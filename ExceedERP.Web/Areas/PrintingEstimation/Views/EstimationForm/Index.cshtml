@@ -20,11 +20,11 @@
                     columns.Bound(c => c.Others).Width(100);
                     columns.Command(command =>
                     {
-                        command.Edit().Text(" ").IconClass("fa fa-pencil");
-                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class="check"}).Click("checkEstimation");
-                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve" }).Click("approveEstimation");
-                        command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject" }).Click("rejectEstimation");
-                        command.Destroy().Text(" ").IconClass("fa fa-trash");
+                        command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class="check", title = "Check" }).Click("checkEstimation");
+                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                        command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                        command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
                     }).Width(200);
 
                 })
@@ -285,11 +285,14 @@
 
                 $(this).find(".k-grid-delete").hide();
             }
-             else if (dataItem.IsChecked == true) {
+            else if (dataItem.IsChecked == true) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
             }
             
         });

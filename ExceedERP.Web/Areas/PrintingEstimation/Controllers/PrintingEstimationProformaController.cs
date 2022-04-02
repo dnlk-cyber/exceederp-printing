@@ -28,10 +28,10 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             ViewData["EstimationForms"] = db.EstimationForms.ToList();
             var jobCategories = db.JobCategories.Select(s => new {
-                JobTypeId = s.JobCategoryId,
-                type = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
+                Code = s.JobCategoryId,
+                Name = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
             }).ToList();
-            ViewData["JobType"] = jobCategories;
+            ViewData["JobTypes"] = jobCategories;
             ViewBag.data = GetData();
             var customers = db.OrganizationCustomers.Select(s => new
             {
@@ -324,6 +324,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                         TotalPrice = (decimal)proformaItem?.TotalPrice,
                         FinishingSize = proformaItem?.Size,
                         Copies = 0,
+                        IsMaga = true,
                         TotalImpression = 0,
                         Pages = 0,
                         Status = ProductionJobOrderStatus.Normal,
@@ -372,6 +373,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 CustomerId = job.CustomerId,
                 Code = job.Code,
                 JobTypeId = job.JobTypeId,
+                IsMaga = job.IsMaga,
                 BeforeTax = job.BeforeTax,
                 UnitPrice = job.UnitPrice,
                 Quantity = job.Quantity,

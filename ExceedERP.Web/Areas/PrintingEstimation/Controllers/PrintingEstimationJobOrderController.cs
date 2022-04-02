@@ -25,13 +25,14 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
         public ActionResult Index()
         {
-            ViewData["Proforma"] = db.Proformas.ToList().Select(s=> new{
-                ProformaId = s.ProformaId,
-                Name = s.ProformaId
-            });
+            ViewData["Proforma"] = db.Proformas.ToList();
             ViewData["JobType"] = db.JobCategories.Select(s => new {
                 JobTypeId = s.JobCategoryId,
-                type = s.HaveParent?db.JobCategories.Where(q=>q.JobCategoryId==s.ParentId).FirstOrDefault().JobName+"-"+ s.JobName : s.JobName
+                type = s.HaveParent ? db.JobCategories.Where(q => q.JobCategoryId == s.ParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            }).ToList();
+            ViewData["CustomerTypes"] = db.ProductionCustomerTypes.Select(s => new {
+                Code = s.ProductionCustomerTypeId,
+                Name = s.Name
             }).ToList();
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                 Code = s.OrganizationCustomerID,
@@ -42,7 +43,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 Name = s.MachineName
             }).ToList();
 
-           
+
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
             var costCenter = db.BranchCostCenter;
@@ -69,7 +70,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             ViewData["Category"] = categories;
             ViewData["defaultCategory"] = categories.FirstOrDefault();
 
-         
+
 
             var employee = db.Person_Employee;
             var selectedEmployee = employee.Select(
@@ -88,7 +89,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 }).AsQueryable();
 
             ViewData["costCenters"] = selectedcostCenter;
-            
+
             ViewBag.data = GetData();
 
             PopulateViewData();
@@ -170,6 +171,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 MachineId = job.MachineId,
                 JobNo = job.JobNo,
                 CustomerId = job.CustomerId,
+                IsMaga = job.IsMaga,
                 EstimatedBy = job.EstimatedBy,
                 Code = job.Code,
                 ApprovedBy = job.ApprovedBy,
@@ -494,6 +496,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 CreatedBy = job.CreatedBy,
                 DateCreated = job.DateCreated,
                 ModifiedBy = job.ModifiedBy,
+                IsMaga = job.IsMaga,
                 LastModified = job.LastModified
             };
             return entity;

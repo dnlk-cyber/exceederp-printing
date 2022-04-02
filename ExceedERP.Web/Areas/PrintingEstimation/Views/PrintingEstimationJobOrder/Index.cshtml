@@ -45,13 +45,15 @@
                                 {
                                     //columns.Bound(c => c.Time);
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
-                                    columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "Name").Width(100);
+                                    columns.ForeignKey(c => c.ProductionCustomertypeId, (IEnumerable)ViewData["CustomerTypes"], "Code", "Name").Width(100);
+                                    //  columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
+                                    columns.Bound(c => c.ReceivedDate).Width(90).Format("{0:MM-dd-yyyy}");
                                     columns.Bound(c => c.Quantity).Width(90).ClientFooterTemplate("T Q: #=sum# ");
                                     columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
                                     columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");
@@ -59,11 +61,11 @@
 
                                     columns.Command(command =>
                                     {
-                                        command.Edit();
-                                        command.Destroy();
-                                        command.Edit().Text("Reorder").HtmlAttributes(new { onclick = "change(this);" });
-
-                                        command.Custom("ReOrder").Text("Change Order").Click("forReOrder").HtmlAttributes(new { @class = "btn btn-primary", id = "btnStyle", style = "padding:2px;", title = "ReOrder" });
+                                        command.Edit().IconClass("fa fa-pencil").Text(" ").HtmlAttributes(new { @class = "normal-edit",title= "Edit"});
+                                        command.Edit().Text(" ").IconClass("fa fa-refresh").HtmlAttributes(new { onclick = "change(this);", title = "ReOrder",  @class = "reorder" });
+                                        command.Custom("change-order").Text(" ").IconClass("fa fa-pencil-square-o").Click("forReOrder").HtmlAttributes(new { @class = "reorder", id = "btnStyle", style = "padding:2px;", title = "Change Order" });
+                                        command.Custom("approve").Text(" ").IconClass("fa fa-check").Click("approveJobOrder").HtmlAttributes(new { title = "Approve" });
+                                        command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new {  title = "Delete" });
 
                                     }).Width(400);
                                 })
@@ -97,7 +99,7 @@
                                                  ag.Add(a=>a.UnitPrice).Sum();
                                                  ag.Add(a=>a.BeforeTax).Sum();
                                                  ag.Add(a=>a.TotalPrice).Sum();
-                                                 
+
                                              })
                                             .Events(events =>
                                             {
@@ -113,1019 +115,16 @@
                                              .Sort(sort =>
                                              {
                                                  sort.Add(l => l.JobId).Descending();
-                                             }))//.ClientDetailTemplateId("Detail")
+                                             }))
 )
 
 
-<script id="Detail" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-                                                                                                                            .Name("tabstrip2_#=JobId#")
-                                                                                                                           .SelectedIndex(0)
-                                                                                                                           .Items(items =>
-                                                                                                                           {
-                                                                                                                               items.Add().Text("Details").Content(
-                                "<div class='row'>" +
-                                        "<div class='col-sm-4' id='detailone'>"
-                                        + "<ul> " +
-                                           "<li  id = detailList><label>Pages:</label>#= Pages #</li>" +
-                                           "<li  id = detailList><label>Copies:</label>#= Copies #</li>" +
-                                           "<li  id = detailList><label>Text Weight:</label>#= TextWeight #</li>" +
-                                           "<li  id = detailList><label>Cover Weight:</label>#= CoverWeight #</li>" +
-                                           "<li  id = detailList><label>Color Text:</label>#= ColorText #</li>" +
-                                           "<li id = detailList><label>Color Cover :</label>#= Colorcover #</li>" +
-                                            "<li  id = detailList><label>Finishing Size:</label>#= FinishingSize #</li>" +
-                                           "<li  id = detailList><label>Printing Line:</label>#= PrintingLine #</li>" +
 
-                                           "</ul>" +
-                                        "</div>" +
-                                        "<div class='col-sm-4' id='detailone'>"
-                                        + "<ul> " +
 
-                                           "<li id = detailList><label>Total Impression:</label>#= TotalImpression #</li>" +
-                                           "<li id = detailList><label>Printing Machine:</label>#= PrintingMachine #</li>" +
-                                           "<li id = detailList><label>Estimated By:</label>#= EstimatedBy #</li>" +
-                                           "<li id = detailList><label>Approved By:</label>#= ApprovedBy #</li>" +
-                                           "<li id = detailList><label>Received Date:</label>#= ReceivedDate #</li>" +
-                                           "<li id = detailList><label>Delivery Date:</label>#= DeliveryDate #</li>" +
-                                           "<li id = detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>" +
-                                           "<li id = detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>" +
-                                           "<li id = detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>" +
 
-                                           "</ul>" +
-                                        "</div>" +
-                                        "</div>"
-                                );
 
-                            items.Add().Text("Materials").Content(@<text>
-                            <a href='@Url.Action("JobOrder", "ReportProductionFollowUp")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
 
 
-                            @(Html.Kendo().Grid<StoreRequisition>()
-                                    .Name("ProductionStoreRequisitionGrid_#=JobId#")
-                                    .Columns(columns =>
-                                    {
-                                // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
-                                columns.Bound(c => c.Reference).Title("Reference").Width(120);
-                                            columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-                                            columns.Bound(c => c.RequestDate).Width(110);
-                                            columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
-                                            columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
-                                columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
-                                            columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
-
-                                            columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
-                                            columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
-                                            columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
-                            "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
-                                                                                                                        //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
-                                columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
-                                            columns.Bound(c => c.PlateNo).Width(100);
-                                            columns.Bound(c => c.Remark).Width(120);
-                                            columns.Bound(c => c.Status).Width(100);
-
-                                            columns.Command(command =>
-                                                {
-                                                command.Edit();
-                                                command.Destroy();
-                                                }).Width(280);
-
-                                        }).Filterable()
-                                    .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-
-                                    .ToolBar(toolbar =>
-                                    {
-                                            toolbar.Create();
-
-                                /*toolbar.Template(@<text>
-                                                <div class="toolbar row">
-                                                    <div class="col-md-1">
-                                                        <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                                                    </div>
-                                                    <div class="col-md-2 pull-right">
-                                                        @(Html.Kendo().Upload()
-                                                                    .Name("file")
-                                                                    .Async(a => a.Save("ProductionStoreRequisition_Import", "ProductionStoreRequisition"))
-                                                                    .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                                                    .ShowFileList(false)
-                                                        )
-                                                    </div>
-
-                                                </div>
-
-                                            </text>);*/
-                                        })
-
-                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProductionStoreRequisition").Window(w => w.Title("Store Requisition").Width(900)))
-                                    .HtmlAttributes(new { style = "height: 550px;" })
-                                    .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(20))
-                                    .Scrollable()
-
-                                    .Filterable()
-                                    .Selectable(selectable =>
-                                    {
-                                            selectable.Mode(GridSelectionMode.Single);
-                                            selectable.Type(GridSelectionType.Row);
-                                        })
-                                    .Sortable(sortable =>
-                                    {
-                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                        })
-                                    .Groupable()
-                                    .Events(ev => ev.DetailExpand("detailExpand"))
-                                    .Events(ev => ev.Edit("onMasterEdit"))
-
-                                    .Scrollable(h => h.Height(500))
-                                    .Events(x => x.DataBound("onDataBoundMaster"))
-                                    .DataSource(dataSource => dataSource
-                                        .Ajax()
-                                        .Sort(sort => sort.Add("StoreRequisitionID").Descending())
-                                        .Events(ev => ev
-                                            .Error("error_handler(\"ProductionStoreRequisitionGrid_#=JobId#\")")
-                                            .RequestStart("onRequestStart(\"ProductionStoreRequisitionGrid_#=JobId#\")")
-                                            .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionGrid_#=JobId#\")"))
-                                        .PageSize(20)
-                                        .Model(model =>
-                                        {
-                                                model.Id(p => p.StoreRequisitionID);
-                                                model.Field(p => p.StoreRequisitionID).Editable(false);
-                                                model.Field(p => p.BranchId).Editable(false);
-                                    // model.Field(p => p.GLPeriodId).Editable(false);
-                                    model.Field(p => p.OrgStructureId).Editable(false);
-                                    // model.Field(p => p.EmployeeId).Editable(false);
-                                    model.Field(p => p.Status).Editable(false);
-                                    //model.Field(p => p.RequestDate).Editable(false);
-                                    model.Field(p => p.CreatedBy).Editable(false);
-                                                model.Field(p => p.DateCreated).Editable(false);
-                                                model.Field(p => p.ModifiedBy).Editable(false);
-                                                model.Field(p => p.LastModified).Editable(false);
-                                            })
-                                        .Read(read => read.Action("ProductionStoreRequisitions_Read", "ProductionStoreRequisition", new { Id = "#=JobId#" }))
-                                        .Create(create => create.Action("ProductionStoreRequisitions_Create", "ProductionStoreRequisition", new { Id = "#=JobId#" }))
-                                        .Update(update => update.Action("ProductionStoreRequisitions_Update", "ProductionStoreRequisition"))
-                                        .Destroy(destroy => destroy.Action("ProductionStoreRequisitions_Destroy", "ProductionStoreRequisition"))
-
-                                    ).Resizable(resize => resize.Columns(true))
-                                    .ClientDetailTemplateId("ProductionStoreRequisitions")
-                                    .ToClientTemplate())
-    </text>
-
-    );
-
-                                                                                                                                    items.Add().Text("Change Of Order").Content(
-@<text>
-
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder>()
-                                                                                                                                           .Name("ChangeOrder#=JobId#")
-                                                                                                                                       .Columns(columns =>
-                                                                                                                                       {
-                                                                                                                                                   columns.Bound(c => c.Quantity);
-                                                                                                                                                   columns.Bound(c => c.Price).Title("Unit Price");
-                                                                                                                                                   columns.Bound(c => c.Total);
-                                                                                                                                                   columns.Bound(c => c.Size);
-                                                                                                                                                   columns.Bound(c => c.Reason);
-                                                                                                                                                   columns.Template(c => @Html.ActionLink("ChangeOfOrder", "ReportProductionFollowUp", new { id = c.ChangeOrderId, }));
-                                                                                                                                                   columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "ReportProductionFollowUp", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
-                                                                                                                                                   columns.Command(command =>
-{
-               //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
-                                }).Width(100);
-                                        })
-                                    .ToolBar(toolbar =>
-                                    {
-                                            })
-                                            .NoRecords("No Data Registered")
-                                        .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
-                                        {
-
-                                                    window.Scrollable(false);
-                                                    window.Title("Change Of Order");
-                                                }))
-                                            .Pageable(pageable => pageable
-                                                .Refresh(true)
-                                                )
-
-                                    .Scrollable(h => h.Height(250))
-
-                                    .DataSource(dataSource => dataSource
-                                        .Ajax()
-                                                //  .Sort(s => s.Add(x => x.ProformaId).Descending())
-                                                .Events(events =>
-                                                {
-                                                            events.Error("error_handler(\"ChangeOrder#=JobId#\")");
-                                                            events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
-                                                            events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
-                                                        }
-                                                )
-
-                                                .Model(model =>
-                                                {
-                                                            model.Id(p => p.ChangeOrderId);
-                                                        })
-
-                                                .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders", new { id = "#=JobId#" }))
-
-                                                ).ToClientTemplate()
-                                )
-</text>
-);
-                                        items.Add().Text("Store Return").Content(@<text>
-                                        @(Html.Kendo().Grid<StoreReturn>()
-                                            .Name("storn_return_#=JobId#")
-                                            .Columns(columns =>
-                                            {
-                                        //columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
-                                        columns.Bound(c => c.Reference).Width(120);
-                                                    columns.Bound(c => c.IssueNumber).Width(120);
-                                                    columns.Bound(c => c.Reason).Width(120);
-                                                    columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
-                                                    columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
-                                                    columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-                                                    columns.Bound(c => c.ReturnDate).Width(130);
-                                                    columns.Bound(c => c.ConfirmationLetter).Width(130);
-                                                    columns.Bound(c => c.IsForOther).Width(130).ClientTemplate("<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
-                                                    columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
-                                                    columns.Bound(c => c.Remark).Width(120);
-                                                    columns.Bound(c => c.Status).Width(80);
-                                                    columns.Command(command =>
-                {
-                                        command.Edit();
-                                        command.Destroy();
-                                        }).Width(180);
-                                        })
-                                    .ToolBar(toolbar =>
-                                    {
-                                            toolbar.Create();
-                                        })
-                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreReturn").Window(w => w.Title("Store Return")))
-                                    .HtmlAttributes(new { style = "height: 550px;" })
-                                    .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(20))
-                                    .Scrollable()
-
-                                    .Filterable()
-                                    .Selectable(selectable =>
-                                    {
-                                            selectable.Mode(GridSelectionMode.Single);
-                                            selectable.Type(GridSelectionType.Row);
-                                        })
-                                    .Sortable(sortable =>
-                                    {
-                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                        })
-                                    .Groupable()
-                                    //.Events(ev => ev.DetailExpand("detailExpand"))
-                                    .Scrollable(h => h.Height(500))
-                                    .Events(x => x.DataBound("onDataBoundMaster"))
-                                    .DataSource(dataSource => dataSource
-                                        .Ajax()
-                                        .Sort(sort => sort.Add("StoreReturnID").Descending())
-                                        .Events(ev => ev
-                                            .Error("error_handler(\"storn_return_#=JobId#\")")
-                                            .RequestStart("onRequestStart(\"storn_return_#=JobId#\")")
-                                            .RequestEnd("onRequestEnd(\"storn_return_#=JobId#\")"))
-
-                                        .Model(model =>
-                                        {
-                                                model.Id(p => p.StoreReturnID);
-                                                model.Field(p => p.Status).Editable(false);
-                                    //model.Field(p => p.GLPeriodId).Editable(false);
-                                    model.Field(p => p.StoreReturnID).Editable(false);
-                                            })
-                                        .Read(read => read.Action("StoreReturns_Read", "ProductionStoreReturn", new { Id = "#=JobId#" }))
-                                        .Create(create => create.Action("StoreReturns_Create", "ProductionStoreReturn", new { Id = "#=JobId#" }))
-                                        .Update(update => update.Action("StoreReturns_Update", "ProductionStoreReturn"))
-                                        .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "ProductionStoreReturn"))
-                                    ).ClientDetailTemplateId("storereturntemplate")
-                                    .ToClientTemplate())
-                                        </text>
-
-                                                            );
-                                       
-
-
-                                        items.Add().Text("Job Status").Content(@<text>
-
-
-
-                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobStatus>()
-                                        .Name("JobStatus#=JobId#")
-                                .Columns(columns =>
-                                {
-                                                                            columns.Bound(c => c.UserId);
-                                                                            columns.Bound(c => c.StartDate);
-                                                                            columns.Bound(c => c.EndDate);
-                                                                            columns.Bound(c => c.JobPhase).EditorTemplateName("JobPhaseTemplate");
-                                                                            columns.Bound(c => c.Status).EditorTemplateName("JobstatusTemplate"); ;
-                                                                //columns.Bound(c => c.Remark).Width(100);
-
-                                                                columns.Command(command =>
-                                                        {
-                                                                                                    command.Edit();
-                                                                                                    command.Destroy();
-                                                                                                }).Width(200);
-                                                                        })
-                                        .ToolBar(toolbar =>
-                                        {
-                                                                                toolbar.Create();
-                                                                            })
-                                    .NoRecords("No Data Registered")
-                                    .Events(ev=>ev.Edit("onJobStatusEdit"))
-                                    .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
-                                    {
-
-                                                                            window.Scrollable(false);
-                                                                            window.Title("Papers and Plate");
-                                                                        }))
-                                    .Pageable(pageable => pageable
-                                        .Refresh(true)
-                                        )
-
-                                .Scrollable(h => h.Height(250))
-                                .Events(ev=>ev.DataBound("jobStatusDataBound").DetailExpand("jobStatusExpand"))
-                                .ClientDetailTemplateId("JobStatusLineItem")
-                                .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                             .Sort(s => s.Add(x => x.JobStatusId).Descending())
-                                            .Events(events =>
-                                            {
-                                                                                    events.Error("error_handler(\"JobStatus#=JobId#\")");
-                                                                                    events.RequestStart("onRequestStart(\"JobStatus#=JobId#\")");
-                                                                                    events.RequestEnd("onRequestEnd(\"JobStatus#=JobId#\")");
-                                                                                }
-                                                )
-
-                                                .Model(model =>
-                                                {
-                                                                                        model.Id(p => p.JobStatusId);
-                                                                                        model.Field(p => p.UserId).Editable(false);
-                                                                                        //model.Field(p => p.Status).Editable(false);
-
-                                                                                    })
-
-                                .Read(read => read.Action("JobStatuses_Read", "JobStatus", new { id = "#=JobId#" }))
-                            .Create(create => create.Action("JobStatuses_Create", "JobStatus", new { id = "#=JobId#" }))
-                            .Update(update => update.Action("JobStatuses_Update", "JobStatus"))
-                            .Destroy(destroy => destroy.Action("JobStatuses_Destroy", "JobStatus"))
-
-                            ).ToClientTemplate()
-                            )
-                            </text>
-
-                            );
-
-
-}).ToClientTemplate())
-</script>
-
-
-
-@(Html.Kendo().Window().Name("ChangeOfOrder")
-                                              .Title("Change Of Order")
-                                    .Visible(false)
-                                    .Modal(true)
-                                    .Draggable(true)
-                                    .Width(500).Content(@<text><div class="form-group">
-                                            <form action="@Url.Action("ChangeOrder", "JobOrders", new { })" method="post" , new { enctype="multipart/form-data" }>
-                                                <input type="hidden" name="id" id="id">
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        @Html.TextBox("JobId", "", new { type = "text", hidden = "hidden" })
-
-                                                        @Html.Label("Quantity")
-
-                                                        @Html.TextBox("ChangedQuantity", "", new { type = "text", onchange = "onChangeOfOrder()" })
-
-                                                        @Html.Label("Unit Price")
-
-                                                        @Html.TextBox("Price", "", new { type = "text", onchange = "onChangeOfOrder()" })
-
-                                                        @Html.Label("Size")
-
-                                                        @Html.TextBox("Size", "", new { type = "text" })
-
-
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        @Html.Label("Tax")
-
-                                                        @Html.TextBox("Tax", "", new { type = "text", @readonly = "readonly" })
-
-                                                        @Html.Label("Total")
-
-                                                        @Html.TextBox("Total", "", new { type = "text", @readonly = "readonly" })
-
-                                                        @Html.Label("Reason")
-
-                                                        @Html.TextBox("Reason", "", new { type = "text" })
-
-                                                    </div>
-
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-8">
-
-                                                        @Html.Label("Type & Quantity of Material Needed")<br />
-
-                                                        <textarea name="TypeAndQuantityOfMaterialNeeded" cols="100" rows="5"></textarea>
-                                                        @*@Html.TextArea("TypeAndQuantityOfMaterialNeeded", "", new { type = "text" })*@
-
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <br />
-                                                    <div class="col-md-4">
-                                                        <input type="submit" class="btn-primary k-button" value=" Submit " />
-                                                    </div>
-                                                </div>
-                                                @*<div class="row">
-                                                        <div class="col-lg-7"></div>
-                                                        <input type="submit" class="btn-primary k-button" value=" Submit "  />
-                                                    </div>*@
-                                            </form>
-                                            <div class="pull-right">
-                                                @*@Html.Kendo().Button().Name("btnUpload").Content("Upload").Events(e => e.Click("UploadD"))*@
-                                                @*<input type="button" name="btnUpload" onclick="UploadD()" value="Upload" />*@
-                                            </div>
-                                        </div>
-                                    </text>))
-
-<script id="storereturntemplate" type="text/Kendo-tmpl">
-    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=StoreReturnID#").Items(items =>
-                                                      {
-                                                          items.Add().Text("Detail").Content(
-                                                            @<text>
-
-                                                                # if (!IsOnlineApproved&&!IsSendForApproval)
-                                                                {#
-
-                                                                <a onclick='return sendForApprovalProductionStoreReturn("#=StoreReturnID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                <br />
-                                                                # } #
-
-                                                                # if (IsOnlineApproved)
-                                                                {#
-                                                                <a href='@Url.Action("StoreReturnPrint", "InventoryPrint")/#=StoreReturnID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                <br />
-                                                                # } #
-
-                                                                <div>
-                                                                    <hr>
-                                                                    <dl class="dl-horizontal">
-                                                                        <dt>
-                                                                            Store Return Number
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= StoreReturnID #
-                                                                        </dd>
-
-                                                                        <dt>
-                                                                            Store
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= StoreCode #
-                                                                        </dd>
-
-                                                                        <dt>
-                                                                            Status
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= Status #
-                                                                        </dd>
-
-                                                                        <dt>
-                                                                            Reason
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= Reason #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Remark
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= Remark #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            CreatedOn
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                                        </dd>
-                                                                        <dt>
-                                                                            CreatedBy
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= CreatedBy #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Modified By
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= ModifiedBy #s
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Modified Date
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                                                                        </dd>
-                                                                    </dl>
-
-                                                                </div>
-
-                                                                <hr>
-
-                                                                # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
-                                                                {#
-                                                                @if (HttpContext.Current.User.IsInRole("Property_Void"))
-                                                                            {
-                                                                    <a onclick='return voidRecord("#=StoreReturnID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                                                            }
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                # } #
-
-                                                            </text>);
-
-
-
-                                                                  items.Add().Text("Item").Content(
-                @<text>
-
-                    @(Html.Kendo().Grid<StoreReturnItems>()
-                                                                          .Name("StoreReturnItem_#=StoreReturnID#")
-                                                                          .Columns(columns =>
-                                                                          {
-                                                                              columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategory").Width(200);
-                                                                              columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("Item").Width(300);
-                                                                              columns.Bound(c => c.Quantity).Width(140);
-                                                                              columns.Bound(c => c.UnitPrice).Width(140);
-                                                                              columns.Command(command =>
-                                                                              {
-                                                                                  command.Edit();
-                                                                                  command.Destroy();
-                                                                              }).Width(480);
-                                                                          })
-                                                                          .ToolBar(toolbar =>
-                                                                          {
-                                                                              toolbar.Create();
-                                                                          })
-                                                                          .Events(ev => ev.Edit("onEdit"))
-                                                                          .Events(x => x.DataBound("onDataBoundLines"))
-                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                          .Scrollable()
-                                                                          .DataSource(dataSource => dataSource
-                                                                              .Ajax()
-                                                                              .Events(ev => ev
-                                                                                  .Error("error_handler(\"StoreReturnItem_#=StoreReturnID#\")")
-                                                                                  .RequestStart("onRequestStart(\"StoreReturnItem_#=StoreReturnID#\")")
-                                                                                  .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
-
-                                                                              .Model(model => model.Id(p => p.StoreReturnItemsID))
-                                                                              .Read(read => read.Action("StoreReturnItems_Read", "ProductionStoreReturnItem", new { id = "#=StoreReturnID#" }))
-                                                                              .Create(create => create.Action("StoreReturnItems_Create", "ProductionStoreReturnItem", new { id = "#=StoreReturnID#" }))
-                                                                              .Update(update => update.Action("StoreReturnItems_Update", "ProductionStoreReturnItem"))
-                                                                              .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "ProductionStoreReturnItem"))
-                                                                          ).ToClientTemplate())
-
-                </text>);
-
-                                                                          items.Add().Text("Attachment").Content(@<text>
-
-                                                                            @FilUploaderBid()
-
-                                                                        </text>);
-
-
-                                                                                items.Add().Text("Validation").Content(
-                            @<text>
-                                @(Html.Kendo().Grid<StoreReturnValidation>()
-                                                                                      .Name("StoreReturnValidation_#=StoreReturnID#")
-                                                                                      .Columns(columns =>
-                                                                                      {
-                                                                                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                                                                                  columns.Bound(c => c.Remark).Width(170);
-                                                                                                  columns.Command(command =>
-                                                                                             {
-                                                              command.Edit();
-                                                  //command.Destroy();
-                                              });
-                                                                                              })
-                                                                                      .ToolBar(toolbar =>
-                                                                                      {
-                                                                                                  toolbar.Create();
-                                                                                              })
-                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                      .Scrollable()
-                                                                                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
-                                                                                      .DataSource(dataSource => dataSource
-                                                                                          .Ajax()
-                                                                                          .Events(ev => ev
-                                                                                              .Error("error_handler(\"StoreReturnValidation_#=StoreReturnID#\")")
-                                                                                              .RequestStart("onRequestStart(\"StoreReturnValidation_#=StoreReturnID#\")")
-                                                                                              .RequestEnd("onRequestEnd(\"StoreReturnValidation_#=StoreReturnID#\")"))
-
-                                                                                          .Model(model => model.Id(p => p.StoreReturnValidationID))
-                                                                                          .Read(read => read.Action("StoreReturnValidations_Read", "ProductionStoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                                                                                          .Create(create => create.Action("StoreReturnValidations_Create", "ProductionStoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                                                                                          .Update(update => update.Action("StoreReturnValidations_Update", "ProductionStoreReturnValidation"))
-                                                                                          .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "ProductionStoreReturnValidation"))
-                                                                                      ).ToClientTemplate())
-
-                            </text>);
-                                                                                  }).ToClientTemplate())
-    <br />
-    Distribution
-
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreReturnDistribution>()
-                                                          .Name("StoreReturnDistribution_#=StoreReturnID#")
-                                                          .Columns(columns =>
-                                                          {
-                                                              columns.Bound(c => c.AccountCode);
-                                                              columns.Bound(c => c.AccountDesc);
-                                                              columns.Bound(c => c.Debit);
-                                                              columns.Bound(c => c.Credit);
-                                                          })
-                                                          .Scrollable()
-                                                          .DataSource(dataSource => dataSource
-                                                              .Ajax()
-                                                              .Read(read => read.Action("StoreReturnDistributions_Read", "ProductionStoreReturnDistribution", new { id = "#=StoreReturnID#" }))
-                                                              .Update(read => read.Action("StoreReturnDistributions_Update", "ProductionStoreReturnDistribution"))
-                                                          ).ToClientTemplate())
-
-
-    @helper FilUploaderBid()
-    {
-        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreReturnAttachment>()
-                                              .Name("StoreReturnAttachment_#=StoreReturnID#")
-                                              .Columns(columns =>
-                                              {
-                                                  columns.Bound(c => c.FileName).ClientTemplate("<a href='/StoreReturnAttachment/FileDwonload?id=\\#=StoreReturnAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
-                                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
-                                              })
-                                              .ToolBar(t => t.Template(
-                                                @<text>
-                                                    @(Html.Kendo().Upload()
-                                                                                          .Name("storeReturnAttachments")
-                                                                                          .Async(a => a.Save("StoreReturnAttachments_Create", "ProductionStoreReturnAttachment", new { id = "#=StoreReturnID #" }))
-                                                                                          .Events(e => e.Complete("bidSuccess"))
-                                                                                          .ShowFileList(false)
-                                                                                          .ToClientTemplate())
-                                                </text>
-                             ))
-
-                         .Editable(editable => editable.Mode(GridEditMode.InLine))
-                         .HtmlAttributes(new { style = "height: 350px;" })
-                         .Scrollable()
-                         .Events(x => x.DataBound("onDataBoundLines"))
-                         .DataSource(dataSource => dataSource
-                             .Ajax()
-                             .Events(ev => ev
-                                 .Error("error_handler(\"StoreReturnAttachment_#=StoreReturnID#\")")
-                                 .RequestStart("onRequestStart(\"StoreReturnAttachment_#=StoreReturnID#\")")
-                                 .RequestEnd("onRequestEnd(\"StoreReturnAttachment_#=StoreReturnID#\")"))
-                             .Model(model => model.Id(p => p.StoreReturnAttachmentId))
-                             .Read(read => read.Action("StoreReturnAttachments_Read", "ProductionStoreReturnAttachment", new { id = "#= StoreReturnID #" }))
-                             .Create(create => create.Action("StoreReturnAttachments_Create", "ProductionStoreReturnAttachment", new { id = "#=StoreReturnID #" }))
-                             .Update(update => update.Action("TenderMinuteUploads_Update", "ProductionStoreReturnAttachment"))
-                             .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "ProductionStoreReturnAttachment"))
-                         ).ToClientTemplate())
-    }
-</script>
-<script id="ProductionStoreRequisitions" type="text/Kendo-tmpl">
-    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
-                                                      {
-                                                          items.Add().Text("Detail").Content(
-
-                                                            @<text>
-                                                                # if (!IsSendForApproval&&!IsSendForApproval)
-                                                                {#
-
-                                                                <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                <br />
-                                                                # } #
-
-                                                                # if (IsOnlineApproved)
-                                                                {#
-                                                                <a href='@Url.Action("ProductionStoreRequisitionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                <br />
-                                                                # } #
-                                                                <div>
-                                                                    <hr>
-                                                                    <dl class="dl-horizontal">
-
-                                                                        <dt>
-                                                                            Request Date
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Status
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= Status #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Is Transfer
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= IsTransfer #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Receiver Store
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= ToStoreCode #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            CreatedOn
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                                        </dd>
-                                                                        <dt>
-                                                                            CreatedBy
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= CreatedBy #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Modified By
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= ModifiedBy #s
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Modified Date
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Approved By
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #= OnlineApprovedBy #s
-                                                                        </dd>
-                                                                        <dt>
-                                                                            Approval Time
-                                                                        </dt>
-                                                                        <dd>
-                                                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-                                                                        </dd>
-                                                                    </dl>
-                                                                </div>
-
-                                                                <hr>
-
-                                                                # if (IsOnlineApproved&&!IsVoid)
-                                                                {#
-                                                                @if (HttpContext.Current.User.IsInRole("Property_Void"))
-                                                                            {
-                                                                    <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                                                            }
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                /**/
-                                                                # } #
-
-                                                            </text>
-                                                                                                            );
-
-                                                                  items.Add().Text("Items").Content(
-    @<text>
-        @(Html.Kendo().Grid<StoreRequisitionItem>()
-                                                              .Name("ProductionStoreRequisitionItem_#=StoreRequisitionID#")
-                                                              .Columns(columns =>
-                                                              {
-                                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategory").Width(200);
-                                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("Item").Width(300);
-                                                                          columns.Bound(c => c.Unit).Width(120);
-                                                                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
-                                                                          columns.Bound(c => c.ModelNo).Width(120);
-                                                                          columns.Bound(c => c.SerialNo).Width(120);
-                                                                          columns.Bound(c => c.ChasisNo).Width(120);
-                                                                          columns.Bound(c => c.RequestedQuantity).Width(120);
-                                                                          columns.Bound(c => c.ApprovedQuantity).Width(120);
-                                                                          columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
-                                                                          columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
-                                                                          columns.Bound(c => c.ItemSpecification).Width(120);
-                                                                          columns.Bound(c => c.CurrentBalance).Hidden();
-                                                                          columns.Command(command =>
-                          {
-                                                  command.Edit();
-                                                  command.Destroy();
-                                                  command.Edit().Text("Return").IconClass("fa fa-share").UpdateText("Save");
-
-                                              });
-
-                                                                      })
-                                                              .ToolBar(toolbar =>
-                                                              {
-                                                                          toolbar.Create();
-                                                                      })
-                                                                      .Events(ev => ev.Edit("onItemEdit"))
-                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                              .Scrollable()
-                                                              .Events(x => x.DataBound("onDataBoundLines"))
-                                                              .DataSource(dataSource => dataSource
-                                                                  .Ajax()
-                                                                  .Events(ev => ev
-                                                                      .Error("error_handler(\"ProductionStoreRequisitionItem_#=StoreRequisitionID#\")")
-                                                                      .RequestStart("onRequestStart(\"ProductionStoreRequisitionItem_#=StoreRequisitionID#\")")
-                                                                      .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionItem_#=StoreRequisitionID#\")"))
-                                                                  .Model(model =>
-                                                                  {
-                                                                              model.Id(p => p.StoreRequisitionItemID);
-                                                                              model.Field(p => p.IssuedQuantity).Editable(false);
-                                                                              model.Field(p => p.PurchaseQuantity).Editable(false);
-                                                                              model.Field(p => p.PartNo).Editable(false);
-                                                                              model.Field(p => p.Unit).Editable(false);
-                                                                              model.Field(p => p.CreatedBy).Editable(false);
-                                                                              model.Field(p => p.DateCreated).Editable(false);
-                                                                              model.Field(p => p.ModifiedBy).Editable(false);
-                                                                              model.Field(p => p.LastModified).Editable(false);
-
-                                                                          })
-                                                                  .Read(read => read.Action("ProductionStoreRequisitionItems_Read", "ProductionStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
-                                                                  .Create(create => create.Action("ProductionStoreRequisitionItems_Create", "ProductionStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
-                                                                  .Update(update => update.Action("ProductionStoreRequisitionItems_Update", "ProductionStoreRequisitionItem"))
-                                                                  .Destroy(destroy => destroy.Action("ProductionStoreRequisitionItems_Destroy", "ProductionStoreRequisitionItem"))
-                                                              ).ToClientTemplate())
-    </text>
-);
-
-
-
-@*items.Add().Text("Validation").Content(
-    @<text>
-
-        @(Html.Kendo().Grid<StoreRequisitionValidation>()
-                      .Name("ProductionStoreRequisitionValidation_#=StoreRequisitionID#")
-                      .Columns(columns =>
-                      {
-                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                  columns.Bound(c => c.Remark).Width(170);
-                                  columns.Command(command =>
-                                  {
-                                      command.Edit();
-                          //command.Destroy();
-                      });
-                              })
-                      .ToolBar(toolbar =>
-                      {
-                                  toolbar.Create();
-                              })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable()
-                      .Events(x => x.DataBound("onDataBoundFisrtValidation").Save("refresh"))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev
-                              .Error("error_handler(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")")
-                              .RequestStart("onRequestStart(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")")
-                              .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")"))
-                          .Model(model =>
-                          {
-                                      model.Id(p => p.StoreRequisitionValidationID);
-                                  })
-                          .Read(read => read.Action("ProductionStoreRequisitionValidations_Read", "ProductionStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("ProductionStoreRequisitionValidations_Create", "ProductionStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("ProductionStoreRequisitionValidations_Update", "ProductionStoreRequisitionValidation"))
-                          .Destroy(destroy => destroy.Action("ProductionStoreRequisitionValidations_Destroy", "ProductionStoreRequisitionValidation"))
-
-                      ).ToClientTemplate())
-
-    </text>
-              );*@
-@*items.Add().Text("Property Validation").Content(@<text>
-    @(Html.Kendo().Grid<ProductionStoreRequisitionPropertyValidation>()
-      .Name("ProductionStoreRequisitionPropertyValidation_#=StoreRequisitionID#")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-          columns.Bound(c => c.Remark).Width(170);
-          columns.Command(command =>
-          {
-             // command.Edit();
-              //command.Destroy();
-          });
-      })
-      .ToolBar(toolbar =>
-      {
-         // toolbar.Create();
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .Scrollable()
-                       .Events(x => x.DataBound("onDataBoundSecondValidation"))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
-          .Model(model =>
-          {
-              model.Id(p => p.ProductionStoreRequisitionPropertyValidationID);
-              model.Field(p => p.Approver).Editable(false);
-          } )
-          .Read(read => read.Action("ProductionStoreRequisitionPropertyValidations_Read", "ProductionStoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-          .Create(create => create.Action("ProductionStoreRequisitionPropertyValidations_Create", "ProductionStoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-          .Update(update => update.Action("ProductionStoreRequisitionPropertyValidations_Update", "ProductionStoreRequisitionPropertyValidation"))
-          .Destroy(destroy => destroy.Action("ProductionStoreRequisitionPropertyValidations_Destroy", "ProductionStoreRequisitionPropertyValidation"))
-      ).ToClientTemplate()
-    )
-                                                                      </text>);*@
-
-        }).ToClientTemplate())
-    @*============================================================ Store Requisition Property Validation ===============================================================================*@
-
-
-
-</script>
-<script id="JobStatusLineItem" type="text/Kendo-tmpl">
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobStatusLineItem>()
-              .Name("JobStatusLineItem#=JobStatusId#")
-              .Columns(columns =>
-              {
-                  columns.Bound(c => c.Date);
-                  columns.Bound(c => c.Quantiy).EditorTemplateName("QuantityEditorTemplate");
-                  columns.Bound(c => c.RemainigQuantiy);
-                  columns.Bound(c => c.TotalPrice);
-                  columns.Bound(c => c.Invoice);
-                  columns.Bound(c => c.SalesVoucherNo);
-                  columns.Bound(c => c.Cash);
-                  columns.Bound(c => c.Credit);
-                  columns.Bound(c => c.CashCreditInvoice);
-
-                  columns.Command(command =>
-                  {
-                      command.Edit();
-                      command.Destroy();
-                  }).Width(200);
-              })
-                                        .ToolBar(toolbar =>
-                                        {
-                                            toolbar.Create();
-                                        })
-                                            .NoRecords("No Data Registered")
-                                    .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
-                                    {
-
-                                        window.Scrollable(false);
-                                    }))
-                                    .Pageable(pageable => pageable
-                                        .Refresh(true)
-                                        )
-
-                                .Scrollable(h => h.Height(250))
-                                .Events(ev=>ev.DataBound("jobStatusLineItemDataBound").Edit("jobStatusLineItemEdit"))
-                                .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                            //  .Sort(s => s.Add(x => x.ProformaId).Descending())
-                                            .Events(events =>
-                                            {
-                                                events.Error("error_handler(\"JobStatusLineItem#=JobStatusId#\")");
-                                                events.RequestStart("onRequestStart(\"JobStatusLineItem#=JobStatusId#\")");
-                                                events.RequestEnd("onRequestEnd(\"JobStatusLineItem#=JobStatusId#\")");
-                                            }
-                                                )
-                                                .Sort(sort=>sort.Add(s=>s.JobStatusLineItemId).Descending())
-                                                .Model(model =>
-                                                {
-                                                    model.Id(p => p.JobStatusLineItemId);
-                                                 model.Field(p => p.RemainigQuantiy).Editable(false);
-
-                                                })
-
-                                .Read(read => read.Action("JobStatusLineItems_Read", "JobStatusLineItem", new { id = "#=JobStatusId#" }))
-                            .Create(create => create.Action("JobStatusLineItems_Create", "JobStatusLineItem", new { id = "#=JobStatusId#" }))
-                            .Update(update => update.Action("JobStatusLineItems_Update", "JobStatusLineItem"))
-                            .Destroy(destroy => destroy.Action("JobStatusLineItems_Destroy", "JobStatusLineItem"))
-
-                            ).ToClientTemplate()
-    )
-</script>
 <script>
     var codeid;
     var unitPrice;
@@ -1133,9 +132,61 @@
     var jobPhase;
     var jobState;
 
-    function jobDataBound() {
+    function jobDataBound(e) {
     //this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsApproved == true) {
+                $(this).find(".k-grid-reorder").show();
+                $(this).find(".k-grid-change-order").show();
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-show").hide();
+                $(this).find(".reorder").show();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-approve").hide();
+
+            }
+            else {
+                $(this).find(".k-grid-change-order").hide();
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-reorder").hide();
+                $(this).find(".reorder").hide();
+                $(this).find(".k-grid-delete").show();
+                $(this).find(".k-grid-approve").show();
+            }
+            
+
+        });
+
     }
+     function approveJobOrder(e) {
+        if (confirm("Are you sure to approve the this job?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("ApproveJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            data: { id: dataItem.JobId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#JobGrid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+
+        }
     function onSave() {
         var masterGrid = $("#JobGrid").data("kendoGrid");
         masterGrid.dataSource.read();
@@ -1287,7 +338,7 @@
     if (quantity !== "" && unitPrice !== "" && jobId !== "") {
 
     $.ajax({
-    url: '@Url.Action("GetTaxAndTotalPriceChangeOfOrder", "JobOrders")',
+    url: '@Url.Action("GetTaxAndTotalPriceChangeOfOrder", "PrintingEstimationJobOrder")',
 
     data: { jobId: jobId, quantity: quantity, unitPrice: unitPrice },
     type: 'POST',
@@ -1365,7 +416,7 @@
         if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
         console.log(unitPrice);
     $.ajax({
-    url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
+    url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationJobOrder")',
 
         data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
     type: 'POST',
@@ -1403,7 +454,7 @@
 
 
     $.ajax({
-    url: '@Url.Action("GetCustomer", "JobOrders")',
+    url: '@Url.Action("GetCustomer", "PrintingEstimationJobOrder")',
 
     data: { proformaId: proformaId },
     type: 'POST',
@@ -2053,5 +1104,9 @@
 
     .row {
         margin-bottom: 10px;
+    }
+    .k-grid tbody .k-button {
+        min-width: 30px;
+        min-height: 30px;
     }
 </style>

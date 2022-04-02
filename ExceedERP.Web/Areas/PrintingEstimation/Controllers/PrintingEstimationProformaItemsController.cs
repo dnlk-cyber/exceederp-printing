@@ -110,13 +110,13 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 {
                     PFProformaItemsId = proformaItems.PFProformaItemsId,
                     ProformaId = id,
-                    JobTypeId = proformaItems.JobTypeId,
+                    JobTypeId =  proformaItems.JobTypeId,
                     Quantity = proformaItems.Quantity,
                     Size = proformaItems.Size,
                     UnitPrice = proformaItems.UnitPrice,
                     Tax = proformaItems.Tax,
                     BeforeTax = proformaItems.BeforeTax,
-                    TotalPrice = 12,
+                    TotalPrice = proformaItems.TotalPrice,
                     Description = proformaItems.Description
                 };
 

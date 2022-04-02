@@ -21,11 +21,11 @@
                                       columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
                                       columns.Command(command =>
                                       {
-                                          command.Edit().Text(" ").IconClass("fa fa-pencil");
-                                          command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check" }).Click("checkEstimation");
-                                          command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve" }).Click("approveEstimation");
-                                          command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject" }).Click("rejectEstimation");
-                                          command.Destroy().Text(" ").IconClass("fa fa-trash");
+                                          command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                                          command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check" ,title = "Check" }).Click("checkEstimation");
+                                          command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                                          command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                                          command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
                                       }).Width(200);
                                   })
                                   .ToolBar(toolbar =>
@@ -88,7 +88,7 @@
                                                                        .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>
                                                            {
-                                                              // columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(100);
+                                                               columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "Code", "Name").Width(100);
                                                                columns.Bound(c => c.Quantity);
                                                                columns.Bound(c => c.Size);
                                                                columns.Bound(c => c.UnitPrice);
@@ -191,7 +191,9 @@
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
             }
-
+            else {
+            $(this).find(".k-grid-approve").hide();
+        }
         });
     }
     function onChildDataBound(e) {
@@ -433,7 +435,7 @@
         if (quantity != 0 && unitPrice != 0 && jobTypeId !== "") {
 
             $.ajax({
-                url: '@Url.Action("GetBeforeVatAndTotalPerice", "ProformaItems")',
+                url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationProformaItems")',
 
                 data: { jobTypeId: jobTypeId, quantity: quantity, unitPrice: unitPrice },
                 type: 'POST',

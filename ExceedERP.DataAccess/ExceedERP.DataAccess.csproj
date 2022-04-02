@@ -246,6 +246,10 @@
     <Compile Include="Migrations\202203310856088_JobApprovalAdded.Designer.cs">
       <DependentUpon>202203310856088_JobApprovalAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202204020830120_JobOrderMega.cs" />
+    <Compile Include="Migrations\202204020830120_JobOrderMega.Designer.cs">
+      <DependentUpon>202204020830120_JobOrderMega.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -387,6 +391,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203310856088_JobApprovalAdded.resx">
       <DependentUpon>202203310856088_JobApprovalAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202204020830120_JobOrderMega.resx">
+      <DependentUpon>202204020830120_JobOrderMega.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
