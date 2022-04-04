@@ -80,7 +80,7 @@
                                             window.Title("Job Order");
                                         }))
 
-                                                           .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound").Save("onSave").Save("onSave"))
+                                                           .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound").Save("onSave").Save("onSave").Edit("onJobEdit"))
 
                                         .Pageable(pageable => pageable
                                                      .Input(true)
@@ -2097,7 +2097,18 @@
             $(".k-grid-edit", detailGrid).hide();
         }
     }
+    function onJobEdit(e) {
+        var mega = $("#IsMega").val();
+        console.log(mega);
+        if (mega) {
+            $("#Branna").hide();
+        }
+        else {
+            $("#Mega").hide();
 
+        }
+
+    }
     function OnIndexCall(elem) {
 
         var a = codeid;
