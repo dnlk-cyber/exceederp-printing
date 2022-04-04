@@ -1,4 +1,4 @@
-namespace ExceedERP.Reporting.ProductionFollowUp.Designer
+namespace ExceedERP.Reporting.PrintingEstimation.Design
 {
     using System;
     using System.ComponentModel;
@@ -8,11 +8,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.Designer
     using Telerik.Reporting.Drawing;
 
     /// <summary>
-    /// Summary description for rptProforma.
+    /// Summary description for rptChangeOfOrder.
     /// </summary>
-    public partial class rptProforma : Telerik.Reporting.Report
+    public partial class rptChangeOfOrder : Telerik.Reporting.Report
     {
-        public rptProforma()
+        public rptChangeOfOrder()
         {
             //
             // Required for telerik Reporting designer support

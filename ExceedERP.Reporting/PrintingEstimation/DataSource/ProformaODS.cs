@@ -1,4 +1,5 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
+namespace ExceedERP.Reporting.PrintingEstimation.DataSource
 {
     [DataObject]
     public class ProformaODS
@@ -26,10 +27,26 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 if (proforma != null)
                 {
                     var pro = new ProformaVM();
+                    pro.InvoiceNo = proforma.InvoiceNo;
+                    pro.EstNo = db.EstimationForms.Find(proforma.EstimationFormId)?.JobNumber;
+                    pro.Date = proforma.InvoiceDate?.ToString("MM-dd-yyyy");
+                    pro.TermsOfPayment = proforma.PaymentTerm.ToString() ;
+                    pro.ValidityDate = proforma.ValidityDate?.ToString("MM-dd-yyyy");
+                    pro.DeliveryDate = proforma.ValidityDate?.ToString("MM-dd-yyyy");
+                    var custDetail = db.OrganizationCustomers.Find(proforma.CustomerId);
+                    if(custDetail!=null)
+                    {
+                        pro.CustomerName = custDetail.TradeName;
+                        pro.ContactPhone = db.Addresses.FirstOrDefault(q=>q.Reference== proforma.CustomerId.ToString()
+                                         && q.Category==AddressType.MOBILE_PHONE_1)?.Value;
+                        pro.Telephone = db.Addresses.FirstOrDefault(q=>q.Reference== proforma.CustomerId.ToString()
+                                         && q.Category==AddressType.HOME_PHONE)?.Value;
+                        pro.Fax = db.Addresses.FirstOrDefault(q=>q.Reference== proforma.CustomerId.ToString()
+                                         && q.Category==AddressType.FAX)?.Value;
+                        pro.Email = db.Addresses.FirstOrDefault(q=>q.Reference== proforma.CustomerId.ToString()
+                                         && q.Category==AddressType.OFFICE_EMAIL)?.Value;
+                    }
 
-                    //pro.CustomerName = proforma.CustomerName;
-                    //pro.ContactName = proforma.ContactName;
-                    //pro.ContactPhone = proforma.ContactPhone;
 
                     var proformaItems = db.PFProformaItems.Where(x => x.ProformaId == proformaId).ToList();
                     if (proItemId != null)

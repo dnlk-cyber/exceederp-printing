@@ -92,7 +92,7 @@
                                                      .ButtonCount(5))
                                                .Filterable()
                                                .Scrollable(h => h.Height(500))
-                                             .Events(ev => ev.Edit("EnableDisableProforma"))
+                                           //  .Events(ev => ev.BeforeEdit("EnableDisableProforma"))
 
                                          .DataSource(dataSource => dataSource
                                              .Ajax()
@@ -124,163 +124,171 @@
 
 <script id="Detail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                                                                            .Name("tabstrip2_#=JobId#")
-                                                                                                                                           .SelectedIndex(0)
-                                                                                                                                           .Items(items =>
-                                                                                                                                           {
-                                                                                                                                               items.Add().Text("Details").Content(
-                                                "<div class='row'>" +
-                                                        "<div class='col-sm-4' id='detailone'>"
-                                                        + "<ul> " +
-                                                           "<li  id = detailList><label>Pages:</label>#= Pages #</li>" +
-                                                           "<li  id = detailList><label>Copies:</label>#= Copies #</li>" +
-                                                           "<li  id = detailList><label>Text Weight:</label>#= TextWeight #</li>" +
-                                                           "<li  id = detailList><label>Cover Weight:</label>#= CoverWeight #</li>" +
-                                                           "<li  id = detailList><label>Color Text:</label>#= ColorText #</li>" +
-                                                           "<li id = detailList><label>Color Cover :</label>#= Colorcover #</li>" +
-                                                            "<li  id = detailList><label>Finishing Size:</label>#= FinishingSize #</li>" +
-                                                           "<li  id = detailList><label>Printing Line:</label>#= PrintingLine #</li>" +
-
-                                                           "</ul>" +
-                                                        "</div>" +
-                                                        "<div class='col-sm-4' id='detailone'>"
-                                                        + "<ul> " +
-
-                                                           "<li id = detailList><label>Total Impression:</label>#= TotalImpression #</li>" +
-                                                           "<li id = detailList><label>Printing Machine:</label>#= PrintingMachine #</li>" +
-                                                           "<li id = detailList><label>Estimated By:</label>#= EstimatedBy #</li>" +
-                                                           "<li id = detailList><label>Approved By:</label>#= ApprovedBy #</li>" +
-                                                           "<li id = detailList><label>Received Date:</label>#= ReceivedDate #</li>" +
-                                                           "<li id = detailList><label>Delivery Date:</label>#= DeliveryDate #</li>" +
-                                                           "<li id = detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>" +
-                                                           "<li id = detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>" +
-                                                           "<li id = detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>" +
-
-                                                           "</ul>" +
-                                                        "</div>" +
-                                                        "</div>"
-                                                );
+                                                                                                                                                                            .Name("tabstrip2_#=JobId#")
+                                                                                                                                                                           .SelectedIndex(0)
+                                                                                                                                                                           .Items(items =>
+                                                                                                                                                                           {
+                                                                                                                                                            @*@<text>
+                                                                                                                                                                </text>*@
 
 
+                                                                                                                                                                        items.Add().Text("Details").Content(
+                                                                                                                                                @<text>
+                                                                                                                                                    <a href='@Url.Action("JobOrder", "PrintingEstimationReport")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
+                                                                                                                                                    <div class='row'>
+                                                                                                                                                        <div class='col-sm-4' id='detailone'>
+                                                                                                                                                            <ul>
+                                                                                                                                                                <li id=detailList><label>Pages:</label>#= Pages #</li>
+                                                                                                                                                                <li id=detailList><label>Copies:</label>#= Copies #</li>
+                                                                                                                                                                <li id=detailList><label>Text Weight:</label>#= TextWeight #</li>
+                                                                                                                                                                <li id=detailList><label>Cover Weight:</label>#= CoverWeight #</li>
+                                                                                                                                                                <li id=detailList><label>Color Text:</label>#= ColorText #</li>
+                                                                                                                                                                <li id=detailList><label>Color Cover :</label>#= Colorcover #</li>
+                                                                                                                                                                <li id=detailList><label>Finishing Size:</label>#= FinishingSize #</li>
+                                                                                                                                                                <li id=detailList><label>Printing Line:</label>#= PrintingLine #</li>
 
-                                                                                                                                               items.Add().Text("Change Of Order").Content(
+                                                                                                                                                            </ul>
+                                                                                                                                                        </div>
+                                                                                                                                                        <div class='col-sm-4' id='detailone'>
+                                                                                                                                                            <ul>
+
+                                                                                                                                                                <li id=detailList><label>Total Impression:</label>#= TotalImpression #</li>
+                                                                                                                                                                <li id=detailList><label>Printing Machine:</label>#= PrintingMachine #</li>
+                                                                                                                                                                <li id=detailList><label>Estimated By:</label>#= EstimatedBy #</li>
+                                                                                                                                                                <li id=detailList><label>Approved By:</label>#= ApprovedBy #</li>
+                                                                                                                                                                <li id=detailList><label>Received Date:</label>#= ReceivedDate #</li>
+                                                                                                                                                                <li id=detailList><label>Delivery Date:</label>#= DeliveryDate #</li>
+                                                                                                                                                                <li id=detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>
+                                                                                                                                                                <li id=detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>
+                                                                                                                                                                <li id=detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>
+
+                                                                                                                                                            </ul>
+                                                                                                                                                        </div>
+                                                                                                                                                    </div>
+                                                                                                                                                </text>
+
+
+                                  );
+
+
+
+                                                                                                                                                                       items.Add().Text("Change Of Order").Content(
         @<text>
 
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder>()
-                                                                                                           .Name("ChangeOrder#=JobId#")
-                                                                                                       .Columns(columns =>
-                                                                                                       {
-                                                                                                                   columns.Bound(c => c.Quantity);
-                                                                                                                   columns.Bound(c => c.Price).Title("Unit Price");
-                                                                                                                   columns.Bound(c => c.Total);
-                                                                                                                   columns.Bound(c => c.Size);
-                                                                                                                   columns.Bound(c => c.Reason);
-                                                                                                                   columns.Template(c => @Html.ActionLink("ChangeOfOrder", "ReportProductionFollowUp", new { id = c.ChangeOrderId, }));
-                                                                                                                   columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "ReportProductionFollowUp", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
-                                                                                                                   columns.Command(command =>
-{
-                //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
-}).Width(100);
-                                                                                                               })
-                .ToolBar(toolbar =>
-                {
-                        })
-                .NoRecords("No Data Registered")
-                .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
-                {
+                                                                                                                                           .Name("ChangeOrder#=JobId#")
+                                                                                                                               .Columns(columns =>
+                                                                                                                               {
+                                                                                                                                   columns.Bound(c => c.Quantity);
+                                                                                                                                   columns.Bound(c => c.Price).Title("Unit Price");
+                                                                                                                                   columns.Bound(c => c.Total);
+                                                                                                                                   columns.Bound(c => c.Size);
+                                                                                                                                   columns.Bound(c => c.Reason);
+                                                                                                                                   columns.Template(c => @Html.ActionLink("ChangeOfOrder", "PrintingEstimationReport", new { id = c.ChangeOrderId, }));
+                                                                                                                                   columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "PrintingEstimationReport", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
+                                                                                                                                   columns.Command(command =>
+                                                                                                                                   {
+                                                                                                                                       //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
+                                                                                                                                   }).Width(100);
+                                                                                                                               }).ToolBar(toolbar =>
+                                                                                                                               {
+                                                                                                                               })
+                                        .NoRecords("No Data Registered")
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
+                                        {
 
-                            window.Scrollable(false);
-                            window.Title("Change Of Order");
-                        }))
-                .Pageable(pageable => pageable
-                .Refresh(true)
-                )
+                                            window.Scrollable(false);
+                                            window.Title("Change Of Order");
+                                        }))
+                                        .Pageable(pageable => pageable
+                                        .Refresh(true)
+                                        )
 
-                .Scrollable(h => h.Height(250))
+                                        .Scrollable(h => h.Height(250))
 
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                //  .Sort(s => s.Add(x => x.ProformaId).Descending())
-                .Events(events =>
-                {
-                            events.Error("error_handler(\"ChangeOrder#=JobId#\")");
-                            events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
-                            events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
-                        }
-                )
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"ChangeOrder#=JobId#\")");
+                                            events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
+                                            events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
+                                        }
+                                        )
 
-                .Model(model =>
-                {
-                            model.Id(p => p.ChangeOrderId);
-                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.ChangeOrderId);
+                                        })
 
-                .Read(read => read.Action("ChangeOrders_Read", "PrintingEstimationJobOrder", new { id = "#=JobId#" }))
+                                        .Read(read => read.Action("ChangeOrders_Read", "PrintingEstimationJobOrder", new { id = "#=JobId#" }))
 
-                ).ToClientTemplate()
+                                        ).ToClientTemplate()
             )
         </text>
-                                      );
+                                                             );
 
-                                                                                                                                                       items.Add().Text("Materials").Content(@<text>
-                                                                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
-                                                                                                                                                                                                    .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
-                                                                                                                                                                                                .Columns(columns =>
-                                                                                                                                                                                                {
-                                                                                                                                                                                                    columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
-                                                                                                                                                                                                    columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name")
-                                                                                                                                                                   .Width(90);
-                                                                                                                                                                                                    columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Items"], "ItemCode", "Name")
-                                                                                                                                                                   .Width(90);
-                                                                                                                                                                                                    columns.Bound(c => c.Quantity).Width(80);
-                                                                                                                                                                                                    columns.Bound(c => c.UnitPrice).Width(80);
-                                                                                                                                                                                                    columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
-                                                                                                                                                                                                    // escaped template expression, to be evaluated in the child/detail context
-                                                                                                                                                                                                   // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                                                                                                                                                                })
-                                                                                                                                                                                                .ToolBar(toolbar =>
-                                                                                                                                                                                                {
-                                                                                                                                                                                                    // toolbar.Create();
+                                                                                                                                                                           items.Add().Text("Materials").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
+                                                                                                                                                                                                                                                        .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
+                                                                                                                                                                                                                                                    .Columns(columns =>
+                                                                                                                                                                                                                                                    {
+                    columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
+                    columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name")
+.Width(90);
+                    columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Items"], "ItemCode", "Name")
+.Width(90);
+                    columns.Bound(c => c.Quantity).Width(80);
+                    columns.Bound(c => c.UnitPrice).Width(80);
+                    columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                    // escaped template expression, to be evaluated in the child/detail context
+                    // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+})
+                                                                                                                                                                                                                                                    .ToolBar(toolbar =>
+                                                                                                                                                                                                                                                    {
+                    // toolbar.Create();
 
-                                                                                                                                                                                                })
-                                                                                                                                                                                                //.Events(ev => ev.DataBound("onChildDataBound"))
-                                                                                                                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                                                                                // .TemplateName("MaterialCost")
-                                                                                                                                                                                                //.Window(w => w.Title("Material Cost Form").Width(400)))
-                                                                                                                                                                                                .Pageable(pageable => pageable
-                                                                                                                                                                                                .Refresh(true)
-                                                                                                                                                                                                .PageSizes(true)
-                                                                                                                                                                                                .ButtonCount(5))
-                                                                                                                                                                                                .DataSource(dataSource => dataSource
-                                                                                                                                                                                                    .Ajax()
-                                                                                                                                                                                                    //   .ServerOperation(false)
-                                                                                                                                                                                                    .Events(ev => ev.Error("error_handler(\"material_costs_#=JobId#\")")
-                                                                                                                                                                                                    .RequestStart("onRequestStart(\"material_costs_#=JobId#\")")
-                                                                                                                                                                                                    .RequestEnd("onRequestEnd(\"material_costs_#=JobId#\")"))
-                                                                                                                                                                                                    .Aggregates(aggregates =>
+})
+                                                                                                                                                                                                                                                    //.Events(ev => ev.DataBound("onChildDataBound"))
+                                                                                                                                                                                                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                                                                                                                    // .TemplateName("MaterialCost")
+                                                                                                                                                                                                                                                    //.Window(w => w.Title("Material Cost Form").Width(400)))
+                                                                                                                                                                                                                                                    .Pageable(pageable => pageable
+                                                                                                                                                                                                                                                    .Refresh(true)
+                                                                                                                                                                                                                                                    .PageSizes(true)
+                                                                                                                                                                                                                                                    .ButtonCount(5))
+                                                                                                                                                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                                                                                                                                                        .Ajax()
+                                                                                                                                                                                                                                                        //   .ServerOperation(false)
+                                                                                                                                                                                                                                                        .Events(ev => ev.Error("error_handler(\"material_costs_#=JobId#\")")
+                                                                                                                                                                                                                                                        .RequestStart("onRequestStart(\"material_costs_#=JobId#\")")
+                                                                                                                                                                                                                                                        .RequestEnd("onRequestEnd(\"material_costs_#=JobId#\")"))
+                                                                                                                                                                                                                                                        .Aggregates(aggregates =>
 
-                                                                                                                                                                                                    {
-                                                                                                                                                                                                        aggregates.Add(c => c.TotalPrice).Sum();
-                                                                                                                                                                                                    })
-                                                                                                                                                                                                    .Model(model => model.Id(p => p.MaterialCostId))
-                                                                                                                                                                                                    .Read(read => read.Action("MaterialJobOrders_Read", "MaterialCost", new { id = "#=JobId #" }))
-                                                                                                                                                                                                    .Sort(sort =>
-                                                                                                                                                                                                    {
-                                                                                                                                                                                                        sort.Add(m => m.LastModified).Descending();
+                                                                                                                                                                                                                                                        {
+                    aggregates.Add(c => c.TotalPrice).Sum();
+})
+                                                                                                                                                                                                                                                        .Model(model => model.Id(p => p.MaterialCostId))
+                                                                                                                                                                                                                                                        .Read(read => read.Action("MaterialJobOrders_Read", "MaterialCost", new { id = "#=JobId #" }))
+                                                                                                                                                                                                                                                        .Sort(sort =>
+                                                                                                                                                                                                                                                        {
+                    sort.Add(m => m.LastModified).Descending();
 
-                                                                                                                                                                                                    })
-                                                                                                                                                                                                    .PageSize(5))
-                                                                                                                                                                                                    .ToClientTemplate())
-                                                                                                                                                    </text>
+})
+                                                                                                                                                                                                                                                        .PageSize(5))
+                                                                                                                                                                                                                                                        .ToClientTemplate())
+                                                                                                                                                                        </text>
 
-                                                                );
-
-
+                                                                                                                                                                                                                                                                                                                                                                                                  );
 
 
 
 
 
-                                                                                                                                                        }).ToClientTemplate())
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }).ToClientTemplate())
 </script>
 
 
@@ -794,7 +802,7 @@
         if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
         console.log(unitPrice);
     $.ajax({
-    url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
+    url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationJobOrder")',
 
         data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
     type: 'POST',

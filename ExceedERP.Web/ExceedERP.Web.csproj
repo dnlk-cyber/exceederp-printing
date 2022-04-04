@@ -1904,7 +1904,7 @@
     <Compile Include="Areas\PrintingEstimation\Controllers\LaborCostController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\MaterialCostController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\OverallCostController.cs" />
-    <Compile Include="Areas\PrintingEstimation\Controllers\PrintingReportController.cs" />
+    <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationReportController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingStepController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationProformaController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationProformaItemsController.cs" />
@@ -4905,11 +4905,11 @@
     <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\Upload.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\UploadDocument.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Proformas\Index.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ChangeOfOrder.cshtml" />
+    <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationReport\ChangeOfOrder.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\FinishedGoodReceival.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\JobOrder.cshtml" />
+    <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationReport\JobOrder.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ProductDelivery.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ProformaPrint.cshtml" />
+    <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationReport\ProformaPrint.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\testp.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\web.config" />
@@ -5114,7 +5114,7 @@
     <Content Include="Areas\PrintingEstimation\Views\MaterialCost\Index.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\Material\Index.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\Overall\Index.cshtml" />
-    <Content Include="Areas\PrintingEstimation\Views\PrintingReport\PrintingEstimationForms.cshtml" />
+    <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationReport\PrintingEstimationForms.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingStep\Index.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\Shared\EditorTemplates\Date.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\Shared\EditorTemplates\PrintingCategory.cshtml" />

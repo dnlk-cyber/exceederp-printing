@@ -82,7 +82,7 @@
                                               items.Add().Text("Items").Content(
                             @<text>
 
-                                <a href='@Url.Action("ProformaPrint", "ReportProductionFollowUp")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
+                                <a href='@Url.Action("ProformaPrint", "PrintingEstimationReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
 
                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
                                                                        .Name("ProformaItems#=ProformaId#")
@@ -212,7 +212,7 @@
 
 
     function onSave() {
-        var masterGrid = $("#ProformaGrid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
         //var cus = $("#CustomerId").data("kendoDropDownList");
         //cus.dataSource.read();
         masterGrid.dataSource.read();

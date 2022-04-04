@@ -187,7 +187,7 @@
                                                     );
                                             itemn.Add().Text("Overall Costs")
                     .Content(@<text>
-                        <a href='@Url.Action("PrintingEstimationForms", "PrintingReport")/#=EstimationFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                        <a href='@Url.Action("PrintingEstimationForms", "PrintingEstimationReport")/#=EstimationFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.OverallCost>()
                                                                                 .Name("overall_costs_#=EstimationFormId#")

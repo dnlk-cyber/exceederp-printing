@@ -1,4 +1,4 @@
-namespace ExceedERP.Reporting.ProductionFollowUp.Designer
+namespace ExceedERP.Reporting.PrintingEstimation.Design
 {
     partial class rptChangeOfOrder
     {
@@ -213,7 +213,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.Designer
             // ChangeOfOrderODS
             // 
             this.ChangeOfOrderODS.DataMember = "GetChangeOfOrder";
-            this.ChangeOfOrderODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ChangeOfOrderODS);
+            this.ChangeOfOrderODS.DataSource = typeof(ExceedERP.Reporting.PrintingEstimation.DataSource.ChangeOfOrderODS);
             this.ChangeOfOrderODS.Name = "ChangeOfOrderODS";
             this.ChangeOfOrderODS.Parameters.Add(new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value"));
             // 

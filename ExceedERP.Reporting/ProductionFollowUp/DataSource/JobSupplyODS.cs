@@ -46,6 +46,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
                 model.TotalJob = jobs.Count().ToString();
+                model.TotalQuantity = jobs.Sum(s=>s.Quantity).ToString();
                 model.Proforma = Math.Round(jobs.Where(q=>q.hv).Sum(s=>s.TotalPrice),2).ToString();
                 model.DirectOrder = Math.Round(jobs.Where(q=>!q.hv).Sum(s=>s.TotalPrice),2).ToString();
                 model.To = endDate?.ToString("dd/MM/yyyy");

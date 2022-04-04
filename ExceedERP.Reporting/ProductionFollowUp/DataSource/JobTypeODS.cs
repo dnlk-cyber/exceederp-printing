@@ -82,6 +82,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                     if (jobStatus.Status == Core.Domain.PrintingEstimation.Setting.JobState.InProgress)
                                     {
                                         totalPrice = 0;
+                                        continue;
                                     }
 
                                 }
@@ -91,6 +92,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                     if(jobS!=null)
                                     {
                                         totalPrice = 0;
+                                        continue;
                                     }
                                 }
                                 else
@@ -104,6 +106,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             else
                             {
                                 totalPrice = 0;
+                                continue;
                             }
                         }
                         job.JobNo = jobOrder?.JobNo;

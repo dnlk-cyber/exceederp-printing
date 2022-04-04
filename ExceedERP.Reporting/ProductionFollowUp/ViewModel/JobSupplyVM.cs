@@ -11,6 +11,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
     { 
             public string From { get; set; }
             public string To { get; set; }
+            public string TotalQuantity { get; set; }
             public string TotalJob { get; set; }
             public string Proforma { get; set; }
             public string DirectOrder { get; set; }

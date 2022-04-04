@@ -53,11 +53,12 @@
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
-                                    columns.Bound(c => c.ReceivedDate).Width(90).Format("{0:MM-dd-yyyy}");
-                                    columns.Bound(c => c.Quantity).Width(90).ClientFooterTemplate("T Q: #=sum# ");
-                                    columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
-                                    columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");
-                                    columns.Bound(c => c.TotalPrice).Width(90).ClientFooterTemplate("T P: #=sum# ");
+                                    columns.Bound(c => c.ReceivedDate).Width(100).Format("{0:MM-dd-yyyy}");
+                                    columns.Bound(c => c.FinishingSize).Width(100);
+                                    columns.Bound(c => c.Quantity).Width(100).ClientFooterTemplate("T Q: #=sum# ");
+                                   // columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
+                                   // columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");
+                                   // columns.Bound(c => c.TotalPrice).Width(90).ClientFooterTemplate("T P: #=sum# ");
                                     columns.Bound(c => c.Status).Width(110);
 
                                     columns.Command(command =>
@@ -122,431 +123,434 @@
 
 <script id="Detail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                                                                            .Name("tabstrip2_#=JobId#")
-                                                                                                                                           .SelectedIndex(0)
-                                                                                                                                           .Items(items =>
-                                                                                                                                           {
-                                                                                                                                               items.Add().Text("Details").Content(
-                                                "<div class='row'>" +
-                                                        "<div class='col-sm-4' id='detailone'>"
-                                                        + "<ul> " +
-                                                           "<li  id = detailList><label>Pages:</label>#= Pages #</li>" +
-                                                           "<li  id = detailList><label>Copies:</label>#= Copies #</li>" +
-                                                           "<li  id = detailList><label>Text Weight:</label>#= TextWeight #</li>" +
-                                                           "<li  id = detailList><label>Cover Weight:</label>#= CoverWeight #</li>" +
-                                                           "<li  id = detailList><label>Color Text:</label>#= ColorText #</li>" +
-                                                           "<li id = detailList><label>Color Cover :</label>#= Colorcover #</li>" +
-                                                            "<li  id = detailList><label>Finishing Size:</label>#= FinishingSize #</li>" +
-                                                           "<li  id = detailList><label>Printing Line:</label>#= PrintingLine #</li>" +
+                                                                                                                                                            .Name("tabstrip2_#=JobId#")
+                                                                                                                                                           .SelectedIndex(0)
+                                                                                                                                                           .Items(items =>
+                                                                                                                                                           {
+                                                                                                                                                            
 
-                                                           "</ul>" +
-                                                        "</div>" +
-                                                        "<div class='col-sm-4' id='detailone'>"
-                                                        + "<ul> " +
+                                                                                                                                                                    items.Add().Text("Details").Content(
 
-                                                           "<li id = detailList><label>Total Impression:</label>#= TotalImpression #</li>" +
-                                                           "<li id = detailList><label>Printing Machine:</label>#= PrintingMachine #</li>" +
-                                                           "<li id = detailList><label>Estimated By:</label>#= EstimatedBy #</li>" +
-                                                           "<li id = detailList><label>Approved By:</label>#= ApprovedBy #</li>" +
-                                                           "<li id = detailList><label>Received Date:</label>#= ReceivedDate #</li>" +
-                                                           "<li id = detailList><label>Delivery Date:</label>#= DeliveryDate #</li>" +
-                                                           "<li id = detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>" +
-                                                           "<li id = detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>" +
-                                                           "<li id = detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>" +
 
-                                                           "</ul>" +
-                                                        "</div>" +
-                                                        "</div>"
-                                                );
-                                                                                                                                               items.Add().Text("Estimated Raw Materials").Content(@<text>
-                                                                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
-                                                                                                                                                                                                    .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
-                                                                                                                                                                                                .Columns(columns =>
-                                                                                                                                                                                                {
-                                                                                                                                                                                                                         columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
-                                                                                                                                                                                                                         columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name")
-                                                                                                                                                                                        .Width(90);
-                                                                                                                                                                                                                         columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Items"], "ItemCode", "Name")
-                                                                                                                                                                                        .Width(90);
-                                                                                                                                                                                                                         columns.Bound(c => c.Quantity).Width(80);
-                                                                                                                                                                                                                         columns.Bound(c => c.UnitPrice).Width(80);
-                                                                                                                                                                                                                         columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
-                                                                                                                                                                                                             // escaped template expression, to be evaluated in the child/detail context
-                                                                                                                                                                                                             // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                          "<div class='row'>" +
+                                                                                  "<div class='col-sm-4' id='detailone'>"
+                                                                                  + "<ul> " +
+                                                                                     "<li  id = detailList><label>Pages:</label>#= Pages #</li>" +
+                                                                                     "<li  id = detailList><label>Copies:</label>#= Copies #</li>" +
+                                                                                     "<li  id = detailList><label>Text Weight:</label>#= TextWeight #</li>" +
+                                                                                     "<li  id = detailList><label>Cover Weight:</label>#= CoverWeight #</li>" +
+                                                                                     "<li  id = detailList><label>Color Text:</label>#= ColorText #</li>" +
+                                                                                     "<li id = detailList><label>Color Cover :</label>#= Colorcover #</li>" +
+                                                                                      "<li  id = detailList><label>Finishing Size:</label>#= FinishingSize #</li>" +
+                                                                                     "<li  id = detailList><label>Printing Line:</label>#= PrintingLine #</li>" +
+
+                                                                                     "</ul>" +
+                                                                                  "</div>" +
+                                                                                  "<div class='col-sm-4' id='detailone'>"
+                                                                                  + "<ul> " +
+
+                                                                                     "<li id = detailList><label>Total Impression:</label>#= TotalImpression #</li>" +
+                                                                                     "<li id = detailList><label>Printing Machine:</label>#= PrintingMachine #</li>" +
+                                                                                     "<li id = detailList><label>Estimated By:</label>#= EstimatedBy #</li>" +
+                                                                                     "<li id = detailList><label>Approved By:</label>#= ApprovedBy #</li>" +
+                                                                                     "<li id = detailList><label>Received Date:</label>#= ReceivedDate #</li>" +
+                                                                                     "<li id = detailList><label>Delivery Date:</label>#= DeliveryDate #</li>" +
+                                                                                     "<li id = detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>" +
+                                                                                     "<li id = detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>" +
+                                                                                     "<li id = detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>" +
+
+                                                                                     "</ul>" +
+                                                                                  "</div>" +
+                                                                                  "</div>"
+                                                                          );
+                                                                                                                                                                    items.Add().Text("Estimated Raw Materials").Content(@<text>
+                                                                                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
+                                                                                                                                                                                                                                            .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
+                                                                                                                                                                                                                                        .Columns(columns =>
+                                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                         columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
+                                                                                                                                                                                                                                                         columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name")
+                                                                                                                                                                                                .Width(90);
+                                                                                                                                                                                                                                                         columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Items"], "ItemCode", "Name")
+                                                                                                                                                                                                .Width(90);
+                                                                                                                                                                                                                                                         columns.Bound(c => c.Quantity).Width(80);
+                                                                                                                                                                                                                                                         columns.Bound(c => c.UnitPrice).Width(80);
+                                                                                                                                                                                                                                                         columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                                                                                                                                                                                                                                             // escaped template expression, to be evaluated in the child/detail context
+                                                                                                                                                                                                                                             // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                                                                                                                                                                                         })
+                                                                                                                                                                                                                                        .ToolBar(toolbar =>
+                                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                             // toolbar.Create();
+
+                                                                                                                                                                                                                                         })
+                                                                                                                                                                                                                                        //.Events(ev => ev.DataBound("onChildDataBound"))
+                                                                                                                                                                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                                                                                                        // .TemplateName("MaterialCost")
+                                                                                                                                                                                                                                        //.Window(w => w.Title("Material Cost Form").Width(400)))
+                                                                                                                                                                                                                                        .Pageable(pageable => pageable
+                                                                                                                                                                                                                                        .Refresh(true)
+                                                                                                                                                                                                                                        .PageSizes(true)
+                                                                                                                                                                                                                                        .ButtonCount(5))
+                                                                                                                                                                                                                                        .DataSource(dataSource => dataSource
+                                                                                                                                                                                                                                            .Ajax()
+                                                                                                                                                                                                                                            //   .ServerOperation(false)
+                                                                                                                                                                                                                                            .Events(ev => ev.Error("error_handler(\"material_costs_#=JobId#\")")
+                                                                                                                                                                                                                                            .RequestStart("onRequestStart(\"material_costs_#=JobId#\")")
+                                                                                                                                                                                                                                            .RequestEnd("onRequestEnd(\"material_costs_#=JobId#\")"))
+                                                                                                                                                                                                                                            .Aggregates(aggregates =>
+
+                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                             aggregates.Add(c => c.TotalPrice).Sum();
+                                                                                                                                                                                                                                                         })
+                                                                                                                                                                                                                                            .Model(model => model.Id(p => p.MaterialCostId))
+                                                                                                                                                                                                                                            .Read(read => read.Action("MaterialJobOrders_Read", "AutoJobOrder", new { id = "#=JobId #" }))
+                                                                                                                                                                                                                                            .Sort(sort =>
+                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                             sort.Add(m => m.LastModified).Descending();
+
+                                                                                                                                                                                                                                                         })
+                                                                                                                                                                                                                                            .PageSize(5))
+                                                                                                                                                                                                                                            .ToClientTemplate())
+                                                                                                                                                                    </text>
+
+                                                                                         );
+
+
+
+                                                                                                                                                                            items.Add().Text("Add New Raw Materials").Content(@<text>
+
+
+                                                                                                                                                                                @(Html.Kendo().Grid<StoreRequisition>()
+                                                                                                                                                                                                                        .Name("ProductionStoreRequisitionGrid_#=JobId#")
+                                                                                                                                                                                                                        .Columns(columns =>
+                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                     // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+                                                                                                                                                                                                                                     columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                                                                                                                                                                                                                                                 columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                                                                                                                                                                                                                 columns.Bound(c => c.RequestDate).Width(110);
+                                                                                                                                                                                                                                                 columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
+                                                                                                                                                                                                                                                 columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
+                                                                                                                                                                                                                                     columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
+                                                                                                                                                                                                                                                 columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+
+                                                                                                                                                                                                                                                 columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                                                                                                                                                                                                                 columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+                                                                                                                                                                                                                                                 columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
+                                                                                                                                                                                 "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
+                                                                                                                                                                                                                                     //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
+                                                                                                                                                                                                                                     columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                                                                                                                                                                                                                                                 columns.Bound(c => c.PlateNo).Width(100);
+                                                                                                                                                                                                                                                 columns.Bound(c => c.Remark).Width(120);
+                                                                                                                                                                                                                                                 columns.Bound(c => c.Status).Width(100);
+
+                                                                                                                                                                                                                                                 columns.Command(command =>
+                                                                                                                                                                                                     {
+                                                                                                                                                                                                                                  command.Edit();
+                                                                                                                                                                                                                                  command.Destroy();
+                                                                                                                                                                                                                              }).Width(280);
+
+                                                                                                                                                                                                                                             }).Filterable()
+                                                                                                                                                                                                                        .Pageable(pageable => pageable
+                                                                                                                                                                                                                            .Input(true)
+                                                                                                                                                                                                                            .Numeric(false)
+                                                                                                                                                                                                                            .Refresh(true)
+                                                                                                                                                                                                                            .PageSizes(true)
+                                                                                                                                                                                                                            .ButtonCount(5))
+
+                                                                                                                                                                                                                        .ToolBar(toolbar =>
+                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                 toolbar.Create();
+
+                                                                                                                                                                                                                                     /*toolbar.Template(@<text>
+                                                                                                                                                                                                                                                     <div class="toolbar row">
+                                                                                                                                                                                                                                                         <div class="col-md-1">
+                                                                                                                                                                                                                                                             <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                                                                                                                                                                                                                                                         </div>
+                                                                                                                                                                                                                                                         <div class="col-md-2 pull-right">
+                                                                                                                                                                                                                                                             @(Html.Kendo().Upload()
+                                                                                                                                                                                                                                                                         .Name("file")
+                                                                                                                                                                                                                                                                         .Async(a => a.Save("ProductionStoreRequisition_Import", "ProductionStoreRequisition"))
+                                                                                                                                                                                                                                                                         .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                                                                                                                                                                                                                                                         .ShowFileList(false)
+                                                                                                                                                                                                                                                             )
+                                                                                                                                                                                                                                                         </div>
+
+                                                                                                                                                                                                                                                     </div>
+
+                                                                                                                                                                                                                                                 </text>);*/
+                                                                                                                                                                                                                                             })
+
+                                                                                                                                                                                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProductionStoreRequisition").Window(w => w.Title("Store Requisition").Width(900)))
+                                                                                                                                                                                                                        .HtmlAttributes(new { style = "height: 550px;" })
+                                                                                                                                                                                                                        .Pageable(pageable => pageable
+                                                                                                                                                                                                                            .Input(true)
+                                                                                                                                                                                                                            .Numeric(false)
+                                                                                                                                                                                                                            .Refresh(true)
+                                                                                                                                                                                                                            .PageSizes(true)
+                                                                                                                                                                                                                            .ButtonCount(20))
+                                                                                                                                                                                                                        .Scrollable()
+
+                                                                                                                                                                                                                        .Filterable()
+                                                                                                                                                                                                                        .Selectable(selectable =>
+                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                 selectable.Mode(GridSelectionMode.Single);
+                                                                                                                                                                                                                                                 selectable.Type(GridSelectionType.Row);
+                                                                                                                                                                                                                                             })
+                                                                                                                                                                                                                        .Sortable(sortable =>
+                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                                 sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                                                                                             })
+                                                                                                                                                                                                                        .Groupable()
+                                                                                                                                                                                                                        .Events(ev => ev.DetailExpand("detailExpand"))
+                                                                                                                                                                                                                        .Events(ev => ev.Edit("onMasterEdit"))
+
+                                                                                                                                                                                                                        .Scrollable(h => h.Height(500))
+                                                                                                                                                                                                                        .Events(x => x.DataBound("onDataBoundMaster"))
+                                                                                                                                                                                                                        .DataSource(dataSource => dataSource
+                                                                                                                                                                                                                            .Ajax()
+                                                                                                                                                                                                                            .Sort(sort => sort.Add("StoreRequisitionID").Descending())
+                                                                                                                                                                                                                            .Events(ev => ev
+                                                                                                                                                                                                                                .Error("error_handler(\"ProductionStoreRequisitionGrid_#=JobId#\")")
+                                                                                                                                                                                                                                .RequestStart("onRequestStart(\"ProductionStoreRequisitionGrid_#=JobId#\")")
+                                                                                                                                                                                                                                .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionGrid_#=JobId#\")"))
+                                                                                                                                                                                                                            .PageSize(20)
+                                                                                                                                                                                                                            .Model(model =>
+                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                     model.Id(p => p.StoreRequisitionID);
+                                                                                                                                                                                                                                                     model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                                                                                                                                                                                     model.Field(p => p.BranchId).Editable(false);
+                                                                                                                                                                                                                                         // model.Field(p => p.GLPeriodId).Editable(false);
+                                                                                                                                                                                                                                         model.Field(p => p.OrgStructureId).Editable(false);
+                                                                                                                                                                                                                                         // model.Field(p => p.EmployeeId).Editable(false);
+                                                                                                                                                                                                                                         model.Field(p => p.Status).Editable(false);
+                                                                                                                                                                                                                                         //model.Field(p => p.RequestDate).Editable(false);
+                                                                                                                                                                                                                                         model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                                                                                                                     model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                                                                                                                     model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                                                                                                                     model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                                                                                                                 })
+                                                                                                                                                                                                                            .Read(read => read.Action("ProductionStoreRequisitions_Read", "ProductionStoreRequisition", new { Id = "#=JobId#" }))
+                                                                                                                                                                                                                            .Create(create => create.Action("ProductionStoreRequisitions_Create", "ProductionStoreRequisition", new { Id = "#=JobId#" }))
+                                                                                                                                                                                                                            .Update(update => update.Action("ProductionStoreRequisitions_Update", "ProductionStoreRequisition"))
+                                                                                                                                                                                                                            .Destroy(destroy => destroy.Action("ProductionStoreRequisitions_Destroy", "ProductionStoreRequisition"))
+
+                                                                                                                                                                                                                        ).Resizable(resize => resize.Columns(true))
+                                                                                                                                                                                                                        .ClientDetailTemplateId("ProductionStoreRequisitions")
+                                                                                                                                                                                                                        .ToClientTemplate())
+                                                                                                                                                                            </text>
+
+                                                                                                                                                );
+
+                                                                                                                                                                                    items.Add().Text("Change Of Order").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder>()
+                                                                                                                                   .Name("ChangeOrder#=JobId#")
+                                                                                                                               .Columns(columns =>
+                                                                                                                               {
+                                                                                                                                           columns.Bound(c => c.Quantity);
+                                                                                                                                           columns.Bound(c => c.Price).Title("Unit Price");
+                                                                                                                                           columns.Bound(c => c.Total);
+                                                                                                                                           columns.Bound(c => c.Size);
+                                                                                                                                           columns.Bound(c => c.Reason);
+                                                                                                                                           columns.Template(c => @Html.ActionLink("ChangeOfOrder", "ReportProductionFollowUp", new { id = c.ChangeOrderId, }));
+                                                                                                                                           columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "ReportProductionFollowUp", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
+                                                                                                                                           columns.Command(command =>
+{
+        //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
+}).Width(100);
+                                                                                                                                       })
+                                        .ToolBar(toolbar =>
+                                        {
+                                                })
+                                        .NoRecords("No Data Registered")
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
+                                        {
+
+                                                    window.Scrollable(false);
+                                                    window.Title("Change Of Order");
+                                                }))
+                                        .Pageable(pageable => pageable
+                                        .Refresh(true)
+                                        )
+
+                                        .Scrollable(h => h.Height(250))
+
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                        .Events(events =>
+                                        {
+                                                    events.Error("error_handler(\"ChangeOrder#=JobId#\")");
+                                                    events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
+                                                    events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
+                                                }
+                                        )
+
+                                        .Model(model =>
+                                        {
+                                                    model.Id(p => p.ChangeOrderId);
+                                                })
+
+                                        .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders", new { id = "#=JobId#" }))
+
+                                        ).ToClientTemplate()
+                    )
+                </text>
+);
+                                                                                                                                                               items.Add().Text("Store Return").Content(@<text>
+                                                                                                                                                                @(Html.Kendo().Grid<StoreReturn>()
+                                                                                                                                                                                                    .Name("storn_return_#=JobId#")
+                                                                                                                                                                                                    .Columns(columns =>
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                         //columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
+                                                                                                                                                                                                         columns.Bound(c => c.Reference).Width(120);
+                                                                                                                                                                                                                     columns.Bound(c => c.IssueNumber).Width(120);
+                                                                                                                                                                                                                     columns.Bound(c => c.Reason).Width(120);
+                                                                                                                                                                                                                     columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                                                                                                                                                                                     columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+                                                                                                                                                                                                                     columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                                                                                                                                                                                     columns.Bound(c => c.ReturnDate).Width(130);
+                                                                                                                                                                                                                     columns.Bound(c => c.ConfirmationLetter).Width(130);
+                                                                                                                                                                                                                     columns.Bound(c => c.IsForOther).Width(130).ClientTemplate("<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
+                                                                                                                                                                                                                     columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                                                                                                                                                                                                                     columns.Bound(c => c.Remark).Width(120);
+                                                                                                                                                                                                                     columns.Bound(c => c.Status).Width(80);
+                                                                                                                                                                                                                     columns.Command(command =>
+                                                                                                                                 {
+                                                                                                                                                              command.Edit();
+                                                                                                                                                              command.Destroy();
+                                                                                                                                                          }).Width(180);
+                                                                                                                                                                                                                 })
+                                                                                                                                                                                            .ToolBar(toolbar =>
+                                                                                                                                                                                            {
+                                                                                                                                                                                                             toolbar.Create();
                                                                                                                                                                                                          })
-                                                                                                                                                                                                .ToolBar(toolbar =>
-                                                                                                                                                                                                {
-                                                                                                                                                                                                             // toolbar.Create();
-
-                                                                                                                                                                                                         })
-                                                                                                                                                                                                //.Events(ev => ev.DataBound("onChildDataBound"))
-                                                                                                                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                                                                                // .TemplateName("MaterialCost")
-                                                                                                                                                                                                //.Window(w => w.Title("Material Cost Form").Width(400)))
-                                                                                                                                                                                                .Pageable(pageable => pageable
+                                                                                                                                                                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreReturn").Window(w => w.Title("Store Return")))
+                                                                                                                                                                                            .HtmlAttributes(new { style = "height: 550px;" })
+                                                                                                                                                                                            .Pageable(pageable => pageable
+                                                                                                                                                                                                .Input(true)
+                                                                                                                                                                                                .Numeric(false)
                                                                                                                                                                                                 .Refresh(true)
                                                                                                                                                                                                 .PageSizes(true)
-                                                                                                                                                                                                .ButtonCount(5))
-                                                                                                                                                                                                .DataSource(dataSource => dataSource
-                                                                                                                                                                                                    .Ajax()
-                                                                                                                                                                                                    //   .ServerOperation(false)
-                                                                                                                                                                                                    .Events(ev => ev.Error("error_handler(\"material_costs_#=JobId#\")")
-                                                                                                                                                                                                    .RequestStart("onRequestStart(\"material_costs_#=JobId#\")")
-                                                                                                                                                                                                    .RequestEnd("onRequestEnd(\"material_costs_#=JobId#\")"))
-                                                                                                                                                                                                    .Aggregates(aggregates =>
+                                                                                                                                                                                                .ButtonCount(20))
+                                                                                                                                                                                            .Scrollable()
 
-                                                                                                                                                                                                    {
-                                                                                                                                                                                                                             aggregates.Add(c => c.TotalPrice).Sum();
-                                                                                                                                                                                                                         })
-                                                                                                                                                                                                    .Model(model => model.Id(p => p.MaterialCostId))
-                                                                                                                                                                                                    .Read(read => read.Action("MaterialJobOrders_Read", "AutoJobOrder", new { id = "#=JobId #" }))
-                                                                                                                                                                                                    .Sort(sort =>
-                                                                                                                                                                                                    {
-                                                                                                                                                                                                                             sort.Add(m => m.LastModified).Descending();
+                                                                                                                                                                                            .Filterable()
+                                                                                                                                                                                            .Selectable(selectable =>
+                                                                                                                                                                                            {
+                                                                                                                                                                                                             selectable.Mode(GridSelectionMode.Single);
+                                                                                                                                                                                                             selectable.Type(GridSelectionType.Row);
+                                                                                                                                                                                                         })
+                                                                                                                                                                                            .Sortable(sortable =>
+                                                                                                                                                                                            {
+                                                                                                                                                                                                             sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                                                         })
+                                                                                                                                                                                            .Groupable()
+                                                                                                                                                                                            //.Events(ev => ev.DetailExpand("detailExpand"))
+                                                                                                                                                                                            .Scrollable(h => h.Height(500))
+                                                                                                                                                                                            .Events(x => x.DataBound("onDataBoundMaster"))
+                                                                                                                                                                                            .DataSource(dataSource => dataSource
+                                                                                                                                                                                                .Ajax()
+                                                                                                                                                                                                .Sort(sort => sort.Add("StoreReturnID").Descending())
+                                                                                                                                                                                                .Events(ev => ev
+                                                                                                                                                                                                    .Error("error_handler(\"storn_return_#=JobId#\")")
+                                                                                                                                                                                                    .RequestStart("onRequestStart(\"storn_return_#=JobId#\")")
+                                                                                                                                                                                                    .RequestEnd("onRequestEnd(\"storn_return_#=JobId#\")"))
 
-                                                                                                                                                                                                                         })
-                                                                                                                                                                                                    .PageSize(5))
-                                                                                                                                                                                                    .ToClientTemplate())
-                                                                                                                                            </text>
-
-                                                                );
-
-
-
-                                                                                                                                                    items.Add().Text("Add New Raw Materials").Content(@<text>
-                                                                                                                                                        <a href='@Url.Action("JobOrder", "ReportProductionFollowUp")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
-
-
-                                                                                                                                                        @(Html.Kendo().Grid<StoreRequisition>()
-                                                                                                                                                                                .Name("ProductionStoreRequisitionGrid_#=JobId#")
-                                                                                                                                                                                .Columns(columns =>
-                                                                                                                                                                                {
-                                                                                                                                                                             // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
-                                                                                                                                                                             columns.Bound(c => c.Reference).Title("Reference").Width(120);
-                                                                                                                                                                                         columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-                                                                                                                                                                                         columns.Bound(c => c.RequestDate).Width(110);
-                                                                                                                                                                                         columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
-                                                                                                                                                                                         columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
-                                                                                                                                                                             columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
-                                                                                                                                                                                         columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
-
-                                                                                                                                                                                         columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
-                                                                                                                                                                                         columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
-                                                                                                                                                                                         columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
-                                                                                                                                                 "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
-                                                                                                                                                                             //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
-                                                                                                                                                                             columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
-                                                                                                                                                                                         columns.Bound(c => c.PlateNo).Width(100);
-                                                                                                                                                                                         columns.Bound(c => c.Remark).Width(120);
-                                                                                                                                                                                         columns.Bound(c => c.Status).Width(100);
-
-                                                                                                                                                                                         columns.Command(command =>
-                                                                                                                                                                     {
-                                                                                      command.Edit();
-                                                                                      command.Destroy();
-                                                                                  }).Width(280);
-
-                                                                                                                                                                                     }).Filterable()
-                                                                                                                                                                                .Pageable(pageable => pageable
-                                                                                                                                                                                    .Input(true)
-                                                                                                                                                                                    .Numeric(false)
-                                                                                                                                                                                    .Refresh(true)
-                                                                                                                                                                                    .PageSizes(true)
-                                                                                                                                                                                    .ButtonCount(5))
-
-                                                                                                                                                                                .ToolBar(toolbar =>
-                                                                                                                                                                                {
-                                                                                                                                                                                         toolbar.Create();
-
-                                                                                                                                                                             /*toolbar.Template(@<text>
-                                                                                                                                                                                             <div class="toolbar row">
-                                                                                                                                                                                                 <div class="col-md-1">
-                                                                                                                                                                                                     <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                                                                                                                                                                                                 </div>
-                                                                                                                                                                                                 <div class="col-md-2 pull-right">
-                                                                                                                                                                                                     @(Html.Kendo().Upload()
-                                                                                                                                                                                                                 .Name("file")
-                                                                                                                                                                                                                 .Async(a => a.Save("ProductionStoreRequisition_Import", "ProductionStoreRequisition"))
-                                                                                                                                                                                                                 .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                                                                                                                                                                                                 .ShowFileList(false)
-                                                                                                                                                                                                     )
-                                                                                                                                                                                                 </div>
-
-                                                                                                                                                                                             </div>
-
-                                                                                                                                                                                         </text>);*/
-                                                                                                                                                                                     })
-
-                                                                                                                                                                                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProductionStoreRequisition").Window(w => w.Title("Store Requisition").Width(900)))
-                                                                                                                                                                                .HtmlAttributes(new { style = "height: 550px;" })
-                                                                                                                                                                                .Pageable(pageable => pageable
-                                                                                                                                                                                    .Input(true)
-                                                                                                                                                                                    .Numeric(false)
-                                                                                                                                                                                    .Refresh(true)
-                                                                                                                                                                                    .PageSizes(true)
-                                                                                                                                                                                    .ButtonCount(20))
-                                                                                                                                                                                .Scrollable()
-
-                                                                                                                                                                                .Filterable()
-                                                                                                                                                                                .Selectable(selectable =>
-                                                                                                                                                                                {
-                                                                                                                                                                                         selectable.Mode(GridSelectionMode.Single);
-                                                                                                                                                                                         selectable.Type(GridSelectionType.Row);
-                                                                                                                                                                                     })
-                                                                                                                                                                                .Sortable(sortable =>
-                                                                                                                                                                                {
-                                                                                                                                                                                         sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                                                                                                     })
-                                                                                                                                                                                .Groupable()
-                                                                                                                                                                                .Events(ev => ev.DetailExpand("detailExpand"))
-                                                                                                                                                                                .Events(ev => ev.Edit("onMasterEdit"))
-
-                                                                                                                                                                                .Scrollable(h => h.Height(500))
-                                                                                                                                                                                .Events(x => x.DataBound("onDataBoundMaster"))
-                                                                                                                                                                                .DataSource(dataSource => dataSource
-                                                                                                                                                                                    .Ajax()
-                                                                                                                                                                                    .Sort(sort => sort.Add("StoreRequisitionID").Descending())
-                                                                                                                                                                                    .Events(ev => ev
-                                                                                                                                                                                        .Error("error_handler(\"ProductionStoreRequisitionGrid_#=JobId#\")")
-                                                                                                                                                                                        .RequestStart("onRequestStart(\"ProductionStoreRequisitionGrid_#=JobId#\")")
-                                                                                                                                                                                        .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionGrid_#=JobId#\")"))
-                                                                                                                                                                                    .PageSize(20)
-                                                                                                                                                                                    .Model(model =>
-                                                                                                                                                                                    {
-                                                                                                                                                                                             model.Id(p => p.StoreRequisitionID);
-                                                                                                                                                                                             model.Field(p => p.StoreRequisitionID).Editable(false);
-                                                                                                                                                                                             model.Field(p => p.BranchId).Editable(false);
-                                                                                                                                                                                 // model.Field(p => p.GLPeriodId).Editable(false);
-                                                                                                                                                                                 model.Field(p => p.OrgStructureId).Editable(false);
-                                                                                                                                                                                 // model.Field(p => p.EmployeeId).Editable(false);
-                                                                                                                                                                                 model.Field(p => p.Status).Editable(false);
-                                                                                                                                                                                 //model.Field(p => p.RequestDate).Editable(false);
-                                                                                                                                                                                 model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                                                                             model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                                                                             model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                                                                                             model.Field(p => p.LastModified).Editable(false);
-                                                                                                                                                                                         })
-                                                                                                                                                                                    .Read(read => read.Action("ProductionStoreRequisitions_Read", "ProductionStoreRequisition", new { Id = "#=JobId#" }))
-                                                                                                                                                                                    .Create(create => create.Action("ProductionStoreRequisitions_Create", "ProductionStoreRequisition", new { Id = "#=JobId#" }))
-                                                                                                                                                                                    .Update(update => update.Action("ProductionStoreRequisitions_Update", "ProductionStoreRequisition"))
-                                                                                                                                                                                    .Destroy(destroy => destroy.Action("ProductionStoreRequisitions_Destroy", "ProductionStoreRequisition"))
-
-                                                                                                                                                                                ).Resizable(resize => resize.Columns(true))
-                                                                                                                                                                                .ClientDetailTemplateId("ProductionStoreRequisitions")
-                                                                                                                                                                                .ToClientTemplate())
-                                                                                                                                                    </text>
-
-                                                                                                                                );
-
-                                                                                                                                                            items.Add().Text("Change Of Order").Content(
-        @<text>
-
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder>()
-                                                                                                           .Name("ChangeOrder#=JobId#")
-                                                                                                       .Columns(columns =>
-                                                                                                       {
-                                                                                                                   columns.Bound(c => c.Quantity);
-                                                                                                                   columns.Bound(c => c.Price).Title("Unit Price");
-                                                                                                                   columns.Bound(c => c.Total);
-                                                                                                                   columns.Bound(c => c.Size);
-                                                                                                                   columns.Bound(c => c.Reason);
-                                                                                                                   columns.Template(c => @Html.ActionLink("ChangeOfOrder", "ReportProductionFollowUp", new { id = c.ChangeOrderId, }));
-                                                                                                                   columns.Bound(p => p.ChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "ReportProductionFollowUp", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
-                                                                                                                   columns.Command(command =>
-{
-                //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
-}).Width(100);
-                                                                                                               })
-                .ToolBar(toolbar =>
-                {
-                        })
-                .NoRecords("No Data Registered")
-                .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
-                {
-
-                            window.Scrollable(false);
-                            window.Title("Change Of Order");
-                        }))
-                .Pageable(pageable => pageable
-                .Refresh(true)
-                )
-
-                .Scrollable(h => h.Height(250))
-
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                //  .Sort(s => s.Add(x => x.ProformaId).Descending())
-                .Events(events =>
-                {
-                            events.Error("error_handler(\"ChangeOrder#=JobId#\")");
-                            events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
-                            events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
-                        }
-                )
-
-                .Model(model =>
-                {
-                            model.Id(p => p.ChangeOrderId);
-                        })
-
-                .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders", new { id = "#=JobId#" }))
-
-                ).ToClientTemplate()
-            )
-        </text>
-);
-                                                                                                                                                       items.Add().Text("Store Return").Content(@<text>
-                                                                                                                                                        @(Html.Kendo().Grid<StoreReturn>()
-                                                                                                                                                                            .Name("storn_return_#=JobId#")
-                                                                                                                                                                            .Columns(columns =>
-                                                                                                                                                                            {
-                                                                                                                                                                         //columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
-                                                                                                                                                                         columns.Bound(c => c.Reference).Width(120);
-                                                                                                                                                                                     columns.Bound(c => c.IssueNumber).Width(120);
-                                                                                                                                                                                     columns.Bound(c => c.Reason).Width(120);
-                                                                                                                                                                                     columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
-                                                                                                                                                                                     columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
-                                                                                                                                                                                     columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-                                                                                                                                                                                     columns.Bound(c => c.ReturnDate).Width(130);
-                                                                                                                                                                                     columns.Bound(c => c.ConfirmationLetter).Width(130);
-                                                                                                                                                                                     columns.Bound(c => c.IsForOther).Width(130).ClientTemplate("<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
-                                                                                                                                                                                     columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
-                                                                                                                                                                                     columns.Bound(c => c.Remark).Width(120);
-                                                                                                                                                                                     columns.Bound(c => c.Status).Width(80);
-                                                                                                                                                                                     columns.Command(command =>
-                                                                                                                         {
-                                                      command.Edit();
-                                                      command.Destroy();
-                                                  }).Width(180);
-                                                                                                                                                                                 })
-                                                                                                                                                                    .ToolBar(toolbar =>
-                                                                                                                                                                    {
-                                                                                                                                                                             toolbar.Create();
-                                                                                                                                                                         })
-                                                                                                                                                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreReturn").Window(w => w.Title("Store Return")))
-                                                                                                                                                                    .HtmlAttributes(new { style = "height: 550px;" })
-                                                                                                                                                                    .Pageable(pageable => pageable
-                                                                                                                                                                        .Input(true)
-                                                                                                                                                                        .Numeric(false)
-                                                                                                                                                                        .Refresh(true)
-                                                                                                                                                                        .PageSizes(true)
-                                                                                                                                                                        .ButtonCount(20))
-                                                                                                                                                                    .Scrollable()
-
-                                                                                                                                                                    .Filterable()
-                                                                                                                                                                    .Selectable(selectable =>
-                                                                                                                                                                    {
-                                                                                                                                                                             selectable.Mode(GridSelectionMode.Single);
-                                                                                                                                                                             selectable.Type(GridSelectionType.Row);
-                                                                                                                                                                         })
-                                                                                                                                                                    .Sortable(sortable =>
-                                                                                                                                                                    {
-                                                                                                                                                                             sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                                                                                         })
-                                                                                                                                                                    .Groupable()
-                                                                                                                                                                    //.Events(ev => ev.DetailExpand("detailExpand"))
-                                                                                                                                                                    .Scrollable(h => h.Height(500))
-                                                                                                                                                                    .Events(x => x.DataBound("onDataBoundMaster"))
-                                                                                                                                                                    .DataSource(dataSource => dataSource
-                                                                                                                                                                        .Ajax()
-                                                                                                                                                                        .Sort(sort => sort.Add("StoreReturnID").Descending())
-                                                                                                                                                                        .Events(ev => ev
-                                                                                                                                                                            .Error("error_handler(\"storn_return_#=JobId#\")")
-                                                                                                                                                                            .RequestStart("onRequestStart(\"storn_return_#=JobId#\")")
-                                                                                                                                                                            .RequestEnd("onRequestEnd(\"storn_return_#=JobId#\")"))
-
-                                                                                                                                                                        .Model(model =>
-                                                                                                                                                                        {
-                                                                                                                                                                                 model.Id(p => p.StoreReturnID);
-                                                                                                                                                                                 model.Field(p => p.Status).Editable(false);
-                                                                                                                                                                     //model.Field(p => p.GLPeriodId).Editable(false);
-                                                                                                                                                                     model.Field(p => p.StoreReturnID).Editable(false);
-                                                                                                                                                                             })
-                                                                                                                                                                        .Read(read => read.Action("StoreReturns_Read", "ProductionStoreReturn", new { Id = "#=JobId#" }))
-                                                                                                                                                                        .Create(create => create.Action("StoreReturns_Create", "ProductionStoreReturn", new { Id = "#=JobId#" }))
-                                                                                                                                                                        .Update(update => update.Action("StoreReturns_Update", "ProductionStoreReturn"))
-                                                                                                                                                                        .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "ProductionStoreReturn"))
-                                                                                                                                                                    ).ClientDetailTemplateId("storereturntemplate")
-                                                                                                                                                                    .ToClientTemplate())
-                                                                                                                                                    </text>
-
-                                                                                                                                                                         );
-
-
-
-                                                                                                                                                            items.Add().Text("Job Status").Content(@<text>
-
-                                                                                                                                                                #if (IsApproved){#
-
-
-                                                                                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobStatus>()
-                                                                                                                                                                            .Name("JobStatus#=JobId#")
-                                                                                                                                                                    .Columns(columns =>
-                                                                                                                                                                    {
-                                                                                                                                                                                     columns.Bound(c => c.UserId);
-                                                                                                                                                                                     columns.Bound(c => c.StartDate);
-                                                                                                                                                                                     columns.Bound(c => c.EndDate);
-                                                                                                                                                                                     columns.Bound(c => c.JobPhase).EditorTemplateName("JobPhaseTemplate");
-                                                                                                                                                                                     columns.Bound(c => c.Status).EditorTemplateName("JobstatusTemplate"); ;
-                                                                                                                                                                         //columns.Bound(c => c.Remark).Width(100);
-
-                                                                                                                                                                         columns.Command(command =>
-                                                                                                                                                                 {
-                                                                                      command.Edit();
-                                                                                      command.Destroy();
-                                                                                  }).Width(200);
-                                                                                                                                                                                 })
-                                                                                                                                                                            .ToolBar(toolbar =>
-                                                                                                                                                                            {
-                                                                                                                                                                                             toolbar.Create();
-                                                                                                                                                                                         })
-                                                                                                                                                                        .NoRecords("No Data Registered")
-                                                                                                                                                                        .Events(ev => ev.Edit("onJobStatusEdit"))
-                                                                                                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
-                                                                                                                                                                        {
-
-                                                                                                                                                                                         window.Scrollable(false);
-                                                                                                                                                                                         window.Title("Papers and Plate");
-                                                                                                                                                                                     }))
-                                                                                                                                                                        .Pageable(pageable => pageable
-                                                                                                                                                                            .Refresh(true)
-                                                                                                                                                                            )
-
-                                                                                                                                                                    .Scrollable(h => h.Height(250))
-                                                                                                                                                                    .Events(ev => ev.DataBound("jobStatusDataBound").DetailExpand("jobStatusExpand"))
-                                                                                                                                                                    .ClientDetailTemplateId("JobStatusLineItem")
-                                                                                                                                                                    .DataSource(dataSource => dataSource
-                                                                                                                                                                        .Ajax()
-                                                                                                                                                                                 .Sort(s => s.Add(x => x.JobStatusId).Descending())
-                                                                                                                                                                                .Events(events =>
-                                                                                                                                                                                {
-                                                                                                                                                                                                 events.Error("error_handler(\"JobStatus#=JobId#\")");
-                                                                                                                                                                                                 events.RequestStart("onRequestStart(\"JobStatus#=JobId#\")");
-                                                                                                                                                                                                 events.RequestEnd("onRequestEnd(\"JobStatus#=JobId#\")");
-                                                                                                                                                                                             }
-                                                                                                                                                                                    )
-
-                                                                                                                                                                                    .Model(model =>
-                                                                                                                                                                                    {
-                                                                                                                                                                                                     model.Id(p => p.JobStatusId);
-                                                                                                                                                                                                     model.Field(p => p.UserId).Editable(false);
-                                                                                                                                                                                         //model.Field(p => p.Status).Editable(false);
-
-                                                                                                                                                                                     })
-
-                                                                                                                                                                    .Read(read => read.Action("JobStatuses_Read", "JobStatus", new { id = "#=JobId#" }))
-                                                                                                                                                                .Create(create => create.Action("JobStatuses_Create", "JobStatus", new { id = "#=JobId#" }))
-                                                                                                                                                                .Update(update => update.Action("JobStatuses_Update", "JobStatus"))
-                                                                                                                                                                .Destroy(destroy => destroy.Action("JobStatuses_Destroy", "JobStatus"))
-
-                                                                                                                                                                ).ToClientTemplate()
-                                                                                                                                                                )#}#
+                                                                                                                                                                                                .Model(model =>
+                                                                                                                                                                                                {
+                                                                                                                                                                                                                 model.Id(p => p.StoreReturnID);
+                                                                                                                                                                                                                 model.Field(p => p.Status).Editable(false);
+                                                                                                                                                                                                     //model.Field(p => p.GLPeriodId).Editable(false);
+                                                                                                                                                                                                     model.Field(p => p.StoreReturnID).Editable(false);
+                                                                                                                                                                                                             })
+                                                                                                                                                                                                .Read(read => read.Action("StoreReturns_Read", "ProductionStoreReturn", new { Id = "#=JobId#" }))
+                                                                                                                                                                                                .Create(create => create.Action("StoreReturns_Create", "ProductionStoreReturn", new { Id = "#=JobId#" }))
+                                                                                                                                                                                                .Update(update => update.Action("StoreReturns_Update", "ProductionStoreReturn"))
+                                                                                                                                                                                                .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "ProductionStoreReturn"))
+                                                                                                                                                                                            ).ClientDetailTemplateId("storereturntemplate")
+                                                                                                                                                                                            .ToClientTemplate())
                                                                                                                                                             </text>
+
+                                                                                                                                                                   );
+
+
+
+                                                                                                                                                                    items.Add().Text("Job Status").Content(@<text>
+
+                                                                                                                                                                        #if (IsApproved){#
+
+
+                                                                                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobStatus>()
+                                                                                                                                                                                                    .Name("JobStatus#=JobId#")
+                                                                                                                                                                                            .Columns(columns =>
+                                                                                                                                                                                            {
+                                                                                                                                                                                                                     columns.Bound(c => c.UserId);
+                                                                                                                                                                                                                     columns.Bound(c => c.StartDate).EditorTemplateName("Date");
+                                                                                                                                                                                                                     columns.Bound(c => c.EndDate).EditorTemplateName("Date");
+                                                                                                                                                                                                                     columns.Bound(c => c.JobPhase).EditorTemplateName("JobPhaseTemplate");
+                                                                                                                                                                                                                     columns.Bound(c => c.Status).EditorTemplateName("JobstatusTemplate"); ;
+                                                                                                                                                                                                         //columns.Bound(c => c.Remark).Width(100);
+
+                                                                                                                                                                                                         columns.Command(command =>
+                                                                                                                                                                                                                     {
+                                                                                                                                                                                                                                              command.Edit();
+                                                                                                                                                                                                                                              command.Destroy();
+                                                                                                                                                                                                                                          }).Width(200);
+                                                                                                                                                                                                                 })
+                                                                                                                                                                                                    .ToolBar(toolbar =>
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                                             toolbar.Create();
+                                                                                                                                                                                                                         })
+                                                                                                                                                                                                .NoRecords("No Data Registered")
+                                                                                                                                                                                                .Events(ev => ev.Edit("onJobStatusEdit"))
+                                                                                                                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+                                                                                                                                                                                                {
+
+                                                                                                                                                                                                                         window.Scrollable(false);
+                                                                                                                                                                                                                         window.Title("Papers and Plate");
+                                                                                                                                                                                                                     }))
+                                                                                                                                                                                                .Pageable(pageable => pageable
+                                                                                                                                                                                                    .Refresh(true)
+                                                                                                                                                                                                    )
+
+                                                                                                                                                                                            .Scrollable(h => h.Height(250))
+                                                                                                                                                                                            .Events(ev => ev.DataBound("jobStatusDataBound").DetailExpand("jobStatusExpand"))
+                                                                                                                                                                                            .ClientDetailTemplateId("JobStatusLineItem")
+                                                                                                                                                                                            .DataSource(dataSource => dataSource
+                                                                                                                                                                                                .Ajax()
+                                                                                                                                                                                                         .Sort(s => s.Add(x => x.JobStatusId).Descending())
+                                                                                                                                                                                                        .Events(events =>
+                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                 events.Error("error_handler(\"JobStatus#=JobId#\")");
+                                                                                                                                                                                                                                 events.RequestStart("onRequestStart(\"JobStatus#=JobId#\")");
+                                                                                                                                                                                                                                 events.RequestEnd("onRequestEnd(\"JobStatus#=JobId#\")");
+                                                                                                                                                                                                                             }
+                                                                                                                                                                                                            )
+
+                                                                                                                                                                                                            .Model(model =>
+                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                     model.Id(p => p.JobStatusId);
+                                                                                                                                                                                                                                     model.Field(p => p.UserId).Editable(false);
+                                                                                                                                                                                                                         //model.Field(p => p.Status).Editable(false);
+
+                                                                                                                                                                                                                     })
+
+                                                                                                                                                                                            .Read(read => read.Action("JobStatuses_Read", "JobStatus", new { id = "#=JobId#" }))
+                                                                                                                                                                                        .Create(create => create.Action("JobStatuses_Create", "JobStatus", new { id = "#=JobId#" }))
+                                                                                                                                                                                        .Update(update => update.Action("JobStatuses_Update", "JobStatus"))
+                                                                                                                                                                                        .Destroy(destroy => destroy.Action("JobStatuses_Destroy", "JobStatus"))
+
+                                                                                                                                                                                        ).ToClientTemplate()
+                                                                                                                                                                        )#}#
+                                                                                                                                                                    </text>
 
                                                                                                                                         );
 
 
-                                                                                                                                                                }).ToClientTemplate())
+                                                                                                                                                                        }).ToClientTemplate())
 </script>
 
 
@@ -1055,85 +1059,8 @@
 
 
 
-@*items.Add().Text("Validation").Content(
-    @<text>
-
-        @(Html.Kendo().Grid<StoreRequisitionValidation>()
-                      .Name("ProductionStoreRequisitionValidation_#=StoreRequisitionID#")
-                      .Columns(columns =>
-                      {
-                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                  columns.Bound(c => c.Remark).Width(170);
-                                  columns.Command(command =>
-                                  {
-                                      command.Edit();
-                          //command.Destroy();
-                      });
-                              })
-                      .ToolBar(toolbar =>
-                      {
-                                  toolbar.Create();
-                              })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable()
-                      .Events(x => x.DataBound("onDataBoundFisrtValidation").Save("refresh"))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev
-                              .Error("error_handler(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")")
-                              .RequestStart("onRequestStart(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")")
-                              .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")"))
-                          .Model(model =>
-                          {
-                                      model.Id(p => p.StoreRequisitionValidationID);
-                                  })
-                          .Read(read => read.Action("ProductionStoreRequisitionValidations_Read", "ProductionStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("ProductionStoreRequisitionValidations_Create", "ProductionStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("ProductionStoreRequisitionValidations_Update", "ProductionStoreRequisitionValidation"))
-                          .Destroy(destroy => destroy.Action("ProductionStoreRequisitionValidations_Destroy", "ProductionStoreRequisitionValidation"))
-
-                      ).ToClientTemplate())
-
-    </text>
-              );*@
-@*items.Add().Text("Property Validation").Content(@<text>
-    @(Html.Kendo().Grid<ProductionStoreRequisitionPropertyValidation>()
-      .Name("ProductionStoreRequisitionPropertyValidation_#=StoreRequisitionID#")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-          columns.Bound(c => c.Remark).Width(170);
-          columns.Command(command =>
-          {
-             // command.Edit();
-              //command.Destroy();
-          });
-      })
-      .ToolBar(toolbar =>
-      {
-         // toolbar.Create();
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .Scrollable()
-                       .Events(x => x.DataBound("onDataBoundSecondValidation"))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
-          .Model(model =>
-          {
-              model.Id(p => p.ProductionStoreRequisitionPropertyValidationID);
-              model.Field(p => p.Approver).Editable(false);
-          } )
-          .Read(read => read.Action("ProductionStoreRequisitionPropertyValidations_Read", "ProductionStoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-          .Create(create => create.Action("ProductionStoreRequisitionPropertyValidations_Create", "ProductionStoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-          .Update(update => update.Action("ProductionStoreRequisitionPropertyValidations_Update", "ProductionStoreRequisitionPropertyValidation"))
-          .Destroy(destroy => destroy.Action("ProductionStoreRequisitionPropertyValidations_Destroy", "ProductionStoreRequisitionPropertyValidation"))
-      ).ToClientTemplate()
-    )
-                                                                      </text>);*@
 
         }).ToClientTemplate())
-    @*============================================================ Store Requisition Property Validation ===============================================================================*@
 
 
 
@@ -1146,7 +1073,7 @@
                   columns.Bound(c => c.Date);
                   columns.Bound(c => c.Quantiy).EditorTemplateName("QuantityEditorTemplate");
                   columns.Bound(c => c.RemainigQuantiy);
-                  columns.Bound(c => c.TotalPrice);
+                //  columns.Bound(c => c.TotalPrice);
                   columns.Bound(c => c.Invoice);
                   columns.Bound(c => c.SalesVoucherNo);
                   columns.Bound(c => c.Cash);

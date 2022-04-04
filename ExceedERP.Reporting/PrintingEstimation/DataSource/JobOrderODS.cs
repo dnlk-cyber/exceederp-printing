@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 
-namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
+namespace ExceedERP.Reporting.PrintingEstimation.DataSource
 {
     [DataObject]
     public class JobOrderODS
