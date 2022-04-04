@@ -488,21 +488,7 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         @Html.LabelFor(model => model.MachineId, htmlAttributes: new { @class = "control-label col-sm-8" })
-                                        <div id="Branna">
-
-                                            @(Html.Kendo().DropDownListFor(model => model.MachineId)
-                                                                                                                                                                .ValuePrimitive(true)
-                                                                                                                                                                .OptionLabel("Select Machines...")
-                                                                                                                                                                .DataTextField("Name")
-                                                                                                                                                                .DataValueField("Code")
-                                                                                                                                                                .Filter("contains")
-                                                                                                                                                                .DataSource(dataSource =>
-                                                                                                                                                                {
-                                                                                                                                                                    dataSource.Read(read => read.Action("GetAllMachineTypes", "Machine", new { area = "ProductionFollowUp" }))
-                                                                                                                                                                    .ServerFiltering(false);
-                                                                                                                                                                }))
-                                            @Html.ValidationMessageFor(model => model.MachineId, "", new { @class = "text-danger" })
-                                        </div>
+                                        
                                         <div id="Mega">
 
                                             @(Html.Kendo().DropDownListFor(model => model.MachineId)

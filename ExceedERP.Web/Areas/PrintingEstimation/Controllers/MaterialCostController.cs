@@ -41,6 +41,23 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             return Json(result);
         }
+        public ActionResult MaterialJobOrders_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q => q.JobId == id);
+            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
+                MaterialCostId = materialCost.MaterialCostId,
+                EstimationFormId = materialCost.EstimationFormId,
+                InventoryCategoryId = materialCost.InventoryCategoryId,
+                InventoryId = materialCost.InventoryId,
+                Quantity = materialCost.Quantity,
+                UnitPrice = materialCost.UnitPrice,
+                TotalPrice = materialCost.TotalPrice,
+                DateCreated = materialCost.DateCreated,
+                LastModified = materialCost.LastModified
+            });
+
+            return Json(result);
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult MaterialCosts_Create([DataSourceRequest]DataSourceRequest request, MaterialCost materialCost, int parentId)

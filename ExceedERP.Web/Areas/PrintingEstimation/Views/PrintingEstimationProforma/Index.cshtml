@@ -190,6 +190,7 @@
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
+                $(this).find(".k-grid-approve").show();
             }
             else {
             $(this).find(".k-grid-approve").hide();
@@ -430,7 +431,7 @@
 
         var unitPrice = $("#UnitPrice").val();
         var quantity = $("#Quantity").val();
-        var jobTypeId = $("#JobTypeId").val();
+        var jobTypeId = $("#JT").val();
 
         if (quantity != 0 && unitPrice != 0 && jobTypeId !== "") {
 
@@ -450,6 +451,17 @@
 
             });
         }
+
+    }
+    function onSelectLoading() {
+        var dropdowntree = $("#JT").data("kendoDropDownTree");
+        var treeviewSelect = function (e) {
+            //if (e.sender.dataItem(e.node).hasChildren) {
+            //e.preventDefault()
+            //}
+        };
+
+        dropdowntree.treeview.bind("select", treeviewSelect);
 
     }
 </script>

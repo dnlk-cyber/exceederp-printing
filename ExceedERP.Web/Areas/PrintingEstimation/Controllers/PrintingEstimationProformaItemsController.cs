@@ -84,6 +84,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Create([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems, int id)
         {
+            proformaItems.JobTypeId = Int16.Parse(proformaItems.JT);
+
             //var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == proformaItems.JobTypeId);
             //if (jobType != null)
             //{
@@ -130,7 +132,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Update([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems)
         {
-           
+            proformaItems.JobTypeId = Int16.Parse(proformaItems.JT);
+
             if (ModelState.IsValid)
             {
                 var entity = new PFProformaItems

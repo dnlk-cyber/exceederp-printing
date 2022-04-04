@@ -250,6 +250,14 @@
     <Compile Include="Migrations\202204020830120_JobOrderMega.Designer.cs">
       <DependentUpon>202204020830120_JobOrderMega.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202204040728343_JobAndMaterialCostUpdate.cs" />
+    <Compile Include="Migrations\202204040728343_JobAndMaterialCostUpdate.Designer.cs">
+      <DependentUpon>202204040728343_JobAndMaterialCostUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202204040828325_ProformaItemUpdate.cs" />
+    <Compile Include="Migrations\202204040828325_ProformaItemUpdate.Designer.cs">
+      <DependentUpon>202204040828325_ProformaItemUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -394,6 +402,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202204020830120_JobOrderMega.resx">
       <DependentUpon>202204020830120_JobOrderMega.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202204040728343_JobAndMaterialCostUpdate.resx">
+      <DependentUpon>202204040728343_JobAndMaterialCostUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202204040828325_ProformaItemUpdate.resx">
+      <DependentUpon>202204040828325_ProformaItemUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

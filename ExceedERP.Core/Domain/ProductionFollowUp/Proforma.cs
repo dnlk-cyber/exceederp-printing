@@ -42,6 +42,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int PFProformaItemsId { get; set; }
         public int ProformaId { get; set; }
         [Display(Name = "Job Type")]
+        public string JT { get; set; }
         public int JobTypeId { get; set; }
        
         [Display(Name = ("Quantity"))]

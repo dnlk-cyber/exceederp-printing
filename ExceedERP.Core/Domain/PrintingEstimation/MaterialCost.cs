@@ -22,7 +22,7 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Display(Name = "Inventory")]
         public string InventoryId { get; set; }
        
-
+        public int? JobId { get; set; }
 
         [Required]
         public decimal Quantity { get; set; }

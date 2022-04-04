@@ -19,7 +19,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
     //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
-    public class BrannaJobOrderController : Controller
+    public class ManualJobOrderController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -159,7 +159,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Job> jobs = db.Jobs;
+            IQueryable<Job> jobs = db.Jobs.Where(q=>!q.hv);
             DataSourceResult result = jobs.ToDataSourceResult(request, job => new
             {
                 JobId = job.JobId,
@@ -258,7 +258,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Jobs_Update([DataSourceRequest]DataSourceRequest request, Job job)
         {
-            job.JobTypeId = Int16.Parse(job.JT);
+             job.JobTypeId = Int16.Parse(job.JT);
 
             if (ModelState.IsValid)
             {

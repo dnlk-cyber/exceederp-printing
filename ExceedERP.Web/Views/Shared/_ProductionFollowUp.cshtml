@@ -38,7 +38,10 @@
                 @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser))
                 {*@
                 <li id="productdfionFollowUp00100100871" class="actionlinlk">
-                    @Html.ActionLink("Job Order", "Index", "JobOrders", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                </li>
+                <li id="productdfionFollowUp00100100871" class="actionlinlk">
+                    @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                 </li>
                 @*}*@
                 @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser))

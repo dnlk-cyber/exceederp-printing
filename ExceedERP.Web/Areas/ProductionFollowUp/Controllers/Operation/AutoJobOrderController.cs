@@ -19,7 +19,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
     //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
-    public class MegaJobOrdersController : Controller
+    public class AutoJobOrderController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -159,7 +159,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Job> jobs = db.Jobs;
+            IQueryable<Job> jobs = db.Jobs.Where(q=>q.IsApproved==true&&q.hv);
             DataSourceResult result = jobs.ToDataSourceResult(request, job => new
             {
                 JobId = job.JobId,
@@ -217,6 +217,24 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 DateCreated = job.DateCreated,
                 ModifiedBy = job.ModifiedBy,
                 LastModified = job.LastModified
+            });
+
+            return Json(result);
+        }
+
+        public ActionResult MaterialJobOrders_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q => q.JobId == id);
+            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
+                MaterialCostId = materialCost.MaterialCostId,
+                EstimationFormId = materialCost.EstimationFormId,
+                InventoryCategoryId = materialCost.InventoryCategoryId,
+                InventoryId = materialCost.InventoryId,
+                Quantity = materialCost.Quantity,
+                UnitPrice = materialCost.UnitPrice,
+                TotalPrice = materialCost.TotalPrice,
+                DateCreated = materialCost.DateCreated,
+                LastModified = materialCost.LastModified
             });
 
             return Json(result);

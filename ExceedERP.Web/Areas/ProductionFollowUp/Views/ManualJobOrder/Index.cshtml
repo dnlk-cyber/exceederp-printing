@@ -46,7 +46,7 @@
                                     //columns.Bound(c => c.Time);
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
                                     columns.ForeignKey(c => c.ProductionCustomertypeId, (IEnumerable)ViewData["CustomerTypes"], "Code", "Name").Width(100);
-                                      columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
+                                   //   columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
@@ -109,10 +109,10 @@
                                                 events.RequestEnd("onRequestEnd(\"JobGrid\")");
                                             })
                                              .Model(model => model.Id(p => p.JobId))
-                                             .Read(read => read.Action("Jobs_Read", "JobOrders"))
-                                             .Create(create => create.Action("Jobs_Create", "JobOrders"))
-                                             .Update(update => update.Action("Jobs_Update", "JobOrders"))
-                                             .Destroy(destroy => destroy.Action("Jobs_Destroy", "JobOrders"))
+                                             .Read(read => read.Action("Jobs_Read", "ManualJobOrder"))
+                                             .Create(create => create.Action("Jobs_Create", "ManualJobOrder"))
+                                             .Update(update => update.Action("Jobs_Update", "ManualJobOrder"))
+                                             .Destroy(destroy => destroy.Action("Jobs_Destroy", "ManualJobOrder"))
                                              .Sort(sort =>
                                              {
                                                  sort.Add(l => l.JobId).Descending();
@@ -1721,9 +1721,9 @@
     function onSelectLoading() {
     var dropdowntree = $("#JT").data("kendoDropDownTree");
     var treeviewSelect = function (e) {
-    //if (e.sender.dataItem(e.node).hasChildren) {
-    //e.preventDefault()
-    //}
+    if (e.sender.dataItem(e.node).hasChildren) {
+    e.preventDefault()
+    }
     };
 
     dropdowntree.treeview.bind("select", treeviewSelect);

@@ -503,21 +503,7 @@
                                                                                                                                                                 }))
                                             @Html.ValidationMessageFor(model => model.MachineId, "", new { @class = "text-danger" })
                                         </div>
-                                        <div id="Mega">
-
-                                            @(Html.Kendo().DropDownListFor(model => model.MachineId)
-                                                                                                                                                                .ValuePrimitive(true)
-                                                                                                                                                                .OptionLabel("Select Machines...")
-                                                                                                                                                                .DataTextField("Name")
-                                                                                                                                                                .DataValueField("Code")
-                                                                                                                                                                .Filter("contains")
-                                                                                                                                                                .DataSource(dataSource =>
-                                                                                                                                                                {
-                                                                                                                                                                    dataSource.Read(read => read.Action("GetAllFixedAssets", "ProductionDataProvider", new { area = "ProductionFollowUp" }))
-                                                                                                                                                                    .ServerFiltering(false);
-                                                                                                                                                                }))
-                                            @Html.ValidationMessageFor(model => model.MachineId, "", new { @class = "text-danger" })
-                                        </div>
+                                        
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
