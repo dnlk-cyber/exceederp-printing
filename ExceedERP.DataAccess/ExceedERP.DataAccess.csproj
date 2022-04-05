@@ -258,6 +258,10 @@
     <Compile Include="Migrations\202204040828325_ProformaItemUpdate.Designer.cs">
       <DependentUpon>202204040828325_ProformaItemUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202204050749116_StoreCodeAddedToMaterialCost.cs" />
+    <Compile Include="Migrations\202204050749116_StoreCodeAddedToMaterialCost.Designer.cs">
+      <DependentUpon>202204050749116_StoreCodeAddedToMaterialCost.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -408,6 +412,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202204040828325_ProformaItemUpdate.resx">
       <DependentUpon>202204040828325_ProformaItemUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202204050749116_StoreCodeAddedToMaterialCost.resx">
+      <DependentUpon>202204050749116_StoreCodeAddedToMaterialCost.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

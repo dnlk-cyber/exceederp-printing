@@ -74,26 +74,26 @@
                                                                     .Name("material_costs_#=EstimationFormId#") // template expression, to be evaluated in the master context
                                                                 .Columns(columns =>
                                                                 {
-                                                                            columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
-                                                                            columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Categorys"], "Code", "Name")
-                                                       .Width(90);
-                                                                            columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Inventories"], "Code", "Name")
-                                                       .Width(90);
-                                                                            columns.Bound(c => c.Quantity).Width(80);
-                                                                            columns.Bound(c => c.UnitPrice).Width(80);
-                                                                            columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
-                                                                // escaped template expression, to be evaluated in the child/detail context
-                                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                                        })
+                                                                    columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
+                                                                    columns.Bound(c => c.StoreCode).Title("Store").Width(100);
+                                                                    columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Categorys"], "Code", "Name").Width(90);
+                                                                    columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Inventories"], "Code", "Name")
+                                               .Width(90);
+                                                                    columns.Bound(c => c.Quantity).Width(80);
+                                                                    columns.Bound(c => c.UnitPrice).Width(80);
+                                                                    columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                                                                    // escaped template expression, to be evaluated in the child/detail context
+                                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                })
                                                                 .ToolBar(toolbar =>
                                                                 {
-                                                                            toolbar.Create();
+                                                                    toolbar.Create();
 
-                                                                        })
+                                                                })
                                                                         .Events(ev => ev.DataBound("onChildDataBound"))
                                                                 .Editable(editable => editable.Mode(GridEditMode.PopUp)
                                                                 .TemplateName("MaterialCost")
-                                                               .Window(w => w.Title("Material Cost Form").Width(400)))
+                                                               .Window(w => w.Title("Material Cost Form").Width(500)))
                                                                 .Pageable(pageable => pageable
                                                                 .Refresh(true)
                                                                 .PageSizes(true)
@@ -107,8 +107,8 @@
                                                                     .Aggregates(aggregates =>
 
                                                                     {
-                                                                                aggregates.Add(c => c.TotalPrice).Sum();
-                                                                            })
+                                                                        aggregates.Add(c => c.TotalPrice).Sum();
+                                                                    })
                                                                     .Model(model => model.Id(p => p.MaterialCostId))
                                                                     .Read(read => read.Action("MaterialCosts_Read", "MaterialCost", new { estimationFormId = "#=EstimationFormId #" }))
                                                                     .Create(create => create.Action("MaterialCosts_Create", "MaterialCost", new { parentId = "#=EstimationFormId #" }))
@@ -116,9 +116,9 @@
                                                                     .Destroy(destroy => destroy.Action("MaterialCosts_Destroy", "MaterialCost"))
                                                                     .Sort(sort =>
                                                                     {
-                                                                                sort.Add(m => m.LastModified).Descending();
+                                                                        sort.Add(m => m.LastModified).Descending();
 
-                                                                            })
+                                                                    })
                                                                     .PageSize(5))
                                                                     .ToClientTemplate())
                             </text>
@@ -311,21 +311,23 @@
     }
     function selectProduct() {
         var productId = $("#InventoryId").val()
+        var storeCode = $("#StoreCode").val()
 
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetUnitPrice", "ProductionDataProvider", new { area = "ProductionFollowUp" })',
+            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
             data: {
-                itemCode: productId,
+                itemCode: productId, storeCode: storeCode
 
             },
             async: false,
             success: function (result) {
                 data = result;
 
-                var up = $("#UnitPrice").data("kendoNumericTextBox");
-                up.value(data.AvgPrice);
+                var up = $("#UnitPrice").val(data.AvgPrice);
+                var ba = $("#Balance").val(data.Balance);
                 up.trigger("change");
+                ba.trigger("change");
 
 
 
@@ -358,7 +360,7 @@
         }
 
         }
-
+   
         function approveEstimation(e) {
             if (confirm("Are you sure to approve this estimation form?")) {
              var grid = this,
@@ -410,14 +412,15 @@
 
     function onChange() {
 
-        var unitPricenumerictextbox = $("#UnitPrice").data("kendoNumericTextBox");
-        var quantitynumerictextbox = $("#Quantity").data("kendoNumericTextBox");
-        var totalPricenumerictextbox = $("#TotalPrice").data("kendoNumericTextBox");
-
-        var unitPrice = unitPricenumerictextbox.value();
-        var quantity = quantitynumerictextbox.value();
+        var unitPricenumerictextbox = $("#UnitPrice");
+        var quantitynumerictextbox = $("#Quantity");
+        var totalPricenumerictextbox = $("#TotalPrice");
+        console.log(1000000);
+        var unitPrice = unitPricenumerictextbox.val();
+        var quantity = quantitynumerictextbox.val();
         var totalPrice = unitPrice * quantity;
-        totalPricenumerictextbox.value(totalPrice);
+        totalPrice = totalPrice.toFixed(3);
+        totalPricenumerictextbox.val(totalPrice);
         totalPricenumerictextbox.trigger("change");
     }
     function filterCategories() {
@@ -451,6 +454,11 @@
         codeid = masterDataItem.EstimationFormId;
         isApproved = masterDataItem.IsApproved;
         isChecked = masterDataItem.IsChecked;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#material_costs_" + codeid).hide();
+            $(".k-grid-add", "#labor_costs_" + codeid).hide();
+        }
+        
 
     }
 
@@ -517,4 +525,12 @@
         .row .col-sm-3 {
             margin: 10px;
         }
+    .k-textbox,
+    .k-numerictextbox,
+    .k-dropdown,
+    .k-dropdowntree,
+    .k-datepicker,
+    .k-upload {
+        width: 80%;
+    }
 </style>

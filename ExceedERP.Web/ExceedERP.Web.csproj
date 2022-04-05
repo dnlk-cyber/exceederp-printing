@@ -1900,6 +1900,7 @@
     <Compile Include="Areas\JobCosting\Report\ReportJobCostingController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationChangeOfOrdersController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\EstimationFormController.cs" />
+    <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationDataProviderController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationJobOrderController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\LaborCostController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\MaterialCostController.cs" />
@@ -7986,6 +7987,7 @@
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />
     <Folder Include="Areas\JobCosting\Views\JobCostingDataProvider\" />
+    <Folder Include="Areas\PrintingEstimation\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Procurement\Views\TenderParticipantItems\EditorTemplates\" />
     <Folder Include="Areas\ProductionFollowUp\Views\MegaDataProvider\" />
     <Folder Include="Areas\ProductionFollowUp\Views\ProductionDataProvider\" />

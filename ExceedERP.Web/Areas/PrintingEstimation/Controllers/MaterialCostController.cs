@@ -32,6 +32,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 EstimationFormId = materialCost.EstimationFormId,
                 InventoryCategoryId = materialCost.InventoryCategoryId,
                 InventoryId = materialCost.InventoryId,
+                StoreCode = materialCost.StoreCode,
                 Quantity = materialCost.Quantity,
                 UnitPrice = materialCost.UnitPrice,
                 TotalPrice = materialCost.TotalPrice,
@@ -50,6 +51,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 InventoryCategoryId = materialCost.InventoryCategoryId,
                 InventoryId = materialCost.InventoryId,
                 Quantity = materialCost.Quantity,
+                StoreCode = materialCost.StoreCode,
                 UnitPrice = materialCost.UnitPrice,
                 TotalPrice = materialCost.TotalPrice,
                 DateCreated = materialCost.DateCreated,
@@ -78,6 +80,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     InventoryCategoryId = materialCost.InventoryCategoryId,
                     InventoryId = materialCost.InventoryId,
                     Quantity = materialCost.Quantity,
+                    StoreCode = materialCost.StoreCode,
                     UnitPrice = materialCost.UnitPrice,
                     TotalPrice = materialCost.TotalPrice
                 };
@@ -110,6 +113,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     EstimationFormId = materialCost.EstimationFormId,
                     InventoryCategoryId = materialCost.InventoryCategoryId,
                     InventoryId = materialCost.InventoryId,
+                    StoreCode = materialCost.StoreCode,
                     Quantity = materialCost.Quantity,
                     UnitPrice = materialCost.UnitPrice,
                     TotalPrice = materialCost.TotalPrice
@@ -137,6 +141,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     InventoryCategoryId = materialCost.InventoryCategoryId,
                     InventoryId = materialCost.InventoryId,
                     EstimationFormId = materialCost.EstimationFormId,
+                    StoreCode = materialCost.StoreCode,
                     Quantity = materialCost.Quantity,
                     UnitPrice = materialCost.UnitPrice,
                     TotalPrice = materialCost.TotalPrice
