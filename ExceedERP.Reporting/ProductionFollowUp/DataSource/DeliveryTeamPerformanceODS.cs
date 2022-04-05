@@ -82,7 +82,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     }
                 }
                 var period = db.GLPeriods.ToList().Where(q => (q.DateFrom.Date <= startDate.Value.Date && startDate.Value.Date <= q.DateTo.Date)
-                                 && (q.DateTo.Date >= endDate.Value.Date && endDate.Value.Date >= q.DateFrom.Date));
+                                 || (q.DateTo.Date >= endDate.Value.Date && endDate.Value.Date >= q.DateFrom.Date));
 
                 var monthlyPlans  = new List<ProductionMonthlyPlan>();
                 if (period != null) 
