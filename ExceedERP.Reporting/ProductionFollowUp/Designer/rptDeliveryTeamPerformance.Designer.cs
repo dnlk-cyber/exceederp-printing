@@ -1,6 +1,6 @@
 ﻿namespace ExceedERP.Reporting.ProductionFollowUp.Designer
 {
-    partial class rptDeliveryTeamPerformance
+    partial class rptDeliveryTeamPerformanceWp
     {
         #region Component Designer generated code
         /// <summary>
@@ -1164,8 +1164,8 @@
             // 
             // DTPOds
             // 
-            this.DTPOds.DataMember = "DeliveryTeamPerformances";
-            this.DTPOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.DeliveryTeamPerformanceODS);
+            this.DTPOds.DataMember = "DeliveryTeamPerformancesWp";
+            this.DTPOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.DeliveryTeamPerformanceWpODS);
             this.DTPOds.Name = "DTPOds";
             this.DTPOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("startDate", typeof(System.Nullable<System.DateTime>), "= Parameters.startDate.Value"),

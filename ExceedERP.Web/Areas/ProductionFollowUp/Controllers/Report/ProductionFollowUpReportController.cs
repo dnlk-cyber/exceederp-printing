@@ -39,11 +39,23 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             return View();
 
         }
+        public ActionResult GetPrintingAndFinishingTeamPerformanceWp()
+        {
+            return View();
+
+        }
+
         public ActionResult GetDeliveryTeamPerformance()
         {
             return View();
 
         }
+        public ActionResult GetDeliveryTeamPerformanceWp()
+        {
+            return View();
+
+        }
+
         public ActionResult GetDeliveryNote(int id)
         {
             ViewBag.id = id;
@@ -60,6 +72,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
 
         }
         public ActionResult GetJobSupplyandSales()
+        {
+            return View();
+
+        }
+        public ActionResult GetJobSupplyandSalesWp()
         {
             return View();
 

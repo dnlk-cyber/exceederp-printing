@@ -17,9 +17,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public JobSupplyandSalesVM GetJobSupplyandSalesWpODS(DateTime? startDate, DateTime? endDate)
+        public JobSupplyandSalesVM GetJobSupplyandSalesWpODS(string periodId)
         {
-
+            int.TryParse(periodId, out int PeriodIdd);
             var model = new JobSupplyandSalesVM();
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
             Image LogoFileName = null;
@@ -45,9 +45,14 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             decimal WeeklySupplyAndSalesPlan = 0;
             decimal WeeklyReceivedActual = 0;
             decimal WeeklySalesActual = 0;
-            if (startDate.HasValue && endDate.HasValue)
+            if (periodId!=null)
             {
-                days = (endDate.Value.Date - startDate.Value.Date).Days;
+                var period = db.GLPeriods.Find(PeriodIdd);
+                if(period != null)
+                {
+                    DateTime? startDate = period.DateFrom;
+                    DateTime? endDate = period.DateTo;
+                    //days = (endDate.Value.Date - startDate.Value.Date).Days;
                 var jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue? x.ReceivedDate.Value.Date >= startDate.Value.Date
                   && x.ReceivedDate.Value.Date <= endDate.Value.Date:false).ToList();
                 
@@ -68,22 +73,17 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                && q.Status == Core.Domain.PrintingEstimation.Setting.JobState.Finished
                                && jobIds.Contains(q.JobId)). Select(s => s.JobStatusId);
                     var deliveredJobs = db.JobStatusLineItems.ToList().Where(q => deliveredJobIds.Contains(q.JobStatusId));
-                    var period = db.GLPeriods.ToList().Where(q => (q.DateFrom.Date <= startDate.Value.Date&& startDate.Value.Date <= q.DateTo.Date)
-                               || (q.DateTo.Date >= endDate.Value.Date && endDate.Value.Date >= q.DateFrom.Date));
-                    if(period!=null)
-                    {
-                        var periods = period.Select(s => s.GLPeriodId);
-                        var monthlyPlans = db.ProductionMonthlyPlans.Where(q => periods.Contains(q.GLPeriodId)).ToList();
-                        var count = monthlyPlans.Count();
-                        if (count >0)
+                   
+                        var monthlyPlan = db.ProductionMonthlyPlans.FirstOrDefault(q =>q.GLPeriodId==period.GLPeriodId);
+                        if (monthlyPlan!=null)
                         {
-                            var proMonthlyPlans = monthlyPlans.Select(s => s.ProductionMonthlyPlanId);
-                            var jobTypePlan = db.ProductionMonthlyJobTypePlans.Where(q => proMonthlyPlans.Contains(q.ProductionMonthlyPlanId)
-                            && q.JobTypeId == jobType.JobCategoryId).ToList();
-                            if(jobTypePlan.Count()>0)
+                            var jobTypePlan = db.ProductionMonthlyJobTypePlans.Where(q => q.ProductionMonthlyPlanId== monthlyPlan.ProductionMonthlyPlanId
+                            && q.JobTypeId == jobType.JobCategoryId).FirstOrDefault();
+                            if(jobTypePlan!=null)
                             {
-                                job.DailySupply = Math.Round(jobTypePlan.Sum(s=>s.TotalPrice) / (count*30),2);
-                                job.WeeklySupplyAndSalesPlan = Math.Round(job.DailySupply*days,2);
+                                 days = (period.DateTo - period.DateFrom).Days;
+                                job.DailySupply = Math.Round(jobTypePlan.TotalPrice /days, 2);
+                                job.WeeklySupplyAndSalesPlan = Math.Round(jobTypePlan.TotalPrice, 2);
                                 job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.TotalPrice),2);
                                 job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
                                 job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.TotalPrice),2);
@@ -93,7 +93,6 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                 WeeklySalesActual += job.WeeklySalesActual;
                             }
                         }
-                    }
 
                     
                     job.Code = jobType?.JobCode;
@@ -105,6 +104,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 model.WeeklySalesActual = Math.Round(WeeklySalesActual, 2);
                 model.WeeklySalesPerformance = Math.Round(WeeklySupplyAndSalesPlan - WeeklySalesActual, 2);
                 model.JobSupplyandSalesItemVMs = jobList;
+                }
+                
             }
 
 
