@@ -87,13 +87,14 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             && q.JobTypeId == jobType.JobCategoryId).ToList();
                             if(jobTypePlan.Count()>0)
                             {
+                                job.PreviousWeeklySupply = Math.Round(previousJobs.Sum(s=>s.TotalPrice),2);
                                 job.DailySupply = Math.Round(jobTypePlan.Sum(s=>s.TotalPrice) / (count*30),2);
-                                job.WeeklySupplyAndSalesPlan = Math.Round(job.DailySupply*days,2);
+                                //job.WeeklySupplyAndSalesPlan = ;
                                 job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.TotalPrice),2);
-                                job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
+                             //   job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
                                 job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.TotalPrice),2);
-                                job.WeeklySalesPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklySalesActual,2);
-                                WeeklySupplyAndSalesPlan += job.WeeklySupplyAndSalesPlan;
+                            //    job.WeeklySalesPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklySalesActual,2);
+                               // WeeklySupplyAndSalesPlan += job.WeeklySupplyAndSalesPlan;
                                 WeeklyReceivedActual += job.WeeklyReceivedActual;
                                 WeeklySalesActual += job.WeeklySalesActual;
                             }
@@ -104,11 +105,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     job.Code = jobType?.JobCode;
                     jobList.Add(job);
                 }
-                model.WeeklySupplyAndSalesPlan = Math.Round(WeeklySupplyAndSalesPlan, 2);
+             //   model.WeeklySupplyAndSalesPlan = Math.Round(WeeklySupplyAndSalesPlan, 2);
                 model.WeeklyReceivedActual = Math.Round(WeeklyReceivedActual, 2);
-                model.WeeklySupplyPerformance = Math.Round(model.WeeklySupplyAndSalesPlan - model.WeeklyReceivedActual, 2);
+            //    model.WeeklySupplyPerformance = Math.Round(model.WeeklySupplyAndSalesPlan - model.WeeklyReceivedActual, 2);
                 model.WeeklySalesActual = Math.Round(WeeklySalesActual, 2);
-                model.WeeklySalesPerformance = Math.Round(WeeklySupplyAndSalesPlan - WeeklySalesActual, 2);
+             //   model.WeeklySalesPerformance = Math.Round(WeeklySupplyAndSalesPlan - WeeklySalesActual, 2);
                 model.JobSupplyandSalesItemVMs = jobList;
                // model.PreviousWeeklySupply = jobList;
             }

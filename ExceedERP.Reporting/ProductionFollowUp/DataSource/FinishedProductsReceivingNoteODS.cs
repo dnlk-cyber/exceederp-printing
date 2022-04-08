@@ -51,6 +51,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             model.Name = Name;
             model.AmharicName = AmharicName;
             string to = "";
+            if(jobPhase==null)
+            {
+                jobPhase = JobPhase.Printing.ToString();
+            }
             if (jobPhase == JobPhase.Printing.ToString())
             {
                 to = JobPhase.Finishing.ToString();
@@ -59,6 +63,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             {
                 to = JobPhase.Delivery.ToString();
             }
+            
             var items = new List<FinishedProductsReceivingNoteVMItem>();
 
             model.From = jobPhase;
@@ -77,9 +82,13 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
                     item.Client = db.OrganizationCustomers.Find(jobOrder.CustomerId)?.TradeName;
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
-                    // item.Unit = db.UnitOfMeasurement.Find(jobOrder.)?.JobName;
                     item.Quantity = db.JobStatusLineItems.Where(q=>q.JobStatusId== job.JobStatusId).ToList().Sum(s=>s.Quantiy);
-                    item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
+
+                    if(item.Quantity==0)
+                    {
+                        continue;
+                    }
+                        item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
                     decimal TotalBirr = Math.Round(item.Quantity * (decimal)jobOrder.UnitPrice,2);
                     item.TotalPriceBirr = (int)TotalBirr;
                     item.TotalPriceCent = (int)(Math.Round((TotalBirr % 1) ,2)* 100);

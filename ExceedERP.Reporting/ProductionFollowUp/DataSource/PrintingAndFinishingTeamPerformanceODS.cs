@@ -67,7 +67,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             decimal LastWeekFinishedJobs = 0;
             decimal LastWeekPendingJobs = 0;
             decimal currentWeekFinishedJobs = 0;
-           
+            decimal currentWeekOrderedJobs = 0;
+
             if (days>0)
             {
                 foreach (var lastJob in previousJobs)
@@ -86,6 +87,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     {
                         var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.TotalPrice);
                         currentWeekFinishedJobs += finished;
+                        currentWeekOrderedJobs += currentJob.TotalPrice;
                     }
                 }
 
@@ -109,13 +111,15 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                 currentWeekFinishedJobs += finished;
                             }
                         }
-                        LastWeekPendingJobs = previousJobs.Sum(s => s.TotalPrice) - LastWeekPendingJobs;
+                        var jobIds = previousJobs.ToList().Select(s => s.JobId);
+                        var changedQuan = db.ChangeOrders.Where(q => jobIds.Contains(q.JobId)).ToList().Sum(s => s.Total);
+                        LastWeekPendingJobs = previousJobs.Sum(s => s.TotalPrice)+ changedQuan - LastWeekPendingJobs;
                         model.From = startDate?.ToString("dd/MM/yyyy");
-                        model.To = endDate?.ToString("dd/MM/yyyy"); ;
+                        model.To = endDate?.ToString("dd/MM/yyyy"); 
                         model.LastWeekPendingJobsBirr = Math.Round(LastWeekPendingJobs, 0);
                         model.LastWeekPendingJobsCent = getDecimalPartNo(LastWeekPendingJobs);
-                        model.CurrentWeekJobsBirr = Math.Round(latestJobsPrices, 0);
-                        model.CurrentWeekJobsCent = getDecimalPartNo(latestJobsPrices);
+                        model.CurrentWeekJobsBirr = Math.Round(currentWeekOrderedJobs, 0);
+                        model.CurrentWeekJobsCent = getDecimalPartNo(currentWeekOrderedJobs);
                         model.TotalBirr = Math.Round((latestJobsPrices + LastWeekPendingJobs), 0);
                         model.TotalCent = getDecimalPartNo(model.TotalBirr);
                         var weekPlan = monthlyPlans.Sum(s => s.TotalPrice);
@@ -149,6 +153,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             decimal lastWeekFinishedJobTypes = 0;
                             decimal lastWeekPendingJobTypes = 0;
                             decimal currentWeekFinishedJobTypes = 0;
+                            decimal currentWeekOrderedJobTypes = 0;
+
                             foreach (var lastJob in lastWeekJobTypes)
                             {
                                 var jobStatus = db.JobStatuses.Where(q => q.JobId == lastJob.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
@@ -165,13 +171,15 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                 {
                                     var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.TotalPrice);
                                     currentWeekFinishedJobTypes += finished;
+                                    currentWeekOrderedJobTypes += currentJob.TotalPrice;
+
                                 }
                             }
                             lastWeekPendingJobTypes = lastWeekJobTypes.Sum(s => s.TotalPrice) - lastWeekFinishedJobTypes;
                             var item = new PrintingAndFinishingTeamPerformanceItem();
                             item.JobType = jobTypeName;
                             item.LastWeekPendingJobs = Math.Round(lastWeekPendingJobTypes, 2);
-                            item.CurrentWeekOrderedJobs = Math.Round(currentWeekJobTypes.Sum(s => s.TotalPrice), 2);
+                            item.CurrentWeekOrderedJobs = Math.Round(currentWeekOrderedJobTypes, 2);
                             item.Total = item.LastWeekPendingJobs + item.CurrentWeekOrderedJobs;
                             item.WeeklyPlan = Math.Round((jobTypePlans.Sum(s => s.TotalPrice)), 2);
                             item.WeeklyPerformance = currentWeekFinishedJobTypes;

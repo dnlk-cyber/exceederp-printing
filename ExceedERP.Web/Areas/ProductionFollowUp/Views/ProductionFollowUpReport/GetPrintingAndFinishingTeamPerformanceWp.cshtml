@@ -60,15 +60,15 @@
                 // 
                 // Strongly typed ReportSource - TypeReportSource or UriReportSource.
                 .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.ProductionFollowUp.Designer.rptPrintingAndFinishingTeamPerformanceWp, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" })
-      // Specifies whether the viewer is in interactive or print preview mode.
-      // PrintPreview - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
-      // Interactive - Displays the report in its original width and height with no paging. Additionally interactivity is enabled.
-      .ViewMode(ViewMode.Interactive)        
-      // Sets the scale mode of the viewer.
-        // Three modes exist currently:
-        // FitPage - The whole report will fit on the page (will zoom in or out), regardless of its width and height.
-        // FitPageWidth - The report will be zoomed in or out so that the width of the screen and the width of the report match.
-        // Specific - Uses the scale to zoom in and out the report.
+                // Specifies whether the viewer is in interactive or print preview mode.
+                // PrintPreview - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
+                // Interactive - Displays the report in its original width and height with no paging. Additionally interactivity is enabled.
+               .ViewMode(ViewMode.Interactive)        
+                // Sets the scale mode of the viewer.
+                // Three modes exist currently:
+                // FitPage - The whole report will fit on the page (will zoom in or out), regardless of its width and height.
+                // FitPageWidth - The report will be zoomed in or out so that the width of the screen and the width of the report match.
+                // Specific - Uses the scale to zoom in and out the report.
                 .ScaleMode(ScaleMode.Specific)
                 // Zoom in and out the report using the scale
                 // 1.0 is equal to 100%, i.e. the original size of the report

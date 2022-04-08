@@ -103,9 +103,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                 currentWeekFinishedJobs += finished;
                             }
                         }
-                        model.TotalClient = latestJobs.Select(s => s.CustomerId).Distinct().Count().ToString();
-                        var customers = latestJobs.Select(s => s.CustomerId);
-                        var deliverdProducts = db.ProductDeliveries.Where(q => customers.Contains(q.CustomerId)).ToList();
+                        var deliverdProducts = db.ProductDeliveries.ToList().Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date >= startDate.Value.Date : false
+                                                             && q.DateCreated.HasValue ? q.DateCreated.Value.Date <= endDate.Value.Date : false
+                                                             ).ToList();
+                        model.TotalClient = deliverdProducts.Select(s=>s.CustomerId).Count().ToString();
                         model.DeliveryFrom = deliverdProducts.FirstOrDefault()?.ProductDeliveryId.ToString();
                         model.DeliveryTo = deliverdProducts.LastOrDefault()?.ProductDeliveryId.ToString();
                         var voidedProductDeliveryItemss = deliverdProducts.Where(q => q.DeliveryStatus == DeliveryStatus.Voided).Select(s => s.ProductDeliveryId);
@@ -130,6 +131,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                     decimal lastWeekFinishedJobTypes = 0;
                                     decimal lastWeekPendingJobTypes = 0;
                                     decimal currentWeekFinishedJobTypes = 0;
+                                    decimal currentWeekOrderedJobTypes = 0;
                                     foreach (var lastJob in lastWeekJobTypes)
                                     {
                                         var jobStatus = db.JobStatuses.Where(q => q.JobId == lastJob.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
@@ -147,7 +149,12 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                             var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.TotalPrice);
                                             currentWeekFinishedJobTypes += finished;
                                         }
+                                    var jobStatuses = db.JobStatuses.Where(q => q.JobId == currentJob.JobId && q.JobPhase.ToString() == ProductionDepartment.FinishingDelivery.ToString()).FirstOrDefault();
+                                    if (jobStatuses != null)
+                                    {
+                                        currentWeekOrderedJobTypes += currentJob.TotalPrice;
                                     }
+                                }
                                 var jobTypeIdsss = lastWeekJobTypes.ToList().Select(s => s.JobId);
                                 var changedQuan = db.ChangeOrders.Where(q => jobTypeIdsss.Contains(q.JobId)).ToList().Sum(s => s.Total);
                                     lastWeekPendingJobTypes = lastWeekJobTypes.Sum(s => s.TotalPrice) +changedQuan- lastWeekFinishedJobTypes;
@@ -163,7 +170,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                     item.JobCode = jobC;
                                     item.JobType = jobN;
                                     item.LastWeekPendingJobs = Math.Round(lastWeekPendingJobTypes, 2);
-                                    item.CurrentWeekOrderedJobs = Math.Round(currentWeekJobTypes.Sum(s => s.TotalPrice), 2);
+                                    item.CurrentWeekOrderedJobs = Math.Round(currentWeekOrderedJobTypes, 2);
                                     item.Total = item.LastWeekPendingJobs + item.CurrentWeekOrderedJobs;
                                     item.WeeklyPlan = Math.Round(jobTypePlan.TotalPrice, 2);
                                     item.WeeklyPerformance = currentWeekFinishedJobTypes;

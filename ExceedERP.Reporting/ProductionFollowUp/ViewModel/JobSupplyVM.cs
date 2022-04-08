@@ -19,10 +19,12 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 
         }
     public class JobSupplyItemVM
-        {
-            public string JobType { get; set; }
-            public decimal TotalPrice { get; set; }
-            public string Code { get; set; }
-        }
+    {
+        public string JobType { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal TotalQuantity { get; set; }
+
+        public string Code { get; set; }
+    }
     }
 

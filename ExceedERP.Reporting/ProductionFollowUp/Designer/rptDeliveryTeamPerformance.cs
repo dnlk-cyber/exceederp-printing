@@ -10,9 +10,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.Designer
     /// <summary>
     /// Summary description for rptDeliveryTeamPerformance.
     /// </summary>
-    public partial class rptDeliveryTeamPerformanceWp : Telerik.Reporting.Report
+    public partial class rptDeliveryTeamPerformance : Telerik.Reporting.Report
     {
-        public rptDeliveryTeamPerformanceWp()
+        public rptDeliveryTeamPerformance()
         {
             //
             // Required for telerik Reporting designer support

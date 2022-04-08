@@ -81,7 +81,6 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     
                 
             }
-
             model.DeliveryFollowUpSheetItemsVMs = items;
             return model;
         }

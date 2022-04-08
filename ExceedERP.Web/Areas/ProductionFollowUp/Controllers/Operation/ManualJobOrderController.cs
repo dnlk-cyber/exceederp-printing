@@ -159,7 +159,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Job> jobs = db.Jobs.Where(q=>!q.hv);
+            IQueryable<Job> jobs = db.Jobs;
             DataSourceResult result = jobs.ToDataSourceResult(request, job => new
             {
                 JobId = job.JobId,

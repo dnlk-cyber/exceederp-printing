@@ -10,6 +10,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
     {
         public string Name { get; set; }
         public string Type { get; set; }
+        public string UoM { get; set; }
         public double Gram { get; set; }
         public double Size { get; set; }
         public double Quantity { get; set; }

@@ -67,64 +67,72 @@ namespace ExceedERP.Reporting.PrintingEstimation.DataSource
 
                 var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == job.JobTypeId);
 
-                var papers = db.JobOrderMaterials.Where(x=>x.JobId == job.JobId && x.Type == JobOrderMaterialType.PaperType).ToList();
-                foreach(var mat in papers)
+                var storeReq = db.StoreRequisitions.Where(x=>x.JobOrderNo == job.JobId.ToString()).FirstOrDefault();
+                if(storeReq!=null)
                 {
-                    var paper = new JobOrderMaterialVM();
-
-                    paper.Name = mat.Name;
-                    paper.Type = mat.Type.ToString();
-                    paper.Quantity = mat.Quantity;
-                    paper.Gram = mat.Gram;
-                    paper.Size = mat.Size;
-                    paper.SIVNo = mat.SIVNo;                   
-                    paper.UnitPrice = Convert.ToDecimal(mat.UnitPrice);
-                    paper.BeforeTax = Convert.ToDecimal(mat.UnitPrice * mat.Quantity);
-
-                    if (jobOrder != null)
+                    var items = db.StoreRequisitionItems.Where(q => q.StoreRequisitionID == storeReq.StoreRequisitionID).ToList();
+                    foreach (var item in items)
                     {
-                        var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
-                        if (tax != null)
-                        {
-                            paper.Tax = paper.UnitPrice * Convert.ToDecimal(paper.Quantity) * tax.CalculatedRate;
-                            paper.TotalPrice = (paper.UnitPrice * Convert.ToDecimal(paper.Quantity)) + paper.Tax;
-                        }
-                    }
-                    
-                    paper.Remark = mat.Remark;
+                        var itemAssign = db.StoreItemAssignments.Where(q => q.ItemCode == item.ItemCode && q.StoreCode == storeReq.StoreCode).FirstOrDefault();
+                        var issue = db.Issues.Where(q => q.StoreRequisitionID ==  storeReq.StoreRequisitionID).FirstOrDefault();
+                        var paper = new JobOrderMaterialVM();
 
-                    jobOrder.PaperTypes.Add(paper);
+                        paper.Name = db.InventoryItems.Find(item.ItemCode)?.Name;
+                        paper.UoM = db.InventoryItems.Find(item.ItemCode)?.UoMName;
+                      //  paper.Type = mat.Type.ToString();
+                        paper.Quantity = (double)item?.IssuedQuantity;
+                      //  paper.Gram = mat.Gram;
+                     //   paper.Size = mat.Size;
+                        paper.SIVNo = issue?.IssueID.ToString();
+                        paper.UnitPrice = Convert.ToDecimal(itemAssign?.AvgPrice);
+                        paper.BeforeTax = Convert.ToDecimal(itemAssign?.AvgPrice * item?.IssuedQuantity);
+
+                        if (jobOrder != null)
+                        {
+                            var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
+                            if (tax != null)
+                            {
+                                paper.Tax = paper.UnitPrice * Convert.ToDecimal(paper.Quantity) * tax.CalculatedRate;
+                                paper.TotalPrice = (paper.UnitPrice * Convert.ToDecimal(paper.Quantity)) + paper.Tax;
+                            }
+                        }
+
+                        paper.Remark = "" ;
+
+                        jobOrder.PaperTypes.Add(paper);
+                    }
+
                 }
 
 
-                var filmorplates = db.JobOrderMaterials.Where(x => x.JobId == job.JobId && x.Type == JobOrderMaterialType.FilmOrPlate).ToList();
-                foreach (var mat in filmorplates)
-                {
-                    var plate = new JobOrderMaterialVM();
+                //var filmorplates = db.JobOrderMaterials.Where(x => x.JobId == job.JobId && x.Type == JobOrderMaterialType.FilmOrPlate).ToList();
+                //foreach (var mat in filmorplates)
+                //{
+                //    var plate = new JobOrderMaterialVM();
 
-                    plate.Name = mat.Name;
-                    plate.Type = mat.Type.ToString();
-                    plate.Quantity = mat.Quantity;
-                    plate.Gram = mat.Gram;
-                    plate.Size = mat.Size;
-                    plate.SIVNo = mat.SIVNo;
-                    plate.UnitPrice = Convert.ToDecimal(mat.UnitPrice);
-                    plate.BeforeTax = Convert.ToDecimal(mat.UnitPrice * mat.Quantity);
+                //    plate.Name = mat.Name;
+                //    plate.Type = mat.Type.ToString();
+                //    plate.Quantity = mat.Quantity;
+                //    plate.Gram = mat.Gram;
+                //    plate.Size = mat.Size;
+                //    plate.SIVNo = mat.SIVNo;
+                //    plate.UnitPrice = Convert.ToDecimal(mat.UnitPrice);
+                //    plate.BeforeTax = Convert.ToDecimal(mat.UnitPrice * mat.Quantity);
 
-                    if (jobOrder != null)
-                    {
-                        var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
-                        if (tax != null)
-                        {
-                            plate.Tax = plate.UnitPrice * Convert.ToDecimal(plate.Quantity) * tax.CalculatedRate;
-                            plate.TotalPrice = (plate.UnitPrice * Convert.ToDecimal(plate.Quantity)) + plate.Tax;
-                        }
-                    }
+                //    if (jobOrder != null)
+                //    {
+                //        var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
+                //        if (tax != null)
+                //        {
+                //            plate.Tax = plate.UnitPrice * Convert.ToDecimal(plate.Quantity) * tax.CalculatedRate;
+                //            plate.TotalPrice = (plate.UnitPrice * Convert.ToDecimal(plate.Quantity)) + plate.Tax;
+                //        }
+                //    }
 
-                    plate.Remark = mat.Remark;
+                //    plate.Remark = mat.Remark;
 
-                    jobOrder.FilmOrPlates.Add(plate);
-                }
+                //    jobOrder.FilmOrPlates.Add(plate);
+                //}
 
                 decimal priceSumBeforeVat = 0;
                 decimal totalPrice = 0;

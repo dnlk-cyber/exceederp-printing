@@ -103,10 +103,10 @@
             this.htmlTextBox40 = new Telerik.Reporting.HtmlTextBox();
             this.htmlTextBox45 = new Telerik.Reporting.HtmlTextBox();
             this.PandFTPOds = new Telerik.Reporting.ObjectDataSource();
-            this.JobPhaseOds = new Telerik.Reporting.ObjectDataSource();
-            this.JtOds = new Telerik.Reporting.ObjectDataSource();
             this.FYOds = new Telerik.Reporting.ObjectDataSource();
             this.POds = new Telerik.Reporting.ObjectDataSource();
+            this.JobPhaseOds = new Telerik.Reporting.ObjectDataSource();
+            this.JtOds = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox17
@@ -839,7 +839,7 @@
             this.textBox18.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox18.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox18.StyleName = "";
-            this.textBox18.Value = "= RowNumber()";
+            this.textBox18.Value = "= RowNumber(\"table1\")";
             // 
             // textBox10
             // 
@@ -868,6 +868,7 @@
             this.textBox12.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox12.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
             this.textBox12.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox12.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox12.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox12.Style.Font.Bold = true;
             this.textBox12.Style.Font.Name = "Microsoft Sans Serif";
@@ -957,6 +958,7 @@
             this.textBox11.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox11.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
             this.textBox11.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox11.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox11.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox11.Style.Font.Bold = true;
             this.textBox11.Style.Font.Name = "Microsoft Sans Serif";
@@ -1181,18 +1183,6 @@
             new Telerik.Reporting.ObjectDataSourceParameter("jobPhase", typeof(string), "= Parameters.jobPhase.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("jobTypeId", typeof(string), "= Parameters.jobTypeId.Value")});
             // 
-            // JobPhaseOds
-            // 
-            this.JobPhaseOds.DataMember = "GetJobPhases";
-            this.JobPhaseOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.JobPhaseOds.Name = "JobPhaseOds";
-            // 
-            // JtOds
-            // 
-            this.JtOds.DataMember = "GetJobTypes";
-            this.JtOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.JtOds.Name = "JtOds";
-            // 
             // FYOds
             // 
             this.FYOds.DataMember = "GetFiscalYears";
@@ -1207,6 +1197,18 @@
             this.POds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("glFiscalYearId", typeof(string), "= Parameters.glFiscalYearId.Value")});
             // 
+            // JobPhaseOds
+            // 
+            this.JobPhaseOds.DataMember = "GetJobPhases";
+            this.JobPhaseOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.JobPhaseOds.Name = "JobPhaseOds";
+            // 
+            // JtOds
+            // 
+            this.JtOds.DataMember = "GetJobTypes";
+            this.JtOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.JtOds.Name = "JtOds";
+            // 
             // rptPrintingAndFinishingTeamPerformanceWp
             // 
             this.DataSource = this.PandFTPOds;
@@ -1214,6 +1216,8 @@
             this.pageHeaderSection1,
             this.detail});
             this.Name = "rptPrintingAndFinishingTeamPerformance";
+            this.PageSettings.ContinuousPaper = false;
+            this.PageSettings.Landscape = false;
             this.PageSettings.Margins = new Telerik.Reporting.Drawing.MarginsU(Telerik.Reporting.Drawing.Unit.Mm(20D), Telerik.Reporting.Drawing.Unit.Mm(20D), Telerik.Reporting.Drawing.Unit.Mm(20D), Telerik.Reporting.Drawing.Unit.Mm(20D));
             this.PageSettings.PaperKind = System.Drawing.Printing.PaperKind.A4;
             reportParameter1.AllowNull = true;
@@ -1257,7 +1261,7 @@
             styleRule1.Style.Padding.Right = Telerik.Reporting.Drawing.Unit.Point(2D);
             this.StyleSheet.AddRange(new Telerik.Reporting.Drawing.StyleRule[] {
             styleRule1});
-            this.Width = Telerik.Reporting.Drawing.Unit.Cm(23.099798202514648D);
+            this.Width = Telerik.Reporting.Drawing.Unit.Cm(23.099998474121094D);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }

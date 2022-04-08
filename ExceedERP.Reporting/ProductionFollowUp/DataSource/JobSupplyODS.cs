@@ -57,7 +57,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     var jobTypes = jobs.GroupBy(g => g.JobTypeId).Select(s => new
                     {
                         JobTypeId = s.Key,
-                        TotalPrice = s.Sum(su => su.TotalPrice)
+                        TotalPrice = s.Sum(su => su.TotalPrice),
+                        TotalQuantity = s.Sum(su => su.Quantity)
                       }).ToList();
                     foreach (var jobOrder in jobTypes)
                     {
@@ -68,6 +69,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         job.JobType = jobType?.JobName;
                         job.Code = jobType?.JobCode;
                         job.TotalPrice = jobOrder.TotalPrice;
+                        job.TotalQuantity = jobOrder.TotalQuantity;
                         jobList.Add(job);
                     }
                     model.JobSupplyItemVMs = jobList;

@@ -4015,6 +4015,12 @@
     <Compile Include="PrintingEstimation\Design\rptChangeOfOrder.Designer.cs">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProductionFollowUp\Designer\Report1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\Report1.Designer.cs">
+      <DependentUpon>Report1.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5843,6 +5849,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PrintingEstimation\Design\rptChangeOfOrder.resx">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\Report1.resx">
+      <DependentUpon>Report1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.resx">
       <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>

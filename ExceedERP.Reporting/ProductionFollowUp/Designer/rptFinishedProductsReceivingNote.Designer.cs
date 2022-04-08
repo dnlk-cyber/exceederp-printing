@@ -654,7 +654,7 @@
             this.textBox18.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox18.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox18.StyleName = "";
-            this.textBox18.Value = "= RowNumber()";
+            this.textBox18.Value = "=RowNumber()";
             // 
             // textBox19
             // 
