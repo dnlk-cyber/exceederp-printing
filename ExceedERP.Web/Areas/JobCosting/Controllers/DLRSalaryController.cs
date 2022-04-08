@@ -56,6 +56,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
             if (ModelState.IsValid)
             {
+                var dlrRec = db.DailyLaborRates.Find(id);
                 var pensionRate = db.JcPensions.FirstOrDefault();
                 if(pensionRate!=null)
                 {
@@ -66,7 +67,16 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 {
                     dLRSalary.Pension = 0;
                 }
-                dLRSalary.TotalSalary = dLRSalary.Pension+ dLRSalary.Total;
+                if(dlrRec != null && dlrRec.EmployeeType==Core.Domain.PrintingEstimation.Setting.EmployementType.Permanent)
+                {
+                    dLRSalary.TotalSalary = dLRSalary.Pension + dLRSalary.Total;
+
+                }
+                else
+                {
+                    dLRSalary.TotalSalary = dLRSalary.Pension + dLRSalary.TotalSalary;
+
+                }
                 var entity = (DLRSalary)this.GetObject(dLRSalary, true, id);
                 dlr.UpdateDLRRow(entity, hr = null, db);
                 db.DLRSalaries.Add(entity);

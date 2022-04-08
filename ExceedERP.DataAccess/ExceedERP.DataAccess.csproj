@@ -262,6 +262,10 @@
     <Compile Include="Migrations\202204050749116_StoreCodeAddedToMaterialCost.Designer.cs">
       <DependentUpon>202204050749116_StoreCodeAddedToMaterialCost.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202204081451500_LabourCostUpdate.cs" />
+    <Compile Include="Migrations\202204081451500_LabourCostUpdate.Designer.cs">
+      <DependentUpon>202204081451500_LabourCostUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -415,6 +419,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202204050749116_StoreCodeAddedToMaterialCost.resx">
       <DependentUpon>202204050749116_StoreCodeAddedToMaterialCost.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202204081451500_LabourCostUpdate.resx">
+      <DependentUpon>202204081451500_LabourCostUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
