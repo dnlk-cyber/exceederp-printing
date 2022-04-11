@@ -1870,7 +1870,7 @@
     <Compile Include="Areas\Inventory\Controllers\Returns\StoreReturnAttachmentController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\ItemMergeController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\InventorySettingController.cs" />
-    <Compile Include="Areas\JobCosting\Common\JobCostingDataProviderController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\Common\JobCostingDataProviderController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\DailyLaborRateController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\DeliveredJobController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\DLRHourController.cs" />
@@ -1897,7 +1897,7 @@
     <Compile Include="Areas\JobCosting\Controllers\Settings\YearlyOverHeadRateController.cs" />
     <Compile Include="Areas\JobCosting\JobCostingAreaRegistration.cs" />
     <Compile Include="Areas\JobCosting\Models\UpdateDLR.cs" />
-    <Compile Include="Areas\JobCosting\Report\ReportJobCostingController.cs" />
+    <Compile Include="Areas\JobCosting\Report\JobCostingReportController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationChangeOfOrdersController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\EstimationFormController.cs" />
     <Compile Include="Areas\PrintingEstimation\Controllers\PrintingEstimationDataProviderController.cs" />
@@ -4878,7 +4878,7 @@
     <Content Include="Areas\JobCosting\Views\JobOrderTimeRegistrations\EditorTemplates\JobOrders.cshtml" />
     <Content Include="Areas\JobCosting\Views\JobOrderTimeRegistrations\Index.cshtml" />
     <Content Include="Areas\JobCosting\Views\JobOrderTimeSheets\Index.cshtml" />
-    <Content Include="Areas\JobCosting\Views\ReportJobCosting\JobOrderTimeSheet.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobCostingReport\JobOrderTimeSheet.cshtml" />
     <Content Include="Areas\JobCosting\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\JobCosting\Views\web.config" />
     <Content Include="Areas\JobCosting\Views\_ViewStart.cshtml" />
@@ -5215,6 +5215,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetJobSupplyandSalesWp.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetPrintingAndFinishingTeamPerformanceWp.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetDeliveryTeamPerformanceWp.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobCostingReport\GetJobOrderCard.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -7989,7 +7990,6 @@
     <Folder Include="Areas\Inventory\Views\StoreItemAssignment\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />
-    <Folder Include="Areas\JobCosting\Views\JobCostingDataProvider\" />
     <Folder Include="Areas\PrintingEstimation\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Procurement\Views\TenderParticipantItems\EditorTemplates\" />
     <Folder Include="Areas\ProductionFollowUp\Views\MegaDataProvider\" />

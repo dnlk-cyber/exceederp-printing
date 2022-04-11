@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ExceedERP.Web.Areas.JobCosting.Common
+namespace ExceedERP.Web.Areas.JobCosting.Controllers.Common
 {
     public class JobCostingDataProviderController : Controller
     {
@@ -14,6 +14,11 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
         public ActionResult Index()
         {
             return View();
+        }
+        public JsonResult GetJobOrder(int jobId)
+        {
+            var jobOrder = db.Jobs.Find(jobId);
+            return Json(jobOrder, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetAllFiscalYears()
         {

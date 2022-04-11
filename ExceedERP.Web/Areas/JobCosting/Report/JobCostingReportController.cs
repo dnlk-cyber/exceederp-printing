@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.JobCosting.Report
 {
-    public class ReportJobCostingController : Controller
+    public class JobCostingReportController : Controller
     {
         // GET: JobCosting/ReportJobCosting
         public ActionResult Index()
@@ -18,5 +18,14 @@ namespace ExceedERP.Web.Areas.JobCosting.Report
             ViewBag.id = id;
             return View();
         }
+        public ActionResult GetJobOrderCard(int? id)
+        {
+            //if(id!=null)
+            //{
+                ViewBag.id = id;
+          //  }
+            return View();
+        }
+
     }
 }

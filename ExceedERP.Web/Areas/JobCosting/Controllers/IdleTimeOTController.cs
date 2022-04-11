@@ -29,24 +29,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             DataSourceResult result = idletimeots.ToDataSourceResult(request, idleTimeOT => new {
                 IdleTimeOTID = idleTimeOT.IdleTimeOTID,
                 IdleTimeID = idleTimeOT.IdleTimeID,
-                OTManualHour = idleTimeOT.OTManualHour,
-                OTManualPercentage = idleTimeOT.OTManualPercentage,
-                OTMechanicalHour = idleTimeOT.OTMechanicalHour,
-                OTMechanicalPercentage = idleTimeOT.OTMechanicalPercentage,
-                OTCameraHour = idleTimeOT.OTCameraHour,
-                OTCameraPercentage = idleTimeOT.OTCameraPercentage,
-                OTOffsetHour = idleTimeOT.OTOffsetHour,
-                OTOffsetPercentage = idleTimeOT.OTOffsetPercentage,
-                OTLetterPressHour = idleTimeOT.OTLetterPressHour,
-                OTLetterPressPercentage = idleTimeOT.OTLetterPressPercentage,
-                OTBindingHour = idleTimeOT.OTBindingHour,
-                OTBindingPercentage = idleTimeOT.OTBindingPercentage,
-                OTComputerHour = idleTimeOT.OTComputerHour,
-                OTComputerPercentage = idleTimeOT.OTComputerPercentage,
-                OTWebHour = idleTimeOT.OTWebHour,
-                OTWebPercentage = idleTimeOT.OTWebPercentage,
-                OTTotalHour = idleTimeOT.OTTotalHour,
-                OTTotalPercentage = idleTimeOT.OTTotalPercentage
+                CostCenterId = idleTimeOT.CostCenterId,
+                Rate = idleTimeOT.Rate,
+                Value = idleTimeOT.Value
             });
 
             return Json(result);
@@ -109,24 +94,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             {
                 IdleTimeOTID = idleTimeOT.IdleTimeOTID,
                 IdleTimeID   = idleTimeOT.IdleTimeID,
-                OTManualHour = idleTimeOT.OTManualHour,
-                OTManualPercentage = idleTimeOT.OTManualPercentage,
-                OTMechanicalHour = idleTimeOT.OTMechanicalHour,
-                OTMechanicalPercentage = idleTimeOT.OTMechanicalPercentage,
-                OTCameraHour = idleTimeOT.OTCameraHour,
-                OTCameraPercentage = idleTimeOT.OTCameraPercentage,
-                OTOffsetHour = idleTimeOT.OTOffsetHour,
-                OTOffsetPercentage = idleTimeOT.OTOffsetPercentage,
-                OTLetterPressHour = idleTimeOT.OTLetterPressHour,
-                OTLetterPressPercentage = idleTimeOT.OTLetterPressPercentage,
-                OTBindingHour = idleTimeOT.OTBindingHour,
-                OTBindingPercentage = idleTimeOT.OTBindingPercentage,
-                OTComputerHour = idleTimeOT.OTComputerHour,
-                OTComputerPercentage = idleTimeOT.OTComputerPercentage,
-                OTWebHour = idleTimeOT.OTWebHour,
-                OTWebPercentage = idleTimeOT.OTWebPercentage,
-                OTTotalHour = idleTimeOT.OTTotalHour,
-                OTTotalPercentage = idleTimeOT.OTTotalPercentage
+                CostCenterId = idleTimeOT.CostCenterId,
+                Rate = idleTimeOT.Rate,
+                Value = idleTimeOT.Value
 
             };
             return entity;

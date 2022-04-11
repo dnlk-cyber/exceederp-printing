@@ -9,22 +9,33 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Job Sheet Time Sheet</title>
+
+
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/ReportViewer/js/jquery-3.3.1.min.js"></script>
+    <link href="~/ReportViewer/css/2018.2.620/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/ReportViewer/css/kendo.blueopal.min.css" rel="stylesheet" />
+    <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer.kendo-12.2.18.912.min.js")"></script>
 
-    @*<link href="https://kendo.cdn.telerik.com/2018.2.620/styles/kendo.common.min.css" rel="stylesheet" />
-        <link href="https://kendo.cdn.telerik.com/2018.2.620/styles/kendo.blueopal.min.css" rel="stylesheet" />*@
+    <script src="~/Scripts/kendo/2018.3.911/kendo.all.min.js"></script>
+    <script src="~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js"></script>
+    <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer-12.2.18.912.min.js")"></script>
 
-    <link href="~/Content/kendo/2020.1.219/kendo.common.min.css" rel="stylesheet" />
-    <link href="~/Content/kendo/2020.1.219/kendo.flat.min.css" rel="stylesheet" />
+    <script src="~/Scripts/Exceed/KendoReport.js"></script>
 
-    <!--If Kendo is used it should be added before the report viewer.-->
-    <script src="@Url.Content("~/api/reports/resources/js/telerikReportViewer-14.0.20.219.min.js/")"></script>
+    <style>
+        #reportViewer1 {
+            position: relative;
+            width: 100%;
+            height: 900px;
+            font-family: Verdana, Arial;
+        }
+    </style>
+
 
 
 
@@ -48,11 +59,11 @@
                                 // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
                                 // 
                                 // Strongly typed ReportSource - TypeReportSource or UriReportSource.
-                                .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.Mega.Designer.rptJobOrdeTimeSheet, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", Parameters = { new Parameter("id", ViewBag.id) } })
+                                .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.JobCosting.Design.JobOrderCardDesign, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", Parameters = { new Parameter("jobOrderId", ViewBag.id) } })
                                 // Specifies whether the viewer is in interactive or print preview mode.
                                 // PrintPreview - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
                                 // Interactive - Displays the report in its original width and height with no paging. Additionally interactivity is enabled.
-                                .ViewMode(ViewMode.PrintPreview)
+                                .ViewMode(ViewMode.Interactive)
                                 // Sets the scale mode of the viewer.
                                 // Three modes exist currently:
                                 // FitPage - The whole report will fit on the page (will zoom in or out), regardless of its width and height.

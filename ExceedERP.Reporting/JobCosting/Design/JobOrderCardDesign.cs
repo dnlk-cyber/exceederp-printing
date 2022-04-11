@@ -1,4 +1,4 @@
-namespace ExceedERP.Reporting.ProductionFollowUp.Designer
+namespace ExceedERP.Reporting.JobCosting.Design
 {
     using System;
     using System.ComponentModel;
@@ -8,11 +8,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.Designer
     using Telerik.Reporting.Drawing;
 
     /// <summary>
-    /// Summary description for Report1.
+    /// Summary description for JobOrderCardDesign.
     /// </summary>
-    public partial class Report1 : Telerik.Reporting.Report
+    public partial class JobOrderCardDesign : Telerik.Reporting.Report
     {
-        public Report1()
+        public JobOrderCardDesign()
         {
             //
             // Required for telerik Reporting designer support

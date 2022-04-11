@@ -3663,6 +3663,15 @@
     <Compile Include="Inventory\ViewModel\StoreRequisitionItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\StoreReturnItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\VariationVm.cs" />
+    <Compile Include="JobCosting\DataSource\JobCostingParameterOds.cs" />
+    <Compile Include="JobCosting\DataSource\JobOrderCardOds.cs" />
+    <Compile Include="JobCosting\Design\JobOrderCardDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="JobCosting\Design\JobOrderCardDesign.Designer.cs">
+      <DependentUpon>JobOrderCardDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JobCosting\ViewModel\JobOrderCardVM.cs" />
     <Compile Include="PrintingEstimation\DataSource\EstimationFormOds.cs" />
     <Compile Include="PrintingEstimation\Design\EstimationFormReporting.cs">
       <SubType>Component</SubType>
@@ -4014,12 +4023,6 @@
     </Compile>
     <Compile Include="PrintingEstimation\Design\rptChangeOfOrder.Designer.cs">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ProductionFollowUp\Designer\Report1.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ProductionFollowUp\Designer\Report1.Designer.cs">
-      <DependentUpon>Report1.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.cs">
       <SubType>Component</SubType>
@@ -5724,6 +5727,9 @@
     <EmbeddedResource Include="Inventory\VariationSummary.resx">
       <DependentUpon>VariationSummary.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="JobCosting\Design\JobOrderCardDesign.resx">
+      <DependentUpon>JobOrderCardDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PrintingEstimation\Design\EstimationFormReporting.resx">
       <DependentUpon>EstimationFormReporting.cs</DependentUpon>
     </EmbeddedResource>
@@ -5849,9 +5855,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PrintingEstimation\Design\rptChangeOfOrder.resx">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProductionFollowUp\Designer\Report1.resx">
-      <DependentUpon>Report1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.resx">
       <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>

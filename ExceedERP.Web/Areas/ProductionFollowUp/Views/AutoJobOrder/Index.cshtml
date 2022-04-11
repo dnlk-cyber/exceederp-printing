@@ -1108,7 +1108,7 @@
 </script>
 <script id="JobStatusLineItem" type="text/Kendo-tmpl">
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobStatusLineItem>()
-              .Name("JobStatusLineItem#=JobStatusId#")
+              .Name("JobStatusLineItem_#=JobStatusId#")
               .Columns(columns =>
               {
                   columns.Bound(c => c.Date);
@@ -1263,8 +1263,8 @@
     jobStatusId = childMasterDataItem.JobStatusId;
     jobPhase = childMasterDataItem.JobPhase;
         jobState = childMasterDataItem.Status;
-        if (jobState == 1) {
-            $(".k-grid-top", $("#JobStatusLineItem" + jobStatusId)).hide();
+        if (jobState == 1 || jobState == 0) {
+            $(".k-grid-top", $("#JobStatusLineItem_" + jobStatusId)).hide();
 
         }
     }
@@ -1280,7 +1280,7 @@
             row.find(".k-grid-delete").hide();
             row.find(".k-grid-edit").hide();
         }
-        if (data.JobPhase == 1) {
+        if (data.JobPhase == 1 || data.JobPhase == 0) {
     row.find('.k-hierarchy-cell a').css({ opacity: 0.0, cursor: 'default' }).click(function (e) { e.stopImmediatePropagation(); return false; });
     }
     });
@@ -1289,7 +1289,7 @@
 
     function jobStatusLineItemDataBound()
     {
-        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        var grid = $('#JobStatusLineItem_' + jobStatusId).data('kendoGrid');
 
     if(jobPhase==3)
     {
@@ -1327,7 +1327,7 @@
     }
     function jobStatusLineItemEdit()
     {
-        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        var grid = $('#JobStatusLineItem_' + jobStatusId).data('kendoGrid');
         $("#TotalPrice").prop("readonly", true);
 
         if (jobPhase == 3) {

@@ -1267,7 +1267,7 @@ items.Add().Text("Validation").Content(
     jobPhase = childMasterDataItem.JobPhase;
         jobState = childMasterDataItem.Status;
         if (jobState == 1) {
-            $(".k-grid-top", $("#JobStatusLineItem" + jobStatusId)).hide();
+            $(".k-grid-top", $("#JobStatusLineItem_" + jobStatusId)).hide();
 
         }
     }
@@ -1283,7 +1283,7 @@ items.Add().Text("Validation").Content(
             row.find(".k-grid-delete").hide();
             row.find(".k-grid-edit").hide();
         }
-        if (data.JobPhase == 1) {
+        if (data.JobPhase == 1 || data.JobPhase == 0) {
     row.find('.k-hierarchy-cell a').css({ opacity: 0.0, cursor: 'default' }).click(function (e) { e.stopImmediatePropagation(); return false; });
     }
     });
@@ -1292,7 +1292,7 @@ items.Add().Text("Validation").Content(
 
     function jobStatusLineItemDataBound()
     {
-        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        var grid = $('#JobStatusLineItem_' + jobStatusId).data('kendoGrid');
 
     if(jobPhase==3)
     {
@@ -1330,7 +1330,7 @@ items.Add().Text("Validation").Content(
     }
     function jobStatusLineItemEdit()
     {
-        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        var grid = $('#JobStatusLineItem_' + jobStatusId).data('kendoGrid');
         $("#TotalPrice").prop("readonly", true);
 
         if (jobPhase == 3) {
