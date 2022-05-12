@@ -72,7 +72,6 @@
                                     </div>
                                 </div>
 
-
                             </div>
 
                             <div class="col-md-3 ro1">
@@ -150,24 +149,36 @@
                                     </div>
                                 </div>
 
+                                @Html.LabelFor(model => model.EmployeeTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                                <div class="col-md-10">
+                                    @(Html.Kendo().DropDownListFor(model => model.EmployeeTypeId)
 
+                                     .OptionLabel(Resources.Select)
+                                     .DataTextField("Name")
+                                     .DataValueField("EmployeeTypeId")
+                                     .ValuePrimitive(true)
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetEmployeeTypes", "HRMDataProvider"))
+                                             .ServerFiltering(false);
+                                     }))
 
-                                <div class="row"></div><br />
-                                <div class="form-group">
-                                    @*    @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                                    <div class="row"></div><br />
+                                    <div class="form-group">
+                                        @*    @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })*@
 
-                                    <div class="col-md-10">
+                                        <div class="col-md-10">
 
-                                        @(Html.Kendo().CheckBoxFor(model => model.IsActive)
+                                            @(Html.Kendo().CheckBoxFor(model => model.IsActive)
                                                                             .Enable(false)
 
-                                        )
-                                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                            )
+                                            @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                        </div>
+
+
                                     </div>
-
-
                                 </div>
-                            </div>
                         </div>
 
 

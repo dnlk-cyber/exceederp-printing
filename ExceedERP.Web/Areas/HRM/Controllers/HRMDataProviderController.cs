@@ -36,6 +36,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         //new
         private HRMInputs inputs = new HRMInputs();
 
+        public JsonResult GetEmployeeTypes()
+        {
+            var data = db.EmployeeTypes.ToList();
+            return Json(data.Select(p => new
+            {
+                p.EmployeeTypeId,
+                p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetEvaluationCriterias(string level)
         {
             List<MeasurementDefinition> measurments = db.MeasurementDefinitions.ToList();

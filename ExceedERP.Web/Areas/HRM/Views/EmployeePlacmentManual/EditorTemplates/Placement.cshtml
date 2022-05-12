@@ -32,19 +32,9 @@
 
                                })
 
-
                               .ValuePrimitive(true)
-
-                    )
-
-
-
+                               )
                 </div>
-
-
-
-
-
 
                 @*<div class="col-md-6">
 
@@ -95,24 +85,20 @@
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
+                        .Filter("contains")
+                        .OptionLabel(Resources.Select)
+                        .MinLength(2)
+                        .DataTextField("Name")
+                        .DataValueField("OrgStructureId")
+                        .HtmlAttributes(new { style = "width:240px" })
+                        .ValuePrimitive(true)
+                        .DataSource(source =>
+                        {
+                            source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
+                        })
+                       // .BindTo((IEnumerable)ViewData["organization"])
 
-                                  .Filter("contains")
-                                  .OptionLabel(Resources.Select)
-                                  .MinLength(2)
-                                  .DataTextField("Name")
-                                  .DataValueField("OrgStructureId")
-                                  .HtmlAttributes(new { style = "width:240px" })
-                                  .ValuePrimitive(true)
-
-                                  .DataSource(source =>
-                                  {
-                                      source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
-
-
-                                  })
-                            // .BindTo((IEnumerable)ViewData["organization"])
-
-
+                     
                     )
                     @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
                 </div>
@@ -127,6 +113,7 @@
                                   .OptionLabel(Resources.Select)
                                   .HtmlAttributes(new { style = "width:240px" })
                                   .MinLength(2)
+                                   .Events(e => e.Change("GetSalary"))
                                   .DataSource(source =>
                                   {
                                       source.Read(read =>
@@ -172,16 +159,16 @@
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
 
-                                                          .Filter("contains")
-                                                          .OptionLabel(Resources.Select)
-                                                          .MinLength(2)
-                                                       .ValuePrimitive(true)
+                                  .Filter("contains")
+                                  .OptionLabel(Resources.Select)
+                                  .MinLength(2)
+                                  .ValuePrimitive(true)
                                   .AutoBind(false)
                                   .OptionLabel("Select Business Unit...")
-                                      .DataTextField("Name")
-                                              .DataValueField("Code")
-                                          .Filter("contains")
-                                           .HtmlAttributes(new { style = "width:240px" })
+                                  .DataTextField("Name")
+                                  .DataValueField("Code")
+                                  .Filter("contains")
+                                  .HtmlAttributes(new { style = "width:240px" })
                                   .DataSource(dataSource =>
                                   {
                                       dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }))
@@ -271,7 +258,7 @@
                                           .DataValueField("RankId")
                                           // .CascadeFrom("JobTitleCode")
                                           //.Enable(false)
-                                         // .Events(e => e.Change("GetSalary"))
+                                          .Events(e => e.Change("GetSalary"))
                                           .DataSource(dataSource =>
                                           {
                                               dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
@@ -295,7 +282,7 @@
                                           .DataValueField("StepId")
                                           // .CascadeFrom("JobTitleCode")
                                           // .Enable (false)
-                                         // .Events(e => e.Change("GetSalary"))
+                                          .Events(e => e.Change("GetSalary"))
                                           .DataSource(dataSource =>
                                           {
                                               dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));

@@ -67,14 +67,20 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                         if (value != null)
                         {
-                            EmployeeInfo.CriteriaName = value.IdNumber;
-
-                            EmployeeInfo.Sex = gender;
+                            EmployeeInfo.CriteriaName = value.IdNumber;                            
 
                             var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
 
                             if (employee != null)
                             {
+                                if (employee.Gender == Gender.MALE)
+                                {
+                                    EmployeeInfo.Sex = "ወንድ";
+                                }
+                                else if (employee.Gender == Gender.FEMALE)
+                                {
+                                    EmployeeInfo.Sex = "ሴት";
+                                }
                                 EmployeeInfo.IdNumber = employee.EmployeeCode;
                                 EmployeeInfo.FullName = employee.FullNameAmharic;
                                 EmployeeInfo.CriteriaName = value.IdNumber;
@@ -138,11 +144,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     EmployeeInfo.IdNumber = e.EmployeeCode;
 
-                    EmployeeInfo.Sex = gender;
-
                     var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
                     if (employee != null)
                     {
+                        if(employee.Gender == Gender.MALE)
+                        {
+                            EmployeeInfo.Sex = "ወንድ";
+                        }
+                        else if(employee.Gender == Gender.FEMALE)
+                        {
+                            EmployeeInfo.Sex = "ሴት";
+                        }
                         EmployeeInfo.IdNumber = employee.EmployeeCode;
                         EmployeeInfo.FullName = employee.FullNameAmharic;
                         EmployeeInfo.Value = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();

@@ -126,12 +126,12 @@
                                                 @item.CreateButton(Resources.ActionButton_AddNewRecord);
 
                                                 @(Html.Kendo().Button()
-                                                                            .Name("btnRefresh")
-                                                                            .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                                                               .Events(e => e.Click("RefreshBranch"))
-                                                                               .Content("Refresh Branch")
-                                                                               .Icon("fa fa-refresh"))
-
+                                                       .Name("btnRefresh")
+                                                       .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                                          .Events(e => e.Click("RefreshBranch"))
+                                                          .Content("Refresh Branch")
+                                                          .Icon("fa fa-refresh"))
+                                                                          
                                                         }
                                           
 
@@ -140,96 +140,87 @@
                                                 @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "EmployeeProfile", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
                                                 @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "EmployeeProfile", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
                                                 @(Html.Kendo().Button()
-                                                                                      .Name("btnDownLoad")
-                                                                                          .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
-                                                                                      .Events(e => e.Click("DownLoadTemplate"))
-                                                                                                      .Content(Resources.DownloadTemplate))
+                                                     .Name("btnDownLoad")
+                                                     .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
+                                                     .Events(e => e.Click("DownLoadTemplate"))
+                                                     .Content(Resources.DownloadTemplate))
                                                 <br />
                                                 @(Html.Kendo().Upload()
 
-                                                                                      .Name("file")
-                                                                                              .Async(a => a.Save("Employee_Import", "EmployeeProfile"))
-                                                                                      .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                                     .Name("file")
+                                                     .Async(a => a.Save("Employee_Import", "EmployeeProfile"))
+                                                     .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
                                                         //.ShowFileList(false).
                                                         // .HtmlAttributes(new { type = "button", @class = "k-primary" })
                                                 )
-
-
-                                                        }
-                                           
-
-
-
-
+                                                        }  
                                         </div>
                                     </text>);
-
-
                                                             
-                                  })                        
-                                                                  .Excel(excel => excel
-                                                                            .FileName(Resources.Navigator_Employee_EmployeeProfile + ".xlsx")
-                                                                        .Filterable(true)
-                                                                       
-                                                                            //.DataURI()
-                                                                            .AllPages(true)
-                                                                    // .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile"))
-                                                                    )
-                                                                         .Pdf(pdf => pdf
-                                                                        .AllPages()
+                                  })  
+                                           .Excel(excel => excel
+                                                     .FileName(Resources.Navigator_Employee_EmployeeProfile + ".xlsx")
+                                                 .Filterable(true)
+                                                
+                                                     //.DataURI()
+                                                     .AllPages(true)
+                                             // .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile"))
+                                             )
+                                                  .Pdf(pdf => pdf
+                                                 .AllPages()
 
-                                                                        .Landscape()
-
-
-                                                                            .FileName(Resources.Navigator_Employee_EmployeeProfile + ".pdf")
-                                                                    //  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeProfile"))
-                                                                    )
-                                                                                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployeeNew").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
-                                                              .Scrollable(h => h.Height(500))
-                                                                          // .Groupable()
-                                                                          .Sortable(sortable =>
-                                                                          {
-                                                                              sortable.SortMode(GridSortMode.SingleColumn);
-                                                                          })
-
-                                                                 .Filterable()
-
-                                                                 .ColumnMenu()
-
-                                                                  .Events(e =>
-                                                                  {
-                                                                      e.Save("GetDate");
-                                                                      e.DataBound("onDataBound");
-                                                                      e.Edit("GetDate");
-                                                                  })
-                                                                 .Pageable(pageable => pageable
-                                                                    .Input(true)
-                                                                    .Numeric(false)
-                                                                    .Refresh(true)
-                                                                    .PageSizes(true)
-                                                                    .ButtonCount(5)
-                                                                    .Enabled(true)
-                                                                    )
+                                                 .Landscape()
 
 
-                                                              .DataSource(dataSource => dataSource
-                                                                  .Ajax()
-                                                                 .Sort(sort => sort.Add("EmployeeCode"))
-                                                                  .ServerOperation(true)
-                                                                                   .Events(events =>
-                                                                                   {
-                                                                                       events.Error("error_handler(\"Person_Employeegrid\")");
-                                                                                       events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
-                                                                                       events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
-                                                                                   })
+                                                     .FileName(Resources.Navigator_Employee_EmployeeProfile + ".pdf")
+                                             //  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeProfile"))
+                                             )
+                                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployeeNew").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
+                                                     .Scrollable(h => h.Height(500))
+                                                        // .Groupable()
+                                                       .Sortable(sortable =>
+                                                       {
+                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
 
-                                                                  .Model(model => model.Id(p => p.EmployeeId))
-                                                                  .Read(read => read.Action("Person_Employee_Read", "EmployeeProfile"))
-                                                                  .Create(create => create.Action("Person_Employee_Create", "EmployeeProfile"))
-                                                                  .Update(update => update.Action("Person_Employee_Update", "EmployeeProfile"))
-                                                                  .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "EmployeeProfile"))
+                             .Filterable()
 
-                                                                  ).ClientDetailTemplateId("template")
+                             .ColumnMenu()
+
+                              .Events(e =>
+                              {
+                                  e.Save("GetDate");
+                                  e.DataBound("onDataBound");
+                                  e.Edit("GetDate");
+                              })
+                             .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5)
+                                .Enabled(true)
+                                )
+
+
+                   .DataSource(dataSource => dataSource
+                       .Ajax()
+                      .Sort(sort => sort.Add("EmployeeCode"))
+                       .ServerOperation(true)
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"Person_Employeegrid\")");
+                            events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
+                            events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
+                        })
+                                        
+                       .Model(model => model.Id(p => p.EmployeeId))
+                       .Read(read => read.Action("Person_Employee_Read", "EmployeeProfile"))
+                       .Create(create => create.Action("Person_Employee_Create", "EmployeeProfile"))
+                       .Update(update => update.Action("Person_Employee_Update", "EmployeeProfile"))
+                       .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "EmployeeProfile"))
+
+                       ).ClientDetailTemplateId("template")
 
         )
     }
@@ -453,7 +444,7 @@
                                               columns.Bound(c => c.ToExAmharic).Width(120).EditorTemplateName("Calander");
                                               //columns.Bound(c => c.TotalDuration).Width(100);
                                               columns.Bound(c => c.TotalExp).Width(100);
-                                             // columns.Bound(c => c.Responsibility).Width(100);
+                                              // columns.Bound(c => c.Responsibility).Width(100);
                                               columns.ForeignKey(c => c.JobTitleId, (IEnumerable)ViewData["JobTitleExternalExperience"], "LookupId", "Description").EditorTemplateName("JobTitleExternalExperience").Width(100);
                                               columns.Bound(c => c.ClearanceDateTimeAm).EditorTemplateName("Calander").Width(130);
                                               columns.Bound(c => c.CleranceReason).Width(100);
@@ -479,18 +470,17 @@
                                                   }
                                               }).Width(200);
                                           })
-                                                                        .ToolBar(toolbar =>
-                                                                        {
-                                                                            if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                                                            {
-
-                                                                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                            }
-                                                                        })
-                                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("EmployeeExperience").Window(window => { window.Title("Employee Experience "); window.Scrollable(false); }))
+                                                        .ToolBar(toolbar =>
+                                                        {
+                                                            if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                                                            {
+                                                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                            }
+                                                        })
+                                             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("EmployeeExperience").Window(window => { window.Title("Employee Experience "); window.Scrollable(false); }))
                                              .Scrollable(h => h.Height(250))
-                                                     .Events(e => e.Save("GetExprianceDate"))
-                                                              .Events(e => e.Edit("GetExprianceDate"))
+                                              .Events(e => e.Save("GetExprianceDate"))
+                                              .Events(e => e.Edit("GetExprianceDate"))
                                          .DataSource(dataSource => dataSource
                                              .Ajax()
                                                      .Events(events =>
@@ -506,6 +496,7 @@
                                          model.Id(p => p.ExperienceId);
                                          model.Field(p => p.TotalDuration).Editable(false);
                                          model.Field(p => p.TotalExp).Editable(false);
+                                         model.Field(p => p.JobTitleId).DefaultValue(0);
                                      })
                                      .Read(read => read.Action("Experiences_Read", "EmployeeExperience", new { Area = "HRM", idEx = "#=EmployeeId#" }))
                                      .Create(create => create.Action("Experiences_Create", "EmployeeExperience", new { Area = "HRM", idExTwo = "#=EmployeeId#" }))
@@ -824,14 +815,14 @@ items.Add().Text(Resources.HR_Disability).Content(
 @<text>
 
     @(Html.Kendo().Grid<Disability>()
-                                                      .Name("Disability_#=EmployeeId#")
+                         .Name("Disability_#=EmployeeId#")
 
-                                                      .Columns(columns =>
-                                                      {
-                                                              columns.Bound(c => c.Type).Width(200);
-                                                              columns.Bound(c => c.Remark).Width(200);
-                                                              columns.Command(command =>
-      {
+                         .Columns(columns =>
+                         {
+                                 columns.Bound(c => c.Type).Width(200);
+                                 columns.Bound(c => c.Remark).Width(200);
+                                 columns.Command(command =>
+                         {                                               
                           if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
                           {
 
@@ -879,14 +870,14 @@ items.Add().Text(Resources.HR_Addresse).Content(
 @<text>
     @* <legend>Addresse</legend>*@
     @(Html.Kendo().Grid<Address>()
-                                                      .Name("AddresseGrid_#=EmployeeId#")
-                                                      .Columns(columns =>
-                                                      {
-                                                              columns.Bound(c => c.Category).EditorTemplateName("Enum");
-                                                              columns.Bound(c => c.Value);
-                                                              columns.Bound(c => c.Remark);
-                                                              columns.Command(command =>
-      {
+                             .Name("AddresseGrid_#=EmployeeId#")
+                             .Columns(columns =>
+                             {
+                                     columns.Bound(c => c.Category).EditorTemplateName("Enum");
+                                     columns.Bound(c => c.Value);
+                                     columns.Bound(c => c.Remark);
+                                     columns.Command(command =>
+                            {                                             
                           if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
                           {
 

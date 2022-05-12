@@ -34,6 +34,7 @@ namespace ExceedERP.DataAccess
 {
 
     #region HRM
+   
 
     public class WaterMarkEntityTypeConfiguration : EntityTypeConfiguration<WaterMark>
     {

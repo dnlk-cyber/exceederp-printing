@@ -1288,7 +1288,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.OrgBranchName.ToString()) && x.IsActive);
+            var person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.OrgBranchName.ToString()) && x.IsActive).ToList();
 
 
             DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
@@ -1333,6 +1333,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 City = person_Employee.City,
                 SubCity = person_Employee.SubCity,
                 Wereda = person_Employee.Wereda,
+                EmployeeTypeId = person_Employee.EmployeeTypeId,
             });
 
             return Json(result);
@@ -1618,6 +1619,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     City = person_Employee.City,
                     SubCity = person_Employee.SubCity,
                     Wereda = person_Employee.Wereda,
+                    EmployeeTypeId = person_Employee.EmployeeTypeId,
                 };
 
                 db.Person_Employee.Add(entity);
@@ -1951,6 +1953,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                 City = person_Employee.City,
                                 SubCity = person_Employee.SubCity,
                                 Wereda = person_Employee.Wereda,
+                                EmployeeTypeId = person_Employee.EmployeeTypeId,
                             };
                             db = new ExceedDbContext();
                             db.Person_Employee.Attach(entity);
@@ -2031,6 +2034,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             City = person_Employee.City,
                             SubCity = person_Employee.SubCity,
                             Wereda = person_Employee.Wereda,
+                            EmployeeTypeId = person_Employee.EmployeeTypeId,
                         };
                         db = new ExceedDbContext();
                         db.Person_Employee.Attach(entity);
@@ -2109,6 +2113,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         City = person_Employee.City,
                         SubCity = person_Employee.SubCity,
                         Wereda = person_Employee.Wereda,
+                        EmployeeTypeId = person_Employee.EmployeeTypeId,
                     };
                     #region delete log
                     UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee information of employee Id" + person_Employee.EmployeeCode);

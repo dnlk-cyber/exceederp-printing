@@ -47,7 +47,10 @@
                               command.Custom("").Click("Pend").Text("  Pend ").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Pend the employee to stop payroll processing ", @id = "pend" });
                               command.Custom("").Click("UnPend").Text(" UnPend").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Remove the employee from pend lists to start payroll processing ", @id = "unpend" });
                           }
-
+                          if (HttpContext.Current.User.IsInRole("PlacementApprover"))
+                          {
+                              command.Custom("").Click("ApprovePlacement").Text(" Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Placement ", @id = "approveplacement" });
+                          }
                           if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
                           {
                               command.Destroy().Text(Resources.ActionButton_Cancel);
@@ -271,31 +274,22 @@
 <script>
     function GetSalary() {
         $("#Salary").val(0);
-        var Ranks = $("#RankId").data("kendoDropDownList");
-        var rank = Ranks.value();
-        var Steps = $("#StepId").data("kendoDropDownList");
-        var step = Steps.value();
-
-
-
+        var rank = $("#RankId").data("kendoDropDownList").value();
+        var step = $("#StepId").data("kendoDropDownList").value();
         //var Jobs = $("#LookupId").data("kendoDropDownList");
         //var job = Jobs.value();
-        if (rank!=0 && step!=0)
-        {
 
+      if (rank!=0 && step!=0)
+      {
         $.ajax({
             url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithOJ")',
-
             data: { rank: rank, step: step},
             type: 'POST',
             cache: false,
             success: function(result) {
-                r = result;
-
-                $("#Salary").val(r);
+                $("#Salary").val(result);
             }
-
-            });
+          });
         }
     }
 
@@ -504,4 +498,33 @@
         }
     }
 
+
+    function ApprovePlacement(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#PlacementGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.PlacementId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("ApprovePlacement", "EmployeePlacmentWithOJ")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
 </script>

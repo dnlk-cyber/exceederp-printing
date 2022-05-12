@@ -233,36 +233,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Placements_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<Placement> placements = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()));
+            var placements = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString())).ToList();
 
-            if (request.Filters != null)
-            {
-                dd: if (request.Filters.Any())
-                {
-                    foreach (var filter in request.Filters)
-                    {
-                        var descriptor = filter as FilterDescriptor;
-                        if (descriptor != null)
-                        {
-                            if (descriptor.Member == "JobTitleName")
-                            {
-                                placements = ModifyFilters(request.Filters, placements).AsQueryable();
+            //if (request.Filters != null)
+            //{
+            //    dd: if (request.Filters.Any())
+            //    {
+            //        foreach (var filter in request.Filters)
+            //        {
+            //            var descriptor = filter as FilterDescriptor;
+            //            if (descriptor != null)
+            //            {
+            //                if (descriptor.Member == "JobTitleName")
+            //                {
+            //                    placements = ModifyFilters(request.Filters, placements).AsQueryable();
 
-                            }
+            //                }
 
-                        }
-                        else if (filter is CompositeFilterDescriptor)
-                        {
+            //            }
+            //            else if (filter is CompositeFilterDescriptor)
+            //            {
 
-                            request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
-                            goto dd;
-                            //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
+            //                request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
+            //                goto dd;
+            //                //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
 
-                        }
-                    }
-                    //request.Filters.Clear();
-                }
-            }
+            //            }
+            //        }
+            //        //request.Filters.Clear();
+            //    }
+            //}
+
             DataSourceResult result = placements.ToDataSourceResult(request, placement => new
             {
                 PlacementId = placement.PlacementId,
@@ -380,8 +381,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 var splitDate = placement.AssignmentDateAmharic.Split('/');
                 placement.AssignmentDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-
-            db = new ExceedDbContext();
 
             var checkAssignment = db.Placements.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
             if (checkAssignment != null && placement.AssignmentType == AssignmentType.NEW)
@@ -539,7 +538,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LastModified = placement.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = placement.ModifiedBy,
-                    isCurrent = false,
+                    isCurrent = false, // this will be true after approval
                     IsApprove = false,
                     IsPend = false,
                     Index = i,
@@ -972,12 +971,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             Salary salary = new Salary();
 
-            salary = db.Salaries.Where(s => s.RankId == rank && s.StepId == step).FirstOrDefault();
+            salary = db.Salaries.FirstOrDefault(s => s.RankId == rank && s.StepId == step);
             SalaryAmount = 0;
             if (salary != null)
             {
                 SalaryAmount = salary.SalaryAmount;
-                return Convert.ToDecimal(salary.SalaryAmount); //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                return salary.SalaryAmount; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
             }
             return 0; //Json(0, JsonRequestBehavior.AllowGet);
         }
@@ -1003,7 +1002,69 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
 
         }
+        public ActionResult ApprovePlacement(int id)
+        {
+            var placement = db.Placements.FirstOrDefault(x => x.PlacementId == id);
 
+            if (placement != null)
+            {
+                int i = 0;
+
+                var placements = db.Placements.Where(x => x.isCurrent && x.EmployeeId == placement.EmployeeId && x.PlacementId != placement.PlacementId).ToList();
+                foreach (var p in placements)
+                {
+                    p.MappingId = 0;
+                    p.JobTitleName = GetTitleName(p.LookupId);
+                    p.ReportsToMappingId = 0;
+                    p.LastModified = DateTime.Now;
+                    p.CreatedBy = p.CreatedBy;
+                    p.ModifiedBy = User.Identity.Name;
+                    p.isCurrent = false;
+                    p.Index = i;
+                    p.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                    p.ApprovedByEmpId = p.EmployeeId;
+
+                    db.Entry(p).State = EntityState.Modified;
+
+                    i += 1;
+                }
+
+                placement.IsApprove = true;
+                placement.isCurrent = true;
+                placement.ApprovedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+                db.Entry(placement).State = EntityState.Modified;
+                db.SaveChanges();
+
+                var employee = db.Person_Employee.FirstOrDefault(p => p.EmployeeId == placement.EmployeeId);
+
+                if (employee != null)
+                {
+                    employee.IsActive = true;
+                    employee.OrgBranchName = placement.BranchId.ToString();
+                    employee.ModifiedBy = User.Identity.Name;
+                    employee.LastModified = DateTime.Now;
+                    employee.BranchId = placement.BranchId;
+
+                    db.Entry(employee).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                var formattedData = new
+                {
+                    Message = "You successfully approve this placement.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData1 = new
+            {
+                Message = "this placement is not approved.",
+                Status = "FAIL"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
         //public string GetDepartment(int OrgId, int title)
         //{
         //    var structures = db.MainCompanyStructures.Where(x=> x.OrgStructureId ==OrgId );

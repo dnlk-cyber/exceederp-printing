@@ -338,7 +338,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
 
-            IQueryable<Placement> placements = db.Placements.Where(x => x.isCurrent || !x.IsApprove);//.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
+            var placements = db.Placements.Where(x => x.isCurrent || !x.IsApprove).ToList();//.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
 
             DataSourceResult result = placements.ToDataSourceResult(request, placement => new
             {
@@ -486,8 +486,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 var splitDate = placement.AssignmentDateAmharic.Split('/');
                 placement.AssignmentDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-
-            db = new ExceedDbContext();
 
             var checkAssignment = db.Placements.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
             if (checkAssignment != null && placement.AssignmentType == AssignmentType.NEW)
@@ -638,7 +636,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LastModified = placement.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = placement.ModifiedBy,
-                    isCurrent = false,
+                    isCurrent = false, // this will be true after approval
                     IsApprove = false,
                     IsPend = false,
                     Index = i,
@@ -1107,25 +1105,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             SalaryJobTitle salary = new SalaryJobTitle();
 
-            salary = db.SalariesJobTitles.Where(s => s.RankId == rank && s.StepId == step && s.LookupId == job).FirstOrDefault();
+            salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step && s.LookupId == job);
             SalaryAmount = 0;
             if (salary != null)
-            {
-                //if (title != 0)
-                //{
-                //    var struc =
-                //        db.SalariesJobTitles.Where(x => x.StepId == salary.StepId && x.RankId == salary.RankId)
-                //            .FirstOrDefault();
-                //    if (struc != null)
-                //    {
-                //        SalaryAmount = struc.Salary;
-                //        return Convert.ToDecimal(salary.SalaryAmount);
-                //    }
-
-                //}
+            {             
                 SalaryAmount = salary.Salary;
-                return Convert.ToDecimal(salary.Salary); //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
             }
+
             return 0; //Json(0, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetJobTitle(int OrgStructureId)
@@ -1251,7 +1238,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     p.ApprovedByEmpId = p.EmployeeId;
 
                     db.Entry(p).State = EntityState.Modified;
-                    db.SaveChanges();
 
                     i += 1;
                 }
@@ -1292,6 +1278,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
 
         }
+
         //public string GetDepartment(int OrgId, int title)
         //{
         //    var structures = db.MainCompanyStructures.Where(x=> x.OrgStructureId ==OrgId );
@@ -1364,7 +1351,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         //    }
         //    return false;
         //}
-
         public ActionResult Employee_ValueMapper(string value)
         {
             var dataItemIndex = -1;

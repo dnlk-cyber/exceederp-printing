@@ -198,8 +198,8 @@
                                                           );
 
                items.Add().Text("Placement Before System").Content(
-    @<text>
-        @(Html.Kendo().Grid<PlacementHistory>()
+                @<text>
+                    @(Html.Kendo().Grid<PlacementHistory>()
                           .Name("PlacementHistoryGrid_#=PlacementId#")
                           .Columns(columns =>
                           {
@@ -266,9 +266,9 @@
                     .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
                 ).ToClientTemplate()
 
-        )
+                    )
 
-    </text>
+                </text>
 );
 
                items.Add().Text("Placement After System").Content(
@@ -451,18 +451,14 @@
 <script>
     function GetSalary() {
         $("#Salary").val(0);
-        var Ranks = $("#RankId").data("kendoDropDownList");
-        var rank = Ranks.value();
-        var Steps = $("#StepId").data("kendoDropDownList");
-        var step = Steps.value();
-        var Jobs = $("#LookupId").data("kendoDropDownList");
-        var job = Jobs.value();
+        var rank = $("#RankId").data("kendoDropDownList").value();
+        var step = $("#StepId").data("kendoDropDownList").value();
+        var job = $("#LookupId").data("kendoDropDownList").value();
+
         if(rank.length!==0 && step.length!==0 && job.length!==0)
         {
-
             $.ajax({
-                url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithJ")',
-
+                url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentManual")',
                 data: { rank: rank, step: step, job: job },
                 type: 'POST',
                 cache: false,
@@ -740,7 +736,6 @@
 </script>
 
 <script>
-
 
     function GetAssignDate() {
 

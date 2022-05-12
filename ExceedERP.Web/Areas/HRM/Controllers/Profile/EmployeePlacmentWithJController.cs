@@ -338,7 +338,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
 
-            IQueryable<Placement> placements = db.Placements.Where(x => x.isCurrent || !x.IsApprove);//.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
+            var placements = db.Placements.Where(x => x.isCurrent || !x.IsApprove).ToList();//.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
 
             DataSourceResult result = placements.ToDataSourceResult(request, placement => new
             {
@@ -568,7 +568,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var contractEmp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
             if (contractEmp != null && contractEmp.Status == EmployeeStatus.CONTRACT)
             {
-                var contractLast = db.Contract.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
+                var contractLast = db.Contract.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).FirstOrDefault();
                 if (contractLast != null && contractLast.To <= placement.AssignmentDate)
                 {
                     ModelState.AddModelError("", "First Extend Contract date for this employee ");
@@ -578,7 +578,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var freelancerEmp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
             if (freelancerEmp != null && freelancerEmp.Status == EmployeeStatus.FREELANCER)
             {
-                var freelancerLast = db.Freelancers.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
+                var freelancerLast = db.Freelancers.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).FirstOrDefault();
                 if (freelancerLast != null && freelancerLast.To <= placement.AssignmentDate)
                 {
                     ModelState.AddModelError("", "First Extend Freelancer date for this employee ");
@@ -646,7 +646,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LastModified = placement.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = placement.ModifiedBy,
-                    isCurrent = false,
+                    isCurrent = false, // this will be true after approval
                     IsApprove = false,
                     IsPend = false,
                     Index = i,
@@ -767,9 +767,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             if (placement.AssignmentDate > DateTime.Now)
             {
-
                 ModelState.AddModelError("", "Assigment date should be less or equal to the current date!!");
-
             }
             var pp = db.Placements.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId && x.isCurrent && x.PlacementId != placement.PlacementId);
             if (pp != null && placement.isCurrent)
@@ -788,27 +786,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 placement.EmployementType = profile.Status;
 
-            }
-
-            var contractEmp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
-            if (contractEmp != null && contractEmp.Status == EmployeeStatus.CONTRACT)
-            {
-                var contractLast = db.Contract.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
-                if (contractLast != null && contractLast.To <= placement.AssignmentDate)
+                if (profile.Status == EmployeeStatus.CONTRACT)
                 {
-                    ModelState.AddModelError("", "First Extend Contract date for this employee ");
+                    var contractLast = db.Contract.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).FirstOrDefault();
+                    if (contractLast != null && contractLast.To <= placement.AssignmentDate)
+                    {
+                        ModelState.AddModelError("", "First Extend Contract date for this employee ");
+                    }
                 }
-            }
 
-            var freelancerEmp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
-            if (freelancerEmp != null && freelancerEmp.Status == EmployeeStatus.FREELANCER)
-            {
-                var freelancerLast = db.Freelancers.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
-                if (freelancerLast != null && freelancerLast.To <= placement.AssignmentDate)
+                if (profile.Status == EmployeeStatus.FREELANCER)
                 {
-                    ModelState.AddModelError("", "First Extend Freelancer date for this employee ");
+                    var freelancerLast = db.Freelancers.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
+                    if (freelancerLast != null && freelancerLast.To <= placement.AssignmentDate)
+                    {
+                        ModelState.AddModelError("", "First Extend Freelancer date for this employee ");
+                    }
                 }
-            }
+            }  
 
             var manPower = db.JobTitleMapping.FirstOrDefault(x => x.BranchId == placement.BranchId && x.OrgStructureId == placement.OrgStructureId && x.LookupId == placement.LookupId);
             if (manPower != null && manPower.PlanType == JobTitlePlan.BOUNDED)
@@ -826,7 +821,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             if (ModelState.IsValid)
             {
-
                 var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId && s.LookupId == placement.LookupId);
 
                 if (salary != null)
@@ -869,19 +863,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     AssignmentDateAmharic = placement.AssignmentDateAmharic,
                     EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == placement.EmployeeId)?.EmployeeCode,
                     PreparedByEmpId = placement.PreparedByEmpId
-
                 };
-                if (SalaryAmount >= 0)
-                {
-                    entity.Salary = SalaryAmount;
-                }
+
+                //if (SalaryAmount >= 0)
+                //{
+                //    entity.Salary =m SalaryAmount;
+                //}
+
                 db.Placements.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
 
                 var employee = db.Person_Employee.FirstOrDefault(p => p.EmployeeId == placement.EmployeeId);
 
-                if (employee != null)
+                if (employee != null && placement.isCurrent)
                 {
                     employee.OrgBranchName = placement.BranchId.ToString();
                     employee.ModifiedBy = User.Identity.Name;
@@ -1133,20 +1128,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             SalaryAmount = 0;
             if (salary != null)
             {
-                //if (title != 0)
-                //{
-                //    var struc =
-                //        db.SalariesJobTitles.Where(x => x.StepId == salary.StepId && x.RankId == salary.RankId)
-                //            .FirstOrDefault();
-                //    if (struc != null)
-                //    {
-                //        SalaryAmount = struc.Salary;
-                //        return Convert.ToDecimal(salary.SalaryAmount);
-                //    }
-
-                //}
                 SalaryAmount = salary.Salary;
-                return Convert.ToDecimal(salary.Salary); //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
             }
             return 0; //Json(0, JsonRequestBehavior.AllowGet);
         }
@@ -1273,7 +1256,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     p.ApprovedByEmpId = p.EmployeeId;
 
                     db.Entry(p).State = EntityState.Modified;
-                    db.SaveChanges();
 
                     i += 1;
                 }
