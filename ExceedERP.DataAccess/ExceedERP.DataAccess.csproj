@@ -270,6 +270,10 @@
     <Compile Include="Migrations\202204111449489_IdleTimeProUpdate.Designer.cs">
       <DependentUpon>202204111449489_IdleTimeProUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202205120755540_erp-updates.cs" />
+    <Compile Include="Migrations\202205120755540_erp-updates.Designer.cs">
+      <DependentUpon>202205120755540_erp-updates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -429,6 +433,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202204111449489_IdleTimeProUpdate.resx">
       <DependentUpon>202204111449489_IdleTimeProUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202205120755540_erp-updates.resx">
+      <DependentUpon>202205120755540_erp-updates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
