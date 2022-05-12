@@ -45,9 +45,15 @@ namespace ExceedERP.Core.Domain.JobCosting
         public int GLPeriodId { get; set; }
         public string Reference { get; set; }
         public decimal PermanetNormalHour  { get; set; }
+        public decimal PermanetLaborCost { get; set; }
+        public decimal PermanetOverHeadCost  { get; set; }
         public decimal PermanetOTHour { get; set; }
-        public decimal ContractOTHour { get; set; }
         public decimal ContractNormalHour { get; set; }
+        public decimal ContractOTHour { get; set; }
+
+        public decimal ContractLaborCost { get; set; }
+        public decimal ContractOverHeadCost { get; set; }
+
         public bool Beginning { get; set; }
         public decimal BeginningHour { get; set; }
     }

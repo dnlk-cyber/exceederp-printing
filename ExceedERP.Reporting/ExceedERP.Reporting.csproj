@@ -3663,6 +3663,15 @@
     <Compile Include="Inventory\ViewModel\StoreRequisitionItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\StoreReturnItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\VariationVm.cs" />
+    <Compile Include="JobCosting\DataSource\JobCostingParameterOds.cs" />
+    <Compile Include="JobCosting\DataSource\JobOrderCardOds.cs" />
+    <Compile Include="JobCosting\Design\JobOrderCardDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="JobCosting\Design\JobOrderCardDesign.Designer.cs">
+      <DependentUpon>JobOrderCardDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JobCosting\ViewModel\JobOrderCardVM.cs" />
     <Compile Include="PrintingEstimation\DataSource\EstimationFormOds.cs" />
     <Compile Include="PrintingEstimation\Design\EstimationFormReporting.cs">
       <SubType>Component</SubType>
@@ -3988,28 +3997,31 @@
     <Compile Include="Procurements\ViewModel\TenderOpening.cs" />
     <Compile Include="Procurements\ViewModel\TranscriptViewModel.cs" />
     <Compile Include="Procurements\ViewModel\WinningSupplierDetailVM.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\DeliveryTeamPerformanceWpODS.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\JobSupplyandSalesWpODS.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\PrintingAndFinishingTeamPerformanceWpODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProductionReportHeaderOds.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobSupplyandSalesODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobSupplyODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobTypeODS.cs" />
-    <Compile Include="ProductionFollowUp\DataSource\ChangeOfOrderODS.cs" />
+    <Compile Include="PrintingEstimation\DataSource\ChangeOfOrderODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\FinishedGoodReceivalODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\DeliveryTeamPerformanceODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\PrintingAndFinishingTeamPerformanceODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\FinishedProductsReceivingNoteODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderNoParameterODS.cs" />
-    <Compile Include="ProductionFollowUp\DataSource\JobOrderODS.cs" />
+    <Compile Include="PrintingEstimation\DataSource\JobOrderODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderTimeSheetODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\DeliveryFollowUpSheetODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProductDeliveryODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProformaItemsListParameterODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProformaItemsODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProformaListParameterODS.cs" />
-    <Compile Include="ProductionFollowUp\DataSource\ProformaODS.cs" />
-    <Compile Include="ProductionFollowUp\Designer\rptChangeOfOrder.cs">
+    <Compile Include="PrintingEstimation\DataSource\ProformaODS.cs" />
+    <Compile Include="PrintingEstimation\Design\rptChangeOfOrder.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ProductionFollowUp\Designer\rptChangeOfOrder.Designer.cs">
+    <Compile Include="PrintingEstimation\Design\rptChangeOfOrder.Designer.cs">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.cs">
@@ -4017,6 +4029,12 @@
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.Designer.cs">
       <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformanceWp.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformanceWp.Designer.cs">
+      <DependentUpon>rptDeliveryTeamPerformanceWp.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformance.cs">
       <SubType>Component</SubType>
@@ -4036,10 +4054,10 @@
     <Compile Include="ProductionFollowUp\Designer\rptFinishedProductsReceivingNote.Designer.cs">
       <DependentUpon>rptFinishedProductsReceivingNote.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProductionFollowUp\Designer\rptJobOrder.cs">
+    <Compile Include="PrintingEstimation\Design\rptJobOrder.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ProductionFollowUp\Designer\rptJobOrder.Designer.cs">
+    <Compile Include="PrintingEstimation\Design\rptJobOrder.Designer.cs">
       <DependentUpon>rptJobOrder.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptJobOrdeTimeSheet.cs">
@@ -4054,11 +4072,23 @@
     <Compile Include="ProductionFollowUp\Designer\rptJobSupply.Designer.cs">
       <DependentUpon>rptJobSupply.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptJobSupplyandSalesWp.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptJobSupplyandSalesWp.Designer.cs">
+      <DependentUpon>rptJobSupplyandSalesWp.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptJobSupplyandSalesVM.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptJobSupplyandSalesVM.Designer.cs">
       <DependentUpon>rptJobSupplyandSalesVM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformanceWp.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformanceWp.Designer.cs">
+      <DependentUpon>rptPrintingAndFinishingTeamPerformanceWp.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformance.cs">
       <SubType>Component</SubType>
@@ -4072,10 +4102,10 @@
     <Compile Include="ProductionFollowUp\Designer\rptProductDelivery.Designer.cs">
       <DependentUpon>rptProductDelivery.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProductionFollowUp\Designer\rptProforma.cs">
+    <Compile Include="PrintingEstimation\Design\rptProforma.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ProductionFollowUp\Designer\rptProforma.Designer.cs">
+    <Compile Include="PrintingEstimation\Design\rptProforma.Designer.cs">
       <DependentUpon>rptProforma.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\RtlJobType.cs">
@@ -5697,6 +5727,9 @@
     <EmbeddedResource Include="Inventory\VariationSummary.resx">
       <DependentUpon>VariationSummary.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="JobCosting\Design\JobOrderCardDesign.resx">
+      <DependentUpon>JobOrderCardDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PrintingEstimation\Design\EstimationFormReporting.resx">
       <DependentUpon>EstimationFormReporting.cs</DependentUpon>
     </EmbeddedResource>
@@ -5820,11 +5853,14 @@
     <EmbeddedResource Include="Procurements\TechnicalResult.resx">
       <DependentUpon>TechnicalResult.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProductionFollowUp\Designer\rptChangeOfOrder.resx">
+    <EmbeddedResource Include="PrintingEstimation\Design\rptChangeOfOrder.resx">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.resx">
       <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformanceWp.resx">
+      <DependentUpon>rptDeliveryTeamPerformanceWp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformance.resx">
       <DependentUpon>rptDeliveryTeamPerformance.cs</DependentUpon>
@@ -5835,7 +5871,7 @@
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptFinishedProductsReceivingNote.resx">
       <DependentUpon>rptFinishedProductsReceivingNote.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobOrder.resx">
+    <EmbeddedResource Include="PrintingEstimation\Design\rptJobOrder.resx">
       <DependentUpon>rptJobOrder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobOrdeTimeSheet.resx">
@@ -5844,8 +5880,14 @@
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobSupply.resx">
       <DependentUpon>rptJobSupply.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobSupplyandSalesWp.resx">
+      <DependentUpon>rptJobSupplyandSalesWp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobSupplyandSalesVM.resx">
       <DependentUpon>rptJobSupplyandSalesVM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformanceWp.resx">
+      <DependentUpon>rptPrintingAndFinishingTeamPerformanceWp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformance.resx">
       <DependentUpon>rptPrintingAndFinishingTeamPerformance.cs</DependentUpon>
@@ -5853,7 +5895,7 @@
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptProductDelivery.resx">
       <DependentUpon>rptProductDelivery.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProductionFollowUp\Designer\rptProforma.resx">
+    <EmbeddedResource Include="PrintingEstimation\Design\rptProforma.resx">
       <DependentUpon>rptProforma.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\RtlJobType.resx">

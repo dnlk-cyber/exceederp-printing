@@ -51,7 +51,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var job = db.Jobs.Find(productDeliveryItems?.JobId);
             var deliveredJobs = db.ProductDeliveryItems.Where(q => q.JobId == productDeliveryItems.JobId).ToList();
             var totQuan = deliveredJobs.Sum(s => s.Quantity) + productDeliveryItems.Quantity;
-            var orderedQuant = job?.Quantity;
+            var changeOfOrders = db.ChangeOrders.Where(q => q.JobId == productDeliveryItems.JobId).ToList();
+            var orderedQuant = job?.Quantity + changeOfOrders.Sum(s => s.Quantity);
             if ((decimal)totQuan > orderedQuant)
             {
                 ModelState.AddModelError("Error", "The items sum must be equals to the ordered quantity");

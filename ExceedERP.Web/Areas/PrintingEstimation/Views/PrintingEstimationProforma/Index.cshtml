@@ -21,11 +21,11 @@
                                       columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
                                       columns.Command(command =>
                                       {
-                                          command.Edit().Text(" ").IconClass("fa fa-pencil");
-                                          command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check" }).Click("checkEstimation");
-                                          command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve" }).Click("approveEstimation");
-                                          command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject" }).Click("rejectEstimation");
-                                          command.Destroy().Text(" ").IconClass("fa fa-trash");
+                                          command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                                          command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check" ,title = "Check" }).Click("checkEstimation");
+                                          command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                                          command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                                          command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
                                       }).Width(200);
                                   })
                                   .ToolBar(toolbar =>
@@ -82,13 +82,13 @@
                                               items.Add().Text("Items").Content(
                             @<text>
 
-                                <a href='@Url.Action("ProformaPrint", "ReportProductionFollowUp")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
+                                <a href='@Url.Action("ProformaPrint", "PrintingEstimationReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
 
                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
                                                                        .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>
                                                            {
-                                                              // columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(100);
+                                                               columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "Code", "Name").Width(100);
                                                                columns.Bound(c => c.Quantity);
                                                                columns.Bound(c => c.Size);
                                                                columns.Bound(c => c.UnitPrice);
@@ -190,8 +190,11 @@
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
+                $(this).find(".k-grid-approve").show();
             }
-
+            else {
+            $(this).find(".k-grid-approve").hide();
+        }
         });
     }
     function onChildDataBound(e) {
@@ -209,7 +212,7 @@
 
 
     function onSave() {
-        var masterGrid = $("#ProformaGrid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
         //var cus = $("#CustomerId").data("kendoDropDownList");
         //cus.dataSource.read();
         masterGrid.dataSource.read();
@@ -428,12 +431,12 @@
 
         var unitPrice = $("#UnitPrice").val();
         var quantity = $("#Quantity").val();
-        var jobTypeId = $("#JobTypeId").val();
+        var jobTypeId = $("#JT").val();
 
         if (quantity != 0 && unitPrice != 0 && jobTypeId !== "") {
 
             $.ajax({
-                url: '@Url.Action("GetBeforeVatAndTotalPerice", "ProformaItems")',
+                url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationProformaItems")',
 
                 data: { jobTypeId: jobTypeId, quantity: quantity, unitPrice: unitPrice },
                 type: 'POST',
@@ -448,6 +451,17 @@
 
             });
         }
+
+    }
+    function onSelectLoading() {
+        var dropdowntree = $("#JT").data("kendoDropDownTree");
+        var treeviewSelect = function (e) {
+            //if (e.sender.dataItem(e.node).hasChildren) {
+            //e.preventDefault()
+            //}
+        };
+
+        dropdowntree.treeview.bind("select", treeviewSelect);
 
     }
 </script>

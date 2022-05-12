@@ -67,5 +67,31 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 
             return custList;
         }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetFiscalYears()
+        {
+            var fisYears = db.GLFiscalYears.ToList()
+                .Select(s => new SelectListItem
+                {
+                    Value = s.GlFiscalYearId.ToString(),
+                    Text = s.Name
+                }).ToList();
+
+            return fisYears;
+        }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetPeriods(string glFiscalYearId)
+        {
+            var periods = db.GLPeriods.ToList().Where(q=>q.GlFiscalYearId.ToString()== glFiscalYearId)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.GLPeriodId.ToString(),
+                    Text = s.Name
+                }).ToList();
+
+            return periods;
+        }
     }
 }

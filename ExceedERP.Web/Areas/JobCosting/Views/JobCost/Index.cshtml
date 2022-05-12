@@ -3,20 +3,20 @@
           .Name("grid")
           .Columns(columns =>
           {
-              columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrders"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
+              columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrders"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No").Width(100);
               columns.ForeignKey(c => c.JobCategoryId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(120).Title("Job Category");
               columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "OrganizationCustomerID", "TradeName")
                                                         .Width(110)
                                                         .Title("Customer");
-              columns.Bound(c => c.JobReceivedDate).Format("{0:yyyy-MM-dd}");
+              columns.Bound(c => c.JobReceivedDate).Width(100).Format("{0:yyyy-MM-dd}");
               // columns.Bound(c => c.Date);
-              columns.Bound(c => c.ReciptNo);
-              columns.Bound(c => c.Quantity);
-              columns.Bound(c => c.SellingPrice);
-              columns.Bound(c => c.OrderSize);
-              columns.Bound(c => c.Void);
-              columns.Bound(c => c.Description);
-              columns.Bound(c => c.Status);
+              columns.Bound(c => c.ReciptNo).Width(100);
+              columns.Bound(c => c.Quantity).Width(100);
+              columns.Bound(c => c.SellingPrice).Width(100);
+              columns.Bound(c => c.OrderSize).Width(100);
+             // columns.Bound(c => c.Void).Width(100);
+              //columns.Bound(c => c.Description).Width(110);
+              columns.Bound(c => c.Status).Width(100);
 
 
               columns.Command(command =>
@@ -43,6 +43,7 @@
       .Events(ev=>ev.DataBound("onDataBound"))
         .DataSource(dataSource => dataSource
     .Ajax()
+    .Sort(se=>se.Add(s=>s.JobCostId).Descending())
     .Model(model => model.Id(p => p.JobCostId))
     .Read(read => read.Action("JobCosts_Read", "JobCost"))
     .Create(create => create.Action("JobCosts_Create", "JobCost"))
@@ -80,30 +81,33 @@
                                                                                                                                                                                            .Name("ChangeOfOrder#=JobCostId#")
                                                                                                                                                                                            .Columns(columns =>
                                                                                                                                                                                            {
-                                                                                                                                                                                           //columns.Bound(c => c.ChangeOrderId);
-                                                                                                                                                                                           columns.Bound(c => c.AdditionalChange);
-                                                                                                                                                                                                       columns.Bound(c => c.ChargeAmount);
-                                                                                                                                                                                                       columns.Bound(c => c.Reason);
-                                                                                                                                                                                                       columns.Command(command =>
-                                                                                                                                           {
-                                                                                                                                                                  // command.Edit();
-                                                                                                                                                                 //  command.Destroy();
-                                                                                                                                                               }).Width(200);
+                                                                                                                                                                                               //columns.Bound(c => c.ChangeOrderId);
+                                                                                                                                                                                               columns.Bound(c => c.AdditionalChange).ClientFooterTemplate("\\#=sum\\#");
+                                                                                                                                                                                               columns.Bound(c => c.ChargeAmount).ClientFooterTemplate("\\#=sum\\#");
+                                                                                                                                                                                               columns.Bound(c => c.Reason);
+                                                                                                                                                                                               columns.Command(command =>
+                                                                                                                                                                                               {
+                                                                                                                                                                                                   // command.Edit();
+                                                                                                                                                                                                   //  command.Destroy();
+                                                                                                                                                                                               }).Width(200);
 
-                                                                                                                                                                                                   })
+                                                                                                                                                                                           })
                                                                                                                                                                                     //.ToolBar(toolbar =>
-                                                                                                                                                                                   // {
-                                                                                                                                                                                          //      toolbar.Create();
+                                                                                                                                                                                    // {
+                                                                                                                                                                                    //      toolbar.Create();
 
-                                                                                                                                                                                           // })
+                                                                                                                                                                                    // })
                                                                                                                                                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                                                                                                                     .DataSource(dataSource => dataSource
                                                                                                                                                                                     .Ajax()
-                                                                                                                                                                                    .ServerOperation(false)
+    .Sort(se => se.Add(s => s.ChangeOrderId).Descending())
                                                                                                                                                                                     .Events(ev => ev.Error("error_handler(\"ChangeOfOrder#=JobCostId#\")")
                                                                                                                                                                                     .RequestStart("onRequestStart(\"ChangeOfOrder#=JobCostId#\")")
                                                                                                                                                                                     .RequestEnd("onRequestEnd(\"ChangeOfOrder#=JobCostId#\")"))
-
+                                                                                                                                                                                    .Aggregates(ag=> {
+                                                                                                                                                                                        ag.Add(a => a.AdditionalChange).Sum();
+                                                                                                                                                                                        ag.Add(a => a.ChargeAmount).Sum();
+                                                                                                                                                                                    })
                                                                                                                                                                                     .PageSize(5)
                                                                                                                                                                                     .Model(model => model.Id(p => p.JobChangeOfOrderId))
                                                                                                                                                                                     .Read(read => read.Action("JobChangeOfOrders_Read", "JobChangeOfOrder", new { id = "#=JobCostId #" }))
@@ -131,12 +135,12 @@
                                                                                                                                                                                                   columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name")
                                                                                                                                                                         .EditorTemplateName("YearCascading").Title("Month").Width(80);
                                                                                                                                                                                                   columns.Bound(c => c.Reference);
-                                                                                                                                                                                                  columns.Bound(c => c.PermanetNormalHour);
-                                                                                                                                                                                                  columns.Bound(c => c.PermanetOTHour);
-                                                                                                                                                                                                  columns.Bound(c => c.ContractOTHour);
-                                                                                                                                                                                                  columns.Bound(c => c.ContractNormalHour);
-                                                                                                                                                                                                  columns.Bound(c => c.Beginning);
-                                                                                                                                                                                                  columns.Bound(c => c.BeginningHour);
+                                                                                                                                                                                                  columns.Bound(c => c.PermanetNormalHour).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                                                                                                                                                                                                  columns.Bound(c => c.PermanetLaborCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                                                                                                                                                                                                  columns.Bound(c => c.PermanetOverHeadCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                                                                                                                                                                                                  columns.Bound(c => c.ContractNormalHour).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                                                                                                                                                                                                  columns.Bound(c => c.ContractLaborCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                                                                                                                                                                                                  columns.Bound(c => c.ContractOverHeadCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
                                                                                                                                                                                                   columns.Command(command =>
                                                                                                                                                                                                   {
 
@@ -155,11 +159,19 @@
                                                                                                                                                                                             .Window(w => w.Width(600).Title("Labor Cost Form")))
                                                                                                                                                                                             .DataSource(dataSource => dataSource
                                                                                                                                                                                             .Ajax()
-                                                                                                                                                                                            .ServerOperation(false)
+                                                                                                                                                                                                .Sort(se => se.Add(s => s.JobLaborCostId).Descending())
+
                                                                                                                                                                                             .Events(ev => ev.Error("error_handler(\"LaborCost#=JobCostId#\")")
                                                                                                                                                                                             .RequestStart("onRequestStart(\"LaborCost#=JobCostId#\")")
                                                                                                                                                                                             .RequestEnd("onRequestEnd(\"LaborCost#=JobCostId#\")"))
-
+                                                                                                                                                                                            .Aggregates(ag=> {
+                                                                                                                                                                                                ag.Add(a => a.PermanetLaborCost).Sum();
+                                                                                                                                                                                                ag.Add(a => a.PermanetNormalHour).Sum();
+                                                                                                                                                                                                ag.Add(a => a.PermanetOverHeadCost).Sum();
+                                                                                                                                                                                                ag.Add(a => a.ContractLaborCost).Sum();
+                                                                                                                                                                                                ag.Add(a => a.ContractNormalHour).Sum();
+                                                                                                                                                                                                ag.Add(a => a.ContractOverHeadCost).Sum();
+                                                                                                                                                                                            })
                                                                                                                                                                                             .PageSize(5)
                                                                                                                                                                                             .Model(model => model.Id(p => p.JobLaborCostId))
                                                                                                                                                                                             .Read(read => read.Action("JobLaborCosts_Read", "JobLaborCost", new { id = "#=JobCostId #" }))
@@ -184,11 +196,11 @@
                                                                                                                                                                                                           columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75);                                                                                                                                                                                                          columns.Bound(c => c.Reference);
                                                                                                                                                                                                           columns.Bound(c => c.Date);
                                                                                                                                                                                                           columns.Bound(c => c.Reference);
-                                                                                                                                                                                                          columns.Bound(c => c.Quantity);
+                                                                                                                                                                                                          columns.Bound(c => c.Quantity).ClientFooterTemplate("\\#=sum\\#");
                                                                                                                                                                                                           columns.Bound(c => c.UnitPrice);
-                                                                                                                                                                                                          columns.Bound(c => c.TaxAmount);
-                                                                                                                                                                                                          columns.Bound(c => c.SubTotal);
-                                                                                                                                                                                                          columns.Bound(c => c.Cost);
+                                                                                                                                                                                                          columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
+                                                                                                                                                                                                          columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
+                                                                                                                                                                                                          columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
                                                                                                                                                                                                           columns.Bound(c => c.ItemDescription);
 
 
@@ -203,11 +215,17 @@
                                                                                                                                                                                                     //.Window(w => w.Width(600).Title("Labor Cost Form")))
                                                                                                                                                                                                     .DataSource(dataSource => dataSource
                                                                                                                                                                                                     .Ajax()
-                                                                                                                                                                                                    .ServerOperation(false)
+                                                                                                                                                                                                        .Sort(se => se.Add(s => s.JobMaterialCostId).Descending())
+
                                                                                                                                                                                                     .Events(ev => ev.Error("error_handler(\"MaterialCost#=JobCostId#\")")
                                                                                                                                                                                                     .RequestStart("onRequestStart(\"MaterialCost#=JobCostId#\")")
                                                                                                                                                                                                     .RequestEnd("onRequestEnd(\"MaterialCost#=JobCostId#\")"))
-
+                                                                                                                                                                                                    .Aggregates(ag=> {
+                                                                                                                                                                                                        ag.Add(a => a.Cost).Sum();
+                                                                                                                                                                                                        ag.Add(a => a.Quantity).Sum();
+                                                                                                                                                                                                        ag.Add(a => a.SubTotal).Sum();
+                                                                                                                                                                                                        ag.Add(a => a.TaxAmount).Sum();
+                                                                                                                                                                                                    })
                                                                                                                                                                                                     .PageSize(5)
                                                                                                                                                                                                     .Model(model => model.Id(p => p.JobMaterialCostId))
                                                                                                                                                                                                     .Read(read => read.Action("JobMaterialCosts_Read", "JobMaterialCost", new { id = "#=JobCostId #" }))
@@ -233,11 +251,11 @@
                                                                                                                                                                                                                   columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75); columns.Bound(c => c.Reference);
                                                                                                                                                                                                                   columns.Bound(c => c.Date);
                                                                                                                                                                                                                   columns.Bound(c => c.Reference);
-                                                                                                                                                                                                                  columns.Bound(c => c.Quantity);
+                                                                                                                                                                                                                  columns.Bound(c => c.Quantity).ClientFooterTemplate("\\#=sum\\#");
                                                                                                                                                                                                                   columns.Bound(c => c.UnitPrice);
-                                                                                                                                                                                                                  columns.Bound(c => c.TaxAmount);
-                                                                                                                                                                                                                  columns.Bound(c => c.SubTotal);
-                                                                                                                                                                                                                  columns.Bound(c => c.Cost);
+                                                                                                                                                                                                                  columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
+                                                                                                                                                                                                                  columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
+                                                                                                                                                                                                                  columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
                                                                                                                                                                                                                   columns.Bound(c => c.ItemDescription);
 
 
@@ -252,11 +270,17 @@
                                                                                                                                                                                                             //.Window(w => w.Width(600).Title("Labor Cost Form")))
                                                                                                                                                                                                             .DataSource(dataSource => dataSource
                                                                                                                                                                                                             .Ajax()
-                                                                                                                                                                                                            .ServerOperation(false)
+                                                                                                                                                                                                                .Sort(se => se.Add(s => s.JobMaterialReturnId).Descending())
+
                                                                                                                                                                                                             .Events(ev => ev.Error("error_handler(\"MaterialReturn#=JobCostId#\")")
                                                                                                                                                                                                             .RequestStart("onRequestStart(\"MaterialReturn#=JobCostId#\")")
                                                                                                                                                                                                             .RequestEnd("onRequestEnd(\"MaterialReturn#=JobCostId#\")"))
-
+                                                                                                                                                                                                            .Aggregates(ag=> {
+                                                                                                                                                                                                                ag.Add(a => a.Quantity).Sum();
+                                                                                                                                                                                                                ag.Add(a => a.TaxAmount).Sum();
+                                                                                                                                                                                                                ag.Add(a => a.Cost).Sum();
+                                                                                                                                                                                                                ag.Add(a => a.SubTotal).Sum();
+                                                                                                                                                                                                            })
                                                                                                                                                                                                             .PageSize(5)
                                                                                                                                                                                                             .Model(model => model.Id(p => p.JobMaterialReturnId))
                                                                                                                                                                                                             .Read(read => read.Action("JobMaterialReturns_Read", "JobMaterialReturn", new { id = "#=JobCostId #" }))
@@ -373,18 +397,18 @@
     function onChangeJobOrder() {
         var id = $("#JobId").val();
          $.ajax({
-            url: '@Url.Action("GetJobOrder", "JobOrders", new { area = "ProductionFollowUp" })',
+            url: '@Url.Action("GetJobOrder", "JobCostingDataProvider", new { area = "JobCosting" })',
 
              data: { jobId: id },
-            type: 'POST',
+            type: 'GET',
             cache: false,
              success: function (data) {
 
                  var quantDDL = $("#Quantity").data("kendoNumericTextBox");
                  var sellingPriceDDL = $("#SellingPrice").data("kendoNumericTextBox");
                  var jobReceiveDTP  = $("#JobReceivedDate").data("kendoDatePicker");
-                 quantDDL.value(data.Quant);
-                 sellingPriceDDL.value(data.TotalPrice / data.Quant);
+                 quantDDL.value(data.Quantity);
+                 sellingPriceDDL.value(data.UnitPrice);
                  jobReceiveDTP.value(data.Date);
                  quantDDL.trigger("change");
                  sellingPriceDDL.trigger("change");

@@ -30,24 +30,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 IdleTimeNonProductiveNonControllableID = idleTimeNonProductiveNonControllable.IdleTimeNonProductiveNonControllableID,
                 IdleTimeID = idleTimeNonProductiveNonControllable.IdleTimeID,
                 IdleTimeCategoryId = idleTimeNonProductiveNonControllable.IdleTimeCategoryId,
-                NPNCManualHour = idleTimeNonProductiveNonControllable.NPNCManualHour,
-                NPNCManualPercentage = idleTimeNonProductiveNonControllable.NPNCManualPercentage,
-                NPNCMechanicalHour = idleTimeNonProductiveNonControllable.NPNCMechanicalHour,
-                NPNCMechanicalPercentage = idleTimeNonProductiveNonControllable.NPNCMechanicalPercentage,
-                NPNCCameraHour = idleTimeNonProductiveNonControllable.NPNCCameraHour,
-                NPNCCameraPercentage = idleTimeNonProductiveNonControllable.NPNCCameraPercentage,
-                NPNCOffsetHour = idleTimeNonProductiveNonControllable.NPNCOffsetHour,
-                NPNCOffsetPercentage = idleTimeNonProductiveNonControllable.NPNCOffsetPercentage,
-                NPNCLetterPressHour = idleTimeNonProductiveNonControllable.NPNCLetterPressHour,
-                NPNCLetterPressPercentage = idleTimeNonProductiveNonControllable.NPNCLetterPressPercentage,
-                NPNCBindingHour = idleTimeNonProductiveNonControllable.NPNCBindingHour,
-                NPNCBindingPercentage = idleTimeNonProductiveNonControllable.NPNCBindingPercentage,
-                NPNCComputerHour = idleTimeNonProductiveNonControllable.NPNCComputerHour,
-                NPNCComputerPercentage = idleTimeNonProductiveNonControllable.NPNCComputerPercentage,
-                NPNCWebHour = idleTimeNonProductiveNonControllable.NPNCWebHour,
-                NPNCWebPercentage = idleTimeNonProductiveNonControllable.NPNCWebPercentage,
-                NPNCTotalHour = idleTimeNonProductiveNonControllable.NPNCTotalHour,
-                NPNCTotalPercentage = idleTimeNonProductiveNonControllable.NPNCTotalPercentage
+                CostCenterId = idleTimeNonProductiveNonControllable.CostCenterId,
+                Rate = idleTimeNonProductiveNonControllable.Rate,
+                Value = idleTimeNonProductiveNonControllable.Value
             });
 
             return Json(result);
@@ -109,24 +94,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 IdleTimeNonProductiveNonControllableID = idleTimeNonProductiveNonControllable.IdleTimeNonProductiveNonControllableID,
                 IdleTimeID = idleTimeNonProductiveNonControllable.IdleTimeID,
                 IdleTimeCategoryId = idleTimeNonProductiveNonControllable.IdleTimeCategoryId,
-                NPNCManualHour = idleTimeNonProductiveNonControllable.NPNCManualHour,
-                NPNCManualPercentage = idleTimeNonProductiveNonControllable.NPNCManualPercentage,
-                NPNCMechanicalHour = idleTimeNonProductiveNonControllable.NPNCMechanicalHour,
-                NPNCMechanicalPercentage = idleTimeNonProductiveNonControllable.NPNCMechanicalPercentage,
-                NPNCCameraHour = idleTimeNonProductiveNonControllable.NPNCCameraHour,
-                NPNCCameraPercentage = idleTimeNonProductiveNonControllable.NPNCCameraPercentage,
-                NPNCOffsetHour = idleTimeNonProductiveNonControllable.NPNCOffsetHour,
-                NPNCOffsetPercentage = idleTimeNonProductiveNonControllable.NPNCOffsetPercentage,
-                NPNCLetterPressHour = idleTimeNonProductiveNonControllable.NPNCLetterPressHour,
-                NPNCLetterPressPercentage = idleTimeNonProductiveNonControllable.NPNCLetterPressPercentage,
-                NPNCBindingHour = idleTimeNonProductiveNonControllable.NPNCBindingHour,
-                NPNCBindingPercentage = idleTimeNonProductiveNonControllable.NPNCBindingPercentage,
-                NPNCComputerHour = idleTimeNonProductiveNonControllable.NPNCComputerHour,
-                NPNCComputerPercentage = idleTimeNonProductiveNonControllable.NPNCComputerPercentage,
-                NPNCWebHour = idleTimeNonProductiveNonControllable.NPNCWebHour,
-                NPNCWebPercentage = idleTimeNonProductiveNonControllable.NPNCWebPercentage,
-                NPNCTotalHour = idleTimeNonProductiveNonControllable.NPNCTotalHour,
-                NPNCTotalPercentage = idleTimeNonProductiveNonControllable.NPNCTotalPercentage
+                CostCenterId = idleTimeNonProductiveNonControllable.CostCenterId,
+                Rate = idleTimeNonProductiveNonControllable.Rate,
+                Value = idleTimeNonProductiveNonControllable.Value
 
             };
             return entity;

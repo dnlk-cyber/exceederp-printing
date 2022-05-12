@@ -84,6 +84,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Create([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems, int id)
         {
+            proformaItems.JobTypeId = Int16.Parse(proformaItems.JT);
+
             //var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == proformaItems.JobTypeId);
             //if (jobType != null)
             //{
@@ -110,13 +112,13 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 {
                     PFProformaItemsId = proformaItems.PFProformaItemsId,
                     ProformaId = id,
-                    JobTypeId = proformaItems.JobTypeId,
+                    JobTypeId =  proformaItems.JobTypeId,
                     Quantity = proformaItems.Quantity,
                     Size = proformaItems.Size,
                     UnitPrice = proformaItems.UnitPrice,
                     Tax = proformaItems.Tax,
                     BeforeTax = proformaItems.BeforeTax,
-                    TotalPrice = 12,
+                    TotalPrice = proformaItems.TotalPrice,
                     Description = proformaItems.Description
                 };
 
@@ -130,7 +132,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Update([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems)
         {
-           
+            proformaItems.JobTypeId = Int16.Parse(proformaItems.JT);
+
             if (ModelState.IsValid)
             {
                 var entity = new PFProformaItems

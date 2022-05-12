@@ -10,15 +10,14 @@
                 @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div>
 
-                    @(Html.Kendo().DropDownTreeFor(model => model.JobTypeId)
+                    @(Html.Kendo().DropDownTreeFor(model => model.JT)
 
-                                                                                                                        .Name("JobTypeId")
                                                                                                                         .ValuePrimitive(true)
                                                                                                                         .Placeholder("--select--")
-                                                                                                                        //.Events(ev => ev.Change("onSelectLoading"))
+                                                                                                                        .Events(ev => ev.Change("onSelectLoading").Change("onChange"))
                                                                                                                         .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
-                    @Html.ValidationMessageFor(model => model.JobTypeId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

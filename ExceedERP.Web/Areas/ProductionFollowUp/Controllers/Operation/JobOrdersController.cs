@@ -173,6 +173,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 CustomerId = job.CustomerId,
                 EstimatedBy = job.EstimatedBy,
                 Code = job.Code,
+                IsMaga = job.IsMaga,
                 ApprovedBy = job.ApprovedBy,
                 BrandName = job.BrandName,
                 TinNo = job.TinNo,
@@ -205,6 +206,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Varnish = job.Varnish,
                 Perforate = job.Perforate,
                 Camsur = job.Camsur,
+                IsApproved = job.IsApproved,
                 UnitId = job.UnitId,
                 GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
@@ -345,11 +347,21 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 //jobOrder.Quant = changeOfOrder.Quantity;
                 //jobOrder.FinishingSize = changeOfOrder.Size;
-                //jobOrder.TotalPrice = changeOfOrder.Total;
+                jobOrder.Status = ProductionJobOrderStatus.ChangedOrder;
                 //jobOrder.Reason = changeOfOrder.Reason;
                 //db.Entry(jobOrder).State = EntityState.Modified;
                 //db.SaveChanges();
-
+                var jobStatuses = db.JobStatuses.Where(q => q.JobId == changeOfOrder.JobId && q.JobPhase != ProductionDepartment.Graphic).ToList();
+                foreach(var jobStatus in jobStatuses)
+                {
+                    var jobStatusLineItem = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).OrderByDescending(or=>or.JobStatusLineItemId).FirstOrDefault();
+                    if(jobStatusLineItem!=null)
+                    {
+                        jobStatusLineItem.RemainigQuantiy = changeOfOrder.ChangedQuantity;
+                        db.JobStatusLineItems.Attach(jobStatusLineItem);
+                        db.Entry(jobStatusLineItem).State = EntityState.Modified;
+                    }
+                }
                 var changeOrder = new ChangeOrder();
 
                 changeOrder.Date = DateTime.Now;// changeOfOrder.Date;
@@ -373,6 +385,28 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             TempData["Error"] = "Invalid Data ";
 
             return RedirectToAction("Index");
+        }
+        public JsonResult ApproveJobOrder(int id)
+        {
+            var job = db.Jobs.Find(id);
+            object response = null;
+
+            if (job != null)
+            {
+                job.IsApproved = true;
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Job has been approved Successfully!" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Job is not found!" };
+            }
+
+            return Json(response);
+
         }
         public ActionResult GetBeforeVatAndTotalPerice(string jobTypeId, int quant, double unitPrice)
         {
@@ -454,6 +488,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Time = job.Time,
                 ProformaId = job.ProformaId,
                 JobNo = job.JobNo,
+                IsMaga = job.IsMaga,
                 CustomerName = job.CustomerName,
                 CustomerId = job.CustomerId,
                 Code = job.Code,
@@ -474,6 +509,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 CoverWeight = job.CoverWeight,
                 ColorText = job.ColorText,
                 TinNo = job.TinNo,
+                IsApproved = job.IsApproved,
                 BrandName = job.BrandName,
                 Colorcover = job.Colorcover,
                 FinishingSize = job.FinishingSize,

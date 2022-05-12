@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -27,7 +28,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         public ActionResult JobStatuses_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<JobStatus> jobstatuses = db.JobStatuses.Where(q=>q.JobId==id);
-            DataSourceResult result = jobstatuses.ToDataSourceResult(request, jobStatus => new {
+            DataSourceResult result = jobstatuses.ToList().ToDataSourceResult(request, jobStatus => new {
                 JobStatusId = jobStatus.JobStatusId,
                 JobId = jobStatus.JobId,
                 UserId = jobStatus.UserId,
@@ -35,7 +36,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 StartDate = jobStatus.StartDate,
                 EndDate = jobStatus.EndDate,
                 JobPhase = jobStatus.JobPhase,
-                Status = jobStatus.Status
+
+                Status = jobStatus.JobPhase == ProductionDepartment.Graphic?jobStatus.Status:(db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.Quantiy) ==
+               (db.Jobs.Where(q => q.JobId == jobStatus.JobId).ToList().Sum(s => s.Quantity) + db.ChangeOrders.Where(q => q.JobId == jobStatus.JobId).ToList().Sum(s => s.Quantity)) ? JobState.Finished : JobState.InProgress)
             });
 
             return Json(result);
@@ -46,7 +49,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var jobS = db.JobStatuses.Where(q => q.JobPhase == jobStatus.JobPhase
             && q.Status == jobStatus.Status
             &&q.JobId==id).FirstOrDefault();
-            if(jobS!=null)
+            jobStatus.UserId = User.Identity.Name;
+
+            if (jobS!=null)
             {
                 ModelState.AddModelError("Error","Existed Phase");
             }
@@ -120,7 +125,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 JobStatusId = jobStatus.JobStatusId,
                 JobId = jobStatus.JobId,
-                UserId = User.Identity.Name,
+                UserId = jobStatus.UserId,
                 Time = jobStatus.Time,
                 StartDate = jobStatus.StartDate,
                 EndDate = jobStatus.EndDate,

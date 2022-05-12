@@ -46,6 +46,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
                 model.TotalJob = jobs.Count().ToString();
+                model.TotalQuantity = jobs.Sum(s=>s.Quantity).ToString();
                 model.Proforma = Math.Round(jobs.Where(q=>q.hv).Sum(s=>s.TotalPrice),2).ToString();
                 model.DirectOrder = Math.Round(jobs.Where(q=>!q.hv).Sum(s=>s.TotalPrice),2).ToString();
                 model.To = endDate?.ToString("dd/MM/yyyy");
@@ -56,7 +57,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     var jobTypes = jobs.GroupBy(g => g.JobTypeId).Select(s => new
                     {
                         JobTypeId = s.Key,
-                        TotalPrice = s.Sum(su => su.TotalPrice)
+                        TotalPrice = s.Sum(su => su.TotalPrice),
+                        TotalQuantity = s.Sum(su => su.Quantity)
                       }).ToList();
                     foreach (var jobOrder in jobTypes)
                     {
@@ -67,6 +69,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         job.JobType = jobType?.JobName;
                         job.Code = jobType?.JobCode;
                         job.TotalPrice = jobOrder.TotalPrice;
+                        job.TotalQuantity = jobOrder.TotalQuantity;
                         jobList.Add(job);
                     }
                     model.JobSupplyItemVMs = jobList;

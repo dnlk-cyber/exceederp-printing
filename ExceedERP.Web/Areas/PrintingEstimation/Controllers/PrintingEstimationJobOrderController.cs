@@ -25,13 +25,14 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
         public ActionResult Index()
         {
-            ViewData["Proforma"] = db.Proformas.ToList().Select(s=> new{
-                ProformaId = s.ProformaId,
-                Name = s.ProformaId
-            });
+            ViewData["Proforma"] = db.Proformas.ToList();
             ViewData["JobType"] = db.JobCategories.Select(s => new {
                 JobTypeId = s.JobCategoryId,
-                type = s.HaveParent?db.JobCategories.Where(q=>q.JobCategoryId==s.ParentId).FirstOrDefault().JobName+"-"+ s.JobName : s.JobName
+                type = s.HaveParent ? db.JobCategories.Where(q => q.JobCategoryId == s.ParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            }).ToList();
+            ViewData["CustomerTypes"] = db.ProductionCustomerTypes.Select(s => new {
+                Code = s.ProductionCustomerTypeId,
+                Name = s.Name
             }).ToList();
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                 Code = s.OrganizationCustomerID,
@@ -42,7 +43,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 Name = s.MachineName
             }).ToList();
 
-           
+
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
             var costCenter = db.BranchCostCenter;
@@ -69,7 +70,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             ViewData["Category"] = categories;
             ViewData["defaultCategory"] = categories.FirstOrDefault();
 
-         
+
 
             var employee = db.Person_Employee;
             var selectedEmployee = employee.Select(
@@ -88,7 +89,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 }).AsQueryable();
 
             ViewData["costCenters"] = selectedcostCenter;
-            
+
             ViewBag.data = GetData();
 
             PopulateViewData();
@@ -158,7 +159,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Job> jobs = db.Jobs;
+            IQueryable<Job> jobs = db.Jobs.Where(q =>q.hv);
             DataSourceResult result = jobs.ToDataSourceResult(request, job => new
             {
                 JobId = job.JobId,
@@ -172,6 +173,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 CustomerId = job.CustomerId,
                 EstimatedBy = job.EstimatedBy,
                 Code = job.Code,
+                IsMaga = job.IsMaga,
                 ApprovedBy = job.ApprovedBy,
                 BrandName = job.BrandName,
                 TinNo = job.TinNo,
@@ -204,6 +206,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 Varnish = job.Varnish,
                 Perforate = job.Perforate,
                 Camsur = job.Camsur,
+                IsChecked = job.IsChecked,
+                IsApproved = job.IsApproved,
                 UnitId = job.UnitId,
                 GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
@@ -218,6 +222,30 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             return Json(result);
         }
+
+        public ActionResult ChangeOrders_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            IQueryable<ChangeOrder> changeorders = db.ChangeOrders.Where(x => x.JobId == id);
+            DataSourceResult result = changeorders.ToDataSourceResult(request, changeOrder => new {
+                ChangeOrderId = changeOrder.ChangeOrderId,
+                JobId = changeOrder.JobId,
+                Date = changeOrder.Date,
+                Reason = changeOrder.Reason,
+                Quantity = changeOrder.Quantity,
+                Size = changeOrder.Size,
+                Price = changeOrder.Price,
+                Tax = changeOrder.Tax,
+                Total = changeOrder.Total,
+                InvoiceNo = changeOrder.InvoiceNo,
+                OrderNo = changeOrder.OrderNo,
+                PreparedBy = changeOrder.PreparedBy,
+                TypeAndQuantityOfMaterialNeeded = changeOrder.TypeAndQuantityOfMaterialNeeded,
+                Checked = changeOrder.Checked
+            });
+
+            return Json(result);
+        }
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Jobs_Create([DataSourceRequest]DataSourceRequest request, Job job)
@@ -494,6 +522,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 CreatedBy = job.CreatedBy,
                 DateCreated = job.DateCreated,
                 ModifiedBy = job.ModifiedBy,
+                IsMaga = job.IsMaga,
                 LastModified = job.LastModified
             };
             return entity;
@@ -532,6 +561,99 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
 
             return jobs;
+        }
+
+        public JsonResult ApproveJobOrder(int id)
+        {
+            var job = db.Jobs.Find(id);
+            object response = null;
+            
+            if (job != null)
+            {
+                if (job.IsChecked)
+                {
+                    job.ApprovedBy = User.Identity.Name;
+                    job.IsApproved = true;
+                    db.Jobs.Attach(job);
+                    db.Entry(job).State = EntityState.Modified;
+                    var proforma = db.Proformas.Find(job.ProformaId);
+                    if(proforma!=null)
+                    {
+                        var estimation = db.EstimationForms.Find(proforma.EstimationFormId);
+                        if(estimation!=null)
+                        {
+                            var materials = db.MaterialCosts.Where(q => q.EstimationFormId == estimation.EstimationFormId).ToList();
+                            foreach(var material in materials)
+                            {
+                                material.JobId = job.JobId;
+                                db.MaterialCosts.Attach(material);
+                                db.Entry(material).State = EntityState.Modified;
+                            }
+                        }
+                    }
+
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Job has been approved Successfully!" };
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Job has not been checked!" };
+
+                }
+
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Job is not found!" };
+            }
+
+            return Json(response);
+
+        }
+        public JsonResult CheckJobOrder(int id)
+        {
+            var job = db.Jobs.Find(id);
+            object response = null;
+
+            if (job != null)
+            {
+                job.IsChecked = true;
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Job has been checked Successfully!" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Job is not found!" };
+            }
+
+            return Json(response);
+
+        }
+        public JsonResult RejectJobOrder(int id)
+        {
+            var job = db.Jobs.Find(id);
+            object response = null;
+
+            if (job != null)
+            {
+                job.IsChecked = false;
+                db.Jobs.Attach(job);
+                db.Entry(job).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Job has been rejected Successfully!" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Job is not found!" };
+            }
+
+            return Json(response);
+
         }
 
 

@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -75,36 +76,13 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         if(jobPhase!=null)
                         {
                             var jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
-                            if (jobStatus != null|| jobPhase == ProductionDepartment.JobFollowup.ToString())
+                            
+                            if (jobStatus == null&& jobPhase != ProductionDepartment.JobFollowup.ToString())
                             {
-                                if (jobPhase == ProductionDepartment.Graphic.ToString())
-                                {
-                                    if (jobStatus.Status == Core.Domain.PrintingEstimation.Setting.JobState.InProgress)
-                                    {
-                                        totalPrice = 0;
-                                    }
+                                continue;
 
-                                }
-                                else if (jobPhase == ProductionDepartment.JobFollowup.ToString())
-                                {
-                                    var jobS = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == ProductionDepartment.Graphic.ToString()).FirstOrDefault();
-                                    if(jobS!=null)
-                                    {
-                                        totalPrice = 0;
-                                    }
-                                }
-                                else
-                                {
-
-
-                                    totalPrice = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.TotalPrice);
-
-                                }                       
                             }
-                            else
-                            {
-                                totalPrice = 0;
-                            }
+                           
                         }
                         job.JobNo = jobOrder?.JobNo;
                         job.JobType = jobType?.JobName;

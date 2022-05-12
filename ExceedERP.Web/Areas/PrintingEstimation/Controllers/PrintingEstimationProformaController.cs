@@ -28,10 +28,10 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             ViewData["EstimationForms"] = db.EstimationForms.ToList();
             var jobCategories = db.JobCategories.Select(s => new {
-                JobTypeId = s.JobCategoryId,
-                type = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
+                Code = s.JobCategoryId,
+                Name = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
             }).ToList();
-            ViewData["JobType"] = jobCategories;
+            ViewData["JobTypes"] = jobCategories;
             ViewBag.data = GetData();
             var customers = db.OrganizationCustomers.Select(s => new
             {
@@ -324,12 +324,13 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                         TotalPrice = (decimal)proformaItem?.TotalPrice,
                         FinishingSize = proformaItem?.Size,
                         Copies = 0,
+                        IsMaga = true,
                         TotalImpression = 0,
                         Pages = 0,
                         Status = ProductionJobOrderStatus.Normal,
                         Time = DateTime.Now,
-                        Colorcover = estimation.CoverPrint,
-                        ColorText = estimation.TextPrint,
+                        Colorcover = estimation?.CoverPrint,
+                        ColorText = estimation?.TextPrint,
                         TextWeight = proformaItem?.Size,
                         CreatedBy = User.Identity.Name,
                         ReceivedDate = DateTime.Now,
@@ -347,6 +348,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 {
                     response = new { Success = false, Message = "Proforma not found!" };
                 }
+
+
             }
             else
             {
@@ -372,6 +375,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 CustomerId = job.CustomerId,
                 Code = job.Code,
                 JobTypeId = job.JobTypeId,
+                IsMaga = job.IsMaga,
                 BeforeTax = job.BeforeTax,
                 UnitPrice = job.UnitPrice,
                 Quantity = job.Quantity,

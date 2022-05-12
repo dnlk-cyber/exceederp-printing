@@ -11,6 +11,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
     { 
             public string From { get; set; }
             public string To { get; set; }
+            public string TotalQuantity { get; set; }
             public string TotalJob { get; set; }
             public string Proforma { get; set; }
             public string DirectOrder { get; set; }
@@ -18,10 +19,12 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 
         }
     public class JobSupplyItemVM
-        {
-            public string JobType { get; set; }
-            public decimal TotalPrice { get; set; }
-            public string Code { get; set; }
-        }
+    {
+        public string JobType { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal TotalQuantity { get; set; }
+
+        public string Code { get; set; }
+    }
     }
 

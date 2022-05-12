@@ -10,6 +10,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
@@ -34,9 +35,13 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 GLPeriodId = jobLaborCost.GLPeriodId,
                 Reference = jobLaborCost.Reference,
                 PermanetNormalHour = jobLaborCost.PermanetNormalHour,
+                PermanetLaborCost = jobLaborCost.PermanetLaborCost,
+                PermanetOverHeadCost = jobLaborCost.PermanetOverHeadCost,
                 PermanetOTHour = jobLaborCost.PermanetOTHour,
-                ContractOTHour = jobLaborCost.ContractOTHour,
                 ContractNormalHour = jobLaborCost.ContractNormalHour,
+                ContractLaborCost = jobLaborCost.ContractLaborCost,
+                ContractOverHeadCost = jobLaborCost.ContractOverHeadCost,
+                ContractOTHour = jobLaborCost.ContractOTHour,
                 Beginning = jobLaborCost.Beginning,
                 BeginningHour = jobLaborCost.BeginningHour,
                 DateCreated = jobLaborCost.DateCreated,
@@ -53,6 +58,23 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
             if (ModelState.IsValid)
             {
+                var dlrs = db.DailyLaborRates.Where(q => q.CostCenter == jobLaborCost.CostCenter && q.GLPeriodId == jobLaborCost.GLPeriodId).ToList();
+                var dlrPer = dlrs.Where(q => q.EmployeeType==EmployementType.Permanent).FirstOrDefault();
+                var dlrCon = dlrs.Where(q => q.EmployeeType==EmployementType.Contrat).FirstOrDefault();
+                var yearlyOHRate = db.YearlyOverHeadRates.Where(q => q.Values == jobLaborCost.CostCenter && q.GlFiscalYearId == jobLaborCost.GlFiscalYearId).FirstOrDefault();
+                if(dlrPer!=null)
+                {
+                    jobLaborCost.PermanetLaborCost = (decimal)Math.Round(jobLaborCost.PermanetNormalHour *(decimal) dlrPer.DLR,3);
+                }
+                if (dlrCon != null)
+                {
+                    jobLaborCost.ContractLaborCost = (decimal)Math.Round(jobLaborCost.ContractNormalHour * (decimal)dlrCon.DLR, 3);
+                }
+                if(yearlyOHRate != null)
+                {
+                    jobLaborCost.PermanetOverHeadCost = Math.Round(jobLaborCost.PermanetNormalHour * yearlyOHRate.Rate,3);
+                    jobLaborCost.ContractOverHeadCost = Math.Round(jobLaborCost.ContractNormalHour * yearlyOHRate.Rate,3);
+                }
                 var entity = (JobLaborCost)this.GetObject(jobLaborCost, true, id);
                 db.JobLaborCosts.Add(entity);
                 db.SaveChanges();
@@ -67,6 +89,23 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         {
             if (ModelState.IsValid)
             {
+                var dlrs = db.DailyLaborRates.Where(q => q.CostCenter == jobLaborCost.CostCenter && q.GLPeriodId == jobLaborCost.GLPeriodId).ToList();
+                var dlrPer = dlrs.Where(q => q.EmployeeType == EmployementType.Permanent).FirstOrDefault();
+                var dlrCon = dlrs.Where(q => q.EmployeeType == EmployementType.Contrat).FirstOrDefault();
+                var yearlyOHRate = db.YearlyOverHeadRates.Where(q => q.Values == jobLaborCost.CostCenter && q.GlFiscalYearId == jobLaborCost.GlFiscalYearId).FirstOrDefault();
+                if (dlrPer != null)
+                {
+                    jobLaborCost.PermanetLaborCost = (decimal)Math.Round(jobLaborCost.PermanetNormalHour * (decimal)dlrPer.DLR, 3);
+                }
+                if (dlrCon != null)
+                {
+                    jobLaborCost.ContractLaborCost = (decimal)Math.Round(jobLaborCost.ContractNormalHour * (decimal)dlrCon.DLR, 3);
+                }
+                if (yearlyOHRate != null)
+                {
+                    jobLaborCost.PermanetOverHeadCost = Math.Round(jobLaborCost.PermanetNormalHour * yearlyOHRate.Rate, 3);
+                    jobLaborCost.ContractOverHeadCost = Math.Round(jobLaborCost.ContractNormalHour * yearlyOHRate.Rate, 3);
+                }
                 var entity = (JobLaborCost)this.GetObject(jobLaborCost, false);
 
                 db.JobLaborCosts.Attach(entity);
@@ -108,9 +147,13 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 GLPeriodId = jobLaborCost.GLPeriodId,
                 Reference = jobLaborCost.Reference,
                 PermanetNormalHour = jobLaborCost.PermanetNormalHour,
+                PermanetLaborCost = jobLaborCost.PermanetLaborCost,
+                PermanetOverHeadCost = jobLaborCost.PermanetOverHeadCost,
                 PermanetOTHour = jobLaborCost.PermanetOTHour,
                 ContractOTHour = jobLaborCost.ContractOTHour,
                 ContractNormalHour = jobLaborCost.ContractNormalHour,
+                ContractLaborCost = jobLaborCost.ContractLaborCost,
+                ContractOverHeadCost = jobLaborCost.ContractOverHeadCost,
                 Beginning = jobLaborCost.Beginning,
                 BeginningHour = jobLaborCost.BeginningHour,
                 DateCreated = jobLaborCost.DateCreated,

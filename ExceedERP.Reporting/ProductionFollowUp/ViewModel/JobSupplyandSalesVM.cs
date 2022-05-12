@@ -11,6 +11,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
     {
         public string From { get; set; }
         public string To { get; set; }
+        public decimal PreviousWeeklySupply { get; set; }
         public decimal WeeklySupplyAndSalesPlan { get; set; }
         public decimal WeeklyReceivedActual { get; set; }
         public decimal WeeklySupplyPerformance { get; set; }
@@ -27,6 +28,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
     {
         public string Code { get; set; }       
         public decimal DailySupply { get; set; }
+        public decimal PreviousWeeklySupply { get; set; }
         public decimal WeeklySupplyAndSalesPlan { get; set; }
         public decimal WeeklyReceivedActual { get; set; }
         public decimal WeeklySupplyPerformance { get; set; }

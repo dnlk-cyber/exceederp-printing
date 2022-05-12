@@ -29,24 +29,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             DataSourceResult result = idletimeproductives.ToDataSourceResult(request, idleTimeProductive => new {
                 IdleTimeProductiveID = idleTimeProductive.IdleTimeProductiveID,
                 IdleTimeID = idleTimeProductive.IdleTimeID,
-                ProductiveManualHour = idleTimeProductive.ProductiveManualHour,
-                ProductiveManualPercentage = idleTimeProductive.ProductiveManualPercentage,
-                ProductiveMechanicalHour = idleTimeProductive.ProductiveMechanicalHour,
-                ProductiveMechanicalPercentage = idleTimeProductive.ProductiveMechanicalPercentage,
-                ProductiveCameraHour = idleTimeProductive.ProductiveCameraHour,
-                ProductiveCameraPercentage = idleTimeProductive.ProductiveCameraPercentage,
-                ProductiveOffsetHour = idleTimeProductive.ProductiveOffsetHour,
-                ProductiveOffsetPercentage = idleTimeProductive.ProductiveOffsetPercentage,
-                ProductiveLetterPressHour = idleTimeProductive.ProductiveLetterPressHour,
-                ProductiveLetterPressPercentage = idleTimeProductive.ProductiveLetterPressPercentage,
-                ProductiveBindingHour = idleTimeProductive.ProductiveBindingHour,
-                ProductiveBindingPercentage = idleTimeProductive.ProductiveBindingPercentage,
-                ProductiveComputerHour = idleTimeProductive.ProductiveComputerHour,
-                ProductiveComputerPercentage = idleTimeProductive.ProductiveComputerPercentage,
-                ProductiveWebHour = idleTimeProductive.ProductiveWebHour,
-                ProductiveWebPercentage = idleTimeProductive.ProductiveWebPercentage,
-                ProductiveTotalHour = idleTimeProductive.ProductiveTotalHour,
-                ProductiveTotalPercentage = idleTimeProductive.ProductiveTotalPercentage
+                CostCenterId = idleTimeProductive.CostCenterId,
+                Rate = idleTimeProductive.Rate,
+                Value = idleTimeProductive.Value
             });
 
             return Json(result);
@@ -108,24 +93,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             {
                 IdleTimeProductiveID = idleTimeProductive.IdleTimeProductiveID,
                 IdleTimeID = idleTimeProductive.IdleTimeID,
-                ProductiveManualHour = idleTimeProductive.ProductiveManualHour,
-                ProductiveManualPercentage = idleTimeProductive.ProductiveManualPercentage,
-                ProductiveMechanicalHour = idleTimeProductive.ProductiveMechanicalHour,
-                ProductiveMechanicalPercentage = idleTimeProductive.ProductiveMechanicalPercentage,
-                ProductiveCameraHour = idleTimeProductive.ProductiveCameraHour,
-                ProductiveCameraPercentage = idleTimeProductive.ProductiveCameraPercentage,
-                ProductiveOffsetHour = idleTimeProductive.ProductiveOffsetHour,
-                ProductiveOffsetPercentage = idleTimeProductive.ProductiveOffsetPercentage,
-                ProductiveLetterPressHour = idleTimeProductive.ProductiveLetterPressHour,
-                ProductiveLetterPressPercentage = idleTimeProductive.ProductiveLetterPressPercentage,
-                ProductiveBindingHour = idleTimeProductive.ProductiveBindingHour,
-                ProductiveBindingPercentage = idleTimeProductive.ProductiveBindingPercentage,
-                ProductiveComputerHour = idleTimeProductive.ProductiveComputerHour,
-                ProductiveComputerPercentage = idleTimeProductive.ProductiveComputerPercentage,
-                ProductiveWebHour = idleTimeProductive.ProductiveWebHour,
-                ProductiveWebPercentage = idleTimeProductive.ProductiveWebPercentage,
-                ProductiveTotalHour = idleTimeProductive.ProductiveTotalHour,
-                ProductiveTotalPercentage = idleTimeProductive.ProductiveTotalPercentage
+                CostCenterId = idleTimeProductive.CostCenterId,
+                Rate = idleTimeProductive.Rate,
+                Value = idleTimeProductive.Value
 
             };
             return entity;

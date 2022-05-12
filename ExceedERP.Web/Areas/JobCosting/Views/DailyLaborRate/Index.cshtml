@@ -92,6 +92,7 @@
                                                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                                            .DataSource(dataSource => dataSource
                                                                                                            .Ajax()
+                                                                                                           .ServerOperation(true)
                                                                                                            .Aggregates(aggregates =>
 
                                                                                                            {
@@ -189,9 +190,9 @@
         var masterGrid = $("#grid").data("kendoGrid");
         var masterDataItem = masterGrid.dataItem(masterRow);
         var codeid = masterDataItem.DailyLaborRateId;
-        var employeeType = masterDataItem.EmployeeType;
+         emptype = masterDataItem.EmployeeType;
         var grid = $('#DLRSalary' + codeid).data('kendoGrid');
-        if (employeeType == 0) {
+        if (emptype == 0) {
             grid.hideColumn('NoOfDay');
             grid.hideColumn('RatePerDay');
             grid.hideColumn('NoOfEmployee');
@@ -210,10 +211,6 @@
 
     function onDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
-
-       
-
-
     }
     function RequestEnd(e) {
         console.log(0000);
@@ -223,15 +220,16 @@
             }, 100);
         }
     }
-    function onEdit() {
-        var detailGridWrapper = this.wrapper;
-        // GET PARENT ROW ELEMENT
-        var parentRow = detailGridWrapper.closest("tr.k-detail-row").prev("tr");
-        // GET PARENT GRID ELEMENT
-        var parentGrid = parentRow.closest("[data-role=grid]").data("kendoGrid");
-        // GET THE PARENT ROW MODEL
-        var parentModel = parentGrid.dataItem(parentRow);
-        emptype = parentModel.EmployeeType;
+    function onEdit(e) {
+        //if(e.n)
+        //var detailGridWrapper = this.wrapper;
+        //// GET PARENT ROW ELEMENT
+        //var parentRow = detailGridWrapper.closest("tr.k-detail-row").prev("tr");
+        //// GET PARENT GRID ELEMENT
+        //var parentGrid = parentRow.closest("[data-role=grid]").data("kendoGrid");
+        //// GET THE PARENT ROW MODEL
+        //var parentModel = parentGrid.dataItem(parentRow);
+        //emptype = parentModel.EmployeeType;
 
     }
     function onSave(e) {
@@ -247,8 +245,6 @@
         var total = netSalary - LessAbsence;
         $("#NetSalary").val(netSalary).trigger("change");
         $("#Total").val(total).trigger("change");
-      //  $("#Pension").val(100).trigger("change");
-        $("#TotalSalary").val(total + 100).trigger("change");
 
         var NoOfDay = $("#NoOfDay").val();
         var RatePerDay = $("#RatePerDay").val();
@@ -258,11 +254,14 @@
             var TotalSalary = NoOfDay * RatePerDay * NoOfEmployee;
             $("#TotalSalary").val(TotalSalary).trigger("change");
         }
+        else {
+            $("#TotalSalary").val(total).trigger("change");
+
+        }
        
 
         var ExpectedTime = NoOfDay * NoOfWorkingHour * NoOfEmployee;
         $("#ExpectedTime").val(ExpectedTime).trigger("change");
-       
     
     }
     
