@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using System.ComponentModel;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
@@ -48,8 +49,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Display(Name = "HR_EmployeeDetail_Experience_TotalDuration", ResourceType = typeof(Localization.Resources))]
         public string TotalExp { get; set; }
         [Display(Name = "HR_EmployeeDetail_Experience_Responsibility", ResourceType = typeof(Localization.Resources))]
-        public string Responsibility { get; set; }
-	
+        public string Responsibility { get; set; }	
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_EmployeeDetail_Experience_ClearanceDateTime", ResourceType = typeof(Localization.Resources))]
@@ -66,7 +66,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsPrivate { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
-        [Display(Name = "Job Title", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "ExternalExperienceJobTitle", ResourceType = typeof(Localization.Resources))]
         public int JobTitleId { get; set; }
     }
 }

@@ -1234,7 +1234,7 @@
     <value>HARRARI</value>
   </data>
   <data name="Enum_Region_OROMO" xml:space="preserve">
-    <value>OROMO</value>
+    <value>OROMIYA</value>
   </data>
   <data name="Enum_Region_SOMALIA" xml:space="preserve">
     <value>SOMALIA</value>
@@ -5948,5 +5948,17 @@
   </data>
   <data name="Enum_LookUpTypes_OLD_JOB_TITLE" xml:space="preserve">
     <value>OLD_JOB_TITLE</value>
+  </data>
+  <data name="Enum_BonusType_From_PROFIT" xml:space="preserve">
+    <value>PROFIT</value>
+  </data>
+  <data name="Navigator_Manpower_PlanningRequest" xml:space="preserve">
+    <value>Manpower Planning Request</value>
+  </data>
+  <data name="ExternalExperienceJobTitle" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="NavigatorTraining_DepartmentTrainingPlan" xml:space="preserve">
+    <value>Department Training Need Assessment</value>
   </data>
 </root>

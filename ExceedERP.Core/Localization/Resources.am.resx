@@ -5961,4 +5961,13 @@
   <data name="Placement_BusinessUnit" xml:space="preserve">
     <value>ቢዝነስ ዩኒት </value>
   </data>
+  <data name="Navigator_Manpower_PlanningRequest" xml:space="preserve">
+    <value>የሰው ሀይል ፕላን መጠየቂያ</value>
+  </data>
+  <data name="ExternalExperienceJobTitle" xml:space="preserve">
+    <value>የስራ መደብ</value>
+  </data>
+  <data name="NavigatorTraining_DepartmentTrainingPlan" xml:space="preserve">
+    <value>የዲፓርትመንት የስልጠና እቅድ</value>
+  </data>
 </root>

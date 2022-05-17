@@ -1154,11 +1154,8 @@
     <Compile Include="Domain\Production\SellingPriceModels.cs" />
     <Compile Include="Domain\Production\SettingModels.cs" />
     <Compile Include="Localization\Resources.am.Designer.cs" />
-    <Compile Include="Localization\Resources1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    <Compile Include="Localization\Resources.Designer.cs" />
+    <Compile Include="Localization\Resources.ti.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1174,14 +1171,6 @@
     <Folder Include="Domain\App_Data\" />
     <Folder Include="Domain\Client Scripts\" />
     <Folder Include="Localization\obj\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Localization\Resources.am.resx" />
-    <EmbeddedResource Include="Localization\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Localization\Resources.ti.resx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Domain\Budget\GAAP\105.png" />
@@ -1202,6 +1191,11 @@
     <Content Include="Domain\Budget\GAAP\leadin.html" />
     <Content Include="Domain\Budget\GAAP\topic.html" />
     <Content Include="Domain\Budget\GAAP\topicg.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\Resources.am.resx" />
+    <EmbeddedResource Include="Localization\Resources.resx" />
+    <EmbeddedResource Include="Localization\Resources.ti.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

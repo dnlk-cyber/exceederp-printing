@@ -19,7 +19,7 @@ namespace ExceedERP.Core.Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -1857,6 +1857,15 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_BonusAttribute_EMPLOYEE_MULTIPLIER {
             get {
                 return ResourceManager.GetString("Enum_BonusAttribute_EMPLOYEE_MULTIPLIER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PROFIT.
+        /// </summary>
+        public static string Enum_BonusType_From_PROFIT {
+            get {
+                return ResourceManager.GetString("Enum_BonusType_From_PROFIT", resourceCulture);
             }
         }
         
@@ -3814,7 +3823,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OROMO.
+        ///   Looks up a localized string similar to OROMIYA.
         /// </summary>
         public static string Enum_Region_OROMO {
             get {
@@ -4215,6 +4224,15 @@ namespace ExceedERP.Core.Localization {
         public static string External_Vacancy {
             get {
                 return ResourceManager.GetString("External_Vacancy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Job Title.
+        /// </summary>
+        public static string ExternalExperienceJobTitle {
+            get {
+                return ResourceManager.GetString("ExternalExperienceJobTitle", resourceCulture);
             }
         }
         
@@ -13147,6 +13165,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manpower Planning Request.
+        /// </summary>
+        public static string Navigator_Manpower_PlanningRequest {
+            get {
+                return ResourceManager.GetString("Navigator_Manpower_PlanningRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Termination Letter.
         /// </summary>
         public static string Navigator_PrintableLetter_TerminationLetter {
@@ -15654,6 +15681,15 @@ namespace ExceedERP.Core.Localization {
         public static string NavigatorTraining_CourseTracking {
             get {
                 return ResourceManager.GetString("NavigatorTraining_CourseTracking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department Training Need Assessment.
+        /// </summary>
+        public static string NavigatorTraining_DepartmentTrainingPlan {
+            get {
+                return ResourceManager.GetString("NavigatorTraining_DepartmentTrainingPlan", resourceCulture);
             }
         }
         
