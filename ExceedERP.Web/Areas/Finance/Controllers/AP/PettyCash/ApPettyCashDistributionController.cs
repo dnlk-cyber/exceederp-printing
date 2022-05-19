@@ -116,6 +116,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
             {
                 var entity = new ApPettyCashDistribution
                 {
+                    ApPettyCashId = apPettyCashDistribution.ApPettyCashId,
                     ApPettyCashDistributionId = apPettyCashDistribution.ApPettyCashDistributionId,
                     AccountCode = apPettyCashDistribution.AccountCode,
                     AccountDesc = _accountHelper.GetAccountDesc(apPettyCashDistribution.AccountCode),

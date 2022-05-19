@@ -37,6 +37,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
         {
             IQueryable<ApPettyCashValidation> appettycashvalidations = _db.ApPettyCashValidations.Where(x => x.ApPettyCashId == id);
             DataSourceResult result = appettycashvalidations.ToDataSourceResult(request, apPettyCashValidation => new {
+                ApPettyCashId = apPettyCashValidation.ApPettyCashId,
                 ApPettyCashValidationId = apPettyCashValidation.ApPettyCashValidationId,
                 Status = apPettyCashValidation.Status,
                 Remark = apPettyCashValidation.Remark,

@@ -25,6 +25,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
         {
             IQueryable<ApPettyCashUtilization> appettycashutilizations = _db.ApPettyCashUtilizations.Where(x => x.ApPettyCashId == id);
             DataSourceResult result = appettycashutilizations.ToDataSourceResult(request, apPettyCashUtilization => new {
+                ApPettyCashId = apPettyCashUtilization.ApPettyCashId,
                 ApPettyCashUtilizationId = apPettyCashUtilization.ApPettyCashUtilizationId,
                 Date = apPettyCashUtilization.Date,
                 PaidTo = apPettyCashUtilization.PaidTo,
@@ -83,6 +84,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
             {
                 var entity = new ApPettyCashUtilization
                 {
+                    ApPettyCashId = apPettyCashUtilization.ApPettyCashId,
                     ApPettyCashUtilizationId = apPettyCashUtilization.ApPettyCashUtilizationId,
                     Date = apPettyCashUtilization.Date,
                     PaidTo = apPettyCashUtilization.PaidTo,
@@ -117,6 +119,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
             {
                 var entity = new ApPettyCashUtilization
                 {
+                    ApPettyCashId = apPettyCashUtilization.ApPettyCashId,
                     ApPettyCashUtilizationId = apPettyCashUtilization.ApPettyCashUtilizationId,
                     Date = apPettyCashUtilization.Date,
                     PaidTo = apPettyCashUtilization.PaidTo,

@@ -453,7 +453,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         public JsonResult GetPaymentRequests()
         {
-            var customers = _db.ContractPayments.Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
+            var customers = _db.ContractPayments
+                .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false)
+                .AsQueryable();
             return Json(customers.Select(c => new
                 {
                     Code = c.ContractPaymentId,

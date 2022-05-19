@@ -115,13 +115,61 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (ModelState.IsValid)
             {
                
-                   #region ger record record status
+                #region ger record record status
 
                 if (record != null && !record.IsOnlineApproved)
                 {
                     //validate 
                     if (aPPaymentValidation.Status == ApprovalStatuses.Approve)
                     {
+                        
+                        #region update po or award
+                        if (!String.IsNullOrWhiteSpace(record.PurchaseReference))
+                        {
+                            if(record.PoType == "Purchase Order")
+                            {
+                             var totalTaken = _db.APPayments
+                               .Where(x => x.PurchaseReference == record.PurchaseReference)
+                               .Where(x => x.PoType == "Purchase Order")
+                               .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                               .Select(x => new { x.PrepaymentAmount,x.PaymentAmount })
+                               .AsQueryable();
+                                if (totalTaken.Any())
+                                {
+                                    decimal totalAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == int.Parse(record.PurchaseReference)).Sum(x => x.Total);                                 
+                                    decimal totalTakenAmount = totalTaken.Sum(x => x.PrepaymentAmount) + totalTaken.Sum(x => x.PaymentAmount);
+                                    if (totalTakenAmount >= totalAmount)
+                                    {
+                                        var po = _db.PurchaseOrders.Find(int.Parse(record.PurchaseReference));
+                                        po.IsPaid = true;
+                                        _db.Entry(po).State = EntityState.Modified;
+                                    }
+                                }
+                            }
+                            else if (record.PoType == "Tender Award")
+                            {
+                                var totalTaken = _db.APPayments
+                                  .Where(x => x.PurchaseReference == record.PurchaseReference)
+                                  .Where(x => x.PoType == "Tender Award")
+                                  .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                  .Select(x => new { x.PrepaymentAmount, x.PaymentAmount })
+                                  .AsQueryable();
+                                if (totalTaken.Any())
+                                {
+                                    var contract = _db.ContractManagements
+                                        .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                        .Where(x => x.ProcurementRefNo == int.Parse(record.PurchaseReference)).FirstOrDefault();
+                                    decimal totalAmount = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).Sum(x => x.Total); 
+                                    decimal totalTakenAmount = totalTaken.Sum(x => x.PrepaymentAmount) + totalTaken.Sum(x => x.PaymentAmount);
+                                    if (totalTakenAmount >= totalAmount)
+                                    {                                       
+                                        contract.IsPaid = true;
+                                        _db.Entry(contract).State = EntityState.Modified;
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
                         //get the invoice
                         var paybleInvoice = _db.APPaybleInvoices.FirstOrDefault(x => x.InvoiceNumber == record.InvoiceNumber);
                         if (paybleInvoice != null)
@@ -138,7 +186,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             }
 
                             _db.Entry(paybleInvoice).State = EntityState.Modified;
-                            _db.SaveChanges();
+                            //_db.SaveChanges();
                         }
 
                         _db.SaveChanges();
@@ -172,7 +220,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                                     SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
                                 };
                                 _db.ReconcilationBookAccounts.Add(book);
-                                _db.SaveChanges();
+                                //_db.SaveChanges();
                             }
                         }
 
@@ -186,7 +234,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         record.OnlineApprovedBy = User.Identity.Name;
                         record.OnlineApprovedTime = DateTime.Now;
                         _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
+                        //_db.SaveChanges();
 
                     }
 
@@ -195,7 +243,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         record.IsSendForApproval = false;
                         record.Status = "Rejected";
                         _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
+                        //_db.SaveChanges();
                     }
 
                     #endregion

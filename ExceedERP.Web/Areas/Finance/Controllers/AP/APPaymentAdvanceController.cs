@@ -258,11 +258,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             .AsQueryable();
                         if (advanceTaken.Any())
                         {
-                            decimal advanceAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-                                .Select(x => new { x.UnitPrice, x.Quantity }).ToList()
-                                .Sum(x => x.UnitPrice * x.Quantity);
-                            decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                            if (advanceTakenAmount >= advanceAmount)
+                            decimal totalAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)                              
+                                .Sum(x => x.Total);
+                            decimal advanceAllowedPerent = _db.PoPaymentSchedules
+                                .Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
+                                .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
+
+                            decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount)+ apPayment.PrepaymentAmount;
+                            decimal advancePossibleAmount = (totalAmount* advanceAllowedPerent)/100;
+                            if (advanceTakenAmount >= advancePossibleAmount)
                                 ModelState.AddModelError("over","Overpaying the supplier is not possible");
                         }
                         #endregion
@@ -287,8 +291,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
                         #region check over advance taken
 
-                        var contract = _db.ContractManagements.Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                           .Where(x => x.IsPaid == false).FirstOrDefault();
+                        var contract = _db.ContractManagements
+                            .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ProcurementRefNo == int.Parse(apPayment.PurchaseReference)).FirstOrDefault();
 
                         if (contract != null)
                         {
@@ -299,26 +304,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                                 .ToList();
                             if (advanceTaken.Any())
                             {
-                                decimal advanceAmount = 0;
-
-                                var items = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).ToList();
-
-                                var schedule = _db.ContractPaymentSchedules
+                                decimal totalAmount = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).Sum(x=>x.Total);
+                                decimal advanceAllowedPerent = _db.ContractPaymentSchedules
                                     .Where(x => x.ContractManagementID == contract.ContractManagementID)
-                                    .FirstOrDefault(x => x.PaymentType == PaymentType.Advance);
+                                    .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
 
-                                //foreach (var item in items)
-                                //{
-                                //    //advanceAmount = advanceAmount + (item.Quantity + item.Addition + item.Omission) * item.UnitPrice;
-
-                                //}
-                                advanceAmount = items.Sum(x => x.Total);
-
-                                if (schedule != null && schedule.Percentage > 0)
-                                    advanceAmount = advanceAmount * schedule.Percentage / 100;
-                                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                                //if (advanceTakenAmount >= advanceAmount)
-                                //    ModelState.AddModelError("over", "Overpaying the supplier is not possible");
+                                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount) + apPayment.PrepaymentAmount;
+                                decimal advancePossibleAmount = (totalAmount * advanceAllowedPerent) / 100;
+                                if (advanceTakenAmount >= advancePossibleAmount)
+                                    ModelState.AddModelError("over", "Overpaying the supplier is not possible");
                             }
                         }
                         else
@@ -501,11 +495,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             .AsQueryable();
                         if (advanceTaken.Any())
                         {
-                            decimal advanceAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-                                .Select(x => new { x.UnitPrice, x.Quantity }).ToList()
-                                .Sum(x => x.UnitPrice * x.Quantity);
-                            decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                            if (advanceTakenAmount >= advanceAmount)
+                            decimal totalAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
+                                .Sum(x => x.Total);
+                            decimal advanceAllowedPerent = _db.PoPaymentSchedules
+                                .Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
+                                .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
+
+                            decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount) + apPayment.PrepaymentAmount;
+                            decimal advancePossibleAmount = (totalAmount * advanceAllowedPerent) / 100;
+                            if (advanceTakenAmount >= advancePossibleAmount)
                                 ModelState.AddModelError("over", "Overpaying the supplier is not possible");
                         }
                         #endregion
@@ -529,8 +527,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         }
                         #region check over advance taken
 
-                        var contract = _db.ContractManagements.Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                           .Where(x => x.IsPaid == false).FirstOrDefault();
+                        var contract = _db.ContractManagements
+                            .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ProcurementRefNo == int.Parse(apPayment.PurchaseReference)).FirstOrDefault();
 
                         if (contract != null)
                         {
@@ -541,25 +540,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                                 .ToList();
                             if (advanceTaken.Any())
                             {
-                                decimal advanceAmount = 0;
-
-                                var items = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).ToList();
-
-                                var schedule = _db.ContractPaymentSchedules
+                                decimal totalAmount = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).Sum(x => x.Total);
+                                decimal advanceAllowedPerent = _db.ContractPaymentSchedules
                                     .Where(x => x.ContractManagementID == contract.ContractManagementID)
-                                    .FirstOrDefault(x => x.PaymentType == PaymentType.Advance);
+                                    .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
 
-                                //foreach (var item in items)
-                                //{
-                                //    //advanceAmount = advanceAmount + (item.Quantity + item.Addition + item.Omission) * item.UnitPrice;
-
-                                //}
-                                advanceAmount = items.Sum(x => x.Total);
-
-                                if (schedule != null && schedule.Percentage > 0)
-                                    advanceAmount = advanceAmount * schedule.Percentage / 100;
-                                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                                if (advanceTakenAmount >= advanceAmount)
+                                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount) + apPayment.PrepaymentAmount;
+                                decimal advancePossibleAmount = (totalAmount * advanceAllowedPerent) / 100;
+                                if (advanceTakenAmount >= advancePossibleAmount)
                                     ModelState.AddModelError("over", "Overpaying the supplier is not possible");
                             }
                         }
