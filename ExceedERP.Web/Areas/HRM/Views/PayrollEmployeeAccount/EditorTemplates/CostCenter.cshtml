@@ -1,7 +1,17 @@
-﻿<div id="popupwrapper">
-    <input class="k-textbox" id="CostCenterAccountCode" name="CostCenterAccountCode" disabled="disabled" data-bind="value:CostCenterAccountCode">
-    <img src="~/Content/Images/search.png" onclick="SelectCostCneter()" />
-</div>
+﻿@using System.Collections
+
+
+@(Html.Kendo().DropDownListFor(x => x)
+
+                            .DataValueField("Value")
+                            .DataTextField("Name")
+                            .OptionLabel("Select Cost Center")
+                            .AutoBind(true)
+                              .ValuePrimitive(true)
+                             .Filter("contains")
+                            .DataSource(
+                    read => read.Read(re => re.Action("GetCostCenter", "EmployeeAccount"))))
+
 
 
 

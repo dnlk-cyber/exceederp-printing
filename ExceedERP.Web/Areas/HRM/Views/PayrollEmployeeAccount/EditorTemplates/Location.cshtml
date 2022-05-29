@@ -1,7 +1,14 @@
-﻿<div id="popupwrapper">
-    <input class="k-textbox" id="SubAccCode" name="SubAccCode" disabled="disabled" data-bind="value:SubAccCode">
-    <img src="~/Content/Images/search.png" onclick="SelectLocation()" />
-</div>
+﻿
+@(Html.Kendo().DropDownListFor(x => x)
+
+                                .DataValueField("Value")
+                                .DataTextField("Name")
+                                .OptionLabel("Select Location")
+                                 .Filter("contains")
+                                .DataSource(
+                        read => read.Read(re => re.Action("GetLocationCode", "EmployeeAccount"))))
+
+
 
 
 

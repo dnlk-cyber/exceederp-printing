@@ -39,9 +39,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
         public JsonResult GetCostCenter()
         {
-            var glchartofaccountaccount = db.GLChartOfAccountCostCenters.AsQueryable();
-            ViewData["CostAcc"] = glchartofaccountaccount;
-            return Json(glchartofaccountaccount.Select(i => new { GlchartAccunt = i.Values + "_" + i.Description, GlValue = i.Values }),
+            var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.CostCenter);
+            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId);
+
+            return Json(costcenters.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetAccountCode()
@@ -68,14 +69,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
         public JsonResult GetSubAccountCode()
         {
-            var glchartofaccountaccount = db.GLChartOfAccountSubAccounts.AsQueryable();
-            ViewData["SubAccCode"] = glchartofaccountaccount;
-            return Json(glchartofaccountaccount.Select(i => new { GlchartSubAccunt = i.Values + "_" + i.Description, GlValue = i.Values }),
+            var subAccountSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.SubAccount);
+            var subAccounts = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
+
+            return Json(subAccounts.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
+                 JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetLocationCode()
+        {
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.Location);
+            var locationAccounts = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+
+            return Json(locationAccounts.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetCompany()
         {
-            var glCompany = db.GLChartOfAccountLocations.AsQueryable();
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.Location);
+            var glCompany = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId).AsQueryable();
             return Json(glCompany.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }

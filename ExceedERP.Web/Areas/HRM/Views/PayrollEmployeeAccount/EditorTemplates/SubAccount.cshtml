@@ -1,0 +1,9 @@
+﻿@(Html.Kendo().DropDownListFor(x => x)
+
+                            .DataValueField("Value")
+                            .DataTextField("Name")
+                            .OptionLabel("Select Sub Account")
+                             .Filter("contains")
+                            .DataSource(
+                    read => read.Read(re => re.Action("GetSubAccountCode", "EmployeeAccount"))))
+

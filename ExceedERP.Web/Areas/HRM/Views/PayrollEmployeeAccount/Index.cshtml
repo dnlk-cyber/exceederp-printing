@@ -16,11 +16,10 @@
               f.Multi(true);
           });
           columns.ForeignKey(c => c.CostCenterAccountCode, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description").EditorTemplateName("CostCenter").Width(220); //(IEnumerable)ViewData["CostAcc"], "GlchartAccunt", "GlValue"
-          columns.ForeignKey(c => c.SubAccCode, (System.Collections.IEnumerable)ViewData["SubAccCode"], "Values", "Description").EditorTemplateName("Location").Width(220);
+          columns.ForeignKey(c => c.SubAccCode, (System.Collections.IEnumerable)ViewData["SubAccCode"], "Values", "Description").EditorTemplateName("SubAccount").Width(220);
+          columns.ForeignKey(c => c.LocationAccCode, (System.Collections.IEnumerable)ViewData["LocationCode"], "Values", "Description").EditorTemplateName("Location").Width(220);
           columns.Bound(c => c.Remark).Width(150);
-          //columns.Bound(c => c.StaffAdvanceAccountCode).Title("Staff Advance Acc.code").EditorTemplateName("StaffAdvance").Width(220);
-          //columns.Bound(c => c.StaffLoanAccountCode).Title("Staff Loan Acc.code").EditorTemplateName("StaffLoan").Width(220); 
-
+          
           columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
 
@@ -51,7 +50,7 @@
             //})
             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("PayrollEmployeeAccount").Window(window => { window.Title("Employee Account"); window.Scrollable(false); }))
            .Scrollable(h => h.Height(500))
-             .Groupable()
+            
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -113,37 +112,7 @@
 
     }
 
-    function sync_handler(e) {
-        this.read();
-
-    }
-    function OnEdit(e) {
-        try {
-            var grid = e.sender._data[0];
-          //  var selectedRows = this.select();
-           // var rowData = this.dataItem(grid.data[0]);
-          //  var rowData = grid.data[0];
-            var id = grid.EmployeeId;
-        $.ajax({
-            url: '@Url.Action("FileterEmployee", "PayrollEmployeeAccount")',
-            //contentType: "application/json; charset=utf-8",
-            data: { id: id },
-            type: 'POST',
-            cache: false,
-            success: function(result) {
-                r = result;
-                if (r === "0") {
-                    alert("The Employee Cost center is already registered!!");
-                }
-            }
-
-
-        });
-    } catch (e) {
-      //  alert("Please select the row!!");
-    }
-
-    }
+   
 </script>
 <style>
     div.k-edit-form-container {
@@ -178,150 +147,4 @@
 </style>
 
 
-<script>
 
-    var popup;
-    var aCode;
-    var templbtn;
-
-    function SelectLocation() {
-        templbtn = "acc";
-        var wnd = $("#Location").data("kendoWindow");
-        wnd.center().open();
-    }
-
-
-    //function SelectDebator() {
-       
-    //    var wnd = $("#Debator").data("kendoWindow");
-    //    wnd.center().open();
-    //}
-
-    //function SelectLoan() {
-
-    //    var wnd = $("#Loan").data("kendoWindow");
-    //    wnd.center().open();
-    //}
-    function SelectCostCneter() {
-       
-        var wnd = $("#CostCneterAccount").data("kendoWindow");
-        wnd.center().open();
-    }
-    
-
-    function onChange(e) {
-
-        var id = e.sender.dataItem(e.container).SubAccCode;
-    
-        var id2 = e.sender.dataItem(e.container).CostCenterAccountCode;
-       
-        $("#SubAccounts").data("kendoComboBox").value(id);
-        $("#CostAccount").data("kendoComboBox").value(id2);
-        //$("#SubAccounts").data("kendoComboBox").value(s[3]);
-        //$("#Accounts").data("kendoComboBox").value(s[0]);
-      
-
-
-    }
-
-    function Costclicked(e) {
-
-        var account = $("#CostAccount").data("kendoComboBox").value();
-        var glAcc = account;
-        if (account !== "") {
-            
-            $("#CostCenterAccountCode").val(glAcc).trigger("change");
-           var window = $("#CostCneterAccount").data("kendoWindow");
-            window.close();
-        }
-        else
-        {
-            alert("Please select all the neccessary Fields");
-        }
-
-    }
-   
-   
-    function Locationclicked(e) {
-
-        var account = $("#SubAccounts").data("kendoComboBox").value();
-        var glAcc = account;
-        if (account !== "") {
-
-            $("#SubAccCode").val(glAcc).trigger("change");
-            var window = $("#Location").data("kendoWindow");
-            window.close();
-        }
-        else {
-            alert("Please select all the neccessary Fields");
-        }
-
-    }
-   
-</script>
-@(Html.Kendo().Window().Name("CostCneterAccount")
-    .Title("Cost Center Account")
-    .Visible(false)
-    .Modal(true)
-      .Content(@<text>
-        @(Html.Kendo().ComboBox()
-                                  .Name("CostAccount")
-                          .HtmlAttributes(new { style = "width:200px" })
-                          .ValuePrimitive(true)
-                          .Placeholder("Account...")
-                                    .MinLength(2)
-                                                     .Filter("contains")
-                                  .DataTextField("GlchartAccunt")
-                                  .DataValueField("GlValue")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetCostCenter", "EmployeeAccount", new { area = "HRM" }));
-                              
-                             // .ServerFiltering(true);
-                          })
-              )
-
-@Html.ValidationMessageFor(m => m)
-<br />
-<div class="pull-right">
-    @Html.Kendo().Button().Name("btncost").Content("Submit").Events(ev => ev.Click("Costclicked"))
-
-</div>
-
-</text>)
-    .Draggable(true)
-    .Width(300)
-      )
-
-@(Html.Kendo().Window().Name("Location")
-        .Title("Sub Account")
-    .Visible(false)
-    .Modal(true)
-      .Content(@<text>
-      @(Html.Kendo().ComboBox()
-                          .Name("SubAccounts")
-                          .ValuePrimitive(true)
-                          .Placeholder("SubAccount...")
-                                   .Filter("contains")
-              .MinLength(2)
-                          .HtmlAttributes(new { style = "width:200px" })
-                                  .DataTextField("GlchartSubAccunt")
-                                  .DataValueField("GlValue")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetSubAccountCode", "PayrollAcounts", new {area = "HRM"}));
-                              // .ServerFiltering(true);
-                          })
-    )
-
-        @Html.ValidationMessageFor(m => m)
-        <br />
-        <div class="pull-right">
-            @Html.Kendo().Button().Name("btnLocation").Content("Submit").Events(ev => ev.Click("Locationclicked"))
-
-        </div>
-
-    </text>)
-                    .Draggable(true)
-                    .Width(300)
-)

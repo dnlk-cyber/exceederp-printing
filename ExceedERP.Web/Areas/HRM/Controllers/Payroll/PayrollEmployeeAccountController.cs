@@ -13,6 +13,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.HRM.Payroll.Setting;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 {
@@ -29,11 +30,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             var list = inputs.GetPayrollPlacmentEmployees(User.Identity.Name).Where(x => x.IsActive).ToList();
             ViewData["EmployeeList"] = list;
-            var costcenters = db.GLChartOfAccountCostCenters;
+
+            var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.CostCenter);
+            var costcenters = db.GlChartOfAccountSegments.Where(x=>x.GLSegmentSetupId== costCenterSeg.GLSegmentSetupId);
             ViewData["costCenter"] = costcenters;
-            var subAccCodes = db.GLChartOfAccountSubAccounts;
+
+            var subAccSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.SubAccount);
+            var subAccCodes = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccSeg.GLSegmentSetupId);
             ViewData["SubAccCode"] = subAccCodes;
-           // PrepareEmployeeAccount();
+
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.Location);
+            var loactionCodes = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            ViewData["LocationCode"] = loactionCodes;
+            // PrepareEmployeeAccount();
             return View();
         }
 
@@ -86,7 +95,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
         private string GetCostCenterDescription(string code)
         {
-            var costCenterDesc = db.GLChartOfAccountCostCenters.Where(x => x.Values == code).FirstOrDefault();
+            var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var costCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId).AsQueryable();
+            var costCenterDesc = costCenters.Where(x => x.Values == code).FirstOrDefault();
             if (costCenterDesc != null)
             {
 
@@ -97,56 +108,50 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PayrollEmployeeAccounts_Create([DataSourceRequest]DataSourceRequest request, PayrollEmployeeAccount payrollEmployeeAccount)
         {
-            ModelState.Clear();
+            var checkexistance = db.PayrollEmployeeAccounts.FirstOrDefault(x => x.EmployeeId == payrollEmployeeAccount.EmployeeId);
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "The Employee Cost center is already registered!!");
+            }
+            else if (BranchCode(payrollEmployeeAccount.EmployeeId) == null)
+            {
+                ModelState.AddModelError("", "There is no assigned cost center value for this employee placement!!");
+            }
+
+
             if (ModelState.IsValid)
             {
-                var checkexistance = db.PayrollEmployeeAccounts.FirstOrDefault(x => x.EmployeeId == payrollEmployeeAccount.EmployeeId);
-                if (checkexistance != null)
-                {
-                    ModelState.AddModelError("", "The Employee Cost center is already registered!!");
-                }
-                else if (BranchCode(payrollEmployeeAccount.EmployeeId) == null)
-                {
-                    ModelState.AddModelError("", "There is no assigned cost center value for this employee placement!!");
-                }
 
-
-                else
+                var entity = new PayrollEmployeeAccount
                 {
-                    //if (CheckStatus)
-                    //{
-                    var entity = new PayrollEmployeeAccount
-                    {
-                        DateCreated = DateTime.Now,
-                        CreatedBy = payrollEmployeeAccount.CreatedBy,
-                        EmployeeId = payrollEmployeeAccount.EmployeeId,
-                        CostCenterAccountCode = BranchCode(payrollEmployeeAccount.EmployeeId),
-                        LocationAccCode = payrollEmployeeAccount.LocationAccCode,
-                        //StaffDebtorAccountCode = payrollEmployeeAccount.StaffDebtorAccountCode,
-                        //StaffAdvanceAccountCode = payrollEmployeeAccount.StaffAdvanceAccountCode,
-                        //StaffLoanAccountCode = payrollEmployeeAccount.StaffLoanAccountCode,
-                        //OrgBranchName = payrollEmployeeAccount.OrgBranchName,
-                        //Status = payrollEmployeeAccount.Status,
-                        //isSendForApproval = payrollEmployeeAccount.isSendForApproval,
-                        //isOnlineApproved = payrollEmployeeAccount.isOnlineApproved,
-                        //OnlineApprovedBy = payrollEmployeeAccount.OnlineApprovedBy,
-                        //OnlineApprovedTime = payrollEmployeeAccount.OnlineApprovedTime,
-                        //isVoid = payrollEmployeeAccount.isVoid,
-                        SubAccCode = payrollEmployeeAccount.SubAccCode,
-                        Remark = payrollEmployeeAccount.Remark,
-                        ModifiedBy = payrollEmployeeAccount.ModifiedBy,
-                        LastModified = payrollEmployeeAccount.LastModified,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
-                    };
+                    DateCreated = DateTime.Now,
+                    CreatedBy = payrollEmployeeAccount.CreatedBy,
+                    EmployeeId = payrollEmployeeAccount.EmployeeId,
+                    CostCenterAccountCode = BranchCode(payrollEmployeeAccount.EmployeeId),
+                    LocationAccCode = payrollEmployeeAccount.LocationAccCode,
+                    //StaffDebtorAccountCode = payrollEmployeeAccount.StaffDebtorAccountCode,
+                    //StaffAdvanceAccountCode = payrollEmployeeAccount.StaffAdvanceAccountCode,
+                    //StaffLoanAccountCode = payrollEmployeeAccount.StaffLoanAccountCode,
+                    //OrgBranchName = payrollEmployeeAccount.OrgBranchName,
+                    //Status = payrollEmployeeAccount.Status,
+                    //isSendForApproval = payrollEmployeeAccount.isSendForApproval,
+                    //isOnlineApproved = payrollEmployeeAccount.isOnlineApproved,
+                    //OnlineApprovedBy = payrollEmployeeAccount.OnlineApprovedBy,
+                    //OnlineApprovedTime = payrollEmployeeAccount.OnlineApprovedTime,
+                    //isVoid = payrollEmployeeAccount.isVoid,
+                    SubAccCode = payrollEmployeeAccount.SubAccCode,
+                    Remark = payrollEmployeeAccount.Remark,
+                    ModifiedBy = payrollEmployeeAccount.ModifiedBy,
+                    LastModified = payrollEmployeeAccount.LastModified,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                };
 
-                    db.PayrollEmployeeAccounts.Add(entity);
-                    db.SaveChanges();
-                    payrollEmployeeAccount.PayrollEmployeeAccountId = entity.PayrollEmployeeAccountId;
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "payroll employee account", "Success", User.Identity.Name, $"added employee account for employee {entity.Employee.EmployeeCode} location {entity.LocationAccCode} sub account {entity.SubAccCode}", Modules.Payroll);
-                    #endregion
-                    //}
-                }
+                db.PayrollEmployeeAccounts.Add(entity);
+                db.SaveChanges();
+                payrollEmployeeAccount.PayrollEmployeeAccountId = entity.PayrollEmployeeAccountId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll employee account", "Success", User.Identity.Name, $"added employee account for employee {entity.EmployeeId} location {entity.LocationAccCode} sub account {entity.SubAccCode}", Modules.Payroll);
+                #endregion
             }
 
             return Json(new[] { payrollEmployeeAccount }.ToDataSourceResult(request, ModelState));
@@ -214,7 +219,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PayrollEmployeeAccounts_Update([DataSourceRequest]DataSourceRequest request, PayrollEmployeeAccount payrollEmployeeAccount)
         {
-            ModelState.Clear();
+          
             if (ModelState.IsValid)
             {
 
@@ -248,7 +253,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "payroll employee account", "Success", User.Identity.Name, $"updated employee account for employee {entity.Employee.EmployeeCode} location {entity.LocationAccCode} sub account {entity.SubAccCode}", Modules.Payroll);
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll employee account", "Success", User.Identity.Name, $"updated employee account for employee {entity.EmployeeId} location {entity.LocationAccCode} sub account {entity.SubAccCode}", Modules.Payroll);
                 #endregion
             }
 
@@ -306,109 +311,58 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     .Where(x => x.BranchId == placement.BranchId)
                     .FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
 
+                var location = db.Branch
+                    .Where(x => x.BranchId == placement.BranchId).FirstOrDefault();
+
                 var payrollEmployeeAccount = db.PayrollEmployeeAccounts.AsNoTracking()
                     .FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
 
                 if (payrollEmployeeAccount != null)
                 {
-                    if (costcenter != null)
+                    #region update
+                    var entity = new PayrollEmployeeAccount
                     {
-                        #region update
-                        var entity = new PayrollEmployeeAccount
-                        {
-                            PayrollEmployeeAccountId = payrollEmployeeAccount.PayrollEmployeeAccountId,
-                            EmployeeId = payrollEmployeeAccount.EmployeeId,
-                            CostCenterAccountCode = costcenter.Values,
-                            LocationAccCode = payrollEmployeeAccount.LocationAccCode,
-                            SubAccCode = payrollEmployeeAccount.SubAccCode,
+                        PayrollEmployeeAccountId = payrollEmployeeAccount.PayrollEmployeeAccountId,
+                        EmployeeId = payrollEmployeeAccount.EmployeeId,
+                        CostCenterAccountCode = costcenter.Values ?? "NA",
+                        LocationAccCode = location.LocationAccount ?? "NA",
+                        SubAccCode = payrollEmployeeAccount.SubAccCode,
 
-                            Remark = payrollEmployeeAccount.Remark,
-                            DateCreated = payrollEmployeeAccount.DateCreated,
-                            CreatedBy = payrollEmployeeAccount.CreatedBy,
-                            ModifiedBy = User.Identity.Name,
-                            LastModified = DateTime.Now,
-                            OrgBranchName = placement.BranchId.ToString()
-                        };
+                        Remark = payrollEmployeeAccount.Remark,
+                        DateCreated = payrollEmployeeAccount.DateCreated,
+                        CreatedBy = payrollEmployeeAccount.CreatedBy,
+                        ModifiedBy = User.Identity.Name,
+                        LastModified = DateTime.Now,
+                        OrgBranchName = placement.BranchId.ToString()
+                    };
 
-                        db.PayrollEmployeeAccounts.Attach(entity);
-                        db.Entry(entity).State = EntityState.Modified;
-                        db.SaveChanges();
+                    db.PayrollEmployeeAccounts.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
 
-                        #endregion
-                    }
-                    else
-                    {
-                        #region create empty
-
-                        var entity = new PayrollEmployeeAccount
-                        {
-
-                            EmployeeId = placement.EmployeeId,
-                            CostCenterAccountCode = "NA",
-                            LocationAccCode = "NA",
-                            SubAccCode = "NA",
-
-                            Remark = "",
-                            DateCreated = DateTime.Now,
-                            CreatedBy = User.Identity.Name,
-                            OrgBranchName = placement.BranchId.ToString()
-                        };
-
-                        db.PayrollEmployeeAccounts.Add(entity);
-                        db.SaveChanges();
-
-                        #endregion
-                    }
+                    #endregion
                 }
                 else
                 {
-                    if (costcenter != null)
+                    #region create empty
+
+                    var entity = new PayrollEmployeeAccount
                     {
-                        #region create
 
-                        var entity = new PayrollEmployeeAccount
-                        {
+                        EmployeeId = placement.EmployeeId,
+                        CostCenterAccountCode = "NA",
+                        LocationAccCode = "NA",
+                        SubAccCode = "NA",
+                        Remark = "",
+                        DateCreated = DateTime.Now,
+                        CreatedBy = User.Identity.Name,
+                        OrgBranchName = placement.BranchId.ToString()
+                    };
 
-                            EmployeeId = placement.EmployeeId,
-                            CostCenterAccountCode = costcenter.Values,
-                            LocationAccCode = "",
-                            SubAccCode = "",
+                    db.PayrollEmployeeAccounts.Add(entity);
+                    db.SaveChanges();
 
-                            Remark = "",
-                            DateCreated = DateTime.Now,
-                            CreatedBy = User.Identity.Name,
-                            OrgBranchName = placement.BranchId.ToString()
-                        };
-
-                        db.PayrollEmployeeAccounts.Add(entity);
-                        db.SaveChanges();
-
-                        #endregion
-                    }
-                    else
-                    {
-                        #region create empty
-
-                        var entity = new PayrollEmployeeAccount
-                        {
-
-                            EmployeeId = placement.EmployeeId,
-                            CostCenterAccountCode = "NA",
-                            LocationAccCode = "NA",
-                            SubAccCode = "NA",
-
-                            Remark = "",
-                            DateCreated = DateTime.Now,
-                            CreatedBy = User.Identity.Name,
-                            OrgBranchName = placement.BranchId.ToString()
-                        };
-
-                        db.PayrollEmployeeAccounts.Add(entity);
-                        db.SaveChanges();
-
-                        #endregion
-
-                    }
+                    #endregion
 
                 }
             }

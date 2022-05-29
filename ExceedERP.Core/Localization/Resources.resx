@@ -3268,7 +3268,7 @@
     <value>Employee</value>
   </data>
   <data name="HR_Payroll_PayrollSetting_PayrollEmployeeAccount_LocationAccCode" xml:space="preserve">
-    <value>Per Employee Account/Sub Account</value>
+    <value>Location Code</value>
   </data>
   <data name="HR_PerformanceManagment_EmployeeMeasurementDefinition_EmpMeasurementDefinitionId" xml:space="preserve">
     <value>Emp Measurement Definition Id</value>
@@ -5960,5 +5960,8 @@
   </data>
   <data name="NavigatorTraining_DepartmentTrainingPlan" xml:space="preserve">
     <value>Department Training Need Assessment</value>
+  </data>
+  <data name="HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode" xml:space="preserve">
+    <value>Sub Account Code</value>
   </data>
 </root>
