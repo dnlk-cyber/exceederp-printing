@@ -429,6 +429,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region payment request
 
                     var paymentRequestLines = _db.PaymentRequestLines.Where(x=>x.PaymentRequestId==did).ToList();
+                    var paymentrequest = _db.PaymentRequests.Find(did);
                     foreach (var requestLine in paymentRequestLines)
                     {
                         var apitem = _db.ApSetupItems.Find(int.Parse(requestLine.ItemName));
@@ -437,7 +438,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             var entity = new ApDirectPaymentLine
                             {
                                 ApDirectPaymentId = record.ApDirectPaymentId,
-                                Purpose = requestLine.PaymentRequest.ReasonOfPayment!=null? requestLine.PaymentRequest.ReasonOfPayment:"NA",
+                                Purpose = paymentrequest.ReasonOfPayment!=null? paymentrequest.ReasonOfPayment:"NA",
                                 Amount = requestLine.Amount,
                                 ForexAmount = requestLine.Amount,
                                 ExchangeRate = 1,
@@ -469,15 +470,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 case "TRAVEL-ORDER":
                     #region travel order
 
-                    var apTravelOrders = _db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == did).ToList();
-                    foreach (var travelOrder in apTravelOrders)
+                    var adbvancePyamnets = _db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == did).ToList();
+                    var travelOder = _db.ApTravelOrders.Find(did);
+                    foreach (var advance in adbvancePyamnets)
                     {
                         var entity = new ApDirectPaymentLine
                         {
                             ApDirectPaymentId = record.ApDirectPaymentId,
-                            Purpose = travelOrder.TravelOrder.PurposeOfTravel,
-                            Amount = travelOrder.Total,
-                            ForexAmount = travelOrder.Total,
+                            Purpose = travelOder.PurposeOfTravel,
+                            Amount = advance.Total,
+                            ForexAmount = advance.Total,
                             ExchangeRate = 1,
                             Currency = "NA",
                             AccountCode = "NA",
@@ -487,13 +489,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             WithholdingAmount = 0,
                             WithholdTax = false,
                             WithholdTaxAmount = 0,
-                            TotalAmount = travelOrder.Total,
-                            NetPayable = travelOrder.Total,
+                            TotalAmount = advance.Total,
+                            NetPayable = advance.Total,
                             Remark = "",
                             DateCreated = DateTime.Now,
-                            LastModified = travelOrder.LastModified,
+                            LastModified = advance.LastModified,
                             CreatedBy = User.Identity.Name,
-                            ModifiedBy = travelOrder.ModifiedBy
+                            ModifiedBy = advance.ModifiedBy
                         };
 
                         _db.ApDirectPaymentLines.Add(entity);
@@ -506,12 +508,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region travel expense claim
 
                     var expensePayments = _db.ApTravelExpensePayments.Where(x => x.ApTravelExpenseClaimId == did).ToList();
+                    var expenseclaim = _db.ApTravelExpenseClaims.Find(did);
                     foreach (var payment in expensePayments)
                     {
                         var entity = new ApDirectPaymentLine
                         {
                             ApDirectPaymentId = record.ApDirectPaymentId,
-                            Purpose = payment.ApTravelExpenseClaim.PurposeOfTravel,
+                            Purpose = expenseclaim.PurposeOfTravel,
                             Amount = payment.Amount,
                             ForexAmount = payment.Amount,
                             ExchangeRate = 1,
