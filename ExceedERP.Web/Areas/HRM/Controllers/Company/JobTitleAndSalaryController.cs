@@ -1,9 +1,11 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -27,7 +29,52 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var structres = db.MainCompanyStructures.AsQueryable();
             ViewData["organization"] = structres;
 
+            var setting = db.SalarySettings.FirstOrDefault();
+            if(setting != null)
+            {
+                ViewBag.IsJobTitleIncludedInSalary = setting.IsJobtitleIncludedInSalary;
+            }
+            else
+            {
+                ViewBag.IsJobTitleIncludedInSalary = false;
+            }
+            
+
             return View();
+        }
+
+        public string SalarySetting(bool isJobTitleIncludedInSalary)
+        {
+            var setting = db.SalarySettings.FirstOrDefault();
+            if(setting != null)
+            {
+                setting.IsJobtitleIncludedInSalary = isJobTitleIncludedInSalary;
+
+                db.Entry(setting).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            else
+            {
+                var entity = new SalarySetting
+                {
+                    IsJobtitleIncludedInSalary = isJobTitleIncludedInSalary
+                };
+
+                db.SalarySettings.Add(entity);
+                db.SaveChanges();
+            }
+
+            return "Salary Successfully Updated";
+        }
+        public bool GetSalarySetting()
+        {
+            var setting = db.SalarySettings.FirstOrDefault();
+            if(setting != null)
+            {
+                return setting.IsJobtitleIncludedInSalary;
+            }
+
+            return false;
         }
     }
 }

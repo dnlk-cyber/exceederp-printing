@@ -1105,13 +1105,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             SalaryJobTitle salary = new SalaryJobTitle();
 
-            salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step && s.LookupId == job);
-            SalaryAmount = 0;
-            if (salary != null)
-            {             
-                SalaryAmount = salary.Salary;
-                return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+            var setting = db.SalarySettings.FirstOrDefault();
+            if(setting != null && setting.IsJobtitleIncludedInSalary)
+            {
+                salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step && s.LookupId == job);
+                if (salary != null)
+                {
+                    SalaryAmount = salary.Salary;
+                    return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                }
             }
+            else
+            {
+                salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step);
+                SalaryAmount = 0;
+                if (salary != null)
+                {
+                    SalaryAmount = salary.Salary;
+                    return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                }
+            }           
 
             return 0; //Json(0, JsonRequestBehavior.AllowGet);
         }

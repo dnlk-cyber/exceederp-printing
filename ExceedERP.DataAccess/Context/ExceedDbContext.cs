@@ -479,6 +479,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region HRM
+            modelBuilder.Configurations.Add(new SalarySettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
@@ -1879,6 +1880,7 @@ namespace ExceedERP.DataAccess.Context
 
         #region HRM
         #region Company
+        public System.Data.Entity.DbSet<SalarySetting> SalarySettings { get; set; }
         public System.Data.Entity.DbSet<WaterMark> WaterMarks { get; set; }
         public System.Data.Entity.DbSet<ManPowerPlanningRequest> ManPowerPlanningRequests { get; set; }
         public System.Data.Entity.DbSet<BusinessUnit> BusinessUnits { get; set; }

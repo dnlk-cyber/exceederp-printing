@@ -30,6 +30,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public static string ReferenceType { get; set; }
         public static string LetterId { get; set; }
         public static int CosignId { get; set; }
+
+        public static bool GetSalarySetting()
+        {
+            ExceedDbContext _db = new ExceedDbContext();
+            var setting = _db.SalarySettings.FirstOrDefault();
+            if (setting != null)
+            {
+                return setting.IsJobtitleIncludedInSalary;
+            }
+
+            return false;
+        }
         public List<EmployeeIdView> GetEmployees(string user)
         {
             return GetPlacmentEmployees(user);

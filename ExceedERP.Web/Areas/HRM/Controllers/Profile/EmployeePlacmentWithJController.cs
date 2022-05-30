@@ -614,12 +614,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 placement.PreparedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId && s.LookupId == placement.LookupId);
-
-                if (salary != null)
+                var setting = db.SalarySettings.FirstOrDefault();
+                if(setting != null && setting.IsJobtitleIncludedInSalary)
                 {
-                    placement.Salary = salary.Salary;
+                    var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId && s.LookupId == placement.LookupId);
+
+                    if (salary != null)
+                    {
+                        placement.Salary = salary.Salary;
+                    }
                 }
+                else
+                {
+                    var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId);
+
+                    if (salary != null)
+                    {
+                        placement.Salary = salary.Salary;
+                    }
+                }
+            
 
                 var entity = new Placement
                 {
@@ -821,13 +835,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             if (ModelState.IsValid)
             {
-                var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId && s.LookupId == placement.LookupId);
-
-                if (salary != null)
-                {
-                    placement.Salary = salary.Salary;
-                }
-
                 var entity = new Placement
                 {
                     PlacementId = placement.PlacementId,
@@ -1124,13 +1131,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             SalaryJobTitle salary = new SalaryJobTitle();
 
-            salary = db.SalariesJobTitles.Where(s => s.RankId == rank && s.StepId == step && s.LookupId == job).FirstOrDefault();
-            SalaryAmount = 0;
-            if (salary != null)
+            var setting = db.SalarySettings.FirstOrDefault();
+            if (setting != null && setting.IsJobtitleIncludedInSalary)
             {
-                SalaryAmount = salary.Salary;
-                return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step && s.LookupId == job);
+                if (salary != null)
+                {
+                    SalaryAmount = salary.Salary;
+                    return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                }
             }
+            else
+            {
+                salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rank && s.StepId == step);
+                SalaryAmount = 0;
+                if (salary != null)
+                {
+                    SalaryAmount = salary.Salary;
+                    return salary.Salary; //Json(salary.SalaryAmount, JsonRequestBehavior.AllowGet);
+                }
+            }
+
             return 0; //Json(0, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetJobTitle(int OrgStructureId)

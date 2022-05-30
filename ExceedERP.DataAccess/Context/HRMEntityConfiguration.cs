@@ -34,7 +34,15 @@ namespace ExceedERP.DataAccess
 {
 
     #region HRM
-   
+
+    public class SalarySettingEntityTypeConfiguration : EntityTypeConfiguration<SalarySetting>
+    {
+        public SalarySettingEntityTypeConfiguration()
+        {
+            this.ToTable("SalarySetting", "HRM");
+            this.HasKey<int>(o => o.SalarySettingId);
+        }
+    }
 
     public class WaterMarkEntityTypeConfiguration : EntityTypeConfiguration<WaterMark>
     {

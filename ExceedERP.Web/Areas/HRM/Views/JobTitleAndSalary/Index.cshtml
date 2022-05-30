@@ -2,236 +2,142 @@
 @using ExceedERP.Core.Domain.HRM.SalaryStructure
 @using ExceedERP.Core.Localization
 @using System.Collections
+@using ExceedERP.Web.Areas.HRM.Controllers
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    //var sett = new HRMInputs();
+    bool isJobTitleIncludedInSalary = HRMInputs.GetSalarySetting();
 }
 
 
 @(Html.Kendo().TabStrip()
-                            .Name("SettingTabStrip")
-
+          .Name("SettingTabStrip")
           .Animation(animation =>
-
-                  animation.Open(effect =>
-                      effect.Fade(FadeDirection.In)))
+          animation.Open(effect =>
+          effect.Fade(FadeDirection.In)))
           .Items(tabstrip =>
           {
               tabstrip.Add()
                       .Text("Job Title")
                       .Selected(true)
-                      // .ImageUrl("~/Content/Images/32x32/traffic-light-red.png")
-                      // .ImageHtmlAttributes(new { style = "width: 32px; height: 32px; padding: 3px;" })
                       .Content(@<text> Maintain Job Title
                         @(Html.Kendo().Grid<Lookup>()
-                                     .Name("Lookupgrid")
-                                 .Columns(columns =>
-                                 {
-                               // columns.Bound(c => c.Code);
-                               //  columns.Bound(c => c.Category);
-                               // columns.Bound(c => c.Index);
-                               // columns.Bound(c => c.LookupType);
-                               columns.Bound(c => c.Description).EditorTemplateName("DescriptionAutoComplate");
-                               // columns.Bound(c => c.IsDefault);
-                               // columns.Bound(c => c.IsActive);
-                               columns.Bound(c => c.Remark);
-                                           columns.Command(command =>
-                                           {
-                                               if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                               {
-                                                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                               }
-                                               if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                                               {
-                                                   command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                   }
-                                           }).Width(200);
-                                       })
+                            .Name("Lookupgrid")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.Description).EditorTemplateName("DescriptionAutoComplate");
+                                columns.Bound(c => c.Remark);
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);//                                   }
+                                }
+                                ).Width(200);
+
+                            })
                                .ToolBar(toolbar =>
                                {
-                                         toolbar.Create();
-
-                             // toolbar.Excel();
-                                            @*toolbar.Template(@<text>
-                                                       <div class="toolbar" style="">
-                                                           @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                                                       {
-                                                               @item.CreateButton(Resources.ActionButton_AddNewRecord)
-
-                                                                       }
-
-
-                                                           @if (HttpContext.Current.User.IsInRole("HR_Company_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                                                       {
-
-                                                               @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitle", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
-                                                               @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitle", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
-                                                               @(Html.Kendo().Button()
-                                                                             .Name("btnDownLoad")
-                                                                                  .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
-                                                                             .Events(e => e.Click("DownLoadTemplate"))
-                                                 .Content(Resources.DownloadTemplate))
-                                                            <br>
-                                                            @(Html.Kendo().Upload()
-
-                                                                          .Name("file")
-                                                                                          .Async(a => a.Save("JobTitle_Import", "JobTitle"))
-                                                                          .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                                                    //.ShowFileList(false).
-                                                                    //  .HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-left" })
-                                                                    // .HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" })
-                                                            )
-
-
-                                                                    }
-
-
-                                                    </div>
-                                                </text>);*@
-
-                                                    })
-
+                                   toolbar.Create();
+                               })
                                      .Excel(excel => excel
-                                                  .FileName(Resources.Navigator_Company_MaintainJobTitle + ".xlsx")
-                                      .Filterable(true)
-                                                      .AllPages(true)
-                                          //  .ProxyURL(Url.Action("Excel_Export_Save", "JobTitle"))
-                                          )
-                                               .Pdf(pdf => pdf
-                                              .AllPages()
+                                     .FileName(Resources.Navigator_Company_MaintainJobTitle + ".xlsx")
+                                     .Filterable(true)
+                                     .AllPages(true)
+                                        )
+                                            .Pdf(pdf => pdf
+                                            .AllPages()
                                             .FileName(Resources.Navigator_Company_MaintainJobTitle + ".pdf")
-                                                                   // .ProxyURL(Url.Acion("Pdf_Export_Save", "JobTitle"))
                                                                    )
                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                            .Selectable(selectable =>
-                                                {
-                                                          selectable.Mode(GridSelectionMode.Single);
-                                                          selectable.Type(GridSelectionType.Row);
-                                                      })
+                                         .Selectable(selectable =>
+                                         {
+                                             selectable.Mode(GridSelectionMode.Single);
+                                             selectable.Type(GridSelectionType.Row);
+                                         })
                                              .Scrollable(h => h.Height(500))
-                                                 .Groupable()
+
                                                      .Sortable(sortable =>
                                                      {
-                                                               sortable.SortMode(GridSortMode.SingleColumn);
-                                                           })
-                                                               .Filterable()
-                                                                  .Pageable(pageable => pageable
-                                                                       .Input(true)
-                                                                       .Numeric(false)
-                                                                       .Refresh(true)
-                                                                       .PageSizes(true)
-                                                                                     .ButtonCount(5))
-                                                                 .DataSource(dataSource => dataSource
-                                                                     .Ajax()
-                                                                                          .Events(events =>
-                                                              {
-
-                                                                        events.Error("error_handler(\"Lookupgrid\")");
-                                                                        events.RequestStart("onRequestStart(\"Lookupgrid\")");
-                                                                        events.RequestEnd("onRequestEnd(\"Lookupgrid\")");
-                                                                    })
-
-
-                                                                     .Model(model => model.Id(p => p.LookupId))
-                                                                         .Read(read => read.Action("Lookups_Read", "JobTitle"))
-                                                                         .Create(create => create.Action("Lookups_Create", "JobTitle"))
-                                                                         .Update(update => update.Action("Lookups_Update", "JobTitle"))
-                                                                         .Destroy(destroy => destroy.Action("Lookups_Destroy", "JobTitle"))
+                                                         sortable.SortMode(GridSortMode.SingleColumn);
+                                                     })
+                                                        .Filterable()
+                                                        .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                                        .DataSource(dataSource => dataSource
+                                                         .Ajax()
+                                                         .Events(events =>
+                                                         {
+                                                             events.Error("error_handler(\"Lookupgrid\")");
+                                                             events.RequestStart("onRequestStart(\"Lookupgrid\")");
+                                                             events.RequestEnd("onRequestEnd(\"Lookupgrid\")");
+                                                         })
+                                                          .Model(model => model.Id(p => p.LookupId))
+                                                          .Read(read => read.Action("Lookups_Read", "JobTitle"))
+                                                          .Create(create => create.Action("Lookups_Create", "JobTitle"))
+                                                          .Update(update => update.Action("Lookups_Update", "JobTitle"))
+                                                          .Destroy(destroy => destroy.Action("Lookups_Destroy", "JobTitle"))
                                                                     )
                         )
                     </text>);
 
-
-
-                    tabstrip.Add()
+tabstrip.Add()
 .Text("Grade")
-//.ImageUrl("~/Content/Images/32x32/traffic-light-yellow.png")
-// .ImageHtmlAttributes(new { style = "width: 32px; height: 32px; padding: 3px;" })
 .Content(@<text>Grade
-    @(Html.Kendo().Grid<Rank>()
+                        @(Html.Kendo().Grid<Rank>()
                         .Name("Rankgrid")
                         .Columns(columns =>
                         {
-                                    columns.Bound(c => c.RankName);
-                                    columns.Bound(c => c.StartingSalary);
-                                    columns.Bound(c => c.MaximumSalary);
-                                    columns.Bound(c => c.Remark);
-                                    columns.Command(command =>
-         {
-                                 if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                 {
-                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                 }
-                                 if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-
-                                 {
-                                     command.Destroy().Text(Resources.ActionButton_Cancel);//
-                     }
-                             }).Width(200);
-                                })
+                            columns.Bound(c => c.RankName);
+                            columns.Bound(c => c.StartingSalary);
+                            columns.Bound(c => c.MaximumSalary);
+                            columns.Bound(c => c.Remark);
+                            columns.Command(command =>
+                            {
+                                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                }
+                                if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                                {
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                }
+                            }).Width(200);
+                        })
                                           .ToolBar(toolbar =>
                                           {
-                                                      toolbar.Create();
-
-                                        @*toolbar.Template(@<text>
-                                                <div class="toolbar" style="">
-                                                    @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-
-                                                        {
-                                                @item.CreateButton(Resources.ActionButton_AddNewRecord);
-                                                        }
-                                            @if (HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                                                        {
-                                                @(Html.Kendo().Button()
-                                                              .Name("btnDownLoad")
-                                                              .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                                              .Events(e => e.Click("DownLoadTemplate"))
-                                                              .Content(Resources.DownloadTemplate))
-
-                                                @(Html.Kendo().Upload()
-                                                              .Name("file")
-                                                              .Async(a => a.Save("Rank_Import", "Rank"))
-                                                              .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                                              //.ShowFileList(false).
-                                                              // .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                                )
-
-
-                                                                                                        }
-
-                                                                                        </div>
-
-                                                                                    </text>);*@
-
-
-                                                })
-                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              toolbar.Create();
+                                          })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
                                     .Selectable(selectable =>
                                     {
-                                                selectable.Mode(GridSelectionMode.Single);
-                                                selectable.Type(GridSelectionType.Row);
-                                            })
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
                                         .Scrollable(h => h.Height(500))
-                                            .Groupable()
-                                                     .Sortable(sortable =>
-                                                     {
-                                                                 sortable.SortMode(GridSortMode.SingleColumn);
-                                                             })
+                                         .Sortable(sortable =>
+                                         {
+                                             sortable.SortMode(GridSortMode.SingleColumn);
+                                         })
                                          .Filterable()
-                                            .Pageable(pageable => pageable
-                                                                       .Input(true)
-                                                                       .Numeric(false)
-                                                                       .Refresh(true)
-                                                                       .PageSizes(true)
-                                                                       .ButtonCount(5))
+                                         .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
                                  .DataSource(dataSource => dataSource
                                      .Ajax()
                                          .Events(events =>
-                                           {
-                                                       events.Error("error_handler(\"Rankgrid\")");
-                                                       events.RequestStart("onRequestStart(\"Rankgrid\")");
-                                                       events.RequestEnd("onRequestEnd(\"Rankgrid\")");
-                                                   })
+                                         {
+                                             events.Error("error_handler(\"Rankgrid\")");
+                                             events.RequestStart("onRequestStart(\"Rankgrid\")");
+                                             events.RequestEnd("onRequestEnd(\"Rankgrid\")");
+                                         })
 
                                     .Model(model => model.Id(p => p.RankId))
                                     .Read(read => read.Action("Ranks_Read", "Rank"))
@@ -239,205 +145,159 @@
                                     .Update(update => update.Action("Ranks_Update", "Rank"))
                                     .Destroy(destroy => destroy.Action("Ranks_Destroy", "Rank"))
                                      )
-    )
+                        )
 </text>);
 
 
 
-                  tabstrip.Add()
+tabstrip.Add()
 .Text("Step")
-//.ImageUrl("~/Content/Images/32x32/traffic-light-yellow.png")
-// .ImageHtmlAttributes(new { style = "width: 32px; height: 32px; padding: 3px;" })
 .Content(@<text>Step
     @(Html.Kendo().Grid<Step>()
-                                                .Name("Stepgrid")
-                                            .Columns(columns =>
-                                            {
-                                                        columns.Bound(c => c.StepName);
-                                                        columns.Bound(c => c.StepSequence);
-                                                        columns.Bound(c => c.Remark);
-                                                        columns.Command(command =>
-                                            {
-                                                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                                {
-                                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                }
-                                                if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                                                {
-                                                    command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                    }
-                                            }).Width(200);
-                                                    })
-                                                 .ToolBar(toolbar =>
-                                                 {
-                                                             toolbar.Create();
-                                                @*toolbar.Template(@<text>
-                                                    <div class="toolbar" style="">
-                                                        @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                                                    {
-                                                            @item.CreateButton(Resources.ActionButton_AddNewRecord);
-                                                                    }
-                                                        @if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                                                                    {
-                                                            @(Html.Kendo().Button()
-                                                          .Name("btnDownLoad")
-                                                          .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                                          .Events(e => e.Click("DownLoadTemplate"))
-                                                          .Content(Resources.DownloadTemplate))
-                                                            @(Html.Kendo().Upload()
-                                                          .Name("file")
-                                                                  .Async(a => a.Save("Step_Import", "Step"))
-                                                          .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                                                                                 //.ShowFileList(false).
-                                                                                                 // .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                                                                         )
+        .Name("Stepgrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.StepName);
+            columns.Bound(c => c.StepSequence);
+            columns.Bound(c => c.Remark);
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                }
+                if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                {
+                    command.Destroy().Text(Resources.ActionButton_Cancel);//
+                }
+            }).Width(200);
+        })
+             .ToolBar(toolbar =>
+             {
+                 toolbar.Create();
+             })
+               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Selectable(selectable =>
+                  {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                     .Scrollable(h => h.Height(500))
+                     .Sortable(sortable =>
+                     {
+                         sortable.SortMode(GridSortMode.SingleColumn);
+                     })
+                       .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+               .DataSource(dataSource => dataSource
+                   .Ajax()
+                         .Events(events =>
+                         {
+                             events.Error("error_handler(\"Stepgrid\")");
+                             events.RequestStart("onRequestStart(\"Stepgrid\")");
+                             events.RequestEnd("onRequestEnd(\"Stepgrid\")");
+                         })
 
-
-                                                                                                 }
-
-                                                                                 </div>
-
-                                                                             </text>);*@
-
-                                                        })
-                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                            .Selectable(selectable =>
-                                            {
-                                                        selectable.Mode(GridSelectionMode.Single);
-                                                        selectable.Type(GridSelectionType.Row);
-                                                    })
-                                                .Scrollable(h => h.Height(500))
-                                                    .Groupable()
-                                                             .Sortable(sortable =>
-                                                             {
-                                                                         sortable.SortMode(GridSortMode.SingleColumn);
-                                                                     })
-                                                 .Filterable()
-                                                    .Pageable(pageable => pageable
-                                                        .Input(true)
-                                                        .Numeric(false)
-                                                        .Refresh(true)
-                                                        .PageSizes(true)
-                                                        .ButtonCount(5))
-                                         .DataSource(dataSource => dataSource
-                                             .Ajax()
-                                                   .Events(events =>
-                                                  {
-                                                              events.Error("error_handler(\"Stepgrid\")");
-                                                              events.RequestStart("onRequestStart(\"Stepgrid\")");
-                                                              events.RequestEnd("onRequestEnd(\"Stepgrid\")");
-                                                          })
-
-                                         .Model(model => model.Id(p => p.StepId))
-                                         .Read(read => read.Action("Steps_Read", "Step"))
-                                         .Create(create => create.Action("Steps_Create", "Step"))
-                                         .Update(update => update.Action("Steps_Update", "Step"))
-                                         .Destroy(destroy => destroy.Action("Steps_Destroy", "Step"))
-                                          )
+              .Model(model => model.Id(p => p.StepId))
+              .Read(read => read.Action("Steps_Read", "Step"))
+              .Create(create => create.Action("Steps_Create", "Step"))
+              .Update(update => update.Action("Steps_Update", "Step"))
+              .Destroy(destroy => destroy.Action("Steps_Destroy", "Step"))
+               )
     )
 </text>);
-
-
-
-                  tabstrip.Add()
+tabstrip.Add()
 .Text("Salary Job Title")
-//.ImageUrl("~/Content/Images/32x32/traffic-light-yellow.png")
-// .ImageHtmlAttributes(new { style = "width: 32px; height: 32px; padding: 3px;" })
-.Content(@<text>Salary Job Title
-        @(Html.Kendo().Grid<SalaryJobTitle>()
-                            .Name("SalaryJobTitle")
-                            .Columns(columns =>
-                            {
-                                        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(150);
-                                        columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(150);
-                                        columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(150);
-                                        columns.Bound(c => c.Salary).Width(150);
-                                        columns.Bound(c => c.Remark).Width(120);
-                                        columns.Command(command =>
-{
-                        if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                        {
-                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                        }
-                        if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                        {
-                            command.Destroy().Text(Resources.ActionButton_Cancel);//
-            }
-                    }).Width(200);
-                                    })
-                            .ToolBar(toolbar =>
-                                {
-                                            if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                            {
-                                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                            }
-                                        })
-                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SalaryJobTitle").Window(window => { window.Title(Resources.Navigator_Company_JobTitleSalary); window.Scrollable(false); }))
-                            .Selectable(selectable =>
-                            {
-                                        selectable.Mode(GridSelectionMode.Single);
-                                        selectable.Type(GridSelectionType.Row);
-                                    })
-                               .Scrollable(h => h.Height(500))
-                                   .Groupable()
-                                            .Sortable(sortable =>
-                                            {
-                                                        sortable.SortMode(GridSortMode.SingleColumn);
-                                                    })
-                                .Filterable()
-                                   .Pageable(pageable => pageable
-                                                              .Input(true)
-                                                              .Numeric(false)
-                                                              .Refresh(true)
-                                                              .PageSizes(true)
-                                                              .ButtonCount(5))
-                            .DataSource(dataSource => dataSource
-                            .Ajax()
-                                 .Events(events =>
-                            {
-                                        events.Error("error_handler(\"SalaryJobTitle\")");
-                                        events.RequestStart("onRequestStart(\"SalaryJobTitle\")");
-                                        events.RequestEnd("onRequestEnd(\"SalaryJobTitle\")");
-                                    })
+.Content(@<text>
+<div class="form-group">
+        <label>Is Job Title Included In Salary ? &nbsp;&nbsp;</label>
+        <input type="checkbox" name="IsJobTitleIncludedInSalary" id="IsJobTitleIncludedInSalary" class="checkboxsize" style="display:inline;" onchange="ChangeSalarySetting()"/>
+    <br />
+</div>
+<br /><br />
 
-                            .Model(model => model.Id(p => p.SalJobTiId))
-                            .Read(read => read.Action("SalariesJobTitles_Read", "SalaryJobTitle"))
-                            .Create(create => create.Action("SalariesJobTitles_Create", "SalaryJobTitle"))
-                            .Update(update => update.Action("SalariesJobTitles_Update", "SalaryJobTitle"))
-                            .Destroy(destroy => destroy.Action("SalariesJobTitles_Destroy", "SalaryJobTitle"))
-                                )
-        )
+    @(Html.Kendo().Grid<SalaryJobTitle>()
+            .Name("SalaryJobTitle")
+            .Columns(columns =>
+            {
+                if (isJobTitleIncludedInSalary == true)
+                {
+                    columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(150);
+                }
+                columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(150);
+                columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(150);
+                columns.Bound(c => c.Salary).Width(150);
+                columns.Bound(c => c.Remark).Width(120);
+                columns.Command(command =>
+                {
+                    if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                    {
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    }
+                    if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                    {
+                        command.Destroy().Text(Resources.ActionButton_Cancel);//
+                    }
+                }).Width(200);
+            })
+             .ToolBar(toolbar =>
+             {
+                 if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                 {
+                     toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                 }
+             })
+             .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SalaryJobTitle").Window(window => { window.Title(Resources.Navigator_Company_JobTitleSalary); window.Scrollable(false); }))
+             .Selectable(selectable =>
+             {
+                 selectable.Mode(GridSelectionMode.Single);
+                 selectable.Type(GridSelectionType.Row);
+             })
+             .Scrollable(h => h.Height(500))
+             .Sortable(sortable =>
+             {
+                 sortable.SortMode(GridSortMode.SingleColumn);
+             })
+           .Filterable()
+           .Pageable(pageable => pageable
+           .Input(true)
+           .Numeric(false)
+           .Refresh(true)
+           .PageSizes(true)
+           .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+              events.Error("error_handler(\"SalaryJobTitle\")");
+              events.RequestStart("onRequestStart(\"SalaryJobTitle\")");
+              events.RequestEnd("onRequestEnd(\"SalaryJobTitle\")");
+          })
+
+       .Model(model => model.Id(p => p.SalJobTiId))
+       .Read(read => read.Action("SalariesJobTitles_Read", "SalaryJobTitle"))
+       .Create(create => create.Action("SalariesJobTitles_Create", "SalaryJobTitle"))
+       .Update(update => update.Action("SalariesJobTitles_Update", "SalaryJobTitle"))
+       .Destroy(destroy => destroy.Action("SalariesJobTitles_Destroy", "SalaryJobTitle"))
+           ))
 </text>);
-
-
-
-              })
+          })
 )
 
-
+<style>
+    .checkboxsize{
+        height:25px;
+        width:25px;
+    }
+</style>
 
 
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function(key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function() {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
-
-    function sync_handler(e) {
-        this.read();
-
-    }
 
     function onUploadSuccess(e) {
         $("#Lookupgrid").data("kendoGrid").dataSource.read();
@@ -446,30 +306,23 @@
 
     function checkFileType(e) {
         var files = e.files;
-
         $.each(files, function () {
-
             if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
 
             } else {
                 alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
                 e.preventDefault();
             }
-
         });
     }
 
     function DownLoadTemplate(e) {
         try {
-
-
             var wnd = $("#AttachmentWindow").data("kendoWindow");
             wnd.center().open();
-
         } catch (ex) {
             // alert("Please select the row!!");
         }
-
     }
     function bb() {
         alert("export to pdf");
@@ -482,67 +335,58 @@
     });
 </script>
 @(Html.Kendo().Window().Name("AttachmentWindow")
-                  .Title(Resources.Templates)
-              .Visible(false)
-              .Modal(true)
-                .Content(@<text>
+     .Title(Resources.Templates)
+     .Visible(false)
+     .Modal(true)
+     .Content(@<text>
+        @(Html.Kendo().Grid<Attachment>()
+     .Name("AttachmentGrid")
+     .Columns(columns =>
+     {
+         columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+         columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { area = "HRM", filename = "#=Description#" }).ToHtmlString());
 
-                    @(Html.Kendo().Grid<Attachment>()
-                                            .Name("AttachmentGrid")
-                                    .Columns(columns =>
-                                    {
-                                              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
-                                  columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { area = "HRM", filename = "#=Description#" }).ToHtmlString());
-
-                                          })
-
-                                        .Scrollable()
-                                        .Selectable()
-                                        .DataSource(dataSource => dataSource
-                                            .Ajax()
-                                                                     .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
-
-                                            .Model(model => model.Id(p => p.AttachmentId))
-                                                            .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
-
-
-                                        )
-                    )
-
-                </text>).Width(500)
+     })
+     .Scrollable()
+     .Selectable()
+     .DataSource(dataSource => dataSource
+     .Ajax()
+     .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+     .Model(model => model.Id(p => p.AttachmentId))
+     .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 })))
+        )
+    </text>).Width(500)
 )
-<style>
-    .k-pdf-export .pdf-page {
-        margin: 0 auto;
-        box-sizing: border-box;
-        box-shadow: 0 5px 10px 0 rgba(0,0,0,.3);
-        background-color: #fff;
-        color: #333;
-        position: relative;
-        /*font-family:  "DejaVu Sans", "Arial", sans-serif,"Nyala";*/
+
+
+
+<script>
+    var isChecked = '@HRMInputs.GetSalarySetting()';
+    $(document).ready(function () {
+        if (isChecked == 'True') {
+            $('#IsJobTitleIncludedInSalary').attr('checked', true);
+        }
+        else {
+            $('#IsJobTitleIncludedInSalary').attr('checked', false);
+        }
+       
+     });
+</script>
+<script>  
+
+    function ChangeSalarySetting() {
+        var isJobTitleIncludedInSalary = $("#IsJobTitleIncludedInSalary").prop("checked");
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("SalarySetting", "JobTitleAndSalary")',
+            data: { isJobTitleIncludedInSalary: isJobTitleIncludedInSalary},
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                alert(result);
+                window.location.reload();
+            }
+
+        });
     }
-
-    .k-pdf-export .pdf-header {
-        position: absolute;
-        top: .5in;
-        height: .6in;
-        left: .5in;
-        right: .5in;
-        border-bottom: 1px solid #e5e5e5;
-    }
-
-    .k-grid {
-        /*font-family: "DejaVu Sans", "Arial", sans-serif,"nyala";*/
-    }
-
-    .k-pdf-export {
-        font-family: "Nyala","DejaVu Sans";
-    }
-
-    .k-widget {
-        font-family: "Nyala","DejaVu Sans"
-    }
-</style>
-
-
-  
+</script>
