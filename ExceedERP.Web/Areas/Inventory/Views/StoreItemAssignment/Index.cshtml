@@ -38,28 +38,47 @@
                                               {
                                                   toolbar.Template(@<text>
                                                     <div class="row">
-                                                        <div class="col-md-4">
-                                                            <b>Select Store</b>
+                                                        <div class="col-md-12">
 
                                                             @(Html.Kendo().DropDownList()
-                                                                                                                                                          .OptionLabel("Select Store")
-                                                                                                                                                          .Name("storeSelector")
-                                                                                                                                                          .AutoBind(false)
-                                                                                                                                                          .DataValueField("StoreCode")
-                                                                                                                                                          .DataTextField("Name")
-                                                                                                                                                          .Filter("Contains")
-                                                                                                                                                          .HtmlAttributes(new { style = "width: 200px;" })
-                                                                                                                                                          .DataSource(dataSource =>
-                                                                                                                                                          {
-                                                                                                                            dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }))
-                                                .ServerFiltering(false);
-                                                                                                                        }))
+                                                                                                                                                                                                  .OptionLabel("Select Store")
+                                                                                                                                                                                                  .Name("storeSelector")
+                                                                                                                                                                                                  .AutoBind(false)
+                                                                                                                                                                                                  .DataValueField("StoreCode")
+                                                                                                                                                                                                  .DataTextField("Name")
+                                                                                                                                                                                                  .Filter("Contains")
+                                                                                                                                                                                                  .HtmlAttributes(new { style = "width: 200px;" })
+                                                                                                                                                                                                  .DataSource(dataSource =>
+                                                                                                                                                                                                  {
+                                                                                                                                                                                                                    dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }))
+                                                                            .ServerFiltering(false);
+                                                                                                                                                                                                                }))
 
 
 
                                                             @Html.Kendo().Button().Name("filterStore").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Filter").Events(ev => ev.Click("filterClicked"))
+                                                            <b>Recalculate from Count:</b>
+                                                            @(Html.Kendo().DropDownList()
+                                                                                                                                                                                                 .OptionLabel("Select Count")
+                                                                                                                                                                                                 .Name("countSelector")
+                                                                                                                                                                                                 .AutoBind(false)
+                                                                                                                                                                                                 .DataValueField("Code")
+                                                                                                                                                                                                 .DataTextField("Name")
+                                                                                                                                                                                                 .Filter("Contains")
+                                                                                                                                                                                                 .CascadeFrom("storeSelector")
+                                                                                                                                                                                                 .HtmlAttributes(new { style = "width: 100px;" })
+                                                                                                                                                                                                 .DataSource(dataSource =>
+                                                                                                                                                                                                 {
+                                                                                                                                                                                                                   dataSource.Read(read => read.Action("GetStoreCounts", "DataProvider", new { area = "Inventory" }).Data("getSelectedStore"))
+                                                                           .ServerFiltering(true);
+                                                                                                                                                                                                               }))
+
+
+
+                                                            @Html.Kendo().Button().Name("recalculateAll").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Recalculate from Count ").Events(ev => ev.Click("recalculateClicked"))
+                                                            @Html.Kendo().Button().Name("recalculateFromBeginning").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Recalculate from Beginning").Events(ev => ev.Click("recalculateBeginningClicked"))
                                                         </div>
-                                                        <div class="col-md-6 pull-right">
+                                                        <div class="col-md-12">
                                                             @(Html.Kendo().CheckBox()
                                                                                                                 .Name("checkDanger")
                                                                                                                 .Label("Danger")
@@ -97,7 +116,7 @@
 
                                                     })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .HtmlAttributes(new { style = "height: 450px;" })
+                            .HtmlAttributes(new { style = "height: 250px;" })
                             .Pageable(pageable => pageable
                                 .Input(true)
                                 .Numeric(false)
@@ -185,7 +204,7 @@
 
 
                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                              .HtmlAttributes(new { style = "height: 450px;" })
+                                              .HtmlAttributes(new { style = "height: 550px;" })
                                               .Pageable(pageable => pageable
                                                   .Input(true)
                                                   .Numeric(false)
@@ -310,6 +329,73 @@
         $('#BinCardLineGrid').data('kendoGrid').refresh();
         //location.reload();
     }
+
+    
+    function recalculateBeginningClicked() {
+       
+        var storeObject = $("#storeSelector").data("kendoDropDownList");
+        var storeValue = storeObject.value();
+       
+        if (storeValue) {
+
+            $('#loading-image').show();
+
+            $.ajax({
+                type: "POST",
+                data: { id: storeValue },
+                url: '@Url.Action("RecalculateAllStoreItemsFromBeginning", "PropertyCount","Inventory")',// + id,
+                success: function (result) {
+                    alert(result.Message);
+                    //toastr.error(result.Message);
+                    //console.log(result);
+                    $('#loading-image').hide();
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+            $('#BinCardLineGrid').data('kendoGrid').dataSource.read();
+            $('#BinCardLineGrid').data('kendoGrid').refresh();
+        }
+        else  {
+            alert("Please select a store.");
+        }
+    }
+
+    function recalculateClicked() {
+        var countObject = $("#countSelector").data("kendoDropDownList");
+        var countValue = countObject.value();
+        if (countValue) {
+            $('#loading-image').show();
+
+            $.ajax({
+                type: "POST",
+                data: { id: countValue },
+                url: '@Url.Action("RecalculateAllStoreItems", "PropertyCount","Inventory")',// + id,
+                success: function (result) {
+                    alert(result.Message);
+                    //toastr.error(result.Message);
+                    //console.log(result);
+                    $('#loading-image').hide();
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+            $('#BinCardLineGrid').data('kendoGrid').dataSource.read();
+            $('#BinCardLineGrid').data('kendoGrid').refresh();
+        }
+        else {
+            alert("Please select a count.");
+        }
+    }
+
+    function getSelectedStore() {
+        return { store: $("#storeSelector").data("kendoDropDownList").value() }
+    }
+
 
     function filterItems() {
         return {

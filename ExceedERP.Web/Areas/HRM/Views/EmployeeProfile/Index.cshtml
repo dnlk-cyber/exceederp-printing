@@ -95,7 +95,7 @@
                                          //columns.Bound(c => c.MothersFullName).Width(100);
                                          columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(80);
                                          columns.Bound(c => c.DateOfBirthAm).Width(100);//.Format("{0:yyyy-MM-dd}");
-                                                                                        //  columns.Bound(c => c.BirthPlace).Width(120);
+                                         columns.Bound(c => c.HiredDateAmharic).Width(100);                                      //  columns.Bound(c => c.BirthPlace).Width(120);
                                          columns.Bound(c => c.Region).EditorTemplateName("Enum").Width(100).Visible(false);
                                          columns.Bound(c => c.Religion).EditorTemplateName("Enum").Width(100).Visible(false);
                                          columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100).Visible(true);
@@ -422,14 +422,13 @@
 
                     )
 
-                </text>
+                </text> 
                          );
                                 //*******************************************Expriance*******************************************************
                                 items.Add().Text(Resources.Navigator_Employee_Experience).Content(
                             @<text>
                                 @(Html.Kendo().Grid<Experience>()
-                                                                  .Name("Expriancegrid_#=EmployeeId#")
-
+                                          .Name("Expriancegrid_#=EmployeeId#")
                                           .Columns(columns =>
                                           {
                                               //          columns.Bound(c => c.EmployeeCode).ClientTemplate(
@@ -4710,25 +4709,25 @@ items.Add().Text("Profile").Content(
                       .Content(@<text>
 
                         @(Html.Kendo().Grid<Attachment>()
-                                                                  .Name("AttachmentGrid")
-                                                          .Columns(columns =>
-                                                          {
-                                                                    columns.Bound(c => c.Description).Width(200); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
-                                                        columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadTemplate", new { area = "HRM", filename = "#=Description#" }).ToHtmlString()).Width(200);
+                                     .Name("AttachmentGrid")
+                             .Columns(columns =>
+                             {
+                                       columns.Bound(c => c.Description).Width(200); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                           columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadTemplate", new { area = "HRM", filename = "#=Description#" }).ToHtmlString()).Width(200);
 
-                                                                })
+                                   })
 
-                                                              .Scrollable()
-                                                              .Selectable()
-                                                              .DataSource(dataSource => dataSource
-                                                                  .Ajax()
-                                                                                           .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+                                 .Scrollable()
+                                 .Selectable()
+                                 .DataSource(dataSource => dataSource
+                                     .Ajax()
+                                                              .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
 
-                                                                  .Model(model => model.Id(p => p.AttachmentId))
-                                                                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
+                                     .Model(model => model.Id(p => p.AttachmentId))
+                                                     .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
 
 
-                                                              )
+                                 )
                         )
 
                     </text>).Width(500)
@@ -4786,19 +4785,19 @@ items.Add().Text("Profile").Content(
 {
 
     @(Html.Kendo().TabStrip()
-                                          .Name("tabstrip")
-                                          .SelectedIndex(0)
-                                          .Items(items =>
-                                          {
+              .Name("tabstrip")
+              .SelectedIndex(0)
+              .Items(items =>
+              {
 
-                                              items.Add().Text(Resources.Navigator_Employee_Experience).Content(
-                                                @<text>
+                  items.Add().Text(Resources.Navigator_Employee_Experience).Content(
+                    @<text>
 
 
 
-                                                </text>
-                                                                                                );
-                                                          items.Add().Text(Resources.Navigator_Employee_InternalExperience).Content(
+                    </text>
+                                                                    );
+                              items.Add().Text(Resources.Navigator_Employee_InternalExperience).Content(
                         @<text>
 
                             @(Html.Kendo().Grid<PlacementHistory>()
@@ -4957,11 +4956,7 @@ items.Add().Text("Profile").Content(
                     var activeGrid = $("#Person_Employeegrid").data("kendoGrid");
                     activeGrid.dataSource.read();
                 }
-
-
-
             });
-
         }
     }
 </script>

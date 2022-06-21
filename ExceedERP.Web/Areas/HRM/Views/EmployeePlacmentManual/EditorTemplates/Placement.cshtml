@@ -9,15 +9,21 @@
 <div class="form">
 
     <div class="row fullrow">
-        <div class="col-md-4 ro1">
-
-            <div class="form-group">
+        <div class="col-md-4 ro1">   
+            
+            <div class="form-group">              
 
                 @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
-
                 <div class="col-md-6">
+                  
+                    @*<input type="text" value="@Model.FullName" id="FullName" name="FullName" class="form-control input-sm"/>*@
+                   
+                    <div id="FullNameTextBox_Id" hidden>
+                        @(Html.Kendo().TextBoxFor(model => model.FullName).HtmlAttributes(new { style = "width:200px;color:red;",@readonly="readonly" }))
+                    </div>
 
-                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                    <div id="EmpIdDropdown_Id" hidden>
+                        @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                               //  .Name("EmployeeId")
                               .DataValueField("EmployeeId")
                               .DataTextField("FullNameaEnglish")
@@ -28,12 +34,15 @@
 
                                .DataSource(source =>
                                {
-                                   source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
-
+                                   //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
+                                   source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                  .ServerFiltering(true);
                                })
-
                               .ValuePrimitive(true)
-                               )
+                        )
+                    </div>
+                        
+                   
                 </div>
 
                 @*<div class="col-md-6">
@@ -92,13 +101,17 @@
                         .DataValueField("OrgStructureId")
                         .HtmlAttributes(new { style = "width:240px" })
                         .ValuePrimitive(true)
+                        .Events(ev=>
+                        {
+                            ev.DataBound("onDepartmentDataBound");
+                        })
                         .DataSource(source =>
                         {
                             source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
                         })
-                       // .BindTo((IEnumerable)ViewData["organization"])
+                    // .BindTo((IEnumerable)ViewData["organization"])
 
-                     
+
                     )
                     @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
                 </div>

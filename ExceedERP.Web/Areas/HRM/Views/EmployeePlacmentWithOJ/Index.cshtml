@@ -81,17 +81,17 @@
 
                   })
                        .Excel(excel => excel
-                                                                                    .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
-                                                        .Filterable(true)
-                                                            .AllPages(true)
-                                                                                        .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithOJ"))
-                                                    )
-                                                         .Pdf(pdf => pdf
-                                                        .AllPages()
-                                                                                    .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
-                                                                                        .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithOJ"))
-                                                    )
-                                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
+                       .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+                       .Filterable(true)
+                       .AllPages(true)
+                       .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithOJ"))
+                                 )
+                        .Pdf(pdf => pdf
+                        .AllPages()
+                        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+                        .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithOJ"))
+                                 )
+                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
                      .Scrollable(h => h.Height(500))
                          .Groupable()
                                   .Sortable(sortable =>
@@ -230,6 +230,21 @@
     }
 </style>
 <script>
+
+
+    var isNew_Global = "";
+    function onDepartmentDataBound() {
+        if (isNew_Global === "True") {
+
+            $("#FullNameTextBox_Id").hide();
+            $("#EmpIdDropdown_Id").show();
+        }
+        else if (isNew_Global === "False") {
+            $("#FullNameTextBox_Id").show();
+            $("#EmpIdDropdown_Id").hide();
+        }
+    }
+
     function GetEmployeeNameEmploye(e) {
         var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
         var id = autocomplete.value();
@@ -337,45 +352,46 @@
     }
 </script>
 <script>
-    function GetDate() {
 
-        var x = AssignDate();
-        var y = x;
-        $("#AssignmentDateAmharic").trigger("change");
-        for (var o in y) {
-            $.ajax({
-                contentType: "application/json; charset=utf-8",
-                url: '@Url.Action("SetDate", "EmployeePlacmentWithOJ")',
-                data: { name: y[o].id, value: y[o].date },
-                type: 'GET',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                }
+    var isNew_Global = "";
+    function onDepartmentDataBound() {
+        if (isNew_Global === "True") {
 
-            });
+            $("#FullNameTextBox_Id").hide();
+            $("#EmpIdDropdown_Id").show();
+        }
+        else if (isNew_Global === "False") {
+            $("#FullNameTextBox_Id").show();
+            $("#EmpIdDropdown_Id").hide();
+        }
+    }
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
         }
     }
 
+    function GetDate(e) {
+
+        $("#AssignmentDateAmharic").trigger("change");
+
+        if (e.model.isNew() === false) {
+            $("#EmployeeId").kendoDropDownList({
+                enable: false
+            });
+
+            isNew_Global = "False";
+        }
+        else {
+            isNew_Global = "True";
+        }
+    }
 </script>
 <script>
     function AssignDate() {
         var list = AssignDates();
         return list;
     }
-    //function valueMapper(options) {
-    //    $.ajax({
-    //        url: "/HRM/EmployeePlacmentWithOJ/Employee_ValueMapper/",
-    //        data: {
-    //            value: options.value || 0,
-    //            status: 1,
-    //            excludeId: -1
-    //        },
-    //        success: function (data) {
-    //            options.success(data);
-    //        }
-    //    });
-    //}
 
     function convertValues(value) {
         var data = {};

@@ -378,7 +378,43 @@
         width: 1000px;
     }
 </style>
-<script>
+<script>   
+
+    var isNew_Global = "";
+
+    function onDepartmentDataBound() {
+        if (isNew_Global === "True") {
+
+            $("#FullNameTextBox_Id").hide();
+            $("#EmpIdDropdown_Id").show();
+        }
+        else if (isNew_Global === "False") {
+            $("#FullNameTextBox_Id").show();
+            $("#EmpIdDropdown_Id").hide();
+        }
+    }
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function GetDate(e) {
+
+        $("#AssignmentDateAmharic").trigger("change");
+
+        if (e.model.isNew() === false) {
+            $("#EmployeeId").kendoDropDownList({
+                enable: false
+            });
+
+            isNew_Global = "False";
+        }
+        else {
+            isNew_Global = "True";
+        }
+    }
+
     function GetEmployeeNameEmploye(e) {
         var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
         var id = autocomplete.value();
@@ -454,8 +490,16 @@
         var step = $("#StepId").data("kendoDropDownList").value();
         var job = $("#LookupId").data("kendoDropDownList").value();
 
-        if(rank.length!==0 && step.length!==0 && job.length!==0)
-        {
+        if (rank.length !== 0 && step.length !== 0) {
+            if (rank == "") {
+                rank = 0;
+            }
+            if (step == "") {
+                step = 0;
+            }
+            if (job == "") {
+                job = 0;
+            }
             $.ajax({
                 url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithJ")',
 
@@ -517,7 +561,7 @@
 <script>
     function GetDate(e) {
 
-       var x = AssignDate();
+       @*var x = AssignDate();
         var y = x;
         $("#AssignmentDateAmharic").trigger("change");
         for (var o in y) {
@@ -539,8 +583,7 @@
             });
 
         }
-
-    }
+    }*@
 
 </script>
 <script>

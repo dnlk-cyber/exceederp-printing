@@ -78,16 +78,13 @@
                   }
 
                   toolbar.Custom().Text("De-Activate Employees").Action("Index", "PlacmentInActiveBatch").HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-
-
-
+                  
                   if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
                   {
                       ///toolbar.Custom()
                       //.Name("Refresh")
                       // .Text("Update Salary")
                       // .HtmlAttributes(new { id = "btnRefresh", onclick = "Refresh()" });
-
                   }
                   //toolbar.Custom().Text(Resources.ActionButton_Refersh).Action("Refresh", "EmployeePlacmentWithJ");
               })
@@ -380,6 +377,41 @@
     }
 </style>
 <script>
+
+    var isNew_Global = "";
+    function onDepartmentDataBound() {
+        if (isNew_Global === "True") {
+
+            $("#FullNameTextBox_Id").hide();
+            $("#EmpIdDropdown_Id").show();           
+        }
+        else if (isNew_Global === "False"){
+            $("#FullNameTextBox_Id").show();
+            $("#EmpIdDropdown_Id").hide();
+        }        
+    }
+     function filterEmployees() {       
+            return {
+                text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+            }              
+    }
+
+    function GetDate(e) {
+        
+        $("#AssignmentDateAmharic").trigger("change");
+      
+        if (e.model.isNew() === false) {
+            $("#EmployeeId").kendoDropDownList({
+                enable: false
+            });
+
+            isNew_Global = "False";
+        }
+        else {
+            isNew_Global = "True";
+        }
+    }
+
     function GetEmployeeNameEmploye(e) {
         var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
         var id = autocomplete.value();
@@ -425,38 +457,24 @@
 </script>
 
 <script>
-    //function error_handler(e) {
-    //    if (e.errors) {
-    //        var message = "Errors:\n";
-    //        $.each(e.errors, function (key, value) {
-    //            if ('errors' in value) {
-    //                $.each(value.errors, function () {
-    //                    message += this + "\n";
-    //                });
-    //            }
-    //        });
-    //        alert(message);
-
-    //    }
-
-    //}
-
-    //function sync_handler(e) {
-    //    this.read();
-
-    //}
-</script>
-
-
-<script>
     function GetSalary() {
         $("#Salary").val(0);
         var rank = $("#RankId").data("kendoDropDownList").value();
         var step = $("#StepId").data("kendoDropDownList").value();
         var job = $("#LookupId").data("kendoDropDownList").value();
 
-        if(rank.length!==0 && step.length!==0 && job.length!==0)
+        if(rank.length!==0 && step.length!==0)
         {
+            if (rank == "") {
+                rank = 0;
+            }
+            if (step == "") {
+                step = 0;
+            }
+            if (job == "")
+            {
+                job = 0;
+            }
             $.ajax({
                 url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentManual")',
                 data: { rank: rank, step: step, job: job },
@@ -474,33 +492,6 @@
 
 </script>
 
-
-<script>
-    @* function GetDepartment() {
-
-        var Titles = $("#OrgStructureId").data("kendoDropDownList");
-        var OrgId = Titles.value();
-        var jobs = $("#LookupId").data("kendoDropDownList");
-        var title = jobs.value();
-        $.ajax({
-            url: '@Url.Action("GetDepartments", "EmployeePlacmentWithJ")',
-
-            data: { OrgId: OrgId, title: title },
-            type: 'POST',
-            cache: false,
-            success: function (result) {
-                r = result;
-                var s = r.split(/-/);
-
-                $("#Salary").val(s[0]);
-                $("#RankId").val(Number( s[1]));
-                $("#StepId").val(Number(s[2]));
-            }
-
-        });
-    }*@
-
-</script>
 <script>
     function filterCategories() {
         return {
@@ -514,54 +505,13 @@
         };
     }
 </script>
-<script>
-    function GetDate(e) {
 
-       var x = AssignDate();
-        var y = x;
-        $("#AssignmentDateAmharic").trigger("change");
-        for (var o in y) {
-            $.ajax({
-                contentType: "application/json; charset=utf-8",
-                url: '@Url.Action("SetDate", "EmployeePlacmentWithJ")',
-                data: { name: y[o].id, value: y[o].date },
-                type: 'GET',
-                cache: false,
-                success: function (result) {
-                    r = result;
-                }
-
-            });
-        }
-        if (e.model.isNew() === false) {
-            $("#EmployeeId").kendoDropDownList({
-                enable: false
-            });
-
-        }
-
-    }
-
-</script>
 <script>
     function AssignDate() {
         var list = AssignDates();
         return list;
     }
-
-    //function valueMapper(options) {
-    //    $.ajax({
-    //        url: "/HRM/EmployeePlacmentWithJ/Employee_ValueMapper/",
-    //        data: {
-    //            value: options.value || 0,
-    //            status: 1,
-    //            excludeId: -1
-    //        },
-    //        success: function (data) {
-    //            options.success(data);
-    //        }
-    //    });
-    //}
+       
 
     function convertValues(value) {
         var data = {};
@@ -601,8 +551,7 @@
         if (e.model.isNew() === false) {
             $("#EmployeeId").kendoDropDownList({
                 enable: false
-            });
-
+            });           
         }
 
     }
