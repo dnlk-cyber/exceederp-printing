@@ -10,7 +10,7 @@
       {
           columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["branches"], "BranchId", "Name");
           columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["Orgs"], "OrgStructureId", "Name");
-         // columns.ForeignKey(c => c.Values, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description");
+          columns.ForeignKey(c => c.Values, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description");
           columns.Bound(c => c.Name).Visible( false);
         columns.Bound(c => c.Remark);
         columns.Command(command =>

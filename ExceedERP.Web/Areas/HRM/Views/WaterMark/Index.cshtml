@@ -1,0 +1,100 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Water Mark Image</legend>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Company.WaterMark>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Name);
+                  columns.Bound(c => c.Abbreviation);
+                  columns.Bound(c => c.IsNeened);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      //command.Destroy().Text(Resource.Grid_DeleteButtonText);
+                  }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  //  toolbar.Excel().Text(Resource.Grid_ExportToExcel);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+              .Scrollable(h => h.Height(550))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.WaterMarkId))
+                  .Read(read => read.Action("WaterMark_Read", "WaterMark"))
+                  .Create(create => create.Action("WaterMark_Create", "WaterMark"))
+                  .Update(update => update.Action("WaterMark_Update", "WaterMark"))
+                  .Destroy(destroy => destroy.Action("WaterMark_Destroy", "WaterMark"))
+              ).ClientDetailTemplateId("watermark_detail_template")
+        )
+ 
+
+<script type="text/kendo-template" id="watermark_detail_template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=WaterMarkId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+         items.Add().Text("Water Mark").Content(
+            @<text>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        @*<p>Water Mark Image</p>*@
+                        <div>
+                            @WaterMarkImage()
+                        </div>
+                        <div class="image-container-box">
+                            <img class="rectuangular-large-img" src="~/Content/Image/WaterMark/#=WaterMarkFileName#" />
+                        </div>
+                    </div>
+                </div>
+
+            </text>);
+        }).ToClientTemplate()
+    )
+</script>
+
+
+
+@helper WaterMarkImage()
+{
+    @(Html.Kendo().Upload()
+        .Name("watermarkImage")
+        .HtmlAttributes(new { @id = "uploader_#=WaterMarkId#" })
+        .Messages(msg =>
+        {
+            msg.Select("<i class = \"fa fa-upload\"></i> Upload Photo");
+        })
+        .ShowFileList(false)
+        .Async(s => s.Save("WaterMarkImage_Upload", "WaterMark", new { id = "#=WaterMarkId#" })
+        )
+        //.Events(e => e.Complete("contractAttachementSuccess"))
+        .HtmlAttributes(new { accept = "image/*" })
+        .Events(events => events.Complete(
+            @<text>
+                function(e) {
+                var ddl = $("\\#grid").data("kendoGrid");
+                ddl.dataSource.read();
+                }
+            </text>
+                  ))
+               .ToClientTemplate()
+    )
+}
+
+<style>
+    .rectuangular-large-img {
+        max-height: 400px;
+        width: auto;
+        border: 1px solid #e6e6e6;
+        box-shadow: 1px 2px 2px #888888;
+    }
+</style>
+

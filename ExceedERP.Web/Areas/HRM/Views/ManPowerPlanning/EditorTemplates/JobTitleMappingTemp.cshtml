@@ -23,12 +23,10 @@
                       .MinLength(2)
                       .DataTextField("Description")
                       .DataValueField("LookupId")
-                              .DataSource(source =>
-                                                                        {
-                                                                            source.Read(read => read.Action("GetProject", "HRMDataProvider"));
-
-
-                                                                        }) 
+                      .DataSource(source =>
+                      {
+                          source.Read(read => read.Action("GetProject", "HRMDataProvider"));
+                      }) 
                       .ValuePrimitive(true)
                 )
                 @Html.ValidationMessageFor(model => model.ProjectType, "", new { @class = "text-danger" })
@@ -43,19 +41,16 @@
             <div>@Html.LabelFor(model => model.WorkUnitId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
             <div class="form-group">
                 @(Html.Kendo().DropDownListFor(model => model.WorkUnitId)
-                           .OptionLabel(Resources.Select)
-                                   .Filter("contains")
-                                            .MinLength(2)
-                                         .DataTextField("Name")
-                                                        .DataValueField("OrgStructureId")
-                                                 .DataSource(source =>
-                                                                {
-                                                                    source.Read(read => read.Action("GetWorkUnit", "JobTitleMapping"));
-
-
-                                                                }) 
-                            .ValuePrimitive(true)
-
+                   .OptionLabel(Resources.Select)
+                   .Filter("contains")
+                   .MinLength(2)
+                   .DataTextField("Name")
+                   .DataValueField("OrgStructureId")
+                   .DataSource(source =>
+                   {
+                     source.Read(read => read.Action("GetWorkUnit", "JobTitleMapping"));
+                   }) 
+                   .ValuePrimitive(true)
                 )
                 @Html.ValidationMessageFor(model => model.WorkUnitId, "", new { @class = "text-danger" })
             </div>
@@ -64,23 +59,22 @@
             <div>@Html.LabelFor(model => model.OrgStructureId , htmlAttributes: new {@class = "control-label col-md-8"})</div>
             <div class="form-group">
                 @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                           .OptionLabel(Resources.Select)
-                                   .Filter("contains")
-                                            .MinLength(2)
-                                         .DataTextField("Name")
-                                                  .DataValueField("OrgStructureId")
-                                                 .CascadeFrom("WorkUnitId")
-                                                       
-          .DataSource(source =>
-          {
-              source.Read(read =>
-              {
-                  read.Action("GetStructure", "JobTitleMapping")
-                      .Data("filterStructure");
-              })
-              .ServerFiltering(true);
-          })                                  //.BindTo((IEnumerable)ViewData["organization"])
-                            .ValuePrimitive(true)
+                   .OptionLabel(Resources.Select)
+                   .Filter("contains")
+                   .MinLength(2)
+                   .DataTextField("Name")
+                   .DataValueField("OrgStructureId")
+                   .CascadeFrom("WorkUnitId")                                       
+                   .DataSource(source =>
+                   {
+                       source.Read(read =>
+                       {
+                           read.Action("GetStructure", "JobTitleMapping")
+                               .Data("filterStructure");
+                       })
+                       .ServerFiltering(true);
+                   })                                  //.BindTo((IEnumerable)ViewData["organization"])
+                   .ValuePrimitive(true)
 
 )
                 @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
@@ -105,7 +99,7 @@
                       .DataValueField("LookupId")
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetJobTitle", "HRMDataProvider", new { area = "HRM" }))
+                          dataSource.Read(read => read.Action("GetAllJobTitle", "HRMDataProvider", new { area = "HRM" }))
                               .ServerFiltering(false);
                       })
                       .ValuePrimitive(true)
