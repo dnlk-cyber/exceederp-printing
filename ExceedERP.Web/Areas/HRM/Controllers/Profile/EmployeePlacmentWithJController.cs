@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -21,6 +21,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -618,26 +619,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 placement.PreparedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                var setting = db.SalarySettings.FirstOrDefault();
-                if(setting != null && setting.IsJobtitleIncludedInSalary)
-                {
-                    var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId && s.LookupId == placement.LookupId);
-
-                    if (salary != null)
-                    {
-                        placement.Salary = salary.Salary;
-                    }
-                }
-                else
-                {
-                    var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId);
-
-                    if (salary != null)
-                    {
-                        placement.Salary = salary.Salary;
-                    }
-                }
-            
+                placement.Salary = HrHelper.GetSalaryFromSalarySetting(placement.StepId, placement.RankId, placement.LookupId);
 
                 var entity = new Placement
                 {
@@ -1277,6 +1259,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 if (employee != null)
                 {
                     employee.IsActive = true;
+                    employee.IsPlaced = true;
                     employee.OrgBranchName = placement.BranchId.ToString();
                     employee.ModifiedBy = User.Identity.Name;
                     employee.LastModified = DateTime.Now;

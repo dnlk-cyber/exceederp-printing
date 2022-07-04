@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -28,13 +28,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
     [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
     public class EmployeePlacmentManualController : BaseController
     {
-        private ExceedDbContext db = new ExceedDbContext();
-       // public static decimal SalaryAmount { get; set; }
-        public static int Rankid { get; set; }
-        public static int Stepid { get; set; }
-        public static int DepartmentId { get; set; }
-        //public static DateTime AssigmentDate { get; set; }
-        //public static string AssigmentDateAmharic { get; set; }
+        private ExceedDbContext db = new ExceedDbContext();      
         HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
@@ -74,17 +68,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
             return RedirectToAction("Index");
 
-        }
-        public void SetDate(string name, string value)
-        {
-            //if (name == "AssignmentDateAmharic")
-            //{
-            //    AssigmentDateAmharic = value;
-            //    var splitDate = AssigmentDateAmharic.Split('/');
-            //    AssigmentDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            //}
-
-        }
+        }     
         public void GetDepartments()
         {
             List<MainCompanyStructure> allDepartment = new List<MainCompanyStructure>();
@@ -618,7 +602,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     PlacementAfterSystem_Create(currentPlacement, placement.AssignmentDate);
                 }
 
-                placement.PreparedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                placement.PreparedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);               
 
                 var entity = new Placement
                 {
@@ -672,7 +656,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 PerapreEmployeeAllowance(placement.EmployeeId, placement.LookupId);
 
                 placement.PlacementId = entity.PlacementId;
-                DepartmentId = 0;
             }
 
             return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
@@ -742,7 +725,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 return "";
             }
         }
-
         [AuthorizeRoles(HrmConstants.HRPlacementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Placements_Update([DataSourceRequest]DataSourceRequest request, Placement placement)
@@ -1257,6 +1239,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 if (employee != null)
                 {
                     employee.IsActive = true;
+                    employee.IsPlaced = true;
                     employee.OrgBranchName = placement.BranchId.ToString();
                     employee.ModifiedBy = User.Identity.Name;
                     employee.LastModified = DateTime.Now;

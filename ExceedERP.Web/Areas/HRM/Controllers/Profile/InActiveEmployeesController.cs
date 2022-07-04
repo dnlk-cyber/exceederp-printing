@@ -85,7 +85,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(result);
         }
+        public ActionResult NotPlaced_Employees_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            IQueryable<Person_Employee> person_employee = db.Person_Employee.Where(x => x.IsActive && !x.IsPlaced);
+            DataSourceResult result = person_employee.ToDataSourceResult(request, person_Employee => new {
+                EmployeeId = person_Employee.EmployeeId,
+                EmployeeCode = person_Employee.EmployeeCode,
+                Title = person_Employee.Title,
+                FirstName = person_Employee.FirstName,
+                MiddleName = person_Employee.MiddleName,
+                LastName = person_Employee.LastName,
+                Nationality = person_Employee.Nationality,
+                DateOfBirth = person_Employee.DateOfBirth,
+                DateOfBirthAm = person_Employee.DateOfBirthAm,
+                Gender = person_Employee.Gender,
+                CategoryID = person_Employee.CategoryID,
+                IsActive = person_Employee.IsActive,
+                MothersFullName = person_Employee.MothersFullName,
+                BirthPlace = person_Employee.BirthPlace,
+                Nation = person_Employee.Nation,
+                Region = person_Employee.Region,
+                Religion = person_Employee.Religion,
+                MartialStatus = person_Employee.MartialStatus,
+                Status = person_Employee.Status,
+                HiredDate = person_Employee.HiredDate,
+                HiredDateAmharic = person_Employee.HiredDateAmharic,
+                Remark = person_Employee.Remark,
+                FirstNameEnglish = person_Employee.FirstNameEnglish,
+                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
+                LastNameEnglish = person_Employee.LastNameEnglish,
+                IsInsured = person_Employee.IsInsured,
+                BranchId = person_Employee.BranchId,
+                OrgBranchName = person_Employee.OrgBranchName,
+                DateCreated = person_Employee.DateCreated,
+                LastModified = person_Employee.LastModified,
+                CreatedBy = person_Employee.CreatedBy,
+                ModifiedBy = person_Employee.ModifiedBy
+            });
 
+            return Json(result);
+        }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult InActiveEmployees_Create([DataSourceRequest]DataSourceRequest request, Person_Employee person_Employee)
         {

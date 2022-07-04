@@ -35,7 +35,6 @@ namespace ExceedERP.Core.Domain.Common.HRM
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Common_PersonEmployee_DateOfBirth", ResourceType = typeof(Localization.Resources))]
-
         public DateTime DateOfBirth { get; set; }
         [Display(Name = "Common_PersonEmployee_DateOfBirth", ResourceType = typeof(Localization.Resources))]
         public string DateOfBirthAm { get; set; }
@@ -49,8 +48,6 @@ namespace ExceedERP.Core.Domain.Common.HRM
         [Display(Name = "Common_PersonEmployee_MothersFullName", ResourceType = typeof(Localization.Resources))]
 
         public string MothersFullName { get; set; }
-        [Required]
-
         [Display(Name = "Common_PersonEmployee_BirthPlace", ResourceType = typeof(Localization.Resources))]
         public string BirthPlace { get; set; }
         [Display(Name = "Common_PersonEmployee_Nation", ResourceType = typeof(Localization.Resources))]
@@ -74,7 +71,6 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public virtual ICollection<UserCardItems> UserCardItems { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
-
         [Required]
         [Display(Name = "Common_PersonEmployee_FirstNameEnglish", ResourceType = typeof(Localization.Resources))]
         public string FirstNameEnglish { get; set; }
@@ -108,5 +104,6 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public string Wereda { get; set; }
         [Display(Name = "Employee Type")]
         public int EmployeeTypeId { get; set; }
+        public bool IsPlaced { get; set; }
     }
 }

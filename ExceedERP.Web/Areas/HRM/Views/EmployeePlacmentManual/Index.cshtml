@@ -117,6 +117,7 @@
                   e.Save("GetDate");
                   e.Edit("GetDate");
                   e.DataBound("onDataBound");
+                 // e.Cancel("onCancel");
                   //e.Edit("onEdit");
 
               })
@@ -482,8 +483,8 @@
                 cache: false,
                 success: function (result) {
                     r = result;
-
                     $("#Salary").val(r);
+                    $("#Salary").trigger("change");
                 }
 
             });
@@ -682,6 +683,30 @@
         }
     }
 
+    function onCancel(e) {
+        var row = $(e.target).closest("tr");
+        var grid = $("#PlacementGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.PlacementId;
+
+        if (dataItem.isCurrent === true && dataItem.IsPend === false) {
+            row.find("#pend").show();
+            row.find("#unpend").hide();
+        }
+        else if (dataItem.isCurrent === true && dataItem.IsPend === true) {
+            row.css("background-color", "red");
+            row.find("#pend").hide();
+            row.find("#unpend").show();
+        }
+        else if (dataItem.isCurrent === false) {
+            row.find("#pend").hide();
+            row.find("#unpend").hide();
+        }
+
+        if (dataItem.IsApprove === true) {
+            row.find("#approveplacement").hide();
+        }
+    }
 </script>
 
 <script>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -21,6 +21,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -284,6 +285,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 EmployementType = placement.EmployementType,
                 IsPend = placement.IsPend,
                 BusinessUnitId = placement.BusinessUnitId,
+                IsApprove = placement.IsApprove,
                 FullName = GetFullName(placement.EmployeeId)
             });
 
@@ -501,12 +503,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 placement.PreparedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                var salary = db.Salaries.FirstOrDefault(s => s.RankId == placement.RankId && s.StepId == placement.StepId);
-
-                if (salary != null)
-                {
-                    placement.Salary = salary.SalaryAmount;
-                }
+                placement.Salary = HrHelper.GetSalaryFromSalarySetting(placement.StepId, placement.RankId, placement.LookupId);
 
                 var entity = new Placement
                 {
@@ -1011,6 +1008,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 if (employee != null)
                 {
                     employee.IsActive = true;
+                    employee.IsPlaced = true;
                     employee.OrgBranchName = placement.BranchId.ToString();
                     employee.ModifiedBy = User.Identity.Name;
                     employee.LastModified = DateTime.Now;
@@ -1034,6 +1032,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             };
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
 
+        }
+        public ActionResult UpdateNewSalary()
+        {
+            var placements = db.Placements.Where(x => x.isCurrent).ToList();
+            foreach(var place in placements)
+            {
+                var salarySetting = db.SalariesJobTitles.FirstOrDefault(x => x.RankId == place.RankId && x.StepId == place.StepId);
+                if(salarySetting != null)
+                {
+                    place.Salary = salarySetting.Salary;
+
+                    db.Entry(place).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+
+            return RedirectToAction("Index");
         }
         //public string GetDepartment(int OrgId, int title)
         //{

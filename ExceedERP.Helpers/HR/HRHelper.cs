@@ -38,6 +38,32 @@ namespace ExceedERP.Helpers.HR
                     }
             }
         }
+        public static decimal GetSalaryFromSalarySetting(int stepId, int rankId, int lookUpId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            decimal salaryAmount = 0;
+            var salarySetting = db.SalarySettings.FirstOrDefault();
+            if (salarySetting != null && salarySetting.IsJobtitleIncludedInSalary)
+            {
+                var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rankId && s.StepId == stepId && s.LookupId == lookUpId);
+
+                if (salary != null)
+                {
+                    salaryAmount = salary.Salary;
+                }
+            }
+            else
+            {
+                var salary = db.SalariesJobTitles.FirstOrDefault(s => s.RankId == rankId && s.StepId == stepId);
+
+                if (salary != null)
+                {
+                    salaryAmount = salary.Salary;
+                }
+            }
+
+            return salaryAmount;
+        }
         public static string GetEmployeeStatus(EmployeeStatus status)
         {
             switch (status)

@@ -116,10 +116,11 @@
                                           .ValuePrimitive(true)
                                           .DataSource(dataSource =>
                                           {
-                                                  //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" })); Changed
-                                                  dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider"));
-                                                  //.ServerFiltering(false);
-                                              })
+                                              //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" })); Changed
+                                              //dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider"));
+                                              dataSource.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
+                                              //.ServerFiltering(false);
+                                          })
 
                     )
                     @Html.ValidationMessageFor(model => model.ReportsTo, "", new { @class = "text-danger" })

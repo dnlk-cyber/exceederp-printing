@@ -259,7 +259,7 @@
         </div>
 
         <div class="col-md-3 ro1">
-            <div class="form-group">
+            @*<div class="form-group">
                 @Html.LabelFor(model => model.RankId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
 
@@ -278,33 +278,31 @@
 
                                           }))
                 </div>
-            </div>
+            </div>*@
             <div class="row"></div>
 
-            <div class="form-group">
-
-
+            @*<div class="form-group">
                 @Html.LabelFor(model => model.StepId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.StepId)
-                                          .ValuePrimitive(true)
-                                          .OptionLabel(Resources.Select)
-                                          .DataTextField("StepName")
-                                          .HtmlAttributes(new { style = "width:200px" })
-                                          .OptionLabel("Select Step")
-                                          .DataValueField("StepId")
-                                          // .CascadeFrom("JobTitleCode")
-                                          // .Enable (false)
-                                          .Events(e => e.Change("GetSalary"))
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+                          .ValuePrimitive(true)
+                          .OptionLabel(Resources.Select)
+                          .DataTextField("StepName")
+                          .HtmlAttributes(new { style = "width:200px" })
+                          .OptionLabel("Select Step")
+                          .DataValueField("StepId")
+                          // .CascadeFrom("JobTitleCode")
+                          // .Enable (false)
+                          .Events(e => e.Change("GetSalary"))
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
 
 
-                                          }))
+                          }))
 
                 </div>
-            </div>
+            </div>*@
             <div class="row"></div>
 
             <div class="form-group">

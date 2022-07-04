@@ -5219,7 +5219,6 @@
     <Content Include="Areas\HRM\Views\PayrollEmployeeAccount\EditorTemplates\SubAccount.cshtml" />
     <Content Include="Areas\HRM\Views\MilitarySalary\EditorTemplates\Allowance.cshtml" />
     <Content Include="Areas\HRM\Views\MilitarySalary\Index.cshtml" />
-    <Content Include="Areas\HRM\Views\Views.rar" />
     <Content Include="Areas\HRM\Views\WaterMark\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

@@ -8,7 +8,7 @@
 <legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
 
 @(Html.Kendo().Grid<Placement>()
-                          .Name("PlacementGrid")
+                  .Name("PlacementGrid")
                   .Columns(columns =>
                   {
                       // columns.Bound(c => c.EmployeeCode).Width(150);
@@ -38,6 +38,13 @@
                       // columns.ForeignKey(c => c.ReportsTo, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(200);
                       // columns.Bound(c => c.ResponsibilityLevel);
                       columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+                      columns.Bound(c => c.IsApprove).ClientTemplate(
+                          "<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
+                          "# if (IsApprove) { #" +
+                          "checked='checked'" +
+                          "# } #" +
+                          "/>"
+                          ).Width(100);
                       columns.Bound(c => c.Remark).Width(100);
                       columns.Command(command =>
                       {
@@ -106,12 +113,12 @@
                                          e.DataBound("onDataBound");
                                      })
                          .Pageable(pageable => pageable
-                                                    .Input(true)
-                                                    .Numeric(false)
-                                                    .Refresh(true)
-                                                    .PageSizes(true)
-                                                    .ButtonCount(5))
-
+                           .Input(true)
+                           .Numeric(false)
+                           .Refresh(true)
+                           .PageSizes(true)
+                           .ButtonCount(5))
+                                                    
                   .DataSource(dataSource => dataSource
                       .Ajax()
                           .Sort(sort => sort.Add("EmployeeCode"))
@@ -138,63 +145,63 @@
                                                                              {
 
                                                                                  items.Add().Text(Resources.Details).Content(
-                                @<text>
+                                                                                    @<text>
 
-                                    @(Html.Kendo().PanelBar()
+                                                                                        @(Html.Kendo().PanelBar()
                                                                                        .Name("panelbar_#=PlacementId#")
                                                                                       .ExpandMode(PanelBarExpandMode.Single)
                                                                                       .Items(panelbar =>
                                                                                       {
-                                                                                                  panelbar.Add().Text("Status")
-                                                                  .Expanded(true)
-                                                                  .Content(
+                                                                                          panelbar.Add().Text("Status")
+                                                          .Expanded(true)
+                                                          .Content(
 
-                                                                       "<div>" +
-                                                            "<table class='table'>" +
+                                                               "<div>" +
+                                                    "<table class='table'>" +
 
-                                                             "<tr>" +
-                                                                "<td>" + "<div class='employee-details'>" +
-                                                                      "<ul>" +
+                                                     "<tr>" +
+                                                        "<td>" + "<div class='employee-details'>" +
+                                                              "<ul>" +
 
-                                                                      "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                                                                      // "<li><label>Title:  </label>#=Title #</li>" +
-                                                                      "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                                                                      "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                                                                      "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+                                                              "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                                              // "<li><label>Title:  </label>#=Title #</li>" +
+                                                              "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                                              "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                                              "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
 
-                                                                      "</ul>" +
-                                                                      "</div>" + "<th>" +
-                                                                // "<td>" + EmployeeChartsResult() + "<th>" +
+                                                              "</ul>" +
+                                                              "</div>" + "<th>" +
+                                                        // "<td>" + EmployeeChartsResult() + "<th>" +
 
-                                                                "</table>" +
-                                                        "</div>"
-                                                                  );
+                                                        "</table>" +
+                                                "</div>"
+                                                          );
 
 
 
-                                                                                              }).ToClientTemplate()
+                                                                                      }).ToClientTemplate()
 
-                                    )
-                                    <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                </text>
+                                                                                        )
+                                                                                        <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                                                    </text>
                                             );
 
-                                                                                         items.Add().Text("Employees").Content(
-                                                                        @<text>
+                                                                             items.Add().Text("Employees").Content(
+                                                                                @<text>
 
 
-                                                                            @(Html.Kendo().Grid<EmployeesUnderBossVM>()
+                                                                                    @(Html.Kendo().Grid<EmployeesUnderBossVM>()
                                                                                                                                                               .Name("EmployeesUnderBoss#=PlacementId#")
                                                                                                                                               .Columns(columns =>
                                                                                                                                               {
 
-                                                                                                                                                          columns.Bound(c => c.EmployeeCode).Width(100);
-                                                                                                                                                          columns.Bound(c => c.FullName).Width(100);
-                                                                                                                                                          columns.Command(command =>
-                                                                                                          {
+                                                                                                                                                  columns.Bound(c => c.EmployeeCode).Width(100);
+                                                                                                                                                  columns.Bound(c => c.FullName).Width(100);
+                                                                                                                                                  columns.Command(command =>
+                                                                                                                                                  {
 
-                                                                                                                              }).Width(300);
-                                                                                                                                                      })
+                                                                                                                                                  }).Width(300);
+                                                                                                                                              })
 
 
                                                                                                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -204,10 +211,10 @@
                                                                                                                                           .Ajax()
                                                                                                                                                   .Events(events =>
                                                                                                                                                   {
-                                                                                                                                                              events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                                                                              events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                                                                              events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                                                                          })
+                                                                                                                                                      events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                                                                      events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                                                                      events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                                                                  })
 
 
                                                                                                                                           .Model(model => model.Id(p => p.EmployeesUnderBossId))
@@ -215,9 +222,9 @@
 
 
                                                                                                                                       ).ToClientTemplate()
-                                                                            )
+                                                                                    )
 
-                                                                        </text>
+                                                                                </text>
                                                                                                                       );
 
                                                                              }).ToClientTemplate())
@@ -303,6 +310,7 @@
             cache: false,
             success: function(result) {
                 $("#Salary").val(result);
+                $("#Salary").trigger("change");
             }
           });
         }
@@ -511,9 +519,11 @@
                 row.find("#pend").hide();
                 row.find("#unpend").hide();
             }
+            if (dataItem.IsApprove === true) {
+                row.find("#approveplacement").hide();
+            }
         }
     }
-
 
     function ApprovePlacement(e) {
 
@@ -527,7 +537,7 @@
             $('#loading-image').show();
 
             $.ajax({
-                url: '@Url.Action("ApprovePlacement", "EmployeePlacmentWithOJ")',
+                url: '@Url.Action("ApprovePlacement", "EmployeePlacmentWithJ")',
 
                 data: { id: id},
                 type: 'POST',
