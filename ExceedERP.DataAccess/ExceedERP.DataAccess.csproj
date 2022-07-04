@@ -282,6 +282,10 @@
     <Compile Include="Migrations\202205301249545_salarysettings.Designer.cs">
       <DependentUpon>202205301249545_salarysettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202207040850300_employeeplaced.cs" />
+    <Compile Include="Migrations\202207040850300_employeeplaced.Designer.cs">
+      <DependentUpon>202207040850300_employeeplaced.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -450,6 +454,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202205301249545_salarysettings.resx">
       <DependentUpon>202205301249545_salarysettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202207040850300_employeeplaced.resx">
+      <DependentUpon>202207040850300_employeeplaced.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
