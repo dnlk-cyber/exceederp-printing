@@ -107,5 +107,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsApprove { get; set; }
         public int ApprovedByEmpId { get; set; }
         public int PreparedByEmpId { get; set; }
+        [NotMapped]
+        public string FullName { get; set; }
     }
 }
