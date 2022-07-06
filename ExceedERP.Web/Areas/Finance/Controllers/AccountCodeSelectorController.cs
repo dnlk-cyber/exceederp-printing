@@ -116,7 +116,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                         {
                             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
 
-                            List<string> locationCodes = _db.Branch.Where(x => mybraches.Contains(x.BranchId.ToString())).Select(x => x.Code).ToList();
+                            List<string> locationCodes = _db.Branch.Where(x => mybraches.Contains(x.BranchId.ToString())).Select(x => x.LocationAccount).ToList();
 
                             segments = segments.Where(x => locationCodes.Contains(x.Values)).ToList();
                         }
