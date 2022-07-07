@@ -609,7 +609,6 @@
     <Compile Include="Areas\Construction\Controllers\Project Input\ProjectEstimationIndexLabourController.cs" />
     <Compile Include="Areas\Construction\Controllers\Project Input\ProjectEstimationMachineryRentController.cs" />
     <Compile Include="Areas\Construction\Controllers\Project Input\ProjectInputsController.cs" />
-    <Compile Include="Areas\Construction\Controllers\Project Input\ProjectJobTitleController.cs" />
     <Compile Include="Areas\Construction\Controllers\Project Input\RowDataCategoryController.cs" />
     <Compile Include="Areas\Construction\Controllers\Project Input\WorkCategoryController.cs" />
     <Compile Include="Areas\Construction\Controllers\Project Input\WorkItemCategoryController.cs" />

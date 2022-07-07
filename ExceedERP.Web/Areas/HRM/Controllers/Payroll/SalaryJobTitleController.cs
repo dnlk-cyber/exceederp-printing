@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -58,9 +58,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
 
         }
-        private string GetTitleName(int id)
+        private string GetTitleName(int? id)
         {
-
             try
             {
                 db = new ExceedDbContext();
