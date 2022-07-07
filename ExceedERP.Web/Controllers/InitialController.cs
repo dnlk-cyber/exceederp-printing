@@ -449,12 +449,14 @@ namespace ExceedERP.Web.Controllers
                 new ApplicationRole(CMSRoles.Examiner, "Examiner", "CMS"),
                 new ApplicationRole(CMSRoles.CMSReporting, "CMS Reports", "CMS"),
                 #endregion
-                #region info desk
-                new ApplicationRole("HelpDeskAdmin", "HelpDeskAdmin", "HelpDesk"),
-                new ApplicationRole("OpenTicket", "OpenTicket", "HelpDesk"),
-                new ApplicationRole("AssignHandler", "AssignHandler", "HelpDesk"),
-                new ApplicationRole("Handler", "Handler", "HelpDesk")
-                #endregion
+                 #region info desk
+            new ApplicationRole("HelpDeskAdmin", "HelpDeskAdmin", "HelpDesk"),
+            new ApplicationRole("OpenTicket", "OpenTicket", "HelpDesk"),
+            new ApplicationRole("AssignHandler", "AssignHandler", "HelpDesk"),
+            new ApplicationRole("Handler", "Handler", "HelpDesk"),
+            new ApplicationRole("HelpDesk_Report", "View Report", "HelpDesk"),
+            new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk")
+            #endregion
                 #region Printing Estimation
                  ,new ApplicationRole(PrintingEstimationRoles.PrintingEstimationAdmin, "Printing Estimation Administrator", "PrintingEstimation"),
                  new ApplicationRole(PrintingEstimationRoles.PrintingEstimationFormUser, "Printing Estimation Form User", "PrintingEstimation"),
