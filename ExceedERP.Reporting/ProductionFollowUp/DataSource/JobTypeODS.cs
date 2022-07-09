@@ -88,7 +88,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         job.JobType = jobType?.JobName;
                         job.Client = client?.TradeName;
                         job.Quantity = jobOrder.Quantity + "x" + jobOrder.Pages;
-                        job.Size = jobOrder.FinishingSize + "x" + jobOrder.Copies;
+                        job.Size = jobOrder.FinishingSize;
                         job.TotalPrice = totalPrice;
                         job.Code = jobType?.JobCode;
                         jobList.Add(job);

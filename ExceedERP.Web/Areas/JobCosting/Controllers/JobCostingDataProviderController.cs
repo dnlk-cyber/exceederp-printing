@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ExceedERP.Web.Areas.JobCosting.Controllers.Common
+namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
     public class JobCostingDataProviderController : Controller
     {
@@ -34,8 +34,6 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers.Common
             }).ToList();
             return Json(periods, JsonRequestBehavior.AllowGet);
         }
-
-
         public JsonResult GetJobOrders()
         {
             var jobs = db.Jobs.ToList();

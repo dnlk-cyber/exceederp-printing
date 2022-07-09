@@ -32,13 +32,30 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             {
 
             
-            IQueryable<ChangeOrder> jobchangeoforders = db.ChangeOrders.Where(q=>q.JobId==jobCost.JobId);
-            DataSourceResult result = jobchangeoforders.ToDataSourceResult(request, jobChangeOfOrder => new {
+            var jobchangeoforders = db.ChangeOrders.Where(q=>q.JobId==jobCost.JobId).ToList();
+                var jobChanges = new List<JobChangeOfOrder>();
+                
+                foreach(var joborder in jobchangeoforders)
+                {
+                    var jobChange = new JobChangeOfOrder();
+
+                    jobChange.ChangeOrderId = joborder.ChangeOrderId;
+                jobChange.AdditionalChange = joborder.Quantity;
+                    jobChange.ChargeAmount = joborder.Total;
+                    jobChange.Reason = joborder.Reason;
+                    jobChange.DateCreated = joborder.DateCreated;
+                    jobChange.LastModified = joborder.LastModified;
+                    jobChange.CreatedBy = joborder.CreatedBy;
+                    jobChange.ModifiedBy = joborder.ModifiedBy;
+                    jobChanges.Add(jobChange);
+                }
+            DataSourceResult result = jobChanges.ToDataSourceResult(request, jobChangeOfOrder => new JobChangeOfOrder
+            { 
                 JobChangeOfOrderId = jobChangeOfOrder.ChangeOrderId,
                 JobCostId = id,
                 ChangeOrderId = jobChangeOfOrder.ChangeOrderId,
-                AdditionalChange = jobChangeOfOrder.Quantity,
-                ChargeAmount = jobChangeOfOrder.Total,
+                AdditionalChange = jobChangeOfOrder.AdditionalChange,
+                ChargeAmount = jobChangeOfOrder.ChargeAmount,
                 Reason = jobChangeOfOrder.Reason,
                 DateCreated = jobChangeOfOrder.DateCreated,
                 LastModified = jobChangeOfOrder.LastModified,
@@ -46,7 +63,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 ModifiedBy = jobChangeOfOrder.ModifiedBy
             });
 
-            return Json(result);
+            return Json(result,JsonRequestBehavior.AllowGet);
             }
             return Json(request);
 

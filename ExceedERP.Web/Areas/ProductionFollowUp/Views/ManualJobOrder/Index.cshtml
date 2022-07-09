@@ -1266,7 +1266,7 @@ items.Add().Text("Validation").Content(
     jobStatusId = childMasterDataItem.JobStatusId;
     jobPhase = childMasterDataItem.JobPhase;
         jobState = childMasterDataItem.Status;
-        if (jobState == 1) {
+        if (jobState == 1 || jobState == 0) {
             $(".k-grid-top", $("#JobStatusLineItem_" + jobStatusId)).hide();
 
         }

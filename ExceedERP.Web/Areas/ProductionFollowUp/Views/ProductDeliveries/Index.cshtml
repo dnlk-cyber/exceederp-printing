@@ -17,8 +17,10 @@
                       columns.Bound(c => c.Credit).Width(100);
                       columns.Bound(c => c.CashSaleNo).Width(100);
                       columns.Bound(c => c.Cash).Width(100);
-                      columns.Bound(c => c.PreparedBy).Width(100);
-                      columns.Bound(c => c.ApprovedBy).Width(100);
+                      columns.Bound(c => c.DeliveryDate).Format("{0:MMMM d,yyyy}").Width(100);
+
+                      //columns.Bound(c => c.PreparedBy).Width(100);
+                      // columns.Bound(c => c.ApprovedBy).Width(100);
                       //columns.Bound(c => c.IdentificationNo);
                       columns.Command(command =>
                       {
