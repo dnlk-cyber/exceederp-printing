@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ExceedERP.Web.Areas.JobCosting.Controllers
+namespace ExceedERP.Web.Areas.JobCosting.Controllers.Common
 {
     public class JobCostingDataProviderController : Controller
     {

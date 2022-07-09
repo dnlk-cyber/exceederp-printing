@@ -1870,6 +1870,7 @@
     <Compile Include="Areas\Inventory\Controllers\Settings\ItemMergeController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\InventorySettingController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\Common\JobCostingDataProviderController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\Common\JobCostingDataProviderController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\DailyLaborRateController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\DeliveredJobController.cs" />
     <Compile Include="Areas\JobCosting\Controllers\DLRHourController.cs" />
