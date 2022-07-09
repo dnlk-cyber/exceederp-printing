@@ -71,15 +71,11 @@
                                         .Columns(columns =>
                                         {
                                             columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No").Width(100);
-                                            // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
-                                            //columns.Bound(c => c.ItemCategory).Width(100);
-                                            //columns.Bound(c => c.ItemCode).Width(100);
-                                            //   columns.Bound(c => c.Description).Width(100);
-                                            //  columns.Bound(c => c.UnitId).Width(70);
+                                            
                                             columns.Bound(c => c.Quantity).ClientFooterTemplate("T Q: \\#=sum\\# ").Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.Amount).ClientFooterTemplate("T A: \\#=sum\\# ").Width(100);
                                             columns.Bound(c => c.VAT).ClientFooterTemplate("T V: \\#=sum\\# ").Width(100);
-                                            //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
+                                              columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.TotalCost).ClientFooterTemplate("Total: \\#=sum\\# ").Width(100);
 
                                             columns.Command(command =>
@@ -173,7 +169,28 @@
             customerId: customerId
         };
     }
-  
+    function onChangeJobOrder() {
+
+     
+        $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalCost", "ProductionDataProvider")',
+
+            data: { jobId: this.value() },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                  
+                    $("#UnitCost").val(r.Unit).trigger("change");
+                }
+
+        });
+        $("#UnitCost").attr('readonly', true);
+        $("#TotalCost").attr('readonly', true);
+        $("#VAT").attr('readonly', true);
+        $("#Amount").attr('readonly', true);
+
+    }
     function onChange() {
         var unitCost = $("#UnitCost").val();
         var quantity = $("#Quantity").val();
@@ -199,6 +216,10 @@
 
             });
         }
+        $("#UnitCost").attr('readonly', true);
+        $("#TotalCost").attr('readonly', true);
+        $("#VAT").attr('readonly', true);
+        $("#Amount").attr('readonly', true);
        }
 
     function hideColumn() {

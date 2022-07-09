@@ -31,7 +31,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var data = db.ProductionCustomerTypes;
             return Json(data.Select(s => new { Code = s.ProductionCustomerTypeId, Name = s.Name }), JsonRequestBehavior.AllowGet);
         }
-        public ActionResult GetBeforeVatAndTotalCost(int jobId, int quant)
+        public ActionResult GetBeforeVatAndTotalCost(int jobId, int quant=0)
         {
             var job = db.Jobs.Find(jobId);
             var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == job.JobTypeId.ToString());
@@ -48,7 +48,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                         Status = "OK",
                         Amount = Math.Round(beforeTax, 3),
                         VAT = Math.Round(vat, 3),
-                        Total = Math.Round(withTax, 3)
+                        Total = Math.Round(withTax, 3),
+                        Unit = Math.Round(job.UnitPrice, 3)
                     });
 
                     return calculatedField;
@@ -58,8 +59,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var nodata = Json(new
             {
                 Status = "OK",
-                BeforeTax = 0,
-                TotalPrice = 0
+                Amount = 0,
+                VAT = 0,
+                Total = 0,
+                Unit = 0
             });
 
             return nodata;
