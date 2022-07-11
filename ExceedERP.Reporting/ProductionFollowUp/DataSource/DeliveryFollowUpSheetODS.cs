@@ -27,7 +27,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             }
             if(startDate.HasValue)
             {
-                productDeliverys = productDeliverys.Where(q => q.DateCreated.HasValue?q.DateCreated.Value.Date >= startDate.Value.Date:false).ToList();
+                productDeliverys = productDeliverys.Where(q => q.DeliveryDate.HasValue?q.DeliveryDate.Value.Date >= startDate.Value.Date:false).ToList();
                 model.From = startDate?.ToString("MM/dd/yyyy");
 
             }

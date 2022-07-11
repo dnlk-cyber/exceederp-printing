@@ -424,7 +424,7 @@
             this.htmlTextBox7.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(14D);
             this.htmlTextBox7.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.htmlTextBox7.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.htmlTextBox7.Value = "በምርት ሂደት ያሉ በብር";
+            this.htmlTextBox7.Value = "<p>በምርት ሂደት ያሉ በብዛት</p><p></p>";
             // 
             // htmlTextBox8
             // 
@@ -496,7 +496,7 @@
             this.htmlTextBox14.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(14D);
             this.htmlTextBox14.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.htmlTextBox14.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.htmlTextBox14.Value = "ብር";
+            this.htmlTextBox14.Value = "<p>ብዛት</p><p></p>";
             // 
             // htmlTextBox16
             // 
@@ -557,20 +557,20 @@
             // 
             this.htmlTextBox25.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7320094108581543D), Telerik.Reporting.Drawing.Unit.Inch(0.45283493399620056D));
             this.htmlTextBox25.Name = "htmlTextBox25";
-            this.htmlTextBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.669486939907074D), Telerik.Reporting.Drawing.Unit.Inch(0.25590547919273376D));
+            this.htmlTextBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590547919273376D));
             this.htmlTextBox25.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox25.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox25.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.htmlTextBox25.Style.Font.Bold = true;
             this.htmlTextBox25.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.htmlTextBox25.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.htmlTextBox25.Value = "ሳ";
+            this.htmlTextBox25.Value = "";
             // 
             // htmlTextBox33
             // 
-            this.htmlTextBox33.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(7.4016146659851074D), Telerik.Reporting.Drawing.Unit.Inch(0.70881938934326172D));
+            this.htmlTextBox33.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.8396873474121094D), Telerik.Reporting.Drawing.Unit.Inch(0.70881938934326172D));
             this.htmlTextBox33.Name = "htmlTextBox33";
-            this.htmlTextBox33.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90539354085922241D), Telerik.Reporting.Drawing.Unit.Inch(1.5358285903930664D));
+            this.htmlTextBox33.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4673207998275757D), Telerik.Reporting.Drawing.Unit.Inch(1.5358285903930664D));
             this.htmlTextBox33.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox33.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox33.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
@@ -579,9 +579,9 @@
             // 
             // htmlTextBox32
             // 
-            this.htmlTextBox32.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(7.4016146659851074D), Telerik.Reporting.Drawing.Unit.Inch(0.45283475518226624D));
+            this.htmlTextBox32.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.8396873474121094D), Telerik.Reporting.Drawing.Unit.Inch(0.45283475518226624D));
             this.htmlTextBox32.Name = "htmlTextBox32";
-            this.htmlTextBox32.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90539354085922241D), Telerik.Reporting.Drawing.Unit.Inch(0.25590547919273376D));
+            this.htmlTextBox32.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4673207998275757D), Telerik.Reporting.Drawing.Unit.Inch(0.25590547919273376D));
             this.htmlTextBox32.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox32.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox32.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
@@ -595,7 +595,7 @@
             // 
             this.htmlTextBox26.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7319698333740234D), Telerik.Reporting.Drawing.Unit.Inch(0.708819568157196D));
             this.htmlTextBox26.Name = "htmlTextBox26";
-            this.htmlTextBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.668977677822113D), Telerik.Reporting.Drawing.Unit.Inch(0.25590547919273376D));
+            this.htmlTextBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590547919273376D));
             this.htmlTextBox26.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox26.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox26.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
@@ -607,7 +607,7 @@
             // 
             this.htmlTextBox24.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7319302558898926D), Telerik.Reporting.Drawing.Unit.Inch(0.96480387449264526D));
             this.htmlTextBox24.Name = "htmlTextBox24";
-            this.htmlTextBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.668977677822113D), Telerik.Reporting.Drawing.Unit.Inch(0.25590565800666809D));
+            this.htmlTextBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590565800666809D));
             this.htmlTextBox24.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox24.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox24.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
@@ -619,7 +619,7 @@
             // 
             this.htmlTextBox23.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7319698333740234D), Telerik.Reporting.Drawing.Unit.Inch(1.2207884788513184D));
             this.htmlTextBox23.Name = "htmlTextBox23";
-            this.htmlTextBox23.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.668977677822113D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
+            this.htmlTextBox23.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
             this.htmlTextBox23.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox23.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox23.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
@@ -631,7 +631,7 @@
             // 
             this.htmlTextBox22.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7319302558898926D), Telerik.Reporting.Drawing.Unit.Inch(1.7327574491500855D));
             this.htmlTextBox22.Name = "htmlTextBox22";
-            this.htmlTextBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.668977677822113D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
+            this.htmlTextBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
             this.htmlTextBox22.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox22.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox22.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
@@ -643,7 +643,7 @@
             // 
             this.htmlTextBox21.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7319302558898926D), Telerik.Reporting.Drawing.Unit.Inch(1.4767731428146362D));
             this.htmlTextBox21.Name = "htmlTextBox21";
-            this.htmlTextBox21.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.668977677822113D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
+            this.htmlTextBox21.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
             this.htmlTextBox21.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.htmlTextBox21.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox21.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
@@ -655,7 +655,7 @@
             // 
             this.htmlTextBox15.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7319302558898926D), Telerik.Reporting.Drawing.Unit.Inch(1.9887423515319824D));
             this.htmlTextBox15.Name = "htmlTextBox15";
-            this.htmlTextBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.668977677822113D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
+            this.htmlTextBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.10763893276453018D), Telerik.Reporting.Drawing.Unit.Inch(0.25590580701828003D));
             this.htmlTextBox15.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox15.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.htmlTextBox15.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;

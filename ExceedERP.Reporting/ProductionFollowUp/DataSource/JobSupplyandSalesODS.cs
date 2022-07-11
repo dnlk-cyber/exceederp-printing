@@ -87,12 +87,12 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             && q.JobTypeId == jobType.JobCategoryId).ToList();
                             if(jobTypePlan.Count()>0)
                             {
-                                job.PreviousWeeklySupply = Math.Round(previousJobs.Sum(s=>s.TotalPrice),2);
-                                job.DailySupply = Math.Round(jobTypePlan.Sum(s=>s.TotalPrice) / (count*30),2);
+                                job.PreviousWeeklySupply = Math.Round(previousJobs.Sum(s=>s.Quantity),2);
+                                job.DailySupply = Math.Round(jobTypePlan.Sum(s=>(decimal)s.TotalProduct) / (count*30),2);
                                 //job.WeeklySupplyAndSalesPlan = ;
-                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.TotalPrice),2);
+                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.Quantity),2);
                              //   job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
-                                job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.TotalPrice),2);
+                                job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.Quantiy),2);
                             //    job.WeeklySalesPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklySalesActual,2);
                                // WeeklySupplyAndSalesPlan += job.WeeklySupplyAndSalesPlan;
                                 WeeklyReceivedActual += job.WeeklyReceivedActual;

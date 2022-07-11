@@ -82,11 +82,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             if(jobTypePlan!=null)
                             {
                                  days = (period.DateTo - period.DateFrom).Days;
-                                job.DailySupply = Math.Round(jobTypePlan.TotalPrice /days, 2);
-                                job.WeeklySupplyAndSalesPlan = Math.Round(jobTypePlan.TotalPrice, 2);
-                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.TotalPrice),2);
+                                job.DailySupply = Math.Round((decimal)jobTypePlan.TotalProduct /days, 2);
+                                job.WeeklySupplyAndSalesPlan = Math.Round((decimal)jobTypePlan.TotalProduct, 2);
+                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.Quantity),2);
                                 job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
-                                job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.TotalPrice),2);
+                                job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.Quantiy),2);
                                 job.WeeklySalesPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklySalesActual,2);
                                 WeeklySupplyAndSalesPlan += job.WeeklySupplyAndSalesPlan;
                                 WeeklyReceivedActual += job.WeeklyReceivedActual;
