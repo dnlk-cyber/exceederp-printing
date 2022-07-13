@@ -870,18 +870,18 @@
             // table1
             // 
             this.table1.Bindings.Add(new Telerik.Reporting.Binding("DataSource", "= Fields.PrintingAndFinishingTeamPerformanceItems"));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(1.7669066190719605D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(1.76690673828125D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(3.3891494274139404D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0743038654327393D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2038905620574951D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2038906812667847D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1399843692779541D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0491000413894653D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0491001605987549D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1282819509506226D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.940742552280426D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.11655894666910172D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(2.1191518306732178D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.29111874103546143D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Cm(0.47917008399963379D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.11655895411968231D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(2.1191520690917969D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.2911188006401062D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Cm(0.47917020320892334D)));
             this.table1.Body.SetCellContent(0, 2, this.textBox2);
             this.table1.Body.SetCellContent(0, 3, this.textBox4);
             this.table1.Body.SetCellContent(0, 4, this.textBox6);
@@ -1015,7 +1015,7 @@
             this.textBox8.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox8.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox8.StyleName = "";
-            this.textBox8.Value = "=Fields.WeeklyPlan";
+            this.textBox8.Value = "";
             // 
             // textBox56
             // 
@@ -1045,7 +1045,7 @@
             this.textBox10.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox10.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox10.StyleName = "";
-            this.textBox10.Value = "=Fields.Percent";
+            this.textBox10.Value = "";
             // 
             // textBox50
             // 
@@ -1097,7 +1097,7 @@
             this.textBox15.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox15.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox15.StyleName = "";
-            this.textBox15.Value = "= Sum(Fields.WeeklyPlan)";
+            this.textBox15.Value = "";
             // 
             // textBox16
             // 
@@ -1117,7 +1117,7 @@
             this.textBox21.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox21.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox21.StyleName = "";
-            this.textBox21.Value = "= Sum(Fields.Percent)";
+            this.textBox21.Value = "";
             // 
             // textBox23
             // 

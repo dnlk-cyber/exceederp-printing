@@ -41,6 +41,9 @@
             this.textBox49 = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
             this.textBox28 = new Telerik.Reporting.TextBox();
+            this.FYOds = new Telerik.Reporting.ObjectDataSource();
+            this.POds = new Telerik.Reporting.ObjectDataSource();
+            this.JtOds = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.htmlTextBox2 = new Telerik.Reporting.HtmlTextBox();
             this.htmlTextBox1 = new Telerik.Reporting.HtmlTextBox();
@@ -104,9 +107,6 @@
             this.htmlTextBox31 = new Telerik.Reporting.HtmlTextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.DTPOds = new Telerik.Reporting.ObjectDataSource();
-            this.FYOds = new Telerik.Reporting.ObjectDataSource();
-            this.POds = new Telerik.Reporting.ObjectDataSource();
-            this.JtOds = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox20
@@ -249,6 +249,26 @@
             this.textBox28.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(13D);
             this.textBox28.StyleName = "";
             this.textBox28.Value = "የሳምንቱ የሽያጭ ኣፈጻጸም";
+            // 
+            // FYOds
+            // 
+            this.FYOds.DataMember = "GetFiscalYears";
+            this.FYOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.FYOds.Name = "FYOds";
+            // 
+            // POds
+            // 
+            this.POds.DataMember = "GetPeriods";
+            this.POds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.POds.Name = "POds";
+            this.POds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("glFiscalYearId", typeof(string), "= Parameters.glFiscalYearId.Value")});
+            // 
+            // JtOds
+            // 
+            this.JtOds.DataMember = "GetJobTypes";
+            this.JtOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.JtOds.Name = "JtOds";
             // 
             // pageHeaderSection1
             // 
@@ -872,12 +892,12 @@
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2038906812667847D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1399843692779541D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0491001605987549D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1282819509506226D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.128281831741333D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.940742552280426D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.11655895411968231D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.11655894666910172D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(2.1191520690917969D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.2911188006401062D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Cm(0.47917020320892334D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.29111883044242859D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Cm(0.47917023301124573D)));
             this.table1.Body.SetCellContent(0, 2, this.textBox2);
             this.table1.Body.SetCellContent(0, 3, this.textBox4);
             this.table1.Body.SetCellContent(0, 4, this.textBox6);
@@ -1172,26 +1192,6 @@
             this.DTPOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("periodId", typeof(string), "= Parameters.periodId.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("jobTypeId", typeof(string), "= Parameters.jobTypeId.Value")});
-            // 
-            // FYOds
-            // 
-            this.FYOds.DataMember = "GetFiscalYears";
-            this.FYOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.FYOds.Name = "FYOds";
-            // 
-            // POds
-            // 
-            this.POds.DataMember = "GetPeriods";
-            this.POds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.POds.Name = "POds";
-            this.POds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("glFiscalYearId", typeof(string), "= Parameters.glFiscalYearId.Value")});
-            // 
-            // JtOds
-            // 
-            this.JtOds.DataMember = "GetJobTypes";
-            this.JtOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.JtOds.Name = "JtOds";
             // 
             // rptDeliveryTeamPerformanceWp
             // 

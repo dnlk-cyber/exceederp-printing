@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public JobTypeVM GetJobTypeODS(DateTime? startDate, DateTime? endDate,string jobPhase, string jobTypeId, string customerId)
+        public JobTypeVM GetJobTypeODS(DateTime? startDate, DateTime? endDate,string jobPhase, string status,  string jobTypeId, string customerId)
         {
             var model = new JobTypeVM();
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
@@ -69,18 +69,32 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var job = new JobTypeItemVM();
 
                         job.JobNo = jobOrder.JobNo;
-
+                        string state = null;
                         var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
                         var client = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId);
                         var totalPrice = jobOrder.TotalPrice;
-                        if(jobPhase!=null)
+                        state = JobState.InProgress.ToString();
+                        var jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase == ProductionDepartment.FinishingDelivery).FirstOrDefault();
+                        if(jobStatus!=null)
                         {
-                            var jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
-                            
-                            if (jobStatus == null&& jobPhase != ProductionDepartment.JobFollowup.ToString())
+                            state = jobStatus.Status.ToString();
+
+                        }
+                        if (jobPhase!=null)
+                        {
+                            jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
+                            state = jobStatus?.Status.ToString();
+                            if(jobStatus!=null&&status!=null)
+                            {
+                                if(jobStatus.Status.ToString()!=status)
+                                {
+                                    continue;
+
+                                }
+                            }
+                            else if (jobStatus == null&& jobPhase != ProductionDepartment.JobFollowup.ToString()|| status ==JobState.Delivered.ToString())
                             {
                                 continue;
-
                             }
                            
                         }
@@ -92,6 +106,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         job.Size = jobOrder.FinishingSize;
                         job.TotalPrice = totalPrice;
                         job.Code = jobType?.JobCode;
+                        job.Status = state;
                         jobList.Add(job);
                     }
                     model.JobTypeItemVMs = jobList;

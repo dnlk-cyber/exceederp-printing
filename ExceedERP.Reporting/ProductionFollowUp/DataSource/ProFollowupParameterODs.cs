@@ -17,6 +17,15 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetJobStatuses()
+        {
+            List<SelectListItem> jobPhases = new List<SelectListItem>();
+            jobPhases = (Enum.GetValues(typeof(JobState)).Cast<JobState>().Select(
+        e => new SelectListItem() { Text = e.ToString(), Value = e.ToString() })).ToList();
+
+            return jobPhases;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SelectListItem> GetAllJobPhases()
         {
             List<SelectListItem> jobPhases = new List<SelectListItem>();

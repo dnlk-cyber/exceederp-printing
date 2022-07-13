@@ -26,5 +26,6 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public string Size { get; set; }       
         public decimal TotalPrice { get; set; }       
         public string Code { get; set; }       
+        public string Status { get; set; }       
     }
 }

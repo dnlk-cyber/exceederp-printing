@@ -178,7 +178,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     DeliveryDate = productDelivery.DeliveryDate,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
-                    DateCreated = DateTime.Now,
+                    LastModified = DateTime.Now,
                     IdentificationNo = productDelivery.IdentificationNo,
                 };
 
