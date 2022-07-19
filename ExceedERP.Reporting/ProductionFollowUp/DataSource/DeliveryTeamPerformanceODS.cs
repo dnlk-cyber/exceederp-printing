@@ -25,12 +25,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 
             var finishingDeliveryPreviousJobStatusLists = db.JobStatuses.Where(q => q.JobPhase == ProductionDepartment.FinishingDelivery).ToList();
             var salesDeliveryPreviousJobStatusLists = db.JobStatuses.Where(q=>q.JobPhase== ProductionDepartment.SalesDelivery).ToList();
-            var latestJobStatusLists = db.JobStatuses.ToList();
-            var salesLatestJobStatusLists = db.JobStatuses.ToList();
-            var salesDeliveryPrevJobs = db.Jobs.ToList();
-            var finishingDeliveryPrevJobs = db.Jobs.ToList();
-            var latestJobs = db.Jobs.ToList();
-            var jobTypes = latestJobs.ToList();
+      
+            var latestJobs = new List<Job>();
+            var prevJobs = new List<Job>();
             var finishingDeliveryLatestJobStatusLists =new  List<JobStatus>();
             var salesDeliveryLatestJobStatusLists = new List<JobStatus>();
             if (startDate.HasValue)
@@ -38,10 +35,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 finishingDeliveryPreviousJobStatusLists = finishingDeliveryPreviousJobStatusLists.Where(q => q.StartDate.HasValue ? q.StartDate.Value.Date < startDate.Value.Date:false).ToList();
                 salesDeliveryPreviousJobStatusLists = salesDeliveryPreviousJobStatusLists.Where(q => q.StartDate.HasValue ? q.StartDate.Value.Date < startDate.Value.Date:false).ToList();
             }
-            var finDelIds = finishingDeliveryPreviousJobStatusLists.Select(s=>s.JobId);
-            var salesDelIds = salesDeliveryPreviousJobStatusLists.Select(s=>s.JobId);
-            finishingDeliveryPrevJobs = finishingDeliveryPrevJobs.Where(q => finDelIds.Contains(q.JobId)).ToList();
-            salesDeliveryPrevJobs = salesDeliveryPrevJobs.Where(q => salesDelIds.Contains(q.JobId)).ToList();
+   
 
             if (startDate.HasValue&& endDate.HasValue)
             {
@@ -54,15 +48,16 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                                                           ).ToList();
             }
             var delProIds = deliverdProducts.Select(s => s.ProductDeliveryId);
-            var jobIds = db.ProductDeliveryItems.Where(q => delProIds.Contains(q.ProductDeliveryId)).ToList().Select(s=>s.JobId);
-            latestJobs = latestJobs.Where(q => jobIds.Contains(q.JobId)).ToList();
-            //if (jobTypeId != null)
-            //{
-            //    latestJobs = latestJobs.ToList().Select(s => s.JobTypeId).Distinct();
+            var jobIds = db.ProductDeliveryItems.Where(q => delProIds.Contains(q.ProductDeliveryId)).ToList().Select(s=>s.JobId).Distinct();
+            latestJobs = db.Jobs.Where(q => jobIds.Contains(q.JobId)).ToList();
+            var prevIds = salesDeliveryPreviousJobStatusLists.Select(s=>s.JobId);
+            prevJobs = db.Jobs.Where(q => prevIds.Contains(q.JobId)).ToList();
+            if (jobTypeId != null)
+            {
 
-            //    latestJobs = latestJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
-            //    previousJobs = previousJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
-            //}
+                prevJobs = prevJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
+                latestJobs = latestJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
+            }
             var jobTypeIds = latestJobs.ToList().Select(s => s.JobTypeId).Distinct();
 
             var latestJobsPrices = latestJobs.Sum(s=>s.Quantity);
@@ -114,21 +109,30 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             && q.JobTypeId == jobType).ToList();
                             //var plans = db.ProductionMonthlyPlans.FirstOrDefault();
                             var jobTypeRec = db.JobCategories.Find(jobType);
-                            var lastWeekJobTypes = previousJobs.Where(q => q.JobTypeId == jobType).ToList();
+                            var lastWeekJobTypes = prevJobs.Where(q => q.JobTypeId == jobType).ToList();
                             var currentWeekJobTypes = latestJobs.Where(q => q.JobTypeId == jobType).ToList();
                             decimal lastWeekFinishedJobTypes = 0;
+                            decimal lastWeekSalesDeliveredJobTypes = 0;
                             decimal lastWeekPendingJobTypes = 0;
                             decimal currentWeekFinishedJobTypes = 0;
                             decimal currentWeekOrderedJobTypes = 0;
                             foreach (var lastJob in lastWeekJobTypes)
                             {
-                                var jobStatus = db.JobStatuses.Where(q => q.JobId == lastJob.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
+                                var jobStatus = db.JobStatuses.Where(q => q.JobId == lastJob.JobId && q.JobPhase.ToString() == ProductionDepartment.FinishingDelivery.ToString()).FirstOrDefault();
                                 if (jobStatus != null)
                                 {
                                     var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.Quantiy);
                                     lastWeekFinishedJobTypes += finished;
+                      
                                 }
-                            }
+                                 jobStatus = db.JobStatuses.Where(q => q.JobId == lastJob.JobId && q.JobPhase.ToString() == ProductionDepartment.SalesDelivery.ToString()).FirstOrDefault();
+                                if (jobStatus != null)
+                                {
+
+                                    var delivered = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.Quantiy);
+                                    lastWeekSalesDeliveredJobTypes += delivered;
+                                }
+                }
                             foreach (var currentJob in currentWeekJobTypes)
                             {
                                 var jobStatus = db.JobStatuses.Where(q => q.JobId == currentJob.JobId && q.JobPhase.ToString() == ProductionDepartment.SalesDelivery.ToString()).FirstOrDefault();
@@ -145,7 +149,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             }
                             var jobTypeIdsss = lastWeekJobTypes.ToList().Select(s => s.JobId);
                             var changedQuan = db.ChangeOrders.Where(q => jobTypeIdsss.Contains(q.JobId)).ToList().Sum(s => s.Total);
-                            lastWeekPendingJobTypes = lastWeekJobTypes.Sum(s => s.Quantity) + changedQuan - lastWeekFinishedJobTypes;
+                            lastWeekPendingJobTypes = lastWeekFinishedJobTypes-lastWeekSalesDeliveredJobTypes;
                             var item = new PrintingAndFinishingTeamPerformanceItem();
                             var jobC = jobTypeRec?.JobCode;
                             var jobN = jobTypeRec?.JobName;
