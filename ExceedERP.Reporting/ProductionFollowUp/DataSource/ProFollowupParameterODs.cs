@@ -27,10 +27,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             }
            
             List<SelectListItem> paperSizes = new List<SelectListItem>();
-             paperSizes= jobs.Select(
+             paperSizes= jobs.Where(q=>q.FinishingSize!=null).Select(
         s => new SelectListItem {
-            Text = s.FinishingSize.ToString(),
-            Value = s.JobId.ToString()
+            Text = s.FinishingSize,
+            Value = s.FinishingSize
         }).Distinct().ToList();
 
             return paperSizes;
@@ -52,8 +52,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             copies = jobs.Select(
        s => new SelectListItem
        {
+          
            Text = s.Copies.ToString(),
-           Value = s.JobId.ToString()
+           Value = s.Copies.ToString()
+            
+          
        }).ToList();
 
             return copies;
@@ -63,6 +66,21 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         {
             List<SelectListItem> jobPhases = new List<SelectListItem>();
             jobPhases = (Enum.GetValues(typeof(JobState)).Cast<JobState>().Select(
+        e => new SelectListItem() { Text = e.ToString(), Value = e.ToString() })).ToList();
+
+            return jobPhases;
+        }
+        public enum JobOrderStatus
+        {
+            Received,
+            ParitiallyFinished,
+            Finished
+
+        }
+        public List<SelectListItem> GetJobOrderStatuses()
+        {
+            List<SelectListItem> jobPhases = new List<SelectListItem>();
+            jobPhases = (Enum.GetValues(typeof(JobOrderStatus)).Cast<JobOrderStatus>().Select(
         e => new SelectListItem() { Text = e.ToString(), Value = e.ToString() })).ToList();
 
             return jobPhases;
@@ -102,7 +120,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 .Select(s =>  new SelectListItem{
                     Value = s.OrganizationCustomerID.ToString(),
                     Text = s.TradeName
-                }).ToList();
+                }).Distinct().ToList();
 
             return custList;
         }

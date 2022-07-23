@@ -81,6 +81,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 jobStstus.Status = JobState.Finished;
 
             }
+            else
+            {
+                jobStstus.Status = JobState.ParitiallyFinished;
+            }
             db.JobStatuses.Attach(jobStstus);
             db.Entry(jobStstus).State = EntityState.Modified;
         }

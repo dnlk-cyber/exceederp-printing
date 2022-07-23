@@ -76,7 +76,7 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                         if(issueReq!=null)
                         {
                             jobCardItem.Year = fiscalYear.DateFrom.Year.ToString();
-                            jobCardItem.Month = fiscalYear.DateFrom.Month.ToString();
+                            jobCardItem.Month = fiscalYear.DateFrom.ToString("MMMM");
                         }
                            
                             jobCardItem.Reference = material.ProductionJobNo;

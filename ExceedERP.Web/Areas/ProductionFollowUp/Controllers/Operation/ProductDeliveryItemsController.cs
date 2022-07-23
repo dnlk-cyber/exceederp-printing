@@ -95,7 +95,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                             StartDate = DateTime.Now,
                             EndDate = DateTime.Now,
                             JobPhase = ProductionDepartment.SalesDelivery,
-                            Status = Core.Domain.PrintingEstimation.Setting.JobState.InProgress
+                            Status = Core.Domain.PrintingEstimation.Setting.JobState.ParitiallyFinished
                         };
                         db.JobStatuses.Add(jobStatusEntity);
                         db.SaveChanges();

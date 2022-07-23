@@ -163,7 +163,7 @@
                                                                                                                                             <a href='@Url.Action("JobOrder", "ReportProductionFollowUp")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
 
                                                                                                                                             @(Html.Kendo().Grid<IssueItem>()
-                                                                                                                                                                                                              .Name("ProductionStoreRequisitionItem_#=JobNo#")
+                                                                                                                                                                                                              .Name("ProductionStoreRequisitionItem_#=JobId#")
                                                                                                                                                                                                               .Columns(columns =>
                                                                                                                                                                                                               {
                                                                                                                                                                                                                   columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategory").Width(200);
@@ -193,9 +193,9 @@
                                                                                                                                                                                                               .DataSource(dataSource => dataSource
                                                                                                                                                                                                                   .Ajax()
                                                                                                                                                                                                                   .Events(ev => ev
-                                                                                                                                                                                                                      .Error("error_handler(\"ProductionStoreRequisitionItem_#=JobNo#\")")
-                                                                                                                                                                                                                      .RequestStart("onRequestStart(\"ProductionStoreRequisitionItem_#=JobNo#\")")
-                                                                                                                                                                                                                      .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionItem_#=JobNo#\")"))
+                                                                                                                                                                                                                      .Error("error_handler(\"ProductionStoreRequisitionItem_#=JobId#\")")
+                                                                                                                                                                                                                      .RequestStart("onRequestStart(\"ProductionStoreRequisitionItem_#=JobId#\")")
+                                                                                                                                                                                                                      .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionItem_#=JobId#\")"))
                                                                                                                                                                                                                   .Model(model =>
                                                                                                                                                                                                                   {
                                                                                                                                                                                                                       model.Id(p => p.IssueItemID);
@@ -221,9 +221,9 @@
 @<text>
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder>()
-                                                                                .Name("ChangeOrder#=JobId#")
-                                                                            .Columns(columns =>
-                                                                            {
+                                                                    .Name("ChangeOrder#=JobId#")
+                                                                    .Columns(columns =>
+                                                                    {
                                                                     columns.Bound(c => c.Quantity).ClientFooterTemplate("T Quantity: \\#=sum\\# ");
                                                                     columns.Bound(c => c.Price).ClientFooterTemplate("T Unit Price: \\#=sum\\# ").Title("Unit Price");
                                                                     columns.Bound(c => c.Total).ClientFooterTemplate("T Price: \\#=sum\\# ");
@@ -263,11 +263,11 @@
                                                                 }
                                                                             )
 
-                                                                            .Model(model =>
-                                                                            {
+                                                                    .Model(model =>
+                                                                    {
                                                                     model.Id(p => p.ChangeOrderId);
                                                                 })
-                                                                           .Aggregates(ag =>
+                                                             .Aggregates(ag =>
                                                                {
                                                                    ag.Add(a => a.Quantity).Sum();
                                                                    ag.Add(a => a.Price).Sum();
@@ -948,7 +948,7 @@ command.Destroy();
     jobStatusId = childMasterDataItem.JobStatusId;
     jobPhase = childMasterDataItem.JobPhase;
         jobState = childMasterDataItem.Status;
-        if (jobState == 1 || jobState == 0) {
+        if (jobPhase == 1 || jobPhase == 0) {
             $(".k-grid-top", $("#JobStatusLineItem_" + jobStatusId)).hide();
 
         }
@@ -961,7 +961,7 @@ command.Destroy();
         var row = $(this);
 
         var data = dataSource.getByUid(row.data('uid'));
-        if (data.Status == 1) {
+        if (data.Status == 2) {
             row.find(".k-grid-delete").hide();
             row.find(".k-grid-edit").hide();
         }
@@ -1387,19 +1387,19 @@ command.Destroy();
     this.expandRow(this.tbody.find("tr.k-master-row").first());
 
     //approved
-    var grid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
-    var gridData = grid.dataSource.view();
+    //var grid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+    //var gridData = grid.dataSource.view();
 
-    for (var i = 0; i < gridData.length; i++) {
-    var currentUid = gridData[i].uid;
-    if (gridData[i].IsOnlineApproved) {
-    var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
-    var editButton = $(currenRow).find(".k-grid-edit");
-    var deleteButton = $(currenRow).find(".k-grid-delete");
-    editButton.hide();
-    deleteButton.hide();
-    }
-    }
+    //for (var i = 0; i < gridData.length; i++) {
+    //var currentUid = gridData[i].uid;
+    //if (gridData[i].IsOnlineApproved) {
+    //var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+    //var editButton = $(currenRow).find(".k-grid-edit");
+    //var deleteButton = $(currenRow).find(".k-grid-delete");
+    //editButton.hide();
+    //deleteButton.hide();
+   // }
+   // }
     }
     function onSelectLoading() {
     var dropdowntree = $("#JT").data("kendoDropDownTree");
@@ -1721,29 +1721,11 @@ command.Destroy();
         }
 
     }
-    function onDataBoundMaster() {
-        this.expandRow(this.tbody.find("tr.k-master-row").first());
-
-        //approved
-        var grid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
-        var gridData = grid.dataSource.view();
-
-        for (var i = 0; i < gridData.length; i++) {
-            var currentUid = gridData[i].uid;
-            if (gridData[i].IsOnlineApproved) {
-                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
-                var editButton = $(currenRow).find(".k-grid-edit");
-                var deleteButton = $(currenRow).find(".k-grid-delete");
-                editButton.hide();
-                deleteButton.hide();
-            }
-        }
-    }
+   
     function onJobStatusEdit(e) {
-        var statusOption = e.sender.editable.options.model.Status;
-        var statusInput = $('[data-role="editable"] input#Status');
+        var statusOption = e.sender.editable.options.model.JobPhase;
         if (!e.model.isNew()) {
-            if (statusOption == 0) {
+            if (statusOption ==0 || statusOption == 1) {
                 $("#Status").data("kendoDropDownList").enable(true);
                 console.log(statusOption);
             } else {

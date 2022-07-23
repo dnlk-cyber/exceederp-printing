@@ -73,9 +73,9 @@
             this.DeOds = new Telerik.Reporting.ObjectDataSource();
             this.JsOds = new Telerik.Reporting.ObjectDataSource();
             this.JtOds = new Telerik.Reporting.ObjectDataSource();
-            this.CuOds = new Telerik.Reporting.ObjectDataSource();
-            this.PsOds = new Telerik.Reporting.ObjectDataSource();
+            this.PsODS = new Telerik.Reporting.ObjectDataSource();
             this.CoOds = new Telerik.Reporting.ObjectDataSource();
+            this.CuOds = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox36
@@ -420,6 +420,9 @@
             this.textBox23.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0665391683578491D), Telerik.Reporting.Drawing.Unit.Cm(0.79104328155517578D));
             this.textBox23.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox23.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox23.Style.Font.Bold = true;
+            this.textBox23.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
+            this.textBox23.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
             this.textBox23.StyleName = "Civic.TableBody";
             this.textBox23.Value = "=Sum(Fields.TotalPrice)";
             // 
@@ -588,7 +591,7 @@
             // 
             // JsOds
             // 
-            this.JsOds.DataMember = "GetJobStatuses";
+            this.JsOds.DataMember = "GetJobOrderStatuses";
             this.JsOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
             this.JsOds.Name = "JsOds";
             // 
@@ -598,18 +601,12 @@
             this.JtOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
             this.JtOds.Name = "JtOds";
             // 
-            // CuOds
+            // PsODS
             // 
-            this.CuOds.DataMember = "GetCustomers";
-            this.CuOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.CuOds.Name = "CuOds";
-            // 
-            // PsOds
-            // 
-            this.PsOds.DataMember = "GetPaperSize";
-            this.PsOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.PsOds.Name = "PsOds";
-            this.PsOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            this.PsODS.DataMember = "GetPaperSize";
+            this.PsODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.PsODS.Name = "PsODS";
+            this.PsODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("startDate", typeof(System.Nullable<System.DateTime>), "= Parameters.startDate.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("endDate", typeof(System.Nullable<System.DateTime>), "= Parameters.endDate.Value")});
             // 
@@ -622,6 +619,12 @@
             new Telerik.Reporting.ObjectDataSourceParameter("startDate", typeof(System.Nullable<System.DateTime>), "= Parameters.startDate.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("endDate", typeof(System.Nullable<System.DateTime>), "= Parameters.endDate.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("size", typeof(string), "= Parameters.size.Value")});
+            // 
+            // CuOds
+            // 
+            this.CuOds.DataMember = "GetCustomers";
+            this.CuOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.CuOds.Name = "CuOds";
             // 
             // RtlJobType
             // 
@@ -669,25 +672,25 @@
             reportParameter5.Text = "Job Type";
             reportParameter5.Visible = true;
             reportParameter6.AllowNull = true;
-            reportParameter6.AvailableValues.DataSource = this.CuOds;
+            reportParameter6.AvailableValues.DataSource = this.PsODS;
             reportParameter6.AvailableValues.DisplayMember = "= Fields.Text";
             reportParameter6.AvailableValues.ValueMember = "= Fields.Value";
-            reportParameter6.Name = "customerId";
-            reportParameter6.Text = "Customer";
+            reportParameter6.Name = "size";
+            reportParameter6.Text = "Size";
             reportParameter6.Visible = true;
             reportParameter7.AllowNull = true;
-            reportParameter7.AvailableValues.DataSource = this.PsOds;
+            reportParameter7.AvailableValues.DataSource = this.CoOds;
             reportParameter7.AvailableValues.DisplayMember = "= Fields.Text";
             reportParameter7.AvailableValues.ValueMember = "= Fields.Value";
-            reportParameter7.Name = "size";
-            reportParameter7.Text = "Size";
+            reportParameter7.Name = "copy";
+            reportParameter7.Text = "Copy";
             reportParameter7.Visible = true;
             reportParameter8.AllowNull = true;
-            reportParameter8.AvailableValues.DataSource = this.CoOds;
+            reportParameter8.AvailableValues.DataSource = this.CuOds;
             reportParameter8.AvailableValues.DisplayMember = "= Fields.Text";
             reportParameter8.AvailableValues.ValueMember = "= Fields.Value";
-            reportParameter8.Name = "copy";
-            reportParameter8.Text = "Copy";
+            reportParameter8.Name = "customerId";
+            reportParameter8.Text = "Customer";
             reportParameter8.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
@@ -753,7 +756,7 @@
         private Telerik.Reporting.TextBox textBox27;
         private Telerik.Reporting.TextBox textBox28;
         private Telerik.Reporting.TextBox textBox26;
-        private Telerik.Reporting.ObjectDataSource PsOds;
         private Telerik.Reporting.ObjectDataSource CoOds;
+        private Telerik.Reporting.ObjectDataSource PsODS;
     }
 }
