@@ -22,7 +22,7 @@
                         @(Html.Kendo().TextBoxFor(model => model.FullName).HtmlAttributes(new { style = "width:200px;color:red;",@readonly="readonly" }))
                     </div>
 
-                    <div id="EmpIdDropdown_Id" hidden>
+                    <div id="EmpIdDropdown_Id" >
                         @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                               //  .Name("EmployeeId")
                               .DataValueField("EmployeeId")
@@ -40,8 +40,7 @@
                                })
                               .ValuePrimitive(true)
                         )
-                    </div>
-                        
+                    </div>                       
                    
                 </div>
 

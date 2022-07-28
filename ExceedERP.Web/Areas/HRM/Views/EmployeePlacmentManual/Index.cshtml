@@ -117,7 +117,7 @@
                   e.Save("GetDate");
                   e.Edit("GetDate");
                   e.DataBound("onDataBound");
-                 // e.Cancel("onCancel");
+                  e.Cancel("onCancel");
                   //e.Edit("onEdit");
 
               })
@@ -130,7 +130,7 @@
 
               .DataSource(dataSource => dataSource
                   .Ajax()
-                      .Sort(sort => sort.Add("PlacementId").Descending())
+                  .Sort(sort => sort.Add("PlacementId").Descending())
                   .Events(events =>
                   {
                       events.Error("error_handler(\"PlacementGrid\")");
@@ -139,11 +139,10 @@
                   }
                   )
                   .Model(model => model.Id(p => p.PlacementId))
-                     .Read(read => read.Action("Placements_Read", "EmployeePlacmentManual"))
-                       .Create(create => create.Action("Placements_Create", "EmployeePlacmentManual"))
-                             .Update(update => update.Action("Placements_Update", "EmployeePlacmentManual"))
-                         .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual"))
-
+                  .Read(read => read.Action("Placements_Read", "EmployeePlacmentManual"))
+                  .Create(create => create.Action("Placements_Create", "EmployeePlacmentManual"))
+                  .Update(update => update.Action("Placements_Update", "EmployeePlacmentManual"))
+                  .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual"))
               ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
@@ -684,28 +683,7 @@
     }
 
     function onCancel(e) {
-        var row = $(e.target).closest("tr");
-        var grid = $("#PlacementGrid").data("kendoGrid");
-        var dataItem = grid.dataItem(row);
-        var id = dataItem.PlacementId;
-
-        if (dataItem.isCurrent === true && dataItem.IsPend === false) {
-            row.find("#pend").show();
-            row.find("#unpend").hide();
-        }
-        else if (dataItem.isCurrent === true && dataItem.IsPend === true) {
-            row.css("background-color", "red");
-            row.find("#pend").hide();
-            row.find("#unpend").show();
-        }
-        else if (dataItem.isCurrent === false) {
-            row.find("#pend").hide();
-            row.find("#unpend").hide();
-        }
-
-        if (dataItem.IsApprove === true) {
-            row.find("#approveplacement").hide();
-        }
+        $("#PlacementGrid").data("kendoGrid").dataSource.read();        
     }
 </script>
 

@@ -106,19 +106,20 @@
                                       sortable.SortMode(GridSortMode.SingleColumn);
                                   })
                       .Filterable()
-                                     .Events(e =>
-                                     {
-                                         e.Save("GetDate");
-                                         e.Edit("GetDate");
-                                         e.DataBound("onDataBound");
-                                     })
+                          .Events(e =>
+                          {
+                              e.Save("GetDate");
+                              e.Edit("GetDate");
+                              e.DataBound("onDataBound");
+                              e.Cancel("onCancel");
+                          })
                          .Pageable(pageable => pageable
                            .Input(true)
                            .Numeric(false)
                            .Refresh(true)
                            .PageSizes(true)
                            .ButtonCount(5))
-                                                    
+
                   .DataSource(dataSource => dataSource
                       .Ajax()
                           .Sort(sort => sort.Add("EmployeeCode"))
@@ -139,24 +140,22 @@
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                    .Name("tabstrip_#=PlacementId#")
-                                                                            .SelectedIndex(0)
-                                                                            .Items(items =>
-                                                                             {
-
-                                                                                 items.Add().Text(Resources.Details).Content(
-                                                                                    @<text>
-
-                                                                                        @(Html.Kendo().PanelBar()
-                                                                                       .Name("panelbar_#=PlacementId#")
-                                                                                      .ExpandMode(PanelBarExpandMode.Single)
-                                                                                      .Items(panelbar =>
-                                                                                      {
-                                                                                          panelbar.Add().Text("Status")
-                                                          .Expanded(true)
-                                                          .Content(
-
-                                                               "<div>" +
+                  .Name("tabstrip_#=PlacementId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                   {
+                       items.Add().Text(Resources.Details).Content(
+                          @<text>
+                             @(Html.Kendo().PanelBar()
+                            .Name("panelbar_#=PlacementId#")
+                            .ExpandMode(PanelBarExpandMode.Single)
+                            .Items(panelbar =>
+                            {
+                                panelbar.Add().Text("Status")
+                                    .Expanded(true)
+                                    .Content(
+                                                          
+                                                   "<div>" +
                                                     "<table class='table'>" +
 
                                                      "<tr>" +
@@ -191,41 +190,40 @@
 
 
                                                                                     @(Html.Kendo().Grid<EmployeesUnderBossVM>()
-                                                                                                                                                              .Name("EmployeesUnderBoss#=PlacementId#")
-                                                                                                                                              .Columns(columns =>
-                                                                                                                                              {
+                                                                                                  .Name("EmployeesUnderBoss#=PlacementId#")
+                                                                                                    .Columns(columns =>
+                                                                                                    {
 
-                                                                                                                                                  columns.Bound(c => c.EmployeeCode).Width(100);
-                                                                                                                                                  columns.Bound(c => c.FullName).Width(100);
-                                                                                                                                                  columns.Command(command =>
-                                                                                                                                                  {
+                                                                                                        columns.Bound(c => c.EmployeeCode).Width(100);
+                                                                                                        columns.Bound(c => c.FullName).Width(100);
+                                                                                                        columns.Command(command =>
+                                                                                                        {
 
-                                                                                                                                                  }).Width(300);
-                                                                                                                                              })
-
-
-                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                      .Scrollable()
-                                                                                                                                      .Selectable()
-                                                                                                                                      .DataSource(dataSource => dataSource
-                                                                                                                                          .Ajax()
-                                                                                                                                                  .Events(events =>
-                                                                                                                                                  {
-                                                                                                                                                      events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                                                                      events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                                                                      events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                                                                  })
+                                                                                                        }).Width(300);
+                                                                                                    })
 
 
-                                                                                                                                          .Model(model => model.Id(p => p.EmployeesUnderBossId))
-                                                                                                                                     .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+                                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                            .Scrollable()
+                                                                                            .Selectable()
+                                                                                            .DataSource(dataSource => dataSource
+                                                                                                .Ajax()
+                                                                                                        .Events(events =>
+                                                                                                        {
+                                                                                                            events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                            events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                            events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                        })
 
 
-                                                                                                                                      ).ToClientTemplate()
+                                                                                                .Model(model => model.Id(p => p.EmployeesUnderBossId))
+                                                                                           .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+
+
+                                                                                            ).ToClientTemplate()
                                                                                     )
 
-                                                                                </text>
-                                                                                                                      );
+                                                                                </text> );
 
                                                                              }).ToClientTemplate())
 
@@ -289,6 +287,10 @@
     function sync_handler(e) {
         this.read();
 
+    }
+
+    function onCancel(e) {
+        $("#PlacementGrid").data("kendoGrid").dataSource.read();
     }
 </script>
 

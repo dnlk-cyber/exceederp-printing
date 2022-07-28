@@ -162,27 +162,27 @@
 																	{
 																		items.Add().Text("Journal Detail").Content(@<text>
 
-    <div>
-        <p><b>Record Status :#= Status #</b></p>
-        <a target="new" title="Print" href='@Url.Action("GlBegJournalVoucher", "FinancePrint")/#=GLRecordJournalBegId#'> <i class="fa fa-print fa-2x"></i>Print</a> <br/><br />
-        # if (!IsOnlineApproved)
-        {#
+	<div>
+		<p><b>Record Status :#= Status #</b></p>
+		<a target="new" title="Print" href='@Url.Action("GlBegJournalVoucher", "FinancePrint")/#=GLRecordJournalBegId#'> <i class="fa fa-print fa-2x"></i>Print</a> <br/><br />
+		# if (!IsOnlineApproved)
+		{#
 
-        <a onclick='return Close("#=GLRecordJournalBegId#")' href=' \#' title="Close"><i class="fa fa-icon-lock fa-2x"></i>Close</a>|
-        <a onclick='return Refresh("#=GLRecordJournalBegId#")' href=' \#' title="Refresh Beginning Data"><i class="fa icon-refresh fa-2x"></i>Refresh</a>
+		<a onclick='return Close("#=GLRecordJournalBegId#")' href=' \#' title="Close"><i class="fa fa-icon-lock fa-2x"></i>Close</a>|
+		<a onclick='return Refresh("#=GLRecordJournalBegId#")' href=' \#' title="Refresh Beginning Data"><i class="fa icon-check fa-2x"></i>Refresh</a>
 
-        # } #
+		# } #
 
 
 
-        # if (IsOnlineApproved)
-        {#
+		# if (IsOnlineApproved)
+		{#
 
-        <a onclick='return Post("#=GLRecordJournalBegId#")' href=' \#' title="Post"><i class="fa fa-step-forward fa-2x"></i>Post</a>
+		<a onclick='return Post("#=GLRecordJournalBegId#")' href=' \#' title="Post"><i class="fa fa-step-forward fa-2x"></i>Post</a>
 
-        # } #
+		# } #
 
-    </div>
+	</div>
 																			<div>
 																				<hr>
 																				<dl class="dl-horizontal">
@@ -256,11 +256,11 @@
 										.ToolBar(t => t.Template(
 										@<text>
 											<div class="toolbar row">
-                                                <div class="col-md-4">
-                                                    <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                                                    
-                                                    
-                                                </div>
+												<div class="col-md-4">
+													<a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+													
+													
+												</div>
 												<div class="col-md-4 pull-right">
 													@(Html.Kendo().Upload()
 																										.Name("files")
@@ -383,6 +383,31 @@
 		$.ajax({
 			type: "POST",
 			url: '@Url.Action("Close", "GLRecordJournalBeg", new { area = "Finance" })',
+			data: { id: id },
+			success: function (result) {
+				// toastr.warnning(result.Message);
+				alert(result.Message);
+				location.reload(true);
+			}, //end succ
+			beforeSend: function () {
+				// Show image container
+				$("#loading-image").show();
+			},
+			complete: function (data) {
+				// Hide image container
+				$("#loading-image").hide();
+			},
+			error: function (result) {
+				alert(result);
+			}
+		});
+    }
+
+    function Post(id) {
+
+		$.ajax({
+			type: "POST",
+			url: '@Url.Action("Post", "GLRecordJournalBeg", new { area = "Finance" })',
 			data: { id: id },
 			success: function (result) {
 				// toastr.warnning(result.Message);
