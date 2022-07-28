@@ -21,9 +21,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public string JobNo { get; set; }       
         public string JobType { get; set; }       
         public string Client { get; set; }       
-        public string Quantity { get; set; }       
+        public decimal Quantity { get; set; }       
+        public string Copy { get; set; }       
         public string Size { get; set; }       
         public decimal TotalPrice { get; set; }       
         public string Code { get; set; }       
+        public string Status { get; set; }       
     }
 }

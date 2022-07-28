@@ -5219,6 +5219,7 @@
     <Content Include="Areas\HRM\Views\MilitarySalary\EditorTemplates\Allowance.cshtml" />
     <Content Include="Areas\HRM\Views\MilitarySalary\Index.cshtml" />
     <Content Include="Areas\HRM\Views\WaterMark\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ManualJobOrder\Index - Copy.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

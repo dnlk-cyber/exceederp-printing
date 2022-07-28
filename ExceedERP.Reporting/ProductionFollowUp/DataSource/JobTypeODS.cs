@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs;
 
 namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 {
@@ -18,7 +19,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public JobTypeVM GetJobTypeODS(DateTime? startDate, DateTime? endDate,string jobPhase, string jobTypeId, string customerId)
+        public JobTypeVM GetJobTypeODS(DateTime? startDate, DateTime? endDate,string jobPhase, string status,  string jobTypeId, string size, string copy, string customerId)
         {
             var model = new JobTypeVM();
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
@@ -41,13 +42,50 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             model.LogoFileName = LogoFileName;
             model.Name = Name;
             model.AmharicName = AmharicName;
+            var jobs = db.Jobs.ToList();
             if (startDate.HasValue && endDate.HasValue)
             {
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
-                var jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue ?  x.ReceivedDate.Value.Date >= startDate.Value.Date
-                && x.ReceivedDate.Value.Date <= endDate.Value.Date:false).ToList();
-                if (jobTypeId != null)
+                 jobs = jobs.Where(x => x.ReceivedDate.HasValue ? x.ReceivedDate.Value.Date >= startDate.Value.Date
+                && x.ReceivedDate.Value.Date <= endDate.Value.Date : false).ToList();
+            }
+            if (jobPhase != null&&jobPhase != ProductionDepartment.JobFollowup.ToString())
+            {
+                var jobLists = db.JobStatuses.Where(x => x.JobPhase.ToString() == jobPhase).ToList();
+                if(status==JobState.Received.ToString())
+                {
+                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false
+       && x.StartDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false).ToList();
+                }
+                else
+                {
+                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false
+                           && x.EndDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false).ToList();
+                }
+                var jobIds = jobLists.Select(s=>s.JobId);
+            jobs = db.Jobs.ToList().Where(q => jobIds.Contains(q.JobId)).ToList();
+            }
+
+            if (status != null)
+            {
+                var jobsLists = db.JobStatuses.ToList().Where(x => x.Status >= 0).ToList();
+                if (status!=JobState.Received.ToString())
+                {
+                    jobsLists = db.JobStatuses.ToList().Where(x => x.Status.ToString() == status).ToList();
+
+                }
+                
+
+                if (jobPhase!=null)
+                {
+                    jobsLists = jobsLists.Where(q => q.JobPhase.ToString() == jobPhase).ToList();
+                }
+                var jobIdss = jobsLists.Select(s => s.JobId);
+                 jobs = jobs.Where(q => jobIdss.Contains(q.JobId)).ToList();
+            }
+
+            if (jobTypeId != null)
                 {
                     jobs = jobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
                     model.JobCode = db.JobCategories.Where(q => q.JobCategoryId.ToString() == jobTypeId).FirstOrDefault()?.JobCode;
@@ -56,12 +94,23 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 {
                     model.JobCode = "All";
                 }
+                if (size != null)
+                {
+                    jobs = jobs.Where(q => q.FinishingSize == size).ToList();
+
+                }
+                if (copy != null)
+                {
+                    jobs = jobs.Where(q => q.Copies.ToString() == copy).ToList();
+
+                }
                 if (customerId != null)
                 {
                     jobs = jobs.Where(q => q.CustomerId.ToString() == customerId).ToList();
 
                 }
-                if (jobs != null)
+                            
+                    if (jobs.Any())
                 {
                     List<JobTypeItemVM> jobList = new List<JobTypeItemVM>();
                     foreach (var jobOrder in jobs)
@@ -69,33 +118,61 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var job = new JobTypeItemVM();
 
                         job.JobNo = jobOrder.JobNo;
-
+                        string state = null;
+                        var changeOfOrders = db.ChangeOrders.Where(q => q.JobId == jobOrder.JobId).ToList();
+                        var chgQua = changeOfOrders.Sum(q => q.Quantity);
+                        var chgTotPrice = changeOfOrders.Sum(q => q.Total);
+                        decimal quantity = jobOrder.Quantity + chgQua;
+                        decimal totalPrice = jobOrder.TotalPrice+ chgTotPrice;
                         var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
                         var client = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId);
-                        var totalPrice = jobOrder.TotalPrice;
-                        if(jobPhase!=null)
+
+                    state = "";
+                        if (jobPhase!=null&& jobPhase != ProductionDepartment.JobFollowup.ToString())
                         {
                             var jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
-                            
-                            if (jobStatus == null&& jobPhase != ProductionDepartment.JobFollowup.ToString())
+                            if(jobStatus!=null)
                             {
-                                continue;
+                                state = jobStatus.Status.ToString();                                                         
+                                if(jobPhase != ProductionDepartment.Graphic.ToString())
+                                {
+                                    var jobLineItems = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList();                                  
+                                    if (status!=null&&status != JobState.Received.ToString())
+                                    {                
+                                            quantity = jobLineItems.Sum(s => s.Quantiy);
+                                            totalPrice = jobLineItems.Sum(s => s.TotalPrice);
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                    
+                                }
 
-                            }
-                           
+                        else
+                        {
+                            continue;
                         }
+                              
+                            }
+                    else
+                    {
+                        state = JobOrderStatus.Received.ToString();
+                    }
                         job.JobNo = jobOrder?.JobNo;
                         job.JobType = jobType?.JobName;
                         job.Client = client?.TradeName;
-                        job.Quantity = jobOrder.Quantity + "x" + jobOrder.Pages;
+                        job.Quantity = quantity;
+                        job.Copy = jobOrder.Pages.ToString() ;
                         job.Size = jobOrder.FinishingSize + "x" + jobOrder.Copies;
                         job.TotalPrice = totalPrice;
                         job.Code = jobType?.JobCode;
+                        job.Status = status!=null?status:state;
                         jobList.Add(job);
                     }
                     model.JobTypeItemVMs = jobList;
                 }
-            }
+            
 
 
             return model;

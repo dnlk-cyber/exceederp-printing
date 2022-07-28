@@ -24,7 +24,47 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             return View();
         }
+        public ActionResult ChangeOrderStatus()
+        {
+            var jobStatuses = db.JobStatuses;
+            foreach(var jobStatus  in jobStatuses)
+            {
+                if(jobStatus.Status.ToString()== JobState.ParitiallyFinished.ToString())
+                {
+                    jobStatus.Status = JobState.Received;
+                    var jobLine = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList();
+                    if(jobLine.Any())
+                    {
+                        jobStatus.Status = JobState.ParitiallyFinished;
+                        var jobOrder = db.Jobs.Find(jobStatus.JobId);
+                        if (jobOrder != null)
+                        {
+                            var changeOrQuan = db.ChangeOrders.Where(q => q.JobId == jobOrder.JobId).ToList().Sum(q => q.Quantity);
+                            var actual = jobLine.Sum(s => s.Quantiy);
+                            var Ordered = changeOrQuan + jobOrder.Quantity;
+                            if (actual == Ordered)
+                            {
+                                jobStatus.Status = JobState.Finished;
 
+                            }
+                        }
+                    }
+                   
+                    db.JobStatuses.Attach(jobStatus);
+                    db.Entry(jobStatus).State = EntityState.Modified;
+                }
+                if(jobStatus.JobPhase ==ProductionDepartment.Graphic)
+                {
+                    if (jobStatus.Status == JobState.ParitiallyFinished)
+                    {
+                        jobStatus.Status = JobState.Finished;
+                    }
+
+                }
+            }
+            db.SaveChanges();
+            return Json("", JsonRequestBehavior.AllowGet);
+        }
         public ActionResult JobStatuses_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<JobStatus> jobstatuses = db.JobStatuses.Where(q=>q.JobId==id);
@@ -36,10 +76,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 StartDate = jobStatus.StartDate,
                 EndDate = jobStatus.EndDate,
                 JobPhase = jobStatus.JobPhase,
-
-                Status = jobStatus.JobPhase == ProductionDepartment.Graphic?jobStatus.Status:(db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.Quantiy) ==
-               (db.Jobs.Where(q => q.JobId == jobStatus.JobId).ToList().Sum(s => s.Quantity) + db.ChangeOrders.Where(q => q.JobId == jobStatus.JobId).ToList().Sum(s => s.Quantity)) ? JobState.Finished : JobState.InProgress)
-            });
+                Status = jobStatus.Status
+                });
 
             return Json(result);
         }
@@ -58,6 +96,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             if (ModelState.IsValid)
             {
                 jobStatus.EndDate = jobStatus.StartDate;
+                jobStatus.Status = JobState.Received;
                    var entity = (JobStatus)this.GetObject(jobStatus, true, id);
                 db.JobStatuses.Add(entity);
                 db.SaveChanges();

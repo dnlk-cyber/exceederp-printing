@@ -1148,9 +1148,9 @@
                                             //  .Sort(s => s.Add(x => x.ProformaId).Descending())
                                             .Events(events =>
                                             {
-                                                events.Error("error_handler(\"JobStatusLineItem#=JobStatusId#\")");
+                                                events.Error("error_handler(\"JobStatusLineItem_JobStatusLineItem_#=JobStatusId#\")");
                                                 events.RequestStart("onRequestStart(\"JobStatusLineItem#=JobStatusId#\")");
-                                                events.RequestEnd("onRequestEnd(\"JobStatusLineItem#=JobStatusId#\")");
+                                                events.RequestEnd("onRequestEnd(\"JobStatusLineItem_#=JobStatusId#\")");
                                             }
                                                 )
                                                 .Sort(sort=>sort.Add(s=>s.JobStatusLineItemId).Descending())
@@ -1255,13 +1255,13 @@
     }
 
     function jobStatusExpand(e) {
-    var childMasterRow = e.masterRow;
+        var childMasterRow = e.masterRow;
 
-    var childMasterGrid = $("#JobStatus"+codeid).data("kendoGrid");
+        var childMasterGrid = $("#JobStatus" + codeid).data("kendoGrid");
 
-    var childMasterDataItem = childMasterGrid.dataItem(childMasterRow);
-    jobStatusId = childMasterDataItem.JobStatusId;
-    jobPhase = childMasterDataItem.JobPhase;
+        var childMasterDataItem = childMasterGrid.dataItem(childMasterRow);
+        jobStatusId = childMasterDataItem.JobStatusId;
+        jobPhase = childMasterDataItem.JobPhase;
         jobState = childMasterDataItem.Status;
         if (jobState == 1 || jobState == 0) {
             $(".k-grid-top", $("#JobStatusLineItem_" + jobStatusId)).hide();

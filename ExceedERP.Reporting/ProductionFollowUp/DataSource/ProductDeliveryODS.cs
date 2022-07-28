@@ -47,6 +47,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     delivery.LogoFileName = LogoFileName;
                     delivery.Name = Name;
                     delivery.AmharicName = AmharicName;
+                    delivery.DeliveryDate = productDelivery.DeliveryDate?.ToString("MMMM d,yyyy");
                     delivery.PrepareBy = productDelivery.PreparedBy ;
                     delivery.ApprovedBy =  productDelivery.ApprovedBy ;
                     delivery.IdentificationNo = productDelivery.IdentificationNo;

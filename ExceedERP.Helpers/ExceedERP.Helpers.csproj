@@ -118,6 +118,7 @@
     <Compile Include="Common\ExtenstionHelper.cs" />
     <Compile Include="Common\GlobalHelper.cs" />
     <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\NumberToWordConverter.cs" />
     <Compile Include="Common\Security.cs" />
     <Compile Include="Common\WaterMarkHelper.cs" />
     <Compile Include="Construction\BillingHelper.cs" />

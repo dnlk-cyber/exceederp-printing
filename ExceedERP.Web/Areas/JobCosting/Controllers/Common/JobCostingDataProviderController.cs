@@ -34,8 +34,6 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers.Common
             }).ToList();
             return Json(periods, JsonRequestBehavior.AllowGet);
         }
-
-
         public JsonResult GetJobOrders()
         {
             var jobs = db.Jobs.ToList();

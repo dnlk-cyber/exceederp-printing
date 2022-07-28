@@ -16,6 +16,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string CashSaleNo { get; set; }
         public decimal Cash { get; set; }
         public decimal Credit { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public string PreparedBy { get; set; }
         public string ApprovedBy { get; set; }
         public DeliveryStatus DeliveryStatus { get; set; }

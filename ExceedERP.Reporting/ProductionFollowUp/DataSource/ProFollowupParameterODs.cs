@@ -17,6 +17,75 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetPaperSize(DateTime? startDate, DateTime? endDate)
+        {
+            var jobs = new List<Job>();
+            if(startDate.HasValue&& endDate.HasValue)
+            {
+                jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue ? x.ReceivedDate.Value.Date >= startDate.Value.Date
+             && x.ReceivedDate.Value.Date <= endDate.Value.Date : false).ToList();
+            }
+           
+            List<SelectListItem> paperSizes = new List<SelectListItem>();
+             paperSizes= jobs.Where(q=>q.FinishingSize!=null).Select(
+        s => new SelectListItem {
+            Text = s.FinishingSize,
+            Value = s.FinishingSize
+        }).Distinct().ToList();
+
+            return paperSizes;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetCopies(DateTime? startDate, DateTime? endDate, string size)
+        {
+            var jobs = new List<Job>();
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue ? x.ReceivedDate.Value.Date >= startDate.Value.Date
+             && x.ReceivedDate.Value.Date <= endDate.Value.Date : false).ToList();
+            }
+            if(size!=null)
+            {
+                jobs = jobs.Where(q => q.FinishingSize == size).ToList();
+            }
+            List<SelectListItem> copies = new List<SelectListItem>();
+            copies = jobs.Select(
+       s => new SelectListItem
+       {
+          
+           Text = s.Copies.ToString(),
+           Value = s.Copies.ToString()
+            
+          
+       }).ToList();
+
+            return copies;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetJobStatuses()
+        {
+            List<SelectListItem> jobPhases = new List<SelectListItem>();
+            jobPhases = (Enum.GetValues(typeof(JobState)).Cast<JobState>().Select(
+        e => new SelectListItem() { Text = e.ToString(), Value = e.ToString() })).ToList();
+
+            return jobPhases;
+        }
+        public enum JobOrderStatus
+        {
+            Received,
+            ParitiallyFinished,
+            Finished
+
+        }
+        public List<SelectListItem> GetJobOrderStatuses()
+        {
+            List<SelectListItem> jobPhases = new List<SelectListItem>();
+            jobPhases = (Enum.GetValues(typeof(JobOrderStatus)).Cast<JobOrderStatus>().Select(
+        e => new SelectListItem() { Text = e.ToString(), Value = e.ToString() })).ToList();
+
+            return jobPhases;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SelectListItem> GetAllJobPhases()
         {
             List<SelectListItem> jobPhases = new List<SelectListItem>();
@@ -51,7 +120,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 .Select(s =>  new SelectListItem{
                     Value = s.OrganizationCustomerID.ToString(),
                     Text = s.TradeName
-                }).ToList();
+                }).Distinct().ToList();
 
             return custList;
         }

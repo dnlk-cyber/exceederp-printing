@@ -26,23 +26,18 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
 
         //[AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
-        public ActionResult ProductionStoreRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , int id )
+        public ActionResult ProductionStoreRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , string jobNO )
         {
-            IQueryable<StoreRequisitionItem> storerequisitionItems = db.StoreRequisitionItems.Where(p => p.StoreRequisitionID == id);
+            IQueryable<IssueItem> storerequisitionItems = db.IssueItems.Where(p => p.ProductionJobNo == jobNO);
             DataSourceResult result = storerequisitionItems.ToDataSourceResult(request, storeRequisitionItem => new {
 
-                StoreRequisitionItemID = storeRequisitionItem.StoreRequisitionItemID,
-                StoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
+                StoreRequisitionItemID = storeRequisitionItem.IssueItemID,
+                StoreRequisitionID = storeRequisitionItem.IssueID,
                 ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
                 ItemCode = storeRequisitionItem.ItemCode,
-                PartNo = storeRequisitionItem.PartNo,
-                ModelNo = storeRequisitionItem.ModelNo,
                 RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                 ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
                 IssuedQuantity = storeRequisitionItem.IssuedQuantity,
-                PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
-                IsApproved = storeRequisitionItem.IsApproved,
-                ItemSpecification = storeRequisitionItem.ItemSpecification,
                 Unit= ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
                 CurrentBalance = 0
             });

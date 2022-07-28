@@ -19,6 +19,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public string Tel2 { get; set; }
         public string PrepareBy { get; set; }
         public string ApprovedBy { get; set; }
+        public string DeliveryDate { get; set; }
         public string IdentificationNo { get; set; }
         public List<ProductDeliveryItemsVM> DeliveryItems { get; set; }
     }

@@ -3,7 +3,9 @@
  
              .OptionLabel( "--Select--")
                             .DataTextField("JobNo")
+                            
                                     .DataValueField("JobId")
+                                    .Events(ev=>ev.Change("onChangeJobOrder"))
                                      .Filter("contains")
       .DataSource(dataSource =>
       {

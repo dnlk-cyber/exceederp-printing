@@ -573,7 +573,7 @@
             this.textBox16.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox16.Style.LineStyle = Telerik.Reporting.Drawing.LineStyle.Dotted;
             this.textBox16.Style.LineWidth = Telerik.Reporting.Drawing.Unit.Pixel(0D);
-            this.textBox16.Value = "";
+            this.textBox16.Value = "=Fields.DeliveryDate";
             // 
             // textBox22
             // 
@@ -621,7 +621,7 @@
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(2.0000083446502686D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.9851188063621521D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Cm(2.0000083446502686D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.28066664934158325D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.28066661953926086D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Cm(1.0291671752929688D)));
             this.table1.Body.SetCellContent(0, 2, this.textBox36);
             this.table1.Body.SetCellContent(0, 4, this.textBox38);

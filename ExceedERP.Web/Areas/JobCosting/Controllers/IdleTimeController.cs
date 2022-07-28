@@ -21,6 +21,8 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
         public ActionResult Index()
         {
+            ViewData["CostCenters"] = db.GLChartOfAccountCostCenters.ToList();
+
             ViewData["ControllableIdleTimeCategories"] = db.IdleTimeCategories.Where(q=>q.IsControllable ==true).ToList();
             ViewData["NonControllableIdleTimeCategories"] = db.IdleTimeCategories.Where(q=>q.IsControllable == false).ToList();
             ViewData["FiscalYears"] = db.GLFiscalYears.ToList();

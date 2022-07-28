@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -54,7 +55,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 }
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
                 var jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue? x.ReceivedDate.Value.Date >= startDate.Value.Date
-                  || x.ReceivedDate.Value.Date <= endDate.Value.Date:false).ToList();
+                  && x.ReceivedDate.Value.Date <= endDate.Value.Date:false).ToList();
                 
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
@@ -68,7 +69,18 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 {
                     var job = new JobSupplyandSalesItemVM();
                     var jobTS = jobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
+                    previousJobs = previousJobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
+                    var prevJobIds = previousJobs.Select(s => s.JobId);
+                    decimal lastWeekFinishedJobs = 0;
+                    var jobStatus = db.JobStatuses.Where(q => prevJobIds.Contains(q.JobId) && q.JobPhase == ProductionDepartment.FinishingDelivery).FirstOrDefault();
+                    if (jobStatus != null)
+                    {
+                        var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.Quantiy);
+                        lastWeekFinishedJobs += finished;
+                    }
                     var jobIds = jobTS.Select(s => s.JobId);
+                    var changeOrderQuan = db.ChangeOrders.Where(q => jobIds.Contains(q.JobId)).ToList().Sum(q => q.Quantity);
+
                     IEnumerable<int> deliveredJobIds = db.JobStatuses.Where(q => q.JobPhase == ProductionDepartment.SalesDelivery
                                && q.Status == Core.Domain.PrintingEstimation.Setting.JobState.Finished
                                && jobIds.Contains(q.JobId)). Select(s => s.JobStatusId);
@@ -85,14 +97,15 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             var proMonthlyPlans = monthlyPlans.Select(s => s.ProductionMonthlyPlanId);
                             var jobTypePlan = db.ProductionMonthlyJobTypePlans.Where(q => proMonthlyPlans.Contains(q.ProductionMonthlyPlanId)
                             && q.JobTypeId == jobType.JobCategoryId).ToList();
-                            if(jobTypePlan.Count()>0)
+                            
+                            if (jobTypePlan.Count()>0)
                             {
-                                job.PreviousWeeklySupply = Math.Round(previousJobs.Sum(s=>s.TotalPrice),2);
-                                job.DailySupply = Math.Round(jobTypePlan.Sum(s=>s.TotalPrice) / (count*30),2);
+                                job.PreviousWeeklySupply = Math.Round(previousJobs.Sum(s=>s.Quantity)- lastWeekFinishedJobs, 2);
+                                job.DailySupply = Math.Round(jobTypePlan.Sum(s=>(decimal)s.TotalProduct) / (count*30),2);
                                 //job.WeeklySupplyAndSalesPlan = ;
-                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.TotalPrice),2);
+                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.Quantity)+changeOrderQuan, 2);
                              //   job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
-                                job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.TotalPrice),2);
+                                job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.Quantiy),2);
                             //    job.WeeklySalesPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklySalesActual,2);
                                // WeeklySupplyAndSalesPlan += job.WeeklySupplyAndSalesPlan;
                                 WeeklyReceivedActual += job.WeeklyReceivedActual;
@@ -107,9 +120,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 }
              //   model.WeeklySupplyAndSalesPlan = Math.Round(WeeklySupplyAndSalesPlan, 2);
                 model.WeeklyReceivedActual = Math.Round(WeeklyReceivedActual, 2);
-            //    model.WeeklySupplyPerformance = Math.Round(model.WeeklySupplyAndSalesPlan - model.WeeklyReceivedActual, 2);
+            //  model.WeeklySupplyPerformance = Math.Round(model.WeeklySupplyAndSalesPlan - model.WeeklyReceivedActual, 2);
                 model.WeeklySalesActual = Math.Round(WeeklySalesActual, 2);
-             //   model.WeeklySalesPerformance = Math.Round(WeeklySupplyAndSalesPlan - WeeklySalesActual, 2);
+             //  model.WeeklySalesPerformance = Math.Round(WeeklySupplyAndSalesPlan - WeeklySalesActual, 2);
                 model.JobSupplyandSalesItemVMs = jobList;
                // model.PreviousWeeklySupply = jobList;
             }

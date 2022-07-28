@@ -52,9 +52,9 @@ namespace ExceedERP.Core.Domain.PrintingEstimation.Setting
     }
     public enum JobState
     {
-        InProgress,
-        Finished,
-        Delivered
+        Received,
+        ParitiallyFinished,
+        Finished
     }
     public enum EmployementType
     {
