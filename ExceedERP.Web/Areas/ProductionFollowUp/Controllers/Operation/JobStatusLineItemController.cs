@@ -64,7 +64,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, true, id);
                 db.JobStatusLineItems.Add(entity);
                
-                    ChangeJobStatus(jobStstus,jobStatusLineItem.RemainigQuantiy);                   
+                    ChangeJobStatus(jobStstus,jobStatusLineItem.RemainigQuantiy, entity.Date);                   
                 db.SaveChanges();
 
                 jobStatusLineItem.JobStatusId = entity.JobStatusId;
@@ -73,21 +73,26 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             return Json(new[] { jobStatusLineItem }.ToDataSourceResult(request, ModelState));
         }
 
-        private void ChangeJobStatus(JobStatus jobStstus, decimal? remainigQuantiy)
+        private void ChangeJobStatus(JobStatus jobStstus, decimal? remainigQuantiy, DateTime date)
         {
-            jobStstus.EndDate = DateTime.Now;
-            if(remainigQuantiy==0)
+            if(jobStstus!=null)
             {
-                jobStstus.Status = JobState.Finished;
+              
+                jobStstus.EndDate = date;
+                if (remainigQuantiy == 0)
+                {
+                    jobStstus.Status = JobState.Finished;
 
+                }
+                else
+                {
+                    jobStstus.Status = JobState.ParitiallyFinished;
+                }
+                db.JobStatuses.Attach(jobStstus);
+                db.Entry(jobStstus).State = EntityState.Modified;
             }
-            else
-            {
-                jobStstus.Status = JobState.ParitiallyFinished;
-            }
-            db.JobStatuses.Attach(jobStstus);
-            db.Entry(jobStstus).State = EntityState.Modified;
         }
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobStatusLineItems_Update([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem)
@@ -112,7 +117,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 db.Entry(entity).State = EntityState.Modified;
                 if (jobStatusLineItem.RemainigQuantiy == 0)
                 {
-                    ChangeJobStatus(jobStstus, jobStatusLineItem.RemainigQuantiy);
+                    ChangeJobStatus(jobStstus, jobStatusLineItem.RemainigQuantiy, entity.Date);
                 }
                 db.SaveChanges();
 

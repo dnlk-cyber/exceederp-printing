@@ -86,14 +86,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     }
                     else
                     {
+                        var productDelivery = db.ProductDeliveries.Find(entity.ProductDeliveryId);
                         var jobStatusEntity = new JobStatus
                         {
                             JobStatusId = id,
                             JobId = job.JobId,
                             UserId = User.Identity.Name,
                             Time = DateTime.Now,
-                            StartDate = DateTime.Now,
-                            EndDate = DateTime.Now,
+                            StartDate = productDelivery.DeliveryDate,
+                            EndDate = productDelivery.DeliveryDate,
                             JobPhase = ProductionDepartment.SalesDelivery,
                             Status = Core.Domain.PrintingEstimation.Setting.JobState.ParitiallyFinished
                         };

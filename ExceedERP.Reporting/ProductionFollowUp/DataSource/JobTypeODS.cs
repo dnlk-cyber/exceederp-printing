@@ -47,41 +47,49 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             {
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
-                 jobs = jobs.Where(x => x.ReceivedDate.HasValue ? x.ReceivedDate.Value.Date >= startDate.Value.Date
-                && x.ReceivedDate.Value.Date <= endDate.Value.Date : false).ToList();
+                if((jobPhase == null || jobPhase == ProductionDepartment.JobFollowup.ToString()))
+                {
+                    jobs = jobs.Where(x => x.ReceivedDate.HasValue ? x.ReceivedDate.Value.Date >= startDate.Value.Date
+              && x.ReceivedDate.Value.Date <= endDate.Value.Date : false).ToList();
+                }
+               
             }
+            var jobLists = new List<JobStatus>();
             if (jobPhase != null&&jobPhase != ProductionDepartment.JobFollowup.ToString())
             {
-                var jobLists = db.JobStatuses.Where(x => x.JobPhase.ToString() == jobPhase).ToList();
-                if(status==JobState.Received.ToString())
+                 jobLists = db.JobStatuses.Where(x => x.JobPhase.ToString() == jobPhase).ToList();
+                if (status == null)
                 {
-                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false
-       && x.StartDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false).ToList();
+                 jobLists = jobLists.Where(q => q.Status.ToString() != JobState.Received.ToString()).ToList();
+                }
+                if (status==JobState.Received.ToString())
+                {
+                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date
+       && x.StartDate.Value.Date <= endDate.Value.Date:false).ToList();
                 }
                 else
                 {
-                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false
-                           && x.EndDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false).ToList();
+                    jobLists = jobLists.Where(x => (x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false)
+                           && (x.EndDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false)).ToList();
                 }
                 var jobIds = jobLists.Select(s=>s.JobId);
             jobs = db.Jobs.ToList().Where(q => jobIds.Contains(q.JobId)).ToList();
             }
-
+            string progressStatus = null;
             if (status != null)
             {
-                var jobsLists = db.JobStatuses.ToList().Where(x => x.Status >= 0).ToList();
-                if (status!=JobState.Received.ToString())
+                if (status== JobOrderStatus.OnProgress.ToString())
                 {
-                    jobsLists = db.JobStatuses.ToList().Where(x => x.Status.ToString() == status).ToList();
-
+                    progressStatus = JobOrderStatus.OnProgress.ToString();
+                  
+                    jobLists = jobLists.ToList().Where(x => x.Status.ToString() == JobState.ParitiallyFinished.ToString()|| x.Status.ToString() == JobState.Received.ToString()).ToList();
                 }
-                
-
-                if (jobPhase!=null)
+                else if (status!=JobState.Received.ToString())
                 {
-                    jobsLists = jobsLists.Where(q => q.JobPhase.ToString() == jobPhase).ToList();
-                }
-                var jobIdss = jobsLists.Select(s => s.JobId);
+                    jobLists = jobLists.ToList().Where(x => x.Status.ToString() == status).ToList();
+
+                }           
+                var jobIdss = jobLists.Select(s => s.JobId);
                  jobs = jobs.Where(q => jobIdss.Contains(q.JobId)).ToList();
             }
 
@@ -137,24 +145,32 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                 if(jobPhase != ProductionDepartment.Graphic.ToString())
                                 {
                                     var jobLineItems = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList();                                  
-                                    if (status!=null&&status != JobState.Received.ToString())
+                                    if (state != JobState.Received.ToString())
                                     {                
-                                            quantity = jobLineItems.Sum(s => s.Quantiy);
-                                            totalPrice = jobLineItems.Sum(s => s.TotalPrice);
-                                            
-                                        }
-                                        
+                                    if(progressStatus!=null)
+                                    {
+                                        quantity = quantity-jobLineItems.Sum(s => s.Quantiy);
+                                        totalPrice = totalPrice-jobLineItems.Sum(s => s.TotalPrice);
+
+                                        state = progressStatus;
+                                        status = state;
+
                                     }
-                                    
-                                    
+                                    else
+                                    {
+                                        quantity = jobLineItems.Sum(s => s.Quantiy);
+                                        totalPrice = jobLineItems.Sum(s => s.TotalPrice);
+                                    }                                                                                     
                                 }
+                            }                                                                      
+                        }
 
                         else
                         {
                             continue;
                         }
                               
-                            }
+                    }
                     else
                     {
                         state = JobOrderStatus.Received.ToString();

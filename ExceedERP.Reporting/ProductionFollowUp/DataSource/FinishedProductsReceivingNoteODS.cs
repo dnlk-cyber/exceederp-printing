@@ -19,23 +19,35 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public FinishedProductsReceivingNoteVM GetFinishedProducts(DateTime? startDate, DateTime? endDate, string jobPhase,string jobTypeId, string userName)
         {
-            if(startDate==null){
+            string to = "";
+
+            if (startDate==null){
                 startDate = DateTime.Now;
             }
             if (endDate == null)
             {
                 endDate = DateTime.Now;
             }
-            var jobOrdersIds = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue ? x.ReceivedDate.Value.Date >= startDate.Value.Date
-                              && x.ReceivedDate.Value.Date <= endDate.Value.Date : false).ToList().Select(q=>q.JobId);
-            var jobs = db.JobStatuses.ToList().Where(q =>  q.JobPhase.ToString() == jobPhase
-                                        && jobOrdersIds.Contains(q.JobId)
-                                        ).ToList();
+            if (jobPhase == null)
+            {
+                jobPhase = JobPhase.Printing.ToString();
+            }
+            if (jobPhase == JobPhase.Printing.ToString())
+            {
+                to = JobPhase.Finishing.ToString();
+            }
+            else if (jobPhase == JobPhase.Finishing.ToString())
+            {
+                to = JobPhase.Delivery.ToString();
+            }
+            var jobs = db.JobStatuses.ToList().Where(x =>  (x.EndDate.HasValue ? x.EndDate.Value.Date >= startDate.Value.Date
+                              && x.EndDate.Value.Date <= endDate.Value.Date : false)&&x.JobPhase.ToString()==jobPhase).ToList();
+          
+
             if(jobTypeId!=null)
             {
                 var jobOrders = db.Jobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList().Select(s=>s.JobId);
-                var jobStatusesIds = db.JobStatuses.Where(q => jobOrders.Contains(q.JobId)).ToList().Select(s=>s.JobStatusId);
-                jobs = jobs.Where(q => jobStatusesIds.Contains(q.JobStatusId)).ToList();
+                 jobs = jobs.Where(q => jobOrders.Contains(q.JobId)).ToList();
             }
             var model = new FinishedProductsReceivingNoteVM();
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
@@ -58,19 +70,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             model.LogoFileName = LogoFileName;
             model.Name = Name;
             model.AmharicName = AmharicName;
-            string to = "";
-            if(jobPhase==null)
-            {
-                jobPhase = JobPhase.Printing.ToString();
-            }
-            if (jobPhase == JobPhase.Printing.ToString())
-            {
-                to = JobPhase.Finishing.ToString();
-            }
-            else if (jobPhase == JobPhase.Finishing.ToString())
-            {
-                to = JobPhase.Delivery.ToString();
-            }
+          
             
             var items = new List<FinishedProductsReceivingNoteVMItem>();
 

@@ -72,9 +72,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         }
         public enum JobOrderStatus
         {
-            Received,
-            ParitiallyFinished,
-            Finished
+            Received=0,
+            OnProgress = 3,
+            ParitiallyFinished=1,
+            Finished=2
 
         }
         public List<SelectListItem> GetJobOrderStatuses()
