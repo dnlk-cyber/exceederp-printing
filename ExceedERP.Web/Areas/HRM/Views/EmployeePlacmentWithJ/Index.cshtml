@@ -88,7 +88,7 @@
                   }
 
                   toolbar.Custom().Text("De-Activate Employees").Action("Index", "PlacmentInActiveBatch").HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                  
+
               })
               .Excel(excel => excel
                   .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
@@ -119,6 +119,7 @@
                   e.Save("GetDate");
                   e.Edit("GetDate");
                   e.DataBound("onDataBound");
+                  e.Cancel("onCancel");
                   //e.Edit("onEdit");
 
               })
@@ -619,6 +620,9 @@
         return data;
     }
 
+    function onCancel(e) {
+        $("#PlacementGrid").data("kendoGrid").dataSource.read();
+    }
 
     function Refresh(e) {
         if (confirm("are you sure to refresh salary")) {
