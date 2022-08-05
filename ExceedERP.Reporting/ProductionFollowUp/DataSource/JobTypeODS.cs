@@ -62,15 +62,16 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 {
                  jobLists = jobLists.Where(q => q.Status.ToString() != JobState.Received.ToString()).ToList();
                 }
-                if (status==JobState.Received.ToString())
-                {
-                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date
-       && x.StartDate.Value.Date <= endDate.Value.Date:false).ToList();
-                }
-                else
+                if (status==JobState.Finished.ToString())
                 {
                     jobLists = jobLists.Where(x => (x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false)
-                           && (x.EndDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false)).ToList();
+                         && (x.EndDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false)).ToList();
+                   
+                }
+               else
+                {
+                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date
+       && x.StartDate.Value.Date <= endDate.Value.Date : false).ToList();
                 }
                 var jobIds = jobLists.Select(s=>s.JobId);
             jobs = db.Jobs.ToList().Where(q => jobIds.Contains(q.JobId)).ToList();
@@ -82,13 +83,17 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 {
                     progressStatus = JobOrderStatus.OnProgress.ToString();
                   
-                    jobLists = jobLists.ToList().Where(x => x.Status.ToString() == JobState.ParitiallyFinished.ToString()|| x.Status.ToString() == JobState.Received.ToString()).ToList();
+                   // jobLists = jobLists.ToList();
                 }
-                else if (status!=JobState.Received.ToString())
+                else if (status==JobState.ParitiallyFinished.ToString())
+                {
+                    jobLists = jobLists.ToList().Where(x => x.Status.ToString() == status|| x.Status.ToString()== JobState.Finished.ToString()).ToList();
+                }
+                else if (status == JobState.Finished.ToString())
                 {
                     jobLists = jobLists.ToList().Where(x => x.Status.ToString() == status).ToList();
 
-                }           
+                }
                 var jobIdss = jobLists.Select(s => s.JobId);
                  jobs = jobs.Where(q => jobIdss.Contains(q.JobId)).ToList();
             }
@@ -126,7 +131,6 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var job = new JobTypeItemVM();
 
                         job.JobNo = jobOrder.JobNo;
-                        string state = null;
                         var changeOfOrders = db.ChangeOrders.Where(q => q.JobId == jobOrder.JobId).ToList();
                         var chgQua = changeOfOrders.Sum(q => q.Quantity);
                         var chgTotPrice = changeOfOrders.Sum(q => q.Total);
@@ -135,33 +139,93 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
                         var client = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId);
 
-                    state = "";
+                    string  state = "";
+                    string  selectedStatus = "";
                         if (jobPhase!=null&& jobPhase != ProductionDepartment.JobFollowup.ToString())
                         {
                             var jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
                             if(jobStatus!=null)
                             {
-                                state = jobStatus.Status.ToString();                                                         
+
+                            selectedStatus = jobStatus.Status.ToString();
                                 if(jobPhase != ProductionDepartment.Graphic.ToString())
                                 {
-                                    var jobLineItems = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList();                                  
-                                    if (state != JobState.Received.ToString())
-                                    {                
-                                    if(progressStatus!=null)
+                                    var jobLineItems = db.JobStatusLineItems.ToList().Where(q => q.JobStatusId == jobStatus.JobStatusId&&q.Date.Date<=endDate.Value.Date).ToList();                                  
+                                    if (selectedStatus != JobState.Received.ToString()&& status != JobState.Received.ToString())
+                                    {    
+                                    if(jobLineItems.Any())
                                     {
-                                        quantity = quantity-jobLineItems.Sum(s => s.Quantiy);
-                                        totalPrice = totalPrice-jobLineItems.Sum(s => s.TotalPrice);
+                                        if (progressStatus != null)
+                                        {
+                                            var finishedQua = jobLineItems.Sum(s => s.Quantiy);
 
-                                        state = progressStatus;
-                                        status = state;
+                                            if (quantity != finishedQua)
+                                            {
+                                                state = progressStatus;
+                                            }
+                                            else
+                                            {
+                                                continue;
+                                            }
+                                            quantity = quantity - finishedQua;
+                                            totalPrice = totalPrice - jobLineItems.Sum(s => s.TotalPrice);
+                                        }
+                                        else 
+                                        {
+                                            decimal finishedQua = jobLineItems.Sum(s => s.Quantiy);
+                                            if (selectedStatus == JobOrderStatus.Finished.ToString())
+                                            {
+                                                state = selectedStatus;
+                                                if (quantity > finishedQua)
+                                                {
+                                                    state = JobOrderStatus.ParitiallyFinished.ToString();
+                                                }
+                                                else
+                                                {
+                                                    if (status == JobState.ParitiallyFinished.ToString())
+                                                    {
+                                                        
 
+                                                     continue;
+                                                    }
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                state = JobOrderStatus.ParitiallyFinished.ToString();
+
+                                            }
+                                            quantity = finishedQua;
+                                            totalPrice = jobLineItems.Sum(s => s.TotalPrice);
+                                        }
                                     }
                                     else
                                     {
-                                        quantity = jobLineItems.Sum(s => s.Quantiy);
-                                        totalPrice = jobLineItems.Sum(s => s.TotalPrice);
-                                    }                                                                                     
+                                        if (progressStatus != null)
+                                        {
+                                            var finishedQua = jobLineItems.Sum(s => s.Quantiy);
+
+                                            if (quantity != finishedQua)
+                                            {
+                                                state = progressStatus;
+                                            }
+                                            else
+                                            {
+                                                continue;
+                                            }
+                                            quantity = quantity - finishedQua;
+                                            totalPrice = totalPrice - jobLineItems.Sum(s => s.TotalPrice);
+                                        }
+                                        else
+                                        {
+                                            continue;
+
+                                        }
+                                    }
+                                                                                                                   
                                 }
+                                
                             }                                                                      
                         }
 
@@ -175,7 +239,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     {
                         state = JobOrderStatus.Received.ToString();
                     }
-                        job.JobNo = jobOrder?.JobNo;
+
+                    job.JobNo = jobOrder?.JobNo;
                         job.JobType = jobType?.JobName;
                         job.Client = client?.TradeName;
                         job.Quantity = quantity;

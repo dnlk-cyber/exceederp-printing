@@ -42,7 +42,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int JobStatusLineItemId { get; set; }
         public int JobStatusId { get; set; }
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Date")]
         public DateTime Date { get; set; }
         [Display(Name = "Quantity")]
