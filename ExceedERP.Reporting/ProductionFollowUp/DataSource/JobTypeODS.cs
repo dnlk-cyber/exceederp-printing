@@ -57,22 +57,13 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             var jobLists = new List<JobStatus>();
             if (jobPhase != null&&jobPhase != ProductionDepartment.JobFollowup.ToString())
             {
-                 jobLists = db.JobStatuses.Where(x => x.JobPhase.ToString() == jobPhase).ToList();
+                jobLists = db.JobStatuses.Where(x => x.JobPhase.ToString() == jobPhase).ToList();
                 if (status == null)
                 {
                  jobLists = jobLists.Where(q => q.Status.ToString() != JobState.Received.ToString()).ToList();
                 }
-                if (status==JobState.Finished.ToString())
-                {
-                    jobLists = jobLists.Where(x => (x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date : false)
-                         && (x.EndDate.HasValue ? x.EndDate.Value.Date <= endDate.Value.Date : false)).ToList();
-                   
-                }
-               else
-                {
-                    jobLists = jobLists.Where(x => x.StartDate.HasValue ? x.StartDate.Value.Date >= startDate.Value.Date
-       && x.StartDate.Value.Date <= endDate.Value.Date : false).ToList();
-                }
+                var jobListItemIds = db.JobStatusLineItems.ToList().Where(x => x.Date.Date >= startDate.Value.Date&& x.Date.Date <= endDate.Value.Date).Select(s=>s.JobStatusId);
+                jobLists = jobLists.Where(q => jobListItemIds.Contains(q.JobStatusId)).ToList();
                 var jobIds = jobLists.Select(s=>s.JobId);
             jobs = db.Jobs.ToList().Where(q => jobIds.Contains(q.JobId)).ToList();
             }
