@@ -55,7 +55,7 @@ namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
               
 
                 var entity = new YearlyProductionPlan();
-            var budgetYear = db.GLFiscalYears.Find(yearlyPlan.GlFiscalYearId);
+                var budgetYear = db.GLFiscalYears.Find(yearlyPlan.GlFiscalYearId);
                 if (budgetYear != null)
                 {
                     var checkPlans = db.YearlyProductionPlans.Where(q => q.GlFiscalYearId == budgetYear.GlFiscalYearId);
@@ -69,8 +69,6 @@ namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
                     
                         int year = (budgetYear.DateFrom.Year) - 8;
                         bool leap = false;
-
-
                         using (var transaction = db.Database.BeginTransaction())
                         {
                             try

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -8,88 +7,87 @@ using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using TradeMarketSystem.Controllers;
-using TradeMarketSystem.Core.Localization;
-using TradeMarketSystem.Core.Model.Common;
-using TradeMarketSystem.Core.Model.CustomerService;
-using TradeMarketSystem.Core.Model.Daily_Market;
-using TradeMarketSystem.DataAccess.Context;
-using TradeMarketSystem.Helper.Common;
-using TradeMarketSystem.Helpers;
+using ExceedERP.Web.Controllers;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 
-namespace TradeMarketSystem.Areas.DailyMarket.Controllers.Setting
+namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
 {
-    public class QuarterlyPlanController : BaseController
+    public class QuarterlyProductionPlanController : BaseController
     {
-        private TradeDbContext db = new TradeDbContext();
+        private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            ViewData["BudgetYears"] = db.BudgetYears.ToList();
+            ViewData["BudgetYears"] = db.GLFiscalYears.ToList();
             
-            ViewData["Periods"] = db.Period.ToList();
+            ViewData["Periods"] = db.GLPeriods.ToList();
             return View();
         }
-        [AuthorizeRoles(DailyMarketRoles.DMPlanApprover, DailyMarketRoles.DMPlanner)]
-        public ActionResult QuarterlyPlans_Read([DataSourceRequest] DataSourceRequest request, int? id)
+        public ActionResult QuarterlyProductionPlans_Read([DataSourceRequest] DataSourceRequest request, int? id)
         {
 
-            IQueryable<QuarterlyPlan> MarketPriceEntryPlans = db.QuarterlyPlans;
+            IQueryable<QuarterlyProductionPlan> MarketPriceEntryPlans = db.QuarterlyProductionPlans;
             if(id!=null)
             {
-                MarketPriceEntryPlans = MarketPriceEntryPlans.Where(q => q.HalfYearlyPlanId == id);
+                MarketPriceEntryPlans = MarketPriceEntryPlans.Where(q => q.HalfYearlyProductionPlanId == id);
             }
 
             
-            DataSourceResult result = MarketPriceEntryPlans.ToDataSourceResult(request, QuarterlyPlan => new
+            DataSourceResult result = MarketPriceEntryPlans.ToDataSourceResult(request, QuarterlyProductionPlan => new
             {
-                QuarterlyPlanId = QuarterlyPlan.QuarterlyPlanId,
-                HalfYearlyPlanId = QuarterlyPlan.HalfYearlyPlanId,
-                StartDate = QuarterlyPlan.StartDate,
-                StartDateEth = QuarterlyPlan.StartDateEth,
-                EndDate = QuarterlyPlan.EndDate,
-                EndDateEth = QuarterlyPlan.EndDateEth,
-                Plan = QuarterlyPlan.Plan,
-                Name = QuarterlyPlan.Name,
-                NameAm = QuarterlyPlan.NameAm,
-                Actual = QuarterlyPlan.Actual,
-                Performance = QuarterlyPlan.Performance,
-                IsApproved = db.YearlyPlans.Find(db.HalfYearlyPlans.Find(QuarterlyPlan.HalfYearlyPlanId).YearlyPlanId).IsApproved,
-                IsTransferred = db.YearlyPlans.Find(db.HalfYearlyPlans.Find(QuarterlyPlan.HalfYearlyPlanId).YearlyPlanId).IsTransferred,
-                ApprovedBy = QuarterlyPlan.ApprovedBy,
-                User = QuarterlyPlan.User
+                QuarterlyProductionPlanId = QuarterlyProductionPlan.QuarterlyProductionPlanId,
+                HalfYearlyProductionPlanId = QuarterlyProductionPlan.HalfYearlyProductionPlanId,
+                StartDate = QuarterlyProductionPlan.StartDate,
+                StartDateEth = QuarterlyProductionPlan.StartDateEth,
+                EndDate = QuarterlyProductionPlan.EndDate,
+                EndDateEth = QuarterlyProductionPlan.EndDateEth,
+                ProductionPlanQuantity = QuarterlyProductionPlan.ProductionPlanQuantity,
+                ProductionPlanBirr = QuarterlyProductionPlan.ProductionPlanBirr,
+                Name = QuarterlyProductionPlan.Name,
+                NameAm = QuarterlyProductionPlan.NameAm,
+            
             });
 
             return Json(result,JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult QuarterlyPlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<QuarterlyPlan> quarterlyPlans)
+        public ActionResult QuarterlyProductionPlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<QuarterlyProductionPlan> quarterlyPlans, int id)
         {
             if (quarterlyPlans != null && ModelState.IsValid)
             {
-                foreach (var quarterlyPlan in quarterlyPlans)
+                var halfYearlyPlan = db.HalfYearlyProductionPlans.Find(id);
+                var quarterYearIds = quarterlyPlans.Select(s => s.QuarterlyProductionPlanId);
+                var qaurterYearProductionPlanUpdatedRecs = db.HalfYearlyProductionPlans.Where(q => q.YearlyProductionPlanId == id && quarterYearIds.Contains(q.HalfYearlyProductionPlanId)).ToList();
+                var qaurterYearProductionPlanNotUpdatedRecs = db.HalfYearlyProductionPlans.Where(q => q.YearlyProductionPlanId == id && !quarterYearIds.Contains(q.HalfYearlyProductionPlanId)).ToList();
+                var totQuarterYearPlanUpdateds = qaurterYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanBirr);
+                var totQuarterYearPlanNotUpdateds = qaurterYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanBirr);
+                if ((totQuarterYearPlanUpdateds + totQuarterYearPlanNotUpdateds) > halfYearlyPlan.ProductionPlanBirr)
                 {
-                    var halfYearPlan = db.HalfYearlyPlans.Find(quarterlyPlan.HalfYearlyPlanId);
-                    var totQuarterPlans = db.QuarterlyPlans.Where(q => q.HalfYearlyPlanId == quarterlyPlan.HalfYearlyPlanId && q.QuarterlyPlanId != quarterlyPlan.QuarterlyPlanId).Sum(s => s.Plan);
-                    if ((totQuarterPlans + quarterlyPlan.Plan) > halfYearPlan.Plan)
-                    {
-                        ModelState.AddModelError(Resource.AlertWindow_ErrorTitle, Resource.DailyMarket_QuarterYearPlanValidation);
-                    }
-                    if (ModelState.IsValid)
-                    {
-                        var entity = db.QuarterlyPlans.Find(quarterlyPlan.QuarterlyPlanId);
+                    ModelState.AddModelError("Error", "Summation of quarter plans in birr must equal with half yearl plan");
+                }
+                totQuarterYearPlanUpdateds = qaurterYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
+                totQuarterYearPlanNotUpdateds = qaurterYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
+                if ((totQuarterYearPlanUpdateds + totQuarterYearPlanNotUpdateds) > halfYearlyPlan.ProductionPlanQuantity)
+                {
+                    ModelState.AddModelError("Error", "Summation of quarter plans in quantity must equal with half yearl plan");
+                }
+                if (ModelState.IsValid)
+                {
+                    foreach (var quarterlyPlan in quarterlyPlans)
+                {               
+                        var entity = db.QuarterlyProductionPlans.Find(quarterlyPlan.QuarterlyProductionPlanId);
                         if (entity != null)
                         {
                             
-                            entity.Plan = quarterlyPlan.Plan;
-                            db.QuarterlyPlans.Attach(entity);
+                            entity.ProductionPlanBirr = quarterlyPlan.ProductionPlanBirr;
+                            entity.ProductionPlanQuantity = quarterlyPlan.ProductionPlanQuantity;
+                            db.QuarterlyProductionPlans.Attach(entity);
                             db.Entry(entity).State = EntityState.Modified;
                         }
                     }
                     db.SaveChanges();
-                    #region Update log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Update", "Success", User.Identity.Name, "Updated LED Display Commodity category Setting with Id: " + quarterlyPlans.Select(s => s.HalfYearlyPlanId).ToString(), Core.Model.Global.GlobalEnum.TradeGroup.DailyMarket);
-                    #endregion
+                    
                 }
 
 
