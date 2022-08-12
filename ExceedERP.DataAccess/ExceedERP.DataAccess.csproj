@@ -298,6 +298,10 @@
     <Compile Include="Migrations\202208050847520_FleetBatteryAndTyreMerged.Designer.cs">
       <DependentUpon>202208050847520_FleetBatteryAndTyreMerged.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202208120938262_ProductionPlanAdded.cs" />
+    <Compile Include="Migrations\202208120938262_ProductionPlanAdded.Designer.cs">
+      <DependentUpon>202208120938262_ProductionPlanAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -478,6 +482,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202208050847520_FleetBatteryAndTyreMerged.resx">
       <DependentUpon>202208050847520_FleetBatteryAndTyreMerged.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208120938262_ProductionPlanAdded.resx">
+      <DependentUpon>202208120938262_ProductionPlanAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

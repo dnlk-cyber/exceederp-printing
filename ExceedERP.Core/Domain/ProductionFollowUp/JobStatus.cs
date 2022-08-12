@@ -63,6 +63,5 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public decimal? Credit { get; set; }
         [Display(Name = "Cash Credit Invoice")]
         public string CashCreditInvoice { get; set; }
-        public JobStatus JobStatus { get; set; }
     }
 }

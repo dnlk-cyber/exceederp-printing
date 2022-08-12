@@ -2058,6 +2058,12 @@
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductIssueItemManualController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaItemsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Plan\HalfYearlyProductionPlanController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Plan\ProductionJobTypePlanController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Plan\YearlyProductionPlanController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Plan\MonthlyProductionPlanController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Plan\QuarterlyProductionPlanController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Plan\WeeklyProductionPlanController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ProductionFollowUpReportController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\JobCategoryController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionCustomerTypeController.cs" />
