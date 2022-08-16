@@ -8,12 +8,11 @@ using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 
-namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
+namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Plan
 {
     public class YearlyProductionPlanController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-
         public ActionResult Index()
         {
             ViewData["BudgetYears"] = db.GLFiscalYears.ToList();
@@ -25,12 +24,12 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 
             IQueryable<YearlyProductionPlan> YearlyProductionPlans = db.YearlyProductionPlans;
 
-          
+
             DataSourceResult result = YearlyProductionPlans.ToDataSourceResult(request, yearlyPlan => new
             {
                 YearlyProductionPlanId = yearlyPlan.YearlyProductionPlanId,
                 GlFiscalYearId = yearlyPlan.GlFiscalYearId,
-            
+
                 StartDate = yearlyPlan.StartDate,
                 StartDateEth = yearlyPlan.StartDateEth,
                 EndDateEth = yearlyPlan.EndDateEth,
@@ -46,29 +45,29 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult YearlyProductionPlans_Create([DataSourceRequest] DataSourceRequest request, YearlyProductionPlan yearlyPlan)
         {
-           
-              
 
-                var entity = new YearlyProductionPlan();
-                var budgetYear = db.GLFiscalYears.Find(yearlyPlan.GlFiscalYearId);
-                if (budgetYear != null)
+
+
+            var entity = new YearlyProductionPlan();
+            var budgetYear = db.GLFiscalYears.Find(yearlyPlan.GlFiscalYearId);
+            if (budgetYear != null)
+            {
+                var checkPlans = db.YearlyProductionPlans.Where(q => q.GlFiscalYearId == budgetYear.GlFiscalYearId);
+                if (checkPlans.Any())
                 {
-                    var checkPlans = db.YearlyProductionPlans.Where(q => q.GlFiscalYearId == budgetYear.GlFiscalYearId);
-                    if (checkPlans.Any())
-                    {
-                        ModelState.AddModelError("Error", "Fiscal Year Plan Already Existed");
+                    ModelState.AddModelError("Error", "Fiscal Year Plan Already Existed");
 
-                    }
-                    if (ModelState.IsValid)
-                          {
-                    
-                        int year = (budgetYear.DateFrom.Year) - 8;
-                        bool leap = false;
-                        using (var transaction = db.Database.BeginTransaction())
+                }
+                if (ModelState.IsValid)
+                {
+
+                    int year = (budgetYear.DateFrom.Year) - 8;
+                    bool leap = false;
+                    using (var transaction = db.Database.BeginTransaction())
+                    {
+                        try
                         {
-                            try
-                            {
-                                var startDateEth = "01/11/" + year;
+                            var startDateEth = "01/11/" + year;
                             var endDateEth = "30/10/" + (year + 1);
                             var startDateArr = startDateEth.Split('/');
                             var endDateArr = endDateEth.Split('/');
@@ -480,21 +479,21 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
                             db.SaveChanges();
                             transaction.Commit();
                             #region Create log
-                           // UserHelper.OperationLog(Request.UserHostAddress, "Create", "Success", User.Identity.Name, "Created Market Price Entry Plan Record with Id: " + entity.YearlyProductionPlanId, Core.Domain.Global.GlobalEnum.SuperSettingAdminMode.DailyMarket);
-                                #endregion
-                            }
-                            catch (Exception ex)
-                            {
-                                // roll back all database operations, if any thing goes wrong      
-                                transaction.Rollback();
-                                ModelState.AddModelError("Error", ex);
-                                throw;
-                            }
+                            // UserHelper.OperationLog(Request.UserHostAddress, "Create", "Success", User.Identity.Name, "Created Market Price Entry Plan Record with Id: " + entity.YearlyProductionPlanId, Core.Domain.Global.GlobalEnum.SuperSettingAdminMode.DailyMarket);
+                            #endregion
                         }
-
+                        catch (Exception ex)
+                        {
+                            // roll back all database operations, if any thing goes wrong      
+                            transaction.Rollback();
+                            ModelState.AddModelError("Error", ex);
+                            throw;
+                        }
                     }
 
                 }
+
+            }
 
             return Json(new[] { yearlyPlan }.ToDataSourceResult(request, ModelState));
         }
@@ -504,25 +503,25 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult YearlyProductionPlans_Update([DataSourceRequest]DataSourceRequest request, YearlyProductionPlan yearlyPlan)
         {
-            
+
             if (ModelState.IsValid)
             {
-                
-                    var entity = db.YearlyProductionPlans.Find(yearlyPlan.YearlyProductionPlanId);
-                if(entity!=null)
+
+                var entity = db.YearlyProductionPlans.Find(yearlyPlan.YearlyProductionPlanId);
+                if (entity != null)
                 {
 
-                 entity.YearlyProductionPlanId = yearlyPlan.YearlyProductionPlanId;
-                 entity.GlFiscalYearId = yearlyPlan.GlFiscalYearId;
-                 entity.StartDate = yearlyPlan.StartDate;
-                 entity.EndDate = yearlyPlan.EndDate;
+                    entity.YearlyProductionPlanId = yearlyPlan.YearlyProductionPlanId;
+                    entity.GlFiscalYearId = yearlyPlan.GlFiscalYearId;
+                    entity.StartDate = yearlyPlan.StartDate;
+                    entity.EndDate = yearlyPlan.EndDate;
                     entity.ProductionPlanBirr = yearlyPlan.ProductionPlanBirr;
-                 entity.ProductionPlanQuantity = yearlyPlan.ProductionPlanQuantity;
-              
-                 db.YearlyProductionPlans.Attach(entity);
-                 db.Entry(entity).State = EntityState.Modified;
-                 db.SaveChanges();
-                    
+                    entity.ProductionPlanQuantity = yearlyPlan.ProductionPlanQuantity;
+
+                    db.YearlyProductionPlans.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
+
                 }
 
 
@@ -543,26 +542,20 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
                     EndDate = yearlyPlan.EndDate,
                     ProductionPlanQuantity = yearlyPlan.ProductionPlanQuantity,
                     ProductionPlanBirr = yearlyPlan.ProductionPlanBirr,
-                  
+
                 };
-                 
-               
-             
+
+
+
                 db.YearlyProductionPlans.Attach(entity);
                 db.YearlyProductionPlans.Remove(entity);
                 db.SaveChanges();
-             
+
             }
 
             return Json(new[] { yearlyPlan }.ToDataSourceResult(request, ModelState));
         }
 
 
-
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }
     }
 }

@@ -22,10 +22,8 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 
         public ActionResult Index()
         {
-            ViewData["BudgetYears"] = db.GLFiscalYears.ToList();
-            ViewData["Periods"] = db.GLPeriods.ToList();
+            ViewData["FiscalYears"] = db.GLFiscalYears.ToList();
             var quarterPlans = db.QuarterlyProductionPlans.ToList();
-            ViewData["QuarterlyProductionPlans"] = quarterPlans;
             var quarters = quarterPlans.ToList();
             ViewData["Quarters"] = quarters.Select(s => new {
                 QuarterlyProductionPlanId = s.QuarterlyProductionPlanId,

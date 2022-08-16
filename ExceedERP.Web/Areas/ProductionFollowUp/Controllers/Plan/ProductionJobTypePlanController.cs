@@ -22,6 +22,8 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
         public ActionResult Index()
         {
             ViewData["FiscalYears"] = db.GLFiscalYears.ToList();
+            ViewData["JobTypes"] = db.JobCategories.ToList();
+
             return View();
         }
 

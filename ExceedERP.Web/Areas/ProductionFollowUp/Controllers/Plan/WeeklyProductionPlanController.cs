@@ -30,9 +30,8 @@ namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
                 NameAm = s.NameAm
             }).ToList();
             var months = db.MonthlyProductionPlans.ToList();
-            ViewData["MonthlyPlans"] = months.Select(s => new {
-                MonthlyPlanId = s.MonthlyProductionPlanId,
-
+            ViewData["MonthlyProductionPlans"] = months.Select(s => new {
+                MonthlyProductionPlanId = s.MonthlyProductionPlanId,
                 Name = getName(s.MonthlyProductionPlanId),
                 NameAm = getName(s.MonthlyProductionPlanId)
             }).ToList();
