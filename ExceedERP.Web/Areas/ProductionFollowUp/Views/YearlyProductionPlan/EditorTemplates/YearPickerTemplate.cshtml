@@ -1,0 +1,23 @@
+﻿@model DateTime?
+@using Kendo.Mvc.Extensions
+
+@{
+    string cultureName = "";
+    HttpCookie cultureCookie = Request.Cookies["_culture"];
+    if (cultureCookie != null)
+    {
+        cultureName = cultureCookie.Value;
+    }
+}
+@if (cultureName.IsCaseInsensitiveEqual("am") || cultureName.IsCaseInsensitiveEqual("or"))
+{
+    @Html.TextBoxFor(model => model, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" })
+    <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+}
+else
+{
+
+    @(Html.Kendo().DatePickerFor(m=>m).Culture("am-ET")
+        )
+    @Html.ValidationMessageFor(m => m)
+}

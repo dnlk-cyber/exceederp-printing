@@ -5226,6 +5226,17 @@
     <Content Include="Areas\HRM\Views\MilitarySalary\Index.cshtml" />
     <Content Include="Areas\HRM\Views\WaterMark\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ManualJobOrder\Index - Copy.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\YearlyProductionPlan\EditorTemplates\YearPickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\YearlyProductionPlan\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\MonthlyPlan\EditorTemplates\DatePickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\MonthlyPlan\EditorTemplates\EthDatePickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\MonthlyPlan\EditorTemplates\YearPickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\MonthlyPlan\Index - Copy.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\MonthlyPlan\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\WeeklyPlan\EditorTemplates\DatePickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\WeeklyPlan\EditorTemplates\EthDatePickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\WeeklyPlan\EditorTemplates\YearPickerTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\WeeklyPlan\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

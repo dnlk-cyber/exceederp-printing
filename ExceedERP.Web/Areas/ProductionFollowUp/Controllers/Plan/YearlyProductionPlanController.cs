@@ -5,17 +5,12 @@ using System.Linq;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Web.Controllers;
-using ExceedERP.Core.Localization;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 
-namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
+namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 {
-    public class YearlyProductionPlanController : BaseController
+    public class YearlyProductionPlanController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 

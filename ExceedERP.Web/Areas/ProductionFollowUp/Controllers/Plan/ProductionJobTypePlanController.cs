@@ -12,9 +12,9 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.Web.Helpers;
 
-namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
+namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 {
-   // [AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpAdmin)]
+    // [AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpAdmin)]
     public class ProductionJobTypePlanController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

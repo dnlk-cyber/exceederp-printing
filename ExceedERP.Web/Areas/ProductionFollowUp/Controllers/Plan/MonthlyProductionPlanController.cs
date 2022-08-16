@@ -14,7 +14,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers;
 using System.Web;
 
-namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
+namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 {
     public class MonthlyProductionPlanController : BaseController
     {

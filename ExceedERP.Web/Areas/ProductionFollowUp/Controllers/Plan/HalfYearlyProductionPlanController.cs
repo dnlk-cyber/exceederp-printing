@@ -15,7 +15,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers;
 
-namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
+namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 {
     public class HalfYearlyProductionPlanController : BaseController
     {

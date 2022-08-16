@@ -11,7 +11,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 
-namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
+namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 {
     public class QuarterlyProductionPlanController : BaseController
     {
@@ -63,13 +63,13 @@ namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
                 var totQuarterYearPlanNotUpdateds = qaurterYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanBirr);
                 if ((totQuarterYearPlanUpdateds + totQuarterYearPlanNotUpdateds) > halfYearlyPlan.ProductionPlanBirr)
                 {
-                    ModelState.AddModelError("Error", "Summation of quarter plans in birr must equal with half yearl plan");
+                    ModelState.AddModelError("Error", "Summation of quarter plans in birr must equal with half yearly plan");
                 }
                 totQuarterYearPlanUpdateds = quarterlyPlans.Sum(s => s.ProductionPlanQuantity);
                 totQuarterYearPlanNotUpdateds = qaurterYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
                 if ((totQuarterYearPlanUpdateds + totQuarterYearPlanNotUpdateds) > halfYearlyPlan.ProductionPlanQuantity)
                 {
-                    ModelState.AddModelError("Error", "Summation of quarter plans in quantity must equal with half yearl plan");
+                    ModelState.AddModelError("Error", "Summation of quarter plans in quantity must equal with half yearly plan");
                 }
                 if (ModelState.IsValid)
                 {

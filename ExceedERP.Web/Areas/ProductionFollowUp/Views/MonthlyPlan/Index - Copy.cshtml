@@ -1,0 +1,847 @@
+﻿@using TradeMarketSystem.Core.Localization
+@using TradeMarketSystem.Core.Model.Daily_Market
+@using Kendo.Mvc.Extensions
+
+@{
+
+
+    string cultureName = "";
+    HttpCookie cultureCookie = Request.Cookies["_culture"];
+    if (cultureCookie != null)
+    {
+        cultureName = cultureCookie.Value;
+    }
+    bool admin = HttpContext.Current.User.IsInRole("DM_Plan_Approver");
+    bool priceEntryMan = HttpContext.Current.User.IsInRole(DailyMarketRoles.DMPriceEntry);
+
+}
+@(Html.Kendo().Window()
+                .Name("window")
+                .Width(600)
+                .Height(250)
+                .Visible(false)
+                        .Modal(true)
+                        .Draggable(true)
+                .Content(@<text>
+<form action="@Url.Action("WeeklyPlan_Reject", "WeeklyPlan", new { area = "DailyMarket" })" method="post" , new { enctype="multipart/form-data" }>
+    <input type="hidden" name="monthlyPlanId" id="monthlyPlanId">
+    <input type="hidden" name="userName" id="userName">
+    <div class="row">
+                <div class="col-md-1"></div>
+
+        <div class="col-md-9">
+
+
+            @(Html.Kendo().Editor().Name("Remark").HtmlAttributes(new { style = "height: 70px" }))
+        </div>
+
+    </div>
+    <button style="margin-top:15px" type="submit"  class="k-button k-button-icontext k-Secondary k-grid-next pull-right"> Submit</button>
+
+</form>
+                </text>)
+        .Modal(true)
+        .Title("Reason For Reject")
+        .Actions(actions => actions.Close())
+
+)
+<div class="content-wrapper">
+    <section class="content-header">
+        <h4><i class="fa fa-list"></i> @TradeMarketSystem.Core.Localization.Resource.DailyMarket_QuarterYearPlans</h4>
+
+    </section>
+    <section class="content">
+
+
+        @(Html.Kendo().Grid<TradeMarketSystem.Core.Model.Daily_Market.QuarterlyPlan>()
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+
+                          if (cultureName.IsCaseInsensitiveEqual("am") || cultureName.IsCaseInsensitiveEqual("or"))
+                          {
+                              columns.ForeignKey(c => c.QuarterlYPlanId, (System.Collections.IEnumerable)ViewData["Quarters"], "QuarterlYPlanId", "NameAm").Filterable(f => f.Multi(true).Search(true)).Width(200);
+                              columns.Bound(c => c.StartDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
+                              columns.Bound(c => c.EndDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
+                          }
+                          else
+                          {
+                              columns.ForeignKey(c => c.QuarterlYPlanId, (System.Collections.IEnumerable)ViewData["Quarters"], "QuarterlYPlanId", "Name").Filterable(f => f.Multi(true).Search(true)).Width(200);
+                              columns.Bound(c => c.StartDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
+                              columns.Bound(c => c.EndDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
+                          }
+                          columns.Bound(c => c.Plan).Filterable(f => f.Multi(true).Search(true)).Width(100);
+                          //columns.Bound(c => c.Actual).Filterable(f => f.Multi(true).Search(true)).Width(100);
+                          //columns.Bound(c => c.Performance).Filterable(f => f.Multi(true).Search(true)).Width(140);
+                          //  columns.Bound(c => c.User).Filterable(f => f.Multi(true).Search(true)).Width(100);
+
+
+                      })
+
+                              .Events(ev =>  {
+                                  ev.DetailExpand("onQuarterlyDetailExpand");
+                                  ev.DataBound("dataBound");
+                              })
+
+      .Editable(editable => editable.Mode(GridEditMode.InCell))
+            .PersistSelection()
+          .HtmlAttributes(new { style = "height: 520px;" })
+                           .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+
+          .Navigatable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .ServerOperation(false)
+              .Batch(true)
+              .Sort(sort =>
+              {
+                  sort.Add(m => m.QuarterlYPlanId).Descending();
+              })
+               .Events(ev => ev
+        .Error("error_handler(\"grid\")")
+        .RequestStart("onRequestStart(\"grid\")")
+        .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model =>
+              {
+
+                  model.Id(p => p.QuarterlYPlanId);
+                  model.Field(p => p.Name).Editable(false);
+                  model.Field(p => p.NameAm).Editable(false);
+                  model.Field(p => p.QuarterlYPlanId).Editable(false);
+                  model.Field(p => p.StartDate).Editable(false);
+                  model.Field(p => p.EndDate).Editable(false);
+                  model.Field(p => p.Plan).Editable(false);
+                  model.Field(p => p.User).Editable(false);
+                  model.Field(p => p.Actual).Editable(false);
+                  model.Field(p => p.ApprovedBy).Editable(false);
+                  model.Field(p => p.Performance).Editable(false);
+              })
+
+              .Read(read => read.Action("QuarterlyPlans_Read", "QuarterlyPlan"))
+              .Create(create => create.Action("QuarterlyPlans_Create", "QuarterlyPlan"))
+              .Update(update => update.Action("QuarterlyPlans_Update", "QuarterlyPlan"))
+              .Destroy(destroy => destroy.Action("QuarterlyPlans_Destroy", "QuarterlyPlan"))
+
+          )
+
+          .ClientDetailTemplateId("monthlyPlan")
+
+                )
+
+
+
+    </section>
+</div>
+
+<script id="monthlyPlan" type="text/kendo-tmpl">
+     @(Html.Kendo().TabStrip()
+      .Name("monthly_tab_#=QuarterlYPlanId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+
+    items.Add().Text(Resource.DailyMarket_MonthlyPlans).Content(
+           @<text>
+         @MonthlyPlan()
+             </text>
+);
+
+         }).ToClientTemplate()
+
+    )
+</script>
+@helper MonthlyPlan()
+{
+    bool admin = HttpContext.Current.User.IsInRole(DailyMarketRoles.DMPlanApprover);
+    bool priceEntryMan = HttpContext.Current.User.IsInRole(DailyMarketRoles.DMPriceEntry);
+
+    string cultureName = "";
+    HttpCookie cultureCookie = Request.Cookies["_culture"];
+    if (cultureCookie != null)
+    {
+        cultureName = cultureCookie.Value;
+    }
+    @(Html.Kendo().Grid<TradeMarketSystem.Core.Model.Daily_Market.MonthlyPlan>()
+      .Name("monthly_grid_#=QuarterlYPlanId#")
+      .Columns(columns =>
+      {
+
+
+          if (cultureName.IsCaseInsensitiveEqual("am") || cultureName.IsCaseInsensitiveEqual("or"))
+          {
+              columns.Bound(c => c.NameAm).Filterable(f => f.Multi(true).Search(true)).Width(120);
+              columns.Bound(c => c.StartDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
+              columns.Bound(c => c.EndDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
+          }
+          else
+          {
+              columns.Bound(c => c.Name).Filterable(f => f.Multi(true).Search(true)).Width(120);
+              columns.Bound(c => c.StartDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
+              columns.Bound(c => c.EndDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
+          }
+          columns.Bound(c => c.Plan).Filterable(f => f.Multi(true).Search(true)).Width(100);
+          //columns.Bound(c => c.Actual).Filterable(f => f.Multi(true).Search(true)).Width(100);
+          //columns.Bound(c => c.Performance).Filterable(f => f.Multi(true).Search(true)).Width(130);
+          //columns.Bound(c => c.User).Filterable(f => f.Multi(true).Search(true)).Width(130);
+
+
+      })
+      .ToolBar(toolbar =>
+      {
+          //if (admin)
+          //{
+          //    toolbar.Save().SaveText(Resource.Approve).HtmlAttributes(new { @class = "approveP" }).CancelText(Resource.Grid_CancelButtonText);
+          //}
+          //else
+          //{
+          toolbar.Save().SaveText(Resource.Grid_SaveChangesButtonText).CancelText(Resource.Grid_CancelButtonText);
+      //}
+      })
+      .Events(ev=>ev.DetailExpand("onMonthlyDetailExpand").Edit("onEdit"))
+      .Editable(editable => editable.Mode(GridEditMode.InCell))
+            .PersistSelection()
+          .HtmlAttributes(new { style = "height: 520px;" })
+                           .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+
+          .Navigatable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .ServerOperation(false)
+              .Batch(true)
+              .Sort(sort =>
+              {
+                  sort.Add(m => m.MonthlyPlanId).Ascending();
+              })
+               .Events(ev => ev
+        .Error("error_handler(\"monthly_grid_#=QuarterlYPlanId#\")")
+        .RequestStart("onRequestStart(\"monthly_grid_#=QuarterlYPlanId#\")")
+        .RequestEnd("onRequestEnd(\"monthly_grid_#=QuarterlYPlanId#\")"))
+              .Model(model =>
+              {
+
+                  model.Id(p => p.MonthlyPlanId);
+                  model.Field(p => p.Name).Editable(false);
+                  model.Field(p => p.NameAm).Editable(false);
+                  model.Field(p => p.ApprovedBy).Editable(false);
+                  model.Field(p => p.StartDate).Editable(false);
+                  model.Field(p => p.EndDate).Editable(false);
+                  model.Field(p => p.StartDateEth).Editable(false);
+                  model.Field(p => p.EndDateEth).Editable(false);
+                  model.Field(p => p.User).Editable(false);
+                  model.Field(p => p.Actual).Editable(false);
+                  model.Field(p => p.Performance).Editable(false);
+              })
+
+              .Read(read => read.Action("MonthlyPlans_Read", "MonthlyPlan", new { id = "#=QuarterlYPlanId#" }))
+              .Create(create => create.Action("MonthlyPlans_Create", "MonthlyPlan", new { id = "#=QuarterlYPlanId#" }))
+              .Update(update => update.Action("MonthlyPlans_Update", "MonthlyPlan", new { id = "#=QuarterlYPlanId#" }))
+              .Destroy(destroy => destroy.Action("MonthlyPlans_Destroy", "MonthlyPlan"))
+
+          ).ClientDetailTemplateId("weeklyPlans")
+          .ToClientTemplate()
+
+
+                )
+}
+
+
+
+<script id="weeklyPlans" type="text/kendo-tmpl">
+
+    #if (IsApproved&& ('@priceEntryMan'=='True')){#
+     @(Html.Kendo().TabStrip()
+      .Name("weekly_tab_#=MonthlyPlanId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+
+    items.Add().Text(Resource.DailyMarket_WeeklyPlans).Content(
+           @<text>
+             # if (!IsWeeklyTransferred && '@priceEntryMan'=='True')
+                        {#
+                 <a onclick='return sentWeeklyPlanForApproval("#=MonthlyPlanId#")' href='\\#' title="Send For Closing"><i class="fa fa-share-square fa-2x"></i></a>
+
+                        # }#
+                  @WeeklyPlan()
+
+
+             </text>
+);
+         items.Add().Text("Rejection Remarks").Content(
+           @<text>
+       #if (IsWeeklyRejected){#
+
+         @RejectionRemark()
+      #}#
+
+             </text>
+);
+
+         }).ToClientTemplate()
+
+    )
+        #}#
+
+</script>
+@helper RejectionRemark()
+{
+    bool admin = false;
+    if (HttpContext.Current.User.IsInRole("DM_Plan_Approver"))
+    {
+        admin = true;
+    }
+    string cultureName = "";
+    HttpCookie cultureCookie = Request.Cookies["_culture"];
+    if (cultureCookie != null)
+    {
+        cultureName = cultureCookie.Value;
+    }
+    @(Html.Kendo().Grid<TradeMarketSystem.Core.Model.Daily_Market.RejecetionRemark>()
+      .Name("Reject_remarks_#=MonthlyPlanId#")
+      .Columns(columns =>
+      {
+
+
+          columns.Bound(c => c.Remark).Filterable(f => f.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Filterable(f => f.Multi(true).Search(true)).Width(100);
+
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .PersistSelection()
+          .HtmlAttributes(new { style = "height: 520px;" })
+                           .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+
+          .Navigatable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .ServerOperation(false)
+              .Batch(true)
+              .Sort(sort =>
+              {
+                  sort.Add(m => m.RejecetionRemarkId).Ascending();
+              })
+               .Events(ev => ev
+        .Error("error_handler(\"Reject_remarks_#=MonthlyPlanId#\")")
+        .RequestStart("onRequestStart(\"Reject_remarks_#=MonthlyPlanId#\")")
+        .RequestEnd("onRequestEnd(\"Reject_remarks_#=MonthlyPlanId#\")"))
+              .Model(model =>
+              {
+
+                  model.Id(p => p.RejecetionRemarkId);
+
+              })
+
+              .Read(read => read.Action("RejectionRemarkWeeklyPlans_Read", "RejectionRemark", new { id = "#=MonthlyPlanId#" }))
+
+          )
+          .ToClientTemplate()
+
+                )
+}
+
+@helper WeeklyPlan()
+{
+    bool priceEntryMan = HttpContext.Current.User.IsInRole(DailyMarketRoles.DMPriceEntry);
+    bool isAdmin = HttpContext.Current.User.IsInRole(DailyMarketRoles.DMPlanApprover);
+
+    string cultureName = "";
+    HttpCookie cultureCookie = Request.Cookies["_culture"];
+    if (cultureCookie != null)
+    {
+        cultureName = cultureCookie.Value;
+    }
+    @(Html.Kendo().Grid<TradeMarketSystem.Core.Model.Daily_Market.WeeklyPlan>
+    ()
+    .Name("weekly_year_grid_#=MonthlyPlanId#")
+    .Columns(columns =>
+    {
+
+        if (cultureName.IsCaseInsensitiveEqual("am") || cultureName.IsCaseInsensitiveEqual("or"))
+        {
+            columns.Bound(c => c.Name).Filterable(f => f.Multi(true).Search(true)).Width(120);
+            columns.Bound(c => c.StartDateEth).EditorTemplateName("EthDatePickerTemplate").Filterable(f => f.Multi(true).Search(true)).Width(150);
+            columns.Bound(c => c.EndDateEth).EditorTemplateName("EthDatePickerTemplate").Filterable(f => f.Multi(true).Search(true)).Width(150);
+
+        }
+        else
+        {
+            columns.Bound(c => c.Name).Filterable(f => f.Multi(true).Search(true)).Width(120);
+            columns.Bound(c => c.StartDate).Filterable(f => f.Multi(true).Search(true)).EditorTemplateName("DatePickerTemplate").Width(120);
+            columns.Bound(c => c.EndDate).Filterable(f => f.Multi(true).Search(true)).EditorTemplateName("DatePickerTemplate").Width(120);
+        }
+
+        columns.Bound(c => c.Plan).Filterable(f => f.Multi(true).Search(true)).Width(100);
+        //columns.Bound(c => c.Actual).Filterable(f => f.Multi(true).Search(true)).Width(100);
+        //columns.Bound(c => c.Performance).Filterable(f => f.Multi(true).Search(true)).Width(130);
+        //if (isAdmin)
+        //{
+
+        //    columns.Bound(c => c.User)/*.Filterable(f => f.Multi(true).Search(true)).Width(100)*/
+        //  .ClientGroupHeaderTemplate("Planner: #=User#<div class='pull-right'><button class='approve'  onclick=approveWeeklyPlan(event,'#=User#','#=MonthlyPlanId#')>Approve</button><button style='margin-left:15px' class='reject' onclick=rejectWeeklyPlan(event,'#=User#','#=MonthlyPlanId#')>Reject</button></div>").Hidden(true); ;
+
+
+
+        //}
+        //else
+        //{
+        columns.Bound(c => c.User).Filterable(f => f.Multi(true).Search(true)).Width(100);
+    //}
+        columns.Command(command =>
+        {
+            //command.Edit().Text(Resource.Grid_EditButtonText).UpdateText(Resource.Grid_SaveButtonText).CancelText(Resource.Grid_CancelButtonText);
+            //command.Custom("custom-delete-command")
+            //                              .Text(Resource.Grid_DeleteButtonText)
+            //                              .IconClass("k-icon k-i-close")
+            //                              .HtmlAttributes(new { @class = "k-button k-button-icontext k-grid-custom-delete" });
+        }).Width(250);
+
+})
+    .ToolBar(toolbar =>
+    {
+        //if(@priceEntryMan)
+        //{
+        toolbar.Save().SaveText(Resource.Grid_SaveButtonText).CancelText(Resource.Grid_CancelButtonText);
+
+        //  }
+    })
+    .Events(ev => ev.DataBound("dataBound").Edit("onWeeklyEdit").Edit("onWeeklyPlanEdit"))
+
+    .Editable(editable => editable.Mode(GridEditMode.InCell))
+    .PersistSelection()
+    .HtmlAttributes(new { style = "height: 520px;" })
+    .Pageable(pageable => pageable
+    .Input(true)
+    .Numeric(false)
+    .Refresh(true)
+    .PageSizes(true)
+    .ButtonCount(5))
+    .Navigatable()
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+    })
+    .Filterable()
+    .Scrollable()
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .PageSize(12)
+    .Batch(true)
+    .ServerOperation(true)
+    .Sort(sort =>
+    {
+        sort.Add(m => m.MonthlyPlanId).Descending();
+    })
+   .Group(gr => {
+       gr.Add(g => g.User);
+   })
+   .Aggregates(aggregates =>
+   {
+       aggregates.Add(p => p.User).Count();
+   })
+
+    .Events(ev => ev
+    .Error("error_handler(\"weekly_year_grid_#=MonthlyPlanId#\")")
+    .RequestStart("onRequestStart(\"weekly_year_grid_#=MonthlyPlanId#\")")
+    .RequestEnd("onRequestEnd(\"weekly_year_grid_#=MonthlyPlanId#\")"))
+    .Model(model =>
+    {
+
+        model.Id(p => p.WeeklyPlanId);
+        model.Field(p => p.Name).Editable(false);
+        model.Field(p => p.NameAm).Editable(false);
+        model.Field(p => p.StartDate).Editable(false);
+        model.Field(p => p.StartDateEth).Editable(false);
+        model.Field(p => p.EndDate).Editable(false);
+        model.Field(p => p.EndDateEth).Editable(false);
+        model.Field(p => p.User).Editable(false);
+        model.Field(p => p.Actual).Editable(false);
+        model.Field(p => p.ApprovedBy).Editable(false);
+        model.Field(p => p.Performance).Editable(false);
+    })
+
+    .Read(read => read.Action("WeeklyPlans_Read", "WeeklyPlan", new { id = "#=MonthlyPlanId#" }))
+    .Create(create => create.Action("WeeklyPlans_Create", "WeeklyPlan", new { id = "#=MonthlyPlanId#" }))
+    .Update(update => update.Action("WeeklyPlans_Update", "WeeklyPlan", new { id = "#=MonthlyPlanId#" }))
+    .Destroy(destroy => destroy.Action("WeeklyPlans_Destroy", "WeeklyPlan"))
+
+    )
+
+    .ToClientTemplate()
+
+    )
+}
+
+
+<script>
+    function GetDate(e) {
+        $("#StartDateEth").trigger("change");
+        $("#EndDateEth").trigger("change");
+    }
+
+    function onSave() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.dataSource.read();
+        var dsSort = [];
+        dsSort.push({ field: "MarketPriceEntryPlanId", dir: "desc" });
+        grid.dataSource.sort(dsSort);
+        grid.dataSource.read();
+    }
+    function dataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.IsApproved) {
+             //   $(this).css("background-color", "#7FFFD4");
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-custom-delete-command").remove();
+                $(this).find(".k-grid-custom-approve-command").remove();
+            }
+
+        });
+        console.log(10000);
+        customDeleteConfirmationGridDataBound(e.sender.element[0].id);
+
+    }
+
+    function filterPeriods() {
+        return {
+            budgetYearId: $("#BudgetYearId").val()
+        };
+    }
+
+
+
+    $(".k-grid-add").first().on("click", function (e) {
+        var grid = $('#grid').data('kendoGrid');
+        if (grid.dataSource.view().length > 0) {
+            console.log("true");
+            e.preventDefault();
+            var sorting = grid.dataSource.sort();
+            if (sorting) {
+                grid.dataSource.sort(null);
+
+            }
+            grid.addRow();
+        }
+    });
+
+        @*function approveWeeklyPlan(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var masterId = dataItem.WeeklyPlanId;
+          $.ajax({
+            type: "POST",
+            url: '@Url.Action("ApproveWeeklyPlan", "MarketPriceEntryPlan", new { area = "DailyMarket" })',
+            data: { id: masterId },
+            success: function (result) {
+                console.log(result);
+                alert(result);
+               location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+        }*@
+        function onWeeklyEdit(e) {
+            console.log("Yeah");
+            $("#StartDate").kendoDatePicker({
+                format: "MM/dd/yyyy",
+                min: startDate,
+                max: endDate,
+                change: onStartDateChange
+
+            });
+            //var startD = $("#StartDate").val();
+            //console.log(startD);
+            //if (startD.value != null) {
+            //    startDate = startD.value;
+            //}
+            $("#EndDate").kendoDatePicker({
+                format: "MM/dd/yyyy",
+                min: startDate,
+                max: endDate,
+                change: onEndDateChange
+
+            });
+            //var dateStartPicker = $("#StartDate").data("kendoDatePicker");
+            //dateStartPicker.min(startDate);
+            //dateStartPicker.max(endDate);
+
+            //var dateEndPicker = $("#EndDate").data("kendoDatePicker");
+            //dateEndPicker.min(startDate);
+            //dateEndPicker.max(endDate);
+
+        }
+        function onStartDateChange(e) {
+            var dt = e.sender;
+            startDate = dt.value();
+        }
+        function onEndDateChange(e) {
+            var dt = e.sender;
+            endDate = dt.value();
+        }
+        var masterId;
+        var isApproved;
+        var isTransferred;
+        var isWeeklyApproved;
+        var isWeeklyApproved;
+        var isTransferredAd;
+        var isApprovedAd;
+        function onQuarterlyDetailExpand(e) {
+            masterRow = e.masterRow;
+            masterGrid = $("#grid").data("kendoGrid");
+            masterDataItem = masterGrid.dataItem(masterRow);
+            masterId = masterDataItem.QuarterlYPlanId;
+            isApprovedAd = masterDataItem.IsApproved;
+            isTransferredAd = masterDataItem.IsTransferred;
+            if (isApproved || isTransferredAd) {
+            $(".k-grid-save-changes", "#monthly_grid_" + masterId).hide();
+            $(".k-grid-cancel-changes", "#monthly_grid_" + masterId).hide();
+        }
+
+
+        }
+        var startDate;
+        var endDate;
+        function onMonthlyDetailExpand(e) {
+            masterRow = e.masterRow;
+            masterGrid = $("#monthly_grid_" + masterId).data("kendoGrid");
+            masterDataItem = masterGrid.dataItem(masterRow);
+            var masterMonId = masterDataItem.MonthlyPlanId;
+            startDate = masterDataItem.StartDate;
+            isWeeklyApproved = masterDataItem.IsWeeklyApproved;
+            isWeeklyTransferred = masterDataItem.IsWeeklyTransferred;
+            endDate = masterDataItem.EndDate;
+            if (isWeeklyApproved || isWeeklyTransferred) {
+                $(".k-grid-save-changes", "#weekly_year_grid_" + masterMonId).hide();
+                $(".k-grid-cancel-changes", "#weekly_year_grid_" + masterMonId).hide();
+        }
+
+
+
+    }
+    function onEdit(e) {
+        if (isApprovedAd) {
+            var grid = this;
+           grid.closeCell();
+        }
+        else if (isTransferredAd) {
+            var grid = this;
+            grid.closeCell();
+        }
+    }
+
+    function onWeeklyPlanEdit() {
+        if (isWeeklyApproved) {
+            var grid = this;
+            grid.closeCell();
+        }
+        else if (isWeeklyTransferred) {
+            var grid = this;
+            grid.closeCell();
+        }
+    }
+
+    function sentWeeklyPlanForApproval(monthlyPlanId) {
+
+
+                swal({
+                title: "@Resource.Grid_ConfirmDeleteTitle",
+                text: "@Resource.Grid_ConfirmDeleteDialogMessage",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "@Resource.Grid_ConfirmDelete_ConfirmButtonText",
+                cancelButtonText: "@Resource.Grid_ConfirmDelete_CancelButtonText",
+                cancelButtonClass: "btn-primary",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+            $.ajax({
+            type: "POST",
+             url: '@Url.Action("WeeklyPlan_SentForApproval", "WeeklyPlan", new { area = "DailyMarket" })',
+                data: { id: monthlyPlanId },
+           success: function (result) {
+                  if (result.Success) {
+                      $(e.currentTarget).closest("tr").find(".k-grid-custom-send-approval-command").hide();
+                      $("#grid").data("kendoGrid").dataSource.read();
+                      toastr.success(result.Message).fadeIn(2000).delay(3000).fadeOut(2000);
+
+                  }
+                  else {
+                       @*swal({
+                            title: "@Resource.AlertWindow_ErrorTitle",
+                          text: result.Message,
+                            type: "error",
+                            //confirmButtonClass: "btn-danger",
+                            confirmButtonText: "@Resource.AlertWindow_ConfirmButtonText",
+                            //closeOnConfirm: false
+                        });*@
+                      toastr.error(result.Message);
+
+                  }
+            },
+              error: function (result) {
+
+                  toastr.error(result).fadeIn(2000).delay(3000).fadeOut(2000);
+            }
+        });
+
+                } else {
+                }
+            });
+
+    }
+    function rejectWeeklyPlan(e, userName, monthlyPlanId) {
+
+
+                swal({
+                title: "@Resource.Grid_ConfirmDeleteTitle",
+                text: "@Resource.Grid_ConfirmDeleteDialogMessage",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "@Resource.Grid_ConfirmDelete_ConfirmButtonText",
+                cancelButtonText: "@Resource.Grid_ConfirmDelete_CancelButtonText",
+                cancelButtonClass: "btn-primary",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+                    var monthlyPlanIdT = $("#monthlyPlanId").val(monthlyPlanId);
+                    var userNameT = $("#userName").val(userName);
+                    monthlyPlanIdT.trigger("change");
+                    userNameT.trigger("change");
+                    $("#window").data("kendoWindow").center().open();
+                } else {
+                }
+                    });
+    }
+    function approveWeeklyPlan(e, user, monthlyId) {
+
+       swal({
+                title: "@Resource.Grid_ConfirmDeleteTitle",
+                text: "@Resource.Grid_ConfirmDeleteDialogMessage",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "@Resource.Grid_ConfirmDelete_ConfirmButtonText",
+                cancelButtonText: "@Resource.Grid_ConfirmDelete_CancelButtonText",
+                cancelButtonClass: "btn-primary",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            },
+            function (isConfirm) {
+                if (isConfirm) {
+            $.ajax({
+            type: "POST",
+            url: '@Url.Action("WeeklyPlan_Approval", "WeeklyPlan", new { area = "DailyMarket" })',
+                data: { id: monthlyId, user:user },
+           success: function (result) {
+                  if (result.Success) {
+                      $(e.currentTarget).closest("tr").find(".k-grid-custom-send-approval-command").hide();
+                      $("#grid").data("kendoGrid").dataSource.read();
+                      toastr.success(result.Message).fadeIn(2000).delay(3000).fadeOut(2000);
+
+                  }
+                  else {
+                       swal({
+                            title: "@Resource.AlertWindow_ErrorTitle",
+                          text: result.Message,
+                            type: "error",
+                            //confirmButtonClass: "btn-danger",
+                            confirmButtonText: "@Resource.AlertWindow_ConfirmButtonText",
+                            //closeOnConfirm: false
+                        });
+                      toastr.error(result.Message);
+
+                  }
+            },
+              error: function (result) {
+
+                  toastr.error(result).fadeIn(2000).delay(3000).fadeOut(2000);
+            }
+        });
+
+                } else {
+                }
+            });
+    }
+
+</script>
+<style>
+    .approve {
+        background-color: darkgreen;
+        border-radius: 10px;
+        color: white;
+        border: 2px solid darkgreen;
+    }
+
+        .approve:hover {
+            background-color: green;
+            border-radius: 10px;
+            color: white;
+            border: 2px solid green;
+        }
+
+    .reject {
+        background-color: darkred;
+        border-radius: 10px;
+        border: 2px solid darkred;
+        color: white;
+    }
+
+        .reject:hover {
+            background-color: darkred;
+            border-radius: 10px;
+            border: 2px solid darkred;
+            color: white;
+        }
+
+    .approveP {
+        background-color: darkgreen;
+        color: white;
+    }
+
+    .k-editor-toolbar {
+        display: none !important;
+    }
+</style>

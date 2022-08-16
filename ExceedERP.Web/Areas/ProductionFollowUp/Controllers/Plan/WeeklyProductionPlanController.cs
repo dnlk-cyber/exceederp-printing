@@ -10,7 +10,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 
-namespace TradeMarketSystem.Areas.DailyMarket.Controllers.Setting
+namespace ExceedERP.Web.Areas.ProductioFollowup.Controllers.Plan
 {
     public class WeeklyProductionPlanController : BaseController
     {
