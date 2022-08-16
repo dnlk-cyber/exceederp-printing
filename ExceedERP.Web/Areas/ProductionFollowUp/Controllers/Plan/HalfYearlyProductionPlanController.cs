@@ -57,16 +57,15 @@ namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
             {
                 var yearlyPlan = db.YearlyProductionPlans.Find(id);
                 var halfYearIds = halfYearlyProductionPlans.Select(s => s.HalfYearlyProductionPlanId);
-                var halfYearProductionPlanUpdatedRecs = db.HalfYearlyProductionPlans.Where(q => q.YearlyProductionPlanId == id && halfYearIds.Contains(q.HalfYearlyProductionPlanId)).ToList();
                 var halfYearProductionPlanNotUpdatedRecs = db.HalfYearlyProductionPlans.Where(q => q.YearlyProductionPlanId == id && !halfYearIds.Contains(q.HalfYearlyProductionPlanId)).ToList();
-                var totHalfYearPlanUpdateds = halfYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanBirr);
-                var totHalfYearPlanNotUpdateds = halfYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanBirr);
+                var totHalfYearPlanUpdateds = halfYearlyProductionPlans.Sum(s => s.ProductionPlanBirr);
+                var totHalfYearPlanNotUpdateds = halfYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanBirr);
                 if ((totHalfYearPlanUpdateds + totHalfYearPlanNotUpdateds) > yearlyPlan.ProductionPlanBirr)
                 {
                     ModelState.AddModelError("Error", "Summation of half year plan in birr must equal with yearly plan");
                 }
-                 totHalfYearPlanUpdateds = halfYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
-                 totHalfYearPlanNotUpdateds = halfYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
+                 totHalfYearPlanUpdateds = halfYearlyProductionPlans.Sum(s => s.ProductionPlanQuantity);
+                 totHalfYearPlanNotUpdateds = halfYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
                 if ((totHalfYearPlanUpdateds + totHalfYearPlanNotUpdateds) > yearlyPlan.ProductionPlanQuantity)
                 {
                     ModelState.AddModelError("Error", "Summation of half year plan in quantity must equal with yearly plan");

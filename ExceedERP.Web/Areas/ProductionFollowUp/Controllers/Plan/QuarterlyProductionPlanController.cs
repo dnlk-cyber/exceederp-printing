@@ -58,15 +58,14 @@ namespace ExceedERP.Areas.DailyMarket.Controllers.Setting
             {
                 var halfYearlyPlan = db.HalfYearlyProductionPlans.Find(id);
                 var quarterYearIds = quarterlyPlans.Select(s => s.QuarterlyProductionPlanId);
-                var qaurterYearProductionPlanUpdatedRecs = db.HalfYearlyProductionPlans.Where(q => q.YearlyProductionPlanId == id && quarterYearIds.Contains(q.HalfYearlyProductionPlanId)).ToList();
-                var qaurterYearProductionPlanNotUpdatedRecs = db.HalfYearlyProductionPlans.Where(q => q.YearlyProductionPlanId == id && !quarterYearIds.Contains(q.HalfYearlyProductionPlanId)).ToList();
-                var totQuarterYearPlanUpdateds = qaurterYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanBirr);
+                var qaurterYearProductionPlanNotUpdatedRecs = db.QuarterlyProductionPlans.Where(q => q.HalfYearlyProductionPlanId == id && !quarterYearIds.Contains(q.QuarterlyProductionPlanId)).ToList();
+                var totQuarterYearPlanUpdateds = quarterlyPlans.Sum(s => s.ProductionPlanBirr);
                 var totQuarterYearPlanNotUpdateds = qaurterYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanBirr);
                 if ((totQuarterYearPlanUpdateds + totQuarterYearPlanNotUpdateds) > halfYearlyPlan.ProductionPlanBirr)
                 {
                     ModelState.AddModelError("Error", "Summation of quarter plans in birr must equal with half yearl plan");
                 }
-                totQuarterYearPlanUpdateds = qaurterYearProductionPlanUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
+                totQuarterYearPlanUpdateds = quarterlyPlans.Sum(s => s.ProductionPlanQuantity);
                 totQuarterYearPlanNotUpdateds = qaurterYearProductionPlanNotUpdatedRecs.Sum(s => s.ProductionPlanQuantity);
                 if ((totQuarterYearPlanUpdateds + totQuarterYearPlanNotUpdateds) > halfYearlyPlan.ProductionPlanQuantity)
                 {
