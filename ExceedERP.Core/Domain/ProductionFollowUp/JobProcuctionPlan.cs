@@ -85,8 +85,10 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int WeeklyProductionPlanId { get; set; }
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
-        
-       
+        public JobCategory JobType { get; set; }
+        public virtual WeeklyProductionPlan WeeklyPlan { get; set; }
+
+
     }
     public class ProductionPlan
     {

@@ -306,6 +306,14 @@
     <Compile Include="Migrations\202208130839314_PlanUpdateProduction.Designer.cs">
       <DependentUpon>202208130839314_PlanUpdateProduction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202208180704287_JobTypePlanUpdate.cs" />
+    <Compile Include="Migrations\202208180704287_JobTypePlanUpdate.Designer.cs">
+      <DependentUpon>202208180704287_JobTypePlanUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208180914027_JobStatusUpdate.cs" />
+    <Compile Include="Migrations\202208180914027_JobStatusUpdate.Designer.cs">
+      <DependentUpon>202208180914027_JobStatusUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -492,6 +500,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202208130839314_PlanUpdateProduction.resx">
       <DependentUpon>202208130839314_PlanUpdateProduction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208180704287_JobTypePlanUpdate.resx">
+      <DependentUpon>202208180704287_JobTypePlanUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208180914027_JobStatusUpdate.resx">
+      <DependentUpon>202208180914027_JobStatusUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

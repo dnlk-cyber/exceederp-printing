@@ -168,7 +168,7 @@ namespace ExceedERP.DataAccess.Context
         {
             public JobStatusEntityTypeConfiguration()
             {
-                this.ToTable("JobStatusEntityTypeConfiguration", "ProductFollowUp");
+                this.ToTable("JobStatuses", "ProductFollowUp");
                 this.HasKey<int>(t => t.JobStatusId);
             }
         }

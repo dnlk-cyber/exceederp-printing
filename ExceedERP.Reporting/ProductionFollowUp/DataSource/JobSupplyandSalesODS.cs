@@ -38,7 +38,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
                 }
             }
-            var previousJobs = db.Jobs.ToList();
+            var previousJobs = new List<Job>();
 
             model.LogoFileName = LogoFileName;
             model.Name = Name;
@@ -51,7 +51,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             {
                 if (startDate.HasValue)
                 {
-                    previousJobs = previousJobs.Where(q => q.ReceivedDate.HasValue ? q.ReceivedDate.Value.Date < startDate.Value.Date : false).ToList();
+                    previousJobs = db.Jobs.ToList().Where(q => q.ReceivedDate.HasValue ? q.ReceivedDate.Value.Date < startDate.Value.Date : false).ToList();
                 }
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
                 var jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue? x.ReceivedDate.Value.Date >= startDate.Value.Date

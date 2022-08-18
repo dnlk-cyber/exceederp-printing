@@ -101,24 +101,27 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Plan
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProductionJobTypePlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionJobTypePlan> productionMonthlyJobTypePlans, int id)
+        public ActionResult ProductionJobTypePlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionJobTypePlan> productionJobTypePlans, int id)
         {
-            var jobTypeIds = productionMonthlyJobTypePlans.ToList().Select(s => s.ProductionJobTypePlanId);
-            var updatedMonthlyJobTypePlanQuas = productionMonthlyJobTypePlans.ToList().Sum(s => s.ProductionPlanQuantity);
-            var updatedMonthlyJobTypePlanBirrs = productionMonthlyJobTypePlans.ToList().Sum(s => s.ProductionPlanBirr);
-            var weeklyPlan = db.ProductionJobTypePlans.Find(id); var monthlyPlan = db.ProductionMonthlyPlans.Find(id);
+            var weeklyPlan = db.WeeklyProductionPlans.Find(id);
 
-            if (weeklyPlan?.ProductionPlanBirr < (updatedMonthlyJobTypePlanBirrs))
+            var jobTypeIds = productionJobTypePlans.ToList().Select(s => s.ProductionJobTypePlanId);
+            var updatedMonthlyJobTypePlanQuas = productionJobTypePlans.ToList().Sum(s => s.ProductionPlanQuantity);
+            var updatedMonthlyJobTypePlanBirrs = productionJobTypePlans.ToList().Sum(s => s.ProductionPlanBirr);
+            var jobTypePlansNotUpdateds = db.ProductionJobTypePlans.Where(q => !jobTypeIds.Contains(q.ProductionJobTypePlanId) && q.WeeklyProductionPlanId == id).ToList();
+            var jobTypePlansNotUpdatedQuas = jobTypePlansNotUpdateds.Sum(s => s.ProductionPlanQuantity);
+            var jobTypePlansNotUpdatedBirrs = jobTypePlansNotUpdateds.Sum(s => s.ProductionPlanBirr);
+            if ((jobTypePlansNotUpdatedQuas + updatedMonthlyJobTypePlanQuas) > weeklyPlan.ProductionPlanQuantity)
             {
                 ModelState.AddModelError("Error", "Summation of monthly job type plans in birr must equals with the monthly paln!");
             }
-            if (weeklyPlan?.ProductionPlanQuantity < (updatedMonthlyJobTypePlanQuas))
+            if ((updatedMonthlyJobTypePlanBirrs + jobTypePlansNotUpdatedBirrs > weeklyPlan.ProductionPlanBirr))
             {
                 ModelState.AddModelError("Error", "Summation of monthly job type plans in quantity must equals with the monthly paln!");
             }
             if (ModelState.IsValid)
             {
-                foreach (var productionMonthlyJobTypePlan in productionMonthlyJobTypePlans)
+                foreach (var productionMonthlyJobTypePlan in productionJobTypePlans)
                 {
                     productionMonthlyJobTypePlan.WeeklyProductionPlanId = id;
                     var entity = (ProductionJobTypePlan)this.GetObject(productionMonthlyJobTypePlan);
@@ -137,7 +140,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Plan
                 db.SaveChanges();
             }
 
-            return Json(new[] { productionMonthlyJobTypePlans }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { productionJobTypePlans }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
