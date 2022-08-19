@@ -35,6 +35,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         // [Required]
         [Display(Name = "Type")]
         public JobState Status { get; set; }
+        public Job JobOrder { get; set; }
     }
 
     public class JobStatusLineItem : TrackUserSettingOperation

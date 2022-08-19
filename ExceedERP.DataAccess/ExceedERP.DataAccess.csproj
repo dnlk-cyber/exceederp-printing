@@ -314,6 +314,10 @@
     <Compile Include="Migrations\202208180914027_JobStatusUpdate.Designer.cs">
       <DependentUpon>202208180914027_JobStatusUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202208190758053_JobOrderAddToJobStatus.cs" />
+    <Compile Include="Migrations\202208190758053_JobOrderAddToJobStatus.Designer.cs">
+      <DependentUpon>202208190758053_JobOrderAddToJobStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -506,6 +510,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202208180914027_JobStatusUpdate.resx">
       <DependentUpon>202208180914027_JobStatusUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208190758053_JobOrderAddToJobStatus.resx">
+      <DependentUpon>202208190758053_JobOrderAddToJobStatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

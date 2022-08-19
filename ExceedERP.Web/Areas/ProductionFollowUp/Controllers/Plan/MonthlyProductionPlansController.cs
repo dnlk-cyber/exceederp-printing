@@ -145,6 +145,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Plan
                         if (entity != null)
                         {
 
+                            entity.StartDate = monthlyPlan.StartDate;
+                            entity.EndDate = monthlyPlan.EndDate;
                             entity.WorkingDays = monthlyPlan.WorkingDays;
                             entity.WorkingHours = monthlyPlan.WorkingHours;
                             entity.ProductionPlanBirr = monthlyPlan.ProductionPlanBirr;

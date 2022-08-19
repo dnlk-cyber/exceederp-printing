@@ -72,12 +72,12 @@
                 @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin)||
             HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser))
         {*@
-                <li id="productionFollowUp001001001" class="actionlinlk">
+                @*<li id="productionFollowUp001001001" class="actionlinlk">
                     @Html.ActionLink("Job Supplies and Sales", "GetJobSupplyandSales", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
                     <b class="arrow"></b>
-                </li>
+                </li>*@
                 <li id="productionFollowUp001001001" class="actionlinlk">
-                    @Html.ActionLink("Job Supplies and Sales Monthly Plan", "GetJobSupplyandSalesWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                    @Html.ActionLink("Job Supplies and Sales Performance", "GetJobSupplyandSalesWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
                     <b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">
@@ -101,7 +101,7 @@
                     <b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">
-                    @Html.ActionLink("Printing and Finishing Team Performance Monthly Plan", "GetPrintingAndFinishingTeamPerformanceWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                    @Html.ActionLink("Printing and Finishing Team Performance Performance", "GetPrintingAndFinishingTeamPerformanceWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
                     <b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">

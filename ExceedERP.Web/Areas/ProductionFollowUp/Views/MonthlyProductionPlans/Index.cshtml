@@ -104,8 +104,8 @@
           columns.Bound(c => c.EndDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
           columns.Bound(c => c.WorkingDays).Filterable(f => f.Multi(true).Search(true)).Width(120);
           columns.Bound(c => c.WorkingHours).Filterable(f => f.Multi(true).Search(true)).Width(120);
-          //columns.Bound(c => c.StartDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
-          //columns.Bound(c => c.EndDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
+          columns.Bound(c => c.StartDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
+          columns.Bound(c => c.EndDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
           columns.Bound(c => c.ProductionPlanQuantity).Filterable(f => f.Multi(true).Search(true)).Width(100);
           columns.Bound(c => c.ProductionPlanBirr).Filterable(f => f.Multi(true).Search(true)).Width(100);
 
@@ -153,8 +153,8 @@
                   model.Id(p => p.MonthlyProductionPlanId);
                   model.Field(p => p.Name).Editable(false);
                   model.Field(p => p.NameAm).Editable(false);
-                  model.Field(p => p.StartDate).Editable(false);
-                  model.Field(p => p.EndDate).Editable(false);
+                  //model.Field(p => p.StartDate).Editable(false);
+                  //model.Field(p => p.EndDate).Editable(false);
                   model.Field(p => p.StartDateEth).Editable(false);
                   model.Field(p => p.EndDateEth).Editable(false);
               })

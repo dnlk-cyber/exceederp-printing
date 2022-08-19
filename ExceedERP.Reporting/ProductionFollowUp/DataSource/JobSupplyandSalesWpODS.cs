@@ -139,24 +139,19 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 previousJobs = previousJobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
                 var prevJobIds = previousJobs.Select(s => s.JobId);
                 decimal lastWeekFinishedJobs = 0;
-                var jobStatus = db.JobStatuses.Where(q => prevJobIds.Contains(q.JobId) && q.JobPhase == ProductionDepartment.SalesDelivery).FirstOrDefault();
+                var jobStatus = db.JobStatuses.ToList().Where(q => prevJobIds.Contains(q.JobId) && q.JobPhase == ProductionDepartment.SalesDelivery).FirstOrDefault();
                 if (jobStatus != null)
                 {
                     var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.Quantiy);
                     lastWeekFinishedJobs += finished;
                 }
-                var salesJobs = db.Jobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
-                IEnumerable<int> salesJobIds = salesJobs.Select(s=>s.JobId).Distinct();
-                List<JobStatus> jobStatuses = db.JobStatuses.ToList().Where(q => 
-                (q.Status == JobState.Finished || q.Status == JobState.ParitiallyFinished)
-                && q.JobPhase == ProductionDepartment.SalesDelivery
-                && salesJobIds.Contains(q.JobId)
-                ).ToList();
-                IEnumerable<int> jobStatusIds = jobStatuses.Select(s => s.JobStatusId).Distinct();
+     
                 var deliveredJobs = db.JobStatusLineItems.ToList().Where(q =>
                                 q.Date.Date >= startDate.Value.Date
                                 && q.Date.Date <= endDate.Value.Date
-                               && jobStatusIds.Contains(q.JobStatus.JobStatusId)
+                                &&q.JobStatus.JobOrder.JobTypeId==jobType.JobCategoryId
+                               && q.JobStatus.JobPhase==ProductionDepartment.SalesDelivery
+                               && (q.JobStatus.Status==JobState.ParitiallyFinished|| q.JobStatus.Status == JobState.Finished)
                                 ).ToList();
 
                 var jobTypePlans = productionPlans.Where(q =>q.JobTypeId == jobType.JobCategoryId).ToList();
