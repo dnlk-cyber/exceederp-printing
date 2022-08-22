@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PrintingAndFinishingTeamPerformanceVM DeliveryTeamPerformances(DateTime? startDate, DateTime? endDate, string jobTypeId)
+        public ProductionPerformanceVM DeliveryTeamPerformances(DateTime? startDate, DateTime? endDate, string jobTypeId)
         {
             string jobPhase = ProductionDepartment.FinishingDelivery.ToString();
             var deliverdProducts = db.ProductDeliveries.ToList();
@@ -61,7 +61,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             var jobTypeIds = latestJobs.ToList().Select(s => s.JobTypeId).Distinct();
 
             var latestJobsPrices = latestJobs.Sum(s=>s.Quantity);
-            var model = new PrintingAndFinishingTeamPerformanceVM();
+            var model = new ProductionPerformanceVM();
 
             decimal lastWeekFinishedJobs = 0;
             decimal currentWeekFinishedJobs = 0;

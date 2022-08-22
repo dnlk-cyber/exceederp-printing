@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PrintingAndFinishingTeamPerformanceVM PrintingAndFinishingTeamPerformances(DateTime? startDate, DateTime? endDate, string jobPhase, string jobTypeId)
+        public ProductionPerformanceVM PrintingAndFinishingTeamPerformances(DateTime? startDate, DateTime? endDate, string jobPhase, string jobTypeId)
         {
             var previousJobs = new List<JobStatus>();
             var latestJobs = new List<JobStatus>();
@@ -44,7 +44,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 previousJobs = previousJobs.Where(q => jobIds.Contains(q.JobId)).ToList();
             }
 
-            var model = new PrintingAndFinishingTeamPerformanceVM();
+            var model = new ProductionPerformanceVM();
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
             Image LogoFileName = null;
             string AmharicName = "";
