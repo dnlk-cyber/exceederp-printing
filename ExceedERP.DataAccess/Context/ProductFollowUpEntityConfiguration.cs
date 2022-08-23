@@ -10,6 +10,66 @@ namespace ExceedERP.DataAccess.Context
 {
    public class ProductFollowUpEntityConfiguration
     {
+        public class YearlyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<YearlyProductionPlan>
+        {
+
+            public YearlyProductionPlanEntityTypeConfiguration()
+            {
+                this.ToTable("YearlyProductionPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.YearlyProductionPlanId);
+
+            }
+        }
+        public class HalfYearlyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<HalfYearlyProductionPlan>
+        {
+
+            public HalfYearlyProductionPlanEntityTypeConfiguration()
+            {
+                this.ToTable("HalfYearlyProductionPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.HalfYearlyProductionPlanId);
+
+            }
+        }
+        public class QuarterlyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<QuarterlyProductionPlan>
+        {
+
+            public QuarterlyProductionPlanEntityTypeConfiguration()
+            {
+                this.ToTable("QuarterlyProductionPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.QuarterlyProductionPlanId);
+
+            }
+        }
+        public class MonthlyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<MonthlyProductionPlan>
+        {
+
+            public MonthlyProductionPlanEntityTypeConfiguration()
+            {
+                this.ToTable("MonthlyProductionPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.MonthlyProductionPlanId);
+
+            }
+        }
+        public class WeeklyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<WeeklyProductionPlan>
+        {
+
+            public WeeklyProductionPlanEntityTypeConfiguration()
+            {
+                this.ToTable("WeeklyProductionPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.WeeklyProductionPlanId);
+
+            }
+        }
+        public class ProductionJobTypePlanEntityTypeConfiguration : EntityTypeConfiguration<ProductionJobTypePlan>
+        {
+
+            public ProductionJobTypePlanEntityTypeConfiguration()
+            {
+                this.ToTable("ProductionJobTypePlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.ProductionJobTypePlanId);
+
+            }
+        }
         public class ProductionCustomerTypeEntityTypeConfiguration : EntityTypeConfiguration<ProductionCustomerType>
         {
             public ProductionCustomerTypeEntityTypeConfiguration()
@@ -108,7 +168,7 @@ namespace ExceedERP.DataAccess.Context
         {
             public JobStatusEntityTypeConfiguration()
             {
-                this.ToTable("JobStatusEntityTypeConfiguration", "ProductFollowUp");
+                this.ToTable("JobStatuses", "ProductFollowUp");
                 this.HasKey<int>(t => t.JobStatusId);
             }
         }

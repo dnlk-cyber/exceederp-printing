@@ -294,6 +294,30 @@
     <Compile Include="Migrations\202207090957215_ProductDeliveryChangesDeliveryDateAdded.Designer.cs">
       <DependentUpon>202207090957215_ProductDeliveryChangesDeliveryDateAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202208050847520_FleetBatteryAndTyreMerged.cs" />
+    <Compile Include="Migrations\202208050847520_FleetBatteryAndTyreMerged.Designer.cs">
+      <DependentUpon>202208050847520_FleetBatteryAndTyreMerged.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208120938262_ProductionPlanAdded.cs" />
+    <Compile Include="Migrations\202208120938262_ProductionPlanAdded.Designer.cs">
+      <DependentUpon>202208120938262_ProductionPlanAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208130839314_PlanUpdateProduction.cs" />
+    <Compile Include="Migrations\202208130839314_PlanUpdateProduction.Designer.cs">
+      <DependentUpon>202208130839314_PlanUpdateProduction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208180704287_JobTypePlanUpdate.cs" />
+    <Compile Include="Migrations\202208180704287_JobTypePlanUpdate.Designer.cs">
+      <DependentUpon>202208180704287_JobTypePlanUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208180914027_JobStatusUpdate.cs" />
+    <Compile Include="Migrations\202208180914027_JobStatusUpdate.Designer.cs">
+      <DependentUpon>202208180914027_JobStatusUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202208190758053_JobOrderAddToJobStatus.cs" />
+    <Compile Include="Migrations\202208190758053_JobOrderAddToJobStatus.Designer.cs">
+      <DependentUpon>202208190758053_JobOrderAddToJobStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -471,6 +495,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202207090957215_ProductDeliveryChangesDeliveryDateAdded.resx">
       <DependentUpon>202207090957215_ProductDeliveryChangesDeliveryDateAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208050847520_FleetBatteryAndTyreMerged.resx">
+      <DependentUpon>202208050847520_FleetBatteryAndTyreMerged.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208120938262_ProductionPlanAdded.resx">
+      <DependentUpon>202208120938262_ProductionPlanAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208130839314_PlanUpdateProduction.resx">
+      <DependentUpon>202208130839314_PlanUpdateProduction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208180704287_JobTypePlanUpdate.resx">
+      <DependentUpon>202208180704287_JobTypePlanUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208180914027_JobStatusUpdate.resx">
+      <DependentUpon>202208180914027_JobStatusUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202208190758053_JobOrderAddToJobStatus.resx">
+      <DependentUpon>202208190758053_JobOrderAddToJobStatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

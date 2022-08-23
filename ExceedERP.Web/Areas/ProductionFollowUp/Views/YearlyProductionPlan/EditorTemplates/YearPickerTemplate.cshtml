@@ -1,0 +1,6 @@
+﻿@model DateTime?
+@using Kendo.Mvc.Extensions
+
+ @(Html.Kendo().DatePickerFor(m=>m)
+        )
+    @Html.ValidationMessageFor(m => m)

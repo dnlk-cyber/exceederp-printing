@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 {
-    public class PrintingAndFinishingTeamPerformanceVM :Organization
+    public class ProductionPerformanceVM : Organization
     {
         public string From { get; set; }
         public string TotalClient { get; set; }

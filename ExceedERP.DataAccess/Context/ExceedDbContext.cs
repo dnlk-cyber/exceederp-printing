@@ -87,6 +87,7 @@ using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender;
 using Configuration = ExceedERP.Core.Domain.Common.HRM.Configuration;
 using ExceedERP.Core.Domain.HRM;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.HRM.Templates;
 using ExceedERP.Core.Domain.Inventory.ArchiveModel;
 using ExceedERP.Core.Domain.ProductionFollowUp;
@@ -1446,26 +1447,32 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP Entity Configuration
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionCustomerTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionMonthlyJobTypePlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionMonthlyPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionYearlyPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProformaEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.GraphicEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobStatusEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.SettingsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobOrderMaterialEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveValidationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.FinishedGoodsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductDeliveryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductDeliveryItemsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.PFProformaItemsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobStatusLineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.YearlyProductionPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.HalfYearlyProductionPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.QuarterlyProductionPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.MonthlyProductionPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.WeeklyProductionPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductionJobTypePlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductionCustomerTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductionMonthlyJobTypePlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductionMonthlyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductionYearlyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.JobCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProformaEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.GraphicEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.JobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.JobStatusEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.SettingsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.JobOrderMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.FinishedGoodsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductDeliveryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.ProductDeliveryItemsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.PFProformaItemsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ProductFollowUpEntityConfiguration.JobStatusLineItemEntityTypeConfiguration());
             #endregion
 
             #region Job Costing Entity Configuration
@@ -3404,6 +3411,12 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<OverallCost> OverallCosts { get; set; }
         #endregion
         #region Production Follow UP
+        public DbSet<YearlyProductionPlan> YearlyProductionPlans { get; set; }
+        public DbSet<HalfYearlyProductionPlan> HalfYearlyProductionPlans { get; set; }
+        public DbSet<QuarterlyProductionPlan> QuarterlyProductionPlans { get; set; }
+        public DbSet<MonthlyProductionPlan> MonthlyProductionPlans { get; set; }
+        public DbSet<WeeklyProductionPlan> WeeklyProductionPlans { get; set; }
+        public DbSet<ProductionJobTypePlan> ProductionJobTypePlans { get; set; }
         public DbSet<ProductionCustomerType> ProductionCustomerTypes { get; set; }
         public DbSet<Proforma> Proformas { get; set; }
         public DbSet<ProductionYearlyPlan> ProductionYearlyPlans { get; set; }

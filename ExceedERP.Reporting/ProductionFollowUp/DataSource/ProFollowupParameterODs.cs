@@ -139,29 +139,80 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<SelectListItem> GetFiscalYears()
+        public List<SelectListItem> GetYearlyProductionPlans()
         {
-            var fisYears = db.GLFiscalYears.ToList()
+            var fisYears = db.YearlyProductionPlans.ToList()
                 .Select(s => new SelectListItem
                 {
-                    Value = s.GlFiscalYearId.ToString(),
-                    Text = s.Name
+                    Value = s.YearlyProductionPlanId.ToString(),
+                    Text = s.GlFiscalYear.Name
                 }).ToList();
 
             return fisYears;
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<SelectListItem> GetPeriods(string glFiscalYearId)
+        public List<SelectListItem> GetHalfYearProductionPlans(string yearlyProductionPlanId)
         {
-            var periods = db.GLPeriods.ToList().Where(q=>q.GlFiscalYearId.ToString()== glFiscalYearId)
+            var halfYearPlans = db.HalfYearlyProductionPlans.ToList().Where(q=>q.YearlyProductionPlanId.ToString()== yearlyProductionPlanId)
                 .Select(s => new SelectListItem
                 {
-                    Value = s.GLPeriodId.ToString(),
-                    Text = s.Name
+                    Value = s.HalfYearlyProductionPlanId.ToString(),
+                    Text = s.NameAm
+                }).ToList();
+
+            return halfYearPlans;
+        }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetQuarterYearProductionPlans(string halfYearProductionPlanId)
+        {
+            var quarterYearPlans = db.QuarterlyProductionPlans.ToList().Where(q => q.HalfYearlyProductionPlanId.ToString() == halfYearProductionPlanId)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.QuarterlyProductionPlanId.ToString(),
+                    Text = s.NameAm
+                }).ToList();
+
+            return quarterYearPlans;
+        }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetMonthlyProductionPlans(string quarterYearProductionPlanId)
+        {
+            var periods = db.MonthlyProductionPlans.ToList().Where(q => q.QuarterlyProductionPlanId.ToString() == quarterYearProductionPlanId)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.MonthlyProductionPlanId.ToString(),
+                    Text = s.NameAm
                 }).ToList();
 
             return periods;
         }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetWeeklyProductionPlans(string monthlyProductionPlanId)
+        {
+            var periods = db.WeeklyProductionPlans.ToList().Where(q => q.MonthlyProductionPlanId.ToString() == monthlyProductionPlanId)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.WeeklyProductionPlanId.ToString(),
+                    Text = s.NameAm
+                }).ToList();
+
+            return periods;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetJobTypeProductionPlans(string weeklyProductionPlanId)
+        {
+            var periods = db.ProductionJobTypePlans.ToList().Where(q => q.WeeklyProductionPlanId.ToString() == weeklyProductionPlanId)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.JobTypeId.ToString(),
+                    Text = s.JobType.JobName
+                }).ToList();
+
+            return periods;
+        }
+
     }
 }

@@ -1129,6 +1129,7 @@
     <Compile Include="Domain\ProductionFollowUp\JobStatus.cs" />
     <Compile Include="Domain\ProductionFollowUp\JobType.cs" />
     <Compile Include="Domain\ProductionFollowUp\MachineType.cs" />
+    <Compile Include="Domain\ProductionFollowUp\JobProcuctionPlan.cs" />
     <Compile Include="Domain\ProductionFollowUp\PrePrinting.cs" />
     <Compile Include="Domain\ProductionFollowUp\Printing.cs" />
     <Compile Include="Domain\ProductionFollowUp\PrintingFinishedGoodReceiving.cs" />
