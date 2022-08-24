@@ -4775,7 +4775,15 @@ namespace ExceedERP.Core.Localization {
                 return ResourceManager.GetString("HR_ArchiveManagement_LetterSender", resourceCulture);
             }
         }
-        
+
+        public static string HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode
+        {
+            get
+            {
+                return ResourceManager.GetString("HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Book No.
         /// </summary>
