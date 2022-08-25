@@ -463,6 +463,8 @@ namespace ExceedERP.Web.Controllers
                 #endregion
                    #region Production FollowUp
                  new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpAdmin, "Production FollowUp Administrator", "ProductionFollowUp"),
+                 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpSetting, "Production FollowUp Setting", "ProductionFollowUp"),
+                 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpReport, "Production FollowUp Report", "ProductionFollowUp"),
                  new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser, "Production FollowUp Proforma User", "ProductionFollowUp"),
                  new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser, "Production FollowUp Job Order User", "ProductionFollowUp"),
                  new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser, "Production FollowUp Finished Good User", "ProductionFollowUp"),

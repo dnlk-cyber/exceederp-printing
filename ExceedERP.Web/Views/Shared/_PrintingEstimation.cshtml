@@ -3,9 +3,9 @@
     ViewBag.Title = "_PrintingEstimation";
 }
 
-@*@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
+@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
      || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
-{*@
+{
 
     <li class="">
         <a href="#" class="dropdown-toggle">
@@ -18,9 +18,9 @@
         <b class="arrow"></b>
         <ul class="submenu">
 
-            @*@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
+            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
                 HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
-            {*@
+            {
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
@@ -34,10 +34,10 @@
                         <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "EstimationForm", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
                     </ul>
                 </li>
-               @* }*@
-            @*@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
+                }
+            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
                    HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
-            {*@
+            {
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
@@ -52,8 +52,8 @@
 
 
             </li>
-           @* }*@
+            }
         </ul>
         </li>
 
- @* }*@
+  }
