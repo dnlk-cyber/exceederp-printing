@@ -25,6 +25,7 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Core.Domain.HRM.Payroll.Vm;
 using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Core.Domain.Finance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {

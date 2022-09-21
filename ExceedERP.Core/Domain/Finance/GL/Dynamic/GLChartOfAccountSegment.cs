@@ -25,5 +25,6 @@ namespace ExceedERP.Core.Domain.Finance.GL.Dynamic
         public bool AllowBudgeting { get; set; }
         [Display(Name = "Allow Posting")]
         public bool AllowPosting { get; set; }
+        public GlCostCenterTypes Type { get; set; }
     }
 }

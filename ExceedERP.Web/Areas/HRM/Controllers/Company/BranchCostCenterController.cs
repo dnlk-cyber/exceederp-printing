@@ -18,6 +18,8 @@ using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using static ExceedERP.Web.Areas.HRM.Controllers.Company.CompanyChartController;
+using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
@@ -43,32 +45,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             this.ViewBag.Tree = GetCHildrens(Nodes);
             var branches = db.Branch;
             ViewData["branches"] = branches;
-            //var costcenters = db.GLChartOfAccountCostCenters;
-            //ViewData["costCenter"] = costcenters;
+
+            var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.CostCenter);
+            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId);
+           
+            ViewData["costCenter"] = costcenters;
             var orgs = db.MainCompanyStructures;
             ViewData["Orgs"] = orgs;
-            ViewData["costCenter"] = db.BranchCostCenter.ToList();
         }
-        //public ActionResult GetCostCenter(int BranchId)
-        //{
-        //    GlCostCenterTypes type;
-        //    List<GLChartOfAccountCostCenter> costcenterList = new List<GLChartOfAccountCostCenter>();
-        //    var branch = db.Branch.Where(x => x.BranchId == BranchId).FirstOrDefault();
-        //    if (branch != null)
-        //    {
-        //        if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
-        //        {
-        //            type = GlCostCenterTypes.HeadOffice;
-        //        }
-        //        else
-        //        {
-        //            type = GlCostCenterTypes.Project;
-        //        }
-        //        costcenterList = db.GLChartOfAccountCostCenters.Where(x => x.Type == type && x.Enable && !x.Parent).ToList();
-        //    }
+        public ActionResult GetCostCenter(int BranchId)
+        {
+            GlCostCenterTypes type;
+            List<GLChartOfAccountSegment> costcenterList = new List<GLChartOfAccountSegment>();
+            var branch = db.Branch.Where(x => x.BranchId == BranchId).FirstOrDefault();
+            if (branch != null)
+            {
+                if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
+                {
+                    type = GlCostCenterTypes.HeadOffice;
+                }
+                else
+                {
+                    type = GlCostCenterTypes.Project;
+                }
 
-        //    return Json(costcenterList.Select(p => new { Values = p.Values, Description = p.Description }), JsonRequestBehavior.AllowGet);
-        //}
+                var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                var costCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId).AsQueryable();
+                costcenterList = costCenters.Where(x => x.Type == type && x.Enable && !x.Parent).ToList();
+            }
+
+            return Json(costcenterList.Select(p => new { Values = p.Values, Description = p.Description }), JsonRequestBehavior.AllowGet);
+        }
         private List<NodeViewModel> GetCHildrens(List<MainCompanyStructure> Nodes)
         {
             NodeViewModel root = new NodeViewModel();
@@ -77,12 +84,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 foreach (var nod in Nodes)
                 {
-                    root = new NodeViewModel
-                    {
-                        Id = nod.OrgStructureId,
-                        Title = nod.Name,
-                        ParentId = nod.Parent
-                    };
+                    root = new NodeViewModel { Id = nod.OrgStructureId, Title = nod.Name, ParentId = nod.Parent };
                     items.Add(root);
                 }
             }

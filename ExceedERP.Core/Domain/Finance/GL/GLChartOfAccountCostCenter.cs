@@ -4,11 +4,7 @@ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.Finance.GL
 {
-    public enum GlCostCenterTypes
-    {
-        HeadOffice,
-        Project
-    }
+   
     public class GLChartOfAccountCostCenter : TrackUserOperation
     {
 
