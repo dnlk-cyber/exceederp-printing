@@ -129,7 +129,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Plan
                     {
                         ModelState.AddModelError("Error", "Summation of monthly plans in quantity must equals quarterly plan!");
                     }
-                    if ((totMonthPlanBirrs + monthlyPlan.ProductionPlanBirr) > quarterPlan.ProductionPlanQuantity)
+                    if ((totMonthPlanBirrs + monthlyPlan.ProductionPlanBirr) > quarterPlan.ProductionPlanBirr)
                     {
                         ModelState.AddModelError("Error", "Summation of monthly plans in Birr must equals quarterly plan!");
                     }

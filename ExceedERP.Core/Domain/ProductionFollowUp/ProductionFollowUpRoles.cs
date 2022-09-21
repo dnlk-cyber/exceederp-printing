@@ -9,6 +9,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
     public class ProductionFollowUpRoles
     {
         public const string ProductionFollowUpAdmin = "ProductionFollowUp_Admin";
+        public const string ProductionFollowUpSetting = "ProductionFollowUp_Setting";
+        public const string ProductionFollowUpReport = "ProductionFollowUp_Report";
         public const string ProductionFollowUpJobOrderUser = "ProductionFollowUp_JobOrder_User";
         public const string ProductionFollowUpProformaUser = "ProductionFollowUp_Proforma_User";
         public const string ProductionFollowUpDeliveryUser = "ProductionFollowUp_Delivery_User";

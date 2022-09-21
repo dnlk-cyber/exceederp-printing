@@ -33,7 +33,10 @@ namespace ExceedERP.Core.Domain.Global
         HealthAndInsurance=13,
         APTS=14,
         SelfCare=15,
-        Administration=16
+        Administration=16,
+        PrintingEstimation = 17,
+        PintingProductionFollowup = 17,
+        JobCosting=18
         
     }
     public class GlobalRuleValue
