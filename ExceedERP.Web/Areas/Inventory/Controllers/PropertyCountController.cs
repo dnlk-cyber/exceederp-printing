@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
             var fiscalYears = db.GLFiscalYears;
-            var periods = db.GLPeriods;
+            var periods = db.InventoryPeriods;
 
             ViewData["Years"] = fiscalYears;
             ViewData["periods"] = periods;
@@ -196,7 +196,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         public JsonResult RefreshStoreItems(int id)
         {
             var countRecord = db.PropertyCounts.Find(id);
-            var storeitems = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode).ToList();
+            var storeitems = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode)
+                //.Where(x=>x.ItemCode== "13102-000-005") //test
+                .ToList();
             var countItems = db.PropertyCountItems.Where(i => i.PropertyCountId == id).ToList();
 
             string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
@@ -204,53 +206,36 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             foreach (var item in storeitems)
             {
                 decimal balanceBeforeCount = item.Balance;
-                // important change
+                // temporary change
                 #region get balance with respect to property count date instead of CURRENT BALANCE
                 var binCardLines =
-                   db.BinCardLines.Where(b => b.Date <= countRecord.CountDate &&
-                   b.StoreItemAssignmentID == item.StoreItemAssignmentID &&
-                   b.Reference != countRecord.PropertyCountId.ToString())
-                   .ToList();
+                   db.BinCardLines.Where(b => b.Date <= countRecord.CountDate &&//added =
+                   b.StoreItemAssignmentID == item.StoreItemAssignmentID&&
+                   //b.ReferenceDoc != null &&
+                   !b.ReferenceDoc.StartsWith("Count on date") // exclude count
+                   ).AsQueryable();
                 if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
                 {
-                    binCardLines = binCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).ToList();
+                    var sorted = binCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).Take(1).ToList();
+                    if (sorted.Any())
+                    {
+                        var targetBinTransaction = sorted[0];
+                        balanceBeforeCount = targetBinTransaction.BalanceQTY;
+                    }
                 }
                 else if (sortOrder == BincardSortOrderAttributes.SequencialId.ToString())
                 {
-                    binCardLines = binCardLines.OrderByDescending(d => d.BinCardLineID).ToList();
-                }
-                if (binCardLines.Any())
-                {
-                    var targetBinTransaction = binCardLines[0];
-                    balanceBeforeCount = targetBinTransaction.BalanceQTY;
-                }
-                //else
-                //{
-                //    // no bincard record found. 
-                //    // go back iteratively and get the most recent bincard (includig count ) 
-                //    // exclude self referencing this very line - !important
-                //    var oldBinCardLines =
-                //          db.BinCardLines.Where(b => b.Date < countRecord.CountDate && // b.Date < countDate  <=> implies we are excluding the target bincard
-                //          b.StoreItemAssignmentID == item.StoreItemAssignmentID
-                //          ).ToList();
+                    var sorted = binCardLines.OrderByDescending(d => d.BinCardLineID).Take(1).ToList();
+                    if (sorted.Any())
+                    {
+                        var targetBinTransaction = sorted[0];
+                        balanceBeforeCount = targetBinTransaction.BalanceQTY;
+                    }
 
-                //    #region sort bincard lines 
-                //    if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
-                //    {
-                //        oldBinCardLines = oldBinCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).ToList();
-                //    }
-                //    else if (sortOrder == BincardSortOrderAttributes.SequencialId.ToString())
-                //    {
-                //        oldBinCardLines = oldBinCardLines.OrderByDescending(d => d.BinCardLineID).ToList();
-                //    }
-                //    if (oldBinCardLines.Any())
-                //    {
-                //        var recentBin = oldBinCardLines[0];
-                //        balanceBeforeCount = recentBin.BalanceQTY;
-                //    }
-                //    #endregion
-                //}
+                }
+                
                 #endregion
+
 
                 var countItem = countItems.FirstOrDefault(x => x.ItemCode == item.ItemCode);
                 if (countItem == null)
@@ -311,20 +296,22 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
 
         }
+
         public JsonResult RecalculateAllStoreItems(string id)
         {
             var countRecord = db.PropertyCounts.Find(int.Parse(id));
             var storeitems = db.StoreItemAssignments
-               // .Where(x=>x.ItemCode== "13202-020-255")
+                //.Where(x=>x.ItemCode== "11411-90-20-0001")
                 .Where(x => x.StoreCode == countRecord.StoreCode)
                 .ToList();
-          
+
             foreach (var item in storeitems)
-            {             
-                
-                var binCardLines =db.BinCardLines.Where(b => b.Date <= countRecord.CountDate &&
-                   b.StoreItemAssignmentID == item.StoreItemAssignmentID &&
-                   b.Reference != countRecord.PropertyCountId.ToString())
+            {
+
+                var binCardLines = db.BinCardLines
+                    .Where(b => b.Date <= countRecord.CountDate &&
+                    b.StoreItemAssignmentID == item.StoreItemAssignmentID)//&&
+                    //b.Reference != countRecord.PropertyCountId.ToString())
                    .AsQueryable();
 
                 if (binCardLines.Any())
@@ -334,9 +321,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     if (previousCountBinCard.Any())
                     {
                         DateTime recentCountDate = previousCountBinCard.Where(x => x.ReferenceDoc.Contains("Count")).Max(x => x.Date);
-                        int previousCountBinCardId = previousCountBinCard.Where(x => x.Date == recentCountDate).Select(x=>x.BinCardLineID).FirstOrDefault();
+                        int previousCountBinCardId = previousCountBinCard.Where(x => x.Date == recentCountDate).Select(x => x.BinCardLineID).FirstOrDefault();
 
-                        InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, previousCountBinCardId,true);
+                        InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, previousCountBinCardId, true);
 
                         #region  log
                         UserHelper.OperationLog(Request.UserHostAddress, "Bin Card recalculation", "Success", User.Identity.Name, $"Bin Card recalculation done starting for item" +
@@ -349,7 +336,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                         var fiscalyear = db.GLFiscalYears.Find(countRecord.GlFiscalYearId);
                         var inyearBincards = binCardLines.Where(x => x.Date >= fiscalyear.DateFrom).AsQueryable();
 
-                        if(inyearBincards.Any())
+                        if (inyearBincards.Any())
                         {
                             DateTime firstTransactionDate = inyearBincards.Min(x => x.Date);
                             int fisrstBincardId = inyearBincards.Where(x => x.Date == firstTransactionDate).Select(x => x.BinCardLineID).FirstOrDefault();
@@ -366,8 +353,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
                     }
                 }
-              
-               
+
+
             }
 
             var formattedData1 = new
@@ -378,13 +365,45 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
 
         }
-        private void GetItemsInStore(PropertyCount propertyCount)
+        private void GetItemsInStore(PropertyCount countRecord)
         {
             List<PropertyCountItem> list = new List<PropertyCountItem>();
-            var itmeList = db.StoreItemAssignments.Where(x => x.StoreCode == propertyCount.StoreCode).ToList();
+            var itmeList = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode).ToList();
+
+            string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
             foreach (var item in itmeList)
             {
                 var inventoryitem = db.InventoryItems.Find(item.ItemCode);
+                //decimal balanceBeforeCount = item.Balance;
+                // temporary change
+                //#region get balance with respect to property count date instead of CURRENT BALANCE
+                //var binCardLines =
+                //   db.BinCardLines.Where(b => b.Date <= countRecord.CountDate && //added =
+                //   b.StoreItemAssignmentID == item.StoreItemAssignmentID&&
+                //   //b.ReferenceDoc != null &&
+                //   !b.ReferenceDoc.StartsWith("Count on date") // exclude count
+                //   ).AsQueryable();
+                //if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
+                //{
+                //    var sorted = binCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).Take(1).ToList();
+                //    if (sorted.Any())
+                //    {
+                //        var targetBinTransaction = sorted[0];
+                //        balanceBeforeCount = targetBinTransaction.BalanceQTY;
+                //    }
+                //}
+                //else if (sortOrder == BincardSortOrderAttributes.SequencialId.ToString())
+                //{
+                //    var sorted = binCardLines.OrderByDescending(d => d.BinCardLineID).Take(1).ToList();
+                //    if (sorted.Any())
+                //    {
+                //        var targetBinTransaction = sorted[0];
+                //        balanceBeforeCount = targetBinTransaction.BalanceQTY;
+                //    }
+
+                //}
+
+                //#endregion
                 if (inventoryitem != null)
                 {
                     var propertyCountItem = new PropertyCountItem
@@ -393,11 +412,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                         ItemCode = item.ItemCode,
                         ItemCodeReadOnly = item.ItemCode.Trim(),
                         ItemName =inventoryitem.Name,
-                        PropertyCountId = propertyCount.PropertyCountId,
+                        PropertyCountId = countRecord.PropertyCountId,
                         Count = 0,
                         PreviousBalance = item.Balance,
                         Location=item.ItemLocation,
-                        Price = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(item.ItemCode, propertyCount.StoreCode),
+                        Price = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(item.ItemCode, countRecord.StoreCode),
                         Status = false,
                         CreatedBy = "Loading Store items"
                     };

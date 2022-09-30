@@ -17,18 +17,17 @@ using ExceedERP.Web.Areas.InfoDesk.Models;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
+    [Authorize]
     public class SelfCareOpenTicketsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-        ApplicationDbContext udb = new ApplicationDbContext();
-             
-
+        ApplicationDbContext udb = new ApplicationDbContext();             
         public ActionResult Index()
         {
             ViewData["branchs"] = db.Branch.ToList();
             ViewData["AssignTo"] = db.Person_Employee.ToList();
             ViewData["Materials"] = db.MaterialItems.ToList();
-
+            ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             var sysusers =
               udb.Users.Select(o =>
                       new
@@ -44,8 +43,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             ViewData["Employees"] = db.Person_Employee.ToList();
 
             return View();
-        }
-      
+        }      
         public double GetAge(DateTime? CreatedDate, DateTime? ClosedDate, InfoDeskFinalizeType status)
         {
             double age = 0;
@@ -58,8 +56,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 age = DateTime.Now.Subtract(CreatedDate.Value).Days;
             }
             return age;
-        }
-        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
+        }      
         public ActionResult SelfCareOpenTickets_Read([DataSourceRequest]DataSourceRequest request)
         {
             TimeSpan age = new TimeSpan();
@@ -72,7 +69,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             if (user != null)
             {
-                var empId = int.Parse(user.EmployeeId);
+                var empId = user.EmployeeId;
                 //  var assinedToMe = db.AssignTicket_HelpDesks.Where(x => x.AssinedTo == empId).ToList()?.Select(x => x.CustomerTicketId);
 
                 customertickets = db.CustomerTicket_HelpDesks.Where(x => x.EmployeeId == empId).ToList();
@@ -87,7 +84,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
                 Description = customerTicket.Description,
                 Priority = customerTicket.Priority,
-                TicketGroup = customerTicket.TicketGroup,
+                SupportGroupId = customerTicket.SupportGroupId,
                 DueDate = customerTicket.DueDate,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
@@ -106,9 +103,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             });
 
             return Json(result);
-        }
- 
-        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
+        } 
+    
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SelfCareOpenTickets_Create([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
@@ -127,7 +123,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 {
                     Description = customerTicket_HelpDesk.Description,
                     Priority = customerTicket_HelpDesk.Priority,
-                    TicketGroup = customerTicket_HelpDesk.TicketGroup,
+                    SupportGroupId = customerTicket_HelpDesk.SupportGroupId,
                     ClosedDate = null,
                     SpecificTicketTypeId = customerTicket_HelpDesk.SpecificTicketTypeId,
                     DueDate = customerTicket_HelpDesk.DueDate,
@@ -148,7 +144,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request));
         }
-        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
+      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SelfCareOpenTickets_Update([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
@@ -159,7 +155,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
                 ticket.Description = customerTicket_HelpDesk.Description;
                 ticket.Priority = customerTicket_HelpDesk.Priority;
-                ticket.TicketGroup = customerTicket_HelpDesk.TicketGroup;
+                ticket.SupportGroupId = customerTicket_HelpDesk.SupportGroupId;
                 ticket.DueDate = customerTicket_HelpDesk.DueDate;
                 ticket.CreatedBy = customerTicket_HelpDesk.CreatedBy;
                 ticket.DateCreated = customerTicket_HelpDesk.DateCreated;
@@ -196,7 +192,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SelfCareOpenTickets_Destroy([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket)
         {

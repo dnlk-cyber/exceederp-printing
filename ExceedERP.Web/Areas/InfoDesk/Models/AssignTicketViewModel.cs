@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Models
         [DisplayName("Customer")]
         public int CustomerId { get; set; }
         [NotMapped]
-        public FinalizeType Status { get; set; }
+        public InfoDeskFinalizeType Status { get; set; }
         [NotMapped]
         public string Priority { get; set; }
         [NotMapped]

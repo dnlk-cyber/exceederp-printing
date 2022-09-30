@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -28,37 +28,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult Index()
         {
             PopulateViewData();
-            GenerateSettingValue();
             return View();
         }
         private void PopulateViewData()
         {
             var types = db.Lookups.Where(l => l.LookupType == LookUpTypes.EVALUATION_TYPE);
             ViewData["EvaluationTypes"] = types;
-        }
-        public void GenerateSettingValue()
-        {
-            var evaluationTypes = db.EvaluationCriteriaActionTypes.ToList();
-            if (!evaluationTypes.Any())
-            {
-                var eval1 = new EvaluationCriteriaActionType()
-                {
-                    PerformanceCriteriaActionType = PerformanceCriteriaActionType.Open,
-                    IsActive = false
-                };
-
-                db.EvaluationCriteriaActionTypes.Add(eval1);
-
-                var eval2 = new EvaluationCriteriaActionType()
-                {
-                    PerformanceCriteriaActionType = PerformanceCriteriaActionType.Sum_Of_Actions,
-                    IsActive = true
-                };
-
-                db.EvaluationCriteriaActionTypes.Add(eval2);
-
-                db.SaveChanges();
-            }
         }
         private bool CheckPerformanceValidation(int id)
         {

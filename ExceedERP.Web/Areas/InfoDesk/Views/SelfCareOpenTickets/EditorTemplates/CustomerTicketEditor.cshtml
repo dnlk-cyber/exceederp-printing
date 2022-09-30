@@ -77,20 +77,20 @@
 
             <div class="form-group">
                 <div class="k-label">
-                    @Html.LabelFor(model => model.TicketGroup)
+                    @Html.LabelFor(model => model.SupportGroupId)
                 </div>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.TicketGroup)
+                    @(Html.Kendo().DropDownListFor(model => model.SupportGroupId)
                            .AutoBind(false)
                            .OptionLabel("Select")
                            .DataTextField("Name")
-                                   .DataValueField("Name")
+                                   .DataValueField("SupportGroup_HelpDeskId")
                            .DataSource(dataSource =>
                            {
-                               dataSource.Read(read => read.Action("GetGroup", "InfoDeskDataProvider"));
+                               dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider"));
 
                            }).ValuePrimitive(true))
-                    @Html.ValidationMessageFor(model => model.TicketGroup)
+                    @Html.ValidationMessageFor(model => model.SupportGroupId)
                 </div>
             </div>
         </div>

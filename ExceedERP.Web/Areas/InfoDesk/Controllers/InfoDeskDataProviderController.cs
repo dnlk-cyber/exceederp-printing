@@ -166,7 +166,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public JsonResult StatusAwaitingDDBind()
         {
 
-            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == FinalizeType.WAITING).ToList();
+            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == InfoDeskFinalizeType.WAITING).ToList();
             return Json(StatusAwaiting, JsonRequestBehavior.AllowGet);
 
         }     
@@ -192,6 +192,15 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var Groups = db.SupportGroup_HelpDesks.ToList();
 
             return Json(Groups, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetSupportGroup()
+        {
+            var groups = db.SupportGroup_HelpDesks.ToList();
+            return Json(groups.Select(p => new
+            {
+                Name = p.Name,
+                SupportGroup_HelpDeskId = p.SupportGroup_HelpDeskId
+            }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetTicketDefintion()
         {
@@ -265,7 +274,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             List<int> empIds = new List<int>();
             if(customer != null)
             {
-                var group = db.SupportGroup_HelpDesks.FirstOrDefault(x =>x.Name == customer.TicketGroup);
+                var group = db.SupportGroup_HelpDesks.FirstOrDefault(x =>x.SupportGroup_HelpDeskId == customer.SupportGroupId);
                 if(group != null)
                 {
                     var subGroups = db.SupportGroupDetail_HelpDesks.Where(x=>x.SupportGroupId == group.SupportGroup_HelpDeskId).ToList().Select(x=>x.EmployeeId);

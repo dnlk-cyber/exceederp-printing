@@ -12,6 +12,7 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
+    [Authorize]
     public class MaterialItemsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -13,7 +13,7 @@ using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
-
+    [Authorize]
     public class PriorityTypeController : Controller
     {
 
@@ -31,7 +31,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+     
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PriorityTypes_Create([DataSourceRequest]DataSourceRequest request, PriorityType_HelpDesk PriorityType)
         {
@@ -61,7 +61,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { PriorityType }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PriorityTypes_Update([DataSourceRequest]DataSourceRequest request, PriorityType_HelpDesk PriorityType)
         {
@@ -84,7 +84,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { PriorityType }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PriorityTypes_Destroy([DataSourceRequest]DataSourceRequest request, PriorityType_HelpDesk PriorityType)
         {

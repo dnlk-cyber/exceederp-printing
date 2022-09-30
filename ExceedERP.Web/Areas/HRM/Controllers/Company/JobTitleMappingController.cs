@@ -46,10 +46,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var branchCostCenter = db.BranchCostCenter.ToList();
             foreach (var b in branchCostCenter)
             {
-                var oneWorkUnit = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
-                if (oneWorkUnit != null)
+                var w = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
+                if (w != null)
                 {
-                    workUnits.Add(oneWorkUnit);
+                    var exisit = workUnits.Where(x => x.OrgStructureId == w.OrgStructureId).FirstOrDefault();
+                    if (exisit == null) workUnits.Add(w);
                 }
 
             }
@@ -64,11 +65,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var branchCostCenter = db.BranchCostCenter.ToList();
             foreach (var b in branchCostCenter)
             {
-                var oneWorkUnit = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == b.OrgStructureId);
-                if (oneWorkUnit != null)
+                var w = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
+                if (w != null)
                 {
-                    workUnits.Add(oneWorkUnit);
+                    var exisit = workUnits.Where(x => x.OrgStructureId == w.OrgStructureId).FirstOrDefault();
+                    if (exisit == null) workUnits.Add(w);
                 }
+
             }
 
             return Json(workUnits.Select(p => new

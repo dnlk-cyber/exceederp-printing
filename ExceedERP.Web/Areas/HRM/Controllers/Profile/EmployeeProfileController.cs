@@ -589,6 +589,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     if (placement != null)
                     {
                         p.BranchId = placement.BranchId;
+                        p.OrgBranchName = placement.BranchId.ToString();
 
                         db.Entry(p).State = EntityState.Modified;
                         db.SaveChanges();
@@ -600,6 +601,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     if (placement != null)
                     {
                         p.BranchId = placement.BranchId;
+                        p.OrgBranchName = placement.OrgBranchName.ToString();
 
                         db.Entry(p).State = EntityState.Modified;
                         db.SaveChanges();
@@ -857,28 +859,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             int maxAge;
             List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-            var employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString())).Where(x => x.IsActive && x.Remark != "R-Active");
+            var employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString())).Where(x => x.IsActive && !x.IsReHired && x.Remark != "R-Active");
             db = new ExceedDbContext();
             bool isActive = true;
             var terminations = db.Terminations;
             var setting = db.Configurations.FirstOrDefault(x => x.Reference == "PENSION" && x.Attribute == "RETIREMENT_AGE");
             if (setting != null)
             {
-
                 maxAge = Convert.ToInt32(setting.CurrentValue);
                 foreach (var e in employees)
                 {
-                    double age = DateTime.Now.Date.Subtract(new DateTime(e.DateOfBirth.Year, e.DateOfBirth.Month,
-                                     e.DateOfBirth.Day)).TotalDays / 365.25;
+                    double age = DateTime.Now.Date.Subtract(new DateTime(e.DateOfBirth.Year, e.DateOfBirth.Month, e.DateOfBirth.Day)).TotalDays / 365.25;
                     if (terminations.Any())
                     {
                         var checkTermintedEmp = terminations.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
 
                         if (checkTermintedEmp == null)
                         {
-
                             isActive = true;
-
                         }
                         else
                         {
@@ -934,51 +932,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             db.SaveChanges();
                         }
                     }
-
-
                     else if (e.IsActive == false && e.Remark == "Retirement")
                     {
-
+                        db = new ExceedDbContext();
+                        var entity = new Person_Employee
                         {
-                            db = new ExceedDbContext();
-                            var entity = new Person_Employee
-                            {
-                                EmployeeId = e.EmployeeId,
-                                EmployeeCode = e.EmployeeCode,
-                                MothersFullName = e.MothersFullName,
-                                BirthPlace = e.BirthPlace,
-                                Nation = e.Nation,
-                                Region = e.Region,
-                                Religion = e.Religion,
-                                MartialStatus = e.MartialStatus,
-                                Status = e.Status,
-                                HiredDate = e.HiredDate,
-                                FirstName = e.FirstName,
-                                MiddleName = e.MiddleName,
-                                LastName = e.LastName,
-                                Nationality = e.Nationality,
-                                DateOfBirth = e.DateOfBirth,
-                                Title = e.Title,
-                                Gender = e.Gender,
-                                CategoryID = e.CategoryID,
-                                IsActive = isActive,
-                                Remark = "Retirement",
-                                DateCreated = e.DateCreated,
-                                LastModified = DateTime.Now,
-                                CreatedBy = e.CreatedBy,
-                                ModifiedBy = User.Identity.Name,
-                                FirstNameEnglish = e.FirstNameEnglish,
-                                MiddleNameEnglish = e.MiddleNameEnglish,
-                                LastNameEnglish = e.LastNameEnglish,
-                                DateOfBirthAm = e.DateOfBirthAm,
-                                HiredDateAmharic = e.HiredDateAmharic,
-                                OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                            };
-                            db = new ExceedDbContext();
-                            db.Person_Employee.Attach(entity);
-                            db.Entry(entity).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
+                            EmployeeId = e.EmployeeId,
+                            EmployeeCode = e.EmployeeCode,
+                            MothersFullName = e.MothersFullName,
+                            BirthPlace = e.BirthPlace,
+                            Nation = e.Nation,
+                            Region = e.Region,
+                            Religion = e.Religion,
+                            MartialStatus = e.MartialStatus,
+                            Status = e.Status,
+                            HiredDate = e.HiredDate,
+                            FirstName = e.FirstName,
+                            MiddleName = e.MiddleName,
+                            LastName = e.LastName,
+                            Nationality = e.Nationality,
+                            DateOfBirth = e.DateOfBirth,
+                            Title = e.Title,
+                            Gender = e.Gender,
+                            CategoryID = e.CategoryID,
+                            IsActive = isActive,
+                            Remark = "Retirement",
+                            DateCreated = e.DateCreated,
+                            LastModified = DateTime.Now,
+                            CreatedBy = e.CreatedBy,
+                            ModifiedBy = User.Identity.Name,
+                            FirstNameEnglish = e.FirstNameEnglish,
+                            MiddleNameEnglish = e.MiddleNameEnglish,
+                            LastNameEnglish = e.LastNameEnglish,
+                            DateOfBirthAm = e.DateOfBirthAm,
+                            HiredDateAmharic = e.HiredDateAmharic,
+                            OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                        };
+                        db = new ExceedDbContext();
+                        db.Person_Employee.Attach(entity);
+                        db.Entry(entity).State = EntityState.Modified;
+                        db.SaveChanges();
                     }
                     else
                     {
@@ -1258,7 +1251,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            var person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.OrgBranchName.ToString()) && x.IsActive && x.IsPlaced).ToList();
+            var person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced).ToList();
 
 
             DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
@@ -1313,7 +1306,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             foreach (var placement in placments)
             {
-                var employee =   db.Person_Employee.FirstOrDefault(p => p.EmployeeId == placement.EmployeeId);
+                var employee = db.Person_Employee.FirstOrDefault(p => p.EmployeeId == placement.EmployeeId);
                 if (employee != null)
                 {
                     employee.Status = placement.EmployementType;
@@ -1782,165 +1775,88 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 }
             }
 
+            int age = DateTime.Now.Year - person_Employee.DateOfBirth.Year;
+
+            if (person_Employee.HiredDate < person_Employee.DateOfBirth)
+            {
+                ModelState.AddModelError("", "Date of birth should be less than hire date.");
+            }
+            if (age < 18)
+            {
+                ModelState.AddModelError("", "The Employee age should be 18 or more.");
+            }
+            if (person_Employee.HiredDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Hire date should be less or equal to the current date!!");
+                return Json(new[] { person_Employee }.ToDataSourceResult(request, ModelState), JsonRequestBehavior.DenyGet);
+            }
+
+            var checkCode = db.Person_Employee.FirstOrDefault(x => x.EmployeeId != person_Employee.EmployeeId && x.EmployeeCode == person_Employee.EmployeeCode);
+            if (checkCode != null)
+            {
+                ModelState.AddModelError("", "This employee code is already taken by another employee");
+            }
+
             if (ModelState.IsValid)
             {
-                int age = DateTime.Now.Year - person_Employee.DateOfBirth.Year;
-                var checkExistance =
-                    db.Person_Employee.Where(x => x.EmployeeCode == person_Employee.EmployeeCode).ToList();
-
-                if (checkExistance.Any())
+                var emp = db.Person_Employee.Find(person_Employee.EmployeeId);
+                if (emp != null)
                 {
-                    var check = checkExistance.Where(x => x.EmployeeId == person_Employee.EmployeeId).FirstOrDefault();
-                    if (check == null)
-                    {
+                    emp.EmployeeCode = person_Employee.EmployeeCode;
+                    emp.MothersFullName = person_Employee.MothersFullName;
+                    emp.BirthPlace = person_Employee.BirthPlace;
+                    emp.Nation = person_Employee.Nation;
+                    emp.Region = person_Employee.Region;
+                    emp.Religion = person_Employee.Religion;
+                    emp.MartialStatus = person_Employee.MartialStatus;
+                    emp.Status = person_Employee.Status;
+                    emp.HiredDate = person_Employee.HiredDate;
+                    emp.FirstName = person_Employee.FirstName;//FirstName,
+                    emp.MiddleName = person_Employee.MiddleName; //MiddleName ,
+                    emp.LastName = person_Employee.LastName;//LastName
+                    emp.Nationality = person_Employee.Nationality;
+                    emp.DateOfBirth = person_Employee.DateOfBirth;
+                    emp.Title = person_Employee.Title;
+                    emp.Gender = person_Employee.Gender;
+                    emp.CategoryID = person_Employee.CategoryID;
+                    emp.IsActive = person_Employee.IsActive;
+                    emp.Remark = person_Employee.Remark;
+                    emp.LastModified = DateTime.Now;
+                    emp.ModifiedBy = User.Identity.Name;
+                    emp.FirstNameEnglish = person_Employee.FirstNameEnglish;
+                    emp.MiddleNameEnglish = person_Employee.MiddleNameEnglish;
+                    emp.LastNameEnglish = person_Employee.LastNameEnglish;
+                    emp.DateOfBirthAm = person_Employee.DateOfBirthAm;
+                    emp.OrgBranchName = person_Employee.OrgBranchName;
+                    emp.HiredDateAmharic = person_Employee.HiredDateAmharic;
+                    emp.PhoneNo = person_Employee.PhoneNo;
+                    emp.City = person_Employee.City;
+                    emp.SubCity = person_Employee.SubCity;
+                    emp.Wereda = person_Employee.Wereda;
+                    emp.EmployeeTypeId = person_Employee.EmployeeTypeId;
 
+                    db.Entry(emp).State = EntityState.Modified;
+                    db.SaveChanges();
 
-                        // RedirectToAction("Index");
-                        ModelState.AddModelError("", "This Employee Id is already assigned for other employee!!");
-                    }
-                    else if (person_Employee.HiredDate < person_Employee.DateOfBirth)
+                    var place = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
+                    if (place != null)
                     {
-                        ModelState.AddModelError("", "Date of birth should be less than hire date.");
-                    }
-                    else if (age < 18)
-                    {
-                        ModelState.AddModelError("", "The Employee age should be 18 or more.");
-                    }
-                    else if (person_Employee.HiredDate.Date > DateTime.Now.Date)
-                    {
+                        place.EmployementType = emp.Status;
 
-                        ModelState.AddModelError("", "Hire date should be less or equal to the current date!!");
-                        return Json(new[] { person_Employee }.ToDataSourceResult(request, ModelState), JsonRequestBehavior.DenyGet);
-                    }
-                    else
-                    {
-                        if (ModelState.IsValid)
-                        {
-
-                            var entity = new Person_Employee
-                            {
-                                EmployeeId = person_Employee.EmployeeId,
-                                EmployeeCode = person_Employee.EmployeeCode,
-                                MothersFullName = person_Employee.MothersFullName,
-                                BirthPlace = person_Employee.BirthPlace,
-                                Nation = person_Employee.Nation,
-                                Region = person_Employee.Region,
-                                Religion = person_Employee.Religion,
-                                MartialStatus = person_Employee.MartialStatus,
-                                Status = person_Employee.Status,
-                                HiredDate = person_Employee.HiredDate,
-                                FirstName = person_Employee.FirstName,//FirstName,
-                                MiddleName = person_Employee.MiddleName, //MiddleName ,
-                                LastName = person_Employee.LastName,//LastName
-                                Nationality = person_Employee.Nationality,
-                                DateOfBirth = person_Employee.DateOfBirth,
-                                Title = person_Employee.Title,
-                                Gender = person_Employee.Gender,
-                                CategoryID = person_Employee.CategoryID,
-                                IsActive = person_Employee.IsActive,
-                                Remark = person_Employee.Remark,
-                                DateCreated = person_Employee.DateCreated,
-                                LastModified = DateTime.Now,
-                                //DateCreatedAM = person_Employee.DateCreatedAM,
-                                //DateLastModifiedAM = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year),
-                                CreatedBy = person_Employee.CreatedBy,
-                                ModifiedBy = User.Identity.Name,
-                                FirstNameEnglish = person_Employee.FirstNameEnglish,
-                                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
-                                LastNameEnglish = person_Employee.LastNameEnglish,
-                                DateOfBirthAm = person_Employee.DateOfBirthAm,
-                                OrgBranchName = person_Employee.OrgBranchName,
-                                HiredDateAmharic = person_Employee.HiredDateAmharic,
-                                PhoneNo = person_Employee.PhoneNo,
-                                City = person_Employee.City,
-                                SubCity = person_Employee.SubCity,
-                                Wereda = person_Employee.Wereda,
-                                EmployeeTypeId = person_Employee.EmployeeTypeId,
-                                IsPlaced = person_Employee.IsPlaced
-                            };
-                            db = new ExceedDbContext();
-                            db.Person_Employee.Attach(entity);
-                            db.Entry(entity).State = EntityState.Modified;
-                            db.SaveChanges();
-
-                            #region operation log
-                            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                            if (person != null)
-                            {
-                                UserHelper.OperationLog(Request.UserHostAddress, "Employee Profile", "Success", User.Identity.Name, " Profile Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
-
-                            }
-                            #endregion
-
-                        }
-                    }
-                }
-                else
-                {
-                    if (person_Employee.HiredDate < person_Employee.DateOfBirth)
-                    {
-                        ModelState.AddModelError("", "Date of birth should be less than hire date.");
-                    }
-                    else
-                    {
-                        var entity = new Person_Employee
-                        {
-                            EmployeeId = person_Employee.EmployeeId,
-                            EmployeeCode = person_Employee.EmployeeCode,
-                            MothersFullName = person_Employee.MothersFullName,
-                            BirthPlace = person_Employee.BirthPlace,
-                            Nation = person_Employee.Nation,
-                            Region = person_Employee.Region,
-                            Religion = person_Employee.Religion,
-                            MartialStatus = person_Employee.MartialStatus,
-                            Status = person_Employee.Status,
-                            HiredDate = person_Employee.HiredDate,
-                            FirstName = person_Employee.FirstName,
-                            MiddleName = person_Employee.MiddleName,
-                            LastName = person_Employee.LastName,
-                            Nationality = person_Employee.Nationality,
-                            DateOfBirth = person_Employee.DateOfBirth,
-                            Title = person_Employee.Title,
-                            Gender = person_Employee.Gender,
-                            CategoryID = person_Employee.CategoryID,
-                            IsActive = person_Employee.IsActive,
-                            Remark = person_Employee.Remark,
-                            DateCreated = person_Employee.DateCreated,
-                            LastModified = DateTime.Now,
-                            CreatedBy = person_Employee.CreatedBy,
-                            ModifiedBy = User.Identity.Name,
-                            //DateCreatedAM = person_Employee.DateCreatedAM,
-                            //DateLastModifiedAM = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year),
-                            FirstNameEnglish = person_Employee.FirstNameEnglish,
-                            MiddleNameEnglish = person_Employee.MiddleNameEnglish,
-                            LastNameEnglish = person_Employee.LastNameEnglish,
-                            DateOfBirthAm = person_Employee.DateOfBirthAm,
-                            OrgBranchName = person_Employee.OrgBranchName,
-                            HiredDateAmharic = person_Employee.HiredDateAmharic,
-                            PhoneNo = person_Employee.PhoneNo,
-                            City = person_Employee.City,
-                            SubCity = person_Employee.SubCity,
-                            Wereda = person_Employee.Wereda,
-                            EmployeeTypeId = person_Employee.EmployeeTypeId,
-                            IsPlaced = person_Employee.IsPlaced
-                        };
-                        db = new ExceedDbContext();
-                        db.Person_Employee.Attach(entity);
-                        db.Entry(entity).State = EntityState.Modified;
+                        db.Entry(place).State = EntityState.Modified;
                         db.SaveChanges();
-
-                        #region operation log
-                        var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                        if (person != null)
-                        {
-
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Profile", "Success", User.Identity.Name, "Profile Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
-
-                        }
-                        #endregion
                     }
-
                 }
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
+                if (person != null)
+                {
+                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Profile", "Success", User.Identity.Name, " Profile Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
+                }
+                #endregion
+
             }
 
 
@@ -1961,53 +1877,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 }
                 else
                 {
-                    var entity = new Person_Employee
+
+                    var employee = db.Person_Employee.Find(person_Employee.EmployeeId);
+                    if (employee != null)
                     {
-                        EmployeeId = person_Employee.EmployeeId,
-                        EmployeeCode = person_Employee.EmployeeCode,
-                        MothersFullName = person_Employee.MothersFullName,
-                        BirthPlace = person_Employee.BirthPlace,
-                        Nation = person_Employee.Nation,
-                        Region = person_Employee.Region,
-                        Religion = person_Employee.Religion,
-                        MartialStatus = person_Employee.MartialStatus,
-                        Status = person_Employee.Status,
-                        HiredDate = person_Employee.HiredDate,
-                        FirstName = person_Employee.FirstName,
-                        MiddleName = person_Employee.MiddleName,
-                        LastName = person_Employee.LastName,
-                        Nationality = person_Employee.Nationality,
-                        DateOfBirth = person_Employee.DateOfBirth,
-                        Title = person_Employee.Title,
-                        Gender = person_Employee.Gender,
-                        CategoryID = person_Employee.CategoryID,
-                        IsActive = person_Employee.IsActive,
-                        Remark = person_Employee.Remark,
-                        DateCreated = person_Employee.DateCreated,
-                        LastModified = person_Employee.LastModified,
-                        CreatedBy = person_Employee.CreatedBy,
-                        ModifiedBy = person_Employee.ModifiedBy,
-                        //DateCreatedAM = person_Employee.DateCreatedAM,
-                        //DateLastModifiedAM = person_Employee.DateLastModifiedAM,
-                        FirstNameEnglish = person_Employee.FirstNameEnglish,
-                        MiddleNameEnglish = person_Employee.MiddleNameEnglish,
-                        LastNameEnglish = person_Employee.LastNameEnglish,
-                        DateOfBirthAm = person_Employee.DateOfBirthAm,
-                        HiredDateAmharic = person_Employee.HiredDateAmharic,
-                        OrgBranchName = person_Employee.OrgBranchName,
-                        PhoneNo = person_Employee.PhoneNo,
-                        City = person_Employee.City,
-                        SubCity = person_Employee.SubCity,
-                        Wereda = person_Employee.Wereda,
-                        EmployeeTypeId = person_Employee.EmployeeTypeId,
-                        IsPlaced = person_Employee.IsPlaced
-                    };
-                    #region delete log
-                    UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee information of employee Id" + person_Employee.EmployeeCode);
-                    #endregion
-                    db.Person_Employee.Attach(entity);
-                    db.Person_Employee.Remove(entity);
-                    db.SaveChanges();
+                        db.Entry(employee).State = EntityState.Deleted;
+                        db.SaveChanges();
+
+                        #region delete log
+                        UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee information of employee Id" + person_Employee.EmployeeCode);
+                        #endregion
+                    }
                 }
             }
 
@@ -2630,13 +2510,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             foreach (var person in persons)
             {
                 var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == person.EmployeeId);
-                if(placement != null)
+                if (placement != null)
                 {
                     person.IsPlaced = true;
 
                     db.Entry(person).State = EntityState.Modified;
                     db.SaveChanges();
-                }               
+                }
             }
             return RedirectToAction("Index");
         }
@@ -2658,5 +2538,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
             return RedirectToAction("Index");
         }
-    }    
+        public string ReHireRetiredEmployees(int employeeId)
+        {
+            var employee = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == employeeId);
+            if(employee != null)
+            {
+                employee.IsActive = true;
+                employee.IsReHired = true;
+
+                db.Entry(employee).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return "Successfully ReHired";
+        }
+    }
 }

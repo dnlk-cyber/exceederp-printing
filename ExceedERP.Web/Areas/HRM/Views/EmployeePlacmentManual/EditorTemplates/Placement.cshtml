@@ -90,23 +90,44 @@
 
             </div>
             <div class="form-group">
+                @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                      .DataTextField("Name")
+                      .HtmlAttributes(new { style = "width:240px" })
+                      .DataValueField("BranchId")
+                      .Filter("contains")
+                      .OptionLabel(Resources.Select)
+                      .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetAllBranch", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      })
+                    )
+                </div>
+            </div>
+            <div class="form-group">
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
                         .Filter("contains")
                         .OptionLabel(Resources.Select)
                         .MinLength(2)
+                        .CascadeFrom("BranchId")
                         .DataTextField("Name")
                         .DataValueField("OrgStructureId")
                         .HtmlAttributes(new { style = "width:240px" })
                         .ValuePrimitive(true)
-                        .Events(ev=>
+                        .Events(ev =>
                         {
                             ev.DataBound("onDepartmentDataBound");
                         })
                         .DataSource(source =>
                         {
-                            source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
+                            // source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
+                            source.Read(read => read.Action("GetDepartmentsByBranchFromManPowerPlanning", "HRMDataProvider")
+                         .Data("filterDepartment")).ServerFiltering(true);
                         })
                     // .BindTo((IEnumerable)ViewData["organization"])
 
@@ -166,6 +187,11 @@
                 </div>
 
             </div>
+          
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-4 ro1">
             <div class="form-group">
                 @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
@@ -192,10 +218,6 @@
                     @Html.ValidationMessageFor(model => model.BusinessUnitId, "", new { @class = "text-danger" })
                 </div>
             </div>
-            <div class="row"></div>
-        </div>
-
-        <div class="col-md-4 ro1">
 
             <div class="form-group">
 
@@ -217,7 +239,7 @@
 
                 </div>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(m => m.BranchId)
@@ -236,7 +258,7 @@
                     @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
                 </div>
 
-            </div>
+            </div>*@
             <div class="form-group">
 
                 @Html.LabelFor(model => model.AssignmentDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -308,8 +330,7 @@
                 @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
 
                 <div class="col-md-6">
-                    @(Html.Kendo().TextBoxFor(model => model.Salary)
-                                          .HtmlAttributes(new { style = "width:200px" }))
+                    @(Html.Kendo().TextBoxFor(model => model.Salary) .HtmlAttributes(new { style = "width:200px" }))
                     @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
                 </div>
             </div>

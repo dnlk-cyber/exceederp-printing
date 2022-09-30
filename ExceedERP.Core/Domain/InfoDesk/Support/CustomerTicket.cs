@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Core.Domain.InfoDesk.Support
 {
@@ -14,34 +16,26 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         [DisplayName("Customer Adress")]
         public string CustomerAddress { get; set; }
         [DisplayName("Ticket Type")]
-        public int? SpecificTicketTypeId { get; set; }     
-  
+        public int? SpecificTicketTypeId { get; set; }  
         public string Description { get; set; }
-
         [DisplayName("Assigned To")]
         public string AssignedTo { get; set; }
-
-        public string Ticket{get;set;}         
-       
+        public string Ticket{get;set;}       
         [DisplayName("Priority Color")]
         public string PriorityColor { get; set; }
-        public InfoDeskFinalizeType Status { get; set; }
-       
+        public InfoDeskFinalizeType Status { get; set; }       
         public string Priority { get; set; }
         [DisplayName("Group")]
-        public string TicketGroup { get; set; }
-        [DisplayName(" Due Date")]
-    
+        public int SupportGroupId { get; set; }
+        [DisplayName(" Due Date")]    
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd hh:mm:ss}")]
         public DateTime? DueDate { get; set; }
         [DisplayName("Closed Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ClosedDate { get; set; }
-
         [DisplayName("Solution Given")]
-        public string SolutionGiven { get; set; }        
-
+        public string SolutionGiven { get; set; }
         [DisplayName("Employee")]
         public int? EmployeeId { get; set; }
         public string Remark { get; set; }

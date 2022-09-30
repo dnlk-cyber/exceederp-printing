@@ -14,6 +14,7 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
+    [Authorize]
     public class TicketTypeController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

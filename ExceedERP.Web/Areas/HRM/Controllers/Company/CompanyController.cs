@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -148,17 +148,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public ActionResult Companies_Create([DataSourceRequest]DataSourceRequest request, MainCompany mainCompany)
         {
             ModelState.Clear();
-            MainCompanyStructure mainCompanyStructure = new MainCompanyStructure();
+            // MainCompanyStructure mainCompanyStructure = new MainCompanyStructure();
+
+            var companes = db.Companies.FirstOrDefault(x => x.Category == "0");
+
+            if (companes != null)
+            {
+                ModelState.AddModelError("", "The main Company is already maintained.");
+            }
+
             if (ModelState.IsValid)
             {
-                var companes = db.Companies.FirstOrDefault(x => x.Category == "0");
-
-                if (companes != null)
-                {
-                    ModelState.AddModelError("", "The main Company is already maintained.");
-                }
-                else
-                {
                     var entity = new MainCompany
                     {
                         TradeName = mainCompany.TradeName,
@@ -173,26 +173,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         CreatedBy = User.Identity.Name,
                         ModifiedBy = mainCompany.ModifiedBy
                     };
-                    var lookup = new Core.Domain.Common.HRM.Structure
+
+                    var lookup = new Structure
                     {
-
                         Name = "Head Office",
-                        // Name=true ,
-
                     };
+
                     db.Structure.Add(lookup);
                     db.SaveChanges();
 
                     var mainCompanyStructureEntity = new MainCompanyStructure
                     {
                         Name = mainCompany.TradeName + "(" + mainCompany.AmharicName + ")",
-                        StructureId = db.Structure.Where(x => x.Name == "Head Office").FirstOrDefault().StructureId,
-
-
-
+                        StructureId = lookup.StructureId
                     };
+                    //var structure = db.Structure.FirstOrDefault(x => x.Name == "Head Office");
+                    //if (structure != null)
+                    //{
+                    //  mainCompanyStructureEntity.StructureId = structure.StructureId;
+                    //}
                     db.MainCompanyStructures.Add(mainCompanyStructureEntity);
                     db.SaveChanges();
+
                     db.Companies.Add(entity);
                     db.SaveChanges();
                     mainCompany.MainCompanyId = entity.MainCompanyId;
@@ -200,12 +202,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     #region operation log
 
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                   
-                        UserHelper.OperationLog(Request.UserHostAddress, "Maintain Company ", "Success", User.Identity.Name, User.Identity.Name + " Mainitain Company called " + entity.AmharicName,Modules.HRM);
-                    
+
+                    UserHelper.OperationLog(Request.UserHostAddress, "Maintain Company ", "Success", User.Identity.Name, User.Identity.Name + " Mainitain Company called " + entity.AmharicName, Modules.HRM);
 
                     #endregion
-                }
             }
 
             return Json(new[] { mainCompany }.ToDataSourceResult(request, ModelState));
@@ -246,9 +246,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 #region operation log
 
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-               
-                    UserHelper.OperationLog(Request.UserHostAddress, "Maintain Company ", "Success", User.Identity.Name, User.Identity.Name + " Updated Company Info of " + entity.AmharicName,Modules.HRM);
-                
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Maintain Company ", "Success", User.Identity.Name, User.Identity.Name + " Updated Company Info of " + entity.AmharicName, Modules.HRM);
+
 
                 #endregion
             }

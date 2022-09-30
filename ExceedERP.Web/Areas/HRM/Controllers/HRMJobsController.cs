@@ -170,7 +170,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                         db.Entry(placement).State = System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
                     }
-                    var user = adb.Users.FirstOrDefault(x => x.EmployeeId == term.EmployeeId.ToString());
+                    var user = adb.Users.FirstOrDefault(x => x.EmployeeId == term.EmployeeId);
                     if (user != null)
                     {
                         user.IsEnabled = false;

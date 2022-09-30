@@ -12,10 +12,10 @@
                   .Columns(columns =>
                   {
                       // columns.Bound(c => c.EmployeeCode).Width(150);
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeCode"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
 
                       columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                       columns.Bound(c => c.Boss).Width(150);
                       // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
                       columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
@@ -28,7 +28,9 @@
                        "# } #" +
                        "/>"
                        );
+                      columns.Bound(c => c.HireDate).Width(100);
                       columns.Bound(c => c.AssignmentDateAmharic).Width(150);
+                  
                       columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(100);
                       columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(100);
                       columns.Bound(c => c.Salary).Width(80);
@@ -99,13 +101,13 @@
                         .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithOJ"))
                                  )
                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
-                     .Scrollable(h => h.Height(500))
-                         .Groupable()
-                                  .Sortable(sortable =>
-                                  {
-                                      sortable.SortMode(GridSortMode.SingleColumn);
-                                  })
-                      .Filterable()
+                   .Scrollable(h => h.Height(500))
+                   .Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+                    .Filterable()
                           .Events(e =>
                           {
                               e.Save("GetDate");
@@ -138,97 +140,229 @@
 
                   ).ClientDetailTemplateId("template")
 )
+
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstrip_#=PlacementId#")
-                  .SelectedIndex(0)
-                  .Items(items =>
+                       .Name("tabstrip_#=PlacementId#")
+               .SelectedIndex(0)
+               .Items(items =>
+               {
+
+               items.Add().Text("Employees").Content(
+                @<text>
+
+
+                    @(Html.Kendo().Grid<EmployeesUnderBossVM>()
+                                   .Name("EmployeesUnderBoss#=PlacementId#")
+                   .Columns(columns =>
                    {
-                       items.Add().Text(Resources.Details).Content(
-                          @<text>
-                             @(Html.Kendo().PanelBar()
-                            .Name("panelbar_#=PlacementId#")
-                            .ExpandMode(PanelBarExpandMode.Single)
-                            .Items(panelbar =>
-                            {
-                                panelbar.Add().Text("Status")
-                                    .Expanded(true)
-                                    .Content(
-                                                          
-                                                   "<div>" +
-                                                    "<table class='table'>" +
 
-                                                     "<tr>" +
-                                                        "<td>" + "<div class='employee-details'>" +
-                                                              "<ul>" +
+                       columns.Bound(c => c.EmployeeCode).Width(100);
+                       columns.Bound(c => c.FullName).Width(100);
+                       //columns.Bound(c => c.IsCurrent).Width(100);
+                       columns.Command(command =>
+                       {
 
-                                                              "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                                                              // "<li><label>Title:  </label>#=Title #</li>" +
-                                                              "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                                                              "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                                                              "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+                       }).Width(300);
+                   })
 
-                                                              "</ul>" +
-                                                              "</div>" + "<th>" +
-                                                        // "<td>" + EmployeeChartsResult() + "<th>" +
 
-                                                        "</table>" +
-                                                "</div>"
+                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                       .Scrollable()
+                       .Selectable()
+                       .DataSource(dataSource => dataSource
+                           .Ajax()
+                                   .Events(events =>
+                                   {
+                                       events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
+                                       events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
+                                       events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
+                                   })
+
+
+                                                  .Model(model => model.Id(p => p.EmployeesUnderBossId))
+                                             .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+
+
+                                                               ).ToClientTemplate()
+                    )
+
+                </text>
                                                           );
 
+               items.Add().Text("Placement Before System").Content(
+                @<text>
+                    @(Html.Kendo().Grid<PlacementHistory>()
+                          .Name("PlacementHistoryGrid_#=PlacementId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
+                              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+                              columns.Bound(c => c.JobTitle).EditorTemplateName("JobTitleAutoComplet").Width(120); //, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+                              columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
+                              columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
+                              columns.Bound(c => c.Salary).Width(80);
+                              columns.Bound(c => c.EmployementType).EditorTemplateName("Enum").Width(80);
+                              //columns.Bound(c => c.Remark);//
+                              columns.Command(command =>
+                              {
+                                  if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  }
+                                  if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                  {
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }
+                              }).Width(250);
+                          })
+         .ToolBar(toolbar =>
+         {
+             if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+             {
+                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+             }
+         })
+         .Editable(editable => editable.Mode(GridEditMode.InLine)) //.TemplateName("EmployeePlacmentHistory").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeeAssignmentHistory); window.Scrollable(false); }))
+         .Scrollable(h => h.Height(500))
+         .Groupable()
+         .Sortable(sortable =>
+         {
+             sortable.SortMode(GridSortMode.SingleColumn);
+         })
+         .Filterable()
+         .Events(e =>
+         {
+             e.Save("GetAssignDate");
+             e.Edit("GetAssignDate");
+         })
+         .Pageable(pageable => pageable
+             .Input(true)
+             .Numeric(false)
+             .Refresh(true)
+             .PageSizes(true)
+             .ButtonCount(5))
+         .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"PlacementHistoryGrid_#=PlacementId#\")");
+                 events.RequestStart("onRequestStart(\"PlacementHistoryGrid_#=PlacementId#\")");
+                 events.RequestEnd("onRequestEnd(\"PlacementHistoryGrid_#=PlacementId#\")");
+             })
+
+             .Model(model => model.Id(p => p.PlacementHistoryId))
+             .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory", new { Area = "HRM", empId = "#=EmployeeId#" }))
+                    .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory", new { Area = "HRM", empIdT = "#=EmployeeId#" }))
+                    .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory"))
+                    .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
+                ).ToClientTemplate()
+
+                    )
+
+                </text>
+);
+
+               items.Add().Text("Placement After System").Content(
+                @<text>
 
 
-                                                                                      }).ToClientTemplate()
+                    @(Html.Kendo().Grid<ExceedERP.Web.Areas.HRM.Controllers.Profile.OldPlacementVM>()
+                                   .Name("OldPlacementVM#=PlacementId#")
+                   .Columns(columns =>
+                   {
+                       columns.Bound(c => c.Branch).Width(80);
+                       columns.Bound(c => c.Department).Width(80);
+                       columns.Bound(c => c.JobTitle).Width(80);
+                       columns.Bound(c => c.AssignmentDate).Width(80);
+                       columns.Bound(c => c.AssignmentType).Width(80);
+                       columns.Bound(c => c.Salary).Width(80);
+                       columns.Bound(c => c.IsHead).ClientTemplate(
+                         "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
+                         "# if (IsHead) { #" +
+                         "checked='checked'" +
+                         "# } #" +
+                         "/>"
+                         ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
 
-                                                                                        )
-                                                                                        <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                                    </text>
-                                            );
+                       columns.Command(command =>
+                       {
 
-                                                                             items.Add().Text("Employees").Content(
-                                                                                @<text>
-
-
-                                                                                    @(Html.Kendo().Grid<EmployeesUnderBossVM>()
-                                                                                                  .Name("EmployeesUnderBoss#=PlacementId#")
-                                                                                                    .Columns(columns =>
-                                                                                                    {
-
-                                                                                                        columns.Bound(c => c.EmployeeCode).Width(100);
-                                                                                                        columns.Bound(c => c.FullName).Width(100);
-                                                                                                        columns.Command(command =>
-                                                                                                        {
-
-                                                                                                        }).Width(300);
-                                                                                                    })
-
-
-                                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                            .Scrollable()
-                                                                                            .Selectable()
-                                                                                            .DataSource(dataSource => dataSource
-                                                                                                .Ajax()
-                                                                                                        .Events(events =>
-                                                                                                        {
-                                                                                                            events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                            events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                            events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
-                                                                                                        })
+                       }).Width(300);
+                   })
 
 
-                                                                                                .Model(model => model.Id(p => p.EmployeesUnderBossId))
-                                                                                           .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                       .Scrollable()
+                       .Selectable()
+                       .DataSource(dataSource => dataSource
+                           .Ajax()
+                                   .Events(events =>
+                                   {
+                                       events.Error("error_handler(\"OldPlacementVM#=PlacementId#\")");
+                                       events.RequestStart("onRequestStart(\"OldPlacementVM#=PlacementId#\")");
+                                       events.RequestEnd("onRequestEnd(\"OldPlacementVM#=PlacementId#\")");
+                                   })
 
 
-                                                                                            ).ToClientTemplate()
-                                                                                    )
+                                      .Model(model => model.Id(p => p.PlaceId))
+                                        .Read(read => read.Action("Placements_History_Read", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
 
-                                                                                </text> );
 
-                                                                             }).ToClientTemplate())
+                                            ).ToClientTemplate()
+                    )
+
+                </text>
+                                                           );
+
+               items.Add().Text(Resources.Details).Content(
+                @<text>
+
+                    @(Html.Kendo().PanelBar()
+                .Name("panelbar_#=PlacementId#")
+                .ExpandMode(PanelBarExpandMode.Single)
+                .Items(panelbar =>
+                {
+                    panelbar.Add().Text("Status")
+                        .Expanded(true)
+                        .Content(
+
+                             "<div>" +
+                  "<table class='table'>" +
+
+                   "<tr>" +
+                      "<td>" + "<div class='employee-details'>" +
+                            "<ul>" +
+
+                            "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                            // "<li><label>Title:  </label>#=Title #</li>" +
+                            "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                            "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                            "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+
+                            "</ul>" +
+                            "</div>" + "<th>" +
+                      // "<td>" + EmployeeChartsResult() + "<th>" +
+
+                      "</table>" +
+              "</div>"
+                        );
+
+
+
+                }).ToClientTemplate()
+                    )
+                    <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                </text>
+           );
+
+               }).ToClientTemplate())
 
 
 </script>
+
+
 <style type="text/css">
     div.k-edit-form-container {
         width: 1000px;
@@ -268,6 +402,29 @@
     }
 </script>
 <script>
+
+    function GetAssignDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeePlacmentHistory")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function(result) {
+                    r = result;
+                }
+            });
+        }
+    }
+
+</script>
+<script>
     //function error_handler(e) {
     //    if (e.errors) {
     //        var message = "Errors:\n";
@@ -292,30 +449,40 @@
     function onCancel(e) {
         $("#PlacementGrid").data("kendoGrid").dataSource.read();
     }
+
+    function filterDepartment() {
+        return {
+            BranchId: $("#BranchId").val(),
+            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
+        };
+    }
 </script>
 
 
 <script>
     function GetSalary() {
-        $("#Salary").val(0);
-        var rank = $("#RankId").data("kendoDropDownList").value();
-        var step = $("#StepId").data("kendoDropDownList").value();
-        //var Jobs = $("#LookupId").data("kendoDropDownList");
-        //var job = Jobs.value();
+        //if (isNew_Global == "True") {        
+            var rank = $("#RankId").data("kendoDropDownList").value();
+            var step = $("#StepId").data("kendoDropDownList").value();
+            //var Jobs = $("#LookupId").data("kendoDropDownList");
+            //var job = Jobs.value();
 
-      if (rank!=0 && step!=0)
-      {
-        $.ajax({
-            url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithOJ")',
-            data: { rank: rank, step: step},
-            type: 'POST',
-            cache: false,
-            success: function(result) {
-                $("#Salary").val(result);
-                $("#Salary").trigger("change");
+            if (rank != 0 && step != 0) {
+
+                $("#Salary").val(0);
+
+                $.ajax({
+                    url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithOJ")',
+                    data: { rank: rank, step: step },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        $("#Salary").val(result);
+                        $("#Salary").trigger("change");
+                    }
+                });
             }
-          });
-        }
+        //}
     }
 
 </script>

@@ -13,10 +13,10 @@
               .Columns(columns =>
               {
                   // columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeCode"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
 
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                   columns.Bound(c => c.Boss).Width(150);
                   columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                   columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
@@ -29,7 +29,9 @@
                     "/>"
                     ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
 
+                  columns.Bound(c => c.HireDate).Width(100);
                   columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100); ;
+
                   columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
                   columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
                   columns.Bound(c => c.Salary).Width(80);
@@ -78,7 +80,7 @@
                   }
 
                   toolbar.Custom().Text("De-Activate Employees").Action("Index", "PlacmentInActiveBatch").HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                  
+
                   if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
                   {
                       ///toolbar.Custom()
@@ -145,6 +147,7 @@
                   .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual"))
               ).ClientDetailTemplateId("template")
 )
+
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
                        .Name("tabstrip_#=PlacementId#")
@@ -383,23 +386,31 @@
         if (isNew_Global === "True") {
 
             $("#FullNameTextBox_Id").hide();
-            $("#EmpIdDropdown_Id").show();           
+            $("#EmpIdDropdown_Id").show();
         }
         else if (isNew_Global === "False"){
             $("#FullNameTextBox_Id").show();
             $("#EmpIdDropdown_Id").hide();
-        }        
+        }
     }
-     function filterEmployees() {       
+     function filterEmployees() {
             return {
                 text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
-            }              
+            }
     }
 
+     function filterDepartment() {
+         return {
+             BranchId: $("#BranchId").val(),
+             searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
+         };
+     }
+
+
     function GetDate(e) {
-        
+
         $("#AssignmentDateAmharic").trigger("change");
-      
+
         if (e.model.isNew() === false) {
             $("#EmployeeId").kendoDropDownList({
                 enable: false
@@ -458,21 +469,21 @@
 
 <script>
     function GetSalary() {
+      if (isNew_Global == "True")
+      {
         $("#Salary").val(0);
         var rank = $("#RankId").data("kendoDropDownList").value();
         var step = $("#StepId").data("kendoDropDownList").value();
         var job = $("#LookupId").data("kendoDropDownList").value();
 
-        if(rank.length!==0 && step.length!==0)
-        {
+        if (rank.length !== 0 && step.length !== 0) {
             if (rank == "") {
                 rank = 0;
             }
             if (step == "") {
                 step = 0;
             }
-            if (job == "")
-            {
+            if (job == "") {
                 job = 0;
             }
             $.ajax({
@@ -487,6 +498,7 @@
                 }
 
             });
+        }
         }
     }
 
@@ -511,7 +523,7 @@
         var list = AssignDates();
         return list;
     }
-       
+
 
     function convertValues(value) {
         var data = {};
@@ -551,7 +563,7 @@
         if (e.model.isNew() === false) {
             $("#EmployeeId").kendoDropDownList({
                 enable: false
-            });           
+            });
         }
 
     }
@@ -683,7 +695,7 @@
     }
 
     function onCancel(e) {
-        $("#PlacementGrid").data("kendoGrid").dataSource.read();        
+        $("#PlacementGrid").data("kendoGrid").dataSource.read();
     }
 </script>
 

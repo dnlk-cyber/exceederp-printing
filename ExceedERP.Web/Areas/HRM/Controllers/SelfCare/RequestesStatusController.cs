@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public int GetApproverDept(int? id)
         {
-            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == id);
+            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
             if (place != null)
             {
                 return place.OrgStructureId;
@@ -3252,9 +3252,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 #endregion
 
                 #region Overtime request Send to overtime table 
-
-                decimal NormalHour = 0, NightHours = 0, RestDay = 0, HolidayHours = 0;
-
+                
                 if (requestesStatus.ReferenceType == "OverTime" && requestesStatus.Status == RequestStatus.APPROVE)
                 {
                     var overtime = db.OverTimeRequest.FirstOrDefault(x => x.OverTimeRequestId == requestesStatus.RequestId);
@@ -3295,15 +3293,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                 }
                                 else if (overtime.Type == OverTimeType.Night_Hour)
                                 {
-                                    checkOverTime.NightHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                    checkOverTime.NightHours = checkOverTime.NightHours + Convert.ToDecimal(duration * diff);
                                 }
                                 else if (overtime.Type == OverTimeType.Rest_Day_Hour)
                                 {
-                                    checkOverTime.RestdayHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                    checkOverTime.RestdayHours = checkOverTime.RestdayHours + Convert.ToDecimal(duration * diff);
                                 }
                                 else if (overtime.Type == OverTimeType.Holiday_Hour)
                                 {
-                                    checkOverTime.HolidayHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                    checkOverTime.HolidayHours = checkOverTime.HolidayHours + Convert.ToDecimal(duration * diff);
                                 }
 
                                 #region operation log
@@ -3326,15 +3324,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                 }
                                 else if (overtime.Type == OverTimeType.Night_Hour)
                                 {
-                                    empOver.NightHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                    empOver.NightHours = empOver.NightHours + Convert.ToDecimal(duration * diff);
                                 }
                                 else if (overtime.Type == OverTimeType.Rest_Day_Hour)
                                 {
-                                    empOver.RestdayHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                    empOver.RestdayHours = empOver.RestdayHours + Convert.ToDecimal(duration * diff);
                                 }
                                 else if (overtime.Type == OverTimeType.Holiday_Hour)
                                 {
-                                    empOver.HolidayHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                    empOver.HolidayHours = empOver.HolidayHours + Convert.ToDecimal(duration * diff);
                                 }
 
                                 #region operation log

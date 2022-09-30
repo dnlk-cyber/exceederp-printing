@@ -13,10 +13,10 @@
               .Columns(columns =>
               {
                   // columns.Bound(c => c.EmployeeCode).Width(150);
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeCode"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
 
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                   columns.Bound(c => c.Boss).Width(150);
                   // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
                   columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
@@ -38,7 +38,9 @@
                   ////    "/>"
                   ////    );
                   //columns.Bound(c => c.ImmediateSupervisor).Width(140);
+                  columns.Bound(c => c.HireDate).Width(100);
                   columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100); ;
+                  
                   columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
                   columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
                   columns.Bound(c => c.Salary).Width(80);
@@ -400,6 +402,13 @@
         }
     }
 
+    function filterDepartment() {
+        return {
+            BranchId: $("#BranchId").val(),
+            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
+        };
+    }
+
     function GetDate(e) {
 
         $("#AssignmentDateAmharic").trigger("change");
@@ -486,35 +495,37 @@
 
 <script>
     function GetSalary() {
-        $("#Salary").val(0);
-        var rank = $("#RankId").data("kendoDropDownList").value();
-        var step = $("#StepId").data("kendoDropDownList").value();
-        var job = $("#LookupId").data("kendoDropDownList").value();
+        if (isNew_Global == "True") {
+            $("#Salary").val(0);
+            var rank = $("#RankId").data("kendoDropDownList").value();
+            var step = $("#StepId").data("kendoDropDownList").value();
+            var job = $("#LookupId").data("kendoDropDownList").value();
 
-        if (rank.length !== 0 && step.length !== 0) {
-            if (rank == "") {
-                rank = 0;
-            }
-            if (step == "") {
-                step = 0;
-            }
-            if (job == "") {
-                job = 0;
-            }
-            $.ajax({
-                url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithJ")',
-
-                data: { rank: rank, step: step, job: job },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                    r = result;
-
-                    $("#Salary").val(r);
-                    $("#Salary").trigger("change");
+            if (rank.length !== 0 && step.length !== 0) {
+                if (rank == "") {
+                    rank = 0;
                 }
+                if (step == "") {
+                    step = 0;
+                }
+                if (job == "") {
+                    job = 0;
+                }
+                $.ajax({
+                    url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithJ")',
 
-            });
+                    data: { rank: rank, step: step, job: job },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+
+                        $("#Salary").val(r);
+                        $("#Salary").trigger("change");
+                    }
+
+                });
+            }
         }
     }
 

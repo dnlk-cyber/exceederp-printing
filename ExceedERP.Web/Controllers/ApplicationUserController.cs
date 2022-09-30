@@ -11,25 +11,44 @@ using System.Linq;
 using System.Web.Mvc;
  using ExceedERP.Core.Domain.Common.HRM;
  using ExceedERP.Helpers.Common;
+using System.Runtime.Caching;
 
 namespace ExceedERP.Web.Controllers
 {
-     [Authorize/*(Roles = "Admin,Admin_Regional,Admin_Module")*/]
+    [Authorize(Roles = "Admin,Admin_Regional,Admin_Module")]
     public class ApplicationUserController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         private ExceedDbContext db1 = new ExceedDbContext();
-       
+
         public ActionResult Index()
         {
             var employee = db1.Person_Employee;
             var structure = db1.MainCompanyStructures;
-            var selectedEmployee = employee.Select(
-                i => new
-                {
-                    FullName = i.EmployeeCode + "_"+i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    PersonId = i.EmployeeId
-                }).AsQueryable();
+            //var selectedEmployee = employee.Select(
+            //    i => new
+            //    {
+            //        FullName = (i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish).Replace("/","-"),//.Replace("\\", " - "),
+            //        PersonId = i.EmployeeId
+            //    }).AsQueryable();
+            var selectedEmployee = from e in db1.Person_Employee
+                                   join p in db1.Placements
+                                       on e.EmployeeId equals p.EmployeeId
+                                   where e.IsActive && p.isCurrent
+                                   select (new
+                                   {
+                                       e.BranchId,
+                                       PersonId = e.EmployeeId,
+                                       FullName = (e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish).Replace("/", "-"),//.Replace("\\", " - "),
+                                   });
+
+            if (IsRegionalAdmin())
+            {
+                List<int> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name).Select(int.Parse).ToList();
+                string useid = UserInformationHelper.GetUserId(User.Identity.Name);
+                selectedEmployee = selectedEmployee.Where(x => mybraches.Contains(x.BranchId));
+            }
+
             ViewData["EmployeeList"] = selectedEmployee;
 
             var selectedstructure = structure.Select(
@@ -55,7 +74,7 @@ namespace ExceedERP.Web.Controllers
 
         private AccountController account;
 
-        public ActionResult ApplicationUsers_Read([DataSourceRequest]DataSourceRequest request,string branchid)
+        public ActionResult ApplicationUsers_Read([DataSourceRequest]DataSourceRequest request, string branchid)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             account = new AccountController(ApplicationUserManager.Usermgr, ApplicationSignInManager.SignInManager);
@@ -66,7 +85,7 @@ namespace ExceedERP.Web.Controllers
             if (!String.IsNullOrEmpty(branchid))
             {
                 var employeesassignnedinbranch = db1.Placements.Where(x => x.BranchId.ToString() == branchid)
-                    .Where(x => x.isCurrent).Select(x => x.EmployeeId.ToString()).ToList();
+                    .Where(x => x.isCurrent).Select(x => x.EmployeeId).ToList();
                 applicationUsers = applicationUsers.Where(x => employeesassignnedinbranch.Contains(x.EmployeeId))
                     .ToList();
             }
@@ -120,18 +139,14 @@ namespace ExceedERP.Web.Controllers
         {
             account = new AccountController(ApplicationUserManager.Usermgr, ApplicationSignInManager.SignInManager);
 
+            var checkExistance = db.Users.Where(x => x.EmployeeId == applicationUser.EmployeeId).FirstOrDefault();
+            if (checkExistance != null)
+            {
+                ModelState.AddModelError("", "The Employee already exists!!");
+            }
             if (ModelState.IsValid)
             {
-
-                var checkExistance = db.Users.Where(x => x.EmployeeId == applicationUser.EmployeeId).FirstOrDefault();
-                if (checkExistance != null)
-                {
-                    ModelState.AddModelError("", "The Employee already exists!!");
-                }
-                else
-                {
-                    account.Register(applicationUser);
-                }
+                account.Register(applicationUser);
 
             }
 
@@ -391,7 +406,7 @@ namespace ExceedERP.Web.Controllers
             var users = db.Users.ToList();
             foreach (var user in users)
             {
-                var placement = db1.Placements.Where(x=>x.EmployeeId.ToString()==user.EmployeeId).FirstOrDefault(x => x.isCurrent);
+                var placement = db1.Placements.Where(x=>x.EmployeeId==user.EmployeeId).FirstOrDefault(x => x.isCurrent);
                 if (placement != null) user.OrgStructureId = placement.OrgStructureId;
                 db.Entry(user).State = EntityState.Modified;
                 db.SaveChanges();
@@ -417,6 +432,24 @@ namespace ExceedERP.Web.Controllers
             return (!System.Web.HttpContext.Current.User.IsInRole("Admin")
                     && System.Web.HttpContext.Current.User.IsInRole("Admin_Regional"));
 
+
+        }
+
+        //provider
+
+        public JsonResult GetEmployeeMap(string text)
+        {
+            List<EmployeeCacheVm> list = new List<EmployeeCacheVm>();
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                var allData = UserInformationHelper.GetEmployeeDetailFromCache();
+                list = allData.Where(x => x.FullName.ToUpper().Contains(text.ToUpper())).ToList();
+            }
+            return Json(list.Select(p => new
+            {
+                PersonId = p.PersonId,
+                FullName = p.EmployeeCode+"-"+p.FullName
+            }), JsonRequestBehavior.AllowGet);
 
         }
 

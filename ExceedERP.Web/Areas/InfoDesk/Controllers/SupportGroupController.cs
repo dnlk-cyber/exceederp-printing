@@ -15,8 +15,8 @@ using ExceedERP.Core.Domain.InfoDesk.Support;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
-  
 
+    [Authorize]
     public class SupportGroupController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public ActionResult Index()
         {
             ViewData["Empoloyees"] = db.Person_Employee.ToList();
-          
+            ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             var sysusers = udb.Users.Select(o => new
                       {
                           CustomerID = o.Id,
@@ -43,7 +43,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Groups_Create([DataSourceRequest]DataSourceRequest request, SupportGroup_HelpDesk model)
         {
@@ -73,7 +73,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Groups_Update([DataSourceRequest]DataSourceRequest request, SupportGroup_HelpDesk model)
         {
@@ -94,7 +94,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { Groups }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Groups_Destroy([DataSourceRequest]DataSourceRequest request, SupportGroup_HelpDesk model)
         {

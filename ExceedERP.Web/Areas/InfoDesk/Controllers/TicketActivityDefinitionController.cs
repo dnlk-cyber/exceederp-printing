@@ -15,8 +15,8 @@ using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
-   
 
+    [Authorize]
     public class TicketActivityDefinitionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

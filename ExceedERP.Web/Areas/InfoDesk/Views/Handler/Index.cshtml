@@ -18,7 +18,7 @@
             //columns.ForeignKey(c => c.TicketDefintion, (System.Collections.IEnumerable)ViewData["TicketDefActivity"], "TicketActivityDefinitionID", "Description").EditorTemplateName("TicketActivityDefinition").Width(150);
 
             columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(80);
-            columns.Bound(c => c.TicketGroup).Width(120);
+            columns.ForeignKey(c => c.SupportGroupId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
 
 
             //columns.Command(
@@ -70,13 +70,13 @@
             model.Field(p => p.Description).Editable(false);
             model.Field(p => p.Priority).Editable(false);
             // model.Field(p => p.StatusType).Editable(false);
-            model.Field(p => p.TicketGroup).Editable(false);
+            model.Field(p => p.SupportGroupId).Editable(false);
         })
         .Events(ev => ev
         .Error("error_handler(\"grid\")")
         .RequestStart("onRequestStart(\"grid\")")
         .RequestEnd("onRequestEnd(\"grid\")"))
-            .Read(read => read.Action("CustomerPendingTickets_Read", "Handler"))
+            .Read(read => read.Action("Handler_Read", "Handler"))
         //.Create(create => create.Action("CustomerTickets_Create", "Handler"))
         //.Update(update => update.Action("CustomerTickets_Update", "Handler"))
         //.Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "Handler"))

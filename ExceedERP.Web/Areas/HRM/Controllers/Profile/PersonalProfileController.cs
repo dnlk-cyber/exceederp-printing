@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -171,7 +171,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public void CheckEmployeeRetirment()
         {
             int maxAge;
-            var employees = db.Person_Employee;
+            var employees = db.Person_Employee.Where(x=>!x.IsReHired);
             db = new ExceedDbContext();
             var setting = db.Configurations.Where(x => x.Reference == "PENSION" && x.Attribute == "RETIREMENT_AGE").FirstOrDefault();
             if (setting != null)
@@ -223,8 +223,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             db.SaveChanges();
                         }
                     }
-
-
                     else
                     {
                         if (e.IsActive == false && e.Remark == "Retirement")

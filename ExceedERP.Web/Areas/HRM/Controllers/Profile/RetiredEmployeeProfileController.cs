@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -182,20 +182,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             double maxAge;
             List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-            var employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString())).Where(x => x.IsActive && x.Remark != "R-Active");
+            var employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString())).Where(x => x.IsActive && !x.IsReHired && x.Remark != "R-Active");
             db = new ExceedDbContext();
             bool isActive = true;
             var terminations = db.Terminations;
             var setting = db.Configurations.FirstOrDefault(x => x.Reference == "PENSION" && x.Attribute == "RETIREMENT_AGE");
             if (setting != null)
             {
-
                 maxAge = Convert.ToInt32(setting.CurrentValue);
                 foreach (var e in employees)
-
                 {
-                    double age = DateTime.Now.Date.Subtract(new DateTime(e.DateOfBirth.Year, e.DateOfBirth.Month,
-                        e.DateOfBirth.Day)).TotalDays / 365.25;
+                    double age = DateTime.Now.Date.Subtract(new DateTime(e.DateOfBirth.Year, e.DateOfBirth.Month,  e.DateOfBirth.Day)).TotalDays / 365.25;
 
                     if (terminations.Any())
                     {
@@ -215,7 +212,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             }
                         }
                     }
-
                     if (age >= maxAge)
                     {
                         isActive = false;
@@ -261,8 +257,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             db.SaveChanges();
                         }
                     }
-
-
                     else if (e.IsActive == false && e.Remark == "Retirement")
                     {
 

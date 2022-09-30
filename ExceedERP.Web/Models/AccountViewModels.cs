@@ -103,7 +103,7 @@ namespace ExceedERP.Web.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
         public bool IsEnabled { get; set; }
-        public string EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
     }

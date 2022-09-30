@@ -17,13 +17,11 @@
 
                 <div class="col-md-6">
 
-                    @*<input type="text" value="@Model.FullName" id="FullName" name="FullName" class="form-control input-sm"/>*@
-
                     <div id="FullNameTextBox_Id" hidden>
                         @(Html.Kendo().TextBoxFor(model => model.FullName).HtmlAttributes(new { style = "width:200px;color:red;", @readonly = "readonly" }))
                     </div>
 
-                    <div id="EmpIdDropdown_Id" hidden>
+                    <div id="EmpIdDropdown_Id">
                         @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                               //  .Name("EmployeeId")
                               .DataValueField("EmployeeId")
@@ -41,9 +39,7 @@
                                })
                               .ValuePrimitive(true)
                         )
-                    </div>
-
-
+                    </div>    
                 </div>
 
                  @*the below code is employees list dropdown with their photo*@
@@ -94,31 +90,48 @@
 
             </div>
             <div class="form-group">
+                @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                      .DataTextField("Name")
+                      .HtmlAttributes(new { style = "width:240px" })
+                      .DataValueField("BranchId")
+                      .Filter("contains")
+                      .OptionLabel(Resources.Select)
+                      .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetAllBranch", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      })
+                    )
+                </div>
+            </div>
+
+            <div class="form-group">
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-
-                                  .Filter("contains")
-                                  .OptionLabel(Resources.Select)
-                                  .MinLength(2)
-                                  .DataTextField("Name")
-                                  .DataValueField("OrgStructureId")
-                                  .HtmlAttributes(new { style = "width:240px" })
-                                  .ValuePrimitive(true)
+                      .Filter("contains")
+                      .OptionLabel(Resources.Select)
+                      .MinLength(2)
+                      .CascadeFrom("BranchId")
+                      .DataTextField("Name")
+                      .DataValueField("OrgStructureId")
+                      .HtmlAttributes(new { style = "width:240px" })
+                      .ValuePrimitive(true)
                       .Events(ev =>
                       {
                           ev.DataBound("onDepartmentDataBound");
                       })
-                                  .DataSource(source =>
-                                  {
-                                      source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
-
-                                  })
+                       .DataSource(source =>
+                       {
+                          // source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
+                           source.Read(read => read.Action("GetDepartmentsByBranchFromManPowerPlanning", "HRMDataProvider")
+                         .Data("filterDepartment")).ServerFiltering(true);
+                       })
                     // .BindTo((IEnumerable)ViewData["organization"])
-
-
                     )
-                    @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
@@ -171,36 +184,35 @@
                 </div>
 
             </div>
+           
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-4 ro1">
             <div class="form-group">
                 @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
-
-                                                          .Filter("contains")
-                                                          .OptionLabel(Resources.Select)
-                                                          .MinLength(2)
-                                                       .ValuePrimitive(true)
-                                  .AutoBind(false)
-                                  .OptionLabel("Select Business Unit...")
-                                      .DataTextField("Name")
-                                              .DataValueField("Code")
-                                          .Filter("contains")
-                                           .HtmlAttributes(new { style = "width:240px" })
-                                  .DataSource(dataSource =>
-                                  {
-                                      dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }))
-                                                            .ServerFiltering(false);
-                                  })
-
+                      .Filter("contains")
+                      .OptionLabel(Resources.Select)
+                      .MinLength(2)
+                      .ValuePrimitive(true)
+                      .AutoBind(false)
+                      .OptionLabel("Select Business Unit...")
+                      .DataTextField("Name")
+                      .DataValueField("Code")
+                      .Filter("contains")
+                      .HtmlAttributes(new { style = "width:240px" })
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }))
+                          .ServerFiltering(false);
+                      })
 
                     )
                     @Html.ValidationMessageFor(model => model.BusinessUnitId, "", new { @class = "text-danger" })
                 </div>
             </div>
-            <div class="row"></div>
-        </div>
-
-        <div class="col-md-4 ro1">
 
             <div class="form-group">
 
@@ -222,26 +234,7 @@
 
                 </div>
             </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(m => m.BranchId)
-                          .DataTextField("Name")
-                          .HtmlAttributes(new { style = "width:200px" })
-                          .DataValueField("BranchId")
-                          .Filter("contains")
-                          .OptionLabel(Resources.Select)
-                          .ValuePrimitive(true)
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetAllBranch", "HRMDataProvider", new { area = "HRM" }))
-                                  .ServerFiltering(false);
-                          })
-                    )
-                    @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
+          
             <div class="form-group">
 
                 @Html.LabelFor(model => model.AssignmentDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })

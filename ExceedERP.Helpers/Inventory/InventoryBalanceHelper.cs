@@ -411,12 +411,13 @@ namespace ExceedERP.Helpers.Inventory
                     }
 
                     #region find and update count table with the most recent bincard balance
-                    if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString() && countBinCard != null)
-                    {
-                        PropertyCountHelper
-                            .UpdatePropertyCountItemPreviousBalanceFromBinCard
-                            (countBinCard: countBinCard, latestBinCard: cardLines.ToArray()[cardLines.Count() - 1]);
-                    }
+                    //NEW.. COUNT SHOULD NOT BE UPDATED EVERYTIME.
+                    //if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString() && countBinCard != null)
+                    //{
+                    //    PropertyCountHelper
+                    //        .UpdatePropertyCountItemPreviousBalanceFromBinCard
+                    //        (countBinCard: countBinCard, latestBinCard: cardLines.ToArray()[cardLines.Count() - 1]);
+                    //}
                     #endregion
                 }
                 else

@@ -12,7 +12,7 @@
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").EditorTemplateName("Stores").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").EditorTemplateName("GlFiscalYearSelector").Width(120);
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["periods"], "GLPeriodId", "Name").EditorTemplateName("GlPeriodSelector").Width(120);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["periods"], "InventoryPeriodId", "Name").Width(120);
           columns.Bound(p => p.CountDate).Width(110);
           columns.Bound(p => p.StoreKeeperId).Title("Store Keeper").Width(110);
           columns.Bound(c => c.IsMidOfPeriod).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsMidOfPeriod ? checked='checked' :'' # />");
@@ -75,81 +75,78 @@
 )
 <script type="text/kendo" id="propCounttemplate">
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.PropertyCountItem>()
-                      .Name("Item_#=PropertyCountId#")
-              .Columns(columns =>
-              {
-                  columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180).Editable("isEditable");
-                  columns.Bound(c => c.ItemCode).Width(150).Title("Items").EditorTemplateName("ItemSelector").Width(180).Editable("isEditable");
-                  columns.Bound(c => c.ItemCodeReadOnly).Width(150);
-                  columns.Bound(c => c.ItemName).Width(150);
-                  columns.Bound(c => c.Count).Width(130);
-                  columns.Bound(c => c.Location).Width(130);
-                  columns.Bound(c => c.Price).Width(130);
-                  columns.Bound(c => c.Status).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
+              .Name("Item_#=PropertyCountId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180).Editable("isEditable");
+          columns.Bound(c => c.ItemCode).Width(150).Title("Items").EditorTemplateName("ItemSelector").Width(180).Editable("isEditable");
+          columns.Bound(c => c.ItemCodeReadOnly).Width(150);
+          columns.Bound(c => c.ItemName).Width(150);
+          columns.Bound(c => c.Count).Width(130);
+          columns.Bound(c => c.Location).Width(130);
+          columns.Bound(c => c.Price).Width(130);
+          columns.Bound(c => c.Status).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
 
-                  columns.Command(command =>
-                  {
-                      command.Edit();
-          //command.Destroy();
-          command.Custom("✅").Click("ChangeStatus");
-                  }).Width(180);
-              })
-              .ToolBar(toolbar =>
-              {
-                  toolbar.Template(@<text>
-                    # if (!IsClosed)
-                    {#
-                    <a class="k-button k-button-icontext k-grid-add" href='\#'> <span class="k-icon k-i-add"></span> Add new record </a>
-                    @Html.Kendo().Button().Name("recalculateAll").Content("Recalculate All").Events(events => events.Click("recalculateAll")).ToClientTemplate()
-                    @Html.Kendo().Button().Name("refresh").Content("Refresh").Events(events => events.Click("refresh")).ToClientTemplate()
-                    @if (HttpContext.Current.User.IsInRole("Property_Count_Approver"))
-                                {
-                        @Html.Kendo().Button().Name("variation").Content("Update").Events(events => events.Click("variationClicked")).ToClientTemplate()
-                        @Html.Kendo().Button().Name("reverse").Content("Reverse").Events(events => events.Click("reverse")).ToClientTemplate()
-                        @Html.Kendo().Button().Name("close").Content("Close").Events(events => events.Click("close")).ToClientTemplate()
-                                }
-                    
+          columns.Command(command =>
+          {
+              command.Edit();
+              //command.Destroy();
+              command.Custom("✅").Click("ChangeStatus");
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+      toolbar.Template(@<text>   
+                # if (!IsClosed)
+                {#
+    <a class="k-button k-button-icontext k-grid-add" href='\#'> <span class="k-icon k-i-add"></span> Add new record </a>
+                    @Html.Kendo().Button().Name("refresh").Content("Refresh").Events(events => events.Click("refresh")).ToClientTemplate()  
+      @if (HttpContext.Current.User.IsInRole("Property_Count_Approver")) { 
+          @Html.Kendo().Button().Name("variation").Content("Update").Events(events => events.Click("variationClicked")).ToClientTemplate()
+          @Html.Kendo().Button().Name("reverse").Content("Reverse").Events(events => events.Click("reverse")).ToClientTemplate()
+          @Html.Kendo().Button().Name("close").Content("Close").Events(events => events.Click("close")).ToClientTemplate()
+      }
 
-                    # } #
+                # } #
                     <a target="new" href='@Url.Action("PropertyCountPrint", "PropertyCount")/#=PropertyCountId#'><i class="fa fa-print fa-2x"></i></a>
+                    
+                    </text>);
+      })
+        .HtmlAttributes(new { style = "height: 550px;" })
+            .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(20))
+            .Scrollable()
+            .Sortable()
+            .Filterable()
 
-                </text>);
-                    })
-                      .HtmlAttributes(new { style = "height: 550px;" })
-                          .Pageable(pageable => pageable
-                                      .Input(true)
-                                      .Numeric(false)
-                                      .Refresh(true)
-                                      .PageSizes(true)
-                                      .ButtonCount(20))
-                          .Scrollable()
-                          .Sortable()
-                          .Filterable()
-
-                          .Scrollable(h => h.Height(500))
-                          .Events(x => x.DataBound("onDataBoundCountLines"))
-                     .Events(events => events.Edit("edit"))
-                    .DataSource(dataSource => dataSource
-                        .Ajax()
-                         .Events(ev => ev
-                                  .Error("error_handler(\"Item_#=PropertyCountId#\")")
-                                  .RequestStart("onRequestStart(\"Item_#=PropertyCountId#\")")
-                                  .RequestEnd("onRequestEnd(\"Item_#=PropertyCountId#\")"))
-                        .Model(model =>
-                        {
-                            model.Id(p => p.PropertyCountItemId);
-                //model.Field(p => p.ItemCategoryCode).Editable(false);
-                //model.Field(p => p.ItemName).Editable(false);
-                // model.Field(p => p.ItemCode).Editable(false);
-                model.Field(p => p.ItemCodeReadOnly).Editable(false);
-                            model.Field(p => p.Status).Editable(false);
-                //model.Field(p => p.Uom).Editable(false);
-            })
-                          .Read(read => read.Action("PropertyCountItems_Read", "PropertyCountItem", new { id = "#= PropertyCountId #" }))
-                           .Create(create => create.Action("PropertyCountItems_Create", "PropertyCountItem", new { id = "#= PropertyCountId #" }))
-                        .Update(update => update.Action("PropertyCountItems_Update", "PropertyCountItem"))
-                        .Destroy(destroy => destroy.Action("PropertyCountItems_Destroy", "PropertyCountItem"))
-                    ).ToClientTemplate()
+            .Scrollable(h => h.Height(500))
+            .Events(x => x.DataBound("onDataBoundCountLines"))
+       .Events(events => events.Edit("edit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+           .Events(ev => ev
+                    .Error("error_handler(\"Item_#=PropertyCountId#\")")
+                    .RequestStart("onRequestStart(\"Item_#=PropertyCountId#\")")
+                    .RequestEnd("onRequestEnd(\"Item_#=PropertyCountId#\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.PropertyCountItemId);
+              //model.Field(p => p.ItemCategoryCode).Editable(false);
+              //model.Field(p => p.ItemName).Editable(false);
+              // model.Field(p => p.ItemCode).Editable(false);
+              model.Field(p => p.ItemCodeReadOnly).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              //model.Field(p => p.Uom).Editable(false);
+          })
+            .Read(read => read.Action("PropertyCountItems_Read", "PropertyCountItem", new { id = "#= PropertyCountId #" }))
+             .Create(create => create.Action("PropertyCountItems_Create", "PropertyCountItem", new { id = "#= PropertyCountId #" }))
+          .Update(update => update.Action("PropertyCountItems_Update", "PropertyCountItem"))
+          .Destroy(destroy => destroy.Action("PropertyCountItems_Destroy", "PropertyCountItem"))
+      ).ToClientTemplate()
     )
 
 
@@ -401,8 +398,6 @@
 
     }
 
-
-
     function refresh(e) {
         $('#loading-image').show();
         $.ajax({
@@ -423,30 +418,9 @@
                 $('#loading-image').hide();
             }
         });
+
     }
 
-
-    function recalculateAll(e) {
-        $('#loading-image').show();
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("RecalculateAllStoreItems", "PropertyCount")',
-            contentType: "application/json; charset=utf-8",
-            data: { id: codeid },
-            dataType: "json",
-            success: function (result) {
-                // toastr.warnning(result.Message);
-                alert(result.Message);
-                //location.reload(true);
-            }, //end succ
-            error: function (result) {
-                alert(result);
-            },
-            complete: function () {
-                $('#loading-image').hide();
-            }
-        });
-    }
     
  
     

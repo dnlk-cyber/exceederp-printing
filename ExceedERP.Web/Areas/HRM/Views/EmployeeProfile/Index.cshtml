@@ -18,8 +18,8 @@
     effect.Fade(FadeDirection.In)))
     .Items(tabstrip =>
     {
-        tabstrip.Add().Text("Employee Profile")
-        .Selected(false)
+     tabstrip.Add().Text("Employee Profile")
+        .Selected(true)
         .Content(@<text>
 
           @EmployeeProfile()
@@ -27,10 +27,10 @@
           </text>);
 
    tabstrip.Add().Text("Not Placed Employees")
-    .Selected(true)
+    .Selected(false)
     .Content(@<text>
 
-            @NotPlaced_Employees()
+        @NotPlaced_Employees()
 
     </text>);
 
@@ -38,7 +38,7 @@
     .Content(@<text>
 
               @*@InActiveEmployees()*@
-              @InActiveEmployeeAllDatas()
+          @InActiveEmployeeAllDatas()
 
         </text>);
    })
@@ -67,132 +67,120 @@
             </p>
         </div>
         @(Html.Kendo().Grid<Person_Employee>()
-                                      .Name("Person_Employeegrid_NotPlaced")
-                                     .Columns(columns =>
-                                     {
-                                         columns.Bound(c => c.EmployeeCode).ClientTemplate(
-                                                       @"<div class='Employee-photo'
-                                                      style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
-                                                   "<div class='Employee-name'>#:EmployeeCode#</div>").Width(150);
-                                         columns.Bound(c => c.Title).EditorTemplateName("Enum").Width(50).Visible(false);
-                                         columns.Bound(c => c.IsProbationEnd).Visible(false);
-
-                                         columns.Bound(c => c.FirstName).Width(100);//Filterable(ftb => ftb.Multi(true).Search(true))
-                                         columns.Bound(c => c.FirstNameEnglish).Width(100);
-
-                                         //.Filterable(filterable => filterable.UI("cityFilter"));
-                                         columns.Bound(c => c.MiddleName).Width(100);
-                                         columns.Bound(c => c.MiddleNameEnglish).Width(100);
-                                         columns.Bound(c => c.LastName).Width(100);
-                                         columns.Bound(c => c.LastNameEnglish).Width(100);
-                                         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                                         //columns.Bound(c => c.MothersFullName).Width(100);
-                                         columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(80);
-                                         columns.Bound(c => c.DateOfBirthAm).Width(100);//.Format("{0:yyyy-MM-dd}");
-                                         columns.Bound(c => c.HiredDateAmharic).Width(100);                                      //  columns.Bound(c => c.BirthPlace).Width(120);
-                                         columns.Bound(c => c.Region).EditorTemplateName("Enum").Width(100).Visible(false);
-                                         columns.Bound(c => c.Religion).EditorTemplateName("Enum").Width(100).Visible(false);
-                                         columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100).Visible(true);
-                                         columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100).Visible(true);
-                                         columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["NationList"], "LookupId", "Description").EditorTemplateName("Nation").Width(100).Visible(true);
-                                         // columns.ForeignKey(c => c.Nationality, (IEnumerable)ViewData["Nationalites"], "CountryId", "Nationality").EditorTemplateName("NationalityList").Width(100);
-                                         columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(100);
-                                         //  columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["Nation"], "Nation", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                                         //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
-                                         columns.Command(command =>
-                                         {
-                                             if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                             {
-                                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                             }
-                                             if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                             {
-                                                 command.Destroy().Text(Resources.ActionButton_Cancel);
-                                             }
-                                         }).Width(200);
-                                     })
-                                  .ToolBar(toolbar =>
-                                  {
-                                  toolbar.Template(@<text>
+                .Name("Person_Employeegrid_NotPlaced")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.EmployeeCode).ClientTemplate(
+                                  @"<div class='Employee-photo'
+                                 style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+                              "<div class='Employee-name'>#:EmployeeCode#</div>").Width(150);
+                    columns.Bound(c => c.Title).EditorTemplateName("Enum").Width(50).Visible(false);
+                    columns.Bound(c => c.IsProbationEnd).Visible(false);
+             
+                    columns.Bound(c => c.FirstName).Width(100);//Filterable(ftb => ftb.Multi(true).Search(true))
+                    columns.Bound(c => c.FirstNameEnglish).Width(100);
+             
+                    //.Filterable(filterable => filterable.UI("cityFilter"));
+                    columns.Bound(c => c.MiddleName).Width(100);
+                    columns.Bound(c => c.MiddleNameEnglish).Width(100);
+                    columns.Bound(c => c.LastName).Width(100);
+                    columns.Bound(c => c.LastNameEnglish).Width(100);
+                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                    //columns.Bound(c => c.MothersFullName).Width(100);
+                    columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(80);
+                    columns.Bound(c => c.DateOfBirthAm).Width(100);//.Format("{0:yyyy-MM-dd}");
+                    columns.Bound(c => c.HiredDateAmharic).Width(100);                                      //  columns.Bound(c => c.BirthPlace).Width(120);
+                    columns.Bound(c => c.Region).EditorTemplateName("Enum").Width(100).Visible(false);
+                    columns.Bound(c => c.Religion).EditorTemplateName("Enum").Width(100).Visible(false);
+                    columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100).Visible(true);
+                    columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100).Visible(true);
+                    columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["NationList"], "LookupId", "Description").EditorTemplateName("Nation").Width(100).Visible(true);
+                    // columns.ForeignKey(c => c.Nationality, (IEnumerable)ViewData["Nationalites"], "CountryId", "Nationality").EditorTemplateName("NationalityList").Width(100);
+                    columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(100);
+                    //  columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["Nation"], "Nation", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                    //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
+                    columns.Command(command =>
+                    {
+                        if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        }
+                        if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                        {
+                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                        }
+                    }).Width(200);
+                })
+             .ToolBar(toolbar =>
+             {
+              toolbar.Template(@<text>
         <div class="toolbar" style="">
             @if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
             {
-                @item.CreateButton(Resources.ActionButton_AddNewRecord);              
+                @*@item.CreateButton(Resources.ActionButton_AddNewRecord);*@              
             }        
         </div>
-                                </text>);
-
-                                  })                                          
-                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployeeNew").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
-                                     .Scrollable(h => h.Height(500))
-                                       // .Groupable()
-                                       .Sortable(sortable =>
-                                       {
-                                           sortable.SortMode(GridSortMode.SingleColumn);
-                                       })
-                                                   
-                             .Filterable()
-
-                             .ColumnMenu()
-
-                              .Events(e =>
-                              {
-                                  e.Save("GetDate");
-                                  e.DataBound("onDataBound");
-                                  e.Edit("GetDate");
-                              })
-                             .Pageable(pageable => pageable
-                                .Input(true)
-                                .Numeric(false)
-                                .Refresh(true)
-                                .PageSizes(true)
-                                .ButtonCount(5)
-                                .Enabled(true)
-                                )
-
-
-                   .DataSource(dataSource => dataSource
-                       .Ajax()
-                      .Sort(sort => sort.Add("EmployeeCode"))
-                       .ServerOperation(true)
-                        .Events(events =>
-                        {
-                            events.Error("error_handler(\"Person_Employeegrid_NotPlaced\")");
-                            events.RequestStart("onRequestStart(\"Person_Employeegrid_NotPlaced\")");
-                            events.RequestEnd("onRequestEnd(\"Person_Employeegrid_NotPlaced\")");
-                        })
-
+               </text>);
+               })                                          
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployeeNew").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
+                    .Scrollable(h => h.Height(500))
+                    // .Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })                                
+                       .Filterable()
+                       .ColumnMenu()
+                       .Events(e =>
+                       {
+                           e.Save("GetDate");
+                           e.DataBound("onDataBound");
+                           e.Edit("GetDate");
+                       })
+                      .Pageable(pageable => pageable
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
+                      .ButtonCount(5)
+                      .Enabled(true))                      
+                      .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Sort(sort => sort.Add("EmployeeCode").Descending())
+                      .ServerOperation(true)
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"Person_Employeegrid_NotPlaced\")");
+                          events.RequestStart("onRequestStart(\"Person_Employeegrid_NotPlaced\")");
+                          events.RequestEnd("onRequestEnd(\"Person_Employeegrid_NotPlaced\")");
+                      })
                        .Model(model => model.Id(p => p.EmployeeId))
                        .Read(read => read.Action("NotPlaced_Employees_Read", "InActiveEmployees"))
                        .Create(create => create.Action("Person_Employee_Create", "EmployeeProfile"))
                        .Update(update => update.Action("Person_Employee_Update", "EmployeeProfile"))
                        .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "EmployeeProfile"))
-
                        ).ClientDetailTemplateId("template")
 
         )
 }
     <script id="template" type="text/kendo-tmpl">
         @(Html.Kendo().TabStrip()
-                                            .Name("tabstrip1_#=EmployeeId#")
+                                    .Name("tabstrip1_#=EmployeeId#")
                                     .SelectedIndex(0)
                                     .Items(items =>
                                     {
                                         items.Add().Text(Resources.Details).Content(
                                             @<text>
 
-                                                @(Html.Kendo().PanelBar()
-                                                                           .Name("panelbar2_#=EmployeeId#")
-                                                                   .ExpandMode(PanelBarExpandMode.Single)
-                                                                   .Items(panelbar =>
-                                                                   {
-
-                                                                       panelbar.Add().Text(Resources.Details)
-
-                                                         .Expanded(true)
-                                                         .Content(
-
-                                                              "<div>" +
+                                             @(Html.Kendo().PanelBar()
+                                                 .Name("panelbar2_#=EmployeeId#")
+                                                 .ExpandMode(PanelBarExpandMode.Single)
+                                                 .Items(panelbar =>
+                                                 {
+                                                 panelbar.Add().Text(Resources.Details)                                                                 
+                                                  .Expanded(true)
+                                                  .Content(
+                                                  "<div>" +
                                                    "<table class='table'>" +
                                                    "<tr>" +
                                                        "<th>" + Resources.Details + "<th>" +
@@ -459,10 +447,10 @@
 
 
                                     //*******************************************Training*******************************************************
-                                    items.Add().Text(Resources.Navigator_Employee_Tranining).Content(
-                                        @<text>
-                                            @(Html.Kendo().Grid<Training>()
-            .Name("EmpTrainingEducation_#=EmployeeId#")
+         items.Add().Text(Resources.Navigator_Employee_Tranining).Content(
+          @<text>
+            @(Html.Kendo().Grid<Training>()
+            .Name("EmpTrainingEducation_NotPlaced#=EmployeeId#")
             .Columns(columns =>
             {
                 columns.Bound(c => c.TrainingName).Width(150);
@@ -478,7 +466,6 @@
                 {
                     if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
                     {
-
                         command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                     }
                     if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
@@ -486,104 +473,94 @@
                         command.Destroy().Text(Resources.ActionButton_Cancel);//
                     }
                 }).Width(200);
-            })
-                                                    .ToolBar(toolbar =>
-                                                    {
-                                                        if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                                        {
+               })
+                  .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      }
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("EmployeeTraining").Window(window => { window.Title("Employee Training "); window.Scrollable(false); }))
+                  .Scrollable(h => h.Height("auto"))
+                  .Events(e => e.Save("GetTrainingDate"))
+                  .Events(e => e.Edit("GetTrainingDate"))
+                  .DataSource(dataSource => dataSource
+                  .Ajax()
+                   .Events(events =>
+                   {
 
-                                                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                        }
-                                                    })
-                                                                                                             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("EmployeeTraining").Window(window => { window.Title("Employee Training "); window.Scrollable(false); }))
-                                                                                        .Scrollable(h => h.Height(500))
-                                                    .Events(e => e.Save("GetTrainingDate"))
-                                                            .Events(e => e.Edit("GetTrainingDate"))
-                               .DataSource(dataSource => dataSource
-                                   .Ajax()
-                                            .Events(events =>
-                                            {
-
-                                                events.Error("error_handler(\"EmpTrainingEducation_NotPlaced#=EmployeeId#\")");
-                                                events.RequestStart("onRequestStart(\"EmpTrainingEducation_NotPlaced#=EmployeeId#\")");
-                                                events.RequestEnd("onRequestEnd(\"EmpTrainingEducation_NotPlaced#=EmployeeId#\")");
-                                            })
-
-                                   .Model(model => model.Id(p => p.EmpEduTrainId))
-                                           .Read(read => read.Action("EmpTrainingEducations_Read", "EmployeeTraining", new { idTr = "#=EmployeeId#" }))
-                                            .Create(create => create.Action("EmpTrainingEducations_Create", "EmployeeTraining", new { idTrTwo = "#=EmployeeId#" }))
-                                           .Update(update => update.Action("EmpTrainingEducations_Update", "EmployeeTraining"))
-                                           .Destroy(destroy => destroy.Action("EmpTrainingEducations_Destroy", "EmployeeTraining"))
-                                                    ).ToClientTemplate()
-                                            )
-
-                                        </text>
-                                                          );
+                       events.Error("error_handler(\"EmpTrainingEducation_NotPlaced#=EmployeeId#\")");
+                       events.RequestStart("onRequestStart(\"EmpTrainingEducation_NotPlaced#=EmployeeId#\")");
+                       events.RequestEnd("onRequestEnd(\"EmpTrainingEducation_NotPlaced#=EmployeeId#\")");
+                   })
+                   .Model(model => model.Id(p => p.EmpEduTrainId))
+                   .Read(read => read.Action("EmpTrainingEducations_Read", "EmployeeTraining", new { idTr = "#=EmployeeId#" }))
+                   .Create(create => create.Action("EmpTrainingEducations_Create", "EmployeeTraining", new { idTrTwo = "#=EmployeeId#" }))
+                   .Update(update => update.Action("EmpTrainingEducations_Update", "EmployeeTraining"))
+                   .Destroy(destroy => destroy.Action("EmpTrainingEducations_Destroy", "EmployeeTraining"))
+                    ).ToClientTemplate()
+                    )
+                    </text>
+                    );
 
                                     //*********************************LanguageOfInterest*************************************************//
-                                    items.Add().Text(Resources.HR_LanguageProficiency).Content(
-                                        @<text>
+                    items.Add().Text(Resources.HR_LanguageProficiency).Content(
+                        @<text>
+                        @(Html.Kendo().Grid<LanguageProficiency>()
+                         .Name("LangugeOfInterestGrid_NotPlaced#=EmployeeId#")
+                         .Columns(columns =>
+                         {
+                             columns.ForeignKey(c => c.LanguageId, (System.Collections.IEnumerable)ViewData["LanguageList"], "LanguageId", "Description").Width(150); //EditorTemplateName("LanguagesLists")
+                             columns.Bound(c => c.Reading).EditorTemplateName("Enum");
+                             columns.Bound(c => c.Writing).EditorTemplateName("Enum");
+                             columns.Bound(c => c.Listening).EditorTemplateName("Enum");
+                             columns.Bound(c => c.Speaking).EditorTemplateName("Enum");
+                             columns.Bound(c => c.Remark);
+                             columns.Command(command =>
+                             {
+                                 if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                                 {
 
+                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                 }
+                                 if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                 {
+                                     command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                 }
+                             }).Width(190);
+                         })
+                         .ToolBar(toolbar =>
+                         {
+                             if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                             {
 
-                                            @(Html.Kendo().Grid<LanguageProficiency>()
-                                                                                .Name("LangugeOfInterestGrid_#=EmployeeId#")
-                                                                                .Columns(columns =>
-                                                                                {
-                                                                                    columns.ForeignKey(c => c.LanguageId, (System.Collections.IEnumerable)ViewData["LanguageList"], "LanguageId", "Description").Width(150); //EditorTemplateName("LanguagesLists")
-                                                                                    columns.Bound(c => c.Reading).EditorTemplateName("Enum");
-                                                                                    columns.Bound(c => c.Writing).EditorTemplateName("Enum");
-                                                                                    columns.Bound(c => c.Listening).EditorTemplateName("Enum");
-                                                                                    columns.Bound(c => c.Speaking).EditorTemplateName("Enum");
-                                                                                    columns.Bound(c => c.Remark);
-                                                                                    columns.Command(command =>
-                                                                                    {
-                                                                                        if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                                                                        {
+                                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                             }
+                         })
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                         .Selectable(selectable =>
+                         {
+                             selectable.Mode(GridSelectionMode.Single);
+                             selectable.Type(GridSelectionType.Row);
+                         })
+                         .Scrollable(h => h.Height(500))
+                         .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Events(events =>
+                         {
+                            events.Error("error_handler(\"LangugeOfInterestGrid_NotPlaced#=EmployeeId#\")");
+                            events.RequestStart("onRequestStart(\"LangugeOfInterestGrid_NotPlaced#=EmployeeId#\")");
+                            events.RequestEnd("onRequestEnd(\"LangugeOfInterestGrid_NotPlaced#=EmployeeId#\")");
+                         })
 
-                                                                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                        }
-                                                                                        if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                                                                        {
-                                                                                            command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                                                                        }
-                                                                                    }).Width(190);
-                                                                                })
-                                                                                .ToolBar(toolbar =>
-                                                                                {
-                                                                                    if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                                                                    {
-
-                                                                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                    }
-                                                                                })
-                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                .Selectable(selectable =>
-                                                                                {
-                                                                                    selectable.Mode(GridSelectionMode.Single);
-                                                                                    selectable.Type(GridSelectionType.Row);
-                                                                                })
-                                                                                .Scrollable(h => h.Height(500))
-                                                                                .DataSource(dataSource => dataSource
-                                                                                    .Ajax()
-                                                                                            .Events(events =>
-                                                                                            {
-
-                                                                                                events.Error("error_handler(\"LangugeOfInterestGrid_NotPlaced#=EmployeeId#\")");
-                                                                                                events.RequestStart("onRequestStart(\"LangugeOfInterestGrid_NotPlaced#=EmployeeId#\")");
-                                                                                                events.RequestEnd("onRequestEnd(\"LangugeOfInterestGrid_NotPlaced#=EmployeeId#\")");
-                                                                                            })
-
-                                                                                    .Model(model => model.Id(p => p.LanguageProficiencyId))
-                                                                                                            .Read(read => read.Action("LanguageOfProficiencies_Read", "LanguageProficiency", new { Area = "Common", id = "#=EmployeeId#" }))
-                                                                                                            .Create(create => create.Action("LanguageOfProficiencies_Create", "LanguageProficiency", new { Area = "Common", id = "#=EmployeeId#" }))
-                                                                                                                                            .Update(update => update.Action("LanguageOfProficiencies_Update", "LanguageProficiency", new { Area = "Common" }))
-                                                                                                                            .Destroy(destroy => destroy.Action("LanguageOfProficiencies_Destroy", "LanguageProficiency", new { Area = "Common" }))
-                                                                                ).ToClientTemplate()
-                                            )
-
-
-
-                                        </text>
+                            .Model(model => model.Id(p => p.LanguageProficiencyId))                                                                                              .Read(read => read.Action("LanguageOfProficiencies_Read", "LanguageProficiency", new { Area = "Common", id = "#=EmployeeId#" }))
+                            .Create(create => create.Action("LanguageOfProficiencies_Create", "LanguageProficiency", new { Area = "Common", id = "#=EmployeeId#" }))
+                            .Update(update => update.Action("LanguageOfProficiencies_Update", "LanguageProficiency", new { Area = "Common" }))
+                            .Destroy(destroy => destroy.Action("LanguageOfProficiencies_Destroy", "LanguageProficiency", new { Area = "Common" }))
+                             ).ToClientTemplate()
+                               )
+                           </text>
                             );
 
                                     //*********************************Comptency*************************************************//
@@ -2886,7 +2863,7 @@ items.Add().Text("Status").Content(
          columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(100);
 
      })
-     
+
             .Excel(excel => excel
                   .FileName(Resources.Navigator_Employee_EmployeeProfile + ".xlsx")
                   .Filterable(true)
@@ -2899,7 +2876,7 @@ items.Add().Text("Status").Content(
               )
                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployee").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
                .Scrollable(h => h.Height(500))
-              //.Groupable()
+               //.Groupable()
                .Sortable(sortable =>
                {
                    sortable.SortMode(GridSortMode.SingleColumn);
@@ -2915,17 +2892,21 @@ items.Add().Text("Status").Content(
                   .Enabled(true)
                   )
                   .ColumnMenu()
+                  .Events(ev=>
+                  {
+                      ev.DetailExpand("onDetailExpandInActive");
+                  })
 
             .DataSource(dataSource => dataSource
                .Ajax()
                .Sort(sort => sort.Add("EmployeeCode"))
                .ServerOperation(true)
                            .Events(events =>
-                {
-                    events.Error("error_handler(\"InActive_Person_Employeegrid\")");
-                    events.RequestStart("onRequestStart(\"InActive_Person_Employeegrid\")");
-                    events.RequestEnd("onRequestEnd(\"InActive_Person_Employeegrid\")");
-                })
+                           {
+                               events.Error("error_handler(\"InActive_Person_Employeegrid\")");
+                               events.RequestStart("onRequestStart(\"InActive_Person_Employeegrid\")");
+                               events.RequestEnd("onRequestEnd(\"InActive_Person_Employeegrid\")");
+                           })
 
                 .Model(model => model.Id(p => p.EmployeeId))
                 .Read(read => read.Action("InActiveEmployees_Read", "InActiveEmployees"))
@@ -2941,19 +2922,16 @@ items.Add().Text("Status").Content(
                                     {
                                         items.Add().Text(Resources.Details).Content(
                                         @<text>
-
+        <a onclick="ReHireTheEmployee(#=EmployeeId#)" title="Rehiring" data-toggle='tooltip'><i class="btn btn-danger fa fa-check fa-2x" style="padding-top:1px;padding-bottom:1px;border-radius:5px;"></i></a>
                                             @(Html.Kendo().PanelBar()
-                                                                   .Name("InActive_panelbar_#=EmployeeId#")
-                                                                   .ExpandMode(PanelBarExpandMode.Single)
-                                                                   .Items(panelbar =>
-                                                                   {
-
-                                                                       panelbar.Add().Text(Resources.Details)
-
+                                                 .Name("InActive_panelbar_#=EmployeeId#")
+                                                 .ExpandMode(PanelBarExpandMode.Single)
+                                                 .Items(panelbar =>
+                                                 {
+                                                     panelbar.Add().Text(Resources.Details)                                                                
                                                          .Expanded(true)
                                                          .Content(
-
-                                                              "<div>" +
+                                                   "<div>" +
                                                    "<table class='table'>" +
                                                    "<tr>" +
                                                        "<th>" + Resources.Details + "<th>" +
@@ -6280,3 +6258,27 @@ items.Add().Text("Profile").Content(
 
 
 
+<script>
+    function onDetailExpandInActive(e) {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+
+    function ReHireTheEmployee(employeeId)
+    {
+        if (confirm("Are you sure to rehire this employee")) {
+             $.ajax({
+              type: 'POST',
+                  url: '@Url.Action("ReHireRetiredEmployees", "EmployeeProfile")',
+                  data: { employeeId: employeeId},
+                  async: false,
+                  success: function (result) {
+
+                      alert("Employee Rehired successfully")
+                      $("#InActive_Person_Employeegrid").data("kendoGrid").dataSource.read();
+                   
+              }
+           });
+        }
+    }
+
+</script>

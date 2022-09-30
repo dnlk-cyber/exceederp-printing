@@ -22,7 +22,8 @@
 
         columns.Bound(c => c.Description).Width(150);
         columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(160);
-        columns.Bound(c => c.TicketGroup).Width(160);
+       // columns.Bound(c => c.TicketGroup).Width(160);
+        columns.ForeignKey(c => c.SupportGroupId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
         columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(160);
         columns.Bound(c => c.Rate).Width(120);
 
@@ -83,140 +84,141 @@
 )
 
 
-<script id="template" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-               .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
-    .SelectedIndex(0)
-    .Items(items =>
-     {
-         items.Add().Text("  Detail  ").Content(
-            @<text>
-                <dl class="dl-horizontal">
+    <script id="template" type="text/kendo-tmpl">
+        @(Html.Kendo().TabStrip()
+                           .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                 {
 
+                     items.Add().Text("  Assign Ticket  ").Content(
+                        @<text>
 
-                    <dt>
-                        Created On
-                    </dt>
-                    <dd>
-                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.AssignTicket_HelpDesk>()
+                                      .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
+                          .Columns(columns =>
+                          {
+                          // columns.Bound(c => c.AssignTicketId).Width(50);
 
-                    </dd>
-                    <dt>
-                        Created By
-                    </dt>
-                    <dd>
-                        #= CreatedBy #
-                    </dd>
-
-                    <dt>
-                        DueDate
-                    </dt>
-                    <dd>
-                        #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
-
-                    </dd>
+                          columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "EmployeeId", "FullNameaEnglish").Title("Assigned To").EditorTemplateName("EmployeesListFromGroup").Width(140);
+                                      columns.Bound(c => c.Role).Width(100);
+                                      columns.Bound(c => c.AssignedDate).Width(100);
+                          // columns.Bound(c => c.Age).Width(80);
+                          columns.Bound(c => c.Solution).Width(200);
 
 
 
-                    <dt>
-                        Modified By
-                    </dt>
-                    <dd>
-                        #= ModifiedBy #
-                    </dd>
-                    <dt>
-                        Modified Date
-                    </dt>
-                    <dd>
-                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                    </dd>
-                    <dt>
-                        Remark
-                    </dt>
-                    <dd>
-                        @Html.LabelFor(model => model.Remark)
+                          // columns.Command(command => { command.Custom("SendForClosing").Text(" Send For Closing ").Click("SendForClosing").HtmlAttributes(new { @class = " glyphicon-envelope btn-Success k-grid-sendforclose  " });
+                          columns.Command(command =>
+                                      {
+                              // command.Custom("solved").Text(" ").Click("ApproveSolved").IconClass("k-icon k-i-check").HtmlAttributes(new { @class = "btn btn-success ", title = "Approve Solved", });
 
-                    </dd>
-                </dl> </text>
-   );
-         items.Add().Text("  Assign Ticket  ").Content(
-            @<text>
+                              command.Edit();
+                                          command.Destroy();
+                                      }).Width(180);
+                                  })
+                           .ToolBar(toolbar =>
+                           {
+                                       toolbar.Create();
+                                       toolbar.Custom()
+                                            .Name("Assign")
+                                             .Text("Finish Assignement")
+                                            .HtmlAttributes(new { id = "btnAssign", onclick = "AssignTicket('#=CustomerTicket_HelpDeskId#')", @class = "btn btn-success" });
 
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.AssignTicket_HelpDesk>()
-                  .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
-      .Columns(columns =>
-      {
-          // columns.Bound(c => c.AssignTicketId).Width(50);
+                                   })
+                          .Events(ev =>
+                          {
 
-          columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "EmployeeId", "FullNameaEnglish").Title("Assigned To").EditorTemplateName("EmployeesListFromGroup").Width(140);
-          columns.Bound(c => c.Role).Width(100);
-          columns.Bound(c => c.AssignedDate).Width(100);
-          // columns.Bound(c => c.Age).Width(80);
-          columns.Bound(c => c.Solution).Width(200);
+                                      ev.DataBound("DetailDataBound");
 
+                                  })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
 
+                           .ClientDetailTemplateId("MaterialsUsed")
 
-          // columns.Command(command => { command.Custom("SendForClosing").Text(" Send For Closing ").Click("SendForClosing").HtmlAttributes(new { @class = " glyphicon-envelope btn-Success k-grid-sendforclose  " });
-          columns.Command(command =>
-          {
-              command.Custom("solved").Text(" ").Click("ApproveSolved").IconClass("k-icon k-i-check").HtmlAttributes(new { @class = "btn btn-success ", title = "Approve Solved", });
+                                  //    }))
 
-              command.Edit();
-              command.Destroy();
-          }).Width(180);
-      })
-       .ToolBar(toolbar =>
-       {
-           toolbar.Create();
-           toolbar.Custom()
-                .Name("Assign")
-                 .Text("Finish Assignement")
-                .HtmlAttributes(new { id = "btnAssign", onclick = "AssignTicket('#=CustomerTicket_HelpDeskId#')", @class = "btn btn-success" });
+                                  .Scrollable(h => h.Height(500))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(model =>
+                              {
+                                          model.Id(p => p.AssignTicket_HelpDeskId);
+                                          model.Field(p => p.AssignTicket_HelpDeskId).Editable(false);
+                                          model.Field(p => p.Age).Editable(false);
+                                          model.Field(p => p.AssignedDate).Editable(false);
+                                          model.Field(p => p.Solution).Editable(false);
 
-       })
-      .Events(ev =>
-      {
+                                      })
+                                  .Events(ev => ev
+                                                    .Error("error_handler(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
+                                                    .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
+                                                    .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
 
-          ev.DataBound("DetailDataBound");
+                                              .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
+                                              .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
+                              .Update(update => update.Action("AssignTickets_Update", "AssignTicket"))
+                              .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
+                          ).ToClientTemplate()
+                            )
 
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        </text>
+                                );
 
-       .ClientDetailTemplateId("MaterialsUsed")
-
-              //    }))
-
-              .Scrollable(h => h.Height(500))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Model(model =>
-          {
-              model.Id(p => p.AssignTicket_HelpDeskId);
-              model.Field(p => p.AssignTicket_HelpDeskId).Editable(false);
-              model.Field(p => p.Age).Editable(false);
-              model.Field(p => p.AssignedDate).Editable(false);
-              model.Field(p => p.Solution).Editable(false);
-
-          })
-              .Events(ev => ev
-                                .Error("error_handler(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
-                                .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
-                                .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
-
-                          .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
-                          .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
-          .Update(update => update.Action("AssignTickets_Update", "AssignTicket"))
-          .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
-      ).ToClientTemplate()
-                )
-
-            </text>
-            );
+                             items.Add().Text("  Detail  ").Content(
+                    @<text>
+                        <dl class="dl-horizontal">
 
 
-        //*****************************************************************************************************//
-    }).ToClientTemplate())
-</script>
+                            <dt>
+                                Created On
+                            </dt>
+                            <dd>
+                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Created By
+                            </dt>
+                            <dd>
+                                #= CreatedBy #
+                            </dd>
+
+                            <dt>
+                                DueDate
+                            </dt>
+                            <dd>
+                                #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
+
+                            </dd>
+
+
+
+                            <dt>
+                                Modified By
+                            </dt>
+                            <dd>
+                                #= ModifiedBy #
+                            </dd>
+                            <dt>
+                                Modified Date
+                            </dt>
+                            <dd>
+                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                            </dd>
+                            <dt>
+                                Remark
+                            </dt>
+                            <dd>
+                                @Html.LabelFor(model => model.Remark)
+
+                            </dd>
+                        </dl> </text>
+     );
+
+             //*****************************************************************************************************//
+         }).ToClientTemplate())
+    </script>
 
 
 

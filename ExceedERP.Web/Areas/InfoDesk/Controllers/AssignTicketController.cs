@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
-
+    [Authorize]
     public class AssignTicketController : Controller
     {
 
@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         {
             ViewData["AssignTo"] = db.Person_Employee.ToList();
             ViewData["Employees"] = db.Person_Employee.ToList();
-
+            ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             ViewData["Materials"] = db.MaterialItems.ToList();
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
@@ -81,7 +81,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }
             return age;
         }
-        [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
         public ActionResult AssignedHandler_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
             var tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id).ToList();
@@ -90,7 +89,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
             if (user != null)
             {
-                var empId = int.Parse(user.EmployeeId);
+                var empId = user.EmployeeId;
                 tickets = tickets.Where(x=>x.AssinedTo == empId).ToList();
             }
             else
@@ -119,7 +118,44 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
+        public ActionResult AssignedHandlerForSelfCare_Read([DataSourceRequest]DataSourceRequest request, int Id)
+        {
+            var tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id).ToList();
+            var userName = User.Identity.Name;
+
+            //var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
+            //if (user != null)
+            //{
+            //    var empId = int.Parse(user.EmployeeId);
+            //    tickets = tickets.Where(x => x.AssinedTo == empId).ToList();
+            //}
+            //else
+            //{
+            //    tickets = new List<AssignTicket_HelpDesk>();
+            //}
+
+
+            DataSourceResult result = tickets.ToDataSourceResult(request, s => new
+            {
+                CustomerTicketId = s.CustomerTicketId,
+                AssignTicket_HelpDeskId = s.AssignTicket_HelpDeskId,
+                Age = 0,//GetAge(s?.DateCreated, s?.ClosedDate, s.IsClosed),
+                AssignedDate = s.AssignedDate,
+                IsClosed = s.IsClosed,
+                AssinedTo = s.AssinedTo,
+                IsAssigned = s.IsAssigned,
+                Role = s.Role,
+                Solution = s.Solution,
+                Remarked = s.Remarked,
+                IsSendForClosing = s.IsSendForClosing,
+                IsSolved = s.IsSolved,
+                MaterialItemsId = s.MaterialItemsId
+
+            });
+
+            return Json(result);
+        }
+
         public ActionResult AssignTickets_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
           
@@ -147,7 +183,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        //[AuthorizeRoles(InfoDeskConstants.InfoDeskAssignTicket)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Create([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket, int Id)
         {
@@ -179,7 +215,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { assignTicket }.ToDataSourceResult(request));
         }
-       // [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Update([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket_HelpDesk)
         {
@@ -214,7 +250,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             return Json(new[] { assignTicket_HelpDesk }.ToDataSourceResult(request));
         }
 
-        [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
+      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Destroy([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk AssignTicket)
         {

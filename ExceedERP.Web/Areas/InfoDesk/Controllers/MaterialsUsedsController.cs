@@ -16,6 +16,7 @@ using ExceedERP.Core.Domain.Common;
 using System.Collections.Generic;
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
+    [Authorize]
     public class MaterialsUsedsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

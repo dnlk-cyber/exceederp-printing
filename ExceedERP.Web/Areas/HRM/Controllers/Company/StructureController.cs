@@ -94,35 +94,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin, HrmConstants.HRCompanyUser)]
         public ActionResult Structure_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Core.Domain.Common.HRM.Structure> structures = db.Structure;
-            if (request.Filters != null)
-            {
-                dd: if (request.Filters.Any())
-                {
-                    foreach (var filter in request.Filters)
-                    {
-                        var descriptor = filter as FilterDescriptor;
-                        if (descriptor != null)
-                        {
-                            if (descriptor.Member == "Name")
-                            {
-                                structures = ModifyFilters(request.Filters, structures).AsQueryable();
+            var structures = db.Structure.ToList();
 
-                            }
+            #region Filteration Comment
+            //if (request.Filters != null)
+            //{
+            //    dd: if (request.Filters.Any())
+            //    {
+            //        foreach (var filter in request.Filters)
+            //        {
+            //            var descriptor = filter as FilterDescriptor;
+            //            if (descriptor != null)
+            //            {
+            //                if (descriptor.Member == "Name")
+            //                {
+            //                    structures = ModifyFilters(request.Filters, structures).AsQueryable();
 
-                        }
-                        else if (filter is CompositeFilterDescriptor)
-                        {
+            //                }
 
-                            request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
-                            goto dd;
-                            //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
+            //            }
+            //            else if (filter is CompositeFilterDescriptor)
+            //            {
 
-                        }
-                    }
-                    //request.Filters.Clear();
-                }
-            }
+            //                request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
+            //                goto dd;
+            //                //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
+
+            //            }
+            //        }
+            //        //request.Filters.Clear();
+            //    }
+            //}
+
+            #endregion
+
             DataSourceResult result = structures.ToDataSourceResult(request, structure => new
             {
                 StructureId = structure.StructureId,
@@ -170,10 +175,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     #region operation log
 
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Structure ", "Success", User.Identity.Name, User.Identity.Name + " Create new Structure called " + entity.Name,Modules.HRM);
 
-                    
+                    UserHelper.OperationLog(Request.UserHostAddress, "Structure ", "Success", User.Identity.Name, User.Identity.Name + " Create new Structure called " + entity.Name, Modules.HRM);
+
+
                     #endregion
                 }
             }
@@ -206,9 +211,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 #region operation log
 
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                
-                    UserHelper.OperationLog(Request.UserHostAddress, "Structure ", "Success", User.Identity.Name, User.Identity.Name + " Updated Structure called " + entity.Name,Modules.HRM);
-                
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Structure ", "Success", User.Identity.Name, User.Identity.Name + " Updated Structure called " + entity.Name, Modules.HRM);
+
                 #endregion
             }
 

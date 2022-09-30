@@ -14,7 +14,7 @@ using ExceedERP.Core.Domain.InfoDesk;
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
 
-
+    [Authorize]
     public class StatusTypeController : Controller
     {
 

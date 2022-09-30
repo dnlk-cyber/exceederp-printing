@@ -18,6 +18,18 @@ namespace ExceedERP.Helpers.HR
         public static string ReportDateTwoAm { get; set; }
         public static DateTime ReportDateOne { get; set; }
         public static DateTime ReportDateTwo { get; set; }
+
+        public static string GetHireDate(int empId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var person = db.Person_Employee.Find(empId);
+            if (person != null)
+            {
+                return person.HiredDateAmharic;
+            }
+
+            return "";
+        }
         public static string GetMartialStatus(Person_Employee e)
         {
             switch (e.MartialStatus)

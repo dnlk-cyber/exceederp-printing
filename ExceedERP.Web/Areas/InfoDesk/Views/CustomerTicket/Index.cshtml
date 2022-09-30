@@ -13,7 +13,7 @@
                           columns.Bound(c => c.Description).Width(180);
                           columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(100);
 
-                          columns.Bound(c => c.TicketGroup).Width(120);
+                          columns.ForeignKey(c => c.SupportGroupId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
 
                           columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
 
@@ -190,7 +190,7 @@
                                       .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
                                       .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
 
-                               .Read(read => read.Action("AssignedHandler_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
+                               .Read(read => read.Action("AssignedHandlerForSelfCare_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
                                .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
                                .Update(update => update.Action("Handler_Update", "Handler"))
                                .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
@@ -301,10 +301,10 @@
             if (dataItem.Status == "0") {
                 $(this).find(".k-grid-confirm").hide();
             }
-            if (dataItem.Status == "1") {
-                $(this).find(".k-grid-confirm").show();
-                $(this).css("background-color", "yellow");
-            }
+            //if (dataItem.Status == "1") {
+            //    $(this).find(".k-grid-confirm").show();
+            //    $(this).css("background-color", "yellow");
+            //}
             if (dataItem.Status == "1") {
                 $(this).find(".k-grid-confirm").hide();
                 $(this).css("background-color", "yellow");

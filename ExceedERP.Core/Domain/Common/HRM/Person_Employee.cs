@@ -23,15 +23,12 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public string FirstName { get; set; }
         [Required]
         [Display(Name = "Common_PersonEmployee_MiddleName", ResourceType = typeof(Localization.Resources))]
-
         public string MiddleName { get; set; }
         [Display(Name = "Common_PersonEmployee_LastName", ResourceType = typeof(Localization.Resources))]
-
         [Required]
         public string LastName { get; set; }
         [Display(Name = "Common_PersonEmployee_Nationality", ResourceType = typeof(Localization.Resources))]
         public string Nationality { get; set; }
-
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Common_PersonEmployee_DateOfBirth", ResourceType = typeof(Localization.Resources))]
@@ -89,7 +86,7 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public List<Experience> Experience { get; set; }
         public List<Training> Training { get; set; }
         [NotMapped]
-        public string FullNameAmharic => string.Concat(FirstName + " " + MiddleName+" "+LastName);
+        public string FullNameAmharic => string.Concat(FirstName + " " + MiddleName + " " + LastName);
         [NotMapped]
         public string FullNameaEnglish => string.Concat(FirstNameEnglish + " " + MiddleNameEnglish + " " + LastNameEnglish);
         [NotMapped]
@@ -103,7 +100,8 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public string SubCity { get; set; }
         public string Wereda { get; set; }
         [Display(Name = "Employee Type")]
-        public int EmployeeTypeId { get; set; }
+        public int? EmployeeTypeId { get; set; }
         public bool IsPlaced { get; set; }
+        public bool IsReHired { get; set; }
     }
 }

@@ -17,6 +17,7 @@ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
+    [Authorize]
     public class HandlerController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -27,30 +28,31 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             ViewData["AssignTo"] = db.Person_Employee.ToList();
             ViewData["Employees"] = db.Person_Employee.ToList();
             ViewData["Materials"] = db.MaterialItems.ToList();
+            ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             return View();
         }
-        public ActionResult CustomerPendingTickets_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult Handler_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<CustomerTicket_HelpDesk> customertickets =new List<CustomerTicket_HelpDesk>(); //db.CustomerTickets.Where(x => x.Status != FinalizeType.CLOSED);
+            List<CustomerTicket_HelpDesk> customertickets = new List<CustomerTicket_HelpDesk>(); //db.CustomerTickets.Where(x => x.Status != FinalizeType.CLOSED);
 
             var userName = User.Identity.Name;
 
-            var user = adb.Users.FirstOrDefault(x=>x.UserName == userName);
+            var user = adb.Users.FirstOrDefault(x => x.UserName == userName);
             if (user != null)
             {
-                var empId = int.Parse(user.EmployeeId);
-                var assinedToMe = db.AssignTicket_HelpDesks.Where(x=>x.AssinedTo == empId).ToList()?.Select(x=>x.CustomerTicketId);
+                var empId = user.EmployeeId;
+                var assinedToMe = db.AssignTicket_HelpDesks.Where(x => x.AssinedTo == empId).ToList()?.Select(x => x.CustomerTicketId);
 
-                customertickets = db.CustomerTicket_HelpDesks.Where(x=>assinedToMe.Contains(x.CustomerTicket_HelpDeskId) && x.Status != InfoDeskFinalizeType.WAITING).ToList();
-            }            
-          
+                customertickets = db.CustomerTicket_HelpDesks.Where(x => assinedToMe.Contains(x.CustomerTicket_HelpDeskId) && x.Status != InfoDeskFinalizeType.WAITING).ToList();
+            }
+
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
             {
 
                 CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
                 Description = customerTicket.Description,
                 Priority = customerTicket.Priority,
-                TicketGroup = customerTicket.TicketGroup,
+                SupportGroupId = customerTicket.SupportGroupId,
                 SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
                 DueDate = customerTicket.DueDate,
                 CreatedBy = customerTicket.CreatedBy,
@@ -64,7 +66,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 AgeOfTicket = customerTicket.AgeOfTicket,
                 Rate = customerTicket.Rate,
                 EmployeeId = customerTicket.EmployeeId,
-                
+
 
             });
             return Json(result);
@@ -104,7 +106,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { assignTicket_HelpDesk }.ToDataSourceResult(request));
         }
-        
+
         public JsonResult GetMaterials()
         {
             var materials = db.MaterialItems.ToList();
@@ -122,9 +124,17 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var ticket = db.AssignTicket_HelpDesks.Find(assignId);
             if (ticket != null)
             {
-                var tickets = db.AssignTicket_HelpDesks.Where(x=>x.CustomerTicketId == ticket.CustomerTicketId && x.AssignTicket_HelpDeskId != assignId && !x.IsSendForClosing).ToList();
-                if(tickets.Any())
+                if (!ticket.IsSendForClosing)
                 {
+                    var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == ticket.CustomerTicketId);
+                    if (customer != null)
+                    {
+                        customer.Status = InfoDeskFinalizeType.WAITING_FOR_CONFIRMATION;
+
+                        db.Entry(customer).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+
                     ticket.IsSendForClosing = true;
 
                     db.Entry(ticket).State = EntityState.Modified;
@@ -134,41 +144,21 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 }
                 else
                 {
-                    if (!ticket.IsSendForClosing)
-                    {
-                        var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x=>x.CustomerTicket_HelpDeskId == ticket.CustomerTicketId);
-                        if(customer != null)
-                        {
-                            customer.Status = InfoDeskFinalizeType.WAITING_FOR_CONFIRMATION;
-
-                            db.Entry(customer).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                        ticket.IsSendForClosing = true;
-
-                        db.Entry(ticket).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                        return "true";
-                    }
-                    else
-                    {
-                        return "false";
-                    }
+                    return "false";
                 }
-                
+
             }
             return "faild";
         }
         public string CheckStatus(int masterId)
         {
-            var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x=>x.CustomerTicket_HelpDeskId == masterId);
-            if(customer != null)
+            var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == masterId);
+            if (customer != null)
             {
-                if(customer.Status == InfoDeskFinalizeType.RESOLVED || customer.Status == InfoDeskFinalizeType.CLOSED)
+                if (customer.Status == InfoDeskFinalizeType.RESOLVED || customer.Status == InfoDeskFinalizeType.CLOSED)
                 {
                     return "true";
-                }                
+                }
             }
             return "false";
         }

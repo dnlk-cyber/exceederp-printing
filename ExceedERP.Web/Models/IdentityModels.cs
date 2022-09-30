@@ -35,7 +35,7 @@ namespace ExceedERP.Web.Models
       
         public string MiddleName { get; set; }
 
-        public string EmployeeId { get; set;  }
+        public int EmployeeId { get; set;  }
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
 

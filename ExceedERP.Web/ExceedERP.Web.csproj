@@ -1545,6 +1545,7 @@
     <Compile Include="Areas\HRM\Controllers\Company\PeriodFiscalYearCourtController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\PeriodController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\ProjectTypeController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\WaterMarkController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\WeekendController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\CommitteMinuteDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\DisciplinaryCaseCourtController.cs" />
@@ -5251,6 +5252,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\WeeklyProductionPlans\EditorTemplates\EthDatePickerTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\WeeklyProductionPlans\EditorTemplates\YearPickerTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\WeeklyProductionPlans\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\Views.rar" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

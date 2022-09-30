@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.CRM;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,7 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public string Description { get; set; }
         [Required]
         public string Color { get; set; }
-        public FinalizeType Status { get; set; }
+        public InfoDeskFinalizeType Status { get; set; }
         public string Remark { get; set; }
         [NotMapped]
         [DefaultValue("")]

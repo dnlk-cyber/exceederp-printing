@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -97,36 +97,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult MainCompanyStructures_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<MainCompanyStructure> maincompanystructures = db.MainCompanyStructures;
+            var maincompanystructures = db.MainCompanyStructures.ToList();
 
-            if (request.Filters != null)
-            {
-                dd: if (request.Filters.Any())
-                {
-                    foreach (var filter in request.Filters)
-                    {
-                        var descriptor = filter as FilterDescriptor;
-                        if (descriptor != null)
-                        {
-                            if (descriptor.Member == "Name")
-                            {
-                                maincompanystructures = ModifyFilters(request.Filters, maincompanystructures).AsQueryable();
+            #region Filteration Comment
+            //if (request.Filters != null)
+            //{
+            //    dd: if (request.Filters.Any())
+            //    {
+            //        foreach (var filter in request.Filters)
+            //        {
+            //            var descriptor = filter as FilterDescriptor;
+            //            if (descriptor != null)
+            //            {
+            //                if (descriptor.Member == "Name")
+            //                {
+            //                    maincompanystructures = ModifyFilters(request.Filters, maincompanystructures).AsQueryable();
 
-                            }
+            //                }
 
-                        }
-                        else if (filter is CompositeFilterDescriptor)
-                        {
+            //            }
+            //            else if (filter is CompositeFilterDescriptor)
+            //            {
 
-                            request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
-                            goto dd;
-                            //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
+            //                request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
+            //                goto dd;
+            //                //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
 
-                        }
-                    }
-                    //request.Filters.Clear();
-                }
-            }
+            //            }
+            //        }
+            //        //request.Filters.Clear();
+            //    }
+            //}
+
+            #endregion
+
             DataSourceResult result = maincompanystructures.ToDataSourceResult(request, mainCompanyStructure => new
             {
                 OrgStructureId = mainCompanyStructure.OrgStructureId,
@@ -153,7 +157,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 var checkExstance = db.MainCompanyStructures.ToList();
                 var jobName = mainCompanyStructure.Name;
-                var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Name.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)) == jobName.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)));
+                var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Name == jobName);
                 if (mainCompanyStructures != null)
                 {
                     ModelState.AddModelError("", "This structure name already exists in the database!!");
@@ -181,10 +185,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     #region operation log
 
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Company Structure ", "Success", User.Identity.Name, User.Identity.Name + " Add new comopany Sturucture " + entity.Name,Modules.HRM);
 
-                  
+                    UserHelper.OperationLog(Request.UserHostAddress, "Company Structure ", "Success", User.Identity.Name, User.Identity.Name + " Add new comopany Sturucture " + entity.Name, Modules.HRM);
+
+
                     #endregion
                 }
             }

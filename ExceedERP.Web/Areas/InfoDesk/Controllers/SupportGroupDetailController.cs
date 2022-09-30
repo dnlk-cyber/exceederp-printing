@@ -12,7 +12,7 @@ using ExceedERP.Core.Domain.InfoDesk;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
-  
+    [Authorize]
     public class SupportGroupDetailController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupportGroupDetails_Create([DataSourceRequest]DataSourceRequest request, SupportGroupDetail_HelpDesk model, int Id)
         {
@@ -59,7 +59,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+    
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupportGroupDetails_Update([DataSourceRequest]DataSourceRequest request, SupportGroupDetail_HelpDesk model)
         {
@@ -80,7 +80,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { Groups }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.HelpDeskAdmin)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupportGroupDetails_Destroy([DataSourceRequest]DataSourceRequest request, SupportGroupDetail_HelpDesk model)
         {

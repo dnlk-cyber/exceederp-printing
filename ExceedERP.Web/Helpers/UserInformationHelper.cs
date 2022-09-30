@@ -14,6 +14,23 @@ using ExceedERP.Web.Areas.Inventory.Controllers;
 
 namespace ExceedERP.Web.Helpers
 {
+    public class EmployeeVm
+    {
+        public int EmployeeId { get; set; }
+        public string EmployeeCode { get; set; }
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
+        public string FirstNameEnglish { get; set; }
+        public string MiddleNameEnglish { get; set; }
+        public string LastNameEnglish { get; set; }
+    }
+    public class EmployeeCacheVm
+    {
+        public int PersonId { get; set; }
+        public string FullName { get; set; }
+        public string EmployeeCode { get; set; }
+    }
     public class EmployeeUseMapCacheVm
     {
         public int EmpId { get; set; }
@@ -52,7 +69,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
+                var placment = db.Placements.Where(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
                     var br = db.Branch.Find(placment.BranchId);
@@ -76,7 +93,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
+                var placment = db.Placements.Where(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
                     var str = db.MainCompanyStructures.Find(placment.OrgStructureId);
@@ -101,7 +118,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
+                var placment = db.Placements.Where(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
                     orgId = placment.OrgStructureId;
@@ -146,7 +163,7 @@ namespace ExceedERP.Web.Helpers
             //if (userempId != null)
             //{
 
-            //    var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId.ToString() == userempId.EmployeeId);
+            //    var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == userempId.EmployeeId);
             //    if (employee != null)
             //    {
             //        fullName = employee.FirstName + " " + employee.MiddleName + " " + employee.LastName;
@@ -156,6 +173,40 @@ namespace ExceedERP.Web.Helpers
             fullName = GetEmployeeFullNameFromCache(userName);
 
             return fullName;
+
+        }
+        public static List<EmployeeCacheVm> GetEmployeeDetailFromCache()
+        {
+            ExceedDbContext db = new ExceedDbContext();           
+
+            var employeeUseMapCacheVms = (List<EmployeeCacheVm>)MemoryCache.Default["EmployeeMap"];
+            if (employeeUseMapCacheVms == null)
+            {
+                List<EmployeeCacheVm> list = new List<EmployeeCacheVm>();
+                var employees = db.Person_Employee                  
+                    .Select(x => new { x.EmployeeId, x.EmployeeCode, x.FirstNameEnglish, x.MiddleNameEnglish, x.LastNameEnglish }).ToList();
+                foreach (var emp in employees)
+                {
+                    var record = new EmployeeCacheVm
+                    {
+                        FullName = emp.FirstNameEnglish + " " + emp.MiddleNameEnglish + " " + emp.LastNameEnglish,
+                        PersonId = emp.EmployeeId,
+                        EmployeeCode = emp.EmployeeCode
+                    };
+                    list.Add(record);
+                }
+
+                MemoryCache.Default["EmployeeMap"] = list;
+
+             
+                return list;
+
+            }
+
+            else
+            {
+                return employeeUseMapCacheVms; 
+            }
 
         }
         private static string GetEmployeeFullNameFromCache(string userName)
@@ -168,14 +219,14 @@ namespace ExceedERP.Web.Helpers
             {
                 List<EmployeeUseMapCacheVm> list = new List<EmployeeUseMapCacheVm>();
                 var users = userdetail.Users
-                    .Where(x=>x.EmployeeId!=null || x.EmployeeId != "")
+                    .Where(x=>x.EmployeeId!=0)
                     .Select(x => new {x.UserName, x.Id, x.EmployeeId}).ToList();
                 foreach (var user in users)
                 {
-                    if(string.IsNullOrEmpty(user.EmployeeId))
+                    if(user.EmployeeId==0)
                         continue;
 
-                    int empid = int.Parse(user.EmployeeId);
+                    int empid = user.EmployeeId;
                     var employee = db.Person_Employee.Select(x => new { x.EmployeeId,x.FirstName, x.MiddleName, x.LastName }).FirstOrDefault(x=>x.EmployeeId==empid);
                     if (employee != null)
                     {
@@ -214,7 +265,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var employee = await db.Person_Employee.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId)
+                var employee = await db.Person_Employee.Where(x => x.EmployeeId == userempId.EmployeeId)
                     .FirstOrDefaultAsync();
                 if (employee != null)
                 {
@@ -258,7 +309,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var employee = db.Person_Employee.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId).FirstOrDefault();
+                var employee = db.Person_Employee.Where(x => x.EmployeeId == userempId.EmployeeId).FirstOrDefault();
                 if (employee != null)
                 {
                     EmployeeId = employee.EmployeeId;
@@ -372,7 +423,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
+                var placment = db.Placements.Where(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
                     orgId = placment.OrgStructureId;
@@ -420,7 +471,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
+                var placment = db.Placements.Where(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
                     department = placment.OrgStructureId;
@@ -551,7 +602,7 @@ namespace ExceedERP.Web.Helpers
             {
                 try
                 {
-                    id = Int32.Parse(userInfo.EmployeeId);
+                    id = userInfo.EmployeeId;
                 }
                 catch (Exception e)
                 {
@@ -566,7 +617,7 @@ namespace ExceedERP.Web.Helpers
         {
             string employeeUserId = "";
             ApplicationDbContext _dbApplication = new ApplicationDbContext();
-            var userInfo = _dbApplication.Users.FirstOrDefault(x => x.EmployeeId == empid.ToString());
+            var userInfo = _dbApplication.Users.FirstOrDefault(x => x.EmployeeId == empid);
             if (userInfo != null)
             {
                 try
@@ -609,7 +660,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent);
+                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent);
                 if (placment != null)
                 {
                     orgId = placment.ReportsTo;
@@ -631,7 +682,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent);
+                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent);
                 if (placment != null)
                 {
                     orgId = placment.OrgStructureId;
@@ -653,7 +704,7 @@ namespace ExceedERP.Web.Helpers
             if (userInfo != null)
             {
                 var userWorkUnit = db.Placements.Where(x=>x.isCurrent)
-                    .FirstOrDefault(x => x.EmployeeId.ToString() == userInfo.EmployeeId);
+                    .FirstOrDefault(x => x.EmployeeId == userInfo.EmployeeId);
                    
                 if (userWorkUnit != null)
                 {
@@ -679,7 +730,7 @@ namespace ExceedERP.Web.Helpers
             if (userInfo != null)
             {
                 var userWorkUnit = db.Placements.Where(x => x.isCurrent)
-                    .FirstOrDefault(x => x.EmployeeId.ToString() == userInfo.EmployeeId);
+                    .FirstOrDefault(x => x.EmployeeId == userInfo.EmployeeId);
 
                 if (userWorkUnit != null)
                 {
@@ -745,7 +796,7 @@ namespace ExceedERP.Web.Helpers
             var user = _dbApplication.Users.FirstOrDefault(x => x.UserName == username);
             if (user != null)
             {
-                int.TryParse(user.EmployeeId, out int employeeId);
+                int employeeId=user.EmployeeId;
                 var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId);
                 if (place != null)
                 {
@@ -770,7 +821,7 @@ namespace ExceedERP.Web.Helpers
             if (userempId != null)
             {
 
-                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent);
+                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent);
                 if (placment != null)
                 {
                     list.Add(placment.ReportsTo);
@@ -782,6 +833,43 @@ namespace ExceedERP.Web.Helpers
 
             return list;
 
+        }
+
+        public static void ChangeDefaultBranch(int empId, int branchId)
+        {
+            var adb = new ApplicationDbContext();
+            var username = GetEmployeeUserId(empId);
+            var userId = GetUserId(username);
+
+            var oldBranchs = adb.UserBranches.Where(x => x.ApplicationUserId == userId).ToList();
+            foreach (var bra in oldBranchs)
+            {
+                bra.IsDefault = false;
+
+                adb.Entry(bra).State = EntityState.Modified;
+                adb.SaveChanges();
+            }
+
+            var checkBranch = adb.UserBranches.FirstOrDefault(x => x.ApplicationUserId == userId && x.UserBranchId == branchId.ToString());
+            if (checkBranch != null)
+            {
+                checkBranch.IsDefault = true;
+
+                adb.Entry(checkBranch).State = EntityState.Modified;
+                adb.SaveChanges();
+            }
+            else
+            {
+                var branch = new UserBranchGroup
+                {
+                    UserBranchId = branchId.ToString(),
+                    ApplicationUserId = userId,
+                    IsDefault = true
+                };
+
+                adb.UserBranches.Add(branch);
+                adb.SaveChanges();
+            }
         }
     }
 }

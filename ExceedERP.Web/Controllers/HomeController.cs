@@ -3463,6 +3463,30 @@ namespace ExceedERP.Web.Controllers
             _accountHelper.SplitBookAccountCombination();
             return View("Success");
         }
+
+        public ActionResult SplitItemIndex()
+        {
+            var items = _db.InventoryItems.ToList();
+            foreach (var item in items)
+            {
+                string[] codes = item.ItemCode.Split('-');
+                if (codes.Length == 3)
+                {
+                    item.Prefix = codes[0] + "-" + codes[1];
+                    item.ItemIndex = int.Parse(codes[2]);
+                    _db.Entry(item).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+                if (codes.Length == 2)
+                {
+                    item.Prefix = codes[0];
+                    item.ItemIndex = int.Parse(codes[1]);
+                    _db.Entry(item).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+            }
+            return View("Success");
+        }
         public ActionResult TakeToBeg(string id)
         {
             string searchKey = id + "-";

@@ -570,11 +570,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         db.SaveChanges();
                     }
                 }
-                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId.ToString());
+                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId);
                 if (user != null)
                 {
                     List<string> roleNames = new List<string>();
-                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId.ToString());
+                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId);
                     if (toUser != null)
                     {
                         foreach (var rm in user.Roles)
@@ -665,7 +665,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 }
 
 
-                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId.ToString());
+                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId);
                 if (user != null)
                 {
                     //List<string> roleNames = new List<string>();
@@ -681,7 +681,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                     //var rolesArray = roleNames.ToArray();
 
-                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId.ToString());
+                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId);
                     if (toUser != null)
                     {
                         var tempoRoles = db.DelegationTempoRoles.Where(x => x.FromUserId == user.Id && x.ToUserId == toUser.Id).ToList();

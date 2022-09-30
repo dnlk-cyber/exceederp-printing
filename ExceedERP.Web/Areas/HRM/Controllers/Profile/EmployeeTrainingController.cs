@@ -23,7 +23,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+    //[AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
     public class EmployeeTrainingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -98,10 +98,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
         }
 
-        [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+        //[AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         public ActionResult EmpTrainingEducations_Read([DataSourceRequest]DataSourceRequest request, int idTr)
         {
-            IQueryable<Training> emptrainingeducations = db.EmpTrainingEducations.Where(t => t.IsTraining == true && t.EmployeeId == idTr);
+            var emptrainingeducations = db.EmpTrainingEducations.Where(t => t.IsTraining == true && t.EmployeeId == idTr).ToList();
+
             DataSourceResult result = emptrainingeducations.ToDataSourceResult(request, empTrainingEducation => new
             {
                 EmpEduTrainId = empTrainingEducation.EmpEduTrainId,
