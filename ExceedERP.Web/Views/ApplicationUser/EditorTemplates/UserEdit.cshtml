@@ -20,17 +20,22 @@
             <div class="form-group">
                                 <div class="col-md-10">
                     @Html.LabelFor(m => m.EmployeeId, new { @class = "col-md-4 k-label" })
-                   @(Html.Kendo().ComboBoxFor(model => model)
-                     .Name("EmployeeId")
+                   @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                         //.Name("EmployeeId")
                          .DataValueField("PersonId")
                         .DataTextField("FullName")
-                           .Placeholder("Select Employee..")
+                           .OptionLabel("Select Employee..")
                             .Filter("contains")
                             .Events (e=> e.Change ("GetName"))
                             .MinLength(2)
                             .HtmlAttributes(new { style = "width:280px" })
-                                  .BindTo((System.Collections.IEnumerable)ViewData["EmployeeList"])
-                                           .ValuePrimitive(true)
+                             .DataSource(dataSource =>
+                             {
+                                 dataSource.Read(read => read.Action("GetEmployeeMap", "ApplicationUser", new { area = "" }).Data("filterEmployees"))
+                                     .ServerFiltering(true);
+                             })
+                                                    //.BindTo((System.Collections.IEnumerable)ViewData["EmployeeList"])
+                                                    //         .ValuePrimitive(true)
 
 
                                                     .Height(400)
