@@ -1714,5 +1714,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 .Where(a => string.IsNullOrEmpty(a.PlateNo) == false).Select(p => new { p.PlateNo }).Distinct().ToList();
             return Json(plateNumbers.Select(p => new { p.PlateNo }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetStoreCounts(string store)
+        {
+            var plateNumbers = db.PropertyCounts
+                .Where(a => a.StoreCode == store)
+                .Select(p => new { p.PropertyCountId, p.CountDate }).OrderByDescending(p => p.CountDate).ToList();
+            return Json(plateNumbers.Select(p => new { Code = p.PropertyCountId, Name = p.CountDate.ToShortDateString() }), JsonRequestBehavior.AllowGet);
+        }
     }
 }

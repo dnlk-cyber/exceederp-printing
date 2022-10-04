@@ -30,7 +30,6 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_EmployeeDetail_Placement_AssignmentDate", ResourceType = typeof(Localization.Resources))]
         public DateTime AssignmentDate { get; set; }
-
         [Display(Name = "HR_EmployeeDetail_Placement_AssignmentDate", ResourceType = typeof(Localization.Resources))]
         [Required]
         public string AssignmentDateAmharic { get; set; }
@@ -109,5 +108,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public int PreparedByEmpId { get; set; }
         [NotMapped]
         public string FullName { get; set; }
+        [NotMapped]
+        public string HireDate { get; set; }
     }
 }
