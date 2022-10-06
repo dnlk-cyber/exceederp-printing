@@ -35,8 +35,6 @@
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox13 = new Telerik.Reporting.TextBox();
             this.textBox15 = new Telerik.Reporting.TextBox();
-            this.ProformaODS = new Telerik.Reporting.ObjectDataSource();
-            this.JobOrderNoParameterODS = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.detail = new Telerik.Reporting.DetailSection();
             this.htmlTextBox1 = new Telerik.Reporting.HtmlTextBox();
@@ -96,6 +94,8 @@
             this.textBox48 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.JobOrderODS = new Telerik.Reporting.ObjectDataSource();
+            this.ProformaODS = new Telerik.Reporting.ObjectDataSource();
+            this.JobOrderNoParameterODS = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox1
@@ -221,18 +221,6 @@
             this.textBox15.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
             this.textBox15.StyleName = "";
             this.textBox15.Value = "አስተያየት\r\nRemark";
-            // 
-            // ProformaODS
-            // 
-            this.ProformaODS.DataMember = "GetProformas";
-            this.ProformaODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaListParameterODS);
-            this.ProformaODS.Name = "ProformaODS";
-            // 
-            // JobOrderNoParameterODS
-            // 
-            this.JobOrderNoParameterODS.DataMember = "GetJobOrders";
-            this.JobOrderNoParameterODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.JobOrderNoParameterODS);
-            this.JobOrderNoParameterODS.Name = "JobOrderNoParameterODS";
             // 
             // pageHeaderSection1
             // 
@@ -439,7 +427,7 @@
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2749869823455811D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.670142412185669D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.76223099231719971D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86652451753616333D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86652439832687378D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.821034848690033D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.99300861358642578D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1095066070556641D)));
@@ -830,6 +818,8 @@
             this.textBox39.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.93767023086547852D), Telerik.Reporting.Drawing.Unit.Inch(5.5D));
             this.textBox39.Name = "textBox39";
             this.textBox39.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6729999780654907D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox39.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox39.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox39.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox39.Value = "=Fields.CreatedBy";
             // 
@@ -846,6 +836,8 @@
             this.textBox42.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5326774120330811D), Telerik.Reporting.Drawing.Unit.Inch(5.5D));
             this.textBox42.Name = "textBox42";
             this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8173633813858032D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox42.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox42.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox42.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox42.Value = "=Fields.CheckedBy";
             // 
@@ -862,6 +854,8 @@
             this.textBox44.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.3430500030517578D), Telerik.Reporting.Drawing.Unit.Inch(5.5D));
             this.textBox44.Name = "textBox44";
             this.textBox44.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0427770614624023D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox44.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox44.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox44.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox44.Value = "=Fields.ApprovedBy";
             // 
@@ -903,6 +897,18 @@
             this.JobOrderODS.Name = "JobOrderODS";
             this.JobOrderODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
+            // 
+            // ProformaODS
+            // 
+            this.ProformaODS.DataMember = "GetProformas";
+            this.ProformaODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaListParameterODS);
+            this.ProformaODS.Name = "ProformaODS";
+            // 
+            // JobOrderNoParameterODS
+            // 
+            this.JobOrderNoParameterODS.DataMember = "GetJobOrders";
+            this.JobOrderNoParameterODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.JobOrderNoParameterODS);
+            this.JobOrderNoParameterODS.Name = "JobOrderNoParameterODS";
             // 
             // rptJobOrder
             // 

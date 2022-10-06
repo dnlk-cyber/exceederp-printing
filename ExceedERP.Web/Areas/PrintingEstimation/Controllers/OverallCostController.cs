@@ -92,8 +92,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 
                 if (ModelState.IsValid)
                 {
-                decimal materialCost = db.MaterialCosts.Where(q => q.EstimationFormId == overallCost.EstimationFormId).Sum(q => q.TotalPrice);
-                decimal laborCost = db.LaborCosts.Where(q => q.EstimationFormId == overallCost.EstimationFormId).Sum(q => q.TotalCost);
+                decimal materialCost = db.MaterialCosts.Where(q => q.EstimationFormId == overallCost.EstimationFormId).ToList().Sum(q => q.TotalPrice);
+                decimal laborCost = db.LaborCosts.Where(q => q.EstimationFormId == overallCost.EstimationFormId).ToList().Sum(q => q.TotalCost);
                 decimal lab_mate_cost = materialCost + laborCost;
                 decimal Tcost = ((overallCost.OverHeadCost) / 100) * lab_mate_cost + lab_mate_cost;
                 decimal NBTCost = ((overallCost.MarginalCost) / 100) * Tcost + Tcost;

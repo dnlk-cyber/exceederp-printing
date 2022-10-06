@@ -37,8 +37,6 @@
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
             this.textBox6 = new Telerik.Reporting.TextBox();
-            this.ProformaParameterODS = new Telerik.Reporting.ObjectDataSource();
-            this.ProformaItemsParameterODS = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox8 = new Telerik.Reporting.TextBox();
@@ -50,7 +48,6 @@
             this.textBox7 = new Telerik.Reporting.TextBox();
             this.textBox14 = new Telerik.Reporting.TextBox();
             this.textBox42 = new Telerik.Reporting.TextBox();
-            this.ProformaItemsODS = new Telerik.Reporting.ObjectDataSource();
             this.textBox32 = new Telerik.Reporting.TextBox();
             this.textBox31 = new Telerik.Reporting.TextBox();
             this.textBox30 = new Telerik.Reporting.TextBox();
@@ -82,16 +79,19 @@
             this.textBox25 = new Telerik.Reporting.TextBox();
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
-            this.ProformaODS = new Telerik.Reporting.ObjectDataSource();
             this.textBox48 = new Telerik.Reporting.TextBox();
-            this.textBox53 = new Telerik.Reporting.TextBox();
-            this.textBox52 = new Telerik.Reporting.TextBox();
-            this.textBox51 = new Telerik.Reporting.TextBox();
-            this.textBox50 = new Telerik.Reporting.TextBox();
             this.textBox49 = new Telerik.Reporting.TextBox();
+            this.textBox50 = new Telerik.Reporting.TextBox();
+            this.textBox51 = new Telerik.Reporting.TextBox();
+            this.textBox52 = new Telerik.Reporting.TextBox();
+            this.textBox53 = new Telerik.Reporting.TextBox();
             this.textBox54 = new Telerik.Reporting.TextBox();
             this.textBox55 = new Telerik.Reporting.TextBox();
             this.textBox56 = new Telerik.Reporting.TextBox();
+            this.ProformaODS = new Telerik.Reporting.ObjectDataSource();
+            this.ProformaItemsODS = new Telerik.Reporting.ObjectDataSource();
+            this.ProformaParameterODS = new Telerik.Reporting.ObjectDataSource();
+            this.ProformaItemsParameterODS = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox36
@@ -175,23 +175,9 @@
             this.textBox6.StyleName = "Civic.TableHeader";
             this.textBox6.Value = "Total Price";
             // 
-            // ProformaParameterODS
-            // 
-            this.ProformaParameterODS.DataMember = "GetProformas";
-            this.ProformaParameterODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaListParameterODS);
-            this.ProformaParameterODS.Name = "ProformaParameterODS";
-            // 
-            // ProformaItemsParameterODS
-            // 
-            this.ProformaItemsParameterODS.DataMember = "GetProformaItems";
-            this.ProformaItemsParameterODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaItemsListParameterODS);
-            this.ProformaItemsParameterODS.Name = "ProformaItemsParameterODS";
-            this.ProformaItemsParameterODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("proId", typeof(string), "= Parameters.id.Value")});
-            // 
             // detailSection1
             // 
-            this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(3.2000000476837158D);
+            this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(4.0401577949523926D);
             this.detailSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.table1,
             this.textBox32,
@@ -211,22 +197,31 @@
             this.textBox38,
             this.textBox37,
             this.textBox47,
-            this.textBox46});
+            this.textBox46,
+            this.textBox56,
+            this.textBox55,
+            this.textBox54,
+            this.textBox53,
+            this.textBox52,
+            this.textBox51,
+            this.textBox50,
+            this.textBox49,
+            this.textBox48});
             this.detailSection1.Name = "detailSection1";
             this.detailSection1.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
             this.detailSection1.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
             // 
             // table1
             // 
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.31079643964767456D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.7873280048370361D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64939582347869873D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.31079646944999695D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.787327766418457D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64939588308334351D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64145201444625854D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.90855824947357178D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.90855824947357178D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.85791724920272827D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.59974777698516846D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.85593140125274658D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.85593146085739136D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.35618102550506592D)));
             this.table1.Body.SetCellContent(0, 1, this.textBox8);
             this.table1.Body.SetCellContent(0, 2, this.textBox10);
@@ -354,15 +349,6 @@
             this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.64145201444625854D), Telerik.Reporting.Drawing.Unit.Inch(0.35618102550506592D));
             this.textBox42.StyleName = "Civic.TableBody";
             this.textBox42.Value = "= Fields.Page";
-            // 
-            // ProformaItemsODS
-            // 
-            this.ProformaItemsODS.DataMember = "GetProformaItems";
-            this.ProformaItemsODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaItemsODS);
-            this.ProformaItemsODS.Name = "ProformaItemsODS";
-            this.ProformaItemsODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("proItemId", typeof(string), "= Parameters.proformaItemId.Value")});
             // 
             // textBox32
             // 
@@ -673,17 +659,94 @@
             // 
             this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1D);
             this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.textBox16,
-            this.textBox56,
-            this.textBox55,
-            this.textBox54,
-            this.textBox49,
-            this.textBox50,
-            this.textBox51,
-            this.textBox52,
-            this.textBox53,
-            this.textBox48});
+            this.textBox16});
             this.pageFooterSection1.Name = "pageFooterSection1";
+            this.pageFooterSection1.Style.BorderStyle.Top = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.pageFooterSection1.Style.BorderWidth.Top = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            // 
+            // textBox48
+            // 
+            this.textBox48.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.3843369483947754D), Telerik.Reporting.Drawing.Unit.Inch(3.7401576042175293D));
+            this.textBox48.Name = "textBox48";
+            this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1458860635757446D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox48.Style.Font.Bold = true;
+            this.textBox48.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox48.Value = "Approved By";
+            // 
+            // textBox49
+            // 
+            this.textBox49.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.5460002422332764D), Telerik.Reporting.Drawing.Unit.Inch(3.7401571273803711D));
+            this.textBox49.Name = "textBox49";
+            this.textBox49.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.95184326171875D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox49.Style.Font.Bold = true;
+            this.textBox49.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox49.Value = "Checked By";
+            // 
+            // textBox50
+            // 
+            this.textBox50.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(3.7401576042175293D));
+            this.textBox50.Name = "textBox50";
+            this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.95184326171875D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox50.Style.Font.Bold = true;
+            this.textBox50.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox50.Value = "Prepared By";
+            // 
+            // textBox51
+            // 
+            this.textBox51.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.1573019027709961D), Telerik.Reporting.Drawing.Unit.Inch(3.5401575565338135D));
+            this.textBox51.Name = "textBox51";
+            this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3623836040496826D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox51.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox51.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox51.Style.Font.Bold = true;
+            this.textBox51.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox51.Value = "=Fields.ApprovedBy";
+            // 
+            // textBox52
+            // 
+            this.textBox52.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.3843369483947754D), Telerik.Reporting.Drawing.Unit.Inch(3.5401575565338135D));
+            this.textBox52.Name = "textBox52";
+            this.textBox52.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77288651466369629D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox52.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox52.Value = "ያፀደቀው ";
+            // 
+            // textBox53
+            // 
+            this.textBox53.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.3468501567840576D), Telerik.Reporting.Drawing.Unit.Inch(3.5401575565338135D));
+            this.textBox53.Name = "textBox53";
+            this.textBox53.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6692066192626953D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox53.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox53.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox53.Style.Font.Bold = true;
+            this.textBox53.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox53.Value = "=Fields.CheckedBy";
+            // 
+            // textBox54
+            // 
+            this.textBox54.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.5729997158050537D), Telerik.Reporting.Drawing.Unit.Inch(3.5401575565338135D));
+            this.textBox54.Name = "textBox54";
+            this.textBox54.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77377152442932129D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox54.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox54.Value = "ያረጋገጠው";
+            // 
+            // textBox55
+            // 
+            this.textBox55.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.78951340913772583D), Telerik.Reporting.Drawing.Unit.Inch(3.5401575565338135D));
+            this.textBox55.Name = "textBox55";
+            this.textBox55.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5248432159423828D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox55.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox55.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox55.Style.Font.Bold = true;
+            this.textBox55.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox55.Value = "=Fields.CreatedBy";
+            // 
+            // textBox56
+            // 
+            this.textBox56.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(3.5401575565338135D));
+            this.textBox56.Name = "textBox56";
+            this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78943461179733276D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox56.Style.Font.Name = "Microsoft Sans Serif";
+            this.textBox56.Value = "ያዘጋጀው";
             // 
             // ProformaODS
             // 
@@ -694,77 +757,28 @@
             new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("proItemId", typeof(string), "= Parameters.proformaItemId.Value")});
             // 
-            // textBox48
+            // ProformaItemsODS
             // 
-            this.textBox48.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.8818235397338867D), Telerik.Reporting.Drawing.Unit.Inch(0.5D));
-            this.textBox48.Name = "textBox48";
-            this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.96792691946029663D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox48.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox48.Value = "Approved By";
+            this.ProformaItemsODS.DataMember = "GetProformaItems";
+            this.ProformaItemsODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaItemsODS);
+            this.ProformaItemsODS.Name = "ProformaItemsODS";
+            this.ProformaItemsODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("proItemId", typeof(string), "= Parameters.proformaItemId.Value")});
             // 
-            // textBox53
+            // ProformaParameterODS
             // 
-            this.textBox53.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.61155438423156738D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox53.Name = "textBox53";
-            this.textBox53.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3447186946868897D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox53.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox53.Value = "=Fields.CreatedBy";
+            this.ProformaParameterODS.DataMember = "GetProformas";
+            this.ProformaParameterODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaListParameterODS);
+            this.ProformaParameterODS.Name = "ProformaParameterODS";
             // 
-            // textBox52
+            // ProformaItemsParameterODS
             // 
-            this.textBox52.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2000000476837158D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox52.Name = "textBox52";
-            this.textBox52.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.67820119857788086D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox52.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox52.Value = "ያረጋገጠው";
-            // 
-            // textBox51
-            // 
-            this.textBox51.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.8782801628112793D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox51.Name = "textBox51";
-            this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6217197179794312D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox51.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox51.Value = "=Fields.CheckedBy";
-            // 
-            // textBox50
-            // 
-            this.textBox50.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.88190221786499D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox50.Name = "textBox50";
-            this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.92104381322860718D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox50.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox50.Value = "ያፀደቀው ";
-            // 
-            // textBox49
-            // 
-            this.textBox49.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.8030242919921875D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox49.Name = "textBox49";
-            this.textBox49.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.7166610956192017D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox49.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox49.Value = "=Fields.ApprovedBy";
-            // 
-            // textBox54
-            // 
-            this.textBox54.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0.5D));
-            this.textBox54.Name = "textBox54";
-            this.textBox54.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.773884117603302D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox54.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox54.Value = "Prepared By";
-            // 
-            // textBox55
-            // 
-            this.textBox55.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2000000476837158D), Telerik.Reporting.Drawing.Unit.Inch(0.5D));
-            this.textBox55.Name = "textBox55";
-            this.textBox55.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82927322387695312D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox55.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox55.Value = "Checked By";
-            // 
-            // textBox56
-            // 
-            this.textBox56.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox56.Name = "textBox56";
-            this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61147546768188477D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox56.Style.Font.Name = "Microsoft Sans Serif";
-            this.textBox56.Value = "ያዘጋጀው";
+            this.ProformaItemsParameterODS.DataMember = "GetProformaItems";
+            this.ProformaItemsParameterODS.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProformaItemsListParameterODS);
+            this.ProformaItemsParameterODS.Name = "ProformaItemsParameterODS";
+            this.ProformaItemsParameterODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("proId", typeof(string), "= Parameters.id.Value")});
             // 
             // rptProforma
             // 
@@ -839,7 +853,7 @@
             styleRule2,
             styleRule3,
             styleRule4});
-            this.Width = Telerik.Reporting.Drawing.Unit.Inch(7.8000001907348633D);
+            this.Width = Telerik.Reporting.Drawing.Unit.Inch(8.3481569290161133D);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
@@ -903,11 +917,11 @@
         private Telerik.Reporting.TextBox textBox56;
         private Telerik.Reporting.TextBox textBox55;
         private Telerik.Reporting.TextBox textBox54;
-        private Telerik.Reporting.TextBox textBox49;
-        private Telerik.Reporting.TextBox textBox50;
-        private Telerik.Reporting.TextBox textBox51;
-        private Telerik.Reporting.TextBox textBox52;
         private Telerik.Reporting.TextBox textBox53;
+        private Telerik.Reporting.TextBox textBox52;
+        private Telerik.Reporting.TextBox textBox51;
+        private Telerik.Reporting.TextBox textBox50;
+        private Telerik.Reporting.TextBox textBox49;
         private Telerik.Reporting.TextBox textBox48;
     }
 }
