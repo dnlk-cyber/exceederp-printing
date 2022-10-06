@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.PrintingEstimation.ViewModel
 {
-    public class PrintingEstimationFormVieModel
+    public class PrintingEstimationFormVieModel : ApprovalPropertyVM
     {
         public string Customer { get; set; }
 

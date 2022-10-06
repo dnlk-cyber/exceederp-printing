@@ -2,18 +2,10 @@
 
 <form id="lineForm" method="post">
 
-    <div class="row">
-        <div class="col-sm-1">
-            <div class="k-label">
-                @Html.HiddenFor(model => model.LaborCostId)
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div class="k-label">
-                    <label for="PrintingCategory">Printing Category</label>
-                </div>
-                <div>
+    <div class="row form-group">
+        
+                    <label for="PrintingCategory" class="control-label control-label col-sm-3 text-right text-right">Printing Category:</label>
+                <div  class="col-sm-6">
                     @(Html.Kendo().DropDownListFor(model => model.PrintingSteps)
                                                                 .DataTextField("Text")
                                                                 .DataValueField("Value")
@@ -22,21 +14,14 @@
                     )
                 </div>
             </div>
-        </div>
 
-    </div>
 
     <div class="row">
-        <div class="col-sm-1">
-        </div>
+      
 
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div class="k-label">
-                    <label for="Material">Printing Category Value</label>
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.PrintingStepId)
+                <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Printing Category Value</label>
+            <div class="col-sm-6">
+                @(Html.Kendo().DropDownListFor(model => model.PrintingStepId)
                                                                         .Name("PrintingStepId")
                                                                         .ValuePrimitive(true)
                                                                         .OptionLabel("Select Materials...")
@@ -54,38 +39,28 @@
                                                                         .CascadeFrom("PrintingSteps")
                                                                         .AutoBind(false)
                                                                         .Enable(false))
-                </div>
             </div>
         </div>
-    </div>
+     
     <div class="row">
-        <div class="col-sm-1"> </div>
+        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Work Hour:</label>
 
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div class="k-label">
-                    <label for="WorkingTime">Work Hour</label>
-                </div>
-                <div>
+                <div class="col-sm-6">
                     @(Html.Kendo().NumericTextBoxFor(model => model.WorkingTime))
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-1"> </div>
 
-        <div class="col-sm-4">
-            <div class="form-group">
-                <div class="k-label">
-                    <label for="CostPerHour">Cost PerHour</label>
-                </div>
-                <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.CostPerHour))
-                </div>
-            </div>
+    <div class="row">
+
+
+        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Cost PerHour:</label>
+
+        <div class="col-sm-6">
+
+            @(Html.Kendo().NumericTextBoxFor(model => model.CostPerHour))
         </div>
     </div>
+
     @*<div class="row">
             <div class="col-sm-1"> </div>
             <div class="col-sm-4">

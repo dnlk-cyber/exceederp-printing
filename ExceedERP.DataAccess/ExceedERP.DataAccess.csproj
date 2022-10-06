@@ -326,6 +326,10 @@
     <Compile Include="Migrations\202209300837050_erp-migrations.Designer.cs">
       <DependentUpon>202209300837050_erp-migrations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202210062104154_PrintingEstimationApprovalUpdates.cs" />
+    <Compile Include="Migrations\202210062104154_PrintingEstimationApprovalUpdates.Designer.cs">
+      <DependentUpon>202210062104154_PrintingEstimationApprovalUpdates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -527,6 +531,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209300837050_erp-migrations.resx">
       <DependentUpon>202209300837050_erp-migrations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210062104154_PrintingEstimationApprovalUpdates.resx">
+      <DependentUpon>202210062104154_PrintingEstimationApprovalUpdates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

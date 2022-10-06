@@ -36,6 +36,8 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         public string BindingStyle { get; set; }
         public string Others { get; set; }
         public bool IsChecked { get; set; }
+        public string CheckedBy { get; set; }
+        public string ApprovedBy { get; set; }
         public bool IsApproved { get; set; }
         public virtual ICollection<MaterialCost> MaterialCosts { get; set; } = new List<MaterialCost>();
         public virtual ICollection<LaborCost> LaborCosts { get; set; } = new List<LaborCost>();

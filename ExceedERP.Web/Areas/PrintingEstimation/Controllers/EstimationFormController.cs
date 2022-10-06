@@ -194,6 +194,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             if (estimation!=null)
                 {
                 estimation.IsChecked = true;
+                estimation.CheckedBy = User.Identity.Name;
                 db.EstimationForms.Attach(estimation);
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();
@@ -241,6 +242,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 if(estimation.IsChecked)
                 {
                     estimation.IsApproved = true;
+                    estimation.ApprovedBy = User.Identity.Name;
+
                     var oc = db.OverallCosts.Where(q => q.EstimationFormId == estimation.EstimationFormId).FirstOrDefault();
                     db.EstimationForms.Attach(estimation);
                     db.Entry(estimation).State = EntityState.Modified;

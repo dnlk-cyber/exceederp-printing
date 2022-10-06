@@ -118,6 +118,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
        
         [Display(Name = "Approved By")]
         public string ApprovedBy { get; set; }
+        public string CheckedBy { get; set; }
         public bool IsApproved { get; set; }
         public bool IsChecked { get; set; }
         public bool IsMaga { get; set; }
