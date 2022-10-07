@@ -67,7 +67,8 @@
                                                                                                                                                //    .BindTo((IEnumerable)ViewData["Items"])
                                                                                                                                                .DataSource(dataSource =>
                                                                                                                                                {
-                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "DataProvider", new { Area = "Inventory" }).Data("filterCategories"))
+                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider")
+                                                                                                                                                   .Data("filterCategories"))
                                                                                                                                                    .ServerFiltering(true);
                                                                                                                                                })
 

@@ -15,6 +15,21 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         {
             return View();
         }
+        public JsonResult GetItems1(string ItemCategoryCode, string text)
+        {
+            var items = _db.InventoryItems.Where(x => x.Enable).Where(i => i.ItemCategoryCode == ItemCategoryCode).OrderBy(x => x.Name).AsQueryable();
+            if (!string.IsNullOrEmpty(text))
+            {
+                items = items.Where(p => p.Name.ToUpper().Contains(text.ToUpper()) || p.ItemCode.Contains(text.ToUpper()));
+            }
+            return Json(items.Select(i => new
+            {
+                Name = i.ItemCode + "-" + i.Name,
+                ItemCode = i.ItemCode
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetAllStores()
         {
             var stores = _db.InventoryStores.ToList().Select(s => new

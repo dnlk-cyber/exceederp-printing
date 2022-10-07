@@ -427,10 +427,15 @@
     function filterCategories() {
         //
         // summary:
-        //      send the filtering text along with the parent widget's value
-        //var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+             // send the filtering text along with the parent widget's value
+        var dropdownlist = $("#InventoryId").data("kendoDropDownList");
+
+        var filterInput = dropdownlist.filterInput.val();
+        
+
         return {
-            ItemCategoryCode: $("#InventoryCategoryId").val()
+            ItemCategoryCode: $("#InventoryCategoryId").val(),
+          text: filterInput
         };
     }
     function onSave(e) {
