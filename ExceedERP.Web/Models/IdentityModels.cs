@@ -79,7 +79,22 @@ namespace ExceedERP.Web.Models
         // Add any custom Role properties/code here
     }
 
+    public class ApplicationUserSignature
+    {
 
+        public string ApplicationUserSignatureId { get; set; }
+
+        public string UserId { get; set; }
+        [UIHint("SignaturePad")]
+        public byte[] Sign { get; set; }
+        public string Image64
+        {
+            get
+            {
+                return Sign != null ? Convert.ToBase64String(Sign) : null;
+            }
+        }
+    }
     // Must be expressed in terms of our custom types:
     public class ApplicationDbContext
         : IdentityDbContext<ApplicationUser, ApplicationRole,
@@ -150,8 +165,9 @@ namespace ExceedERP.Web.Models
         }
 
         public System.Data.Entity.DbSet<ExceedERP.Web.Models.RoleViewModel> RoleViewModels { get; set; }
+        public System.Data.Entity.DbSet<ApplicationUserSignature> ApplicationUserSignatures { get; set; }
 
-         
+
     }
 
 
