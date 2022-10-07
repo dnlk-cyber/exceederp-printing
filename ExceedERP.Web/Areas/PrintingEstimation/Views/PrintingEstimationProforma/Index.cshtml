@@ -81,9 +81,10 @@
 
                                               items.Add().Text("Items").Content(
                             @<text>
+    #if(IsApproved){#
 
                                 <a href='@Url.Action("ProformaPrint", "PrintingEstimationReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
-
+    #}#
                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
                                                                        .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>

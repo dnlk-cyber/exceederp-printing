@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Reporting.PrintingEstimation.DataSource
 {
@@ -60,6 +61,9 @@ namespace ExceedERP.Reporting.PrintingEstimation.DataSource
                 jobOrder.Varnish = job.Varnish;
                 jobOrder.Perforate = job.Perforate;
                 jobOrder.Camsur = job.Camsur;
+                jobOrder.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(job.CreatedBy));
+                jobOrder.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(job.CheckedBy));
+                jobOrder.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(job.ApprovedBy));
 
 
                 jobOrder.PaperTypes = new List<JobOrderMaterialVM>();

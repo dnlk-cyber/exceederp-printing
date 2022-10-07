@@ -619,6 +619,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             if (job != null)
             {
                 job.IsChecked = true;
+                job.CheckedBy = User.Identity.Name;
+
                 db.Jobs.Attach(job);
                 db.Entry(job).State = EntityState.Modified;
                 db.SaveChanges();

@@ -152,7 +152,7 @@
                                                                                                         })
                                                                                         .Editable(editable => editable.Mode(GridEditMode.PopUp)
                                                                                         .TemplateName("LaborCost")
-                                                                                       .Window(w => w.Title("Labor Cost Form").Width(400)))
+                                                                                       .Window(w => w.Title("Labor Cost Form").Width(500)))
                                                                                        .Events(ev => ev.DataBound("onChildDataBound"))
                                                                                         .Pageable(pageable => pageable
                                                                                         .Refresh(true)
@@ -187,8 +187,9 @@
                                                     );
                                             itemn.Add().Text("Overall Costs")
                     .Content(@<text>
+    #if(IsApproved){#
                         <a href='@Url.Action("PrintingEstimationForms", "PrintingEstimationReport")/#=EstimationFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-
+    #}#
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.OverallCost>()
                                                                                 .Name("overall_costs_#=EstimationFormId#")
                                                                                 .Columns(columns =>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Reporting.PrintingEstimation.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 {
-   public class JobOrderVM
+   public class JobOrderVM : ApprovalPropertyVM
     {
         public DateTime Time { get; set; }
         public string JobNo { get; set; }

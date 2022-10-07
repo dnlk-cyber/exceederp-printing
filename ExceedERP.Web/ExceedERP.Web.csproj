@@ -2445,6 +2445,10 @@
     <Compile Include="Migrations\202012291258133_OtherDbUsed.Designer.cs">
       <DependentUpon>202012291258133_OtherDbUsed.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202210062129229_UpDate.cs" />
+    <Compile Include="Migrations\202210062129229_UpDate.Designer.cs">
+      <DependentUpon>202210062129229_UpDate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
@@ -8084,6 +8088,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202012291258133_OtherDbUsed.resx">
       <DependentUpon>202012291258133_OtherDbUsed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210062129229_UpDate.resx">
+      <DependentUpon>202210062129229_UpDate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

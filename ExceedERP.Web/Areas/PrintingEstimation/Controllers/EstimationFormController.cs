@@ -109,6 +109,10 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     TextPrint = estimationForm.TextPrint,
                     CoverPrint = estimationForm.CoverPrint,
                     BindingStyle = estimationForm.BindingStyle,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now,
                     Others = estimationForm.Others
 
                 };
@@ -141,8 +145,10 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     CoverPrint = estimationForm.CoverPrint,
                     BindingStyle = estimationForm.BindingStyle,
                     Others = estimationForm.Others,
-                    IsChecked = estimationForm.IsChecked,
-                    IsApproved = estimationForm.IsApproved
+            
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now,
+                   
 
                 };
 
@@ -194,6 +200,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             if (estimation!=null)
                 {
                 estimation.IsChecked = true;
+                estimation.CheckedBy = User.Identity.Name;
                 db.EstimationForms.Attach(estimation);
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();
@@ -241,6 +248,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 if(estimation.IsChecked)
                 {
                     estimation.IsApproved = true;
+                    estimation.ApprovedBy = User.Identity.Name;
+
                     var oc = db.OverallCosts.Where(q => q.EstimationFormId == estimation.EstimationFormId).FirstOrDefault();
                     db.EstimationForms.Attach(estimation);
                     db.Entry(estimation).State = EntityState.Modified;
@@ -252,6 +261,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     proforma.ProformaNo = estimation.EstimationFormId.ToString();
                     proforma.CustomerId = estimation.CustomerId;
                     proforma.EstimationFormId = estimation.EstimationFormId;
+                    proforma.DateCreated = DateTime.Now;
+                    proforma.CreatedBy = User.Identity.Name;
                     db.Proformas.Add(proforma);
                     db.SaveChanges();
                     decimal beforeTax = 0;

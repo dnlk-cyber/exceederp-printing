@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System;
@@ -33,7 +34,11 @@ namespace ExceedERP.Reporting.PrintingEstimation.DataSource
                     pro.TermsOfPayment = proforma.PaymentTerm.ToString() ;
                     pro.ValidityDate = proforma.ValidityDate?.ToString("MM-dd-yyyy");
                     pro.DeliveryDate = proforma.ValidityDate?.ToString("MM-dd-yyyy");
+                    pro.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CreatedBy));
+                    pro.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CheckedBy));
+                    pro.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.ApprovedBy));
                     var custDetail = db.OrganizationCustomers.Find(proforma.CustomerId);
+
                     if(custDetail!=null)
                     {
                         pro.CustomerName = custDetail.TradeName;

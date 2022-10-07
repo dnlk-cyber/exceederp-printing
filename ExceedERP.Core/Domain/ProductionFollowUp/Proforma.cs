@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class Proforma
+    public class Proforma : TrackUserSettingOperation
     {
         public int ProformaId { get; set; }
         [DataType(DataType.Date)]
@@ -34,6 +35,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Tin No ")]
         public string TinNo { get; set; }
         public bool IsApproved { get; set; }
+        public string CheckedBy { get; set; }
+        public string ApprovedBy { get; set; }
         public bool IsChecked { get; set; }
 
     }

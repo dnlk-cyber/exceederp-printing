@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.PrintingEstimation.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,9 @@ namespace ExceedERP.Reporting.PrintingEstimation.DataSource
                 model.TextPrint = estimationForm.TextPrint;
                 model.CoverPrint = estimationForm.CoverPrint;
                 model.BindingStyle = estimationForm.BindingStyle;
+                model.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(estimationForm.CreatedBy));
+                model.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(estimationForm.CheckedBy));
+                model.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(estimationForm.ApprovedBy));
                 model.Others = model.Others;
 
 

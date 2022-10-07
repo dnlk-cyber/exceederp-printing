@@ -255,6 +255,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             if (proforma != null)
             {
                 proforma.IsChecked = true;
+                proforma.CheckedBy = User.Identity.Name;
+
                 db.Proformas.Attach(proforma);
                 db.Entry(proforma).State = EntityState.Modified;
                 db.SaveChanges();
@@ -304,6 +306,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     var proformaItem = db.PFProformaItems.Where(q => q.ProformaId == proforma.ProformaId).FirstOrDefault();
                     var estimation = db.EstimationForms.Find(proforma.EstimationFormId);
                     proforma.IsApproved = true;
+                    proforma.ApprovedBy = User.Identity.Name;
                     var oc = db.OverallCosts.Where(q => q.EstimationFormId == proforma.EstimationFormId).FirstOrDefault();
                     db.Proformas.Attach(proforma);
                     db.Entry(proforma).State = EntityState.Modified;
