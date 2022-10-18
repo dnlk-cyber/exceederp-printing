@@ -45,6 +45,7 @@ namespace ExceedERP.Core.Domain.JobCosting
         public int GLPeriodId { get; set; }
         public string Reference { get; set; }
         public decimal PermanetNormalHour  { get; set; }
+        [Display(Name ="Permanent Direct Material")]
         public decimal PermanetLaborCost { get; set; }
         public decimal PermanetOverHeadCost  { get; set; }
         public decimal PermanetOTHour { get; set; }
@@ -65,7 +66,9 @@ namespace ExceedERP.Core.Domain.JobCosting
         public string ItemCategoryCode { get; set; }
         public string ItemCode { get; set; }
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] public DateTime Date { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
+        [Display(Name ="Issue Ref")]
         public string Reference { get; set; }
         public decimal Quantity { get; set; }
         public decimal SubTotal { get; set; }

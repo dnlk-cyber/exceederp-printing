@@ -101,10 +101,10 @@
         <div class="col-sm-4">
             <div class="form-group">
                 <div class="k-label">
-                    <label for="PermanetNormalHour">Permanet Normal Hour</label>
+                    <label for="PermanetNormalHour">Permanet Direct Material</label>
                 </div>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.PermanetNormalHour))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.PermanetNormalHour).Decimals(3).RestrictDecimals(true))
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
                     <label for="PermanetOTHour">Permanet OT Hour</label>
                 </div>
                 <div>
-                    @(Html.Kendo().TextBoxFor(model => model.PermanetOTHour))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.PermanetOTHour).Decimals(3).RestrictDecimals(true))
 
                 </div>
             </div>
@@ -131,7 +131,7 @@
                     <label for="ContractNormalHour">Contract Normal Hour</label>
                 </div>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.ContractNormalHour))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ContractNormalHour).Decimals(3).RestrictDecimals(true))
 
                 </div>
             </div>
@@ -142,7 +142,7 @@
                     <label for="ContractOTHour">Contract OT Hour</label>
                 </div>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.ContractOTHour))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ContractOTHour).Decimals(3).RestrictDecimals(true))
 
                 </div>
             </div>

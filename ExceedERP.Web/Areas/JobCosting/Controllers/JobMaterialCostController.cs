@@ -42,7 +42,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
                         jobMaterial.ItemCode = item.ItemCode;
                         jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
                         jobMaterial.Date = DateTime.Now;
-                        jobMaterial.Reference = item.ProductionJobNo;
+                        jobMaterial.Reference = db.Issues.Find(item.IssueID)?.Reference;
                         jobMaterial.Quantity = item.IssuedQuantity;
                         jobMaterial.UnitPrice = item.UnitPrice;
                         jobMaterial.Cost = item.Total;

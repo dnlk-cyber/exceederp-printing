@@ -192,7 +192,7 @@
         var codeid = masterDataItem.DailyLaborRateId;
          emptype = masterDataItem.EmployeeType;
         var grid = $('#DLRSalary' + codeid).data('kendoGrid');
-        if (emptype == 0) {
+        if (emptype == 0 || emptype == 1) {
             grid.hideColumn('NoOfDay');
             grid.hideColumn('RatePerDay');
             grid.hideColumn('NoOfEmployee');
@@ -250,7 +250,7 @@
         var RatePerDay = $("#RatePerDay").val();
         var NoOfEmployee = $("#NoOfEmployee").val();
         var NoOfWorkingHour = $("#NoOfWorkingHour").val();
-        if (emptype == 1) {
+        if (emptype != 1 && emptype != 0) {
             var TotalSalary = NoOfDay * RatePerDay * NoOfEmployee;
             $("#TotalSalary").val(TotalSalary).trigger("change");
         }
@@ -265,4 +265,10 @@
     
     }
     
+</script>
+<script>
+    $("#numerictextbox").kendoNumericTextBox({
+        decimals: 3,
+        restrictDecimals: true
+    });
 </script>

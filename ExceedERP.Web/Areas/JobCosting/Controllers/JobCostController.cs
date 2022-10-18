@@ -10,10 +10,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
-    //[AuthorizeRoles(JobCostingRoles.JobCostingJobCostUser)]
+    [AuthorizeRoles(JobCostingRoles.JobCostingJobCostUser)]
     public class JobCostController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -71,6 +72,14 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                var jobOrder = db.Jobs.Find(jobCost.JobId);
+                if(jobOrder!=null)
+                {
+                    jobCost.JobCategoryId = jobOrder.JobTypeId;
+                    jobCost.CustomerId = jobOrder.CustomerId;
+                }
+               
                 var entity = (JobCost)this.GetObject(jobCost);
                 db.JobCosts.Add(entity);
                 db.SaveChanges();
@@ -87,6 +96,12 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         {
             if (ModelState.IsValid)
             {
+                var jobOrder = db.Jobs.Find(jobCost.JobId);
+                if (jobOrder != null)
+                {
+                    jobCost.JobCategoryId = jobOrder.JobTypeId;
+                    jobCost.CustomerId = jobOrder.CustomerId;
+                }
                 var entity = (JobCost)this.GetObject(jobCost);
 
                 db.JobCosts.Attach(entity);
@@ -115,19 +130,13 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
         private object GetObject(JobCost jobCost)
         {
-            var jobOrder = db.Jobs.Find(jobCost.JobId);
-            bool status = false;
-            if (jobOrder != null)
-            {
-                 status = true;
-
-            }
+       
             var entity = new JobCost
             {
                 JobCostId = jobCost.JobCostId,
                 JobId = jobCost.JobId,
-                JobCategoryId = status?jobOrder.JobTypeId:jobCost.JobCategoryId,
-                CustomerId = jobOrder.CustomerId,
+                JobCategoryId = jobCost.JobCategoryId,
+                CustomerId = jobCost.CustomerId,
                 JobReceivedDate = jobCost.JobReceivedDate,
                 Date = jobCost.Date,
                 ReciptNo = jobCost.ReciptNo,
