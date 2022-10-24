@@ -15,6 +15,18 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         {
             return View();
         }
+        public JsonResult GetItemCategory()
+        {
+            var itemCategory = _db.ItemCategorys
+                .Where(x => x.HaveParent == false)
+                .ToList();//exclude sub categories
+            return Json(itemCategory.Select(p => new
+            {
+                Name = p.ItemCategoryCode + "-" + p.Name,
+                ItemCategoryCode = p.ItemCategoryCode
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetItems1(string ItemCategoryCode, string text)
         {
             var items = _db.InventoryItems.Where(x => x.Enable).Where(i => i.ItemCategoryCode == ItemCategoryCode).OrderBy(x => x.Name).AsQueryable();

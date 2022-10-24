@@ -95,6 +95,41 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             
             return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
         }
+        public ActionResult JobMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, MaterialCost materialCost, int id)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
+                var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId&&q.EstimationFormId== estId).ToList();
+                if (invs.Any())
+                {
+                    ModelState.AddModelError("403", "Inventory already available");
+                }
+                materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
+                var entity = new MaterialCost
+                {
+                    //MaterialCostId = materialCost.MaterialCostId,
+                    JobId = id,
+                    EstimationFormId = estId,
+                    InventoryCategoryId = materialCost.InventoryCategoryId,
+                    InventoryId = materialCost.InventoryId,
+                    Quantity = materialCost.Quantity,
+                    StoreCode = materialCost.StoreCode,
+                    UnitPrice = materialCost.UnitPrice,
+                    TotalPrice = materialCost.TotalPrice
+                };
+
+                db.MaterialCosts.Add(entity);
+                db.SaveChanges();
+                var estimation = new UpdateOverallCost();
+                estimation.update(estId);
+
+            }
+
+            
+            return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
+        }
 
         public decimal totalPrice(decimal UP, decimal Q)
         {

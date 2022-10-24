@@ -108,7 +108,7 @@
                                             @(Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
                                                                                                                                                                                                                         .Events(e =>
                                                                                                                                                                                                                             {
-                                                                                                                                                                                                                                e.Change("onChange");
+                                                                                                                                                                                                                                e.Change("onChangeQuan");
                                                                                                                                                                                                                             })
                                             )
                                             @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })

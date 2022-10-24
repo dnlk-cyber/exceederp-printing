@@ -5129,7 +5129,7 @@
     <Content Include="Areas\PrintingEstimation\Views\EstimationForm\EditorTemplates\Date.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\EstimationForm\EditorTemplates\EstimationForm.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\EstimationForm\EditorTemplates\LaborCost.cshtml" />
-    <Content Include="Areas\PrintingEstimation\Views\EstimationForm\EditorTemplates\MaterialCost.cshtml" />
+    <Content Include="Areas\PrintingEstimation\Views\Shared\EditorTemplates\MaterialCost.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\EstimationForm\Index.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\LaborCost\Index.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\MaterialCost\Index.cshtml" />
@@ -5195,7 +5195,6 @@
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\ItemCategorySelector.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\JobOrderPop.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\JobPhaseTemplate.cshtml" />
-    <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\JobPopUp.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\JobStatusTemplate.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\NumericTextBox.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\ProductionStoreRequisition.cshtml" />

@@ -138,8 +138,27 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var chgQua = changeOfOrders.Sum(q => q.Quantity);
                         var chgTotPrice = changeOfOrders.Sum(q => q.Total);
                         decimal quantity = jobOrder.Quantity + chgQua;
-                        decimal totalPrice = jobOrder.TotalPrice+ chgTotPrice;
-                        var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
+                    decimal totalPrice = jobOrder.TotalPrice + chgTotPrice;
+
+                    if (jobPhase==ProductionDepartment.Finishing.ToString())
+                    {
+                        var totalOrders = db.JobStatusLineItems.Where(q => q.JobStatus.JobPhase == ProductionDepartment.Printing).ToList();
+                        quantity = totalOrders.Sum(s => s.Quantiy);
+                        totalPrice = totalOrders.Sum(s => s.TotalPrice);
+                    }
+                    else if (jobPhase == ProductionDepartment.FinishingDelivery.ToString())
+                    {
+                        var totalOrders = db.JobStatusLineItems.Where(q => q.JobStatus.JobPhase == ProductionDepartment.Finishing).ToList();
+                        quantity = totalOrders.Sum(s => s.Quantiy);
+                        totalPrice = totalOrders.Sum(s => s.TotalPrice);
+                    }
+                    else if (jobPhase == ProductionDepartment.SalesDelivery.ToString())
+                    {
+                        var totalOrders = db.JobStatusLineItems.Where(q => q.JobStatus.JobPhase == ProductionDepartment.FinishingDelivery).ToList();
+                        quantity = totalOrders.Sum(s => s.Quantiy);
+                        totalPrice = totalOrders.Sum(s => s.TotalPrice);
+                    }
+                    var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
                         var client = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId);
 
                     string  state = "";

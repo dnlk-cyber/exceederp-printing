@@ -40,7 +40,7 @@
                                                               //    .BindTo((IEnumerable)ViewData["Items"])
                                                               .DataSource(dataSource =>
                                                               {
-                                                                  dataSource.Read(read => read.Action("GetItemCategory", "DataProvider", new { Area = "Inventory" }));
+                                                                  dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" }));
                                                                   //.ServerFiltering(true);
                                                               })
                                                               .Filter("contains")
@@ -59,7 +59,7 @@
                                                                                                                                .DataValueField("ItemCode")
                                                                                                                                .Events(ev =>
                                                                                                                                {
-                                                                                                                                   ev.Change("selectProduct").DataBound("selectProduct");
+                                                                                                                                   ev.Change("selectInventory").DataBound("selectInventory");
 
                                                                                                                                })
                                                                                                                                                                                                                                                                           .CascadeFrom("InventoryCategoryId")
@@ -67,7 +67,7 @@
                                                                                                                                                //    .BindTo((IEnumerable)ViewData["Items"])
                                                                                                                                                .DataSource(dataSource =>
                                                                                                                                                {
-                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider")
+                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" })
                                                                                                                                                    .Data("filterCategories"))
                                                                                                                                                    .ServerFiltering(true);
                                                                                                                                                })
