@@ -1,20 +1,32 @@
-﻿using System; using ExceedERP.Web.Helpers;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
-using ExceedERP.Core.Domain.CRM;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.CRM.Models
 {
-     public class BindingModel
+    public class BindingModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
     }
+    public class InvoicePosPrintBindingViewModel
+    {
+        public string Id { get; set; }
+        public string BaseURL { get; set; }
+        public string PosId { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+    public class InvoiceSyncFromPosBindingViewModel
+    {
+        public DateTime FromTime { get; set; }
+        //public DateTime ToTime { get; set; }
 
+        public string BaseURL { get; set; }
+        //public string PosId { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
      public class CashPaymentViewModel
      {
          public string Id { get; set; }

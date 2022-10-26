@@ -1,0 +1,16 @@
+﻿@(Html.Kendo()
+    .DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .DataTextField("Name")
+    .DataValueField("AdditionalCostId")
+    .OptionLabel(" Select ")
+    .DataSource(datasource =>
+    {
+        datasource.Read(read =>
+        {
+            read.Action("GetAddtionalCostTypes", "CRMDataProvider", new { area = "CRM"});
+        })
+        .ServerFiltering(false);
+    })
+    )
+

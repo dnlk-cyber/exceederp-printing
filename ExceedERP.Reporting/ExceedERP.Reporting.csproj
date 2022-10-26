@@ -619,21 +619,65 @@
     <Compile Include="Construction\ViewModel\WorkProportionReportViewModels.cs" />
     <Compile Include="CRM\DataSource\CampaignObjectDataSource.cs" />
     <Compile Include="CRM\DataSource\CashInvoiceDataSource.cs" />
+    <Compile Include="CRM\DataSource\CustomerListOds.cs" />
+    <Compile Include="CRM\DataSource\CustomerOrderStatusSummaryOds.cs" />
+    <Compile Include="CRM\DataSource\ParametersOds.cs" />
+    <Compile Include="CRM\DataSource\SalesDescriptionOds.cs" />
+    <Compile Include="CRM\DataSource\SalesDetailReportOds.cs" />
     <Compile Include="CRM\DataSource\SalesOrderDataSource.cs" />
+    <Compile Include="CRM\DataSource\SalesOrderDetailOds.cs" />
     <Compile Include="CRM\DataSource\SalesOrderIssueDataSource.cs" />
+    <Compile Include="CRM\DataSource\SalesOrderStatusDetailOds.cs" />
+    <Compile Include="CRM\DataSource\SalesOrderSummaryOds.cs" />
+    <Compile Include="CRM\DataSource\SalesPlanAndActualReportOds.cs" />
     <Compile Include="CRM\DataSource\SalesQuoteDataSource.cs" />
+    <Compile Include="CRM\DataSource\SalesQuoteDetailOds.cs" />
+    <Compile Include="CRM\DataSource\SalesSummaryByBranchReportOds.cs" />
+    <Compile Include="CRM\DataSource\SalesSummaryReportOds.cs" />
     <Compile Include="CRM\DataSource\ServiceUsageDataSource.cs" />
+    <Compile Include="CRM\DataSource\ShipmentDetailOds.cs" />
+    <Compile Include="CRM\DataSource\TenderFollowupOds.cs" />
     <Compile Include="CRM\DataSource\TicketObjectDataSource.cs" />
-    <Compile Include="CRM\Printing\DataSource\CashInvoiceDataSource.cs" />
+    <Compile Include="CRM\Printing\DataSource\CreditSettlementPrintOds.cs" />
+    <Compile Include="CRM\Printing\DataSource\PriceEstimationOds.cs" />
     <Compile Include="CRM\Printing\DataSource\SalesInventoryDataSource.cs" />
+    <Compile Include="CRM\Printing\DataSource\SalesInvoiceObjectDataSource.cs" />
     <Compile Include="CRM\Printing\DataSource\SalesOrderDataSource.cs" />
     <Compile Include="CRM\Printing\DataSource\SalesQuoteDataSource.cs" />
+    <Compile Include="CRM\Printing\DataSource\ShipmentIssueDataSource.cs" />
     <Compile Include="CRM\Printing\DataSource\TicketDataSource.cs" />
     <Compile Include="CRM\Printing\ViewModel\CashSales.cs" />
-    <Compile Include="CRM\Printing\ViewModel\OrderStatus.cs" />
-    <Compile Include="CRM\Printing\ViewModel\QuoteStatus.cs" />
+    <Compile Include="CRM\Printing\ViewModel\CreditSettlementPrintViewModel.cs" />
+    <Compile Include="CRM\Printing\ViewModel\PriceEstimationPrintViewModel.cs" />
+    <Compile Include="CRM\Printing\ViewModel\QuotePrintViewModel.cs" />
     <Compile Include="CRM\Printing\ViewModel\SalesInventory.cs" />
+    <Compile Include="CRM\Printing\ViewModel\SalesInvoicePrintViewMode.cs" />
+    <Compile Include="CRM\Printing\ViewModel\SalesOrderPrintViewModel.cs" />
     <Compile Include="CRM\Printing\ViewModel\TicketViewModel.cs" />
+    <Compile Include="CRM\Printing\View\CashReceiptVoucher.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Printing\View\CashReceiptVoucher.Designer.cs">
+      <DependentUpon>CashReceiptVoucher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Printing\View\CreditReceiptVoucher.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Printing\View\CreditReceiptVoucher.Designer.cs">
+      <DependentUpon>CreditReceiptVoucher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Printing\View\CreditSettlementPrintDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Printing\View\CreditSettlementPrintDesign.Designer.cs">
+      <DependentUpon>CreditSettlementPrintDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Printing\View\EstimationQuotePrint.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Printing\View\EstimationQuotePrint.Designer.cs">
+      <DependentUpon>EstimationQuotePrint.cs</DependentUpon>
+    </Compile>
     <Compile Include="CRM\Printing\View\InvoicePrint.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -652,10 +696,16 @@
     <Compile Include="CRM\Printing\View\QuotePrint.Designer.cs">
       <DependentUpon>QuotePrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="CRM\Printing\View\ShipmentIssuePrintDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Printing\View\ShipmentIssuePrintDesign.Designer.cs">
+      <DependentUpon>ShipmentIssuePrintDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="CRM\Printing\View\StoreIssue.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="CRM\Printing\View\StoreIssue.Designer.cs">
+    <Compile Include="CRM\Printing\View\StoreIssue.designer.cs">
       <DependentUpon>StoreIssue.cs</DependentUpon>
     </Compile>
     <Compile Include="CRM\Printing\View\StoreIssuesPrint.cs">
@@ -672,17 +722,44 @@
     </Compile>
     <Compile Include="CRM\ViewModel\CampaignView.cs" />
     <Compile Include="CRM\ViewModel\CashSales.cs" />
+    <Compile Include="CRM\ViewModel\CustomerOrderStatusSummaryViewModel.cs" />
+    <Compile Include="CRM\ViewModel\CustomerViewModel.cs" />
     <Compile Include="CRM\ViewModel\OrderStatus.cs" />
     <Compile Include="CRM\ViewModel\QuoteStatus.cs" />
     <Compile Include="CRM\ViewModel\ReportingConst.cs" />
+    <Compile Include="CRM\ViewModel\SalesDescriptionCompanyHeaderViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesDescriptionViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesDetailReportViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesOrderDetailViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesOrderStatusDetailViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesOrderSummaryViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesPlanAndActualReportViewModel.cs" />
     <Compile Include="CRM\ViewModel\SalesQuote.cs" />
+    <Compile Include="CRM\ViewModel\SalesQuoteDetailViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesSummaryByBranchViewModel.cs" />
+    <Compile Include="CRM\ViewModel\SalesSummaryViewModel.cs" />
     <Compile Include="CRM\ViewModel\ServiceUsageViewModel.cs" />
+    <Compile Include="CRM\ViewModel\ShipmentDetailViewModel.cs" />
+    <Compile Include="CRM\ViewModel\ShipmentReportViewModels.cs" />
+    <Compile Include="CRM\ViewModel\TenderFollowupViewModel.cs" />
     <Compile Include="CRM\ViewModel\Ticket.cs" />
     <Compile Include="CRM\View\Campain.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CRM\View\Campain.Designer.cs">
       <DependentUpon>Campain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\CustomerListReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\CustomerListReptDesign.Designer.cs">
+      <DependentUpon>CustomerListReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\CustomerOrderStatusSummaryReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\CustomerOrderStatusSummaryReptDesign.Designer.cs">
+      <DependentUpon>CustomerOrderStatusSummaryReptDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="CRM\View\CustomerServiceUsage.cs">
       <SubType>Component</SubType>
@@ -702,6 +779,18 @@
     <Compile Include="CRM\View\QuoteStatus.Designer.cs">
       <DependentUpon>QuoteStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="CRM\View\SalesDescriptionRepDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesDescriptionRepDesign.Designer.cs">
+      <DependentUpon>SalesDescriptionRepDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesDetailReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesDetailReportDesign.Designer.cs">
+      <DependentUpon>SalesDetailReportDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="CRM\View\Salesinvoice.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -714,11 +803,71 @@
     <Compile Include="CRM\View\SalesInvoiceStatus.Designer.cs">
       <DependentUpon>SalesInvoiceStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="CRM\View\SalesOrderDetailReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesOrderDetailReptDesign.Designer.cs">
+      <DependentUpon>SalesOrderDetailReptDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="CRM\View\SalesOrderIssue.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="CRM\View\SalesOrderIssue.Designer.cs">
       <DependentUpon>SalesOrderIssue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesOrderStatusDetailReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesOrderStatusDetailReptDesign.Designer.cs">
+      <DependentUpon>SalesOrderStatusDetailReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesOrderSummaryReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesOrderSummaryReptDesign.Designer.cs">
+      <DependentUpon>SalesOrderSummaryReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesPlanAndActualReportReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesPlanAndActualReportReptDesign.Designer.cs">
+      <DependentUpon>SalesPlanAndActualReportReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesQuoteDetailReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesQuoteDetailReptDesign.Designer.cs">
+      <DependentUpon>SalesQuoteDetailReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesQuoteDetailReptDesignWithCrossTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesQuoteDetailReptDesignWithCrossTab.Designer.cs">
+      <DependentUpon>SalesQuoteDetailReptDesignWithCrossTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesSummaryByBranchReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesSummaryByBranchReptDesign.Designer.cs">
+      <DependentUpon>SalesSummaryByBranchReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\SalesSummaryReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\SalesSummaryReportDesign.Designer.cs">
+      <DependentUpon>SalesSummaryReportDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\ShipmentDetailReptDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\ShipmentDetailReptDesign.Designer.cs">
+      <DependentUpon>ShipmentDetailReptDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\View\TenderFollowupRepDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\View\TenderFollowupRepDesign.Designer.cs">
+      <DependentUpon>TenderFollowupRepDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="CRM\View\TicketReport.cs">
       <SubType>Component</SubType>
@@ -4603,6 +4752,18 @@
     <EmbeddedResource Include="Construction\ReportDesign\rptWorkProportion.resx">
       <DependentUpon>rptWorkProportion.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Printing\View\CashReceiptVoucher.resx">
+      <DependentUpon>CashReceiptVoucher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Printing\View\CreditReceiptVoucher.resx">
+      <DependentUpon>CreditReceiptVoucher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Printing\View\CreditSettlementPrintDesign.resx">
+      <DependentUpon>CreditSettlementPrintDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Printing\View\EstimationQuotePrint.resx">
+      <DependentUpon>EstimationQuotePrint.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CRM\Printing\View\InvoicePrint.resx">
       <DependentUpon>InvoicePrint.cs</DependentUpon>
     </EmbeddedResource>
@@ -4611,6 +4772,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CRM\Printing\View\QuotePrint.resx">
       <DependentUpon>QuotePrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Printing\View\ShipmentIssuePrintDesign.resx">
+      <DependentUpon>ShipmentIssuePrintDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CRM\Printing\View\StoreIssue.resx">
       <DependentUpon>StoreIssue.cs</DependentUpon>
@@ -4624,6 +4788,12 @@
     <EmbeddedResource Include="CRM\View\Campain.resx">
       <DependentUpon>Campain.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\CustomerListReptDesign.resx">
+      <DependentUpon>CustomerListReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\CustomerOrderStatusSummaryReptDesign.resx">
+      <DependentUpon>CustomerOrderStatusSummaryReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CRM\View\CustomerServiceUsage.resx">
       <DependentUpon>CustomerServiceUsage.cs</DependentUpon>
     </EmbeddedResource>
@@ -4633,11 +4803,47 @@
     <EmbeddedResource Include="CRM\View\QuoteStatus.resx">
       <DependentUpon>QuoteStatus.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesDescriptionRepDesign.resx">
+      <DependentUpon>SalesDescriptionRepDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesDetailReportDesign.resx">
+      <DependentUpon>SalesDetailReportDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CRM\View\Salesinvoice.resx">
       <DependentUpon>Salesinvoice.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesOrderDetailReptDesign.resx">
+      <DependentUpon>SalesOrderDetailReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CRM\View\SalesOrderIssue.resx">
       <DependentUpon>SalesOrderIssue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesOrderStatusDetailReptDesign.resx">
+      <DependentUpon>SalesOrderStatusDetailReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesOrderSummaryReptDesign.resx">
+      <DependentUpon>SalesOrderSummaryReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesPlanAndActualReportReptDesign.resx">
+      <DependentUpon>SalesPlanAndActualReportReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesQuoteDetailReptDesign.resx">
+      <DependentUpon>SalesQuoteDetailReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesQuoteDetailReptDesignWithCrossTab.resx">
+      <DependentUpon>SalesQuoteDetailReptDesignWithCrossTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesSummaryByBranchReptDesign.resx">
+      <DependentUpon>SalesSummaryByBranchReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\SalesSummaryReportDesign.resx">
+      <DependentUpon>SalesSummaryReportDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\ShipmentDetailReptDesign.resx">
+      <DependentUpon>ShipmentDetailReptDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\View\TenderFollowupRepDesign.resx">
+      <DependentUpon>TenderFollowupRepDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CRM\View\TicketReport.resx">
       <DependentUpon>TicketReport.cs</DependentUpon>

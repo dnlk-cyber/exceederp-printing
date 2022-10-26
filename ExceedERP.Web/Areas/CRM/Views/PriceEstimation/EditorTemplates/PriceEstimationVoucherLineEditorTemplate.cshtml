@@ -1,0 +1,149 @@
+﻿
+@model ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucherLine
+@using System.Collections
+<form id="lineForm" method="post">
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.CategoryId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.CategoryId)
+                        .Name("CategoryId")
+                        .OptionLabel("Select")
+                        .DataTextField("Description")
+                        .DataValueField("ProductCategoryId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetProductCategory", "CRMDataProvider"))
+                                    .ServerFiltering(false);
+                        })
+                        .Filter(FilterType.Contains)
+                        .ValuePrimitive(true)
+
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ProductId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ProductId)
+                        .Name("ProductId")
+                        .OptionLabel("Select")
+                        .DataTextField("Name")
+                        .DataValueField("ProductId")
+                        .DataSource(d =>
+                        {
+                            d.Read(r =>
+                            {
+                                r.Action("GetAllProductsByCategory", "CRMDataProvider").Data("getSelectedCategoryId");
+                            })
+                            .ServerFiltering(true);
+                        })
+                        .Filter(FilterType.Contains)
+                        .CascadeFrom("CategoryId")
+                        .ValuePrimitive(true)
+                        .Enable(true)
+                        .AutoBind(true)
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model=> model.Quantity)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Quantity))
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.UnitAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.UnitAmount))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TaxTypeId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TaxTypeId)
+                        .DataTextField("TaxName")
+                        .DataValueField("GLTaxRateID")
+                        .OptionLabel("Select ")
+                        .DataSource(datasource =>
+                        {
+                            datasource.Read(read =>
+                            {
+                                read.Action("GetGlTaxRates", "CRMDataProvider", new { area = "CRM" });
+                            })
+                            .ServerFiltering(false);
+                        })
+                        .ValuePrimitive(true)
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.WithholdingTypeId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.WithholdingTypeId)
+                                .DataTextField("TaxName")
+                                .DataValueField("GLTaxRateID")
+                                .OptionLabel(" Select ")
+                                .DataSource(datasource =>
+                                {
+                                    datasource.Read(read =>
+                                    {
+                                        read.Action("GetGlTaxRates", "CRMDataProvider", new { area = "CRM" });
+                                    })
+                                    .ServerFiltering(false);
+                                })
+                                .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                </div>
+                <div>
+                    @(Html.Kendo().CheckBoxFor(model => model.WithholdTax)
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select...")
+    .DataTextField("Name")
+    .DataValueField("RepairTypeId")
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetCRMServiceTypes", "CRMDataProvider"));
+    })
+
+)
+@Html.ValidationMessageFor(m => m)

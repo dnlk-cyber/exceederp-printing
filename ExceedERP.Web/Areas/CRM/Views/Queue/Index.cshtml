@@ -1,0 +1,391 @@
+﻿<legend>Queue Registration</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Queue>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.QueueNumber).Width(80);
+          columns.ForeignKey(c => c.QueueTypeId, (System.Collections.IEnumerable)ViewData["QueueTypes"], "QueueTypeId", "QueueName").Width(100);
+
+          columns.Bound(c => c.CustomerName).Width(100);
+          columns.Bound(c => c.TinNumber).Width(100);
+          columns.Bound(c => c.Phone).Width(100);
+          columns.Bound(c => c.InvestmentType).Width(100);
+          columns.Bound(c => c.InvestmentAmount).Width(100);
+          columns.Bound(c => c.Grade).Width(100);
+          columns.Bound(c => c.TotalRequestedAmount).Width(100);
+          columns.Bound(c => c.WeeklyRequest).Width(100);
+          columns.Bound(c => c.ApprovedQuantity).Width(100);
+          columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(100);
+          columns.ForeignKey(c => c.LocationMapId, (System.Collections.IEnumerable)ViewData["LocationMaps"], "LocationMapId", "LocationName").Width(100);
+          columns.Bound(c => c.Store).Width(100);
+
+          columns.Bound(c => c.QueueDate).Width(100);
+          columns.Bound(c => c.QueueStatus).Width(100);
+          columns.Bound(c => c.AdvancePayment).Width(100);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Bound(c => c.Status).Width(100).Title("Aproval Status");
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => {
+          editable.Mode(GridEditMode.PopUp);
+          editable.TemplateName("QueueEditor");
+          editable.Window(w => {
+              w.Title("Queue");
+              w.Scrollable(false);
+
+          });
+      })
+      .Pageable()
+      .Navigatable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Events(ev => {
+          ev.DataBound("onDataBound");
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.QueueId))
+          .Read(read => read.Action("Queue_Read", "Queue"))
+          .Create(create => create.Action("Queue_Create", "Queue"))
+          .Update(update => update.Action("Queue_Update", "Queue"))
+          .Destroy(destroy => destroy.Action("Queue_Destroy", "Queue"))
+      )
+      .ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    #if(!IsOnlineApproved){#
+    @(Html.Kendo().TabStrip()                                                               
+        .Name("tabstrip_#=QueueId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                            {
+                items.Add().Text("Detail").Content(@<text>
+
+                    #if (!IsOnlineApproved&&!IsSendForApproval){#
+                    <a onclick='return sendForApproval("#=QueueId#")' href='\#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    #}#
+                    @*<a href='@Url.Action("CreditSettlement", "Print")/#=CreditSettlementId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>*@
+                    @(Html.Kendo().PanelBar()
+                                            .Name("panelbar_#=QueueId#")
+                                            .ExpandMode(PanelBarExpandMode.Multiple)
+                                            //.HtmlAttributes(new { st})
+                                            .Items(panelbar =>
+                                            {
+                                                    panelbar.Add()
+                                                        .Expanded(true)
+                                                        .Text("Detail")
+                                                        .Content(
+                                                            "<div>" +
+                                                            "<ul>" +
+                                                            "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                                            "<li> <label> Created on: </label> #= DateCreated != null?  kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                            "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                                            "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                            "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                                            "</ul>" +
+                                                            "</div>"
+                                                        );
+                                                }).ToClientTemplate()
+                )
+            </text>);
+                
+
+            
+        items.Add().Text("Validation").Content(
+        @<text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.QueueValidation>()
+                        .Name("validation_#=QueueId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector").Width(100);
+                            //columns.Bound(c => c.RequestedQuantity).Width(100);
+                            columns.Bound(c => c.ApprovedQuantity).Width(100);
+                            columns.Bound(c => c.Remark).Width(100);
+
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(400);
+                        })
+
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create();
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Scrollable(h => h.Height(300))
+                        //.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        //.Filterable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"validation_#=QueueId#\")");
+                                events.RequestStart("onRequestStart(\"validation_#=QueueId#\")");
+                                events.RequestEnd("onRequestEnd(\"validation_#=QueueId#\")");
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(f => f.QueueValidationId);
+                                //model.Field(f => f.RequestedQuantity).Editable(false);
+                            })
+
+                            .Read(read => read.Action("Validations_Read", "QueueValidation", new { id = "#=QueueId#" }))
+                            .Create(create => create.Action("Validation_Create", "QueueValidation", new { id = "#=QueueId#" }))
+                            .Update(update => update.Action("Validation_Update", "QueueValidation"))
+                            .Destroy(destroy => destroy.Action("Validation_Destroy", "QueueValidation"))
+                        )
+                        .ToClientTemplate()
+        )
+        </text>
+        );
+        }).ToClientTemplate()
+    )
+    #}else {#
+    @(Html.Kendo().TabStrip()                                                               
+        .Name("tabstrip_#=QueueId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                            {
+                items.Add().Text("Detail").Content(@<text>
+
+                    #if (!IsOnlineApproved&&!IsSendForApproval){#
+                    <a onclick='return sendForApproval("#=QueueId#")' href='\#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    #}#
+                    @*<a href='@Url.Action("CreditSettlement", "Print")/#=CreditSettlementId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>*@
+                    @(Html.Kendo().PanelBar()
+                                            .Name("panelbar_#=QueueId#")
+                                            .ExpandMode(PanelBarExpandMode.Multiple)
+                                            //.HtmlAttributes(new { st})
+                                            .Items(panelbar =>
+                                            {
+                                                    panelbar.Add()
+                                                        .Expanded(true)
+                                                        .Text("Detail")
+                                                        .Content(
+                                                            "<div>" +
+                                                            "<ul>" +
+                                                            "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                                            "<li> <label> Created on: </label> #= DateCreated != null?  kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                            "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                                            "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                            "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                                            "</ul>" +
+                                                            "</div>"
+                                                        );
+                                                }).ToClientTemplate()
+                )
+            </text>);
+                
+
+            
+        items.Add().Text("Validation").Content(
+        @<text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.QueueValidation>()
+                        .Name("validation_#=QueueId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector").Width(100);
+                            columns.Bound(c => c.ApprovedQuantity).Width(100);
+                            columns.Bound(c => c.Remark).Width(100);
+
+                            columns.Command(command =>
+                            {
+                                ////command.Edit();
+                                ////command.Destroy();
+                            }).Width(400);
+                        })
+
+                        //.ToolBar(toolbar =>
+                        //{
+                        //    toolbar.Create();
+                        //})
+                        //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Scrollable(h => h.Height(300))
+                        //.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        //.Filterable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"validation_#=QueueId#\")");
+                                events.RequestStart("onRequestStart(\"validation_#=QueueId#\")");
+                                events.RequestEnd("onRequestEnd(\"validation_#=QueueId#\")");
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(f => f.QueueValidationId);
+
+                            })
+
+                            .Read(read => read.Action("Validations_Read", "QueueValidation", new { id = "#=QueueId#" }))
+                        //.Create(create => create.Action("Validation_Create", "QueueValidation", new { id = "#=QueueId#" }))
+                        //.Update(update => update.Action("Validation_Update", "QueueValidation"))
+                        //.Destroy(destroy => destroy.Action("Validation_Destroy", "QueueValidation"))
+                        )
+                        .ToClientTemplate()
+        )
+        </text>
+        );
+
+        }).ToClientTemplate()
+
+    )
+    #}#
+</script>
+
+<script type="text/javascript">
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approved") {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).addClass("k-state-Approved");
+            }
+            if (dataItem.Status == "WaitingApproval") {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            if (dataItem.Status == "Rejected") {
+                $(this).addClass("k-state-Rejected");
+            }
+
+        });
+    }
+    function getSelectedBranchId(e) {
+        var dropdownlist = $("#BranchId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            branchId: $("#BranchId").val(), filterString: filterInput.val()
+        };
+    }
+    function getCustomerFilterString(e) {
+        var dropdownlist = $("#QueueCustomerId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            filterString: filterInput.val()
+        };
+    }
+
+    function toggleCustomerDetailRow(e) {
+        var v = $("#QueueCustomerId").data("kendoDropDownList").value();
+        if (v) {
+            $("#customerDetailRow").show();
+        }
+        else {
+            $("#customerDetailRow").hide();
+        }
+    }
+    function customerDataBound(e) {
+        toggleCustomerDetailRow(e);
+    }
+    function customerSelectorChange(e) {
+        toggleCustomerDetailRow(e);
+
+        var drp = this;
+        var id = drp.value();
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetConcatnatedQueueCustomerData", "CRMDataProvider", new { area = "CRM" })',
+            data: { id: id},
+            success: function (result) {
+                if (result) {
+                    var values = result.split('_');
+                    var tinNo = values[0];
+                    var phoneNo = values[1];
+                    var investmentType = values[2];
+
+                    $("#TinNumber").val(tinNo);
+                    $("#Phone").val(phoneNo);
+                    $("#InvestmentType").val(investmentType);
+                }
+            }, 
+            error: function (result) {
+            }
+        });
+
+    }
+    function sendForApproval(id) {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "Queue", new { area = "CRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: 800px;
+    }
+    .k-grid table tr.k-state-Approved {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+
+    .k-grid table tr.k-state-Rejected {
+        background: #fcabab;
+        color: #040000;
+    }
+</style>

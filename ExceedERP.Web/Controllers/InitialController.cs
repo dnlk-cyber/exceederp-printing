@@ -23,6 +23,7 @@ using ExceedERP.Core.Domain.CMS;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.Core.Domain.JobCosting;
+using ExceedERP.Core.Domain.CRM;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -359,24 +360,38 @@ namespace ExceedERP.Web.Controllers
             #endregion
 
                 #region CRM
-             new ApplicationRole("CRM_Admin", "CRM Administrator", "CRM"),
-             new ApplicationRole("Sales_Report", "Sales Report", "CRM"),
-             new ApplicationRole("Marketing_Report", "Marketing Report", "CRM"),
-             new ApplicationRole("Service_Support_report", "Service Support_report", "CRM"),
-             new ApplicationRole("Sales_Quote_User", "Sales Quote User", "CRM"),
-             new ApplicationRole("Sales_Order_User", "Sales Order User", "CRM"),
-             new ApplicationRole("Cash_Sales_User", "Cash Sales User", "CRM"),
-             new ApplicationRole("Sales_Quote_Approver", "Sales Quote Approver", "CRM"),
-             new ApplicationRole("Sales_Order_Approver", "Sales Order Approver", "CRM"),
-             new ApplicationRole("Cash_Sales_Approver", "Cash Sales Approver", "CRM"),
-             new ApplicationRole("Marketing_User", "Marketing User", "CRM"),
-             new ApplicationRole("Service_Support_User", "Service_Support_User", "CRM"),
-             new ApplicationRole("Inventory_Issue_User", "Inventory Issue User", "CRM"),
-             new ApplicationRole("Inventory_Issue_Approver", "Inventory Issue Approver", "CRM"),
-             new ApplicationRole("Customer_Service_User", "Customer Service User", "CRM"),
-             new ApplicationRole("Customer_Service_Approver", "Customer Service Approver", "CRM"),
-             new ApplicationRole("Customer_Service_Report", "Customer Service Report", "CRM"),
-             new ApplicationRole("Credit_Settlement_User", "Credit Settlement User", "CRM"),
+            new ApplicationRole(CRMRoles.CRMAdmin, "CRM Administrator - Manages all CRM Settings. Can Create, Edit and Delete CRM Settings", "CRM"),
+            new ApplicationRole(CRMRoles.SalesReport, "Sales Report - Can see all CRM Reports.", "CRM"),
+            new ApplicationRole(CRMRoles.SalesQuoteUser, "Sales Quote User - Create, Edit and Delete Sales Quote records", "CRM"),
+            new ApplicationRole(CRMRoles.SalesQuoteFirstApprover, "Sales Quote first-level Approver", "CRM"),
+            new ApplicationRole(CRMRoles.SalesQuoteSecondApprover, "Sales Quote second-level Approver", "CRM"),
+            new ApplicationRole(CRMRoles.SalesQuoteApprover, "Sales Quote Approver - Approve and Reject Sales Quotes", "CRM"),
+            new ApplicationRole(CRMRoles.SalesOrderUser, "Sales Order User - Create, Edit and Delete Sales Order records", "CRM"),
+            new ApplicationRole(CRMRoles.SalesOrderApprover, "Sales Order Approver - Approve and Reject Sales Orders", "CRM"),
+            new ApplicationRole(CRMRoles.CashSalesUser, "Cash Sales User - Create, Edit and Delete CASH SALES", "CRM"),
+            new ApplicationRole(CRMRoles.CashSalesApprover, "Cash Sales Approver - Approve and Reject CASH SALES", "CRM"),
+            new ApplicationRole(CRMRoles.CreditSalesUser, "Credit Sales User - Create, Edit and Delete CREDIT SALES", "CRM"),
+            new ApplicationRole(CRMRoles.CreditSalesApprover, "Credit Sales Approver - Approve and Reject CREDIT SALES", "CRM"),
+            new ApplicationRole(CRMRoles.CRMQueueSetting, "Responsible for Queue Related Settings (queue types, investment types and location mapping)", "CRM"),
+            new ApplicationRole(CRMRoles.CRMQueueUser, "Creating and Modifying Queue Records", "CRM"),
+            new ApplicationRole(CRMRoles.CRMQueueApprover, "Queue Records approver", "CRM"),
+            new ApplicationRole(CRMRoles.CustomerRegistrationUser, "Add and Modify Organization Customers", "CRM"),
+            new ApplicationRole(CRMRoles.ShipmentUser, "Shipment User. Can Create and Modify Shipment Records", "CRM"),
+            new ApplicationRole(CRMRoles.ShipmentApprover, "Shipment Approver. Can Approver, Reject Shipment Records", "CRM"),
+            new ApplicationRole(CRMRoles.CreditSettlementUser, "Credit Settlement User - Create, Edit and Delete Credit Settlements", "CRM"),
+            new ApplicationRole(CRMRoles.CreditSettlementApprover, "Credit Settlement Approver - Approve and Reject Credit Settlements", "CRM"),
+            new ApplicationRole(CRMRoles.AdvancePaymentUser, "Advance Payment User - Create, Edit and Delete Advance Payments", "CRM"),
+            new ApplicationRole(CRMRoles.AdvancePaymentApprover, "Advance Payment Approver - Approve and Reject Advance Payments", "CRM"),
+            new ApplicationRole(CRMRoles.CRMVoid, "Void sales quote, sales order, sales invoice, shipment and other vouchers", "CRM"),
+            new ApplicationRole(CRMRoles.SalesPlanUser, "Sales plan user - Create, Edit and Delete Sales Plan", "CRM"),
+            new ApplicationRole(CRMRoles.SalesPlanApprover, "Sales plan approver - Approve and Reject Sales Plan", "CRM"),
+            new ApplicationRole(CRMRoles.CRMBatchTransfer, "CRM Batch Transfer - batch transfer Cash Sales, Credit Sales, Shipment, Credit Settlements and Deposit", "CRM"),
+            new ApplicationRole(CRMRoles.IncompleteShipmentAdmin, "Incomplete and Partially Incomplete shipment admin", "CRM"),
+            new ApplicationRole(CRMRoles.CRMTenderFollowup, "Tender Followup", "CRM"),
+            new ApplicationRole(CRMRoles.PriceEstimationUser, "Maintains price estimation vouchers", "CRM"),
+            new ApplicationRole(CRMRoles.PriceEstimationFirstApprover, "Price estimation first approver", "CRM"),
+            new ApplicationRole(CRMRoles.PriceEstimationSecondApprover, "Price estimation second approver", "CRM"),
+            new ApplicationRole(CRMRoles.PriceEstimationApprover, "Price estimation final approver", "CRM"),
             #endregion
 
                 #region FLEET

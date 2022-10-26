@@ -1,0 +1,13 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select...")
+    .DataTextField("Description")
+    .DataValueField("SalesStoreId")
+    .ValuePrimitive(true)
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetStoreInBranch", "CRMDataProvider", new { branchId = "#=BranchId#", area = "CRM"}));
+    })
+
+)

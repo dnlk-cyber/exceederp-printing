@@ -1,0 +1,250 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.CRM.SalesOrderVoucher
+
+<form  method="post">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.OrganizationCustomerId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.OrganizationCustomerId)
+                                //.HtmlAttributes(new { @class = "form-control" })
+                                .DataTextField("TradeName")
+                                .DataValueField("OrganizationCustomerID")
+                                .OptionLabel("Select ")
+                                .Filter(FilterType.Contains)
+                                .SelectedIndex(1)
+
+                                .DataSource(d => d.Read(r => r.Action("CashOrgCustomerDDBind", "OrganizationCustomer")).ServerFiltering(false))
+                                .Events(e => e.Change("SwitchCustomer").DataBound("SwitchCustomer")))
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Source)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.Source)
+                                .Name("Source")
+                                .OptionLabel(Resources.Select)
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .ValuePrimitive(true)
+                                .Filter("contains")
+                                .BindTo(EnumExtension.EnumToSelectList(typeof(SalesOrderSource))))
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="k-label">
+                @Html.LabelFor(model => model.References)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.References)
+                                         .OptionLabel(Resources.Select)
+                                          .Name("References")
+                                          .DataTextField("SalesQuoteVoucherID")
+                                          .DataValueField("SalesQuoteVoucherID")
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetSalesQuoteNumber", "CRMDataProvider").Data("filterSourceTypeAndCustomerId"))
+                                              .ServerFiltering(true);
+                                          })
+                                          .Events(ev => {
+                                              ev.Change("referenceSelectorChanged");
+                                          })
+                                          .Filter("contains")
+                                          .CascadeFrom("Source")
+                                          .MinLength(2)
+                                          .AutoBind(false)
+                                          .Enable(false)
+                                          .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3" id="NewCustomerArea">
+            <div class="form-group">
+                @*<div class="k-label">
+                    @Html.LabelFor(model => model.NewCustomer)
+                </div>*@
+                <div>
+                    @*@(Html.Kendo().TextBoxFor(model => model.NewCustomer))*@
+                    @(Html.Kendo().AutoCompleteFor( m => m.NewCustomer)
+                          .Name("NewCustomer")
+                          .Placeholder("New Customer Name")
+                          .DataTextField("TradeName")
+                          .Filter("contains")
+                          .MinLength(2)
+                          .NoDataTemplate("Write Customer Name Manually")
+                          //.HtmlAttributes(new { @class = "form-control" })
+                          .DataSource(source =>
+                          {
+                              source.Read(read =>
+                              {
+                                  read.Action("GetTemporaryCustomersForAutocomplete", "CRMDataProvider")
+                                      .Data("onAdditionalData");
+                              })
+                              .ServerFiltering(true);
+                          })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.CRMPeriodId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.CRMPeriodId)
+                                                                        //.HtmlAttributes(new { @class = "form-control" })
+                                                                        .ValuePrimitive(true)
+                                                                        .OptionLabel("Select Period...")
+                                                                        .DataTextField("Name")
+                                                                        .DataValueField("CRMPeriodId")
+                                                                        .Filter("contains")
+                                                                        .DataSource(dataSource =>
+                                                                        {
+                                                                            dataSource.Read(read => read.Action("GetOpenCRMPeriodsWithinSalesQuoteRange", "CRMDataProvider", new { area = "CRM" }).Data("getSelectedQuoteId"))
+                                                                            .ServerFiltering(false);
+                                                                        })
+                                                                        .Events(ev =>
+                                                                        {
+                                                                            ev.Change("onPeriodChange");
+                                                                        })
+
+                    )
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Date)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.Date))
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BranchId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                                .Name("BranchId")
+                                //.HtmlAttributes(new { @class = "form-control" })
+                                .Filter(FilterType.Contains)
+                                //.SelectedIndex(1)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Select Branch...")
+                                .DataTextField("Name")
+                                .DataValueField("BranchId")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetBranches", "CRMDataProvider", new { area = "CRM" }))
+                                        .ServerFiltering(false);
+                                })
+                    )
+
+
+
+                </div>
+            </div>
+        </div>
+       
+    </div>
+    
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StoreID)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.StoreID)
+                                        .Name("StoreID")
+                                        .HtmlAttributes(new { @class = "form-control" })
+                                        .Filter(FilterType.Contains)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select Store...")
+                                        .DataTextField("Description")
+                                        .CascadeFrom("BranchId")
+                                        .DataValueField("SalesStoreId")
+                                        .Filter("contains")
+                                        .Enable(false)
+                                        //.AutoBind(false)
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetStoreInBranch", "CRMDataProvider", new { area = "CRM" }).Data("getSelectedBranch"))
+                                            .ServerFiltering(true);
+                                        })
+                    )
+
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PaymentMethod)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.PaymentMethod)
+                        //.HtmlAttributes(new { @class = "form-control" })
+                        .DataTextField("Name")
+                        .DataValueField("Name")
+                        .DataSource(d =>
+                        {
+                            d.Read(r =>
+                            {
+                                r.Action("PaymentMethodByCustomerDDBind", "OrganizationCustomer").Data("filterPayment");
+                            })
+                                .ServerFiltering(true);
+                        })
+                        .ValuePrimitive(true)
+                        .CascadeFrom("OrganizationCustomerId"))
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark)
+                </div>
+                <div>
+                    @Html.TextAreaFor(m => m.Remark, 2, 10, new {@style="width:100%; rows:4;" })
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</form>
+

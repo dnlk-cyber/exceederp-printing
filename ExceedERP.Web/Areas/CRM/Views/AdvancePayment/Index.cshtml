@@ -5,11 +5,11 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.AdvancePaymentId).Title("#").Width(100);
-
+          columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(100);
           columns.ForeignKey(c => c.Customer, (System.Collections.IEnumerable)ViewData["OrganizationCustomer"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("OrgCustomerEditor").Width(160);
-           
-            columns.Bound(c => c.GrandTotal).Width(120);
-            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(120);
+
+          columns.Bound(c => c.GrandTotal).Width(120);
+          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(120);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar =>
@@ -17,7 +17,7 @@
           toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-        .HtmlAttributes(new { style = "height: 520px;" })
+        .HtmlAttributes(new { style = "height: 700px;" })
                                                   .Pageable(pageable => pageable
                                                                     .Input(true)
                                                                     .Numeric(false)
@@ -28,22 +28,21 @@
                                                         .Scrollable()
                                                         .Sortable()
                                                         .Filterable()
-                                                        .Groupable()
                                                         .Scrollable(h => h.Height(500))
-                                                       // .ClientDetailTemplateId("template")
+      // .ClientDetailTemplateId("template")
       .DataSource(dataSource => dataSource
           .Ajax()
                                .Model(model =>
-                                                  {
-                                                      model.Id(p => p.AdvancePaymentId);
-                                                      model.Field(v => v.GrandTotal).Editable(false);
-                                                      model.Field(v => v.DateCreated).Editable(false);
-                                                      model.Field(v => v.AdvancePaymentId).Editable(false);
-                                                  })    .Events(ev => ev
-                                                                                                        .Error("error_handler(\"grid\")")
-                                                                                                        .RequestStart("onRequestStart(\"grid\")")
-                                                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
-                
+                               {
+                                   model.Id(p => p.AdvancePaymentId);
+                                   model.Field(v => v.GrandTotal).Editable(false);
+                                   model.Field(v => v.DateCreated).Editable(false);
+                                   model.Field(v => v.AdvancePaymentId).Editable(false);
+                               })    .Events(ev => ev
+                                                                                     .Error("error_handler(\"grid\")")
+                                                                                     .RequestStart("onRequestStart(\"grid\")")
+                                                                                     .RequestEnd("onRequestEnd(\"grid\")"))
+
           .Read(read => read.Action("AdvancePayments_Read", "AdvancePayment"))
           .Create(create => create.Action("AdvancePayments_Create", "AdvancePayment"))
           .Update(update => update.Action("AdvancePayments_Update", "AdvancePayment"))
@@ -62,9 +61,9 @@
 
 
                     /***********************************************Advance Payment Line **************************************************/
-                    items.Add().Text(" ").Content(
+                    items.Add().Text("Line Item ").Content(
                         @<text>
-                            <legend>  Payment List </legend>
+                            @*<legend>  Payment List </legend>*@
                             @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdvancePaymentLine>()
               .Name("AdvancePaymentLineGrid_#=AdvancePaymentId#")
       .Columns(columns =>
@@ -103,6 +102,62 @@
                         </text>
 
          );
+
+                items.Add().Text("Distribution").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdvancePaymentDistibution>()
+                                                                .Name("Distribution_#=AdvancePaymentId#")
+
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.AccountCode);
+                                    columns.Bound(c => c.AccountDesc);
+                                    columns.Bound(c => c.Debit)
+                                        .ClientTemplate(
+                                            "\\# if (Debit === 0) { \\#" +
+                                            "_" +
+                                            "\\# } else {\\#" +
+                                            "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                            "\\# } \\#"
+                                        )
+                                        .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                    columns.Bound(c => c.Credit)
+                                        .ClientTemplate(
+                                            "\\# if (Credit === 0) { \\#" +
+                                            "_" +
+                                            "\\# } else {\\#" +
+                                            "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                            "\\# } \\#"
+                                        )
+                                        .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                    //columns.Command(command => { }).Width(180);
+                                })
+
+                        .Scrollable()
+                        .DataSource(dataSource => dataSource
+
+                        .Ajax().Events(e => e.Error("error_handler(\"Distribution_#=AdvancePaymentId#\")")
+
+                        .RequestStart("onRequestStart(\"Distribution_#=AdvancePaymentId#\")")
+                        .RequestEnd("onRequestEnd(\"Distribution_#=AdvancePaymentId#\")"))
+                        .Aggregates(ag => {
+                            ag.Add(f => f.Debit).Sum();
+                            ag.Add(f => f.Credit).Sum();
+                        })
+                        .Model(model => model.Id(p => p.AdvancePaymentDistibutionId))
+
+                        .Read(read => read.Action("AdvancePaymentDistribution_Read", "AdvancePaymentDistibution", new { Id = "#=AdvancePaymentId#" }))
+
+                        ).ToClientTemplate()
+
+                                    )
+                                </text>
+
+                            );
                 }).ToClientTemplate()
 
     )

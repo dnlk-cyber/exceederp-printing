@@ -1,0 +1,34 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.BranchMonthlySalesPlan>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.StoreCode);
+        columns.Bound(c => c.CRMPeriodId);
+        columns.Bound(c => c.Ratio);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Value);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Navigatable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BranchMonthlySalesPlanId))
+          .Read(read => read.Action("BranchMonthlySalesPlans_Read", "BranchMonthlySalesPlan"))
+          .Create(create => create.Action("BranchMonthlySalesPlans_Create", "BranchMonthlySalesPlan"))
+          .Update(update => update.Action("BranchMonthlySalesPlans_Update", "BranchMonthlySalesPlan"))
+          .Destroy(destroy => destroy.Action("BranchMonthlySalesPlans_Destroy", "BranchMonthlySalesPlan"))
+      )
+)

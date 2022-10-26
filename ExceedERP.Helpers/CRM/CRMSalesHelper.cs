@@ -182,36 +182,82 @@ namespace ExceedERP.Helpers.CRM
         }
         public void ConfigureWitholding(bool WithholdTax, string WithholdingType, List<GLTaxRate> Rate, out decimal WithHoldingAmount, out decimal WithHoldingTaxAmount, decimal TaxAmount, decimal subTotal)
         {
+            var db = new ExceedDbContext();
             var GLWithholdingTaxRate = Rate.Where(t => t.GLTaxRateID.ToString() == WithholdingType).FirstOrDefault();
             //WithHoldingAmount = (TotalAmount - (TotalAmount * (GLWithholdingTaxRate.Rate / 100)));
-            WithHoldingAmount = subTotal * GLWithholdingTaxRate.CalculatedRate;
+            if(GLWithholdingTaxRate != null)
+            {
+                WithHoldingAmount = subTotal * GLWithholdingTaxRate.CalculatedRate;
+            }
+            else
+            {
+                WithHoldingAmount = 0;
+            }
             WithHoldingTaxAmount = decimal.Zero;
             if (WithholdTax)
             {
-                WithHoldingTaxAmount = TaxAmount;
+                var vatWithholdingSetting = db.GLVatWithholdings.FirstOrDefault();
+                if(vatWithholdingSetting != null)
+                {
+                    // VAT withholding could be partial instead of full 15% withholding
+                    WithHoldingTaxAmount = subTotal * (vatWithholdingSetting.WithholdPercent / 100);
+                }
+
+                //WithHoldingTaxAmount = TaxAmount;
             }
         }
-
+        public static decimal CalculateTaxAmount(int? taxTypeId, decimal subTotal)
+        {
+            var db = new ExceedDbContext();
+            decimal amnt = 0;
+            var taxType = db.GLTaxRates.Find(taxTypeId);
+            if(taxType != null)
+            {
+                amnt = taxType.CalculatedRate * subTotal;
+            }
+            return amnt;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="subTotal"></param>
+        /// <param name="vat"></param>
+        /// <returns></returns>
+        public static decimal CalculateVatWithholdingAmount(decimal subTotal, decimal vat)
+        {
+            decimal amnt = vat;
+            var db = new ExceedDbContext();
+            var vatWithholdingSetting = db.GLVatWithholdings.FirstOrDefault();
+            if (vatWithholdingSetting != null)
+            {
+                // VAT withholding could be partial instead of full 15% withholding
+                amnt = subTotal * (vatWithholdingSetting.WithholdPercent / 100);
+            }
+            return amnt;
+        }
         public bool SalesInvoiceHasUnShipedLineLitems(CashSalesInvoice salesInvoice, string voucherDefnisionId)
         {
             var db = new ExceedDbContext();
             bool hasUnShipedItems = false;
-            var lineItems = db.LineItems.Where(l => l.Voucher == salesInvoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == voucherDefnisionId).ToList();
-            if (lineItems.Any())
+            if (string.IsNullOrEmpty(salesInvoice.JobOrderNumber)) // if invoice is from maintenance, exclude it
             {
-                foreach (LineItem lineItem in lineItems)
+                var lineItems = db.LineItems.Where(l => l.Voucher == salesInvoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == voucherDefnisionId).ToList();
+                if (lineItems.Any())
                 {
-                    decimal remainingQty = lineItem.Quantity;
-                    decimal shippedBefore = 0;
-                    var existingShipmentLineItem = db.SalesShipmentLineItem.Where(li => li.LineItemId == lineItem.LineItemID).ToList();
-                    if (existingShipmentLineItem.Any())
+                    foreach (LineItem lineItem in lineItems)
                     {
-                        shippedBefore = existingShipmentLineItem.Sum(i => i.ShipedQuantity);
-                        remainingQty = lineItem.Quantity - shippedBefore;
-                    }
-                    if (remainingQty > 0)
-                    {
-                        hasUnShipedItems = true;
+                        decimal remainingQty = lineItem.Quantity;
+                        decimal shippedBefore = 0;
+                        var existingShipmentLineItem = db.SalesShipmentLineItem.Where(li => li.LineItemId == lineItem.LineItemID).ToList();
+                        if (existingShipmentLineItem.Any())
+                        {
+                            shippedBefore = existingShipmentLineItem.Sum(i => i.ShipedQuantity);
+                            remainingQty = lineItem.Quantity - shippedBefore;
+                        }
+                        if (remainingQty > 0)
+                        {
+                            hasUnShipedItems = true;
+                        }
                     }
                 }
             }
@@ -295,121 +341,159 @@ namespace ExceedERP.Helpers.CRM
             }
         }
 
-        public static void SendSalesToBankReconciliation(CashSalesInvoice invoice, string userName)
-        {
-             AccountHelper _accountHelper = new AccountHelper();
+        //public static CRMTransactionCounterViewModel SendSalesToBankReconciliation(CashSalesInvoice invoice, string userName)
+        //{
+        //    CRMTransactionCounterViewModel model = new CRMTransactionCounterViewModel();
+        //    AccountHelper _accountHelper = new AccountHelper();
+        //    int successfullDistr = 0;
+        //    int skippedDistr = 0;
+        //    var db = new ExceedDbContext();
+        //    #region pass data for reconciliation
 
-            var db = new ExceedDbContext();
-            #region pass data for reconciliation
+        //    var distributions = db.SalesInvoicePaymentDistibutions.Where(d => d.CashSalesInvoiceId == invoice.CashSalesInvoiceID).ToList();
 
-            var distributions = db.SalesInvoicePaymentDistibutions.Where(d => d.CashSalesInvoiceId == invoice.CashSalesInvoiceID).ToList();
+        //    foreach (SalesInvoicePaymentDistibution distribution in distributions)
+        //    {
+        //        string sourceid = invoice.CashSalesInvoiceID + "-" + distribution.SalesInvoicePaymentDistibutionId;
+        //        var existingRecord = db.ReconcilationBookAccounts.FirstOrDefault(b => b.SourceID == sourceid && b.Type == BankReconciliationType.Sales.ToString());
+        //        //check if this is bank account
+        //        if (_accountHelper.IsBankAccount(distribution.AccountCode) && existingRecord == null)
+        //        {
+        //            var book = new ReconciliationBookAccount
+        //            {
+        //                CreatedBy = userName,
+        //                DateCreated = DateTime.Now,
+        //                AccountCode = distribution.AccountCode,
+        //                Debit = distribution.Debit,
+        //                Credit = distribution.Credit,
+        //                Date = invoice.Date,
+        //                Type = BankReconciliationType.Sales.ToString(),
+        //                ReferenceDoc = !String.IsNullOrWhiteSpace(invoice.ReceiptReference) ? invoice.ReceiptReference : "NA",
+        //                Reference = !String.IsNullOrWhiteSpace(invoice.References) ? invoice.References : "NA",
+        //                Source = JournalSources.Sales.ToString(),
+        //                SourceID = sourceid,
+        //                AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+        //                SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+        //            };
+        //            db.ReconcilationBookAccounts.Add(book);
+        //            var res = db.SaveChanges();
+        //            if(res > 0)
+        //            {
+        //                successfullDistr += 1;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            skippedDistr += 1;
+        //        }
+        //    }
+        //    model.SuccessfulOperations = successfullDistr;
+        //    model.IgnoredOperations = skippedDistr;
+        //    #endregion
+        //    return model;
+        //}
+        //public static CRMTransactionCounterViewModel SendDepositToBankReconciliation(CRMDeposit deposit, string userName)
+        //{
+        //    CRMTransactionCounterViewModel model = new CRMTransactionCounterViewModel();
+        //    AccountHelper _accountHelper = new AccountHelper();
+        //    int successfullDistr = 0;
+        //    int skippedDistr = 0;
+        //    var db = new ExceedDbContext();
+        //    #region pass data for reconciliation
 
-            foreach (SalesInvoicePaymentDistibution distribution in distributions)
-            {
-                string sourceid = invoice.CashSalesInvoiceID + "-" + distribution.SalesInvoicePaymentDistibutionId;
-                //check if this is bank account
-                if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                {
-                    var book = new ReconciliationBookAccount
-                    {
-                        CreatedBy = userName,
-                        DateCreated = DateTime.Now,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit,
-                        Date = invoice.Date,
-                        Type = BankReconciliationType.Sales.ToString(),
-                        ReferenceDoc = !String.IsNullOrWhiteSpace(invoice.ReceiptReference) ? invoice.ReceiptReference : "NA",
-                        Reference = !String.IsNullOrWhiteSpace(invoice.References) ? invoice.References : "NA",
-                        Source = JournalSources.Sales.ToString(),
-                        SourceID = sourceid,
-                        AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                        SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                    };
-                    db.ReconcilationBookAccounts.Add(book);
-                    db.SaveChanges();
-                }
-            }
-            #endregion
-        }
-        public static void SendDepositToBankReconciliation(CRMDeposit deposit, string userName)
-        {
-            AccountHelper _accountHelper = new AccountHelper();
+        //    var distributions = db.CRMDepositDistribution.Where(d => d.CRMDepositId == deposit.CRMDepositId).ToList();
 
-            var db = new ExceedDbContext();
-            #region pass data for reconciliation
+        //    foreach (CRMDepositDistribution distribution in distributions)
+        //    {
+        //        string sourceid = deposit.CRMDepositId + "-" + distribution.CRMDepositDistributionId;
+        //        var existingRecord = db.ReconcilationBookAccounts.FirstOrDefault(b => b.SourceID == sourceid && b.Type == BankReconciliationType.Deposit.ToString());
+        //        //check if this is bank account
+        //        if (_accountHelper.IsBankAccount(distribution.AccountCode) && existingRecord == null)
+        //        {
+        //            var book = new ReconciliationBookAccount
+        //            {
+        //                CreatedBy = userName,
+        //                DateCreated = DateTime.Now,
+        //                AccountCode = distribution.AccountCode,
+        //                Debit = distribution.Debit,
+        //                Credit = distribution.Credit,
+        //                Date = deposit.Date,
+        //                Type = BankReconciliationType.Deposit.ToString(),
+        //                ReferenceDoc = !String.IsNullOrWhiteSpace(deposit.Remark) ? deposit.Remark : "NA",
+        //                Reference = !String.IsNullOrWhiteSpace(deposit.SalesPersonFullName) ? deposit.SalesPersonFullName : "NA",
+        //                Source = JournalSources.Deposit.ToString(),
+        //                SourceID = sourceid,
+        //                AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+        //                SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+        //            };
+        //            db.ReconcilationBookAccounts.Add(book);
+        //            var res = db.SaveChanges();
+        //            if (res > 0)
+        //            {
+        //                successfullDistr += 1;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            skippedDistr += 1;
+        //        }
+        //    }
+        //    #endregion
+        //    return model;
+        //}
+        //public static CRMTransactionCounterViewModel SendCreditSettlementToBankReconciliation(CreditSettlement creditSettlement, string userName)
+        //{
+        //    CRMTransactionCounterViewModel model = new CRMTransactionCounterViewModel();
+        //    AccountHelper _accountHelper = new AccountHelper();
+        //    int successfullDistr = 0;
+        //    int skippedDistr = 0;
+        //    var db = new ExceedDbContext();
+        //    #region pass data for reconciliation
 
-            var distributions = db.CRMDepositDistribution.Where(d => d.CRMDepositId == deposit.CRMDepositId).ToList();
+        //    var distributions = db.CreditSettlementDistribution.Where(d => d.CreditSettlementId == creditSettlement.CreditSettlementId).ToList();
 
-            foreach (CRMDepositDistribution distribution in distributions)
-            {
-                string sourceid = deposit.CRMDepositId + "-" + distribution.CRMDepositDistributionId;
-                //check if this is bank account
-                if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                {
-                    var book = new ReconciliationBookAccount
-                    {
-                        CreatedBy = userName,
-                        DateCreated = DateTime.Now,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit,
-                        Date = deposit.Date,
-                        Type = BankReconciliationType.Deposit.ToString(),
-                        ReferenceDoc = !String.IsNullOrWhiteSpace(deposit.Remark) ? deposit.Remark : "NA",
-                        Reference = !String.IsNullOrWhiteSpace(deposit.SalesPersonFullName) ? deposit.SalesPersonFullName : "NA",
-                        Source = JournalSources.Sales.ToString(),
-                        SourceID = sourceid,
-                        AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                        SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                    };
-                    db.ReconcilationBookAccounts.Add(book);
-                    db.SaveChanges();
-                }
-            }
-            #endregion
-        }
-        public static void SendCreditSettlementToBankReconciliation(CreditSettlement creditSettlement, string userName)
-        {
-            AccountHelper _accountHelper = new AccountHelper();
-
-            var db = new ExceedDbContext();
-            #region pass data for reconciliation
-
-            var distributions = db.CreditSettlementDistribution.Where(d => d.CreditSettlementId == creditSettlement.CreditSettlementId).ToList();
-
-            foreach (CreditSettlementDistribution distribution in distributions)
-            {
-                string sourceid = creditSettlement.CreditSettlementId + "-" + distribution.CreditSettlementDistributionId;
-                //check if this is bank account
-                if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                {
-                    var book = new ReconciliationBookAccount
-                    {
-                        CreatedBy = userName,
-                        DateCreated = DateTime.Now,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit,
-                        Date = creditSettlement.Date,
-                        Type = BankReconciliationType.Credit_Settlement.ToString(),
-                        ReferenceDoc = !String.IsNullOrWhiteSpace(creditSettlement.ReceiptNumber) ? creditSettlement.ReceiptNumber : "NA",
-                        Reference = !String.IsNullOrWhiteSpace(creditSettlement.Remark) ? creditSettlement.Remark : "NA",
-                        Source = JournalSources.Sales.ToString(),
-                        SourceID = sourceid,
-                        AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                        SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                    };
-                    db.ReconcilationBookAccounts.Add(book);
-                    db.SaveChanges();
-                }
-            }
-            #endregion
-        }
+        //    foreach (CreditSettlementDistribution distribution in distributions)
+        //    {
+        //        string sourceid = creditSettlement.CreditSettlementId + "-" + distribution.CreditSettlementDistributionId;
+        //        var existingRecord = db.ReconcilationBookAccounts.FirstOrDefault(b => b.SourceID == sourceid && b.Type == BankReconciliationType.Credit_Settlement.ToString());
+        //        //check if this is bank account
+        //        if (_accountHelper.IsBankAccount(distribution.AccountCode) && existingRecord == null)
+        //        {
+        //            var book = new ReconciliationBookAccount
+        //            {
+        //                CreatedBy = userName,
+        //                DateCreated = DateTime.Now,
+        //                AccountCode = distribution.AccountCode,
+        //                Debit = distribution.Debit,
+        //                Credit = distribution.Credit,
+        //                Date = creditSettlement.Date,
+        //                Type = BankReconciliationType.Credit_Settlement.ToString(),
+        //                ReferenceDoc = !String.IsNullOrWhiteSpace(creditSettlement.ReceiptNumber) ? creditSettlement.ReceiptNumber : "NA",
+        //                Reference = !String.IsNullOrWhiteSpace(creditSettlement.Remark) ? creditSettlement.Remark : "NA",
+        //                Source = JournalSources.Credit_Settlement.ToString(),
+        //                SourceID = sourceid,
+        //                AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+        //                SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+        //            };
+        //            db.ReconcilationBookAccounts.Add(book);
+        //            var res = db.SaveChanges();
+        //            if (res > 0)
+        //            {
+        //                successfullDistr += 1;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            skippedDistr += 1;
+        //        }
+        //    }
+        //    #endregion
+        //    return model;
+        //}
 
         public static void CreateShipmentRecordFromInvoice(CashSalesInvoice invoice, string userName)
         {
-            if(new CRMSalesHelper().SalesInvoiceHasUnShipedLineLitems(invoice, "2"))
+            if (new CRMSalesHelper().SalesInvoiceHasUnShipedLineLitems(invoice, "2"))
             {
                 var db = new ExceedDbContext();
                 var record = new SalesShipment
@@ -811,7 +895,21 @@ namespace ExceedERP.Helpers.CRM
             return id;
         }
 
-
+        public static decimal GetProductSalesPrice(string itemCode)
+        {
+            var db = new ExceedDbContext();
+            decimal price = 0;
+            var product = db.Products.FirstOrDefault(p => p.ItemCode == itemCode);
+            if(product != null)
+            {
+                var priceSetting = db.Prices.FirstOrDefault(p => p.Thing == product.ProductID.ToString());
+                if(priceSetting != null)
+                {
+                    price = priceSetting.Value;
+                }
+            }
+            return price;
+        }
     }
 
 }

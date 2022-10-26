@@ -1,0 +1,22 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+    .Name("PlateNo")
+    .OptionLabel("Select")
+    .DataTextField("LicensePlate")
+    .DataValueField("LicensePlate")
+    .DataSource(d =>
+    {
+        d.Read(r =>
+        {
+            r.Action("GetEquipments", "CRMDataProvider").Data("getSelectedCustomerId");
+        })
+        .ServerFiltering(true);
+    })
+    .Filter(FilterType.Contains)
+    .CascadeFrom("OrganizationCustomerId")
+    .ValuePrimitive(true)
+    .Enable(true)
+    .AutoBind(true)
+    
+
+)

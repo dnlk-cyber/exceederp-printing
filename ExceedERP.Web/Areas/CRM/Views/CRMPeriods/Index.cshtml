@@ -1,0 +1,160 @@
+﻿@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Kendo.Mvc.UI
+<legend>Setting | CRM Periods</legend>
+@(Html.Kendo().Grid<CRMPeriod>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+  columns.Bound(c => c.CRMPeriodId).Hidden();
+  columns.Bound(c => c.Name);
+              columns.Bound(c => c.DateFrom);
+              columns.Bound(c => c.DateTo);
+              columns.Bound(c => c.Status);
+
+              columns.Command(command =>
+              {
+      //command.Edit();
+      command.Custom("Close").Click("ClosePeriods");
+                  command.Custom("Open").Click("OpenPeriod");
+              }).Width(180);
+          })
+          //.ToolBar(toolbar =>
+          //               {
+          //                   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          //               })
+          .HtmlAttributes(new { style = "height: 700px;" })
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(10))
+          .Selectable()
+          .Scrollable()
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+           //.Groupable()
+           .Events(events => events.DataBound("dataBound"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .PageSize(20)
+              .Model(
+                  model =>
+                  {
+                      model.Id(p => p.CRMPeriodId);
+                      model.Field(p => p.Status).Editable(false);
+                      model.Field(p => p.OrgBranchName).Editable(false);
+                      model.Field(p => p.CreatedBy).Editable(false);
+                      model.Field(p => p.ModifiedBy).Editable(false);
+                      model.Field(p => p.LastModified).Editable(false);
+                      model.Field(p => p.DateCreated).Editable(false);
+
+                  })
+                  .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+
+                .Read(read => read.Action("Periods_Read", "CRMPeriods"))
+                .Create(create => create.Action("Period_Create", "CRMPeriods"))
+                .Update(read => read.Action("Periods_Read", "CRMPeriods"))
+                .Destroy(read => read.Action("Periods_Read", "CRMPeriods"))
+          )
+)
+
+<script>
+
+    function ClosePeriods(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.CRMPeriodId;
+        var grd = $('#grid').data('kendoGrid');
+        @*$.ajax({
+            type: "GET",
+            data: id,
+            url: '@Url.Action("ClosePeriod", "ConstructionPeriod")/' + id
+        });*@
+        $.ajax({
+                url: '@Url.Action("ClosePeriod", "CRMPeriods", new { area = "CRM" })',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    grd.dataSource.read();
+                }
+            });
+        //grd.dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+    function OpenPeriod(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.CRMPeriodId;
+        var grd = $('#grid').data('kendoGrid');
+        grd.dataSource.read();
+        $.ajax({
+                url: '@Url.Action("OpenPeriod", "CRMPeriods", new { area = "CRM" })',
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    grd.dataSource.read();
+                }
+            });
+    };
+</script>
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //var grid = this;
+        //var gridRows = grid.tbody.find("tr");
+        ////Selects all edit buttons
+        //for (var i = 0; i < gridRows.length; i++) {
+        //    var row = $(gridRows[i]);
+        //    var dataItem = grid.dataItem(row);
+        //    //perform your custom check
+        //    if (dataItem.Status === 0) {
+        //        //hide buttons using jQuery
+        //        row.find(".k-grid-Open").hide();
+        //        row.find(".k-grid-Close").show();
+        //        //row.addClass("highlighted-row");
+        //        //row.find(".k-grid-customAction").text('ይከፈት');
+        //    } else {
+
+        //        row.find(".k-grid-Open").show();
+        //        row.find(".k-grid-Close").hide();
+        //    }
+        //}
+    }
+</script>
+
+<script type="text/javascript">
+
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+        height: auto;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>

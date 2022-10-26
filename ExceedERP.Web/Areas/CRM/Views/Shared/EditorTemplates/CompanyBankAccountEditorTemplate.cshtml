@@ -1,0 +1,20 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+    .OptionLabel("Select...")
+    .DataTextField("AccountName")
+    .DataValueField("BankAccountId")
+    .DataSource(d =>
+    {
+        d.Read(r =>
+        {
+            r.Action("GetCompanyBankAccounts", "CRMDataProvider");
+        })
+        .ServerFiltering(false);
+    })
+    .Filter(FilterType.Contains)
+    .ValuePrimitive(true)
+    .Enable(true)
+    .AutoBind(true)
+    
+
+)

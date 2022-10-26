@@ -1,0 +1,39 @@
+﻿<legend>Investment /Project Type</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.InvestmentType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InvestmentName);
+          columns.Bound(c => c.Description);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.InvestmentTypeId))
+          .Read(read => read.Action("InvestmentTypes_Read", "InvestmentType"))
+          .Create(create => create.Action("InvestmentTypes_Create", "InvestmentType"))
+          .Update(update => update.Action("InvestmentTypes_Update", "InvestmentType"))
+          .Destroy(destroy => destroy.Action("InvestmentTypes_Destroy", "InvestmentType"))
+      )
+)

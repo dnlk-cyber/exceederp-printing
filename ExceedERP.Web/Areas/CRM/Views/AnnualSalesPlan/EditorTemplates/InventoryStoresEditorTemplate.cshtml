@@ -1,0 +1,11 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .OptionLabel("Select...")
+                  .DataTextField("Name")
+                  .DataValueField("StoreCode")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetInventoryStoresInBranch", "CRMDataProvider", new { branchId = "#=BranchId#", area = "CRM"}));
+                  })
+
+)

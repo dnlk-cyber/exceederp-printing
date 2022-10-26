@@ -1,0 +1,18 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(Resources.Select)
+        .DataTextField("Description")
+        .DataValueField("SalesStoreId")
+        .CascadeFrom("BranchId")
+        .DataSource(dataSource =>
+        {
+            
+            dataSource.Read(read =>  read.Action("GetStoreInBranch", "CRMDataProvider", new { area = "CRM" }).Data("getSelectedBranch"))
+            .ServerFiltering(true);
+
+        })
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

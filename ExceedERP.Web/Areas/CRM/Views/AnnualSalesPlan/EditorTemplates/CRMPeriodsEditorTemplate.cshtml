@@ -1,0 +1,13 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select...")
+    .DataTextField("Name")
+    .DataValueField("CRMPeriodId")
+    .ValuePrimitive(true)
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetCRMPeriodsForStorePlan", "CRMDataProvider", new { annualStorePlanId = "#=StoreAnnualSalesPlanId#", area = "CRM"}));
+    })
+
+)

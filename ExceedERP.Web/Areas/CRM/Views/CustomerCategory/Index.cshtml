@@ -1,0 +1,41 @@
+﻿<legend>Customer Category</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.OrganizationCategory>()
+          .Name("OrganizationCategoryGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+      
+          columns.Bound(c => c.Index);
+          columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["OrganizationCategoryList"], "OrganizationCategoryID", "Description").EditorTemplateName("OrganizationCategory").Width(200);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 520px;" })
+                                  .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+
+                                        .Scrollable()
+                                        .Sortable()
+                                        .Filterable()
+                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.OrganizationCategoryID)).Events(ev => ev
+                                                                                    .Error("error_handler(\"OrganizationCategoryGrid\")")
+                                                                                    .RequestStart("onRequestStart(\"OrganizationCategoryGrid\")")
+                                                                                    .RequestEnd("onRequestEnd(\"OrganizationCategoryGrid\")"))
+          .Read(read => read.Action("OrganizationCategories_Read", "OrganizationCategory"))
+          .Create(create => create.Action("OrganizationCategories_Create", "OrganizationCategory"))
+          .Update(update => update.Action("OrganizationCategories_Update", "OrganizationCategory"))
+          .Destroy(destroy => destroy.Action("OrganizationCategories_Destroy", "OrganizationCategory"))
+      )
+) 

@@ -1,0 +1,40 @@
+﻿
+<legend>Queue Types</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.QueueType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.QueueName);
+          columns.Bound(c => c.Description);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.QueueTypeId))
+          .Read(read => read.Action("QueueTypes_Read", "QueueType"))
+          .Create(create => create.Action("QueueTypes_Create", "QueueType"))
+          .Update(update => update.Action("QueueTypes_Update", "QueueType"))
+          .Destroy(destroy => destroy.Action("QueueTypes_Destroy", "QueueType"))
+      )
+)

@@ -10,7 +10,8 @@
                     @Html.LabelFor(model => model.Variety)
                 </div>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.Variety).Name("Variety")
+                    @(Html.Kendo().DropDownListFor(model => model.Variety)
+                        .Name("Variety")
                       .AutoBind(false)
                               .OptionLabel("Select Variety")
                               .DataTextField("Name")
@@ -53,6 +54,7 @@
                                   })
                                   .ServerFiltering(false);
                           })
+                          //.CascadeFrom("Variety")
                       .Enable(true)
                       .AutoBind(false)
                     )
@@ -81,7 +83,7 @@
     <div class="row">
         <div class="col-md-1">
         </div>
-        <div class="col-md-3">
+        @*<div class="col-md-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.Reference)
@@ -108,7 +110,7 @@
                     )
                 </div>
             </div>
-        </div>
+        </div>*@
 
 
 
@@ -118,7 +120,7 @@
                     @Html.LabelFor(model => model.Value)
                 </div>
                 <div>
-                    @(Html.Kendo().CurrencyTextBoxFor(model => model.Value)
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Value).Decimals(4)
                     )
 
                 </div>

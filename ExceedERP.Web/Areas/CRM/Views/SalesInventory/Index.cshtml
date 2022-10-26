@@ -111,7 +111,7 @@
                                               editable.Mode(GridEditMode.InLine);
                                               editable.DisplayDeleteConfirmation("Are You Sure To Approve Invoice");
                                           })
-          .HtmlAttributes(new { style = "height: 520px;" })
+          .HtmlAttributes(new { style = "height: 700px;" })
                           .Pageable(pageable => pageable
                                             .Input(true)
                                             .Numeric(false)
@@ -262,7 +262,7 @@
 @(Html.Kendo().Window().Name("Details")
     .Title("Issue Product ")
     .Visible(false)
-        .Modal(true).Animation(x => x.Open(y => y.SlideIn(SlideDirection.Down)).Close(y => y.SlideIn(SlideDirection.Down)).Enable(true))
+        .Modal(true).Animation(x => x.Open(y => y.SlideIn(SlideDirection.Down)).Close(y => y.SlideIn(SlideDirection.Up)).Enable(true))
     .Scrollable(true)
     .Draggable(true)
     .Width(500)

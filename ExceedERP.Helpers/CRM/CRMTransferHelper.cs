@@ -279,6 +279,9 @@ namespace ExceedERP.Helpers.CRM
                     //    Status = "OK"
                     //};
                     //return Json(formattedData, JsonRequestBehavior.AllowGet);
+                    #region bank reconciliation
+                    //CRMSalesHelper.SendSalesToBankReconciliation(record, userName);
+                    #endregion
                     responseMessage = "SUCCESS";
                     return responseMessage;
                 }
@@ -558,6 +561,11 @@ namespace ExceedERP.Helpers.CRM
                     //    Status = "OK"
                     //};
                     //return Json(formattedData, JsonRequestBehavior.AllowGet);
+                    #region bank reconcilation
+                    #region bank reconciliation
+                    //CRMSalesHelper.SendSalesToBankReconciliation(record, userName);
+                    #endregion
+                    #endregion
                     responseMessage = "SUCCESS";
                     return responseMessage;
                 }
@@ -1001,7 +1009,9 @@ namespace ExceedERP.Helpers.CRM
                         helper.SplitJournal(detail.GlRecordJournalDetailId);
                     }
                     #endregion
-
+                    #region bank reconciliation
+                    //CRMSalesHelper.SendDepositToBankReconciliation(record, userName);
+                    #endregion
                     responseMessage = "SUCCESS";
                     return responseMessage;
                 }
@@ -1208,7 +1218,9 @@ namespace ExceedERP.Helpers.CRM
                         helper.SplitJournal(detail.GlRecordJournalDetailId);
                     }
                     #endregion
-
+                    #region bank reconciliation
+                    //CRMSalesHelper.SendCreditSettlementToBankReconciliation(record, userName);
+                    #endregion
                     responseMessage = "SUCCESS";
                     return responseMessage;
                 }

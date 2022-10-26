@@ -1,4 +1,4 @@
-﻿<legend> Receive Method </legend>
+﻿<legend> Payment Method </legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ReceiveMethod>()
       .Name("grid")
       .Columns(columns =>
@@ -11,7 +11,7 @@
       })
       
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-       .HtmlAttributes(new { style = "height: 520px;" })
+       .HtmlAttributes(new { style = "height: 700px;" })
                                                   .Pageable(pageable => pageable
                                                                     .Input(true)
                                                                     .Numeric(false)
@@ -22,7 +22,7 @@
                                                         .Scrollable()
                                                         .Sortable()
                                                         .Filterable()
-                                                        .Groupable()
+                                                        //.Groupable()
                                                         .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()

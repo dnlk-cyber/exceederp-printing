@@ -1,0 +1,283 @@
+﻿@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Web.Areas.CRM.Models
+<legend>Tender Followup</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TenderFollowup>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.TenderFollowupId).Title("#").ClientTemplate("#=appendZeros(TenderFollowupId)#").Width(80);
+              columns.ForeignKey(c => c.CustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Width(80)
+              .Filterable(f =>
+              {
+                  f.Multi(true);
+                  f.Search(true);
+              });
+              columns.Bound(c => c.BidBondAmount).Width(80).Format("{0:N2}");
+              columns.Bound(c => c.DateAnnounceBidValidatiy).Width(80);
+              columns.Bound(c => c.ServiceCharge).Format("{0:N2}").Width(80);
+              columns.Bound(c => c.ClosingDate).Width(80);
+              columns.Bound(c => c.OpeningDate).Width(80);
+              columns.Bound(c => c.Location).Width(80);
+              columns.Bound(c => c.CountDownTillSubmission).Width(80);
+              columns.Bound(c => c.DocumentPreparationStartDate).Width(80);
+              columns.Bound(c => c.Status).Width(80);
+              columns.Bound(c => c.TenderResult).Width(80);
+              columns.Bound(c => c.Remark).Width(80);
+              columns.Bound(c => c.LatestLetter).Width(80);
+              columns.Bound(c => c.ContactPerson).Width(80);
+              columns.Bound(c => c.BidAmount).Width(80).Format("{0:N2}");
+              columns.Bound(c => c.BidSecurityCharge).Width(80).Format("{0:N2}");
+              columns.Bound(c => c.BidValidty).Width(80).Format("{0:N2}");
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+          .Selectable()
+          .Scrollable(s => s.Height(500))
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+              toolbar.Excel();
+          })
+
+          .Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp);
+              editable.TemplateName("TenderEditorTemplate");
+              editable.Window(w =>
+              {
+                  w.Scrollable(false);
+                  w.Title("Tender Information");
+              });
+          })
+          .HtmlAttributes(new { style = "height: 700px;" })
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+
+        .Scrollable()
+        .Sortable()
+        .Filterable()
+        .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Sort(x => x.Add(s => s.TenderFollowupId).Descending())
+            .Model(model =>
+            {
+                model.Id(p => p.TenderFollowupId);
+            })
+
+            .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+
+            .Read(read => read.Action("Data_Read", "TenderFollowup"))
+            .Create(create => create.Action("Data_Create", "TenderFollowup"))
+            .Update(update => update.Action("Data_Update", "TenderFollowup"))
+            .Destroy(distroy => distroy.Action("Data_Destroy", "TenderFollowup"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=TenderFollowupId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail").Content(
+            @<text>
+                @*<a href='@Url.Action("PriceEstimation", "Print")/#=TenderFollowupId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                @(Html.Kendo().PanelBar()
+                        .Name("panelbar_#=TenderFollowupId#")
+                        .ExpandMode(PanelBarExpandMode.Multiple)
+                        .Items(panelbar =>
+                        {
+                                    panelbar.Add()
+                                        .Expanded(true)
+                                        .Text("Voucher Detail")
+                                        .Content(
+                                            "<div>" +
+                                            "<ul>" +
+                                            "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                            "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                            "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                            "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                            "</ul>" +
+                                            "</div>"
+                                        );
+                                }).ToClientTemplate()
+                    )
+                </text>
+            );
+        items.Add().Text("Products").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TenderFollowupLineItem>()
+                                        .Name("LineItems_#=TenderFollowupId#")
+                                        .Columns(columns =>
+                                        {
+
+                                            //columns.ForeignKey(c => c.ItemCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name")
+                                            //          .Width(120)
+                                            //          .Filterable(f =>
+                                            //          {
+                                            //              f.Multi(true);
+                                            //              f.Search(true);
+
+                                            //          });
+                                            //columns.ForeignKey(c => c.ItemCode, (System.Collections.IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name")
+                                            //.Width(120)
+                                            //.Filterable(f =>
+                                            //{
+                                            //    f.Multi(true);
+                                            //    f.Search(true);
+
+                                            //});
+                                            columns.Bound(c => c.CategoryName).Width(120);
+                                            columns.Bound(c => c.ItemName).Width(120);
+                                            columns.Bound(c => c.Quantity).Format("{0:N2}").Width(80);
+
+                                            columns.Command(command =>
+                                            {
+                                                command.Edit();
+                                                command.Destroy();
+                                            }).Width(180);
+                                        })
+                                        .ToolBar(toolbar =>
+                                        {
+                                            toolbar.Create();
+                                        })
+                                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TenderLineItemEditorTemplate")
+                                        .Window(w =>
+                                        {
+                                            w.Title("Products");
+                                            w.Scrollable(false);
+                                        }))
+                                        .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                        .Scrollable()
+                                        .Sortable()
+                                        .Filterable()
+                                        //.Scrollable(h => h.Height(500))
+                                        //.Events(e => e.Edit("AddCostItemInit"))
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .ServerOperation(false)
+                                            .Model(model =>
+                                            {
+                                                model.Id(p => p.TenderFollowupLineItemId);
+
+                                            })
+                                            .Events(ev => ev
+                                                .Error("error_handler(\"LineItems_#=TenderFollowupId#\")")
+                                                .RequestStart("onRequestStart(\"LineItems_#=TenderFollowupId#\")")
+                                                .RequestEnd("onRequestEnd(\"LineItems_#=TenderFollowupId#\")")
+                                                )
+                                            .Read(read => read.Action("Data_Read", "TenderFollowupLineItem", new { id = "#=TenderFollowupId#" }))
+                                            .Create(create => create.Action("Data_Create", "TenderFollowupLineItem", new { id = "#=TenderFollowupId#" }))
+                                            .Update(update => update.Action("Data_Update", "TenderFollowupLineItem"))
+                                            .Destroy(destroy => destroy.Action("Data_Destroy", "TenderFollowupLineItem")))
+                                        .ToClientTemplate()
+                        )
+                    </text>
+                    );
+        }).ToClientTemplate()
+    ) 
+</script>
+
+<script type="text/javascript">
+    function getSelectedCategoryCode() {
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            categoryCode: $("#ItemCategoryCode").val(), filterText: filterInput.val()
+        };
+    }
+    //function getSelectedServiceCategoryCode() {
+    //    //var dropdownlist = $("#ProductId").data("kendoDropDownList");
+    //    //var filterInput = dropdownlist.filterInput;
+    //    return {
+    //        categoryCode: $("#CategoryCode").val()
+    //    };
+    //}
+
+    //function filterSubCategories() {
+    //    return {
+    //        subCategoryCode: $("#SubCategoryCode").val()
+    //    };
+
+    //}
+    //function filterServices() {
+    //    var categoryCode = $("#SubCategoryCode").val();
+    //    var serviceGroup = $("#ServiceGroup").val();
+    //    return {
+    //        subCategoryCode: categoryCode,
+    //        serviceGroup: serviceGroup
+    //    };
+
+    //}
+    function swithReasonEditors() {
+        var selectedValue = $("#Status").data("kendoDropDownList").value();
+        if (selectedValue == "@TenderFollowupStatus.NonParticipating") {
+            $("#reason_of_not_participating_container").show();
+            $("#reason_of_losing_container").hide();
+        }
+        else if (selectedValue == "@TenderFollowupStatus.LostFinancialEvaluation" || selectedValue == "@TenderFollowupStatus.LostTechnicalEvaluation" || selectedValue == "@TenderFollowupStatus.LostNonTechnicalEvaluation") {
+            $("#reason_of_losing_container").show();
+            $("#reason_of_not_participating_container").hide();
+        }
+        else {
+            $("#reason_of_losing_container").hide();
+            $("#reason_of_not_participating_container").hide();
+        }
+    }
+    function onExternalProductCheckBoxClick(checked) {
+        if (checked) {
+            $("#externalCategoryContainer").show();
+            $("#externalProductContainer").show();
+            $("#internalCategoryContainer").hide();
+            $("#internalProductContainer").hide();
+        } else {
+            $("#externalCategoryContainer").hide();
+            $("#externalProductContainer").hide();
+            $("#internalCategoryContainer").show();
+            $("#internalProductContainer").show();
+        }
+    }
+    function onCategoryBound(e) {
+        var isEx = $("#IsExternalProduct").is(':checked');
+        if (isEx) {
+            $("#externalCategoryContainer").show();
+            $("#externalProductContainer").show();
+            $("#internalCategoryContainer").hide();
+            $("#internalProductContainer").hide();
+        }
+        else {
+            $("#externalCategoryContainer").hide();
+            $("#externalProductContainer").hide();
+            $("#internalCategoryContainer").show();
+            $("#internalProductContainer").show();
+        }
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 750px;
+    }
+
+    /*div.k-edit-form-container {
+        width: auto;
+    }*/
+</style>

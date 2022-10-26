@@ -1,5 +1,8 @@
-﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
-                                .DataTextField("Description")
-                                .DataValueField("ItemCategoryCode").OptionLabel("Select ")
-                                        .DataSource(d => d.Read(r => r.Action("GetItemCategory", "CRMDataProvider"))))
+﻿@(Html.Kendo().DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .DataTextField("Description")
+    .DataValueField("ItemCategoryCode")
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select ")
+    .DataSource(d => d.Read(r => r.Action("GetItemCategory", "CRMDataProvider"))))
 

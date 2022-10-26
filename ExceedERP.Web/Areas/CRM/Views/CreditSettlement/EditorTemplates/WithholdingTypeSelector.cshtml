@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select")                             
+    .DataTextField("TaxName")                     
+    .DataValueField("GLTaxRateID")
+    .DataSource(datasource =>
+    {
+        datasource.Read(read => read.Action("GetWithholdingTaxList", "CRMDataProvider"))
+            .ServerFiltering(false);
+    })
+    )
+

@@ -1,0 +1,62 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.CRM.ProductUnitConvertorSetup
+
+<form method="post">
+    <div class="k-edit-form-container">
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ProductId)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(model => model.ProductId)
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select Product...")
+                                    .DataTextField("Name")
+                                    .DataValueField("ProductId")
+                                    .Filter("contains")
+                                    .DataSource(dataSource =>
+                                      {
+                                          dataSource.Read(read => read.Action("GetAllProducts", "CRMDataProvider"));
+                                      })
+                                    .Events(ev =>
+                                    {
+                                        ev.Change("onProductChange");
+                                    })
+
+            )
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.FromUoM)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(model => model.FromUoM)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select UoM")
+                                            .DataTextField("UoMName")
+                                            .DataValueField("UoMName")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                              {
+                                                  dataSource.Read(read => read.Action("GetAllUoM", "CRMDataProvider"));
+                                              })
+            )
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ToUoM)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.ToUoM).Enable(false))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.MultiplicationFactor)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(m => m.MultiplicationFactor).Decimals(4))
+        </div>
+        
+    </div>
+</form>
+

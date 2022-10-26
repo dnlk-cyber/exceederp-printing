@@ -1,0 +1,20 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().MultiSelectFor(m => m)
+          .Placeholder(Resources.Select)
+          .Name("ReferencedSalesOrderIds")
+          .DataTextField("Display")
+          .DataValueField("Value")
+          .AutoClose(false)
+          .DataSource(dataSource =>
+          {
+              dataSource.Read(read => read.Action("GetSalesOrderNumberForMultiSelect", "CRMDataProvider"));
+              //.ServerFiltering(true);
+          })
+          //.AutoBind(true)
+          //.Filter("contains")
+          //.CascadeFrom("Source")
+          //.MinLength(2)
+          //.Enable(false)
+          //.ValuePrimitive(true)
+)

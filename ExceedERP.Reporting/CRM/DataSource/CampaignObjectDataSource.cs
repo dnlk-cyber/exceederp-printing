@@ -1,5 +1,4 @@
-﻿ using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.CRM;
+﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.CRM.ViewModel;
@@ -7,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace ExceedERP.Reporting.CRM.DataSource

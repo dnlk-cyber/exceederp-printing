@@ -1,0 +1,11 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .OptionLabel("Select...")
+                  .DataTextField("Name")
+                  .DataValueField("BranchId")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetAllBranches", "CRMDataProvider", new { area = "CRM"}));
+                  })
+
+)

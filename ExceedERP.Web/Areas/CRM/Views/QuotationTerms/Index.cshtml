@@ -1,0 +1,45 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.QuotationTerm>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.QuotationInDays);
+          columns.Bound(c => c.Desription);
+          columns.Bound(c => c.Remark);
+         
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 700px;" })
+      .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation(false)
+          .Model(model => model.Id(p => p.QuotationTermId))
+
+          .Read(read => read.Action("QuotationTerm_Read", "QuotationTerms"))
+          .Create(create => create.Action("QuotationTerm_Create", "QuotationTerms"))
+          .Update(update => update.Action("QuotationTerm_Update", "QuotationTerms"))
+          .Destroy(destroy => destroy.Action("QuotationTerm_Destroy", "QuotationTerms"))
+      )
+)
