@@ -1,14 +1,15 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" }) 
-                                .DataTextField("Name")
-                                        .DataValueField("Name").OptionLabel(" Select ")
-                    .HtmlAttributes(new { style = "width:100%" })
-                    .DataSource(d =>
-                    {
-                        d.Read(r =>
-                        {
-                            r.Action("GetCustomerInvoiceDDBind", "CashSalesInvoice").Data("filterCustomerInvoice");
-                        })
-                      .ServerFiltering(true);
-                    })
-                       .AutoBind(false).Events(e => e.Change("UpdateInvoiceChange"))
-                        )
+    .DataTextField("Name")
+    .DataValueField("Name").OptionLabel(" Select ")
+    .HtmlAttributes(new { style = "width:100%" })
+    .DataSource(d =>
+    {
+        d.Read(r =>
+            {
+                r.Action("GetCustomerInvoiceDDBind", "CashSalesInvoice").Data("filterCustomerInvoice");
+            })
+            .ServerFiltering(true);
+    })
+    .AutoBind(false)
+    .Events(e => e.Change("UpdateInvoiceChange"))
+)

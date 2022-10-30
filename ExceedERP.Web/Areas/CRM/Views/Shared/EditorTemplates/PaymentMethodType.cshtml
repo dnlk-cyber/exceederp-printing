@@ -1,13 +1,15 @@
 ﻿
-@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
-                                .DataTextField("Name")
-                                    .DataValueField("Name")
-                       .DataSource(d =>
-                          {
-                              d.Read(r =>
-                                  {
-                                      r.Action("PaymentMethodByCustomerDDBind", "OrganizationCustomer").Data("filterPayment");
-                                  })
-                                  .ServerFiltering(true);
-                          }).ValuePrimitive(true)
-                             .CascadeFrom("OrganizationCustomerId"))
+@(Html.Kendo().DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .DataTextField("Name")
+    .DataValueField("Name")
+    .DataSource(d =>
+    {
+        d.Read(r =>
+        {
+            r.Action("PaymentMethodByCustomerDDBind", "OrganizationCustomer").Data("filterPayment");
+        })
+            .ServerFiltering(true);
+    })
+    .ValuePrimitive(true)
+    .CascadeFrom("OrganizationCustomerId"))

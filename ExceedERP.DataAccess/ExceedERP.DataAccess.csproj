@@ -330,6 +330,10 @@
     <Compile Include="Migrations\202210062104154_PrintingEstimationApprovalUpdates.Designer.cs">
       <DependentUpon>202210062104154_PrintingEstimationApprovalUpdates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202210260938453_CRMModuleUpgrade.cs" />
+    <Compile Include="Migrations\202210260938453_CRMModuleUpgrade.Designer.cs">
+      <DependentUpon>202210260938453_CRMModuleUpgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -534,6 +538,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202210062104154_PrintingEstimationApprovalUpdates.resx">
       <DependentUpon>202210062104154_PrintingEstimationApprovalUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210260938453_CRMModuleUpgrade.resx">
+      <DependentUpon>202210260938453_CRMModuleUpgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

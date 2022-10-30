@@ -3,34 +3,64 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.SalesStoreId).Width(100);
-          columns.ForeignKey(c => c.StoreCode, (System.Collections.IEnumerable)ViewData["InventoryStore"], "StoreCode", "Name").EditorTemplateName("StoreObject").Title("Inventory Store").Width(150);
-           columns.Bound(c => c.Description);
-        columns.Bound(c => c.Location);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+          //columns.Bound(c => c.SalesStoreId).Width(100);
+          columns.ForeignKey(c => c.StoreCode, (System.Collections.IEnumerable)ViewData["InventoryStore"], "StoreCode", "Name")
+          .EditorTemplateName("StoreObject")
+          .Title("Inventory Store")
+          .Filterable(f =>
+          {
+              f.Multi(true);
+              f.Search(true);
+              
+          })
+          .Width(150);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Type).EditorTemplateName("StoreTypeSelector");
+          columns.Bound(c => c.Location);
+          columns.Group(group =>
+          {
+              group.HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+              group.Title("POS Integration Setting");
+              group.Columns(innerColumns =>
+              {
+                  innerColumns.Bound(c => c.PosId);
+                  innerColumns.Bound(c => c.PosServiceBaseUrl);
+              });
+          });
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
+          toolbar.Excel();
+      })
+      .Events(events =>
+      {
+          events.DataBound("mainGridDataBound");
+      })
+      .Excel(e =>
+      {
+          e.AllPages(true);
+          e.FileName("CRM Store/Shop Export " + DateTime.Now.ToString("yyyyMMddHHmmss"));
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-        .HtmlAttributes(new { style = "height: 520px;" })
-                          .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
+        .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
 
-                                .Scrollable()
-                                .Sortable()
-                                .Filterable()
-                                .Groupable()
-                                .Scrollable(h => h.Height(500))
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            //.Groupable()
+            .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
               .Model(model => { model.Id(p => p.SalesStoreId);
-                       model.Field(p => p.Location).Editable(false);
-               model.Field(p => p.SalesStoreId).Editable(false);})
+                  model.Field(p => p.Location).Editable(false);
+                  model.Field(p => p.SalesStoreId).Editable(false);})
                     .Events(ev => ev
                                                                 .Error("error_handler(\"grid\")")
                                                                 .RequestStart("onRequestStart(\"grid\")")
@@ -41,3 +71,19 @@
           .Destroy(destroy => destroy.Action("SalesStores_Destroy", "SalesStore"))
       )
 )
+
+<script type="text/javascript">
+    function mainGridDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.HasReference == true) {
+
+                //$(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+</script>

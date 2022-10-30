@@ -1,0 +1,118 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.CRM.ServiceLineItem
+<form method="post">
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.HiddenFor(model => model.ServiceLineItemId)
+                    @*<input type="hidden" name="VoucherDefinitionId" id="VoucherDefinitionId" />
+                    <input type="hidden" name="Voucher" id="Voucher" />*@
+                    @Html.LabelFor(model => model.ServiceTypeId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ServiceTypeId)
+                        .Name("ServiceTypeId")
+                        .AutoBind(true)
+                        .Filter(FilterType.Contains)
+                        .OptionLabel("Select ")
+                        .DataTextField("Name")
+                        .DataValueField("RepairTypeId")
+                        .DataSource(datasource =>
+                        {
+                            datasource.Read(read => read.Action("GetCRMServiceTypes", "CRMDataProvider"))
+                                .ServerFiltering(false);
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1 hidden-xs">
+        </div>
+    </div>
+   
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.UnitAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.UnitAmount).Enable(true)
+                                      .Name("UnitAmount").HtmlAttributes(new { @onchange = "GetTaxValue()", style = "font-weight:bold;font-family: sans-serif;" })
+                    )
+                    @Html.ValidationMessageFor(model => model.UnitAmount)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SubTotal)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.SubTotal)
+                        .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.SubTotal)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TaxTypeId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TaxTypeId)
+                        .AutoBind(true)
+                        .OptionLabel("Select")
+                        .DataTextField("TaxName")
+                        .Filter(FilterType.Contains)
+                        .DataValueField("GLTaxRateID")
+                        .DataSource(datasource =>
+                        {
+                            datasource.Read(read => read.Action("GetTaxList", "CRMDataProvider"))
+                                .ServerFiltering(true);
+                        })
+                    .Events(e => e.Change("GetTaxValue"))
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TaxAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TaxAmount).Name("TaxAmount")
+                    .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.TaxAmount)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TotalAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TotalAmount).Name("TotalAmount")
+                                      .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.TotalAmount)
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

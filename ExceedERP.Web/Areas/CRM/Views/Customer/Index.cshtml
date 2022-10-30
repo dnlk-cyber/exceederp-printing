@@ -1,0 +1,420 @@
+﻿@using System.Collections.Generic
+<legend>Customer </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.OrganizationCustomer>()
+          .Name("OrganizationCustomerGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TradeName).Width(100);
+          columns.Bound(c => c.BrandName).Width(100);
+          columns.Bound(c => c.CustomerType).EditorTemplateName("CustomerTypeEditor").Title("Location").Width(100);
+          columns.Bound(c => c.BusinessType).EditorTemplateName("BusinessType").Width(120);
+          columns.Bound(c => c.EsclationLevel).Title("Esclation").Width(100);
+          columns.ForeignKey(c => c.Category, (System.Collections.IEnumerable)ViewData["OrganizationCategory"], "OrganizationCategoryID", "Description").EditorTemplateName("OrganizationCategory").Width(100);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active").Width(100);
+          columns.Bound(c => c.IsCredit).Width(105).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsCredit #' " + " # if (IsCredit) { #" + "checked='checked'" + "# } #" + " />").Title("Is Credit").Width(100);
+
+
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Events(ev => {
+          ev.DataBound("mainGridDataBound");
+      })
+      .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            //.Groupable()
+            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Sort(sort =>
+               {
+                   sort.Add(p => p.OrganizationCustomerID).Descending();
+               })
+              .Model(model => model.Id(p => p.OrganizationCustomerID))
+              .Events(ev => ev
+              .Error("error_handler(\"OrganizationCustomerGrid\")")
+              .RequestStart("onRequestStart(\"OrganizationCustomerGrid\")")
+              .RequestEnd("onRequestEnd(\"OrganizationCustomerGrid\")"))
+
+          .Read(read => read.Action("OrganizationCustomers_Read", "OrganizationCustomer"))
+          .Create(create => create.Action("OrganizationCustomers_Create", "OrganizationCustomer"))
+          .Update(update => update.Action("OrganizationCustomers_Update", "OrganizationCustomer"))
+          .Destroy(destroy => destroy.Action("OrganizationCustomers_Destroy", "OrganizationCustomer"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                    .Name("tabstrip_#=OrganizationCustomerID#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+    @*items.Add().Text("Customer Equipments").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.EquipmentInformation>()
+                .Name("equipments_grid_#=OrganizationCustomerID#")
+                .Columns(columns =>
+                {
+                    //columns.Template(e => { }).Width(50).ClientTemplate("<button hidden class='btn-equipment-information' title='This Equipment needs a maintenance'><span class ='fa fa-bell'></span></button>").Title(" ");
+                    columns.Bound(e => e.GroupName);
+                    columns.Bound(e => e.LicensePlate);
+                    columns.Bound(e => e.DeviceNumber);
+                    columns.Bound(e => e.InitialOdometer);
+                    columns.Bound(e => e.OdometerOnLastMaintenance);
+                    columns.Bound(e => e.CurrentOdometer);
+                    //columns.Bound(e => e.FutureMaintenanceAlert);
+
+                    //columns.Bound(e => e.OdometerOnNextRegularMaintenance);
+                    //columns.Bound(e => e.RemainingKmForUpComingMaintenance);
+
+                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+                })
+                .ToolBar(commands => commands.Create())
+                .Editable(editable =>
+                {
+                    editable.Mode(GridEditMode.InLine);
+                    editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Equipment?");
+                })
+                .HtmlAttributes(new { style = "height: 700px;" })
+                .Events(ev => {
+                    // ev.DataBound("EquipmentGridDataBound");
+                })
+                .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+
+                    .Scrollable()
+                    .Sortable()
+                    .Filterable()
+                    .Scrollable(h => h.Height(500))
+                .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(20)
+                            .Sort(s => s.Add(f => f.LicensePlate))
+                            .ServerOperation(false)
+                            .Sort(s => {
+                                s.Add(f => f.FutureMaintenanceAlert).Descending();
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.EquipmentInformationId);
+                                model.Field(f => f.InitialOdometer).Editable(false);
+                                model.Field(f => f.OdometerOnLastMaintenance).Editable(false);
+                                model.Field(f => f.CurrentOdometer).Editable(false);
+
+                            }).Events(ev => ev
+                                        .Error("error_handler(\"equipments_grid_#=OrganizationCustomerID#\")")
+                                        .RequestStart("onRequestStart(\"equipments_grid_#=OrganizationCustomerID#\")")
+                                        .RequestEnd("onRequestEnd(\"equipments_grid_#=OrganizationCustomerID#\")"))
+                            .Create(c => c.Action("Equipment_Create", "EquipmentInformation", new { cstId = "#=OrganizationCustomerID#" }))
+                            .Read(r => r.Action("Equipments_Read", "EquipmentInformation", new { customerId = "#=OrganizationCustomerID#" }))
+                            .Update(update => update.Action("Equipment_Update", "EquipmentInformation"))
+                            .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation"))
+                ).ToClientTemplate()
+            )
+        </text>);*@
+
+        items.Add().Text("Beginning").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
+                      .Name("BeginningGrid_#=OrganizationCustomerID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.Period, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").EditorTemplateName("Period").Width(150);
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.IsProvisional);
+           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax() 
+          .Model(model => model.Id(p => p.BeginningID))
+                  .Events(ev => ev
+                                                                                                    .Error("error_handler(\"BeginningGrid_#=OrganizationCustomerID#\")")
+                                                                                                    .RequestStart("onRequestStart(\"BeginningGrid_#=OrganizationCustomerID#\")")
+                                                                                                    .RequestEnd("onRequestEnd(\"BeginningGrid_#=OrganizationCustomerID#\")"))
+                                                  .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=OrganizationCustomerID#", beginningReferenceType = "Organization_Customer" }))
+                                          .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=OrganizationCustomerID#", beginningReferenceType = "Organization_Customer" }))
+          .Update(update => update.Action("Beginnings_Update", "Beginning"))
+          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+     ).ToClientTemplate()
+                )
+            </text>
+    );
+         
+         items.Add().Text("Account Map").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
+                    .Name("AccountMapGrid_#=OrganizationCustomerID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.ControlAccountID).EditorTemplateName("AccountRequirementDefinition").Width(120);
+                          columns.Bound(c => c.AccountID).EditorTemplateName("AccountCode").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                                                  
+                          .Model(model => model.Id(p => p.AccountMapID))
+                                                                           
+                          .Events(ev => ev
+                                        .Error("error_handler(\"AccountMapGrid_#=OrganizationCustomerID#\")")
+                                        .RequestStart("onRequestStart(\"AccountMapGrid_#=OrganizationCustomerID#\")")
+                                        .RequestEnd("onRequestEnd(\"AccountMapGrid_#=OrganizationCustomerID#\")"))
+                                                                                          
+                          .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { accountMapReferenceType = "Organization_Customer", id = "#=OrganizationCustomerID#" }))
+                          .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { accountMapReferenceType = "Organization_Customer", id = "#=OrganizationCustomerID#" }))
+                          .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
+                          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+                      ).ToClientTemplate()
+                )
+            </text>
+             );
+
+         
+         items.Add().Text("Addresse").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Address>()
+              .Name("AddresseGrid_#=OrganizationCustomerID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).EditorTemplateName("AddressType");
+          columns.Bound(c => c.Value);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  
+          .Model(model => model.Id(p => p.AddressId)).Events(ev => ev
+            
+          .Error("error_handler(\"AddresseGrid_#=OrganizationCustomerID#\")")
+            .RequestStart("onRequestStart(\"AddresseGrid_#=OrganizationCustomerID#\")")
+            .RequestEnd("onRequestEnd(\"AddresseGrid_#=OrganizationCustomerID#\")"))
+            
+            .Read(read => read.Action("Addresses_Read", "Addresse", new { referenceID = "#=OrganizationCustomerID#", addressReferenceType = "Organization_Customer" }))
+            .Create(create => create.Action("Addresses_Create", "Addresse", new { referenceID = "#=OrganizationCustomerID#", addressReferenceType = "Organization_Customer" }))
+          .Update(update => update.Action("Addresses_Update", "Addresse"))
+          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse"))
+       ).ToClientTemplate()
+                )
+            </text>
+    );
+         
+         @*items.Add().Text("BankAccountDetails").Content(
+            @<text>
+                <legend>Bank Account Details</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.BankReference>()
+                                             .Name("BankReference#=OrganizationCustomerID#")
+             .Columns(columns =>
+             {
+                 columns.ForeignKey(c => c.BankID, (System.Collections.IEnumerable)ViewData["BankList"], "BankID", "Name").Width(150);
+                 columns.Bound(c => c.Type).EditorTemplateName("BankAccountType");
+                 columns.Bound(c => c.AccountNumber);
+                 columns.Bound(c => c.Remark);
+                 columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+             })
+             .ToolBar(toolbar =>
+             {
+                 toolbar.Create();
+             })
+             .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Scrollable()
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Model(model => model.Id(p => p.BankReferenceID))
+                                         .Read(read => read.Action("BankReferences_Read", "BankReference", new { id = "#=OrganizationCustomerID#", bankReferenceType = "Organization_Customer" }))
+                                                 .Create(create => create.Action("BankReferences_Create", "BankReference", new { id = "#=OrganizationCustomerID#", bankReferenceType = "Organization_Customer" }))
+                                 .Update(update => update.Action("BankReferences_Update", "BankReference"))
+                                 .Destroy(destroy => destroy.Action("BankReferences_Destroy", "BankReference"))
+             ).ToClientTemplate()
+                )
+
+            </text>
+            );*@
+         //****************************************************************************************************//
+
+         //*********************************Industry Involvement*************************************************//
+         items.Add().Text("Industry Involvement").Content(
+            @<text>
+                @*<legend>Industry Involvement</legend>*@
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.IndustryInvolved>()
+                      .Name("IndustryInvolvementGrid_#=OrganizationCustomerID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Index);
+          columns.Bound(c => c.Industry).EditorTemplateName("IndustryType");
+         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax() 
+          .Model(model => model.Id(p => p.IndustryInvolvedID))
+                   .Events(ev => ev
+                                                                                                                                    .Error("error_handler(\"IndustryInvolvementGrid_#=OrganizationCustomerID#\")")
+                                                                                                                                    .RequestStart("onRequestStart(\"IndustryInvolvementGrid_#=OrganizationCustomerID#\")")
+                                                                                                                                    .RequestEnd("onRequestEnd(\"IndustryInvolvementGrid_#=OrganizationCustomerID#\")"))
+                                                                       
+                                                                                  .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new { referenceIndustryInvolvment = "#=OrganizationCustomerID#", industryInvolvedReferenceType = "Organization_Customer" }))
+                                                                                  .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new { referenceIndustryInvolvment = "#=OrganizationCustomerID#", industryInvolvedReferenceType = "Organization_Customer" }))
+                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved"))
+          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved"))
+     ).ToClientTemplate()
+                )
+
+            </text>
+    );
+    
+       items.Add().Text("Credit Setting").Content(
+            @<text>
+                @*<legend>Credit Setting</legend>*@
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CreditSetting>()
+                                                             .Name("CreditSetting_#=OrganizationCustomerID#")
+             .Columns(columns =>
+             {
+                 columns.Bound(c => c.Quantity).Title("Amount").EditorTemplateName("NumEditor").Width(100);
+                 columns.Bound(c => c.Date).Width(100);
+                 
+                 columns.Command(command => { command.Edit();  }).Width(100);
+             })
+             .ToolBar(toolbar =>
+             {
+                 toolbar.Create();
+             })
+             .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Scrollable()
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                                  .Sort(x => x.Add(s => s.Date).Descending())
+                          .Model(model =>
+              {
+              model.Id(p => p.CreditSettingID);
+              model.Field(p => p.Date).Editable(false);
+          
+              }).Events(ev => ev
+                                                                                                                                                    .Error("error_handler(\"CreditSetting_#=OrganizationCustomerID#\")")
+                                                                                                                                                    .RequestStart("onRequestStart(\"CreditSetting_#=OrganizationCustomerID#\")")
+                                                                                                                                                    .RequestEnd("onRequestEnd(\"CreditSetting_#=OrganizationCustomerID#\")"))
+                                                                       
+                                                                              
+                                                                                                 .Read(read => read.Action("CreditSettings_Read", "CreditSetting", new { OrgID = "#=OrganizationCustomerID#" }))
+                                                                                                                 .Create(create => create.Action("CreditSettings_Create", "CreditSetting", new { CustomerID = "#=OrganizationCustomerID#" }))
+                                                                            .Update(update => update.Action("CreditSettings_Update", "CreditSetting"))
+
+                                                                         ).ToClientTemplate()
+                )
+
+            </text>
+            );
+
+       items.Add().Text("Tin Number").Content(
+        @<text>
+            @*<legend>Tin Number</legend>*@
+            @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.BindingModel>()
+                                                                     .Name("TinNo_#=OrganizationCustomerID#")
+             .Columns(columns =>
+             {
+                 columns.Bound(c => c.Name).Title("Number");
+                 
+                 columns.Command(command => { command.Edit(); }).Width(100);
+             })
+           
+             .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Scrollable()
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                               
+                          .Model(model =>
+              {
+                  model.Id(p => p.Id);
+                
+              }).Events(ev => ev
+                                                                                                                                                            .Error("error_handler(\"TinNo_#=OrganizationCustomerID#\")")
+                                                                                                                                                            .RequestStart("onRequestStart(\"TinNo_#=OrganizationCustomerID#\")")
+                                                                                                                                                            .RequestEnd("onRequestEnd(\"TinNo_#=OrganizationCustomerID#\")"))
+
+
+                                                                                                                 .Read(read => read.Action("OrganizationTinNo_Read", "OrganizationCustomer", new { Id = "#=OrganizationCustomerID#" }))
+                                                                                                                                 .Create(create => create.Action("OrganizationTinNo_Create", "OrganizationCustomer", new { Id = "#=OrganizationCustomerID#" }))
+                                                                                            .Update(update => update.Action("OrganizationTinNo_Create", "OrganizationCustomer"))
+
+                                                                         ).ToClientTemplate()
+            )
+
+        </text>
+            );
+         //*****************************************************************************************************//
+     }).ToClientTemplate())
+</script>
+
+<script type="text/javascript">
+    function mainGridDataBound(e){
+    var grid = this;
+        //var Checkgrid = $("#SalesQuoteVoucher").data("kendoGrid");
+        //var gridData = Checkgrid.dataSource.view();
+
+        //for (var i = 0; i < gridData.length; i++) {
+        //    //get the item uid
+        //    var currentUid = gridData[i].uid;
+        //    //if the record fits the custom condition
+        //    if (gridData[i].LastObjectState == "Rejected") {
+        //        //find the row based on the uid and the custom class
+        //        var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+        //        $(currenRow).addClass("k-state-Rejected");
+        //    }
+        //}
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.HasActiveTransaction == true) {
+
+                //$(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+</script>
+ 

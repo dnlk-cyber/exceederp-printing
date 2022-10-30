@@ -1,71 +1,97 @@
 ﻿@model  ExceedERP.Core.Domain.CRM.Product
-
-
-
-
-
-<script>
-    function filterItem() {
-        return {
-            Category: $("#CategoryID").val()
-        };
-    }
-    function filterItemCode() {
-        return {
-            Code: $("#ItemCode").val()
-        };
-    }
-</script>
 <legend>Product</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Product>()
-          .Name("grid")
+      .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Name).Width(120);
-          columns.ForeignKey(c => c.CategoryID, (System.Collections.IEnumerable)ViewData["ThingCategory"], "Code", "Description").EditorTemplateName("ThingCategory").Width(120);
-  
-       //   columns.ForeignKey(c => c.ItemCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategory"], "Code", "Description").EditorTemplateName("ItemCategory").Title("Item Category").Width(150);
-          columns.ForeignKey(c => c.ItemCode, (System.Collections.IEnumerable)ViewData["Item"], "Code", "Description").EditorTemplateName("ItemCode").Width(150);
+          columns.ForeignKey(c => c.CategoryID, (System.Collections.IEnumerable)ViewData["ProductMainCategories"], "ProductCategoryId", "Description")
+          .EditorTemplateName("CategoryEditorTemplates")
+          .Width(120)
+          .Filterable(f =>
+          {
+              f.Multi(true);
+              f.Search(true);
 
-          columns.Bound(c => c.UOM).EditorTemplateName("UOM").Width(120);
+          });
+          columns.ForeignKey(c => c.SubCategoryId, (System.Collections.IEnumerable)ViewData["ProductSubCategories"], "ProductCategoryId", "Description")
+          .EditorTemplateName("SubCategoryEditorTemplates")
+          .Width(120)
+          .Filterable(f =>
+          {
+              f.Multi(true);
+              f.Search(true);
+
+          });
+
+          //   columns.ForeignKey(c => c.ItemCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategory"], "Code", "Description").EditorTemplateName("ItemCategory").Title("Item Category").Width(150);
+          columns.ForeignKey(c => c.ItemCode, (System.Collections.IEnumerable)ViewData["Item"], "Code", "Description")
+          .EditorTemplateName("InventoryItemEditorTemplate")
+          .Width(150)
+          .Filterable(f =>
+          {
+              f.Multi(true);
+              f.Search(true);
+
+          });
+          columns.Bound(c => c.Name).Width(120);
+
+          columns.Bound(c => c.UOM)/*.EditorTemplateName("UOM")*/.Width(120);
+          columns.Bound(c => c.Price).Format("{0:N2}").Width(100);
           columns.Bound(c => c.IsActive).Width(100).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active");
-       
+
           columns.Command(command =>
           {
               command.Edit();
               command.Destroy();
           }).Width(180);
       })
-              .ToolBar(toolbar =>
-                          {
-                              toolbar.Create();
-                          })
-            .Events(ev => ev.DetailExpand("onDetailExpand"))
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          toolbar.Excel();
+      })
+      .Events(ev => {
+          ev.DetailExpand("onDetailExpand");
+          ev.DataBound("mainGridDataBound");
+          ev.Edit("onProductEdit");
+          ev.Cancel("onCancel");
+      })
+      .Excel(e =>
+      {
+          e.AllPages(true);
+          e.FileName("CRM Products Export " + DateTime.Now.ToString("yyyyMMddHHmmss"));
+      })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-         .HtmlAttributes(new { style = "height: 520px;" })
-                          .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-
-                                .Scrollable()
-                                .Sortable()
-                                .Filterable()
-                                .Groupable()
-                                .Scrollable(h => h.Height(500))
+      .HtmlAttributes(new { style = "height: 700px;" })
+      .Groupable()
+      .Pageable(pageable => pageable
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
+                      .ButtonCount(5))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      //.Groupable()
+      .Scrollable(h => h.Height(700))
       .DataSource(dataSource => dataSource
-          .Ajax() 
-          .Model(model => model.Id(p => p.ProductID))
-              .Read(read => read.Action("Products_Read", "Product")).Events(ev => ev
-                                                                            .Error("error_handler(\"grid\")")
-                                                                            .RequestStart("onRequestStart(\"grid\")")
-                                                                            .RequestEnd("onRequestEnd(\"grid\")"))
-                                                 .Create(create => create.Action("Products_Create", "Product"))
-                                      .Update(update => update.Action("Products_Update", "Product"))
-                                      .Destroy(destroy => destroy.Action("Products_Destroy", "Product"))
-          ).ClientDetailTemplateId("template")
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.ProductID);
+              model.Field(f => f.IsActive).DefaultValue(true);
+          })
+          .Events(ev => ev
+                .Error("errorHandler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")")
+                )
+        .Read(read => read.Action("Products_Read", "Product"))
+        .Create(create => create.Action("Products_Create", "Product"))
+        .Update(update => update.Action("Products_Update", "Product"))
+        .Destroy(destroy => destroy.Action("Products_Destroy", "Product"))
+    ).ClientDetailTemplateId("template")
 )
 
 
@@ -120,7 +146,7 @@
               //*********************************"Account Map***********************************************************//
               items.Add().Text("Account Map").Content(
                 @<text>
-                    <legend>Account Map</legend>
+                    @*<legend>Account Map</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
                       .Name("AccountMapGrid_#=ProductID#")
                       .Columns(columns =>
@@ -163,7 +189,7 @@
               //*********************************"Price***********************************************************//
               items.Add().Text("Price").Content(
                 @<text>
-                    <legend>Price</legend>
+                    @*<legend>Price</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Price>()
                       .Name("PriceGrid_#=ProductID#")
                       .Columns(columns =>
@@ -172,7 +198,7 @@
                           columns.Bound(c => c.ReferenceType).Width(120);
                         //  columns.Bound(c => c.Variety).EditorTemplateName("GetVarietyByProduct").Width(120);
                           //columns.Bound(c => c.Class).EditorTemplateName("GetClassByProduct").Width(120);
-                          columns.Bound(c => c.Reference).Width(100);
+                          //columns.Bound(c => c.Reference).Width(100);
                           columns.Bound(c => c.Value).Width(100);
 
                           columns.Bound(c => c.Priority).Width(100);
@@ -197,11 +223,11 @@
                           .Ajax() 
                           .Model(model => model.Id(p => p.PriceID))
                                   .Events(ev => ev
-                                                                                            .Error("error_handler(\"PriceGrid_#=ProductID#\")")
-                                                                                            .RequestStart("onRequestStart(\"PriceGrid_#=ProductID#\")")
-                                                                                            .RequestEnd("onRequestEnd(\"PriceGrid_#=ProductID#\")"))
-                                          .Read(read => read.Action("Prices_Read", "Price", new { thingID = "#=ProductID#", priceThingType = "Product" }))
-                                          .Create(create => create.Action("Prices_Create", "Price", new { thingID = "#=ProductID#", priceThingType = "Product" }))
+                                        .Error("error_handler(\"PriceGrid_#=ProductID#\")")
+                                        .RequestStart("onRequestStart(\"PriceGrid_#=ProductID#\")")
+                                        .RequestEnd("onRequestEnd(\"PriceGrid_#=ProductID#\")"))
+                        .Read(read => read.Action("Prices_Read", "Price", new { thingID = "#=ProductID#", priceThingType = "Product" }))
+                        .Create(create => create.Action("Prices_Create", "Price", new { thingID = "#=ProductID#", priceThingType = "Product" }))
                           .Update(update => update.Action("Prices_Update", "Price"))
                           .Destroy(destroy => destroy.Action("Prices_Destroy", "Price"))
                       ).ToClientTemplate()
@@ -213,7 +239,7 @@
               //*********************************"Stock Balance**************************************************************//
               items.Add().Text("Stock Balance").Content(
                 @<text>
-                    <legend>Stock Balance</legend>
+                    @*<legend>Stock Balance</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StockBalance>()
                       .Name("StockBalanceGrid_#=ProductID#")
                       .Columns(columns =>
@@ -253,7 +279,7 @@
               //*********************************"Stock Level**************************************************************//
               items.Add().Text("Stock Level").Content(
                 @<text>
-                    <legend>Stock Level</legend>
+                    @*<legend>Stock Level</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StockLevel>()
                       .Name("StockLevelGrid_#=ProductID#")
                       .Columns(columns =>
@@ -293,7 +319,7 @@
               //*********************************"Object State**************************************************************//
               items.Add().Text("Object State").Content(
                 @<text>
-                    <legend>Object State</legend>
+                    @*<legend>Object State</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ObjectState>()
                       .Name("ObjectStateGrid_#=ProductID#")
                       .Columns(columns =>
@@ -330,7 +356,7 @@
               //*********************************"Specification**************************************************************//
               items.Add().Text("Specification").Content(
                 @<text>
-                    <legend>Specification</legend>
+                    @*<legend>Specification</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Specification>()
                               .Name("SpecificationGrid_#=ProductID#")
       .Columns(columns =>
@@ -370,7 +396,7 @@
               //*********************************"Serial Definition**************************************************************//
               items.Add().Text("SerialDefinition").Content(
                 @<text>
-                    <legend>Serial Definition</legend>
+                    @*<legend>Serial Definition</legend>*@
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SerialDefinition>()
       .Name("SerialDefinitionGrid_#=ProductID#")
       .Columns(columns =>
@@ -422,9 +448,61 @@
         codeid = masterDataItem.ProductID;
     }
 
-  
-</script>
+    function errorHandler(gridName) {
+        return function (args) {
+            if (args.errors) {
 
+                var grid = $("#" + gridName).data("kendoGrid");
+                grid.cancelChanges();
+                grid.one("dataBinding", function (e) {
+                    e.preventDefault(); // cancel grid rebind if error occurs
+
+                    for (var error in args.errors) {
+                        alert(args.errors[error].errors[0]);
+                        //showMessage(grid.editable.element, error, args.errors[error].errors);
+                    }
+                });
+            }
+
+        }
+    }
+    function mainGridDataBound(e) {
+        var grid = this;
+        
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.HasTransaction == true) {
+
+                //$(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+    function getSelectedCategoryId() {
+        var ddl = $("#ItemCode").data("kendoDropDownList");
+        return {
+            categoryId: $("#CategoryID").val(), subcategoryId: $("#SubCategoryId").val(), filterText: ddl.filterInput.val()
+        };
+    }
+    function categorySelectorChange() {
+        var ddl = $("#ItemCode").data("kendoDropDownList");
+        if (ddl) {
+            ddl.dataSource.read()
+        }
+    }
+    //function filterItem() {
+    //    return {
+    //        Category: $("#CategoryID").val()
+    //    };
+    //}
+    function filterItemCode() {
+        return {
+            Code: $("#ItemCode").val()
+        };
+    }
+</script>
 
 <script>
     var popup;
@@ -468,13 +546,14 @@
 
 <script>
     var ThingID;
+    //var productId;
     function onDetailExpand(e) {
         var masterRow = e.masterRow;
         //var masterGrid = $("#grid").data("kendoGrid");
         var masterGrid = $("#grid").data("kendoGrid");
         var masterDataItem = masterGrid.dataItem(masterRow);
         ThingID = masterDataItem.ItemCode;
- 
+        productId = masterDataItem.ProductID;
 
     }
     function getdata() {
@@ -488,14 +567,59 @@
         return { ThingID: ThingID }
     }
     function filterclass() {
-      
- 
-        return { ProductName: ThingID }
+        return { inventoryItemCode: ThingID }
     }
-    function filterReference() {
-        return {
-            priceTag: $("#ReferenceType").data("kendoDropDownList").value()
-        };
+    //function filterReference() {
+    //    return {
+    //        priceTag: $("#ReferenceType").data("kendoDropDownList").value()
+    //    };
+    //}
+
+
+    function onInventoryItemChange(e) {
+        var itemCode = this.value();
+        $.ajax({
+            url: '@Url.Action("GetInventoryItemName", "CRMDataProvider")',
+            data: { code: itemCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#Name").val(r);
+                $("#Name").trigger("change");
+            }
+        });
+        $.ajax({
+            url: '@Url.Action("GetInventoryItemUOM", "CRMDataProvider")',
+            data: { code: itemCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                //var ddl = $("#UOM").data("kendoDropDownList");
+                $("#UOM").val(result);
+                $("#UOM").trigger("change");
+            }
+        });
+        $.ajax({
+            url: '@Url.Action("GetInventoryItemPrice", "CRMDataProvider")',
+            data: { code: itemCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                //var ddl = $("#UOM").data("kendoDropDownList");
+                $("#Price").val(result);
+                $("#Price").trigger("change");
+            }
+        });
+    }
+    function onProductEdit(e) {
+        $("#Name").attr("disabled", true); 
+        $("#UOM").attr("disabled", true); 
+    }
+    function onCancel(e) {
+        this.dataSource.read();
     }
 </script>
 <style>

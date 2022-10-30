@@ -1,13 +1,11 @@
-﻿using System; using ExceedERP.Web.Helpers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;     
+﻿using ExceedERP.Web.Helpers;
+using System.Web.Mvc;
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-       [AuthorizeRoles(CRMRoles.SalesReport)] 
+    [AuthorizeRoles(CRMRoles.SalesReport)] 
     public class PrintController : Controller
     {
         //
@@ -19,6 +17,13 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
 
         public ActionResult QuotePrint(int Id)
         {
+            ViewBag.Id = Id;
+            return View();
+        }
+        public ActionResult PriceEstimation(int Id)
+        {
+            var db = new ExceedDbContext();
+            var estimation = db.PriceEstimationQuoteVouchers.Find(Id);
             ViewBag.Id = Id;
             return View();
         }
@@ -35,6 +40,16 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             ViewBag.Id = Id;
             return View();
         }
+        public ActionResult CashReceiptVoucher(int Id)
+        {
+            ViewBag.Id = Id;
+            return View();
+        }
+        public ActionResult CreditReceiptVoucher(int Id)
+        {
+            ViewBag.Id = Id;
+            return View();
+        }
         public ActionResult SalesInventoryPrint(int Id)
         {
             ViewBag.Id = Id;
@@ -43,6 +58,17 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         public ActionResult CustomerTicketPrint(int id)
         {
             ViewBag.Id = id;
+            return View();
+        }
+
+        public ActionResult Shipment(int id)
+        {
+            ViewBag.ShipmentId = id;
+            return View();
+        }
+        public ActionResult CreditSettlement(int id)
+        {
+            ViewBag.CreditSettlement = id;
             return View();
         }
     }

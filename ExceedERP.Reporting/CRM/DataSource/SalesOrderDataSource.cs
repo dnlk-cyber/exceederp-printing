@@ -1,12 +1,9 @@
-﻿ using ExceedERP.Core.Domain.Common;
-using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.DataAccess.Context;
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Reporting.CRM.ViewModel;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Reporting.SharedDataSources;

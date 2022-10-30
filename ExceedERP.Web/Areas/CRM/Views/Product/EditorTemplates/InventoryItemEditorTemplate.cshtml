@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .Name("ItemCode")
+    .OptionLabel("Select")
+    .DataTextField("Name")
+    .DataValueField("ItemCode")
+    .DataSource(d =>
+    {
+        d.Read(r =>
+        {
+            r.Action("GetItemByCRMProductCategory", "CRMDataProvider").Data("getSelectedCategoryId");
+        })
+        .ServerFiltering(true);
+    })
+    .Filter(FilterType.Contains)
+    .CascadeFrom("CategoryID")
+    .ValuePrimitive(true)
+    .Enable(true)
+    .AutoBind(true)
+    .Events(events =>
+    {
+        events.Change("onInventoryItemChange");
+    })
+
+)

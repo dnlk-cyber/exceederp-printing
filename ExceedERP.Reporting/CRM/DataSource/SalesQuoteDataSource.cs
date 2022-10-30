@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.CRM.ViewModel;
 using ExceedERP.Core.Domain.CRM;
@@ -12,7 +9,7 @@ using ExceedERP.Reporting.SharedDataSources;
 using System.Drawing;
 
 namespace ExceedERP.Reporting.CRM.DataSource
-    {
+{
     [DataObject]
     public class SalesQuoteObjectDataSource : List<QuoteStatus>
         {

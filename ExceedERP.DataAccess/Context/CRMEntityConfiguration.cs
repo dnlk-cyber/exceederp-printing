@@ -1,12 +1,8 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -65,6 +61,8 @@ namespace ExceedERP.DataAccess.Context
                 this.ToTable("AdvancePaymentDistibution", "CRM");
                 this.HasKey<int>(t => t.AdvancePaymentDistibutionId);
 
+                this.Property(p => p.Debit).HasPrecision(18, 4);
+                this.Property(p => p.Credit).HasPrecision(18, 4);
             }
         }
         public class SalesInvoicePaymentDistibutionEntityTypeConfiguration : EntityTypeConfiguration<SalesInvoicePaymentDistibution>
@@ -75,6 +73,8 @@ namespace ExceedERP.DataAccess.Context
                 this.ToTable("SalesInvoicePaymentDistibution", "CRM");
                 this.HasKey<int>(t => t.SalesInvoicePaymentDistibutionId);
 
+                this.Property(p => p.Debit).HasPrecision(18, 4);
+                this.Property(p => p.Credit).HasPrecision(18, 4);
             }
         }
         public class TicketStatusLogEntityTypeConfiguration : EntityTypeConfiguration<TicketStatusLog>
@@ -193,6 +193,29 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
+        public class CreditSettlementValidationEntityTypeConfiguration : EntityTypeConfiguration<CreditSettlementValidation>
+        {
+
+            public CreditSettlementValidationEntityTypeConfiguration()
+            {
+                this.ToTable("CreditSettlementValidation", "CRM");
+                this.HasKey<int>(t => t.CreditSettlementValidationId);
+
+            }
+        }
+        public class CreditSettlementDistributionEntityTypeConfiguration : EntityTypeConfiguration<CreditSettlementDistribution>
+        {
+
+            public CreditSettlementDistributionEntityTypeConfiguration()
+            {
+                this.ToTable("CreditSettlementDistribution", "CRM");
+                this.HasKey<int>(t => t.CreditSettlementDistributionId);
+
+                this.Property(p => p.Debit).HasPrecision(18, 4);
+                this.Property(p => p.Credit).HasPrecision(18, 4);
+
+            }
+        }
         public class LineCreditSettlementEntityTypeConfiguration : EntityTypeConfiguration<LineCreditSettlement>
         {
 
@@ -201,6 +224,10 @@ namespace ExceedERP.DataAccess.Context
                 this.ToTable("LineCreditSettlement", "CRM");
                 this.HasKey<int>(t => t.LineCreditSettlementId);
 
+                this.Property(p => p.SettelmentAmount).HasPrecision(18, 4);
+                this.Property(p => p.NetBalance).HasPrecision(18, 4);
+                this.Property(p => p.RemainingAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdingAmount).HasPrecision(18, 4);
             }
         }
         public class ServiceLineItemEntityTypeConfiguration : EntityTypeConfiguration<ServiceLineItem>
@@ -211,11 +238,15 @@ namespace ExceedERP.DataAccess.Context
                 this.ToTable("ServiceLineItem", "CRM");
                 this.HasKey<int>(t => t.ServiceLineItemId);
 
+                this.Property(p => p.UnitAmount).HasPrecision(18, 4);
+                this.Property(p => p.SubTotal).HasPrecision(18, 4);
+                this.Property(p => p.TotalAmount).HasPrecision(18, 4);
+                this.Property(p => p.TaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdingAmount).HasPrecision(18, 4);
+                this.Property(p => p.Quantity).HasPrecision(18, 4);
+                this.Property(p => p.WithholdTaxAmount).HasPrecision(18, 4);
             }
         }
-
-
-
 
         public class ServiceUsageEntityTypeConfiguration : EntityTypeConfiguration<ServiceUsage>
         {
@@ -228,10 +259,6 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-
-
-
-
         public class ServiceUsageApprovalEntityTypeConfiguration : EntityTypeConfiguration<ServiceUsageApproval>
         {
 
@@ -242,9 +269,6 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-
-
-
         public class CRMHolidayEntityTypeConfiguration : EntityTypeConfiguration<CRMHoliday>
         {
 
@@ -255,7 +279,6 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-
 
         public class CustomerServiceEntityTypeConfiguration : EntityTypeConfiguration<CustomerService>
         {
@@ -268,7 +291,6 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-
         public class HolidayDefinitionEntityTypeConfiguration : EntityTypeConfiguration<HolidayDefinition>
         {
 
@@ -279,7 +301,6 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-
 
         public class ReceiveMethodEntityTypeConfiguration : EntityTypeConfiguration<ReceiveMethod>
         {
@@ -292,7 +313,6 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-
         public class TermEntityTypeConfiguration : EntityTypeConfiguration<Term>
         {
 
@@ -303,7 +323,6 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-
 
         public class InventoryCateoryMapEntityTypeConfiguration : EntityTypeConfiguration<InventoryCateoryMap>
         {
@@ -338,16 +357,16 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-        //public class TaxEntityTypeConfiguration : EntityTypeConfiguration<Tax>
-        //{
+        public class TaxEntityTypeConfiguration : EntityTypeConfiguration<Tax>
+        {
 
-        //    public TaxEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("Tax", "CRM");
-        //        this.HasKey<int>(t => t.TaxID);
+            public TaxEntityTypeConfiguration()
+            {
+                this.ToTable("Tax", "CRM");
+                this.HasKey<int>(t => t.TaxID);
 
-        //    }
-        //}
+            }
+        }
 
         public class TaxTransactionEntityTypeConfiguration : EntityTypeConfiguration<TaxTransaction>
         {
@@ -379,6 +398,7 @@ namespace ExceedERP.DataAccess.Context
                 this.Property(p => p.Reference).HasColumnOrder(4);
                 this.Property(p => p.Value).HasColumnOrder(5);
                 this.Property(p => p.IsDefault).HasColumnOrder(6);
+                this.Property(p => p.Value).HasPrecision(18, 4);
                 this.Property(p => p.Priority)
                  .HasColumnAnnotation(
             IndexAnnotation.AnnotationName,
@@ -400,6 +420,19 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("LineItem", "CRM");
                 this.Property(p => p.ThingID);
+
+                this.Property(p => p.StockBalance).HasPrecision(18, 4);
+
+                this.Property(p => p.StockBalanceReserved).HasPrecision(18, 4);
+                this.Property(p => p.UnitAmount).HasPrecision(18, 4);
+                this.Property(p => p.Quantity).HasPrecision(18, 4);
+                this.Property(p => p.TotalAmount).HasPrecision(18, 4);
+                this.Property(p => p.CalculatedCost).HasPrecision(18, 4);
+                this.Property(p => p.TaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdingAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdTaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.Vat).HasPrecision(18, 4);
+                this.Property(p => p.Discount).HasPrecision(18, 4);
 
             }
         }
@@ -731,6 +764,15 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(o => o.SalesStoreId);
             }
         }
+        public class SalesPersonAssignmentEntityTypeConfiguration : EntityTypeConfiguration<SalesPersonAssignment>
+        {
+
+            public SalesPersonAssignmentEntityTypeConfiguration()
+            {
+                this.ToTable("SalesPersonAssignment", "CRM");
+                this.HasKey<int>(o => o.SalesPersonAssignmentId);
+            }
+        }
         public class AdditionalCostLogEntityTypeConfiguration : EntityTypeConfiguration<AdditionalCostLog>
         {
 
@@ -738,6 +780,15 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("AdditionalCostLog", "CRM");
                 this.HasKey<int>(o => o.AdditionalCostLogId);
+            }
+        }
+        public class CommissionLineItemEntityTypeConfiguration : EntityTypeConfiguration<CommissionLineItem>
+        {
+
+            public CommissionLineItemEntityTypeConfiguration()
+            {
+                this.ToTable("CommissionLineItem", "CRM");
+                this.HasKey<int>(o => o.CommissionLineItemId);
             }
         }
         public class AdditionalCostEntityTypeConfiguration : EntityTypeConfiguration<AdditionalCost>
@@ -795,6 +846,32 @@ namespace ExceedERP.DataAccess.Context
             }
 
         }
+        public class ProductPriceLogEntityTypeConfiguration : EntityTypeConfiguration<ProductPriceLog>
+        {
+
+            public ProductPriceLogEntityTypeConfiguration()
+            {
+                this.ToTable("ProductPriceLog", "CRM");
+                this.HasKey<int>(o => o.ProductPriceLogId);
+
+                this.Property(p => p.InitialPrice).HasPrecision(18, 4);
+                this.Property(p => p.ProposedNewPrice).HasPrecision(18, 4);
+                this.Property(p => p.ApprovedNewPrice).HasPrecision(18, 4);
+                this.Property(p => p.NewExchangeRate).HasPrecision(18, 4);
+            }
+
+        }
+        public class ProductUnitConvertorSetupEntityTypeConfiguration : EntityTypeConfiguration<ProductUnitConvertorSetup>
+        {
+
+            public ProductUnitConvertorSetupEntityTypeConfiguration()
+            {
+                this.ToTable("ProductUnitConvertorSetup", "CRM");
+                this.HasKey<int>(o => o.ProductUnitConvertorSetupId);
+                this.Property(p => p.MultiplicationFactor).HasPrecision(18, 4);
+            }
+
+        }
         public class ObjectStateDefinitionEntityTypeConfiguration : EntityTypeConfiguration<ObjectStateDefinition>
         {
 
@@ -842,6 +919,48 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("CashSalesInvoice", "CRM");
                 this.HasKey<int>(o => o.CashSalesInvoiceID);
+            }
+        }
+        public class CRMDepositEntityTypeConfiguration : EntityTypeConfiguration<CRMDeposit>
+        {
+
+            public CRMDepositEntityTypeConfiguration()
+            {
+                this.ToTable("CRMDeposit", "CRM");
+                this.HasKey<int>(o => o.CRMDepositId);
+
+            }
+        }
+        public class CRMDepositLineEntityTypeConfiguration : EntityTypeConfiguration<CRMDepositLine>
+        {
+
+            public CRMDepositLineEntityTypeConfiguration()
+            {
+                this.ToTable("CRMDepositLine", "CRM");
+                this.HasKey<int>(o => o.CRMDepositLineId);
+
+                this.Property(p => p.DepositAmount).HasPrecision(18, 4);
+            }
+        }
+        public class CRMDepositValidationEntityTypeConfiguration : EntityTypeConfiguration<CRMDepositValidation>
+        {
+
+            public CRMDepositValidationEntityTypeConfiguration()
+            {
+                this.ToTable("CRMDepositValidation", "CRM");
+                this.HasKey<int>(o => o.CRMDepositValidationId);
+            }
+        }
+        public class CRMDepositDistributionEntityTypeConfiguration : EntityTypeConfiguration<CRMDepositDistribution>
+        {
+
+            public CRMDepositDistributionEntityTypeConfiguration()
+            {
+                this.ToTable("CRMDepositDistribution", "CRM");
+                this.HasKey<int>(o => o.CRMDepositDistributionId);
+
+                this.Property(p => p.Debit).HasPrecision(18, 4);
+                this.Property(p => p.Credit).HasPrecision(18, 4);
             }
         }
         public class CustomerTicketEntityTypeConfiguration : EntityTypeConfiguration<CustomerTicket>
@@ -1018,6 +1137,363 @@ namespace ExceedERP.DataAccess.Context
                 this.ToTable("PreCustomer", "CRM");
             }
         }
+        public class CRMPeriodEntityTypeConfiguration : EntityTypeConfiguration<CRMPeriod>
+        {
+            public CRMPeriodEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.CRMPeriodId);
+                this.ToTable("CRMPeriod", "CRM");
+            }
+        }
+        public class SalesShipmentEntityTypeConfiguration : EntityTypeConfiguration<SalesShipment>
+        {
+            public SalesShipmentEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesShipmentId);
+                this.ToTable("SalesShipments", "CRM");
+            }
+        }
 
+
+        public class SalesShipmentLineItemEntityTypeConfiguration : EntityTypeConfiguration<SalesShipmentLineItem>
+        {
+            public SalesShipmentLineItemEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesShipmentLineItemId);
+                this.ToTable("SalesShipmentLineItem", "CRM");
+
+                this.Property(p => p.SubTotal).HasPrecision(18, 4);
+
+                this.Property(p => p.TotalQuantity).HasPrecision(18, 4);
+                this.Property(p => p.TotalAmount).HasPrecision(18, 4);
+                this.Property(p => p.Price).HasPrecision(18, 4);
+                this.Property(p => p.TaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.ShipedQuantityTilPreShipment).HasPrecision(18, 4);
+                this.Property(p => p.ShipedQuantity).HasPrecision(18, 4);
+                this.Property(p => p.RemainingQuantity).HasPrecision(18, 4);
+            }
+        }
+        public class SalesShipmentValidationEntityTypeConfiguration : EntityTypeConfiguration<SalesShipmentValidation>
+        {
+            public SalesShipmentValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesShipmentValidationId);
+                this.ToTable("SalesShipmentValidation", "CRM");
+            }
+        }
+        public class SalesShipmentDistributionEntityTypeConfiguration : EntityTypeConfiguration<SalesShipmentDistribution>
+        {
+            public SalesShipmentDistributionEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesShipmentDistributionId);
+                this.ToTable("SalesShipmentDistribution", "CRM");
+
+                this.Property(p => p.Debit).HasPrecision(18, 4);
+                this.Property(p => p.Credit).HasPrecision(18, 4);
+            }
+        }
+
+        public class QuotationTermEntityTypeConfiguration : EntityTypeConfiguration<QuotationTerm>
+        {
+            public QuotationTermEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QuotationTermId);
+                this.ToTable("QuotationTerm", "CRM");
+            }
+        }
+        public class SalesQuoteVoucherValidationEntityTypeConfiguration : EntityTypeConfiguration<SalesQuoteVoucherValidation>
+        {
+            public SalesQuoteVoucherValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesQuoteVoucherValidationId);
+                this.ToTable("SalesQuoteVoucherValidation", "CRM");
+            }
+        }
+        public class SalesQuoteVoucherFirstValidationEntityTypeConfiguration : EntityTypeConfiguration<SalesQuoteVoucherFirstValidation>
+        {
+            public SalesQuoteVoucherFirstValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesQuoteVoucherFirstValidationId);
+                this.ToTable("SalesQuoteVoucherFirstValidation", "CRM");
+            }
+        }
+        public class SalesQuoteVoucherSecondValidationEntityTypeConfiguration : EntityTypeConfiguration<SalesQuoteVoucherSecondValidation>
+        {
+            public SalesQuoteVoucherSecondValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesQuoteVoucherSecondValidationId);
+                this.ToTable("SalesQuoteVoucherSecondValidation", "CRM");
+            }
+        }
+        public class SalesOrderVoucherValidationEntityTypeConfiguration : EntityTypeConfiguration<SalesOrderVoucherValidation>
+        {
+            public SalesOrderVoucherValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesOrderVoucherValidationId);
+                this.ToTable("SalesOrderVoucherValidation", "CRM");
+            }
+        }
+
+        public class VoucherContractDocumentEntityTypeConfiguration : EntityTypeConfiguration<VoucherContractDocument>
+        {
+            public VoucherContractDocumentEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.VoucherContractDocumentId);
+                this.ToTable("VoucherContractDocument", "CRM");
+            }
+        }
+        public class PaymentScheduleEntityTypeConfiguration : EntityTypeConfiguration<PaymentSchedule>
+        {
+            public PaymentScheduleEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.PaymentScheduleId);
+                this.ToTable("PaymentSchedule", "CRM");
+            }
+        }
+        public class CashSalesInvoiceValidationEntityTypeConfiguration : EntityTypeConfiguration<CashSalesInvoiceValidation>
+        {
+            public CashSalesInvoiceValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.CashSalesInvoiceValidationId);
+                this.ToTable("CashSalesInvoiceValidation", "CRM");
+            }
+        }
+        public class PosSettingEntityTypeConfiguration : EntityTypeConfiguration<PosSetting>
+        {
+            public PosSettingEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.PosSettingId);
+                this.ToTable("PosSetting", "CRM");
+            }
+        }
+        public class AnnualSalesPlanEntityTypeConfiguration : EntityTypeConfiguration<AnnualSalesPlan>
+        {
+            public AnnualSalesPlanEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.AnnualSalesPlanId);
+                this.ToTable("AnnualSalesPlan", "CRM");
+            }
+        }
+        public class BranchAnnualSalesPlanEntityTypeConfiguration : EntityTypeConfiguration<BranchAnnualSalesPlan>
+        {
+            public BranchAnnualSalesPlanEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.BranchAnnualSalesPlanId);
+                this.ToTable("BranchAnnualSalesPlan", "CRM");
+            }
+        }
+        public class StoreAnnualSalesPlanEntityTypeConfiguration : EntityTypeConfiguration<StoreAnnualSalesPlan>
+        {
+            public StoreAnnualSalesPlanEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.StoreAnnualSalesPlanId);
+                this.ToTable("StoreAnnualSalesPlan", "CRM");
+            }
+        }
+        public class StoreMonthlySalesPlanEntityTypeConfiguration : EntityTypeConfiguration<StoreMonthlySalesPlan>
+        {
+            public StoreMonthlySalesPlanEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.StoreMonthlySalesPlanId);
+                this.ToTable("StoreMonthlySalesPlan", "CRM");
+            }
+        }
+        public class AnnualSalesPlanValidationEntityTypeConfiguration : EntityTypeConfiguration<AnnualSalesPlanValidation>
+        {
+            public AnnualSalesPlanValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.AnnualSalesPlanValidationId);
+                this.ToTable("AnnualSalesPlanValidation", "CRM");
+            }
+        }
+        public class CRMDashboardTodateSalesDataEntityTypeConfiguration : EntityTypeConfiguration<CRMDashboardTodateSalesData>
+        {
+            public CRMDashboardTodateSalesDataEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.CRMDashboardTodateSalesDataId);
+                this.ToTable("CRMDashboardTodateSalesData", "CRM");
+                this.Property(p => p.Amount).HasPrecision(20, 4);
+            }
+        }
+        public class CRMDashboardTodateSalesBranchDataEntityTypeConfiguration : EntityTypeConfiguration<CRMDashboardTodateSalesBranchData>
+        {
+            public CRMDashboardTodateSalesBranchDataEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.CRMDashboardTodateSalesBranchDataId);
+                this.ToTable("CRMDashboardTodateSalesBranchData", "CRM");
+                this.Property(p => p.Amount).HasPrecision(20, 4);
+            }
+        }
+        #region Customer Queue
+        public class QueueTypeEntityTypeConfiguration : EntityTypeConfiguration<QueueType>
+        {
+            public QueueTypeEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QueueTypeId);
+                this.ToTable("QueueType", "CRM");
+            }
+        }
+
+        public class InvestmentTypeEntityTypeConfiguration : EntityTypeConfiguration<InvestmentType>
+        {
+            public InvestmentTypeEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.InvestmentTypeId);
+                this.ToTable("InvestmentType", "CRM");
+            }
+        }
+        public class LocationMapEntityTypeConfiguration : EntityTypeConfiguration<LocationMap>
+        {
+            public LocationMapEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.LocationMapId);
+                this.ToTable("LocationMap", "CRM");
+            }
+        }
+        public class LocationUserAssignmentEntityTypeConfiguration : EntityTypeConfiguration<LocationUserAssignment>
+        {
+            public LocationUserAssignmentEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.LocationUserAssignmentId);
+                this.ToTable("LocationUserAssignment", "CRM");
+            }
+        }
+        public class QueueCustomerEntityTypeConfiguration : EntityTypeConfiguration<QueueCustomer>
+        {
+            public QueueCustomerEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QueueCustomerId);
+                this.ToTable("QueueCustomer", "CRM");
+            }
+        }
+        public class QueueEntityTypeConfiguration : EntityTypeConfiguration<Queue>
+        {
+            public QueueEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QueueId);
+                this.ToTable("Queue", "CRM");
+            }
+        }
+        public class QueueStatusEntityTypeConfiguration : EntityTypeConfiguration<QueueStatus>
+        {
+            public QueueStatusEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QueueStatusId);
+                this.ToTable("QueueStatus", "CRM");
+            }
+        }
+        public class QueueValidationEntityTypeConfiguration : EntityTypeConfiguration<QueueValidation>
+        {
+            public QueueValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QueueValidationId);
+                this.ToTable("QueueValidation", "CRM");
+            }
+        }
+
+        public class QueueStatusValidationEntityTypeConfiguration : EntityTypeConfiguration<QueueStatusValidation>
+        {
+            public QueueStatusValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.QueueStatusValidationId);
+                this.ToTable("QueueStatusValidation", "CRM");
+            }
+        }
+        #endregion
+
+        #region price estimation quote
+        public class PriceEstimationQuoteVoucherEntityTypeConfiguration : EntityTypeConfiguration<PriceEstimationQuoteVoucher>
+        {
+            public PriceEstimationQuoteVoucherEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.PriceEstimationQuoteVoucherId);
+                this.ToTable("PriceEstimationQuoteVouchers", "CRM");
+                this.Property(p => p.GrandTotal).HasPrecision(20, 4);
+            }
+        }
+
+        public class PriceEstimationQuoteVoucherLineEntityTypeConfiguration : EntityTypeConfiguration<PriceEstimationQuoteVoucherLine>
+        {
+
+            public PriceEstimationQuoteVoucherLineEntityTypeConfiguration()
+            {
+                this.ToTable("PriceEstimationQuoteVoucherLines", "CRM");
+                this.HasKey<int>(t => t.PriceEstimationQuoteVoucherLineId);
+
+                this.Property(p => p.UnitAmount).HasPrecision(18, 4);
+                this.Property(p => p.SubTotal).HasPrecision(18, 4);
+                this.Property(p => p.TotalAmount).HasPrecision(18, 4);
+                this.Property(p => p.TaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdingAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdTaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.Quantity).HasPrecision(18, 4);
+            }
+        }
+        public class PriceEstimationQuoteVoucherServiceEntityTypeConfiguration : EntityTypeConfiguration<PriceEstimationQuoteVoucherService>
+        {
+
+            public PriceEstimationQuoteVoucherServiceEntityTypeConfiguration()
+            {
+                this.ToTable("PriceEstimationQuoteVoucherServices", "CRM");
+                this.HasKey<int>(t => t.PriceEstimationQuoteVoucherServiceId);
+
+                this.Property(p => p.UnitAmount).HasPrecision(18, 4);
+                this.Property(p => p.SubTotal).HasPrecision(18, 4);
+                this.Property(p => p.TotalAmount).HasPrecision(18, 4);
+                this.Property(p => p.TaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdingAmount).HasPrecision(18, 4);
+                this.Property(p => p.WithholdTaxAmount).HasPrecision(18, 4);
+                this.Property(p => p.Quantity).HasPrecision(18, 4);
+            }
+        }
+        public class PriceEstimationQuoteVoucherFirstValidationEntityTypeConfiguration : EntityTypeConfiguration<PriceEstimationQuoteVoucherFirstValidation>
+        {
+            public PriceEstimationQuoteVoucherFirstValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.PriceEstimationQuoteVoucherFirstValidationId);
+                this.ToTable("PriceEstimationQuoteVoucherFirstValidation", "CRM");
+            }
+        }
+        public class PriceEstimationQuoteVoucherSecondValidationEntityTypeConfiguration : EntityTypeConfiguration<PriceEstimationQuoteVoucherSecondValidation>
+        {
+            public PriceEstimationQuoteVoucherSecondValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.PriceEstimationQuoteVoucherSecondValidationId);
+                this.ToTable("PriceEstimationQuoteVoucherSecondValidation", "CRM");
+            }
+        }
+        public class PriceEstimationQuoteVoucherValidationEntityTypeConfiguration : EntityTypeConfiguration<PriceEstimationQuoteVoucherValidation>
+        {
+            public PriceEstimationQuoteVoucherValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.PriceEstimationQuoteVoucherValidationId);
+                this.ToTable("PriceEstimationQuoteVoucherValidation", "CRM");
+            }
+        }
+        #endregion
+
+        #region tender followup
+        public class TenderFollowupEntityTypeConfiguration : EntityTypeConfiguration<TenderFollowup>
+        {
+            public TenderFollowupEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.TenderFollowupId);
+                this.ToTable("TenderFollowup", "CRM");
+                this.Property(p => p.ServiceCharge).HasPrecision(20, 4);
+                this.Property(p => p.BidBondAmount).HasPrecision(20, 4);
+                this.Property(p => p.BidAmount).HasPrecision(20, 4);
+                this.Property(p => p.BidSecurityCharge).HasPrecision(20, 4);
+                this.Property(p => p.BidValidty).HasPrecision(20, 4);
+            }
+        }
+        public class TenderFollowupLineItemEntityTypeConfiguration : EntityTypeConfiguration<TenderFollowupLineItem>
+        {
+            public TenderFollowupLineItemEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.TenderFollowupLineItemId);
+                this.ToTable("TenderFollowupLineItem", "CRM");
+            }
+        }
+        #endregion
     }
 }

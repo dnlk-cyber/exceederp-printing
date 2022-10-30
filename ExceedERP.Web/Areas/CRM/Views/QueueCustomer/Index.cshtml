@@ -1,0 +1,68 @@
+﻿<legend>Customers</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.QueueCustomer>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CustomerName).EditorTemplateName("CustomerNameSelector");
+          columns.Bound(c => c.TinNumber);
+          columns.Bound(c => c.Phone);
+          columns.ForeignKey(c => c.InvestmentTypeId, (System.Collections.IEnumerable)ViewData["InvestmentTypes"], "InvestmentTypeId", "InvestmentName").EditorTemplateName("InvestmentTypeSelector");
+          columns.Bound(c => c.InvestmentAmount);
+          columns.Bound(c => c.Grade);
+          columns.Bound(c => c.DateCreated).Title("Date").Format("{0:dd/MM/yyyy}");
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Navigatable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Events(events => {
+          events.DataBound("onDataBound");
+      })
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+                .Error("error_handler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.QueueCustomerId);
+              model.Field(f => f.DateCreated).Editable(false);
+          })
+          .Read(read => read.Action("QueueCustomer_Read", "QueueCustomer"))
+          .Create(create => create.Action("QueueCustomer_Create", "QueueCustomer"))
+          .Update(update => update.Action("QueueCustomer_Update", "QueueCustomer"))
+          .Destroy(destroy => destroy.Action("QueueCustomer_Destroy", "QueueCustomer"))
+      )
+)
+
+<script type="text/javascript">
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.HasTransactions == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                //$(this).addClass("k-state-Approved");
+            }
+        });
+    }
+</script>

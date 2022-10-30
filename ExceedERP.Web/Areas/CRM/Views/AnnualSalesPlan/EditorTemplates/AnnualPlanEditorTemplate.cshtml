@@ -1,0 +1,81 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.CRM.AnnualSalesPlan
+
+    <form method="post">
+        <div class="k-edit-form-container">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.GlFiscalYearId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+                                    .Name("GlFiscalYearId")
+                                    .DataTextField("Name")
+                                    .DataValueField("GlFiscalYearId")
+                                    .OptionLabel("Select")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(d => d.Read(r => r.Action("GetFiscalYears", "CRMDataProvider")))
+                )
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.CategoryId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.CategoryId)
+                                    .Name("CategoryId")
+                                    .DataTextField("Description")
+                                    .DataValueField("ProductCategoryId")
+                                    .OptionLabel("Select")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(d => d.Read(r => r.Action("GetAllProductCategories", "CRMDataProvider")))
+                )
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.SubCategoryId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.SubCategoryId)
+                                    .Name("SubCategoryId")
+                                    .CascadeFrom("CategoryId")
+                                    .DataTextField("Description")
+                                    .DataValueField("ProductCategoryId")
+                                    .OptionLabel("Select")
+                                    .AutoBind(true)
+                                    //.Enable(false)
+                                    .Filter(FilterType.Contains)
+                                    //.Events(e => e.Change("subcategoryChanged"))
+                                    .DataSource(d => d.Read(r => r.Action("GetSubCategories", "CRMDataProvider").Data("getSelectedCategory")).ServerFiltering(true))
+                )
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.AveragePrice)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().NumericTextBoxFor(m => m.AveragePrice).Min(0))
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Profit, "Profit (%)")
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().NumericTextBoxFor(m => m.Profit).Min(0))
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.TotalAnnualPlanQuantity, "Total Anual Plan Quantity")
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().NumericTextBoxFor(m => m.TotalAnnualPlanQuantity))
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Remark)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().TextBoxFor(m => m.Remark))
+            </div>
+        </div>
+    </form>
+

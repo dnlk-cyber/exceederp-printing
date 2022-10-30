@@ -1,23 +1,19 @@
-﻿using System;
+﻿using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
 namespace ExceedERP.Reporting.CRM.ViewModel
 {
-        public  class QuoteStatus : Organization
+    public class QuoteStatus : Organization
     {
-
         [DisplayName("# Quote")]
         public int QuoteNumber { get; set; }
 
         [DisplayName("Customer")]
         public string Consignee { get; set; }
-        [DisplayName("Product Name")]
+        //[DisplayName("Product Name")]
         public string ProductName { get; set; }
         public string CustomerAddress { get; set; }
         public string PaymentMethod { get; set; }
@@ -38,11 +34,14 @@ namespace ExceedERP.Reporting.CRM.ViewModel
         public decimal Tax { get; set; }
         [DisplayName("Grand Total")]
         public decimal GrandTotal { get; set; }
-
+        public string TotalAmountInWords { get; set; }
         public string Status { get; set; }
 
-        public string Store { get; set; }
+        public decimal TotalTax { get; set; }
+        public decimal TotalWithholding { get; set; }
+        public decimal NetPay { get; set; }
 
+        public string Store { get; set; }
 
         public bool IsOnlineApproved { get; set; }
         public string OnlineApprovedBy { get; set; }
@@ -63,6 +62,10 @@ namespace ExceedERP.Reporting.CRM.ViewModel
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? SendForApprovalTime { get; set; }
+        public DateTime? DueDate { get; set; }
 
+       
     }
+
+    
 }

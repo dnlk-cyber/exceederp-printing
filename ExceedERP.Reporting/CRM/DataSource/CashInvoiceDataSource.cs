@@ -122,18 +122,18 @@ namespace ExceedERP.Reporting.CRM.DataSource
                     if (OrgCustomer != null)
                     {
                         var OrgCustomerID = OrgCustomer.OrganizationCustomerID;
-                        var addresss =
-                            db.Addresses.ToList()
-                                .Where(
-                                    x =>
-                                        x.Reference == OrgCustomerID.ToString() &&
-                                        x.ReferenceType == "Organization_Customer")
-                                .SingleOrDefault();
-                        if (addresss != null)
-                        {
+                        //var addresss =
+                        //    db.Addresses.ToList()
+                        //        .Where(
+                        //            x =>
+                        //                x.Reference == OrgCustomerID.ToString() &&
+                        //                x.ReferenceType == "Organization_Customer")
+                        //        .SingleOrDefault();
+                        //if (addresss != null)
+                        //{
 
-                            address = addresss.Value;
-                        }
+                        //    address = addresss.Value;
+                        //}
                     }
                     foreach (CashSalesInvoice sov in SalesInvoices)
                     {

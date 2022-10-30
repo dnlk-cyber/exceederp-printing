@@ -3,13 +3,11 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.CRM.Printing.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System;
- using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Common.HRM;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Reporting.CRM.Printing.DataSource
@@ -18,12 +16,11 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
     public class SalesInventoryDataSource
     {
 
-
         private readonly ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetOrganizationCustomers()
         {
-     ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject OrgCustomer = new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject();
+            ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject OrgCustomer = new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject();
             List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> Customer = new List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject>();
 
             var Customers = db.OrganizationCustomers.ToList();
@@ -54,7 +51,8 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
 
 
 
-
+                string vat = "";
+                string tin = "";
 
                 string tradeName = "";
                 string CompanyAddress = "";
@@ -91,6 +89,23 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                         }
 
                     }
+                    var tinIdentification = db.Identifications.FirstOrDefault(a =>
+                            a.Type == Core.Domain.Common.IdentificationType.TIN &&
+                            a.Reference == organization.MainCompanyId.ToString() &&
+                            a.ReferenceType.ToLower() == "company");
+                    var companyVat = db.Identifications.FirstOrDefault(a =>
+                               a.Type == Core.Domain.Common.IdentificationType.VAT_NUMBER &&
+                               a.Reference == organization.MainCompanyId.ToString() &&
+                               a.ReferenceType.ToLower() == "company");
+                    if (tinIdentification != null)
+                    {
+                        tin = tinIdentification.IdNumber;
+                    }
+                    if (companyVat != null)
+                    {
+                        vat = companyVat.IdNumber;
+                    }
+
                     var logo =
                         db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
                                 a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO);
@@ -142,7 +157,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                         }
                         foreach (CashSalesInvoice sov in SalesInvoices)
                         {
-
+                           
                             string CustomerType = "CASH";
                             int Index = 0;
 
@@ -151,18 +166,18 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                             {
                                 int uOMID = 0;
                                 string uOM = "";
-                                
-                                    try
-                                    {
-                                        uOMID = int.Parse(l.Product.UOM);
-                                        uOM = db.Lookups.Where(x => x.LookupId == uOMID).FirstOrDefault().Description;
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        uOM = string.Empty;
-                                    }
-                               
-                                var history = db.IssueHistorys.Where(x => x.InvoiceId == sov.CashSalesInvoiceID && x.Remark == l.ThingID.ToString() ).ToList();
+
+                                try
+                                {
+                                    uOMID = int.Parse(l.Product.UOM);
+                                    uOM = db.Lookups.Where(x => x.LookupId == uOMID).FirstOrDefault().Description;
+                                }
+                                catch (Exception e)
+                                {
+                                    uOM = string.Empty;
+                                }
+
+                                var history = db.IssueHistorys.Where(x => x.InvoiceId == sov.CashSalesInvoiceID && x.Remark == l.ThingID.ToString()).ToList();
                                 if (OrgCustomer.IsCredit)
                                 {
                                     CustomerType = "CREDIT";
@@ -178,29 +193,29 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                                 if (history.Any())
                                 {
                                     decimal RemainingInvoice = decimal.Zero;
-                                    if(Index == 0  || Index != l.LineItemID)
+                                    if (Index == 0 || Index != l.LineItemID)
                                     {
-                                          RemainingInvoice = decimal.Zero;
+                                        RemainingInvoice = decimal.Zero;
                                         Index = l.LineItemID;
                                     }
-                                   
-                                    foreach (var h in history.OrderBy(x=>x.DateCreated))
+
+                                    foreach (var h in history.OrderBy(x => x.DateCreated))
                                     {
-                                       
+
                                         SalesInvoiceViewModel = new SalesInventory();
                                         SalesInvoiceViewModel.Consignee = sov.OrganizationCustomer.TradeName;
                                         SalesInvoiceViewModel.CustomerType = CustomerType;
 
                                         SalesInvoiceViewModel.InvoiceNumber = sov.CashSalesInvoiceID;
-                                          SalesInvoiceViewModel.OrderDate = DateTime.Now;
-                                        SalesInvoiceViewModel.ProductName = l.Product.Name ;
+                                        SalesInvoiceViewModel.OrderDate = DateTime.Now;
+                                        SalesInvoiceViewModel.ProductName = l.Product.Name;
                                         SalesInvoiceViewModel.UOM = uOM;
                                         SalesInvoiceViewModel.Store = l.SalesStore.Description;
-                                                 SalesInvoiceViewModel.IssuedItem = h.Remark;
+                                        SalesInvoiceViewModel.IssuedItem = h.Remark;
                                         SalesInvoiceViewModel.IssuedQuantity = h.Amount;
                                         SalesInvoiceViewModel.IssuedDate = h.DateCreated;
                                         SalesInvoiceViewModel.IssueHistoryId = h.IssueHistoryId;
-                                        SalesInvoiceViewModel.InvoiceQuantity = (l.CalculatedCost / l.UnitAmount) ;
+                                        SalesInvoiceViewModel.InvoiceQuantity = (l.CalculatedCost / l.UnitAmount);
 
                                         SalesInvoiceViewModel.AmharicName = AmharicName;
                                         SalesInvoiceViewModel.Name = Name;
@@ -217,7 +232,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                                     SalesInvoiceViewModel.Consignee = sov.OrganizationCustomer.TradeName;
                                     SalesInvoiceViewModel.CustomerAddress = address;
                                     SalesInvoiceViewModel.InvoiceNumber = sov.CashSalesInvoiceID;
-                                    SalesInvoiceViewModel.InvoiceQuantity = l.CalculatedCost /  l.UnitAmount;
+                                    SalesInvoiceViewModel.InvoiceQuantity = l.CalculatedCost / l.UnitAmount;
                                     SalesInvoiceViewModel.Store = l.SalesStore.Description;
                                     SalesInvoiceViewModel.OrderNumber = sov.References;
                                     SalesInvoiceViewModel.GrandTotal = sov.GrandTotal;
@@ -226,9 +241,9 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                                     SalesInvoiceViewModel.OrderDate = DateTime.Now;
                                     SalesInvoiceViewModel.ProductName = l.Product.Name;
                                     SalesInvoiceViewModel.UOM = uOM;
-                                     SalesInvoiceViewModel.Class = l.Class;
+                                    SalesInvoiceViewModel.Class = l.Class;
                                     SalesInvoiceViewModel.Variety = l.Variety;
-                                      SalesInvoiceViewModel.Tax = l.TaxAmount;
+                                    SalesInvoiceViewModel.Tax = l.TaxAmount;
                                     SalesInvoiceViewModel.SubTotoal = l.CalculatedCost;
                                     SalesInvoiceViewModel.GrandTotal = l.TotalAmount;
                                     SalesInvoiceViewModel.OnlineApprovedBy = l.CreatedBy;
@@ -256,7 +271,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
             catch (Exception e)
             {
 
-            
+
             }
 
             return null;

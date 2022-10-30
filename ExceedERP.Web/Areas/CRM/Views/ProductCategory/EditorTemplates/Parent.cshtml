@@ -3,11 +3,13 @@
                   .OptionLabel("Select")
                   .DataTextField("Description")
                   .DataValueField("Code")
+                  .AutoBind(true)
+                  .Filter(FilterType.Contains)
+                  .ValuePrimitive(true)
                   .DataSource(dataSource =>
                   {
                       dataSource.Read(read => read.Action("GetThingCategory", "CRMDataProvider"))
-                                .ServerFiltering(true);
+                                .ServerFiltering(false);
                   })
 
 )
-@Html.ValidationMessageFor(m => m)

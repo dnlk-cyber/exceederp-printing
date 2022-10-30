@@ -1,0 +1,19 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+          .OptionLabel(Resources.Select)
+          .Name("References")
+          .DataTextField("SalesQuoteVoucherID")
+          .DataValueField("SalesQuoteVoucherID")
+          .DataSource(dataSource =>
+          {
+              dataSource.Read(read => read.Action("GetSalesQuoteNumber", "CRMDataProvider").Data("filterSourceType"))
+              .ServerFiltering(true);
+          })
+          .Filter("contains")
+          .CascadeFrom("Source")
+          .MinLength(2)
+          .AutoBind(false)
+          .Enable(false)
+          .ValuePrimitive(true)
+)

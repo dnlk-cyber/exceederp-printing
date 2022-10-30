@@ -966,127 +966,172 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region CRM
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdvancePaymentLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdvancePaymentDistibutionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CashSalesPartialItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CashSalesPartialLineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TicketStatusLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesStoreEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdditionalCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdditionalCostLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CommissionLineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesInvoicePaymentDistibutionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SupportGroupDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.InventoryCateoryMapEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SupportGroupEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StatusTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriorityTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AssignTicketEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMHolidayEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdvancePaymentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdvancePaymentLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ReceiveMethodEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ServiceLineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ServiceUsageApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ServiceUsageEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.LineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.LineCreditSettlementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CreditSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CreditSettlementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CreditSettlementDistributionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CreditSettlementValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CustomerHandlingTeamEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VoucherDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CustomerServiceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.HolidayDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.MailModelEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PreCustomerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PreCustomerScheduleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VarietyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.IssueHistoryEntityTypeConfiguration());
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AdvancePaymentLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AdvancePaymentDistibutionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CashSalesPartialItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CashSalesPartialLineItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TicketStatusLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SalesStoreEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AdditionalCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AdditionalCostLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SalesInvoicePaymentDistibutionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SupportGroupDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.InventoryCateoryMapEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SupportGroupEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.StatusTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.PriorityTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AssignTicketEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CRMHolidayEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AdvancePaymentEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AdvancePaymentLineEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ReceiveMethodEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ServiceLineItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ServiceUsageApprovalEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ServiceUsageEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.LineItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.LineCreditSettlementEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CreditSettingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CreditSettlementEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CustomerHandlingTeamEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.VoucherDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CustomerServiceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.HolidayDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.MailModelEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.PreCustomerEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.PreCustomerScheduleEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.VarietyEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.IssueHistoryEntityTypeConfiguration());
-
-
-
-
-
-
-
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TermEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.VoucherTermEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new CRMEntityConfiguration.TaxEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TaxTransactionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.PriceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TermEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VoucherTermEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TaxEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TaxTransactionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEntityTypeConfiguration());
             //  modelBuilder.Configurations.Add(new LineItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.UserEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.LifeTimeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.UserEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.LifeTimeEntityTypeConfiguration());
 
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ActivityDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ActivityEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.GlobalTypeListEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ActivityDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ActivityEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.GlobalTypeListEntityTypeConfiguration());
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.VoucherExtensionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.VoucherExtensionTransactionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SerialDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SerialCodeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VoucherExtensionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VoucherExtensionTransactionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SerialDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SerialCodeEntityTypeConfiguration());
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TransactionReferenceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.StoreTransactionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.StockBalanceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.StockLevelEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.VoucherValueEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.GlobalTypeTaxEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ControlAccountEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AccountRequirementEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AccountEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.AccountMapEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TransactionReferenceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StoreTransactionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StockBalanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StockLevelEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VoucherValueEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.GlobalTypeTaxEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ControlAccountEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AccountRequirementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AccountEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AccountMapEntityTypeConfiguration());
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.JournalTemplateEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.JournalDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.BeginningEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CurrencyEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CurrencyPreferenceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.JournalTemplateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.JournalDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.BeginningEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CurrencyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CurrencyPreferenceEntityTypeConfiguration());
 
-
-
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ObjectStateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ObjectStateEntityTypeConfiguration());
             //  modelBuilder.Configurations.Add(new ReligionEntityTypeConfiguration());
             //   modelBuilder.Configurations.Add(new ValueFactorDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ValueFactorEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SalesQuoteVoucherEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CartTransactionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.StoreEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ValueFactorEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesQuoteVoucherEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CartTransactionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StoreEntityTypeConfiguration());
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CartEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.OrganizationCustomerEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.OrganizationCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ThingCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.PersonCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ProductEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ObjectStateDefinitionEntityTypeConfiguration());
-
-
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.NonCashTransactionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.LifeSpanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CommunicationSourceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SalesOrderVoucherEntityTypeConfiguration());
-
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CampaignEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CashSalesInvoiceEntityTypeConfiguration());
-
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CustomerTicketEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TicketActivityDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TicketAssignmentEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TicketRoleEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.RoleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CartEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.OrganizationCustomerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.OrganizationCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ThingCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PersonCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ProductEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ObjectStateDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ProductUnitConvertorSetupEntityTypeConfiguration());
 
 
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.BankAccountDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.SpecificationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.CreditSalesInvoiceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ObjectAccountRequirementEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.ThingCategoryDefaultAccountEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.NonCashTransactionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.LifeSpanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CommunicationSourceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesOrderVoucherEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CampaignEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CashSalesInvoiceEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMDepositEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMDepositLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMDepositValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMDepositDistributionEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CustomerTicketEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TicketActivityDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TicketAssignmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TicketRoleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.RoleEntityTypeConfiguration());
 
 
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.BankAccountDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SpecificationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CreditSalesInvoiceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ObjectAccountRequirementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ThingCategoryDefaultAccountEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMPeriodEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesShipmentEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesShipmentLineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesShipmentDistributionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesShipmentValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesPersonAssignmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QuotationTermEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesQuoteVoucherValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesQuoteVoucherFirstValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesQuoteVoucherSecondValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesOrderVoucherValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PaymentScheduleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.VoucherContractDocumentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CashSalesInvoiceValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PosSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AnnualSalesPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.BranchAnnualSalesPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StoreAnnualSalesPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.StoreMonthlySalesPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AnnualSalesPlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMDashboardTodateSalesDataEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CRMDashboardTodateSalesBranchDataEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEstimationQuoteVoucherEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEstimationQuoteVoucherLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEstimationQuoteVoucherServiceEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEstimationQuoteVoucherFirstValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEstimationQuoteVoucherSecondValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.PriceEstimationQuoteVoucherValidationEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QueueTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.InvestmentTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.LocationMapEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.LocationUserAssignmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QueueCustomerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QueueEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QueueStatusEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QueueValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.QueueStatusValidationEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TenderFollowupEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TenderFollowupLineItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ProductPriceLogEntityTypeConfiguration());
             #endregion
+
             #region Construction
             modelBuilder.Configurations.Add(new ProjectDefinationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProjectCalanderEntityTypeConfiguration());
@@ -2541,16 +2586,18 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<AdvancePaymentLine> AdvancePaymentLines { get; set; }
 
         public DbSet<VoucherTerm> VoucherTerms { get; set; }
-        //public DbSet<Tax> Taxs { get; set; }
+        public DbSet<ExceedERP.Core.Domain.CRM.Tax> Taxs { get; set; }
         public DbSet<TaxTransaction> TaxTransactions { get; set; }
         public DbSet<Price> Prices { get; set; }
-
         public DbSet<LineItem> LineItems { get; set; }
         public DbSet<CreditSetting> CreditSettings { get; set; }
         public DbSet<CreditSettlement> CreditSettlement { get; set; }
+        public DbSet<CreditSettlementValidation> CreditSettlementValidation { get; set; }
+        public DbSet<CreditSettlementDistribution> CreditSettlementDistribution { get; set; }
         public DbSet<LineCreditSettlement> LineCreditSettlements { get; set; }
         public DbSet<IssueHistory> IssueHistorys { get; set; }
         public DbSet<AdditionalCostLog> AdditionalCostLogs { get; set; }
+        public DbSet<CommissionLineItem> CommissionLineItems { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<LifeTime> LifeTimes { get; set; }
         public DbSet<ActivityDefinition> ActivityDefinitions { get; set; }
@@ -2603,6 +2650,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ObjectStateDefinition> ObjectStateDefinitions { get; set; }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductUnitConvertorSetup> ProductUnitConvertorSetup { get; set; }
 
         public DbSet<PersonCategory> PersonCategories { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
@@ -2611,9 +2659,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<OrganizationCustomer> OrganizationCustomers { get; set; }
         public DbSet<Cart> Carts { get; set; }
 
-
         public DbSet<Store> Stores { get; set; }
-
 
         public DbSet<CustomerTicket> CustomerTickets { get; set; }
 
@@ -2627,6 +2673,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<CreditSalesInvoice> CreditSalesInvoices { get; set; }
         public DbSet<CashSalesInvoice> CashSalesInvoices { get; set; }
 
+        public DbSet<CRMDeposit> CRMDeposit { get; set; }
+        public DbSet<CRMDepositLine> CRMDepositLine { get; set; }
+        public DbSet<CRMDepositValidation> CRMDepositValidation { get; set; }
+        public DbSet<CRMDepositDistribution> CRMDepositDistribution { get; set; }
 
         public DbSet<MailModel> MailModels { get; set; }
         public DbSet<Variety> Varietys { get; set; }
@@ -2637,7 +2687,6 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Campaign> Campaigns { get; set; }
 
         public DbSet<Role> Roles { get; set; }
-
 
 
         public DbSet<Specification> Specifications { get; set; }
@@ -2670,9 +2719,54 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<PriorityType> PriorityTypes { get; set; }
         public DbSet<AssignTicket> AssignTickets { get; set; }
+        public DbSet<CRMPeriod> CRMPeriods { get; set; }
+        public DbSet<SalesShipment> SalesShipments { get; set; }
+        public DbSet<SalesShipmentLineItem> SalesShipmentLineItem { get; set; }
+        public DbSet<SalesShipmentDistribution> SalesShipmentDistribution { get; set; }
+        public DbSet<SalesShipmentValidation> SalesShipmentValidation { get; set; }
+        public DbSet<SalesPersonAssignment> SalesPersonAssignments { get; set; }
+        public DbSet<QuotationTerm> QuotationTerms { get; set; }
+
+        public DbSet<SalesQuoteVoucherValidation> SalesQuoteVoucherValidation { get; set; }
+        public DbSet<SalesQuoteVoucherFirstValidation> SalesQuoteVoucherFirstValidation { get; set; }
+        public DbSet<SalesQuoteVoucherSecondValidation> SalesQuoteVoucherSecondValidation { get; set; }
+        public DbSet<SalesOrderVoucherValidation> SalesOrderVoucherValidation { get; set; }
+        public DbSet<PaymentSchedule> PaymentSchedule { get; set; }
+        public DbSet<VoucherContractDocument> VoucherContractDocument { get; set; }
+        public DbSet<CashSalesInvoiceValidation> CashSalesInvoiceValidation { get; set; }
+        public DbSet<PosSetting> PosSetting { get; set; }
+        public DbSet<TenderFollowup> TenderFollowup { get; set; }
+        public DbSet<TenderFollowupLineItem> TenderFollowupLineItem { get; set; }
+
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.AnnualSalesPlan> AnnualSalesPlans { get; set; }
+
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.BranchAnnualSalesPlan> BranchAnnualSalesPlans { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.StoreAnnualSalesPlan> StoreAnnualSalesPlans { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.StoreMonthlySalesPlan> StoreMonthlySalesPlans { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.AnnualSalesPlanValidation> AnnualSalesPlanValidation { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.CRMDashboardTodateSalesData> CRMDashboardTodateSalesData { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.CRMDashboardTodateSalesBranchData> CRMDashboardTodateSalesBranchData { get; set; }
+
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucher> PriceEstimationQuoteVouchers { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucherLine> PriceEstimationQuoteVoucherLines { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucherService> PriceEstimationQuoteVoucherServices { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucherFirstValidation> PriceEstimationQuoteVoucherFirstValidation { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucherSecondValidation> PriceEstimationQuoteVoucherSecondValidation { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.PriceEstimationQuoteVoucherValidation> PriceEstimationQuoteVoucherValidation { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.CRM.ProductPriceLog> ProductPriceLog { get; set; }
 
 
+        public DbSet<QueueType> QueueTypes { get; set; }
+        public DbSet<InvestmentType> InvestmentTypes { get; set; }
+        public DbSet<LocationMap> LocationMap { get; set; }
+        public DbSet<LocationUserAssignment> LocationUserAssignment { get; set; }
+        public DbSet<QueueCustomer> QueueCustomer { get; set; }
+        public DbSet<Queue> Queue { get; set; }
+        public DbSet<QueueStatus> QueueStatus { get; set; }
+        public DbSet<QueueValidation> QueueValidation { get; set; }
+        public DbSet<QueueStatusValidation> QueueStatusValidation { get; set; }
         #endregion
+
         #region Budget
 
         public DbSet<BudgetType> BudgetTypes { get; set; }

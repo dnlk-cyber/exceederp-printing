@@ -1,0 +1,98 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Sales Person Assignment</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesPersonAssignment>()
+                          .Name("assignmentGrid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.UserName).EditorTemplateName("UserSelector").ClientTemplate(
+                                  "<strong> #=FullName#</strong> <br /> @<i style=''>#=UserName#</i>"
+                                  );
+                              columns.ForeignKey(c =>
+                                c.SalesStoreId, (IEnumerable)ViewData["Shops"], "SalesStoreId", "Description")
+                                .EditorTemplateName("StoresAndShopsSelector")
+                                .Filterable(f =>
+                                {
+                                    f.Multi(true);
+                                    f.Search(true);
+
+                                });
+                              columns.Group(group =>
+                              {
+                                  group.HeaderHtmlAttributes(new { style = "text-align:center" });
+                                  group.Title("Receive Methods");
+                                  group.Columns(innerColumns =>
+                                  {
+                                      innerColumns.ForeignKey(c => c.PaymentMethodId, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method")
+                                      .EditorTemplateName("RecieveMethodType")
+                                      .Title("Bank")
+                                      .Filterable(f =>
+                                      {
+                                          f.Multi(true);
+                                          f.Search(true);
+                                      });
+                                      innerColumns.ForeignKey(c => c.CashOnHandPaymentMethodId, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method")
+                                      .EditorTemplateName("RecieveMethodType")
+                                      .Title("Cash on Hand")
+                                      .Filterable(f =>
+                                      {
+                                          f.Multi(true);
+                                          f.Search(true);
+                                      });
+                                  });
+                              });
+                              
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Resources").Window(window => { window.Title("Resource"); window.Scrollable(false); }))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                        .Scrollable(h => h.Height(500))
+                        //.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Filterable()
+                        .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .PageSize(20)
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"assignmentGrid\")");
+                                  events.RequestStart("onRequestStart(\"assignmentGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"assignmentGrid\")");
+
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(diam => diam.SalesPersonAssignmentId);
+                              })
+                              .Read(read => read.Action("Assignments_Read", "SalesPersonAssignment"))
+                              .Create(create => create.Action("Assignment_Create", "SalesPersonAssignment"))
+                              .Update(update => update.Action("Assignment_Update", "SalesPersonAssignment"))
+                              .Destroy(destroy => destroy.Action("Assignment_Destroy", "SalesPersonAssignment"))
+                          )
+)

@@ -1,0 +1,17 @@
+﻿@(Html.Kendo()
+    .DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .DataTextField("TaxName")
+    .DataValueField("GLTaxRateID")
+    .OptionLabel(" Select ")
+    .DataSource(datasource =>
+    {
+        datasource.Read(read =>
+        {
+            read.Action("GetGlTaxRates", "CRMDataProvider", new { area = "CRM"});
+        })
+        .ServerFiltering(false);
+    })
+    .ValuePrimitive(true)
+    )
+

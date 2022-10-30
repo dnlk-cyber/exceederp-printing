@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+        .ValuePrimitive(true)
+        .OptionLabel("Select Branch...")
+        .DataTextField("Name")
+        .DataValueField("BranchId")
+        .Filter("contains")
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetBranches", "CRMDataProvider", new { area = "CRM" }))
+            .ServerFiltering(false);
+        })
+
+)
+@Html.ValidationMessageFor(m => m)

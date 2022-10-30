@@ -143,8 +143,13 @@
     <Compile Include="CRM\CRMDistributionHelper.cs" />
     <Compile Include="CRM\CRMDynamicDistributionHelper.cs" />
     <Compile Include="CRM\CRMGenericHelper.cs" />
+    <Compile Include="CRM\CRMMaintenanceIntegrationHelper.cs" />
+    <Compile Include="CRM\CRMPaymentDistibutionHelper.cs" />
     <Compile Include="CRM\CRMPOSHelper.cs" />
+    <Compile Include="CRM\CRMSalesHelper.cs" />
+    <Compile Include="CRM\CRMSalesPlanHelper.cs" />
     <Compile Include="CRM\CRMStaticDistributionHelper.cs" />
+    <Compile Include="CRM\CRMTransferHelper.cs" />
     <Compile Include="Finance\FinanceDistributionHelper.cs" />
     <Compile Include="Finance\DynamicAccountHelper.cs" />
     <Compile Include="Finance\Encrypt.cs" />

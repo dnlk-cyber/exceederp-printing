@@ -1,4 +1,4 @@
-﻿<legend> Organization Customer </legend>
+﻿<legend>Customer </legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.OrganizationCustomer>()
           .Name("OrganizationCustomerGrid")
       .Columns(columns =>
@@ -11,9 +11,9 @@
           columns.ForeignKey(c => c.Category, (System.Collections.IEnumerable)ViewData["OrganizationCategory"], "OrganizationCategoryID", "Description").EditorTemplateName("OrganizationCategory").Width(100);
           columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active").Width(100);
           columns.Bound(c => c.IsCredit).Width(105).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsCredit #' " + " # if (IsCredit) { #" + "checked='checked'" + "# } #" + " />").Title("Is Credit").Width(100);
-       
-          
-          
+
+
+
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar =>
@@ -21,19 +21,19 @@
           toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .HtmlAttributes(new { style = "height: 520px;" })
-                                  .Pageable(pageable => pageable
-                                                    .Input(true)
-                                                    .Numeric(false)
-                                                    .Refresh(true)
-                                                    .PageSizes(true)
-                                                    .ButtonCount(5))
+      .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
 
-                                        .Scrollable()
-                                        .Sortable()
-                                        .Filterable()
-                                        .Groupable()
-                                        .Scrollable(h => h.Height(500))
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            //.Groupable()
+            .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
               .Model(model => model.Id(p => p.OrganizationCustomerID)).Events(ev => ev
@@ -59,7 +59,7 @@
          //**************************************Beginnings************************************************//
          items.Add().Text("Beginning").Content(
             @<text>
-                <legend>Beginning</legend>
+                @*<legend>Beginning</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
                       .Name("BeginningGrid_#=OrganizationCustomerID#")
       .Columns(columns =>
@@ -94,7 +94,7 @@
          //**************************************Account Map************************************************//
          items.Add().Text("Account Map").Content(
             @<text>
-                <legend>Account Map</legend>
+                @*<legend>Account Map</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
                               .Name("AccountMapGrid_#=OrganizationCustomerID#")
                       .Columns(columns =>
@@ -133,7 +133,7 @@
          //*********************************Addresse***********************************************************//
          items.Add().Text("Addresse").Content(
             @<text>
-                <legend>Addresse</legend>
+                @*<legend>Addresse</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Address>()
               .Name("AddresseGrid_#=OrganizationCustomerID#")
       .Columns(columns =>
@@ -201,7 +201,7 @@
          //*********************************Industry Involvement*************************************************//
          items.Add().Text("Industry Involvement").Content(
             @<text>
-                <legend>Industry Involvement</legend>
+                @*<legend>Industry Involvement</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.IndustryInvolved>()
                       .Name("IndustryInvolvementGrid_#=OrganizationCustomerID#")
       .Columns(columns =>
@@ -236,7 +236,7 @@
     
        items.Add().Text("Credit Setting").Content(
             @<text>
-                <legend>Credit Setting</legend>
+                @*<legend>Credit Setting</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CreditSetting>()
                                                              .Name("CreditSetting_#=OrganizationCustomerID#")
              .Columns(columns =>
@@ -278,7 +278,7 @@
 
        items.Add().Text("Tin Number").Content(
         @<text>
-            <legend>Tin Number</legend>
+            @*<legend>Tin Number</legend>*@
             @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.BindingModel>()
                                                                      .Name("TinNo_#=OrganizationCustomerID#")
              .Columns(columns =>

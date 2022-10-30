@@ -1,0 +1,15 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .DataTextField("QuotationInDays")
+    .DataValueField("QuotationTermId")
+    .DataSource(d =>
+    {
+        d.Read(r =>
+        {
+            r.Action("GetQuotationTerms", "CRMDataProvider", new { area = "CRM" });
+        })
+            .ServerFiltering(false);
+    })
+    .ValuePrimitive(true)
+    )

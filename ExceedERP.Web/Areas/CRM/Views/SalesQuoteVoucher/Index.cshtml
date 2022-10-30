@@ -1,81 +1,138 @@
-﻿@model  ExceedERP.Core.Domain.CRM.SalesQuoteVoucherView
-
-
-
+﻿@using ExceedERP.Core.Domain.CRM
+@model  ExceedERP.Core.Domain.CRM.SalesQuoteVoucherView
 <style>
-
-
-
-
     .k-grid table tr.k-state-Issued {
         background: #b7ff9e;
         color: #040000;
     }
-
-
+    .k-grid table tr.k-state-first-approved {
+        background: #99e6ff;
+        color: #040000;
+    }
+    .k-grid table tr.k-state-second-approved {
+        background: #99c2ff;
+        color: #040000;
+    }
+    .k-grid table tr.k-state-waiting-approval {
+        background: #ffffcc;
+        color: #040000;
+    }
     .k-grid table tr.k-state-Rejected {
         background: #fcabab;
         color: #040000;
     }
-</style>
+    fieldset.scheduler-border {
+        border: 1px ridge #e6e6e6 !important;
+        /*border: 1px ridge #e88686 !important;*/
+        padding: 0 1.4em 1.4em 1.4em !important;
+        margin: 0 0 1.5em 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0.5px 0.5px 0px 0px #ccc;
+    }
 
+    legend.scheduler-border {
+        font-size: 1.2em !important;
+        font-weight: bold !important;
+        text-align: left !important;
+        /*padding: 0 10px;*/ /* To give a bit of padding on the left and right */
+        border-bottom: none;
+    }
+</style>
 
 <legend>Sales Quote Voucher</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherView>()
-              .Name("SalesQuoteVoucher")
+          .Name("SalesQuoteVoucher")
           .Columns(columns =>
           {
               columns.Bound(c => c.SalesQuoteVoucherID).Title(" # ").Width(80);
+              columns.Bound(c => c.JobOrderNumber).Title("JO # ").Width(80);
               columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("OrgCustomerEditor").Width(100);
-
+              columns.Bound(c => c.PlateNo).Width(80);
+              columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(100);
+              columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(100);
+              columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").EditorTemplateName("OpenCRMPeriodsSelector").Width(100);
               columns.Bound(c => c.Date).Width(100).EditorTemplateName("Date");
               columns.Bound(c => c.PaymentMethod).Title("Payment Method").EditorTemplateName("PaymentMethodType").Width(100);
-              columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(100);
+              columns.ForeignKey(c => c.QuotationTermId, (System.Collections.IEnumerable)ViewData["QuotationTerms"], "QuotationTermId", "QuotationInDays").EditorTemplateName("QuotationTermEditor").Width(100);
+              columns.ForeignKey(c => c.BankAccountId, (System.Collections.IEnumerable)ViewData["BankAccounts"], "BankAccountId", "AccountName").Width(100)/*.EditorTemplateName("CompanyBankAccountEditorTemplate")*/;
+              columns.Bound(c => c.DueDate).Width(100).EditorTemplateName("Date");
+              columns.Bound(c => c.GrandTotal).Format("{0:N4}").Width(100);
+              columns.Bound(c => c.CreatedBy).Width(80);
               columns.Bound(c => c.Status).Width(80);
+              columns.Bound(c => c.Remark).Width(100);
 
               columns.Command(command =>
               {
                   command.Edit();
-
-                  command.Destroy().Text("Forward");
-
-              }).Width(180);
-
-
+                  //command.Destroy();
+              }).Width(200);
           })
           .Selectable()
           .Scrollable(s => s.Height(500))
           .ToolBar(toolbar =>
           {
-              toolbar.Create();
+              //toolbar.Create();
+              //toolbar.Excel();
+              toolbar.Template(@<text>
+                    <div class="toolbar">
+
+                        <button class="k-button k-button-icontext k-grid-add btn btn-primary" href='#'>
+                            <span class="k-icon k-i-add"></span>
+                            Add new Record
+                        </button> 
+                        &nbsp;
+                        <button class="k-button k-button-icontext k-grid-excel" href='#'>
+                            <span class="k-icon k-i-excel"></span>
+                            Export to Excel
+                        </button>
+                        &nbsp;
+                        @(Html.Kendo().Button()
+                            .Content("Generate from Job Order")
+                            .Name("GenerateFromJobOrder")
+                            .Icon("copy")
+                            .Events(e =>
+                            {
+                                e.Click("onGenerateSalesQuoteFromJobOrderClick");
+                            })
+                            //.HtmlAttributes(new { @onClick="onCheckBoxClick(this.checked)", @style="vertical-align:center;"})
+                            )
+
+                    </div>
+                </text>);
           })
           .Events(ev =>
-              {
-                  ev.DetailExpand("onDetailExpand");
-                  ev.DataBound("onDataBound");
+          {
+              ev.DetailExpand("onDetailExpandUser");
+              ev.DataBound("onDataBound");
 
-              })
+          })
           .Editable(editable =>
           {
-              editable.Mode(GridEditMode.InLine);
-              editable.DisplayDeleteConfirmation("Are You Sure To Forward Quote Voucher");
+              editable.Mode(GridEditMode.PopUp);
+              editable.TemplateName("SaleQuoteEditor");
+              editable.Window(w =>
+              {
+                  w.Scrollable(false);
+                  w.Title("Sales Quote Voucher");
+              });
+              //editable.DisplayDeleteConfirmation("Are You Sure To Forward Quote Voucher");
           }
-              ).HtmlAttributes(new { style = "height: 520px;" })
-                              .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
+              )
+              .HtmlAttributes(new { style = "height: 700px;" })
+                .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
 
-                                    .Scrollable()
-                                    .Sortable()
-                                    .Filterable()
-                                     .Scrollable(h => h.Height(500))
-             .Events(ev => ev.DetailExpand("onDetailExpandUser"))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                .Scrollable(h => h.Height(500))
           .DataSource(dataSource => dataSource
                   .Ajax()
-                      .Sort(x => x.Add(s => s.SalesQuoteVoucherID).Descending())
+                  .Sort(x => x.Add(s => s.SalesQuoteVoucherID).Descending())
               .Model(model =>
               {
                   model.Id(p => p.SalesQuoteVoucherID);
@@ -84,294 +141,250 @@
                   model.Field(v => v.AdditionalCharge).Editable(false);
                   model.Field(v => v.Discount).Editable(false);
                   model.Field(v => v.Status).Editable(false);
+                  model.Field(f => f.DueDate).Editable(false);
+                  model.Field(f => f.CreatedBy).Editable(false);
 
                   model.Field(v => v.SubTotal).Editable(false);
               }
                   ).Events(ev => ev
-                                                                    .Error("error_handler(\"SalesQuoteVoucher\")")
-                                                                 .RequestStart("onRequestStart(\"SalesQuoteVoucher\")")
-                                                               .RequestEnd("onRequestEnd(\"SalesQuoteVoucher\")"))
+                            .Error("error_handler(\"SalesQuoteVoucher\")")
+                            .RequestStart("onRequestStart(\"SalesQuoteVoucher\")")
+                            .RequestEnd("onRequestEnd(\"SalesQuoteVoucher\")"))
 
-
-                          .Read(read => read.Action("Vouchers_Read", "SalesQuoteVoucher"))
-              .Create(create => create.Action("Vouchers_Create", "SalesQuoteVoucher"))
-              .Update(update => update.Action("Vouchers_Update", "SalesQuoteVoucher"))
-                  .Destroy(distroy => distroy.Action("ForwardSalseQuoteVoucher", "SalesQuoteVoucher"))
+                .Read(read => read.Action("Vouchers_Read", "SalesQuoteVoucher"))
+                .Create(create => create.Action("Vouchers_Create", "SalesQuoteVoucher"))
+                .Update(update => update.Action("Vouchers_Update", "SalesQuoteVoucher"))
+                .Destroy(distroy => distroy.Action("Vouchers_Delete", "SalesQuoteVoucher"))
           ).ClientDetailTemplateId("template")
 )
 
 
 <script id="template" type="text/kendo-tmpl">
-
+    #if(Source==0){#
     @(Html.Kendo().TabStrip()
-                            .Name("tabstrip_#=SalesQuoteVoucherID#")
-            .SelectedIndex(0)
-            .Items(items =>
+        .Name("tabstrip_#=SalesQuoteVoucherID#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail").Content(
+            @<text>
+                #if (!IsMiddleOnlineApproved && !IsMiddleSendForApproval){#
+                    <a onclick='return sendForFirstApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 1st Approval"><i class="fa fa-share-square fa-2x text-info"></i></a>
+                #}#
+                #if (!IsOnlineApproved&&!IsSendForApproval && IsMiddleOnlineApproved){#
+                    <a onclick='return sendForApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                #}#
+                <a href='@Url.Action("QuotePrint", "Print")/#=SalesQuoteVoucherID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                &nbsp;
+                # if (IsOnlineApproved  || IsMiddleOnlineApproved || IsSecondOnlineApproved)
+                {#
+                    @if (HttpContext.Current.User.IsInRole(CRMRoles.CRMVoid))
+                    {
+                        <a onclick='return voidRecord("#=SalesQuoteVoucherID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                    }
+                # } #
+                @(Html.Kendo().PanelBar()
+                        .Name("panelbar_#=SalesQuoteVoucherID#")
+                        .ExpandMode(PanelBarExpandMode.Multiple)
+                        .Items(panelbar =>
                         {
+                                    panelbar.Add()
+                                        .Expanded(true)
+                                        .Text("Quote Detail")
+                                        .Content(
+                                            "<div>" +
+                                            "<ul>" +
+                                            "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                            "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                            "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                            "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                            "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                            "</ul>" +
+                                            "</div>"
+                                        );
+                                }).ToClientTemplate()
+                    )
+                </text>
+            );
+        items.Add().Text("Line Items").Content(
+            @<text>
+                #if(!IsOnlineApproved && !IsSendForApproval){#
+                    @SalesQuoteLineItemHelperCrud()
+                #}else{#
+                    @SalesQuoteLineItemHelper()
+                #}#
+            </text>);
+        items.Add().Text("Services").Content(
+            @<text>
+                #if(!IsOnlineApproved && !IsSendForApproval){#
+                    @ServiceLineItemHelperWithCrud()
+                #}else{#
+                    @ServiceLineItemHelper()
+                #}#
+            </text>);
+        items.Add().Text("Commission Line Items").Content(
+            @<text>
+                #if(!IsOnlineApproved && !IsSendForApproval){#
+                    @CommissionHelperWithCrud()
+                #}else{#
+                    @CommissionHelper()
+                #}#
+            </text>);
+        items.Add().Text("Additional Cost").Content(
+            @<text>
+                #if(!IsOnlineApproved && !IsSendForApproval){#
+                    @AdditionHelperWithCrud()
+                #}else{#
+                    @AdditionHelper()
+                #}#
+            </text>);
+        items.Add().Text("1st Validation").Content(
+            @<text>
+                #if(IsMiddleSendForApproval && !IsMiddleOnlineApproved && !IsOnlineApproved && !IsSendForApproval){#
+                    @FirstValidationHelperWithCrud()
+                #}else{#
+                    @FirstValidationHelper()
+                #}#
+            </text>
+        );
+        items.Add().Text("Final Validation").Content(
+            @<text>
+                #if(!IsOnlineApproved && IsSendForApproval){#
+                    @ValidationHelperWithCrud()
+                #}else{#
+                    @ValidationHelper()
+                #}#
+            </text>
+        );
+        }).ToClientTemplate()
+    )
+    #}else {#
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=SalesQuoteVoucherID#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail").Content(
+            @<text>
+                #if (!IsMiddleOnlineApproved && !IsMiddleSendForApproval){#
+                    <a onclick='return sendForFirstApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 1st Approval"><i class="fa fa-share-square fa-2x text-info"></i></a>
+                #}#
+                #if (IsMiddleOnlineApproved&& !IsSecondOnlineApproved && !IsSecondSendForApproval && !IsOnlineApproved && !IsSendForApproval){#
+                    <a onclick='return sendForSecondApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 2nd Approval"><i class="fa fa-share-square fa-2x text-danger"></i></a>
+                #}#
+                 #if (IsSecondOnlineApproved  && !IsOnlineApproved && !IsSendForApproval){#
+                    <a onclick='return sendForApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 3rd Approval"><i class="fa fa-share-square fa-2x text-success"></i></a>
+                #}#
+                <a href='@Url.Action("QuotePrint", "Print")/#=SalesQuoteVoucherID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                &nbsp;
+                # if (IsOnlineApproved  || IsMiddleOnlineApproved || IsSecondOnlineApproved)
+                {#
+                    @if (HttpContext.Current.User.IsInRole(CRMRoles.CRMVoid))
+                    {
+                        <a onclick='return voidRecord("#=SalesQuoteVoucherID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                    }
+                # } #
 
-                /***********************************************Detail*******************************************/
-
-                            items.Add().Text("Detail").Content(
-                                @<text>
-                                    <legend>Detail</legend>
-
-                                    <div class="box">
-
-                                        <div class="box-col">
-
-                                            <a href='@Url.Action("QuotePrint", "Print")/#=SalesQuoteVoucherID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-
-                                        </div>
-
-
-
-                                    </div>
-                                    <legend>  Sales Quote</legend>
-                                    <div class="demo-section k-header export-app">
-                                        <div class="demo-section content-wrapper">
-
-                                            <form>
-
-
-
-                                                <div class="row">
-                                                    <div class="col-md-1">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <div class="form-group">
-                                                            <div class="label">
-                                                                @Html.LabelFor(model => model.CreatedBy)
-                                                            </div>
-                                                            <div>
-                                                                #=CreatedBy#
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <div class="form-group">
-                                                            <div class="label">
-                                                                @Html.LabelFor(model => model.DateCreated)
-                                                            </div>
-                                                            <div>
-                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <div class="label">
-                                                                @Html.LabelFor(model => model.ModifiedBy)
-                                                            </div>
-                                                            <div>
-
-                                                                #=ModifiedBy#
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <div class="form-group">
-                                                            <div class="label">
-                                                                @Html.LabelFor(model => model.LastModified)
-                                                            </div>
-                                                            <div>
-                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-1">
-                                                    </div>
-                                                    <div class="col-md-8">
-                                                        <div class="form-group">
-                                                            <div class="label">
-                                                                @Html.LabelFor(model => model.Remark)
-                                                            </div>
-                                                            <div>
-                                                                #=Remark#
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </form>
-
-                                        </div>
-                                    </div>
-
-
-
-                                </text>
-
-
-                            );
-                                    items.Add().Text("Line Items").Content(
-                                        @<text>
-
-                                            @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.LineItemViewModel>()
-                                                  .Name("LineItems_#=SalesQuoteVoucherID#")
-                                .Columns(columns =>
-                                {
-                                            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
-
-                                            columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
-                                //    columns.Bound(c => c.Variety).Width(80);
-                                // columns.Bound(c => c.Class).Width(50);
-
-                                columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N0}").Width(80);
-                                            columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N0}").Width(80);
-                                            columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N0}").Width(80);
-                                            columns.Bound(c => c.TaxAmount).Format("{0:N0}").Width(80);
-                                            columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N0}").Width(80);
-                                            columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
-                                            columns.Bound(c => c.Vat).Format("{0:N0}").Width(60);
-
-
-                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                        })
-                              .ToolBar(toolbar =>
-                              {
-                                          toolbar.Create();
-                                      })
-                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LineitemEditorTemplate").Window(w =>
-                          {
-                                      w.Title("Line Item");
-                                      w.Scrollable(false);
-                                  }))
-                                 .HtmlAttributes(new { style = "height: 520px;" })
-                                                      .Pageable(pageable => pageable
-                                                                        .Input(true)
-                                                                        .Numeric(false)
-                                                                        .Refresh(true)
-                                                                        .PageSizes(true)
-                                                                        .ButtonCount(5))
-
-                                                            .Scrollable()
-                                                            .Sortable()
-                                                            .Filterable()
-                                                             .Scrollable(h => h.Height(500)).Events(e => e.Edit("AddCostItemInit"))
-                        .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .ServerOperation(false)
-                               .Model(model =>
-                               {
-                                           model.Id(p => p.LineItemID);
-                                           model.Field(v => v.TotalAmount).Editable(false);
-                                           model.Field(v => v.TaxAmount).Editable(false);
-                                           model.Field(v => v.CalculatedCost).Editable(false);
-                                       }
-                                      ).Events(ev => ev
-                                                                                                                                                                                                                                                                                                                   .Error("error_handler(\"LineItems_#=SalesQuoteVoucherID#\")")
-                                                                                                                                                                                            .RequestStart("onRequestStart(\"LineItems_#=SalesQuoteVoucherID#\")")
-                                                                                                                                                                                            .RequestEnd("onRequestEnd(\"LineItems_#=SalesQuoteVoucherID#\")"))
-
-
-                                              .Read(read => read.Action("LineItems_Read", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
-                                                                      .Create(create => create.Action("LineItems_Create", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionIDCreate = "0" }))
-                                                            .Update(update => update.Action("LineItems_Update", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
-                                .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem"))
-                        ).ToClientTemplate()
-
-                                            )
-                                        </text>
-
-
-                                    );
-
-                                /***********************************************************************************************************/
-
-                                /***********************************************Voucher Terms*******************************************/
-                                            items.Add().Text("Voucher Terms").Content(
-                                                @<text>
-                                                    <legend>Voucher Terms</legend>
-                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherTerm>()
-                                                                      .Name("VoucherTerms_#=SalesQuoteVoucherID#")
-                                              .Columns(columns =>
-                                              {
-                                                          columns.Bound(c => c.TermID).EditorTemplateName("VoucherTermEditor").Width(200);
-                                                          columns.Bound(c => c.Value);
-                                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                      })
-                                              .ToolBar(toolbar =>
-                                              {
-                                                          toolbar.Create();
-                                                      })
-                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                              .Scrollable()
-                                              .DataSource(dataSource => dataSource
-                                                  .Ajax()
-                                                  .Model(model => model.Id(p => p.VoucherTermID))
-                                                          .Events(ev => ev
-                                                                                                        .Error("error_handler(\"VoucherTerms_#=SalesQuoteVoucherID#\")")
-                                                                                                     .RequestStart("onRequestStart(\"VoucherTerms_#=SalesQuoteVoucherID#\")")
-                                                                                                   .RequestEnd("onRequestEnd(\"VoucherTerms_#=SalesQuoteVoucherID#\")"))
-                                                                                  .Read(read => read.Action("VoucherTerms_Read", "VoucherTerm", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "1" }))
-                                                                          .Create(create => create.Action("VoucherTerms_Create", "VoucherTerm", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "1" }))
-                                                  .Update(update => update.Action("VoucherTerms_Update", "VoucherTerm"))
-                                                  .Destroy(destroy => destroy.Action("VoucherTerms_Destroy", "VoucherTerm"))
-                                              ).ToClientTemplate()
-                                                    )
-
-                                                </text>
-
-                                         );
-
-
-                                        /***********************************************VoucherExtensions*******************************************/
-                                        @*   items.Add().Text("Voucher Extensions").Content(
-                                                            @<text>
-                                                                <legend>Voucher Extensions</legend>
-                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherExtensionTransaction>()
-                                                                                                  .Name("VoucherExtension_#=SalesQuoteVoucherID#")
-                                            .Columns(columns =>
-                                                  {
-                                                      columns.Bound(c => c.Number);
-                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                  })
-                                                  .ToolBar(toolbar =>
-                                                  {
-                                                      toolbar.Create();
-                                                  })
-                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                  .Scrollable()
-                                                  .DataSource(dataSource => dataSource
-                                                      .Ajax()
-                                                      .Model(model => model.Id(p => p.VoucherExtensionTransactionID))
-                                                              .Events(ev => ev
-                                                                                                    .Error("error_handler(\"SalesOrderVoucher\")")
-                                                                                                 .RequestStart("onRequestStart(\"SalesOrderVoucher\")")
-                                                                                               .RequestEnd("onRequestEnd(\"SalesOrderVoucher\")"))
-                                                                                      .Read(read => read.Action("VoucherExtensionTransactions_Read", "VoucherExtensionTransaction", new { voucherID = "#=SalesQuoteVoucherID#" }))
-                                                                                      .Create(create => create.Action("VoucherExtensionTransactions_Create", "VoucherExtensionTransaction", new { voucherID = "#=SalesQuoteVoucherID#" }))
-                                                              .Update(update => update.Action("VoucherExtensionTransactions_Update", "VoucherExtensionTransaction"))
-                                                              .Destroy(destroy => destroy.Action("VoucherExtensionTransactions_Destroy", "VoucherExtensionTransaction"))
-                                                  ).ToClientTemplate()
-
-                                                                )
-                                                            </text>
-
-                                             );*@
-                                        /***********************************************************************************************************/
-
-
-
-                                                }).ToClientTemplate()
+                @(Html.Kendo().PanelBar()
+                        .Name("panelbar_#=SalesQuoteVoucherID#")
+                        .ExpandMode(PanelBarExpandMode.Multiple)
+                        //.HtmlAttributes(new { st})
+                        .Items(panelbar =>
+                        {
+                                    panelbar.Add()
+                                        .Expanded(true)
+                                        .Text("Quote Detail")
+                                        .Content(
+                                            "<div>" +
+                                            "<ul>" +
+                                            "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                            "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                            "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                            "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                            "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                            "</ul>" +
+                                            "</div>"
+                                        );
+                                }).ToClientTemplate()
+                    )
+                </text>
+            );
+        items.Add().Text("Line Items").Content(
+            @<text>
+                #if(!IsMiddleOnlineApproved && !IsMiddleSendForApproval &&!IsOnlineApproved && !IsSendForApproval){#
+                    @SalesQuoteLineItemHelperCrud()
+                #}else{#
+                    @SalesQuoteLineItemHelper()
+                #}#
+            </text>);
+        items.Add().Text("Services").Content(
+            @<text>
+                #if(!IsMiddleOnlineApproved && !IsMiddleSendForApproval &&!IsOnlineApproved && !IsSendForApproval){#
+                    @ServiceLineItemHelper()
+                #}else{#
+                    @ServiceLineItemHelper()
+                #}#  
+            </text>);
+        items.Add().Text("Commission Line Items").Content(
+            @<text>
+                #if(!IsMiddleOnlineApproved && !IsMiddleSendForApproval &&!IsOnlineApproved && !IsSendForApproval){#
+                    @CommissionHelperWithCrud()
+                #}else{#
+                    @CommissionHelper()
+                #}#
+            </text>);
+        items.Add().Text("Additional Cost").Content(
+            @<text>
+                #if(!IsMiddleOnlineApproved && !IsMiddleSendForApproval &&!IsOnlineApproved && !IsSendForApproval){#
+                    @AdditionHelperWithCrud()
+                #}else{#
+                    @AdditionHelper()
+                #}#
+            </text>);
+       
+        if (User.IsInRole(CRMRoles.SalesQuoteFirstApprover))
+        {
+            items.Add().Text("First Validation").Content(
+            @<text>
+                #if(IsMiddleSendForApproval && !IsMiddleOnlineApproved && !IsOnlineApproved && !IsSendForApproval){#
+                    @FirstValidationHelperWithCrud()
+                #}else{#
+                    @FirstValidationHelper()
+                #}#
+            </text>);
+        }
+        if (User.IsInRole(CRMRoles.SalesQuoteSecondApprover))
+        {
+            items.Add().Text("Second Validation").Content(
+            @<text>
+                #if(!IsSecondOnlineApproved && IsSecondSendForApproval && !IsOnlineApproved && !IsSendForApproval){#
+                    @SecondValidationHelperWithCrud()
+                #}else{#
+                    @SecondValidationHelper()
+                #}#
+            </text>);
+        }
+        if (User.IsInRole(CRMRoles.SalesQuoteApprover))
+        {
+            items.Add().Text("Third Validation").Content(
+            @<text>
+                #if(IsSecondOnlineApproved&& !IsOnlineApproved && IsSendForApproval){#
+                    @ValidationHelperWithCrud()
+                #}else{#
+                    @ValidationHelper()
+                #}#
+            </text>);
+        }
+        
+        }).ToClientTemplate()
 
     )
-
+    #}#
 </script>
 
 <style type="text/css">
     div.k-edit-form-container {
-        width: 1000px;
+        width: 850px;
     }
 
     .custom .k-grid-edit {
@@ -379,6 +392,768 @@
     }
 </style>
 <script>
+    @helper SalesQuoteLineItemHelperCrud()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.LineItemViewModel>()
+                .Name("LineItems_#=SalesQuoteVoucherID#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.ShipmentNumber).Title("Issue No.").Width(60);
+                    columns.Bound(c => c.StoreRequisitionNumber).Title("SR No.").Width(60);
+
+                    columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+                    columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                    columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.UOM).Width(60).Title("UoM");
+                    columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N4}").Width(80);
+                    columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+                    columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.Discount).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N4}").Width(80);
+                    columns.ForeignKey(c => c.WithholdingType, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(120);
+                    columns.Bound(c => c.WithholdingAmount).Width(100);
+                    columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+                    //columns.Bound(c => c.Vat).Format("{0:N2}").Width(60);
+                    columns.Bound(c => c.Status).Width(60);
+
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                        command.Destroy();
+                    }).Width(180);
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+                })
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LineitemEditorTemplate")
+                .Window(w =>
+                {
+                    w.Title("Line Item");
+                    w.Scrollable(false);
+                }))
+                //.HtmlAttributes(new { style = "height: 350px;" })
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                //.Scrollable(h => h.Height(500))
+                //.Events(e => e.Edit("AddCostItemInit"))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(false)
+                    .Model(model =>
+                    {
+                        model.Id(p => p.LineItemID);
+                        model.Field(v => v.TotalAmount).Editable(false);
+                        model.Field(v => v.TaxAmount).Editable(false);
+                        model.Field(v => v.CalculatedCost).Editable(false);
+                    })
+                    .Events(ev => ev
+                        .Error("error_handler(\"LineItems_#=SalesQuoteVoucherID#\")")
+                        .RequestStart("onRequestStart(\"LineItems_#=SalesQuoteVoucherID#\")")
+                        .RequestEnd("onRequestEnd(\"LineItems_#=SalesQuoteVoucherID#\")")
+                        )
+                    .Read(read => read.Action("LineItems_Read", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
+                    .Create(create => create.Action("LineItems_Create", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionIDCreate = "0" }))
+                    .Update(update => update.Action("LineItems_Update", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
+                    .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem")))
+                .ToClientTemplate()
+
+        )
+    }
+    @helper SalesQuoteLineItemHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.LineItemViewModel>()
+            .Name("LineItems_#=SalesQuoteVoucherID#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.ShipmentNumber).Title("Issue No.").Width(60);
+                columns.Bound(c => c.StoreRequisitionNumber).Title("SR No.").Width(60);
+                columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+                columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N4}").Width(80);
+                columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N4}").Width(80);
+                columns.Bound(c => c.UOM).Width(60).Title("UoM");
+                columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N4}").Width(80);
+                columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+                columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                columns.Bound(c => c.Discount).Format("{0:N4}").Width(80);
+                columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N4}").Width(80);
+                columns.ForeignKey(c => c.WithholdingType, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(120);
+                columns.Bound(c => c.WithholdingAmount).Width(100);
+                columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+                //columns.Bound(c => c.Vat).Format("{0:N2}").Width(60);
+                columns.Bound(c => c.Status).Width(60);
+            })
+            .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable()
+            //.Events(e => e.Edit("AddCostItemInit"))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .Model(model =>
+                {
+                    model.Id(p => p.LineItemID);
+                    model.Field(v => v.TotalAmount).Editable(false);
+                    model.Field(v => v.TaxAmount).Editable(false);
+                    model.Field(v => v.CalculatedCost).Editable(false);
+                })
+                .Events(ev => ev
+                    .Error("error_handler(\"LineItems_#=SalesQuoteVoucherID#\")")
+                    .RequestStart("onRequestStart(\"LineItems_#=SalesQuoteVoucherID#\")")
+                    .RequestEnd("onRequestEnd(\"LineItems_#=SalesQuoteVoucherID#\")")
+                    )
+                .Read(read => read.Action("LineItems_Read", "LineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
+                )
+            .ToClientTemplate()
+        )
+    }
+</script>
+<script>
+    @helper ServiceLineItemHelperWithCrud()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ServiceLineItem>()
+                    .Name("services_#=SalesQuoteVoucherID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.ServiceTypeCode).Width(60);
+                        columns.ForeignKey(c => c.ServiceTypeId, (System.Collections.IEnumerable)ViewData["RepairTypes"], "RepairTypeId", "Name").Width(120).EditorTemplateName("MaintenanceServiceTypeEditorTemplate");
+                        columns.Bound(c => c.UnitAmount).Format("{0:N4}").Width(80);
+                        columns.Bound(c => c.SubTotal).Title("Sub Total").Format("{0:N4}").Width(80);
+                        columns.ForeignKey(c => c.TaxTypeId, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80).EditorTemplateName("GlTaxTypeSelector");
+                        columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                        columns.ForeignKey(c => c.WithholdingTypeId, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(80).EditorTemplateName("GlTaxTypeSelector");
+                        columns.Bound(c => c.WithholdingAmount).Title("Withholding Amount").Format("{0:N4}").Width(80);
+                        columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+                        columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N4}").Width(80);
+
+                        columns.Command(command =>
+                        {
+                            command.Edit();
+                            command.Destroy();
+                        }).Width(180);
+                    })
+                    //.ToolBar(toolbar =>
+                    //{
+                    //    toolbar.Create();
+                    //})
+                    //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ServiceLineitemEditorTemplate")
+                    //.Window(w =>
+                    //{
+                    //    w.Title("Line Item");
+                    //    w.Scrollable(false);
+                    //}))
+                    //.HtmlAttributes(new { style = "height: 350px;" })
+                    .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+
+                    .Scrollable()
+                    .Sortable()
+                    .Filterable()
+
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Model(model =>
+                        {
+                            model.Id(p => p.ServiceLineItemId);
+                            model.Field(v => v.TotalAmount).Editable(false);
+                            model.Field(v => v.TaxAmount).Editable(false);
+                            model.Field(v => v.SubTotal).Editable(false);
+                            model.Field(v => v.ServiceTypeCode).Editable(false);
+                            model.Field(v => v.ServiceTypeId).Editable(false);
+                            //model.Field(v => v.UnitAmount).Editable(false);
+                            model.Field(v => v.WithholdingAmount).Editable(false);
+                        })
+                        .Events(ev => ev
+                            .Error("error_handler(\"services_#=SalesQuoteVoucherID#\")")
+                            .RequestStart("onRequestStart(\"services_#=SalesQuoteVoucherID#\")")
+                            .RequestEnd("onRequestEnd(\"services_#=SalesQuoteVoucherID#\")")
+                            )
+                        .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
+                        .Create(create => create.Action("ServiceLineItems_Create", "ServiceLineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
+                        .Update(update => update.Action("ServiceLineItems_Update", "ServiceLineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
+                        .Destroy(destroy => destroy.Action("ServiceLineItems_Destroy", "ServiceLineItem")))
+                    .ToClientTemplate()
+
+        )
+    }
+    @helper ServiceLineItemHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ServiceLineItem>()
+            .Name("services_#=SalesQuoteVoucherID#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.ServiceTypeCode).Width(60);
+                columns.ForeignKey(c => c.ServiceTypeId, (System.Collections.IEnumerable)ViewData["RepairTypes"], "RepairTypeId", "Name").Width(120).EditorTemplateName("MaintenanceServiceTypeEditorTemplate");
+                columns.Bound(c => c.UnitAmount).Format("{0:N4}").Width(80);
+                columns.Bound(c => c.SubTotal).Title("Sub Total").Format("{0:N4}").Width(80);
+                columns.ForeignKey(c => c.TaxTypeId, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80).EditorTemplateName("GlTaxTypeSelector");
+                columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                columns.ForeignKey(c => c.WithholdingTypeId, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(80).EditorTemplateName("GlTaxTypeSelector");
+                columns.Bound(c => c.WithholdingAmount).Title("Withholding Amount").Format("{0:N4}").Width(80);
+                columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+                columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N4}").Width(80);
+            })
+            .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .Model(model =>
+                {
+                    model.Id(p => p.ServiceLineItemId);
+                })
+                .Events(ev => ev
+                    .Error("error_handler(\"services_#=SalesQuoteVoucherID#\")")
+                    .RequestStart("onRequestStart(\"services_#=SalesQuoteVoucherID#\")")
+                    .RequestEnd("onRequestEnd(\"services_#=SalesQuoteVoucherID#\")")
+                    )
+                .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new { voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
+                )
+            .ToClientTemplate()
+        )
+    }
+</script>
+<script>
+    @helper CommissionHelperWithCrud() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CommissionLineItem>()
+                    .Name("commission_#=SalesQuoteVoucherID#")
+                    .Columns(columns =>
+                    {
+                                columns.Bound(c => c.Reason);
+                                columns.Bound(c => c.CostAmount);
+                                columns.ForeignKey(c => c.GLTaxRateID, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").EditorTemplateName("GlTaxTypeSelector");
+                                columns.Bound(c => c.TaxAmount);
+                                columns.Bound(c => c.TotalAmount);
+                                columns.Command(command =>
+                                {
+                                    command.Edit();
+                                    command.Destroy();
+                                }).Width(180);
+                            })
+                    .ToolBar(toolbar =>
+                    {
+                                toolbar.Create();
+                            })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Model(m =>
+                            {
+                                m.Id(f => f.CommissionLineItemId);
+                                m.Field(f => f.TaxAmount).Editable(false);
+                                m.Field(f => f.TotalAmount).Editable(false);
+                            })
+                    .Events(ev => ev
+                        .Error("error_handler(\"commission_#=SalesQuoteVoucherID#\")")
+                        .RequestStart("onRequestStart(\"commission_#=SalesQuoteVoucherID#\")")
+                        .RequestEnd("onRequestEnd(\"commission_#=SalesQuoteVoucherID#\")")
+                        )
+
+                    .Read(read => read.Action("LineItems_Read", "CommissionLineItem", new { voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+                    .Create(create => create.Action("LineItem_Create", "CommissionLineItem", new { voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+                    .Update(update => update.Action("LineItem_Update", "CommissionLineItem"))
+                    .Destroy(destroy => destroy.Action("LineItem_Destroy", "CommissionLineItem"))
+                    ).ToClientTemplate()
+                )
+    }
+    @helper CommissionHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CommissionLineItem>()
+                    .Name("commission_#=SalesQuoteVoucherID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Reason);
+                        columns.Bound(c => c.CostAmount);
+                        columns.ForeignKey(c => c.GLTaxRateID, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").EditorTemplateName("GlTaxTypeSelector");
+                        columns.Bound(c => c.TaxAmount);
+                        columns.Bound(c => c.TotalAmount);
+                    })
+                    .Scrollable()
+                    .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Model(m =>
+                            {
+                                m.Id(f => f.CommissionLineItemId);
+                                m.Field(f => f.TaxAmount).Editable(false);
+                                m.Field(f => f.TotalAmount).Editable(false);
+                            })
+                    .Events(ev => ev
+                        .Error("error_handler(\"commission_#=SalesQuoteVoucherID#\")")
+                        .RequestStart("onRequestStart(\"commission_#=SalesQuoteVoucherID#\")")
+                        .RequestEnd("onRequestEnd(\"commission_#=SalesQuoteVoucherID#\")")
+                        )
+
+                    .Read(read => read.Action("LineItems_Read", "CommissionLineItem", new { voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+
+                    ).ToClientTemplate()
+                )
+    }
+</script>
+<script>
+    @helper AdditionHelperWithCrud() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdditionalCostLog>()
+                    .Name("additional_cost_#=SalesQuoteVoucherID#")
+                    .Columns(columns =>
+                    {
+                                columns.ForeignKey(c => c.AdditionalCostId, (System.Collections.IEnumerable)ViewData["AddtionalCostTypes"], "AdditionalCostId", "Name").EditorTemplateName("AddtionalCostTypeSelector");
+                                columns.Bound(c => c.CostAmount);
+                                columns.ForeignKey(c => c.GLTaxRateID, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").EditorTemplateName("GlTaxTypeSelector");
+                                columns.Bound(c => c.TaxAmount);
+                                columns.Bound(c => c.TotalAmount);
+                                columns.Command(command =>
+                                {
+                                    command.Edit();
+                                    command.Destroy();
+                                }).Width(180);
+                            })
+                    .ToolBar(toolbar =>
+                    {
+                                toolbar.Create();
+                            })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(ev => ev
+                        .Error("error_handler(\"additional_cost_#=SalesQuoteVoucherID#\")")
+                        .RequestStart("onRequestStart(\"additional_cost_#=SalesQuoteVoucherID#\")")
+                        .RequestEnd("onRequestEnd(\"additional_cost_#=SalesQuoteVoucherID#\")")
+                        )
+
+                    .Model(m =>
+                            {
+                                m.Id(f => f.AdditionalCostLogId);
+                                m.Field(f => f.TaxAmount).Editable(false);
+                                m.Field(f => f.TotalAmount).Editable(false);
+                            })
+
+                    .Read(read => read.Action("LineItems_Read", "AdditionalCostLog", new { voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+                    .Create(create => create.Action("LineItem_Create", "AdditionalCostLog", new { voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+                    .Update(update => update.Action("LineItem_Update", "AdditionalCostLog"))
+                    .Destroy(destroy => destroy.Action("LineItem_Destroy", "AdditionalCostLog"))
+                    ).ToClientTemplate()
+                )
+    }
+    @helper AdditionHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdditionalCostLog>()
+        .Name("additional_cost_#=SalesQuoteVoucherID#")
+        .Columns(columns =>
+        {
+                columns.ForeignKey(c => c.AdditionalCostId, (System.Collections.IEnumerable)ViewData["AddtionalCostTypes"], "AdditionalCostId", "Name").EditorTemplateName("AddtionalCostTypeSelector");
+                columns.Bound(c => c.CostAmount);
+                columns.ForeignKey(c => c.GLTaxRateID, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").EditorTemplateName("GlTaxTypeSelector");
+                columns.Bound(c => c.TaxAmount);
+                columns.Bound(c => c.TotalAmount);
+            })
+
+        .Scrollable()
+        .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Events(ev => ev
+        .Error("error_handler(\"additional_cost_#=SalesQuoteVoucherID#\")")
+        .RequestStart("onRequestStart(\"additional_cost_#=SalesQuoteVoucherID#\")")
+        .RequestEnd("onRequestEnd(\"additional_cost_#=SalesQuoteVoucherID#\")"))
+        .Model(m =>
+            {
+                m.Id(f => f.AdditionalCostLogId);
+                m.Field(f => f.TaxAmount).Editable(false);
+                m.Field(f => f.TotalAmount).Editable(false);
+            })
+        .Read(read => read.Action("LineItems_Read", "AdditionalCostLog", new { voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+        ).ToClientTemplate()
+        )
+    }
+</script>
+<script>
+    @helper FirstValidationHelperWithCrud() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherFirstValidation>()
+            .Name("first_validation_#=SalesQuoteVoucherID#")
+            .Columns(columns =>
+            {
+
+            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector").Width(200);
+            columns.Bound(c => c.Remark).Width(200);
+
+            columns.Command(command =>
+            {
+                command.Edit();
+                command.Destroy();
+            });
+            })
+
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create();
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Selectable(selectable =>
+            {
+                selectable.Mode(GridSelectionMode.Single);
+                selectable.Type(GridSelectionType.Row);
+            })
+            //.Scrollable(h => h.Height(500))
+            //.Groupable()
+            .Scrollable()
+            .Sortable(sortable =>
+            {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+            //.Filterable()
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+
+            .Events(events =>
+            {
+                events.Error("error_handler(\"first_validation_#=SalesQuoteVoucherID#\")");
+                events.RequestStart("onRequestStart(\"first_validation_#=SalesQuoteVoucherID#\")");
+                events.RequestEnd("onRequestEnd(\"first_validation_#=SalesQuoteVoucherID#\")");
+            })
+            .Model(model =>
+            {
+                model.Id(f => f.SalesQuoteVoucherFirstValidationId);
+
+            })
+
+            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }))
+            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }))
+            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherFirstValidation"))
+            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherFirstValidation"))
+            )
+            .ToClientTemplate()
+            )
+    }
+    @helper FirstValidationHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherFirstValidation>()
+                .Name("first_validation_#=SalesQuoteVoucherID#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector");
+                    columns.Bound(c => c.Remark);
+                })
+
+
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                //.Scrollable(h => h.Height(500))
+                //.Groupable()
+                .Scrollable()
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                //.Filterable()
+                .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"first_validation_#=SalesQuoteVoucherID#\")");
+                    events.RequestStart("onRequestStart(\"first_validation_#=SalesQuoteVoucherID#\")");
+                    events.RequestEnd("onRequestEnd(\"first_validation_#=SalesQuoteVoucherID#\")");
+                })
+                .Model(model =>
+                {
+                    model.Id(f => f.SalesQuoteVoucherFirstValidationId);
+                })
+                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }))
+                ).ToClientTemplate()
+            )
+    }
+</script>
+<script>
+    @helper SecondValidationHelperWithCrud() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherSecondValidation>()
+            .Name("second_validation_#=SalesQuoteVoucherID#")
+            .Columns(columns =>
+            {
+
+            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector").Width(200);
+            columns.Bound(c => c.Remark).Width(200);
+
+            columns.Command(command =>
+            {
+                command.Edit();
+                command.Destroy();
+            });
+            })
+
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create();
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Selectable(selectable =>
+            {
+                selectable.Mode(GridSelectionMode.Single);
+                selectable.Type(GridSelectionType.Row);
+            })
+            //.Scrollable(h => h.Height(500))
+            //.Groupable()
+            .Scrollable()
+            .Sortable(sortable =>
+            {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+            //.Filterable()
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+
+            .Events(events =>
+            {
+                events.Error("error_handler(\"second_validation_#=SalesQuoteVoucherID#\")");
+                events.RequestStart("onRequestStart(\"second_validation_#=SalesQuoteVoucherID#\")");
+                events.RequestEnd("onRequestEnd(\"second_validation_#=SalesQuoteVoucherID#\")");
+            })
+            .Model(model =>
+            {
+                model.Id(f => f.SalesQuoteVoucherSecondValidationId);
+
+            })
+
+            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherSecondValidation", new { id = "#=SalesQuoteVoucherID#" }))
+            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherSecondValidation", new { id = "#=SalesQuoteVoucherID#" }))
+            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherSecondValidation"))
+            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherSecondValidation"))
+            )
+            .ToClientTemplate()
+            )
+    }
+    @helper SecondValidationHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherSecondValidation>()
+                .Name("second_validation_#=SalesQuoteVoucherID#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector");
+                    columns.Bound(c => c.Remark);
+                })
+
+
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                //.Scrollable(h => h.Height(500))
+                //.Groupable()
+                .Scrollable()
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                //.Filterable()
+                .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"second_validation_#=SalesQuoteVoucherID#\")");
+                    events.RequestStart("onRequestStart(\"second_validation_#=SalesQuoteVoucherID#\")");
+                    events.RequestEnd("onRequestEnd(\"second_validation_#=SalesQuoteVoucherID#\")");
+                })
+                .Model(model =>
+                {
+                    model.Id(f => f.SalesQuoteVoucherSecondValidationId);
+                })
+                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherSecondValidation", new { id = "#=SalesQuoteVoucherID#" }))
+                ).ToClientTemplate()
+            )
+    }
+</script>
+<script>
+    @helper ValidationHelperWithCrud() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherValidation>()
+            .Name("validation_#=SalesQuoteVoucherID#")
+            .Columns(columns =>
+            {
+
+                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector").Width(200);
+                    columns.Bound(c => c.Remark).Width(200);
+
+                    columns.Command(command =>
+            {
+                                command.Edit();
+                                command.Destroy();
+                            });
+                })
+
+            .ToolBar(toolbar =>
+            {
+                    toolbar.Create();
+                })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Selectable(selectable =>
+            {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+            //.Scrollable(h => h.Height(500))
+            //.Groupable()
+            .Scrollable()
+            .Sortable(sortable =>
+            {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+            //.Filterable()
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+
+            .Events(events =>
+            {
+                        events.Error("error_handler(\"validation_#=SalesQuoteVoucherID#\")");
+                        events.RequestStart("onRequestStart(\"validation_#=SalesQuoteVoucherID#\")");
+                        events.RequestEnd("onRequestEnd(\"validation_#=SalesQuoteVoucherID#\")");
+                    })
+            .Model(model =>
+            {
+                        model.Id(f => f.SalesQuoteVoucherValidationId);
+
+                    })
+
+            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }))
+            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }))
+            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherValidation"))
+            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherValidation"))
+            )
+            .ToClientTemplate()
+            )
+    }
+    @helper ValidationHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherValidation>()
+                .Name("validation_#=SalesQuoteVoucherID#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector");
+                    columns.Bound(c => c.Remark);
+                })
+
+
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                //.Scrollable(h => h.Height(500))
+                //.Groupable()
+                .Scrollable()
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                //.Filterable()
+                .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"validation_#=SalesQuoteVoucherID#\")");
+                    events.RequestStart("onRequestStart(\"validation_#=SalesQuoteVoucherID#\")");
+                    events.RequestEnd("onRequestEnd(\"validation_#=SalesQuoteVoucherID#\")");
+                })
+                .Model(model =>
+                {
+                    model.Id(f => f.SalesQuoteVoucherValidationId);
+                })
+                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }))
+                ).ToClientTemplate()
+            )
+    }
+</script>
+
+<script>
+    var headerStoreId = 0;
     var id;
     var masterId;
     var gridName;
@@ -387,34 +1162,102 @@
     var masterDataItem;
     var selectedStoreID;
 
-
+     function sendForFirstApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForFirstApproval", "SalesQuoteVoucher", new { area = "CRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                location.reload(true);
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function sendForSecondApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForSecondApproval", "SalesQuoteVoucher", new { area = "CRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                location.reload(true);
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function sendForApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "SalesQuoteVoucher", new { area = "CRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                location.reload(true);
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
     function onDataBound(e) {
         var grid = this;
-
-
         var Checkgrid = $("#SalesQuoteVoucher").data("kendoGrid");
         var gridData = Checkgrid.dataSource.view();
 
         for (var i = 0; i < gridData.length; i++) {
-            //get the item uid
             var currentUid = gridData[i].uid;
-            //if the record fits the custom condition
             if (gridData[i].LastObjectState == "Rejected") {
-                //find the row based on the uid and the custom class
                 var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
                 $(currenRow).addClass("k-state-Rejected");
+            }
+            else if (gridData[i].LastObjectState == "WaitingApproval" || gridData[i].LastObjectState == "Waiting Approval" ||
+                gridData[i].LastObjectState == "Waiting CRM Approval" || gridData[i].LastObjectState == "Waiting Maintenance Approval") {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                $(currenRow).addClass("k-state-waiting-approval");
+            }
+            else if (gridData[i].LastObjectState == "Forwarded" || gridData[i].LastObjectState == "Approved" || gridData[i].LastObjectState == "Finance Approved") {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                $(currenRow).addClass("k-state-Issued");
+            }
+            else if (gridData[i].LastObjectState == "CRM Approved") {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                $(currenRow).addClass("k-state-first-approved");
+            }
+            else if (gridData[i].LastObjectState == "Maintenance Approved") {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                $(currenRow).addClass("k-state-second-approved");
             }
         }
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
 
-            if (dataItem.LastObjectState == "Forwarded") {
+            if (!(dataItem.LastObjectState == "UnForwarded" || dataItem.LastObjectState == "Editing" || dataItem.LastObjectState == "Void")) {
 
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
-                $(this).addClass("k-state-Issued");
+                //$(this).addClass("k-state-Issued");
             }
         });
+    }
+    function SwitchCustomer() {
+        var OrganizationCustomer = $("#OrganizationCustomerId").data("kendoDropDownList").value();
+        if (OrganizationCustomer == 0) {
+            $("#NewCustomerArea").show();
+        }
+        else {
+            $("#NewCustomerArea").hide();
+        }
+
+    }
+    function filterPayment() {
+        return {
+            customerId: $("#OrganizationCustomerId").val()
+        };
     }
     function onDetailExpand(e) {
         var masterRow = e.masterRow;
@@ -423,6 +1266,13 @@
         var masterDataItem2 = masterGrid.dataItem(masterRow);
         masterId = masterDataItem2.SalesQuoteVoucherID;
         gridName = "#LineItems_" + masterId;
+
+        headerStoreId = masterDataItem2.StoreID;
+    }
+    function getHeaderStoreId() {
+        return {
+            storeId: headerStoreId
+        };
     }
     function GetThingId(e) {
         var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
@@ -441,12 +1291,7 @@
         var grid = $(e.target).data("kendoGrid");
         var item = grid.dataItem(grid.select());
         var code = item.SalesQuoteVoucherID;
-        //$("#reqRows").on("mousedown", "tr[role='row']", function (e) {
-        //    if (e.which === 3) {
-        //        $("#reqRows tbody tr").removeClass("k-state-selected");
-        //        $(this).addClass("k-state-selected");
-        //    }
-        //});
+        
         $.ajax({
             url: "/SalesQuoteVoucherView/SalesQuoteVoucherViews_Forward",
             data: { userRole: code, salesQuoteVoucherViewID: code }
@@ -478,8 +1323,10 @@
         };
     }
     function filterThing() {
+        var dropdownlist = $("#ThingID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
         return {
-            StoreID: $("#StoreID").val()
+            StoreID: $("#StoreID").val(), filterString: filterInput.val()
         };
     }
 
@@ -496,6 +1343,34 @@
     }
 </script>
 <script>
+    function showConvertorTool() {
+        $("#unitConversionFormContainer").toggle();
+    }
+    function onOtherUoMChange(e) {
+        var uom = this.value();
+        var productId = $("#ThingID").val();
+         $.ajax({
+            url: '@Url.Action("GetUnitConversionMultiplicationFactor", "CRMDataProvider", new { area="CRM"})',
+            data: { productId: productId, uom:uom},
+            type: 'POST',
+            cache: false,
+             success: function (result) {
+                 $("#MultiplcationFactor").val(result);
+                 $("#MultiplcationFactor").trigger("change");
+            }
+        });
+    }
+    function onQuantityInOtherUnitChange(e) {
+        var qty = this.value();
+        var factor = $("#MultiplcationFactor").val();
+
+        var result = qty * factor;
+        $("#Result").val(result.toFixed(4));
+        $("#Result").trigger("change");
+        var qtyImputField = $("#Quantity").data("kendoNumericTextBox");
+        qtyImputField.value(result.toFixed(4));
+        qtyImputField.trigger("change");
+    }
     function GetStockBalance() {
 
         var storeobj = $("#StoreID").data("kendoDropDownList");
@@ -507,6 +1382,39 @@
         var vid = varityobj.value();
         var classobj = $("#Class").data("kendoDropDownList");
         var cid = classobj.value();
+
+        $.ajax({
+            url: '@Url.Action("GetUoMOfSelectedProduct", "CRMDataProvider")',
+            data: { productId: tID},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#quantityLabel").text(result);
+                if (result != null) {
+                    $("#otherUnitContainer").show();
+                } else {
+                    $("#otherUnitContainer").hide();
+                }
+                
+            }
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetUoMOfSelectedProduct", "CRMDataProvider")',
+            data: { productId: tID},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#quantityLabel").text(result);
+                if (result != null) {
+                    $("#otherUnitContainer").show();
+                } else {
+                    $("#otherUnitContainer").hide();
+                }
+                
+            }
+        });
+
         //   var stID = selectedStoreID = $("#Store").data("kendoDropDownList");
         $.ajax({
             url: '@Url.Action("GetStockBalance", "CRMDataProvider")',
@@ -515,19 +1423,21 @@
             cache: false,
             success: function (result) {
                 r = result;
-                $("#UnitAmount").val('0.0');
-                $("#TaxAmount").val('0.0');
-                $("#TotalAmount").val('0.0');
+                //$("#UnitAmount").val('0.0');
+                //$("#TaxAmount").val('0.0');
+                //$("#TotalAmount").val('0.0');
 
                 if (r != 0) {
                     var s = r.split(/_/);
                     $("#StockBalance").val(s[0]);
-                    $("#CalculatedCost").val(s[1]);
+                    //$("#CalculatedCost").val(s[1]);
                     $("#StockBalanceReserved").val(s[2]);
+                    $("#ActualRemainingBalance").val(s[0] - s[2]);
                 } else {
                     $("#StockBalance").val('0.0');
-                    $("#CalculatedCost").val('0.0');
+                    //$("#CalculatedCost").val('0.0');
                     $("#StockBalanceReserved").val('0.0');
+                    $("#ActualRemainingBalance").val(0);
                 }
             }
 
@@ -547,8 +1457,8 @@
     }
     function UpdatePriceChange() {
 
-        var priceTagDetail = $("#PriceTagDetail").data("kendoDropDownList");
-        var ptdID = priceTagDetail.value();
+        //var priceTagDetail = $("#PriceTagDetail").data("kendoDropDownList");
+        //var ptdID = priceTagDetail.value();
         var priceTag = $("#PriceTag").data("kendoDropDownList");
         var ptID = priceTag.value();
         var product = $("#ThingID").data("kendoDropDownList");
@@ -561,7 +1471,7 @@
         $.ajax({
             url: '@Url.Action("GetPriceValue", "CRMDataProvider")',
 
-            data: { priceTagID: ptID, priceTagDetailID: ptdID, productID: product.value(), VarietyID: vID, ClassID: cID },
+            data: { priceTagID: ptID, productID: product.value(), VarietyID: vID, ClassID: cID },
             type: 'POST',
             cache: false,
             success: function (result) {
@@ -569,7 +1479,10 @@
                     result = 0;
                 }
                 else {
-                    $("#UnitAmount").val(parseFloat(result));
+                    //$("#UnitAmount").val(parseFloat(result));
+                    $("#UnitAmount").val(result)
+                    $("#UnitAmount").trigger('change');
+
                 }
             }, error: function () {
                 $("#UnitAmount").val("0");
@@ -586,8 +1499,16 @@
             priceTag: pt.value()
         };
     }
-
-
+    function getSelectedProduct() {
+        return {
+            productId: $("#ThingID").data("kendoDropDownList").value()
+        };
+    }
+    function getSelectedBranch() {
+        return {
+            branchId: $("#BranchId").data("kendoDropDownList").value()
+        };
+    }
     function GetTaxValue() {
         var taxObject = $("#Tax").data("kendoDropDownList");
         var taxID = taxObject.value();
@@ -597,6 +1518,7 @@
         var FreightCost = $("#FreightCost").val();
         var OtherCost = $("#OtherCost").val();
         var GrowthValue = parseInt(quantityValue);// + parseInt(InsuranceCost) + parseInt(FreightCost) + parseInt(OtherCost);
+        var discount = $("#Discount").val();
 
         $.ajax({
             url: '@Url.Action("GetTaxValue", "CRMDataProvider")',
@@ -606,13 +1528,20 @@
             success: function (result) {
                 r = result;
 
-                var calculatedTax = (r / 100) * parseInt(quantityValue) * unitAmountValue;
-                var calculatedTotalAmount = (quantityValue * unitAmountValue) + calculatedTax ;
-                calculatedTax = parseFloat(Math.round(calculatedTax)).toFixed(2);
-                calculatedTotalAmount = parseFloat(Math.round(calculatedTotalAmount)).toFixed(2);
+                var calculatedTax = (r / 100) * quantityValue * unitAmountValue;
+                var calculatedTotalAmount = (quantityValue * unitAmountValue) + calculatedTax - discount;
+                calculatedTax = calculatedTax.toFixed(4);
+                calculatedTotalAmount = calculatedTotalAmount.toFixed(4);
+
+                $("#CalculatedCost").val(quantityValue * unitAmountValue);
+                $("#CalculatedCost").trigger("change");
 
                 $("#TaxAmount").val(calculatedTax);
+                $("#TaxAmount").trigger("change");
+
                 $("#TotalAmount").val(calculatedTotalAmount);
+                $("#TotalAmount").trigger("change");
+
             }
 
         });
@@ -628,7 +1557,13 @@
         var masterDataItem = masterGrid.dataItem(masterRow);
 
         masterId = masterDataItem.SalesQuoteVoucherID;
+        headerStoreId = masterDataItem.StoreID;
+
         var linegridName = "#LineItems_" + masterId;
+        var commissionLineGrid = "#commission_" + masterId;
+        var additionalCostGrid = "#additional_cost_" + masterId;
+        var validationGrid = "#validation_" + masterId;
+
         var vouchertermGridName = "VoucherTerms_" + masterId;
         var VoucherExtensionGridName = "VoucherExtension_" + masterId;
         $.ajax({
@@ -645,6 +1580,21 @@
                     $(".k-grid-top", linegridName).hide();
                     $(".k-grid-edit", linegridName).hide();
                     $(".k-grid-delete", linegridName).hide();
+
+                    $(commissionLineGrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", commissionLineGrid).hide();
+                    $(".k-grid-edit", commissionLineGrid).hide();
+                    $(".k-grid-delete", commissionLineGrid).hide();
+
+                    $(additionalCostGrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", additionalCostGrid).hide();
+                    $(".k-grid-edit", additionalCostGrid).hide();
+                    $(".k-grid-delete", additionalCostGrid).hide();
+
+                    $(validationGrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", validationGrid).hide();
+                    $(".k-grid-edit", validationGrid).hide();
+                    $(".k-grid-delete", validationGrid).hide();
 
                     $(vouchertermGridName).find(".k-toolbar").hide(); //hide toolbar
                     $(".k-grid-top", vouchertermGridName).hide();
@@ -670,22 +1620,22 @@
     var PopUpMode = "";
     function AddCostItemInit(e) {
 
-        if (e.model.isNew()) {
+        @*if (e.model.isNew()) {
             $('#lineForm').attr('action', '@Url.Action("LineItems_Create", "LineItem")');
             $('#linesave').val("Create");
         }
         else {
             $('#lineForm').attr('action', '@Url.Action("LineItems_Update", "LineItem")');
             $('#linesave').val("Update");
-        }
-        $('#Voucher').val(masterId);
-        $('#VoucherDefinitionId').val('0');
-        var html = "";
-        var optionId = "option" + index;
+        }*@
+        //$('#Voucher').val(masterId);
+        //$('#VoucherDefinitionId').val('0');
+        //var html = "";
+        //var optionId = "option" + index;
 
-        $('.k-edit-buttons').css('display', 'none');
+        //$('.k-edit-buttons').css('display', 'none');
 
-        $.ajax({
+        @*$.ajax({
             url: "@Url.Action("GetLineAdditionalCost", "CRMDataProvider")",
             type: 'GET',
             traditional: true,
@@ -704,7 +1654,7 @@
                 index++;
             }
 
-        });
+        });*@
 
         return false;
     };
@@ -714,7 +1664,7 @@
         return false;
     }
     var ItemIndex = 0;
-    function AddCostItem() {
+    @*function AddCostItem() {
 
 
         var html = "";
@@ -745,24 +1695,44 @@
         kendo.init("#CostItem");
         ItemIndex++;
         return false;
-    };
+    };*@
 
 
 
 </script>
 
 <script>
-    function ClearValMsg() {
-        $("#StoreVal").text("");
-        $("#ProductVal").text("");
-        $("#TaxVal").text("");
-        $("#PriceTagVal").text("");
-        $("#PriceTagDetailVal").text("");
-        $("#QuantityVal").text("");
-        return false;
-    }
-    function ValidateInput() {
+    //function ClearValMsg() {
+    //    $("#StoreVal").text("");
+    //    $("#ProductVal").text("");
+    //    $("#TaxVal").text("");
+    //    $("#PriceTagVal").text("");
+    //    $("#PriceTagDetailVal").text("");
+    //    $("#QuantityVal").text("");
+    //    return false;
+    //}
+    @*function ValidateInput() {
         var ValidationCount = 0;
+        var voucherId = $("#Voucher").val();
+        var vDefId = $("#VoucherDefinitionId").val();
+        var prodId = $("#ThingID").val();
+        var varId = $("#Variety").val();
+        var classId = $("#Class").val();
+        $.ajax({
+            url: '@Url.Action("IsDuplicateLineItem", "CRMDataProvider", new { area = "CRM"})',
+            data: { voucherId: voucherId, voucherDefId: vDefId, productId: prodId, variety: varId, className: classId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == True) {
+                    ValidationCount += 1;
+                    $("#ProductVal").text("Duplicate item. This line item exists already.");
+
+                }
+            }
+        });
+
         var StoreObject = $("#StoreID").data("kendoDropDownList");
         var StoreId = StoreObject.value();
         if (StoreId == "" || StoreId == null) {
@@ -792,13 +1762,13 @@
             ValidationCount = ValidationCount + 1;
 
         }
-        var PriceTagDetailObject = $("#PriceTagDetail").data("kendoDropDownList");
-        var PriceTagDetailId = PriceTagDetailObject.value();
-        if (PriceTagDetailId == "" || PriceTagDetailId == null) {
-            $("#PriceTagDetailVal").text("Required");
-            ValidationCount = ValidationCount + 1;
+        //var PriceTagDetailObject = $("#PriceTagDetail").data("kendoDropDownList");
+        //var PriceTagDetailId = PriceTagDetailObject.value();
+        //if (PriceTagDetailId == "" || PriceTagDetailId == null) {
+        //    $("#PriceTagDetailVal").text("Required");
+        //    ValidationCount = ValidationCount + 1;
 
-        }
+        //}
         var AmountId = $("#Quantity").val();
         var StockBaalance = $("#StockBalance").val();
         if (parseFloat(AmountId) > parseFloat(StockBaalance)) {
@@ -807,12 +1777,150 @@
         }
         var AmountId = $("#Quantity").val();
         if (AmountId == "0" || AmountId == "" || AmountId == null) {
-            $("#QuantityVal").text("Amount Can't Be 0 ");
+            $("#QuantityVal").text("Quantity Can't Be 0 ");
             ValidationCount = ValidationCount + 1;
         }
         if (ValidationCount > 0) {
             return false;
         }
 
+    }*@
+
+    function onPeriodChange(e) {
+        var drp = this;
+        var id = drp.value();
+        var voucherDate = $("#Date").data("kendoDatePicker");
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPeriodRanges", "CRMDataProvider", new { area = "CRM" })',
+            data: { periodId: id},
+            success: function (result) {
+                if (result) {
+                    var ranges = result.split('_');
+                    var start = ranges[0];
+                    var end = ranges[1];
+                    var startDate = new Date(start);
+                    var endDate = new Date(end);
+                    if (voucherDate) {
+                        voucherDate.min(startDate);
+                        voucherDate.max(endDate);
+                        voucherDate.value(startDate);
+                        voucherDate.trigger("change");
+                    } 
+                }
+            }, 
+            error: function (result) {
+            }
+        });
+    }
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "SalesQuoteVoucher", new {area = "CRM"})',
+                data: { id: id },
+                success: function (result) {
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
     }
 </script>
+
+<script>
+    function onGenerateSalesQuoteFromJobOrderClick(e) {
+        var win = $("#generate_sales_quote_from_job_order").data("kendoWindow");
+        win.open();
+        win.center();
+    }
+    function onGenerateSQFromJOClose(e) {
+        $("#generate_sq_from_jo_ddl").data("kendoDropDownList").dataSource.read();
+    }
+    function onGenerateSQFromJOOpen(e) {
+        $("#generate_sq_from_jo_ddl").data("kendoDropDownList").dataSource.read();
+    }
+    function onMaintenanceJOChange(e) {
+        var val = this.value();
+        if (val) {
+            $("#generate_sq_from_jo_confirm_btn").data("kendoButton").enable(true);
+        }
+    }
+    function onGenerateSalesQuoteFromJobOrderConfirm(e) {
+        var jO = $("#generate_sq_from_jo_ddl").val();
+        if (jO) {
+            $("#generate_sq_from_jo_ddl").data("kendoDropDownList").dataSource.read();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GenerateSQFromJo", "SalesQuoteVoucher", new {area = "CRM"})',
+                data: { joNumber: jO },
+                success: function (result) {
+                    //alert(result.Message);
+                    $("#SalesQuoteVoucher").data("kendoGrid").dataSource.read();
+                    $("#generate_sq_from_jo_ddl").data("kendoDropDownList").dataSource.read();
+                },
+                error: function (result) {
+                    //alert(result);
+                }
+            });
+        }
+        
+    }
+</script>
+
+@(Html.Kendo().Window()
+    .Name("generate_sales_quote_from_job_order")
+    .Title("Generate SQ from JO")
+    .Content(@<text>
+        @(Html.Kendo().DropDownList()
+            .Name("generate_sq_from_jo_ddl")
+            .Filter(FilterType.Contains)
+            .ValuePrimitive(true)
+            .OptionLabel("Select JO...")
+            .DataTextField("JobOrderNumber")
+            .DataValueField("JobOrderNumber")
+            .HtmlAttributes(new { style="width:100%;"})
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetMaintenanceJobOrdersToGenerateSQ", "CRMDataProvider", new { area = "CRM" }))
+                .ServerFiltering(false);
+            })
+            .Events(e =>
+            {
+                e.Change("onMaintenanceJOChange");
+            })
+        )
+        <hr />
+        @(Html.Kendo().Button()
+            .Name("generate_sq_from_jo_confirm_btn")
+            .Content("Generate SQ")
+            .Enable(false)
+            .Events(e =>
+            {
+                e.Click("onGenerateSalesQuoteFromJobOrderConfirm");
+            })
+            .HtmlAttributes(new { style="width:100%;", @class = "btn btn-primary"})
+        )
+    </text>)
+    .Draggable()
+    //.Resizable(false)
+    .Width(250)
+    .Height(150)
+    .Modal(true)
+    .Visible(false)
+
+    .Events(e =>
+    {
+        e.Close("onGenerateSQFromJOOpen");
+        e.Open("onGenerateSQFromJOClose");
+    })
+)
+

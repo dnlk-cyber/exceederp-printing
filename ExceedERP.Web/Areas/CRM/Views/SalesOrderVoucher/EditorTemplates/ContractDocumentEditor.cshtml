@@ -1,0 +1,52 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.CRM.VoucherContractDocument
+
+@*<form method="post">
+        <div class="k-edit-form-container">
+            <div class="editor-label">
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().Upload()
+                                .Name("files")
+                                .HtmlAttributes(new { aria_label = "files" })
+                )
+
+
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Remark)
+                </div>
+                <div class="editor-field">
+                    @(Html.Kendo().TextBoxFor(m => m.Remark))
+                </div>
+            </div>
+        </div>
+    </form>*@
+
+@using (Html.BeginForm("LineItem_Create", "VoucherContractDocument", FormMethod.Post,
+    new { enctype = "multipart/form-data", voucher = 1, type = VoucherType.SalesOrder }))
+{
+
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <div class="editor-field">
+            @Html.TextBox("files", "", new { type = "file" })
+        </div>
+        <br />
+        <div class="editor-field">
+            @*@Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })*@
+            @Html.TextBox("Remark", null, new { placeholder = "Description or Note" })
+        </div>
+        <br />
+        <div class="editor-field">
+            <input type="submit" value="@Resources.HR_ActionButton_Upload" />
+        </div>
+    </fieldset>
+}
+
+
+
+
+

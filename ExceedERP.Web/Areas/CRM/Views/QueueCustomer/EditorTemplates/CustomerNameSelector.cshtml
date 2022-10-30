@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().AutoCompleteFor(m => m)
+                              .DataTextField("TradeName")
+                              .Filter("contains")
+                              .MinLength(4)
+                              //.HtmlAttributes(new { @class = "form-control" })
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetAllCustomersForAutoComplete", "CRMDataProvider");
+                                  })
+                                  .ServerFiltering(false);
+                              })
+                              .NoDataTemplate(" ")
+)

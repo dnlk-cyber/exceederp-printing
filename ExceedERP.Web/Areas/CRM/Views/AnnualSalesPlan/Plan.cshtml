@@ -1,0 +1,341 @@
+﻿<legend><b>@ViewBag.Category @{ if (ViewBag.SubCategory != "") { <text>|</text>  @ViewBag.SubCategory; }}</b> Sales Plan for Budget Year <b>@ViewBag.FiscalYear</b>  </legend>
+@using System.Collections
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.BranchAnnualSalesPlan>()
+                            .Name("grid")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").ClientFooterTemplate("Total").EditorTemplateName("BranchEditorTemplate");
+                                columns.Bound(c => c.Ratio).ClientTemplate(" #=Ratio #%").ClientFooterTemplate(" #=sum #%");
+                                columns.Bound(c => c.Quantity).Format("{0:N2}").ClientFooterTemplate(" #=kendo.toString(sum, 'N2') #");
+
+                                columns.Bound(c => c.Value).Format("{0:N2}").ClientFooterTemplate(" #=kendo.toString(sum, 'N2') #");
+                                columns.Bound(c => c.Remark);
+
+                                if (!ViewBag.IsReadonly)
+                                {
+                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                }
+                            })
+
+                            .ToolBar(toolbar =>
+                            {
+                                if (!ViewBag.IsReadonly)
+                                {
+                                    toolbar.Create();
+                                }
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Pageable()
+                            //.Navigatable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                            .Scrollable(s => s.Height(700))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.BranchAnnualSalesPlanId);
+
+                                     model.Field(f => f.Quantity).Editable(false);
+                                     model.Field(f => f.Value).Editable(false);
+                                 })
+                                 .Aggregates(ag =>
+                                 {
+                                     ag.Add(f => f.Quantity).Sum();
+                                     ag.Add(f => f.Ratio).Sum();
+                                     ag.Add(f => f.Value).Sum();
+                                 })
+                                 .Events(ev =>
+                                 {
+                                     ev.Error("error_handler(\"grid\")");
+                                     ev.RequestStart("onRequestStart(\"grid\")");
+                                     ev.RequestEnd("onRequestEnd(\"grid\")");
+                                 })
+                                .Read(read => read.Action("BranchAnnualSalesPlans_Read", "BranchAnnualSalesPlan").Data("getSelectedPlanId"))
+                                .Create(create => create.Action("BranchAnnualSalesPlans_Create", "BranchAnnualSalesPlan").Data("getSelectedPlanId"))
+                                .Update(update => update.Action("BranchAnnualSalesPlans_Update", "BranchAnnualSalesPlan"))
+                                .Destroy(destroy => destroy.Action("BranchAnnualSalesPlans_Destroy", "BranchAnnualSalesPlan"))
+                            ).ClientDetailTemplateId("store_anual_plan")
+                        )
+
+<script id="store_anual_plan" type="text/kendo-template">
+    #if(!IsOnlineApproved){#
+    @(Html.Kendo().TabStrip()
+            .Name("store_tab_#=BranchAnnualSalesPlanId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Sales Center Plans").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreAnnualSalesPlan>()
+                            .Name("store_plan_#=BranchAnnualSalesPlanId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.SalesStoreId, (IEnumerable)ViewData["CRMStores"], "SalesStoreId", "Description").ClientFooterTemplate("Total").EditorTemplateName("CRMStoresEditorTemplate");
+                                columns.Bound(c => c.Ratio).ClientTemplate("\\#=Ratio\\#%").ClientFooterTemplate("\\#=sum\\#%");
+                                columns.Bound(c => c.AnnualQuantity).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                columns.Bound(c => c.AnnualValue).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create();
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Pageable()
+                            .Navigatable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                            .Scrollable(s => s.Height(400))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.StoreAnnualSalesPlanId);
+
+                                     model.Field(f => f.AnnualQuantity).Editable(false);
+                                     model.Field(f => f.AnnualValue).Editable(false);
+                                 })
+                                 .Aggregates(ag =>
+                                 {
+                                     ag.Add(f => f.AnnualQuantity).Sum();
+                                     ag.Add(f => f.Ratio).Sum();
+                                     ag.Add(f => f.AnnualValue).Sum();
+                                 })
+                                 .Events(ev =>
+                                 {
+                                     ev.Error("error_handler(\"store_plan_#=BranchAnnualSalesPlanId#\")");
+                                     ev.RequestStart("onRequestStart(\"store_plan_#=BranchAnnualSalesPlanId#\")");
+                                     ev.RequestEnd("onRequestEnd(\"store_plan_#=BranchAnnualSalesPlanId#\")");
+                                 })
+                                .Read(read => read.Action("StoreAnnualPlans_Read", "StoreAnnualSalesPlan", new { branchPlanId = "#=BranchAnnualSalesPlanId#" }))
+                                .Create(create => create.Action("StoreAnnualPlan_Create", "StoreAnnualSalesPlan", new { branchPlanId = "#=BranchAnnualSalesPlanId#" }))
+                                .Update(update => update.Action("StoreAnnualPlan_Update", "StoreAnnualSalesPlan"))
+                                .Destroy(destroy => destroy.Action("StoreAnnualPlan_Destroy", "StoreAnnualSalesPlan"))
+                            ).ClientDetailTemplateId("store_monthly_plan").ToClientTemplate()
+                        )
+                    </text>);
+                    }).ToClientTemplate()
+    )
+    #} else{#
+    @(Html.Kendo().TabStrip()
+            .Name("store_tab_#=BranchAnnualSalesPlanId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Sales Center Plans").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreAnnualSalesPlan>()
+                            .Name("store_plan_#=BranchAnnualSalesPlanId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.SalesStoreId, (IEnumerable)ViewData["CRMStores"], "SalesStoreId", "Description").ClientFooterTemplate("Total").EditorTemplateName("CRMStoresEditorTemplate");
+                                columns.Bound(c => c.Ratio).ClientTemplate("\\#=Ratio\\#%").ClientFooterTemplate("\\#=sum\\#%");
+                                columns.Bound(c => c.AnnualQuantity).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                columns.Bound(c => c.AnnualValue).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
+                            //    toolbar.Create();
+                            //})
+                            //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Pageable()
+                            .Navigatable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                            .Scrollable(s => s.Height(400))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.StoreAnnualSalesPlanId);
+
+                                     model.Field(f => f.AnnualQuantity).Editable(false);
+                                     model.Field(f => f.AnnualValue).Editable(false);
+                                 })
+                                 .Aggregates(ag =>
+                                 {
+                                     ag.Add(f => f.AnnualQuantity).Sum();
+                                     ag.Add(f => f.Ratio).Sum();
+                                     ag.Add(f => f.AnnualValue).Sum();
+                                 })
+                                 .Events(ev =>
+                                 {
+                                     ev.Error("error_handler(\"store_plan_#=BranchAnnualSalesPlanId#\")");
+                                     ev.RequestStart("onRequestStart(\"store_plan_#=BranchAnnualSalesPlanId#\")");
+                                     ev.RequestEnd("onRequestEnd(\"store_plan_#=BranchAnnualSalesPlanId#\")");
+                                 })
+                                .Read(read => read.Action("StoreAnnualPlans_Read", "StoreAnnualSalesPlan", new { branchPlanId = "#=BranchAnnualSalesPlanId#" }))
+
+                            ).ClientDetailTemplateId("store_monthly_plan_approved").ToClientTemplate()
+                        )
+                    </text>);
+                    }).ToClientTemplate()
+    )
+    #}#
+</script>
+<script id="store_monthly_plan" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+            .Name("store_month_tab_#=StoreAnnualSalesPlanId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Sales Center Plans").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreMonthlySalesPlan>()
+                            .Name("monthly_plan_#=StoreAnnualSalesPlanId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.CRMPeriodId, (IEnumerable)ViewData["Periods"], "CRMPeriodId", "Name").EditorTemplateName("CRMPeriodsEditorTemplate").ClientFooterTemplate("Total");
+                                columns.Bound(c => c.Quantity).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                columns.Bound(c => c.Value).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create();
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Pageable()
+                            .Navigatable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                            .Scrollable(s => s.Height(300))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(12)
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.StoreMonthlySalesPlanId);
+
+                                     //model.Field(f => f.AnnualQuantity).Editable(false);
+                                     //model.Field(f => f.AnnualValue).Editable(false);
+                                 })
+                                 .Aggregates(ag =>
+                                 {
+                                     ag.Add(f => f.Quantity).Sum();
+                                     //ag.Add(f => f.Ratio).Sum();
+                                     ag.Add(f => f.Value).Sum();
+                                 })
+                                 .Events(ev =>
+                                 {
+                                     ev.Error("error_handler(\"monthly_plan_#=StoreAnnualSalesPlanId#\")");
+                                     ev.RequestStart("onRequestStart(\"monthly_plan_#=StoreAnnualSalesPlanId#\")");
+                                     ev.RequestEnd("onRequestEnd(\"monthly_plan_#=StoreAnnualSalesPlanId#\")");
+                                 })
+                                .Read(read => read.Action("StorePlans_Read", "StoreMonthlySalesPlan", new { annualStorePlanId = "#=StoreAnnualSalesPlanId#" }))
+                                .Create(create => create.Action("StorePlan_Create", "StoreMonthlySalesPlan", new { annualStorePlanId = "#=StoreAnnualSalesPlanId#" }))
+                                .Update(update => update.Action("StorePlan_Update", "StoreMonthlySalesPlan"))
+                                .Destroy(destroy => destroy.Action("StorePlan_Destroy", "StoreMonthlySalesPlan"))
+                            ).ToClientTemplate()
+                        )
+                    </text>);
+                    }).ToClientTemplate()
+    )
+</script>
+<script id="store_monthly_plan_approved" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+            .Name("store_month_tab_#=StoreAnnualSalesPlanId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Sales Center Plans").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreMonthlySalesPlan>()
+                            .Name("monthly_plan_#=StoreAnnualSalesPlanId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.CRMPeriodId, (IEnumerable)ViewData["Periods"], "CRMPeriodId", "Name").EditorTemplateName("CRMPeriodsEditorTemplate").ClientFooterTemplate("Total");
+                                columns.Bound(c => c.Quantity).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                columns.Bound(c => c.Value).Format("{0:N2}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N2')\\#");
+
+                                //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
+                            //    toolbar.Create();
+                            //})
+                            //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Pageable()
+                            .Navigatable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                            .Scrollable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.StoreMonthlySalesPlanId);
+
+                                     //model.Field(f => f.AnnualQuantity).Editable(false);
+                                     //model.Field(f => f.AnnualValue).Editable(false);
+                                 })
+                                 .Aggregates(ag =>
+                                 {
+                                     ag.Add(f => f.Quantity).Sum();
+                                     //ag.Add(f => f.Ratio).Sum();
+                                     ag.Add(f => f.Value).Sum();
+                                 })
+                                 .Events(ev =>
+                                 {
+                                     ev.Error("error_handler(\"monthly_plan_#=StoreAnnualSalesPlanId#\")");
+                                     ev.RequestStart("onRequestStart(\"monthly_plan_#=StoreAnnualSalesPlanId#\")");
+                                     ev.RequestEnd("onRequestEnd(\"monthly_plan_#=StoreAnnualSalesPlanId#\")");
+                                 })
+                                .Read(read => read.Action("StorePlans_Read", "StoreMonthlySalesPlan", new { annualStorePlanId = "#=StoreAnnualSalesPlanId#" }))
+                                
+                            ).ToClientTemplate()
+                        )
+                    </text>);
+                    }).ToClientTemplate()
+    )
+</script>
+<script type="text/javascript">
+    var planId = "";
+    $(function () {
+        var url = window.location.href;
+        var parameterName = 'pi';
+        parameterName = parameterName.replace(/[\[\]]/g, ' $&');
+        var regex = new RegExp('[?&]' + parameterName + '(=([^&#]*)|&|#|$)');
+        var results = regex.exec(url);
+        if (!results) planId = null;
+        if (!results[2]) planId = '';
+
+        var stringValue = decodeURIComponent(results[2].replace(/\+/g, ' '));
+
+        planId = parseInt(stringValue)
+
+        grid = $("#grid").data("kendoGrid");
+        grid.dataSource.read();
+        grid.refresh();
+    });
+
+    function getSelectedPlanId() {
+        return { id: planId };
+    }
+</script>
+

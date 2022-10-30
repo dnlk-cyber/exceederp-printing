@@ -1,0 +1,20 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+    .Name("SubCategoryId")
+                  .OptionLabel("Select")
+                  .DataTextField("Description")
+                  .DataValueField("ProductCategoryId")
+                  .CascadeFrom("CategoryID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetProductSubCategory", "CRMDataProvider").Data("getSelectedCategoryId"))
+                                .ServerFiltering(true);
+                  })
+                  .Filter(FilterType.Contains)
+                  .Events(e =>
+                  {
+                      e.Change("categorySelectorChange");
+                  })
+                  .ValuePrimitive(true)
+
+)
+@Html.ValidationMessageFor(m => m)

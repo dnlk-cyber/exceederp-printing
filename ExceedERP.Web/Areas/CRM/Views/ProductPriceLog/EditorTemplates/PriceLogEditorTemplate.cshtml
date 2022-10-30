@@ -1,0 +1,147 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.CRM.ProductPriceLog
+
+<form method="post">
+    <div class="k-edit-form-container">
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.StoreCode)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.StoreCode)
+                .Name("StoreCode")
+                .OptionLabel("Select...")
+                .DataTextField("Name")
+                .DataValueField("StoreCode")
+                .HtmlAttributes(new { style="width:100%;"})
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetInventoryStoreList", "CRMDataProvider"))
+                            .ServerFiltering(false);
+                })
+                .Filter(FilterType.Contains)
+                .Events(e =>
+                {
+                    e.Change("storeSelectorChange");
+                })
+                .ValuePrimitive(true)
+
+            )
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ItemCategoryCode)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.ItemCategoryCode)
+                .Name("ItemCategoryCode")
+                .OptionLabel("Select...")
+                .DataTextField("Description")
+                .DataValueField("ItemCategoryCode")
+                .HtmlAttributes(new { style="width:100%;"})
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetItemCategory", "CRMDataProvider"))
+                            .ServerFiltering(false);
+                })
+                .Filter(FilterType.Contains)
+
+                .ValuePrimitive(true)
+
+            )
+        </div>
+        @*<div class="editor-label">
+            @Html.LabelFor(model => model.SubCategoryId)
+        </div>*@
+        @*<div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.SubCategoryId)
+                    .Name("SubCategoryId")
+                    .OptionLabel("Select")
+                    .DataTextField("Description")
+                    .DataValueField("ProductCategoryId")
+                    .CascadeFrom("CategoryId")
+                    .HtmlAttributes(new { style = "width:100%;" })
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetProductSubCategory", "CRMDataProvider").Data("getSelectedCategoryId"))
+                                  .ServerFiltering(true);
+                    })
+                    .Filter(FilterType.Contains)
+                    .Events(e =>
+                    {
+                        e.Change("categorySelectorChange");
+                    })
+                    .ValuePrimitive(true)
+
+            )
+        </div>*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.StoreItemAssignmentID)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.StoreItemAssignmentID)
+                            .Name("StoreItemAssignmentID")
+                            .OptionLabel("Select")
+                            .DataTextField("Item")
+                            .DataValueField("StoreItemAssignmentID")
+                            .CascadeFrom("ItemCategoryCode")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetStoreItemassignmentByCategoryAndStore", "CRMDataProvider").Data("getSelectedCategory"))
+                                          .ServerFiltering(true);
+                            })
+                            .Filter(FilterType.Contains)
+
+                            .ValuePrimitive(true)
+
+            )
+        </div>
+                <div style="border-bottom:2px solid #ccc"></div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.InitialDate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.InitialDate)
+                    .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div> 
+        <div class="editor-label">
+            @Html.LabelFor(model => model.InitialExchangeRate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(m => m.InitialExchangeRate)
+                .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div>
+         <div class="editor-label">
+            @Html.LabelFor(model => model.InitialPrice)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(m => m.InitialPrice)
+                .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div>
+        <div style="border-bottom:2px solid #ccc"></div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.NewDate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.NewDate)
+                    .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div> 
+        <div class="editor-label">
+            @Html.LabelFor(model => model.NewExchangeRate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(m => m.NewExchangeRate)
+                .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div>
+    </div>
+</form>
+

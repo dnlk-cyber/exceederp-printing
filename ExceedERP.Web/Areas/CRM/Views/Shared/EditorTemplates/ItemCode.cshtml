@@ -1,18 +1,19 @@
 ﻿
-@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
-                      .AutoBind(true)
-                              .OptionLabel("Select")
-                                  .DataTextField("Name")
-                                  .DataValueField("ItemCode")
-                      .DataSource(d =>
-                          {
-                              d.Read(r =>
-                                  {
-                                      r.Action("GetItemByCategory", "CRMDataProvider").Data("filterItem");
-                                  })
-                                  .ServerFiltering(true);
-                          })
-                      .Enable(true)
-                      .AutoBind(true)
+@(Html.Kendo().DropDownListFor(model => model)
+    .HtmlAttributes(new { @class = "form-control" })
+    .OptionLabel("Select")
+    .DataTextField("Name")
+    .DataValueField("ItemCode")
+    .DataSource(d =>
+    {
+        d.Read(r =>
+        {
+            r.Action("GetItemByCategory", "CRMDataProvider").Data("filterItem");
+        })
+        .ServerFiltering(true);
+    })
+    .ValuePrimitive(true)
+    .Enable(true)
+    .AutoBind(true)
 
 )

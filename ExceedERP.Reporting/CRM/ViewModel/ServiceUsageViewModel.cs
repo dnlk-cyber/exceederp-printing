@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExceedERP.Reporting.SharedDataSources.ViewModel;
+﻿using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System;
 
 namespace ExceedERP.Reporting.CRM.ViewModel
 {

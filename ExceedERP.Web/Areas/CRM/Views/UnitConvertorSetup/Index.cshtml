@@ -1,0 +1,67 @@
+﻿<legend>Unit Conversion Set up</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ProductUnitConvertorSetup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ProductId,(System.Collections.IEnumerable)ViewData["Products"], "ProductId", "Name").EditorTemplateName("ProductEditorTemplate");
+          columns.Bound(c => c.FromUoM);
+          columns.Bound(c => c.ToUoM);
+          columns.Bound(c => c.MultiplicationFactor);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp);
+          editable.TemplateName("ProductUnitConvertorSetupEditor");
+          editable.Window(window =>
+          {
+              window.Title("Unit Convertor Set up");
+          });
+      })
+      .Pageable()
+      .Navigatable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .PageSize(20)
+           .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.ProductUnitConvertorSetupId))
+          .Read(read => read.Action("ProductUnitConvertorSetup_Read", "UnitConvertorSetup"))
+          .Create(create => create.Action("ProductUnitConvertorSetup_Create", "UnitConvertorSetup"))
+          .Update(update => update.Action("ProductUnitConvertorSetup_Update", "UnitConvertorSetup"))
+          .Destroy(destroy => destroy.Action("ProductUnitConvertorSetup_Destroy", "UnitConvertorSetup"))
+      )
+)
+<script>
+    function onProductChange(e) {
+        var pId = this.value();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetSelectedProductUoM", "UnitConvertorSetup", new {area = "CRM"})',
+            data: { productId: pId },
+            success: function (result) {
+                $("#ToUoM").val(result);
+                $("#ToUoM").trigger("change");
+            },
+            error: function (result) {
+            }
+        });
+    }
+</script>

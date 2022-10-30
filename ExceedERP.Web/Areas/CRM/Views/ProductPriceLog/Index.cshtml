@@ -1,0 +1,349 @@
+﻿
+<legend>Product Price</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ProductPriceLog>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Select().Width(40);
+              columns.ForeignKey(c => c.StoreCode, (System.Collections.IEnumerable)ViewData["InventoryStores"], "StoreCode", "Name")
+              .Width(100)
+              .Filterable(f =>
+              {
+                  f.Multi(true);
+                  f.Search(true);
+
+              });
+              columns.ForeignKey(c => c.ItemCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name")
+              .Width(100)
+              .Filterable(f =>
+              {
+                  f.Multi(true);
+                  f.Search(true);
+
+              });
+              //columns.ForeignKey(c => c.SubCategoryCode, (System.Collections.IEnumerable)ViewData["ProductSubCategories"], "ProductCategoryId", "Description")
+              //.Width(100)
+              //.Filterable(f =>
+              //{
+              //    f.Multi(true);
+              //    f.Search(true);
+
+              //});
+
+              columns.Bound(c => c.ItemCode).Width(80);
+              columns.Bound(c => c.ItemName).Width(90);
+              columns.Bound(c => c.UoM).Width(60);
+              columns.Bound(c => c.InitialDate).Width(80);
+              columns.Bound(c => c.InitialExchangeRate).Width(80);
+              columns.Bound(c => c.InitialPrice).Format("{0:N2}").Width(80);
+              columns.Bound(c => c.NewDate).Width(80);
+              columns.Bound(c => c.NewExchangeRate).Width(80);
+              //columns.Group(gr =>
+              //{
+              //    gr.Title("Updated Prices");
+              //    gr.HeaderHtmlAttributes(new { style = "text-align:center;" });
+              //    gr.Columns(c =>
+              //    {
+              //        c.Bound(cl => cl.ProposedNewPrice).Format("{0:N2}").Width(80);
+              //        c.Bound(cl => cl.ApprovedNewPrice).Format("{0:N2}").Width(80);
+              //        c.Bound(cl => cl.Difference).Format("{0:N2}").Width(80);
+              //    });
+              //});
+              columns.Bound(cl => cl.ProposedNewPrice).Format("{0:N2}").Width(80);
+              columns.Bound(cl => cl.ApprovedNewPrice).Format("{0:N2}").Width(80);
+              columns.Bound(cl => cl.Difference).Format("{0:N2}").Width(80);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+        .ToolBar(toolbar =>
+        {
+            //toolbar.Create();
+            //toolbar.Excel();
+            toolbar.Template(
+            @<text>
+                <div class="toolbar">
+                        <button class="k-button k-button-icontext k-grid-add btn btn-primary" href='#'>
+                            <span class="k-icon k-i-add"></span>
+                            Add new Record
+                        </button> 
+                        &nbsp;
+                        <button class="k-button k-button-icontext k-grid-excel" href='#'>
+                            <span class="k-icon k-i-excel"></span>
+                            Export to Excel
+                        </button>
+                    &nbsp;&nbsp;
+                        <a id="backgroundProcessingIndicator" class="text-warning" title="Processing..." hidden> <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw"></i></a>
+                    <div class="pull-right">
+                        <label >1 USD as of</label>
+                        @(Html.Kendo().DatePicker()
+                            .Name("date_of_exchage")
+                            .HtmlAttributes(new { style="width:80px;"})
+                            .Events(e =>
+                            {
+                                e.Change("onAttrChange");
+                            })
+                        )
+                        <label>is</label>
+                        @(Html.Kendo().NumericTextBox()
+                            .Name("exchange_rate_box")
+                            .HtmlAttributes(new { style = "width:80px;" })
+                            .Events(e =>
+                            {
+                                e.Change("onAttrChange");
+                            })
+                        )
+                        <label>Birr</label>
+                        @(Html.Kendo().Button()
+                            .Name("btn_calculate")
+                            .Content("Calculate Price")
+                            .Events(e =>
+                            {
+                                e.Click("onCalculateClick");
+                            })
+                            .HtmlAttributes(new { @class="btn btn-primary"})
+                            .Enable(false)
+                        )
+                        @(Html.Kendo().Button()
+                            .Name("btn_accept_proposed")
+                            .Content("Accept Proposed")
+                            .Events(e =>
+                            {
+                                e.Click("onAcceptProposedClick");
+                            })
+                            //.Icon("check")
+                            .Enable(false)
+                            .HtmlAttributes(new { @class="btn btn-success"})
+                        )
+
+                        @(Html.Kendo().Button()
+                            .Name("btn_update_product_price")
+                            .Content("Update Item Prices")
+                            .Events(e =>
+                            {
+                                e.Click("onSyncProductPricesClick");
+                            })
+                            .Enable(false)
+                            .HtmlAttributes(new { @class= "btn btn-success" })
+                        )
+                    </div>
+                </div>
+            </text>);
+        })
+          .PersistSelection()
+          .Events(e =>
+          {
+              e.Change("onMainGridSelectionChange");
+          })
+          .Excel(e =>
+          {
+              e.AllPages(true);
+              e.FileName("CRM Product Price " + DateTime.Now.ToString("yyyyMMddHHmmss"));
+          })
+          .Events(e =>
+          {
+              e.Edit("onPriceEdit");
+          })
+          .Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp);
+              editable.TemplateName("PriceLogEditorTemplate");
+              editable.Window(window =>
+              {
+                  window.Title("Price");
+              });
+          })
+          .HtmlAttributes(new { style = "height: 700px;" })
+          .Groupable()
+          .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+
+          .Scrollable()
+          .Sortable()
+          .Filterable()
+          .Scrollable(h => h.Height(700))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort =>
+              {
+                  sort.Add(p => p.NewDate).Descending();
+              })
+              .Model(model =>
+              {
+                  model.Id(p => p.ProductPriceLogId);
+                  model.Field(f => f.Difference).Editable(false);
+              })
+              .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")")
+                    )
+            .Read(read => read.Action("ProductPriceLog_Read", "ProductPriceLog"))
+            .Create(create => create.Action("ProductPriceLog_Create", "ProductPriceLog"))
+            .Update(update => update.Action("ProductPriceLog_Update", "ProductPriceLog"))
+            .Destroy(destroy => destroy.Action("ProductPriceLog_Destroy", "ProductPriceLog"))
+        )
+)
+
+
+
+<script>
+    function getSelectedCategory() {
+        var ddl = $("#StoreItemAssignmentID").data("kendoDropDownList");
+        return {
+            categoryCode: $("#ItemCategoryCode").val(), storeCode: $("#StoreCode").val(), filterText: ddl.filterInput.val()
+        };
+    }
+    function storeSelectorChange() {
+        var ddl = $("#StoreItemAssignmentID").data("kendoDropDownList");
+        if (ddl) {
+            ddl.dataSource.read()
+        }
+    }
+
+    // limit date to be less or equal to today
+    function onPriceEdit(e) {
+        var datePkr = $("#Date").data("kendoDatePicker");
+        if (datePkr) {
+            var nw = new Date(Date.now());
+            //datePkr.min(startDate);
+            datePkr.max(nw);
+            //datePkr.value(nw);
+            //datePkr.trigger("change");
+        } 
+    }
+    function onMainGridSelectionChange(e) {
+        var selected = this.selectedKeyNames().length;
+        if (selected > 0) {
+            $("#btn_accept_proposed").data("kendoButton").enable(true);
+            $("#btn_update_product_price").data("kendoButton").enable(true);
+        }
+        else {
+            $("#btn_accept_proposed").data("kendoButton").enable(false);
+            $("#btn_update_product_price").data("kendoButton").enable(false);
+        }
+    }
+    function onCalculateClick(e) {
+        disableInputExchangeRateFields();
+        showIndicator();
+        $.ajax({
+            url: '@Url.Action("CalculatePrice", "ProductPriceLog", new { area = "CRM"})',
+            data: {
+                currentDate: $("#date_of_exchage").val(),
+                exchangeRate: $("#exchange_rate_box").val()
+            },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                hideIndicator();
+                enableInputExchangeRateFields();
+                $("#grid").data("kendoGrid").dataSource.read();
+            },
+            error: function (result) {
+                hideIndicator();
+                enableInputExchangeRateFields();
+            }
+        });
+    }
+    function onAttrChange(e) {
+        var datePicker = $("#date_of_exchage").data("kendoDatePicker");
+        var tBox = $("#exchange_rate_box").data("kendoNumericTextBox");
+        if (datePicker && tBox) {
+            var dt = datePicker.value();
+            var rate = tBox.value();
+            if (dt && rate) {
+                $("#btn_calculate").data("kendoButton").enable(true);
+            } else {
+                $("#btn_calculate").data("kendoButton").enable(false);
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+    function onAcceptProposedClick(e) {
+        if (confirm("Are you sure you want to replace latest price with proposed price?")) {
+            showIndicator();
+            disableeIntegrationButtons();
+            var selected = $("#grid").data("kendoGrid").selectedKeyNames();
+
+            $.ajax({
+                url: '@Url.Action("AcceptProposedPrice", "ProductPriceLog", new { area = "CRM"})',
+                data: {
+                    priceLogIds: selected,
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    hideIndicator();
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                },
+                error: function (result) {
+                    hideIndicator();
+                    toastr.error("Operation failed.");
+                }
+            });
+        }
+    }
+    function onSyncProductPricesClick(e) {
+        var dt = $("#grid").data("kendoGrid").selectedKeyNames().length;
+        if (confirm("Are you sure you want to update item prices? " + dt + " item(s) will be affected.")) {
+            showIndicator();
+            disableeIntegrationButtons();
+            var selected = $("#grid").data("kendoGrid").selectedKeyNames();
+
+            $.ajax({
+                url: '@Url.Action("UpdateProductPrice", "ProductPriceLog", new { area = "CRM"})',
+                data: {
+                    priceLogIds: selected,
+                },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    hideIndicator();
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                },
+                error: function (result) {
+                    hideIndicator();
+                    toastr.error("Operation failed.");
+                }
+            });
+        }
+    }
+    function showIndicator() {
+        $("#backgroundProcessingIndicator").show();
+    }
+    function hideIndicator() {
+        $("#backgroundProcessingIndicator").hide();
+    }
+    function enableInputExchangeRateFields() {
+        $("#date_of_exchage").data("kendoDatePicker").enable(true);
+        $("#exchange_rate_box").data("kendoNumericTextBox").enable(true);
+        $("#btn_calculate").data("kendoButton").enable(true);
+    }
+    function disableInputExchangeRateFields() {
+        $("#date_of_exchage").data("kendoDatePicker").enable(false);
+        $("#exchange_rate_box").data("kendoNumericTextBox").enable(false);
+        $("#btn_calculate").data("kendoButton").enable(false);
+    }
+    function enableIntegrationButtons() {
+        $("#btn_accept_proposed").data("kendoButton").enable(true);
+        $("#btn_update_product_price").data("kendoButton").enable(true);
+    }
+    function disableeIntegrationButtons() {
+        $("#btn_accept_proposed").data("kendoButton").enable(false);
+        $("#btn_update_product_price").data("kendoButton").enable(false);
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 350px;
+    }
+</style>

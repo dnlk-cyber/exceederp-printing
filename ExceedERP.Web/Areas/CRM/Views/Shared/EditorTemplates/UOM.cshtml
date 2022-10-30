@@ -1,9 +1,10 @@
 ﻿ 
-@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+@(Html.Kendo().DropDownListFor(model => model)
+                      .HtmlAttributes(new { @class = "form-control" })
                       .AutoBind(true)
-                              .OptionLabel("Select")
-                                  .DataTextField("Text")
-                                      .DataValueField("Text")
+                      .OptionLabel("Select")
+                      .DataTextField("Text")
+                      .DataValueField("Text")
                       .DataSource(d =>
                           {
                               d.Read(r =>
@@ -11,7 +12,9 @@
                                       r.Action("GetUOM", "CRMDataProvider").Data("filterItemCode");
                                   })
                                   .ServerFiltering(true);
-                          }).ValuePrimitive(true).CascadeFrom("ItemCode")
+                          })
+                      .ValuePrimitive(true)
+                      .CascadeFrom("ItemCode")
                       .Enable(true)
                       .AutoBind(true)
 

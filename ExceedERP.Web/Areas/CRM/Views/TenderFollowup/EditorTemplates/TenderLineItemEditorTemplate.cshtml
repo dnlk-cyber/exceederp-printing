@@ -1,0 +1,103 @@
+﻿
+@model ExceedERP.Core.Domain.CRM.TenderFollowupLineItem
+@using System.Collections
+<div class="row">
+    <div class="col-sm-1">
+        <div class="k-label">
+        </div>
+    </div>
+    <div class="col-sm-9">
+        @(Html.Kendo().CheckBoxFor(m => m.IsExternalProduct)
+            .Name("IsExternalProduct")
+            .HtmlAttributes(new { @onClick = "onExternalProductCheckBoxClick(this.checked)"})
+        )
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-1">
+        <div class="k-label">
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div id="internalCategoryContainer">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ItemCategoryCode)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ItemCategoryCode)
+                                .Name("ItemCategoryCode")
+                                .OptionLabel("Select")
+                                .DataTextField("Name")
+                                .DataValueField("ItemCategoryCode")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetAllInventoryCategoryies", "CRMDataProvider"))
+                                            .ServerFiltering(false);
+                                })
+                                .Filter(FilterType.Contains)
+                                .Events(e =>
+                                {
+                                    e.DataBound("onCategoryBound");
+                                })
+                                .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+
+        <div id="externalCategoryContainer" hidden>
+            <div class="k-label">
+                @Html.LabelFor(model => model.ItemCategoryCode)
+            </div>
+            <div>
+                @(Html.Kendo().TextBoxFor(m => m.Category))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div id="internalProductContainer">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ItemCode)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ItemCode)
+                                        .Name("ItemCode")
+                                        .OptionLabel("Select")
+                                        .DataTextField("Name")
+                                        .DataValueField("ItemCode")
+                                        .CascadeFrom("ItemCategoryCode")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetInventoryItems", "CRMDataProvider").Data("getSelectedCategoryCode"))
+                                                      .ServerFiltering(true);
+                                        })
+                                        .Filter(FilterType.Contains)
+                                        .AutoBind(false)
+                                        .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+        <div id="externalProductContainer" hidden>
+            <div class="k-label">
+                @Html.LabelFor(model => model.Product)
+            </div>
+            <div>
+                @(Html.Kendo().TextBoxFor(m => m.Product))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Quantity)
+            </div>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Quantity))
+            </div>
+        </div>
+    </div>
+</div>
+

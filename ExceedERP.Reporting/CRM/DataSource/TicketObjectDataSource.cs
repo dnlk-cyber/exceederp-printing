@@ -2,19 +2,13 @@
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
 using System.ComponentModel;
-
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Reporting.CRM.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.CRM.DataSource
 {
-            public  class TicketObjectDataSource
+    public  class TicketObjectDataSource
     {
 
         private readonly ExceedDbContext db = new ExceedDbContext();

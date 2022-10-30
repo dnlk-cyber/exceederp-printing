@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+            .ValuePrimitive(true)
+            .OptionLabel("Select...")
+            .DataTextField("PaymentTermsDays")
+            .DataValueField("PaymentTermsID")
+            .Filter("contains")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetPaymentTerms", "CRMDataProvider", new { area = "CRM" }))
+                .ServerFiltering(false);
+            })
+
+)
+@Html.ValidationMessageFor(m => m)

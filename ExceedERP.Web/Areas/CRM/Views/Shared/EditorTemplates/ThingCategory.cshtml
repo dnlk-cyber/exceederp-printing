@@ -8,6 +8,7 @@
                       dataSource.Read(read => read.Action("GetThingCategory", "CRMDataProvider"))
                                 .ServerFiltering(true);
                   })
+                  .ValuePrimitive(true)
 
 )
 @Html.ValidationMessageFor(m => m)

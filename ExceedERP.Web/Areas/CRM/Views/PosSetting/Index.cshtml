@@ -1,0 +1,41 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Settings.PosSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SettingType).EditorTemplateName("SettingTypeEditor");
+          columns.Bound(c => c.Value);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(600))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PosSettingId))
+          .Events(e => e.Error("error_handler(\"grid\")")
+          .RequestStart("onRequestStart(\"grid\")")
+          .RequestEnd("onRequestEnd(\"grid\")"))
+
+          .Read(read => read.Action("PosSetting_Read", "PosSetting"))
+          .Create(create => create.Action("PosSetting_Create", "PosSetting"))
+          .Update(update => update.Action("PosSetting_Update", "PosSetting"))
+          .Destroy(destroy => destroy.Action("PosSetting_Destroy", "PosSetting"))
+      )
+)

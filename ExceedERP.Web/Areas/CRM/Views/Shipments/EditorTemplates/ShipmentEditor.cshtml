@@ -1,0 +1,235 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.CRM.SalesShipment
+
+<form method="post">
+    <div class="k-edit-form-container">
+        <div id="uneditableFieldsContainer">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.OrganizationCustomerId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.OrganizationCustomerId)
+                                                    .Name("OrganizationCustomerId")
+                                                    .DataTextField("TradeName")
+                                                    .DataValueField("OrganizationCustomerID")
+                                                    .OptionLabel("Select")
+                                                    .Filter(FilterType.Contains)
+                                                    .SelectedIndex(1)
+
+                                                    .DataSource(d => d.Read(r => r.Action("CashOrgCustomerDDBind", "OrganizationCustomer")))
+                                                    .Events(e => e.Change("SwitchCustomer").DataBound("SwitchCustomer"))
+                )
+            </div>
+            <div id="NewCustomerArea">
+                @*<div class="editor-label">
+                    @Html.LabelFor(model => model.NewCustomer)
+                </div>*@
+                <div class="editor-field">
+                    @(Html.Kendo().AutoCompleteFor(m => m.NewCustomer)
+                                              .Name("NewCustomer")
+                                              .DataTextField("TradeName")
+                                              .Filter("contains")
+                                              .MinLength(2)
+                                              .Placeholder("New Customer Name")
+                                              .NoDataTemplate("Write Customer Name Manually")
+                                              //.HtmlAttributes(new { @class = "form-control" })
+                                              .DataSource(source =>
+                                              {
+                                                  source.Read(read =>
+                                                  {
+                                                      read.Action("GetTemporaryCustomersForAutocomplete", "CRMDataProvider")
+                                                          .Data("onAdditionalData");
+                                                  })
+                                                  .ServerFiltering(true);
+                                              })
+                    )
+                </div>
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Source)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.Source)
+                    .Name("Source")
+                    .OptionLabel(Resources.Select)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .ValuePrimitive(true)
+                    .Filter("contains")
+                    .Events(ev =>
+                    {
+                        ev.Change("shipmentSourceChange");
+                    })
+                    //.BindTo(EnumExtension.EnumToSelectList(typeof(ShipmentSource)))
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetShipmentSourcesExcludingMaintenance", "CRMDataProvider", new { area = "CRM" }))
+                        .ServerFiltering(false);
+                    })
+                    )
+
+            </div>
+
+            @*<div style="height:20px;"></div>*@
+            <div id="invoiceNumberSelectionContainer">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.CashSalesInvoiceID)
+                </div>
+                <div class="editor-field">
+                    @(Html.Kendo().DropDownListFor(m => m.CashSalesInvoiceID)
+                                                                    .ValuePrimitive(true)
+                                                                    .Name("CashSalesInvoiceID")
+                                                                    .OptionLabel("Select Invoice No...")
+                                                                    .DataTextField("InvoiceNumberDisplay")
+                                                                    .DataValueField("CashSalesInvoiceID")
+                                                                    .Filter("contains")
+                                                                    .DataSource(dataSource =>
+                                                                    {
+                                                                        dataSource.Read(read => read.Action("GetShipmentInvoiceNumbers", "CRMDataProvider", new { area = "CRM" }).Data("filterShipmentInvoiceNumber"))
+                                                                        .ServerFiltering(true);
+                                                                    })
+                                                                    .Events(ev =>
+                                                                    {
+                                                                        ev.Change("referencedInvoiceSelectorChange");
+                                                                    })
+                                                                    .CascadeFrom("Source")
+                                                                    .Enable(false)
+                                                                    .AutoBind(false)
+
+                    )
+                </div>
+            </div>
+
+
+            <div id="salesOrderSelectionContainer" hidden>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.SalesOrderVoucherID)
+                </div>
+                <div class="editor-field">
+                    @(Html.Kendo().DropDownListFor(m => m.SalesOrderVoucherID)
+                                                        .Name("SalesOrderVoucherID")
+                                                        .ValuePrimitive(true)
+                                                        .OptionLabel("Select SO No...")
+                                                        .DataTextField("SalesOrderVoucherID")
+                                                        .DataValueField("SalesOrderVoucherID")
+                                                        .Filter("contains")
+                                                        .DataSource(dataSource =>
+                                                        {
+                                                            dataSource.Read(read => read.Action("GetShipmentSalesOrderNumbers", "CRMDataProvider", new { area = "CRM" }).Data("filterShipmentSalesOrder"))
+                                                            .ServerFiltering(true);
+                                                        })
+                                                        .Events(ev =>
+                                                        {
+                                                            ev.Change("referencedSalesOrderSelectorChange");
+                                                        })
+                                                        .CascadeFrom("Source")
+                                                        .Enable(false)
+                                                        .AutoBind(false)
+
+                    )
+                </div>
+            </div>
+            @*<div style="height:10px;"></div>*@
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.BranchId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                                                    //.HtmlAttributes(new { @class = "form-control" })
+                                                    .Filter(FilterType.Contains)
+                                                    //.SelectedIndex(1)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select Branch...")
+                                                    .DataTextField("Name")
+                                                    .DataValueField("BranchId")
+                                                    .Filter("contains")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetBranches", "CRMDataProvider", new { area = "CRM" }))
+                                                            .ServerFiltering(false);
+                                                    })
+                )
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.StoreID)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.StoreID)
+                                                    .Name("StoreID")
+                                                    .Filter(FilterType.Contains)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select Store...")
+                                                    .DataTextField("Description")
+                                                    .CascadeFrom("BranchId")
+                                                    .DataValueField("SalesStoreId")
+                                                    .Filter("contains")
+                                                    .Enable(false)
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetStoreInBranch", "CRMDataProvider", new { area = "CRM" }).Data("getSelectedBranch"))
+                                                        .ServerFiltering(true);
+                                                    })
+                )
+            </div>
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CRMPeriodId)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(model => model.CRMPeriodId)
+                                    //.HtmlAttributes(new { @class = "form-control" })
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select Period...")
+                                    .DataTextField("Name")
+                                    .DataValueField("CRMPeriodId")
+                                    .Filter("contains")
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetOpenCRMPeriodsWithinVouchersReferencedByShipment", "CRMDataProvider", new { area = "CRM" })
+                                        .Data("getShipmentSourceAndRefrencedIds"))
+                                        .ServerFiltering(false);
+                                    })
+                                    .Events(ev =>
+                                    {
+                                        ev.Change("onPeriodChange");
+                                    })
+
+            )
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ShipmentDate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.ShipmentDate))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.MethodOfShipment)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.MethodOfShipment))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PlateNo)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.PlateNo))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TrailerPlateNo)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.TrailerPlateNo))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Remark)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.Remark))
+        </div>
+    </div>
+</form>
+

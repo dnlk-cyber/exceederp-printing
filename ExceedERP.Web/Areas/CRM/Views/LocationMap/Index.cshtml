@@ -1,0 +1,98 @@
+﻿<legend>Location Map</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LocationMap>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.LocationName);
+          columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector");
+          columns.Bound(c => c.Description);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LocationMapId))
+          .Read(read => read.Action("LocationMap_Read", "LocationMap"))
+          .Create(create => create.Action("LocationMap_Create", "LocationMap"))
+          .Update(update => update.Action("LocationMap_Update", "LocationMap"))
+          .Destroy(destroy => destroy.Action("LocationMap_Destroy", "LocationMap"))
+      )
+      .ClientDetailTemplateId("assignment-template")
+)
+
+
+<script id="assignment-template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tb_#=LocationMapId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("User Assignment").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LocationUserAssignment>()
+                            .Name("assignment_#=LocationMapId#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.UserName).EditorTemplateName("UserSelector").ClientTemplate(
+                                 "<strong> \\#=FullName\\#</strong> <br /> @<i style=''>\\#=UserName\\#</i>"
+                                 );
+
+                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create();
+                                //toolbar.Excel();
+                                //toolbar.Pdf();
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Pageable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                            .Scrollable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                        .Error("error_handler(\"assignment_#=LocationMapId#\")")
+                                        .RequestStart("onRequestStart(\"assignment_#=LocationMapId#\")")
+                                        .RequestEnd("onRequestEnd(\"assignment_#=LocationMapId#\")"))
+                                .Model(model => model.Id(p => p.LocationMapId))
+                                .Read(read => read.Action("Assignments_Read", "LocationUserAssignment", new { id = "#=LocationMapId#" }))
+                                .Create(create => create.Action("Assignment_Create", "LocationUserAssignment", new { id = "#=LocationMapId#" }))
+                                .Update(update => update.Action("Assignment_Update", "LocationUserAssignment"))
+                                .Destroy(destroy => destroy.Action("Assignment_Destroy", "LocationUserAssignment"))
+                            ).ToClientTemplate()
+                            )
+                            </text>
+                        );
+                    }).ToClientTemplate()
+    )
+</script>

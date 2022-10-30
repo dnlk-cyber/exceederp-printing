@@ -1,0 +1,288 @@
+﻿
+@model ExceedERP.Core.Domain.CRM.TenderFollowup
+@using System.Collections
+<form id="lineForm" method="post">
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.CustomerId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                                                                .DataTextField("TradeName")
+                                                                .DataValueField("OrganizationCustomerID")
+                                                                .OptionLabel("Select")
+                                                                .Filter(FilterType.Contains)
+                                                                .DataSource(d => d.Read(r => r.Action("OrgCustomerDDBind", "OrganizationCustomer")))
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BidBondAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.BidBondAmount)
+
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.DateAnnounceBidValidatiy)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(m => m.DateAnnounceBidValidatiy))
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ServiceCharge)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ServiceCharge))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ClosingDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DateTimePickerFor(model => model.ClosingDate)
+
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.OpeningDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DateTimePickerFor(model => model.OpeningDate)
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Location)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Location))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.DocumentPreparationStartDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DateTimePickerFor(model => model.DocumentPreparationStartDate)
+
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Status)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Status)
+                                .Name("Status")
+                                .OptionLabel("Select")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetTenderFollowupStatus", "CRMDataProvider"))
+                                        .ServerFiltering(false);
+                                })
+                                .Events(e =>
+                                {
+                                    e.Change("swithReasonEditors");
+                                    e.DataBound("swithReasonEditors");
+                                })
+                                .Filter(FilterType.Contains)
+                                .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-9">
+            <div hidden id="reason_of_not_participating_container">
+                <div class="form-group">
+                    <div class="k-label text-danger">
+                        @Html.LabelFor(model => model.ReasonOfNotParticipating)
+                    </div>
+                    <div>
+                        @(Html.Kendo().TextBoxFor(model => model.ReasonOfNotParticipating)
+                            .HtmlAttributes(new { style="max-width:100%; width:100%;"})
+                            )
+                    </div>
+                </div>
+            </div>
+            <div hidden id="reason_of_losing_container">
+                <div class="form-group">
+                    <div class="k-label text-danger">
+                        @Html.LabelFor(model => model.ReasonOfLosing)
+                    </div>
+                    <div>
+                        @(Html.Kendo().TextBoxFor(model => model.ReasonOfLosing)
+                            .HtmlAttributes(new { style = "max-width:100%; width:100%;" })
+
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TenderResult)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TenderResult))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Remark)
+
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LatestLetter)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.LatestLetter)
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ContactPerson)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.ContactPerson))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BidAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.BidAmount)
+
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BidSecurityCharge)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.BidSecurityCharge)
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BidValidty)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.BidValidty))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+
+            </div>
+        </div>
+    </div>
+</form>
+
