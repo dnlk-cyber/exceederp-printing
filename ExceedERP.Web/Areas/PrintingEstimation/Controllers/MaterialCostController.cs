@@ -44,7 +44,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         }
         public ActionResult MaterialJobOrders_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q => q.JobId == id);
+            var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
+            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q => q.EstimationFormId == estId);
             DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
                 MaterialCostId = materialCost.MaterialCostId,
                 EstimationFormId = materialCost.EstimationFormId,
