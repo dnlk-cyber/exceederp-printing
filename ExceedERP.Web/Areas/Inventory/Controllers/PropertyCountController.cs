@@ -452,7 +452,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             {
                 return "There are items with zero price.Please update them first";
             }
-            return null;
+            return "";
         }
 
         public ActionResult PropertyCountPrint(int id)

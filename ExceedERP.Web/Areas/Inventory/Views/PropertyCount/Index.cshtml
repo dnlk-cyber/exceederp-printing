@@ -331,6 +331,7 @@
         if (conf === true) {
 
             $('#loading-image').show();
+            alert(codeid);
                 $.ajax({
                     type: "GET",
                     url: '@Url.Action("UpdateBalance", "PropertyCount")',
@@ -343,7 +344,8 @@
                         //location.reload(true);
                     }, //end succ
                     error: function (result) {
-                        alert(result);
+                        alert("error-" + result);
+                        console.log (result)
                     },
                     complete: function () {
                         $('#loading-image').hide();
