@@ -197,7 +197,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         {
             var countRecord = db.PropertyCounts.Find(id);
             var storeitems = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode)
-                //.Where(x=>x.ItemCode== "13102-000-005") //test
+                //.Where(x=>x.ItemCode== "13106-000-695") //test
                 .ToList();
             var countItems = db.PropertyCountItems.Where(i => i.PropertyCountId == id).ToList();
 
@@ -207,12 +207,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             {
                 decimal balanceBeforeCount = item.Balance;
                 // temporary change
+                //any record just before the current or on the current date
                 #region get balance with respect to property count date instead of CURRENT BALANCE
                 var binCardLines =
                    db.BinCardLines.Where(b => b.Date <= countRecord.CountDate &&//added =
-                   b.StoreItemAssignmentID == item.StoreItemAssignmentID&&
+                   b.StoreItemAssignmentID == item.StoreItemAssignmentID//&&
                    //b.ReferenceDoc != null &&
-                   !b.ReferenceDoc.StartsWith("Count on date") // exclude count
+                   //!b.ReferenceDoc.StartsWith("Count on date") // exclude count
                    ).AsQueryable();
                 if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
                 {
@@ -357,6 +358,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
             }
 
+            #region operation log
+            UserHelper.OperationLog(Request.UserHostAddress, "Count recalculate", "Success", User.Identity.Name, $"recalculated  {countRecord.StoreCode} ", Modules.Inventory);
+            #endregion
+
             var formattedData1 = new
             {
                 Message = "Completed.",
@@ -447,7 +452,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             {
                 return "There are items with zero price.Please update them first";
             }
-            return null;
+            return "";
         }
 
         public ActionResult PropertyCountPrint(int id)
@@ -499,7 +504,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                                 BalanceQTY = storeItem.Balance,
                                 BalanceUPrice = storeItem.AvgPrice,
                                 BalanceTPrice = storeItem.AvgPrice * storeItem.Balance,
-                                TimeStamp = DateTime.Now,
+                                TimeStamp = DateTime.Now.Date,
                                 TransactionType= BinCardTransactionTypes.Count,
                                 StatusType= BinCardTransactionStatus.Regular
                             };
@@ -553,6 +558,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     }
 
                 }
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Count update", "Success", User.Identity.Name, $"updated  {record.StoreCode} ", Modules.Inventory);
+                #endregion
                 var formattedData = new
                 {
                     Message = "Updating items completed.",
@@ -620,6 +629,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
                 #endregion
             }
+            #region operation log
+            UserHelper.OperationLog(Request.UserHostAddress, "Count reverse", "Success", User.Identity.Name, $"reversed  {record.StoreCode} ", Modules.Inventory);
+            #endregion
             var formattedData1 = new
             {
                 Message = "Reversed Successfully.",
@@ -657,8 +669,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
             }
-           
-           
+
+            #region operation log
+            UserHelper.OperationLog(Request.UserHostAddress, "Count close", "Success", User.Identity.Name, $"closed  {record.StoreCode} ", Modules.Inventory);
+            #endregion
             var formattedData1 = new
             {
                 Message = "Count is closed Sucessfully.",
