@@ -163,6 +163,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var chgQua = changeOfOrders.Sum(q => q.Quantity);
                         var chgTotPrice = changeOfOrders.Sum(q => q.Total);
                         decimal quantity = jobOrder.Quantity + chgQua;
+                    var receQua = quantity;
                     decimal totalPrice = jobOrder.TotalPrice + chgTotPrice;
                     var jobItems = db.JobStatusLineItems.ToList().Where(q=>q.Date.Date >= startDate.Value.Date && q.Date.Date <= endDate.Value.Date).ToList();
 
@@ -219,7 +220,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                         {
                                             var finishedQua = jobLineItems.Sum(s => s.Quantiy);
 
-                                            if (quantity > finishedQua)
+                                            if (quantity != finishedQua)
                                             {
                                                 state = progressStatus;
                                             }
@@ -233,29 +234,31 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                         else
                                         {
                                             decimal finishedQua = jobLineItems.Sum(s => s.Quantiy);
-                                            if (selectedStatus == JobOrderStatus.Finished.ToString())
-                                            {
+                                            //if (selectedStatus == JobOrderStatus.Finished.ToString())
+                                            //{
                                                 state = selectedStatus;
-                                                if (quantity > finishedQua)
+                                                if (quantity != finishedQua)
                                                 {
-                                                    state = JobOrderStatus.ParitiallyFinished.ToString();
+                                                if (status == JobState.Finished.ToString())
+                                                {
+                                                    continue;
+                                                }
+                                                state = JobOrderStatus.ParitiallyFinished.ToString();
                                                 }
                                                 else
                                                 {
                                                     if (status == JobState.ParitiallyFinished.ToString())
                                                     {
-
-
                                                         continue;
                                                     }
                                                 }
 
-                                            }
-                                            else
-                                            {
-                                                state = JobOrderStatus.ParitiallyFinished.ToString();
+                                            //}
+                                            //else
+                                            //{
+                                            //    state = JobOrderStatus.ParitiallyFinished.ToString();
 
-                                            }
+                                            //}
                                             quantity = finishedQua;
                                             totalPrice = jobLineItems.Sum(s => s.TotalPrice);
                                         }
@@ -266,7 +269,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                         {
                                             var finishedQua = jobLineItems.Sum(s => s.Quantiy);
 
-                                            if (quantity > finishedQua)
+                                            if (quantity != finishedQua)
                                             {
                                                 state = progressStatus;
                                             }
@@ -291,7 +294,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                                     {
                                         var finishedQua = jobLineItems.Sum(s => s.Quantiy);
 
-                                        if (quantity > finishedQua)
+                                        if (quantity != finishedQua)
                                         {
                                             state = progressStatus;
                                         }
@@ -318,7 +321,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     {
                         state = JobOrderStatus.Received.ToString();
                     }
-
+                    if(quantity<0)
+                    {
+                        continue;
+                    }
                     job.JobNo = jobOrder?.JobNo;
                         job.JobType = jobType?.JobName;
                         job.Client = client?.TradeName;
