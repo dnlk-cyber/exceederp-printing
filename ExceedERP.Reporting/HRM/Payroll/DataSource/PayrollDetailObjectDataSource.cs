@@ -29,18 +29,16 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
 
                 if (branchId != null)
                 {
-                    List<string> branchs = branchId.Split('-').ToList();
-                    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
+                    // List<string> branchs = branchId.Split('-').ToList();
+                    int did = int.Parse(branchId);
+                    payrolldatas = payrolldatas.Where(x => x.BranchId ==did).ToList();
                 }
-                else if (UserHelper.CheckUserRole(user, "All_Branch_Payroll_Report"))
-                {
-                    List<string> branchs = UserHelper.GetUserBranchId(user);
-                    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
-                }
-                else
-                {
-                    payrolldatas = null;
-                }
+                //else if (UserHelper.CheckUserRole(user, "All_Branch_Payroll_Report"))
+                //{
+                //    List<string> branchs = UserHelper.GetUserBranchId(user);
+                //    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
+                //}
+               
                 if (payrolldatas != null)
                 {
                     var Palacmenets = db.Placements.OrderByDescending(x => x.AssignmentDate);
@@ -62,7 +60,7 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                     {
                         payrolldatas = payrolldatas.Where(x => x.BankAccount == null).ToList();
                     }
-                    else
+                    else if (payment == "BANK")
                     {
                         payrolldatas = payrolldatas.Where(x => x.BankAccount != null).ToList();
                         if (!string.IsNullOrEmpty(bank))
