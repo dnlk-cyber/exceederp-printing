@@ -6118,13 +6118,6 @@
     <Content Include="Areas\HRM\Views\EmployeeCosign\EditorTemplates\CosignType.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeCosign\EditorTemplates\Upload.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeCosign\Index.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\EduLevelList.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\LookUpList.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\PersonEmployee.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\PersonTitle.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\Upload.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\UploadDocument.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\Index.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeExperience\EditorTemplates\EmployeeExperience.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeExperience\EditorTemplates\Upload.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeExperience\Index.cshtml" />
@@ -6644,7 +6637,6 @@
     <Content Include="Areas\HRM\Views\Delegation\EditorTemplates\GLPeriod.cshtml" />
     <Content Include="Areas\Common\Views\Bank\EditorTemplates\Address.cshtml" />
     <Content Include="Areas\HRM\Views\Company\EditorTemplates\Address.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\Address.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeProfile\EditorTemplates\Address.cshtml" />
     <Content Include="Areas\HRM\Views\PayrollProcess\EditorTemplates\Branch.cshtml" />
     <Content Include="Areas\Procurement\Views\GuaranteeMode\Index.cshtml" />
@@ -6658,7 +6650,6 @@
     <Content Include="Areas\FixedAsset\Views\FixedAssetReceive\EditorTemplates\filterItem.cshtml" />
     <Content Include="Areas\FixedAsset\Views\FixedAssetReceive\EditorTemplates\FixedAssetReceive.cshtml" />
     <Content Include="Areas\FixedAsset\Views\FixedAssetReceive\EditorTemplates\FixedAssetReceive - Copy.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\Emergency.cshtml" />
     <Content Include="Areas\Procurement\Views\ProformTechnical\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\ContractRenewal\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\ContractRenewalValidation\Index.cshtml" />
@@ -6689,7 +6680,6 @@
     <Content Include="Areas\HRM\Views\JobTitleMappingTemp\Index.cshtml" />
     <Content Include="Areas\HRM\Views\ProjectType\Index.cshtml" />
     <Content Include="Areas\FixedAsset\Views\DepreciationRule\EditorTemplates\FixedAssetRuleCategorySelector.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeeCourtProfile\EditorTemplates\Relationship.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeProfile\EditorTemplates\Emergency.cshtml" />
     <Content Include="Areas\FixedAsset\Views\FixedAssetPrint\FixedAssetRequistionPrint.cshtml" />
     <Content Include="Areas\FixedAsset\Views\FixedAssetPrint\FixedAssetReceive.cshtml" />
