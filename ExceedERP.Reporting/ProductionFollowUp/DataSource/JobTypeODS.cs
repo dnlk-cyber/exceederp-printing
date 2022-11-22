@@ -69,24 +69,22 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                      jobListItemIds = db.JobStatusLineItems.ToList().Where(x => x.Date.Date >= startDate.Value.Date && x.Date.Date <= endDate.Value.Date).Select(s => s.JobStatusId).ToList();
                     jobLists = jobLists.Where(q => jobListItemIds.Contains(q.JobStatusId)).ToList();
                 }
-                else if(status == JobOrderStatus.Received.ToString())
+                else if(status == JobOrderStatus.Received.ToString()&& jobPhase != ProductionDepartment.Printing.ToString())
                 {
-                    if (jobPhase == ProductionDepartment.Finishing.ToString())
+                  
+                     if (jobPhase == ProductionDepartment.Finishing.ToString())
                     {
-                        var jobStatusIds = db.JobStatuses.Where(q => q.JobPhase.ToString() == ProductionDepartment.Printing.ToString()).ToList().Select(s => s.JobStatusId);
-                        jobLists = db.JobStatuses.ToList().Where(q => jobStatusIds.Contains(q.JobStatusId)).ToList();
+                        jobLists = db.JobStatuses.Where(q => q.JobPhase.ToString() == ProductionDepartment.Printing.ToString()).ToList();
                        
                     }
                     else if (jobPhase == ProductionDepartment.FinishingDelivery.ToString())
                     {
-                        var jobStatusIds = db.JobStatuses.Where(q => q.JobPhase.ToString() == ProductionDepartment.Finishing.ToString()).ToList().Select(s => s.JobStatusId);
-                        jobLists = db.JobStatuses.ToList().Where(q => jobStatusIds.Contains(q.JobStatusId)).ToList();
+                        jobLists = db.JobStatuses.Where(q => q.JobPhase.ToString() == ProductionDepartment.Finishing.ToString()).ToList();
                        
                     }
                     else if (jobPhase == ProductionDepartment.SalesDelivery.ToString())
                     {
-                        var jobStatusIds = db.JobStatuses.Where(q => q.JobPhase.ToString() == ProductionDepartment.FinishingDelivery.ToString()).ToList().Select(s => s.JobStatusId);
-                        jobLists = db.JobStatuses.ToList().Where(q => jobStatusIds.Contains(q.JobStatusId)).ToList();
+                        jobLists = db.JobStatuses.Where(q => q.JobPhase.ToString() == ProductionDepartment.FinishingDelivery.ToString()).ToList();
                      
                     }
                     jobListItemIds = db.JobStatusLineItems.ToList().Where(x => x.Date.Date >= startDate.Value.Date && x.Date.Date <= endDate.Value.Date).Select(s => s.JobStatusId).ToList();
