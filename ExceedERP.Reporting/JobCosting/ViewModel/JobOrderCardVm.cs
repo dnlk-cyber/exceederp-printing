@@ -11,6 +11,8 @@ namespace ExceedERP.Reporting.JobCosting.ViewModel
     {
         public string ReceivedDate { get; set; }
         public string JobOrderNo { get; set; }
+        public string Year { get; set; }
+
         public decimal Quantity { get; set; }
         public string Customer { get; set; }
         public string ReceiptNo { get; set; }
@@ -25,6 +27,7 @@ namespace ExceedERP.Reporting.JobCosting.ViewModel
         public string CostCenter { get; set; }
         public string Year { get; set; }
         public string Month { get; set; }
+        public string Date { get; set; }
         public string Reference { get; set; }
         public decimal MaterialQty { get; set; }
         public decimal WorkingHour { get; set; }

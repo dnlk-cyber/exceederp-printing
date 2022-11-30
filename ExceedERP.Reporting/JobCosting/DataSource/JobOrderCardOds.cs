@@ -56,11 +56,12 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                     model.Quantity = jobOrder.Quantity;
                     model.Remaining = jobOrder.Quantity - finishedQuantity;
                     model.ReceiptNo = jobCost.ReciptNo;
-                    model.Description = jobCost.Description;
+                    model.Description = "Code "+db.JobCategories.Find(jobOrder.JobTypeId)?.JobCode;
                     model.SalesPrice = jobOrder.TotalPrice;
                     model.OrderSize = jobOrder.FinishingSize;
                     model.ReceivedDate = jobOrder.ReceivedDate?.ToString("MM/dd/yyyy");
                     model.Date = DateTime.Now.ToString("MM/dd/yyyy");
+                    string year = "";
                     if (jobStatus != null)
                     {
                         finishedQuantity = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.TotalPrice);
@@ -76,6 +77,7 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                         if(issueReq!=null)
                         {
                             jobCardItem.Year = fiscalYear.DateFrom.Year.ToString();
+                            year = jobCardItem.Year;
                             jobCardItem.Month = fiscalYear.DateFrom.ToString("MMMM");
                         }
                            
@@ -94,7 +96,9 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                             var jobCardItem = new JobOrderCardItem();
                             jobCardItem.CostCenter = db.GLChartOfAccountCostCenters.Find(labour.CostCenter)?.Values;
                             jobCardItem.Year = db.GLFiscalYears.Find(labour.GlFiscalYearId)?.Name;
-                            jobCardItem.Month = db.GLPeriods.Find(labour.GLPeriodId)?.Name;
+                        year = jobCardItem.Year;
+
+                        jobCardItem.Month = db.GLPeriods.Find(labour.GLPeriodId)?.Name;
                             jobCardItem.Reference = labour.Reference;
                             jobCardItem.MaterialQty = 0;
                             jobCardItem.WorkingHour = 0;
@@ -105,6 +109,7 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                             jobCardItems.Add(jobCardItem);
 
                         }
+                        model.Year = year;
                         model.JobOrderCardItems = jobCardItems;
 
                     }

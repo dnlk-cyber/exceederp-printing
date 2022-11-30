@@ -1552,7 +1552,6 @@
     console.log(x);
     if (x == true) {
 
-    $("#ProformaId").data("kendoDropDownList").enable(true);
     $("#CustomerId").data("kendoDropDownList").enable(false);
     $("#IsExistingCustomer").attr("disabled", true);
     $("#CustomerName").prop("readonly", true);
@@ -1561,12 +1560,11 @@
     }
     else {
     $("#IsExistingCustomer").attr("disabled", false);
-    $("#ProformaId").data("kendoDropDownList").enable(false);
 
     var y = $('#IsExistingCustomer').is(':checked');
     if (y == true) {
     console.log(100);
-    $("#CustomerId").data("kendoDropDownList").enable(true);
+    //$("#CustomerId").data("kendoDropDownList").enable(true);
     $("#hv").attr("disabled", true);
     $("#CustomerName").prop("readonly", true);
     $("#BrandName").prop("readonly", true);
@@ -1575,13 +1573,13 @@
     else {
     console.log(200);
 
-    $("#CustomerId").data("kendoDropDownList").enable(false);
+    //$("#CustomerId").data("kendoDropDownList").enable(false);
     $("#hv").attr("disabled", false);
     $("#CustomerName").prop("readonly", false);
     $("#BrandName").prop("readonly", false);
     $("#TinNo").prop("readonly", false);
 
-    $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+   // $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
     $("#CustomerName").val("");
     $("#ContactName").val("");
     $("#ContactPhone").val("");
@@ -1619,7 +1617,7 @@
     $("#BrandName").prop("readonly", false);
     $("#TinNo").prop("readonly", false);
 
-    $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+  //  $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
     $("#CustomerName").val("");
     $("#ContactName").val("");
     $("#ContactPhone").val("");
