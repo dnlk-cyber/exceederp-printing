@@ -8,14 +8,15 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
     public static class ListOfEmployeeIdView
     {
         private static ExceedDbContext db = new ExceedDbContext();
-        public static List<EmployeeIdView> GetEmployees()
+        public static List<EmployeeIdView> GetEmployees(bool active=true)
         {
             List<EmployeeIdView> EmployeeIdViews = new List<EmployeeIdView>();
             EmployeeIdView EmployeeIdView = new EmployeeIdView();
             var employeeList = db.Person_Employee.AsQueryable();
             if (employeeList.Any())
             {
-                employeeList = employeeList.Where(l => l.IsActive).AsQueryable();
+                
+                employeeList = employeeList.Where(l => l.IsActive==active).AsQueryable();
             }
             foreach (var emp in employeeList)
             {

@@ -14,15 +14,21 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<BasicSalaryList> GetPayrollBasicSalaryList(string branchId, string user)
+        public List<BasicSalaryList> GetPayrollBasicSalaryList(string branchId, string user,string status)
         {
             List<BasicSalaryList> list = new List<BasicSalaryList> { };
             BasicSalaryList EmployeeInfo;
-            var empLists = ListOfEmployeeIdView.GetEmployees();
+            List<EmployeeIdView> emplist = new List<EmployeeIdView>();
+
+            if (status== "Active")
+                emplist = ListOfEmployeeIdView.GetEmployees();
+            else if (status == "InActive")
+                emplist = ListOfEmployeeIdView.GetEmployees(false);
+
             decimal totalAmount = 0;
             int maxid = 0;
 
-            foreach (EmployeeIdView emp in empLists)
+            foreach (EmployeeIdView emp in emplist)
             {
 
                 var assignmentList = db.Placements.Where(x => x.EmployeeId == emp.PersonId && x.isCurrent).ToList();

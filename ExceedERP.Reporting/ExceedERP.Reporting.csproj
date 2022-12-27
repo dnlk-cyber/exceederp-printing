@@ -2362,6 +2362,7 @@
     <Compile Include="HRM\Payroll\DataSource\DynamicColumnObjectDataSource.cs" />
     <Compile Include="HRM\Payroll\DataSource\EmployeeListObjectDataSource.cs" />
     <Compile Include="HRM\Payroll\DataSource\EmployeePaySlipObjectDataSource.cs" />
+    <Compile Include="HRM\Payroll\DataSource\EmployeeStatusOds.cs" />
     <Compile Include="HRM\Payroll\DataSource\EmployeeSummaryReconcilationObjectDataSource.cs" />
     <Compile Include="HRM\Payroll\DataSource\IncomeTaxObjectDataSource.cs" />
     <Compile Include="HRM\Payroll\DataSource\ListOfEmployeeIdView.cs" />
