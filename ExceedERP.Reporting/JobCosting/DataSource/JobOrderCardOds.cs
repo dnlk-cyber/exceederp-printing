@@ -67,7 +67,8 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                         finishedQuantity = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.TotalPrice);
                     }
                         var jobCardItems = new List<JobOrderCardItem>();
-                        var materialCosts =db.IssueItems.Where(q => q.ProductionJobNo == jobOrder.JobNo).ToList(); ;
+                        var materialCosts =db.IssueItems.Where(q => q.ProductionJobNo == jobOrder.JobNo).ToList();
+                    decimal accTotal = 0;
                         foreach(var material in materialCosts)
                         {
                             var jobCardItem = new JobOrderCardItem();
@@ -78,16 +79,18 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                         {
                             jobCardItem.Year = fiscalYear.DateFrom.Year.ToString();
                             year = jobCardItem.Year;
-                            jobCardItem.Month = fiscalYear.DateFrom.ToString("MMMM");
+                            jobCardItem.Month = issueReq.IssueDate.ToString("MMMM");
                         }
                            
                             jobCardItem.Reference = material.ProductionJobNo;
                             jobCardItem.MaterialQty = material.IssuedQuantity;
+                            jobCardItem.Date = issueReq.IssueDate.Day.ToString();
                             jobCardItem.WorkingHour = 0;
                             jobCardItem.DirectLabor = 0;
                             jobCardItem.DirectMaterial = material.Total;
                             jobCardItem.MOH = 0;
-                            jobCardItem.Total = material.Total;
+                        accTotal += material.Total;
+                            jobCardItem.Total = accTotal;
                             jobCardItems.Add(jobCardItem);
                         }
                         var labourCosts = db.JobLaborCosts.Where(q => q.JobCostId == jobCost.JobCostId).ToList();
@@ -102,10 +105,12 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                             jobCardItem.Reference = labour.Reference;
                             jobCardItem.MaterialQty = 0;
                             jobCardItem.WorkingHour = 0;
-                            jobCardItem.DirectLabor = labour.ContractLaborCost+labour.ContractLaborCost;
+                        jobCardItem.Date = "30";
+                        jobCardItem.DirectLabor = labour.PermanetLaborCost+labour.ContractLaborCost;
                             jobCardItem.DirectMaterial = 0;
                             jobCardItem.MOH = labour.ContractOverHeadCost + labour.PermanetOverHeadCost;
-                            jobCardItem.Total = jobCardItem.MOH + jobCardItem.DirectLabor;
+                        accTotal += jobCardItem.MOH + jobCardItem.DirectLabor;
+                        jobCardItem.Total = accTotal;
                             jobCardItems.Add(jobCardItem);
 
                         }
