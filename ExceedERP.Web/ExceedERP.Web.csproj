@@ -7872,7 +7872,6 @@
     <Content Include="Views\Shared\EditorTemplates\PurchaserSelector.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\FixedAssetPeriodSelector.cshtml" />
     <Content Include="Views\Shared\_HRM.cshtml" />
-    <Content Include="Views\Shared\BranchSelector.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\CountrySelector.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SubordinatePurchaserSelector.cshtml" />
     <Content Include="Views\Dashboard\HrDashboard2.cshtml" />
