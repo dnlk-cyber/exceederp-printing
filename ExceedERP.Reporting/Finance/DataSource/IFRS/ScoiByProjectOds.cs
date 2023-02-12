@@ -28,7 +28,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
             var discontinuedOperationRanges = _db.IfrsScoiDiscontinuedOperationRanges.ToList();
             var otherComprehensiveIncomeRanges = _db.IfrsScoiOtherComprehensiveIncomeRanges.ToList();
 
-            if (notes != null && !String.IsNullOrEmpty(fiscalyear) && !String.IsNullOrEmpty(project))
+            if (notes != null && !String.IsNullOrEmpty(fiscalyear))
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
                 var prevYearEndBalance = new List<GLLedgerPostingLines>();
@@ -58,15 +58,18 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                 #region filter by segment
 
-                //currentYearEndBalance = currentYearEndBalance
-                //      .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
-                //prevYearEndBalance = prevYearEndBalance
-                //    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                if (!String.IsNullOrEmpty(project))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
 
-                //currentYearBegBalance = currentYearBegBalance
-                //    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
-                //prevYearBegBalance = prevYearBegBalance
-                //    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                }
 
                 if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                 {
@@ -303,7 +306,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
             var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();                
 
-            if (scoiRules != null && !String.IsNullOrEmpty(fiscalyear) && !String.IsNullOrEmpty(project))
+            if (scoiRules != null && !String.IsNullOrEmpty(fiscalyear))
             {
                 #region continuing operation variables
 
@@ -369,11 +372,23 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                         prevYearEndBalance = _reportHelper.GetAccountEndBalance(prevfyearObj.GlFiscalYearId, previousPeriodTo);
                         prevYearBegBalance = _reportHelper.GetAccountBegBalance(prevfyearObj.GlFiscalYearId, previousPeriodFrom);
                     }
-                                       
-                    #region filter by segment
 
-                 
-                    if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
+
+                    #region filter by segment
+                    if (!String.IsNullOrEmpty(project))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                    }
+
+                     if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                     {
 
                         var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
