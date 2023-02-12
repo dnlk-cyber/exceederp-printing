@@ -94,7 +94,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox22.Name = "textBox22";
             this.textBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.0039327144622803D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox22.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox22.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox22.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox22.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox22.StyleName = "Civic.TableHeader";
@@ -105,7 +105,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox13.Name = "textBox13";
             this.textBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.69936120510101318D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox13.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox13.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox13.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox13.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox13.StyleName = "Civic.TableHeader";
@@ -116,7 +116,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox24.Name = "textBox24";
             this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8122748136520386D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox24.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox24.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox24.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox24.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox24.StyleName = "Civic.TableHeader";
@@ -128,7 +128,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox25.Name = "textBox25";
             this.textBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0521397590637207D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox25.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox25.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox25.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox25.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox25.StyleName = "Civic.TableHeader";
@@ -140,7 +140,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.0135395526885986D), Telerik.Reporting.Drawing.Unit.Inch(0.18368059396743774D));
-            this.textBox3.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox3.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox3.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox3.StyleName = "Civic.TableHeader";
@@ -151,7 +151,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2612464427948D), Telerik.Reporting.Drawing.Unit.Inch(0.18368059396743774D));
-            this.textBox1.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox1.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox1.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox1.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox1.StyleName = "Civic.TableHeader";
@@ -163,7 +163,7 @@ namespace ExceedERP.Reporting.Finance.GAAP.ByBranch
             // 
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2929222583770752D), Telerik.Reporting.Drawing.Unit.Inch(0.18368059396743774D));
-            this.textBox10.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox10.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox10.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox10.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox10.StyleName = "Civic.TableHeader";

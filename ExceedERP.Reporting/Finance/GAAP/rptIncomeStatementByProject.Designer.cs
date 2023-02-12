@@ -35,6 +35,8 @@ namespace ExceedERP.Reporting.Finance.GAAP
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -61,6 +63,8 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
             this.periodDS = new Telerik.Reporting.ObjectDataSource();
             this.BranchDS = new Telerik.Reporting.ObjectDataSource();
+            this.SegmentTypes = new Telerik.Reporting.ObjectDataSource();
+            this.SegmentValues = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table2 = new Telerik.Reporting.Table();
             this.textBox8 = new Telerik.Reporting.TextBox();
@@ -86,18 +90,20 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.textBox28 = new Telerik.Reporting.TextBox();
             this.textBox27 = new Telerik.Reporting.TextBox();
-            this.textBox30 = new Telerik.Reporting.TextBox();
-            this.textBox29 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
+            this.textBox31 = new Telerik.Reporting.TextBox();
+            this.textBox32 = new Telerik.Reporting.TextBox();
+            this.textBox29 = new Telerik.Reporting.TextBox();
+            this.textBox30 = new Telerik.Reporting.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox22
             // 
             this.textBox22.Name = "textBox22";
             this.textBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.0039327144622803D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox22.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox22.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox22.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox22.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox22.Style.Font.Name = "Georgia";
@@ -109,7 +115,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.textBox23.Name = "textBox23";
             this.textBox23.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.69936120510101318D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox23.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox23.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox23.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox23.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox23.Style.Font.Name = "Georgia";
@@ -121,7 +127,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.textBox24.Name = "textBox24";
             this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8122748136520386D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox24.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox24.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox24.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox24.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox24.Style.Font.Name = "Georgia";
@@ -134,7 +140,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.textBox25.Name = "textBox25";
             this.textBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0521397590637207D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
-            this.textBox25.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox25.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox25.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox25.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox25.Style.Font.Name = "Georgia";
@@ -147,7 +153,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.0135395526885986D), Telerik.Reporting.Drawing.Unit.Inch(0.16979172825813294D));
-            this.textBox10.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox10.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox10.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox10.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox10.Style.Font.Name = "Georgia";
@@ -160,7 +166,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2612464427948D), Telerik.Reporting.Drawing.Unit.Inch(0.16979172825813294D));
-            this.textBox12.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox12.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox12.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox12.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox12.Style.Font.Name = "Georgia";
@@ -174,7 +180,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.textBox13.Name = "textBox13";
             this.textBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2929222583770752D), Telerik.Reporting.Drawing.Unit.Inch(0.16979172825813294D));
-            this.textBox13.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox13.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox13.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox13.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
             this.textBox13.Style.Font.Name = "Georgia";
@@ -199,8 +205,8 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // table3
             // 
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(7.5677084922790527D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.10104154050350189D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.40000003576278687D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1010415181517601D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.40000006556510925D)));
             this.table3.Body.SetCellContent(0, 0, this.textBox2);
             this.table3.Body.SetCellContent(1, 0, this.table4);
             tableGroup6.Name = "group6";
@@ -232,9 +238,9 @@ namespace ExceedERP.Reporting.Finance.GAAP
             // 
             this.table4.Bindings.Add(new Telerik.Reporting.Binding("DataSource", "= Fields.IncomeStatementReportItems"));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(3.0039329528808594D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.69936132431030273D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.8122743368148804D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.0521402359008789D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.699361264705658D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.8122738599777222D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.052140474319458D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D)));
             this.table4.Body.SetCellContent(0, 0, this.textBox15);
             this.table4.Body.SetCellContent(0, 1, this.textBox17);
@@ -320,7 +326,9 @@ namespace ExceedERP.Reporting.Finance.GAAP
             new Telerik.Reporting.ObjectDataSourceParameter("fiscalyear", typeof(string), "= Parameters.fiscalyear.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("periodFrom", typeof(string), "= Parameters.periodFrom.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("periodTo", typeof(string), "= Parameters.periodTo.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("branchid", typeof(string), "= Parameters.branchid.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("branchid", typeof(string), "= Parameters.branchid.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentType", typeof(string), "= Parameters.segmentType.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentValue", typeof(string), "= Parameters.segmentValue.Value")});
             // 
             // fiscalYeardDs
             // 
@@ -339,6 +347,20 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.BranchDS.DataMember = "GetBrancheshs";
             this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
             this.BranchDS.Name = "BranchDS";
+            // 
+            // SegmentTypes
+            // 
+            this.SegmentTypes.DataMember = "GeSegmentTypeList";
+            this.SegmentTypes.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.SegmentTypes.Name = "SegmentTypes";
+            // 
+            // SegmentValues
+            // 
+            this.SegmentValues.DataMember = "GeSegmentValueList";
+            this.SegmentValues.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.SegmentValues.Name = "SegmentValues";
+            this.SegmentValues.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("type", typeof(string), "= Parameters.segmentType.Value")});
             // 
             // detailSection1
             // 
@@ -503,7 +525,9 @@ namespace ExceedERP.Reporting.Finance.GAAP
             new Telerik.Reporting.ObjectDataSourceParameter("fiscalyear", typeof(string), "= Parameters.fiscalyear.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("periodFrom", typeof(string), "= Parameters.periodFrom.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("periodTo", typeof(string), "= Parameters.periodTo.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("branchid", typeof(string), "= Parameters.branchid.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("branchid", typeof(string), "= Parameters.branchid.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentType", typeof(string), "= Parameters.segmentType.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentValue", typeof(string), "= Parameters.segmentValue.Value")});
             // 
             // pageHeaderSection1
             // 
@@ -523,7 +547,9 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.textBox28,
             this.textBox27,
             this.textBox30,
-            this.textBox29});
+            this.textBox29,
+            this.textBox32,
+            this.textBox31});
             this.pageHeaderSection1.Name = "pageHeaderSection1";
             // 
             // textBox21
@@ -551,7 +577,7 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.textBox36.Style.Font.Bold = true;
             this.textBox36.Style.Font.Name = "Segoe UI";
             this.textBox36.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(14D);
-            this.textBox36.Value = "INCOME STATEMENT BY BRANCH/PROJECT";
+            this.textBox36.Value = "INCOME STATEMENT BY SEGMENT";
             // 
             // txtOrgName
             // 
@@ -665,28 +691,6 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.textBox27.Style.Font.Underline = true;
             this.textBox27.Value = "= Parameters.periodTo.Label";
             // 
-            // textBox30
-            // 
-            this.textBox30.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.39112573862075806D), Telerik.Reporting.Drawing.Unit.Inch(1.5D));
-            this.textBox30.Name = "textBox30";
-            this.textBox30.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8999998569488525D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox30.Style.Font.Bold = false;
-            this.textBox30.Style.Font.Name = "Segoe UI";
-            this.textBox30.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(13D);
-            this.textBox30.Value = "Project/Branch Name";
-            // 
-            // textBox29
-            // 
-            this.textBox29.Format = "{0:d}";
-            this.textBox29.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3911254405975342D), Telerik.Reporting.Drawing.Unit.Inch(1.5D));
-            this.textBox29.Name = "textBox29";
-            this.textBox29.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.8010420799255371D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
-            this.textBox29.Style.Font.Bold = false;
-            this.textBox29.Style.Font.Name = "Segoe UI";
-            this.textBox29.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(13D);
-            this.textBox29.Style.Font.Underline = true;
-            this.textBox29.Value = "= Parameters.branchid.Label";
-            // 
             // textBox4
             // 
             this.textBox4.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.008491039276123D), Telerik.Reporting.Drawing.Unit.Inch(0.073958463966846466D));
@@ -707,6 +711,50 @@ namespace ExceedERP.Reporting.Finance.GAAP
             this.Organization.DataMember = "GetOrganization";
             this.Organization.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
             this.Organization.Name = "Organization";
+            // 
+            // textBox31
+            // 
+            this.textBox31.Format = "{0:d}";
+            this.textBox31.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.7416467666625977D), Telerik.Reporting.Drawing.Unit.Inch(1.5D));
+            this.textBox31.Name = "textBox31";
+            this.textBox31.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.3999998569488525D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
+            this.textBox31.Style.Font.Bold = false;
+            this.textBox31.Style.Font.Name = "Segoe UI";
+            this.textBox31.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(13D);
+            this.textBox31.Style.Font.Underline = true;
+            this.textBox31.Value = "= Parameters.segmentValue.Value";
+            // 
+            // textBox32
+            // 
+            this.textBox32.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.0415682792663574D), Telerik.Reporting.Drawing.Unit.Inch(1.5D));
+            this.textBox32.Name = "textBox32";
+            this.textBox32.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.699999988079071D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
+            this.textBox32.Style.Font.Bold = false;
+            this.textBox32.Style.Font.Name = "Segoe UI";
+            this.textBox32.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(13D);
+            this.textBox32.Value = "Value";
+            // 
+            // textBox29
+            // 
+            this.textBox29.Format = "{0:d}";
+            this.textBox29.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.1417256593704224D), Telerik.Reporting.Drawing.Unit.Inch(1.5D));
+            this.textBox29.Name = "textBox29";
+            this.textBox29.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.3999998569488525D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
+            this.textBox29.Style.Font.Bold = false;
+            this.textBox29.Style.Font.Name = "Segoe UI";
+            this.textBox29.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(13D);
+            this.textBox29.Style.Font.Underline = true;
+            this.textBox29.Value = "= Parameters.segmentType.Label";
+            // 
+            // textBox30
+            // 
+            this.textBox30.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.44164684414863586D), Telerik.Reporting.Drawing.Unit.Inch(1.5D));
+            this.textBox30.Name = "textBox30";
+            this.textBox30.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.699999988079071D), Telerik.Reporting.Drawing.Unit.Inch(0.30000001192092896D));
+            this.textBox30.Style.Font.Bold = false;
+            this.textBox30.Style.Font.Name = "Segoe UI";
+            this.textBox30.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(13D);
+            this.textBox30.Value = "Segmet";
             // 
             // rptIncomeStatementByProject
             // 
@@ -757,10 +805,26 @@ namespace ExceedERP.Reporting.Finance.GAAP
             reportParameter4.Name = "branchid";
             reportParameter4.Text = "Branch";
             reportParameter4.Visible = true;
+            reportParameter5.AllowBlank = false;
+            reportParameter5.AllowNull = true;
+            reportParameter5.AvailableValues.DataSource = this.SegmentTypes;
+            reportParameter5.AvailableValues.DisplayMember = "= Fields.Name";
+            reportParameter5.AvailableValues.ValueMember = "= Fields.Name";
+            reportParameter5.Name = "segmentType";
+            reportParameter5.Text = "Segment Type";
+            reportParameter6.AllowBlank = false;
+            reportParameter6.AllowNull = true;
+            reportParameter6.AvailableValues.DataSource = this.SegmentValues;
+            reportParameter6.AvailableValues.DisplayMember = "= Fields.Values+\"-\"+ Fields.Description";
+            reportParameter6.AvailableValues.ValueMember = "= Fields.Values";
+            reportParameter6.Name = "segmentValue";
+            reportParameter6.Text = "Segment Value";
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
+            this.ReportParameters.Add(reportParameter5);
+            this.ReportParameters.Add(reportParameter6);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -854,7 +918,11 @@ namespace ExceedERP.Reporting.Finance.GAAP
         private Telerik.Reporting.TextBox textBox1;
         private Telerik.Reporting.TextBox textBox28;
         private Telerik.Reporting.TextBox textBox27;
+        private Telerik.Reporting.ObjectDataSource SegmentTypes;
+        private Telerik.Reporting.ObjectDataSource SegmentValues;
         private Telerik.Reporting.TextBox textBox30;
         private Telerik.Reporting.TextBox textBox29;
+        private Telerik.Reporting.TextBox textBox32;
+        private Telerik.Reporting.TextBox textBox31;
     }
 }

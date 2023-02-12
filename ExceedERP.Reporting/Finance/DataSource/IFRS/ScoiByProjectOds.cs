@@ -20,7 +20,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear, string periodFrom, string periodTo, string project)
+        public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear, string periodFrom, string periodTo, string project, string segmentType, string segmentValue)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
             var notes = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
@@ -56,18 +56,122 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                 }
 
 
-                #region filter by project
+                #region filter by segment
 
-                currentYearEndBalance = currentYearEndBalance
-                      .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
-                prevYearEndBalance = prevYearEndBalance
-                    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                //currentYearEndBalance = currentYearEndBalance
+                //      .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                //prevYearEndBalance = prevYearEndBalance
+                //    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
 
-                currentYearBegBalance = currentYearBegBalance
-                    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
-                prevYearBegBalance = prevYearBegBalance
-                    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                //currentYearBegBalance = currentYearBegBalance
+                //    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                //prevYearBegBalance = prevYearBegBalance
+                //    .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
 
+                if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
+                {
+                    
+                    var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                    int index = setup?.Sequence ?? 0;
+                    switch (index)
+                    {
+                        case 1:                              
+
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+                            break;
+
+                        case 2:
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+                            break;
+
+                        case 3:
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+                            break;
+
+                        case 4:
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+                            break;
+
+                        case 5:
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+                            break;
+
+                        case 6:
+                            currentYearEndBalance = currentYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+                            break;
+                        case 7:
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+                            break;
+                        case 8:
+                            currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+                            prevYearEndBalance = prevYearEndBalance
+                                .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+
+                            currentYearBegBalance = currentYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+                            prevYearBegBalance = prevYearBegBalance
+                                .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+                            break;
+                    }
+                   
+                }
                 #endregion
 
                 #region continuinng
@@ -193,7 +297,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public ScoiReportVeiwModel ScoiByProjectReport(string fiscalyear,string periodFrom, string periodTo, string project)
+        public ScoiReportVeiwModel ScoiByProjectReport(string fiscalyear,string periodFrom, string periodTo, string project, string segmentType, string segmentValue)
         {
             ScoiReportVeiwModel scoiReport = new ScoiReportVeiwModel();            
 
@@ -265,20 +369,114 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                         prevYearEndBalance = _reportHelper.GetAccountEndBalance(prevfyearObj.GlFiscalYearId, previousPeriodTo);
                         prevYearBegBalance = _reportHelper.GetAccountBegBalance(prevfyearObj.GlFiscalYearId, previousPeriodFrom);
                     }
+                                       
+                    #region filter by segment
 
-                    #region filter by project
+                 
+                    if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
+                    {
 
-                    currentYearEndBalance = currentYearEndBalance
-                       .Where(x => x.GLLedgerPosting.BranchSegment== project).ToList();
-                    prevYearEndBalance = prevYearEndBalance
-                        .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                        var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                        int index = setup?.Sequence ?? 0;
+                        switch (index)
+                        {
+                            case 1:
 
-                    currentYearBegBalance = currentYearBegBalance
-                        .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
-                    prevYearBegBalance = prevYearBegBalance
-                        .Where(x => x.GLLedgerPosting.BranchSegment == project).ToList();
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
 
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment1 == segmentValue).ToList();
+                                break;
 
+                            case 2:
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment2 == segmentValue).ToList();
+                                break;
+
+                            case 3:
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment3 == segmentValue).ToList();
+                                break;
+
+                            case 4:
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment4 == segmentValue).ToList();
+                                break;
+
+                            case 5:
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment5 == segmentValue).ToList();
+                                break;
+
+                            case 6:
+                                currentYearEndBalance = currentYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment6 == segmentValue).ToList();
+                                break;
+                            case 7:
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment7 == segmentValue).ToList();
+                                break;
+                            case 8:
+                                currentYearEndBalance = currentYearEndBalance
+                                        .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+                                prevYearEndBalance = prevYearEndBalance
+                                    .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+
+                                currentYearBegBalance = currentYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+                                prevYearBegBalance = prevYearBegBalance
+                                    .Where(x => x.GLLedgerPosting.Segment8 == segmentValue).ToList();
+                                break;
+                        }
+
+                    }
                     #endregion
 
 

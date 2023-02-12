@@ -20,7 +20,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<GaapNoteVeiwModel> IncomestatementByProjectReportNotes(string fiscalyear, string periodFrom, string periodTo, string branchid)
+        public List<GaapNoteVeiwModel> IncomestatementByProjectReportNotes(string fiscalyear, string periodFrom, string periodTo, string branchid, string segmentType, string segmentValue)
         {
             List<GaapNoteVeiwModel> list = new List<GaapNoteVeiwModel>();
             var notes = _db.GaapIncomeStatements.FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
@@ -148,7 +148,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public IncomeStatementReportVeiwModel IncomeStatementByProjectReport(string fiscalyear, string periodFrom, string periodTo, string branchid)
+        public IncomeStatementReportVeiwModel IncomeStatementByProjectReport(string fiscalyear, string periodFrom, string periodTo, string branchid, string segmentType, string segmentValue)
         {
             IncomeStatementReportVeiwModel scoiReport = new IncomeStatementReportVeiwModel();
 
