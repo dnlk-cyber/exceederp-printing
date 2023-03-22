@@ -206,7 +206,7 @@
                           .Columns(columns =>
                           {
 
-                              columns.columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(60);
+                              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(60);
                               columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(60);
                               columns.Bound(c => c.JobTitle).Width(80);  //EditorTemplateName("JobTitleAutoComplet")//, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
                               columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
