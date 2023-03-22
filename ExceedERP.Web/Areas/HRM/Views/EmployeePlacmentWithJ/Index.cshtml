@@ -206,46 +206,46 @@
                           .Columns(columns =>
                           {
 
-                          columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
-                          columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
-                          columns.Bound(c => c.JobTitle).EditorTemplateName("JobTitleAutoComplet").Width(120); //, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
-                          columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
-                          columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
-                          columns.Bound(c => c.Salary).Width(80);
-                          columns.Bound(c => c.EmployementType).EditorTemplateName("Enum").Width(80);
-                          //columns.Bound(c => c.Remark);//
-                          columns.Command(command =>
-                                      {
-                                   if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                   {
-                                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                   }
-                                   if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                   {
-                                       command.Destroy().Text(Resources.ActionButton_Cancel);
-                                   }
-                               }).Width(250);
-                                  })
+                              columns.columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(60);
+                              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(60);
+                              columns.Bound(c => c.JobTitle).Width(80);  //EditorTemplateName("JobTitleAutoComplet")//, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+                              columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
+                              columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
+                              columns.Bound(c => c.Salary).Width(80);
+                              columns.Bound(c => c.EmployementType).EditorTemplateName("Enum").Width(80);
+                              //columns.Bound(c => c.Remark);//
+                              columns.Command(command =>
+                              {
+                                  if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  }
+                                  if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                  {
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }
+                              }).Width(250);
+                          })
          .ToolBar(toolbar =>
          {
-                     if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                     {
-                         toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                     }
-                 })
+             if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+             {
+                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+             }
+         })
          .Editable(editable => editable.Mode(GridEditMode.InLine)) //.TemplateName("EmployeePlacmentHistory").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeeAssignmentHistory); window.Scrollable(false); }))
          .Scrollable(h => h.Height(500))
          .Groupable()
          .Sortable(sortable =>
          {
-                     sortable.SortMode(GridSortMode.SingleColumn);
-                 })
+             sortable.SortMode(GridSortMode.SingleColumn);
+         })
          .Filterable()
          .Events(e =>
-                 {
-                             e.Save("GetAssignDate");
-                             e.Edit("GetAssignDate");
-                         })
+         {
+             e.Save("GetAssignDate");
+             e.Edit("GetAssignDate");
+         })
          .Pageable(pageable => pageable
              .Input(true)
              .Numeric(false)
@@ -256,10 +256,10 @@
              .Ajax()
              .Events(events =>
              {
-                         events.Error("error_handler(\"PlacementHistoryGrid_#=PlacementId#\")");
-                         events.RequestStart("onRequestStart(\"PlacementHistoryGrid_#=PlacementId#\")");
-                         events.RequestEnd("onRequestEnd(\"PlacementHistoryGrid_#=PlacementId#\")");
-                     })
+                 events.Error("error_handler(\"PlacementHistoryGrid_#=PlacementId#\")");
+                 events.RequestStart("onRequestStart(\"PlacementHistoryGrid_#=PlacementId#\")");
+                 events.RequestEnd("onRequestEnd(\"PlacementHistoryGrid_#=PlacementId#\")");
+             })
 
              .Model(model => model.Id(p => p.PlacementHistoryId))
              .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory", new { Area = "HRM", empId = "#=EmployeeId#" }))

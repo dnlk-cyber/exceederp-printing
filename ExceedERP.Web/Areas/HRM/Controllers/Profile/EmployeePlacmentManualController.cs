@@ -40,6 +40,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
         private void PopulateViewData()
         {
+            ViewData["JobTitleAutoComplate"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).Select(x => x.Description).ToList();
             var employeeIds = db.Placements.Select(x => x.EmployeeId).ToList();
             ViewData["EmployeeList"] = db.Person_Employee.Where(x => employeeIds.Contains(x.EmployeeId)).Select(x => new { EmployeeId = x.EmployeeId, EmployeeCode = x.EmployeeCode, FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).ToList();// inputs.GetEmployeesForPlacment(User.Identity.Name);
         
