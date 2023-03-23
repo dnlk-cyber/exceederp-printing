@@ -7,6 +7,7 @@
         public decimal BasicSalary { get; set; }
         //awwce added
         public decimal TotalAbsent { get; set; }
+        public decimal TotalPenality { get; set; }
         public decimal Overtime { get; set; }
         public decimal TotalTaxableAllowance { get; set; }
         public decimal TotalNonTaxableAllowance { get; set; }

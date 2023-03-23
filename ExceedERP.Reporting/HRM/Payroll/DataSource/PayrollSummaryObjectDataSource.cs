@@ -48,12 +48,15 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
 
                         if (payrolldataSummary.Any())
                         {
-                            EmployeeInfo = new PayrollSummaryViewmodel();
-                            EmployeeInfo.AccountCode = costcenter.Values;
-                            EmployeeInfo.AccountDesc = costcenter.Description;
-                            EmployeeInfo.BasicSalary = payrolldataSummary.Sum(x => x.BasicSalary);
-                            EmployeeInfo.TotalAbsent = payrolldataSummary.Sum(x => x.AbsentDeduction);
-                            EmployeeInfo.Overtime = payrolldataSummary.Sum(x => x.TotalOvertime);
+                            EmployeeInfo = new PayrollSummaryViewmodel
+                            {
+                                AccountCode = costcenter.Values,
+                                AccountDesc = costcenter.Description,
+                                BasicSalary = payrolldataSummary.Sum(x => x.BasicSalary),
+                                TotalAbsent = payrolldataSummary.Sum(x => x.AbsentDeduction),
+                                Overtime = payrolldataSummary.Sum(x => x.TotalOvertime),
+                                TotalPenality = payrolldataSummary.Sum(x => x.TotalPenality)
+                            };
                             EmployeeInfo.Overtime = payrolldataSummary.Sum(x => x.TotalOvertime);
                             EmployeeInfo.TotalTaxableAllowance = payrolldataSummary.Sum(x => x.TaxableAllowance);
                             EmployeeInfo.TotalNonTaxableAllowance =
@@ -81,20 +84,24 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                             EmployeeInfo.Advance = payrolldataSummary.Sum(x => x.TotalAdvance);
                             EmployeeInfo.LabourUnion = payrolldataSummary.Sum(x => x.LabourUnionContribution);
                             EmployeeInfo.ProvidentPension = EmployeeInfo.Provident + EmployeeInfo.Pension;
-                            EmployeeInfo.OtherDeduction = payrolldataSummary.Sum(x => x.TotalDeductions)
+                            EmployeeInfo.OtherDeduction = 
                                                           + payrolldataSummary.Sum(x => x.TotalLongTermDeductions)
                                                           + payrolldataSummary.Sum(x => x.TotalRegularContribution)
-                                                          + payrolldataSummary.Sum(x => x.TotalFixedContribution)
-                                                          + EmployeeInfo.Loan
-                                                          + EmployeeInfo.Saving
-                                                          + EmployeeInfo.SportFee
+                                                          + payrolldataSummary.Sum(x => x.TotalFixedContribution)                                                        
                                                           + EmployeeInfo.Advance
-                                                          + EmployeeInfo.LabourUnion;
+                                                          + EmployeeInfo.TotalPenality; 
 
 
-                            EmployeeInfo.TotalDeduction = EmployeeInfo.OtherDeduction + EmployeeInfo.IncomeTax +
-                                                          EmployeeInfo.Pension + EmployeeInfo.TotalAbsent +
-                                                          EmployeeInfo.Provident;
+                            EmployeeInfo.TotalDeduction = EmployeeInfo.OtherDeduction +
+                                                          EmployeeInfo.IncomeTax +
+                                                          EmployeeInfo.Pension +
+                                                          EmployeeInfo.TotalAbsent +
+                                                          EmployeeInfo.Provident+
+                                                          EmployeeInfo.Loan +
+                                                          EmployeeInfo.Saving +
+                                                          EmployeeInfo.SportFee+
+                                                          EmployeeInfo.LabourUnion;
+
                             EmployeeInfo.NetPay = payrolldataSummary.Sum(x => x.NetEarning);
                             list.Add(EmployeeInfo);
                         }
