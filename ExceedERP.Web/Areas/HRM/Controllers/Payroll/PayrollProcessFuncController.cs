@@ -911,6 +911,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 payroldata.TotalDesertAllowance += payroldata.TaxableAllowance +
                                                                           payroldata.NonTaxableAllowance;
                             }
+                            if (allowancemodel.AllowanceType == AllowanceType.PROJECT)
+                            {
+                                payroldata.TaxableProjectAllowance += payroldata.TaxableAllowance;
+                                payroldata.NonTaxableProjectAllowance += payroldata.NonTaxableAllowance;
+                                payroldata.TotalProjectAllowance += payroldata.TaxableAllowance +
+                                                                          payroldata.NonTaxableAllowance;
+                            }
                             #region Allowance Additions
 
                             db = new ExceedDbContext();
