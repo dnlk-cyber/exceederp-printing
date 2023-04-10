@@ -6396,6 +6396,238 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         break;
 
                                     #endregion
+                                    #region "PROJECT"
+
+                                    case "PROJECT":
+                                        if (accounts.IsPerEmployee)
+                                        {
+                                            foreach (var p in payrolldatas)
+                                            {
+                                                var emp =
+                                                    employeeAccounts.Where(x => x.EmployeeId == p.EmployeeId).FirstOrDefault();
+                                                if (emp != null)
+                                                {
+                                                    AccountHelper myAccountHelper = new AccountHelper();
+                                                    distribution = new PayrollDistribution();
+                                                    distribution.OrgBranchName = defaultBranch;
+                                                    distribution.GLPeriodId = id;
+                                                    distribution.BranchId = branchId;
+                                                    distribution.AccountDesc = accounts.Description;
+                                                    if (accountHelper.IsDynamicCoA())
+                                                    {
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+                                                    }
+                                                    else
+                                                    {
+                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
+                                                              emp.SubAccCode);
+                                                    }
+                                                    distribution.CostCenterCode = costCneter;
+                                                    distribution.LocationCode = branch;
+                                                    distribution.Debit = p.TotalProjectAllowance;
+                                                    distribution.Credit = 0;
+                                                    distribution.DateCreated = DateTime.Now.Date;
+                                                    distribution.LastModified = null;
+                                                    distribution.CreatedBy = User.Identity.Name;
+                                                    distribution.ModifiedBy = null;
+                                                    var checkExe =
+                                                        payrollDistributions.Where(
+                                                            x =>
+                                                                x.AccountDesc == distribution.AccountDesc &&
+                                                                x.Debit == distribution.Debit &&
+                                                                x.Credit == distribution.Credit &&
+                                                                x.AccountCode == distribution.AccountCode).FirstOrDefault();
+
+                                                    if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                        checkExe == null)
+                                                    {
+                                                        //db.PayrollDistributions.Add(distribution);
+                                                        //db.SaveChanges();
+                                                        payrollDistributions.Add(distribution);
+                                                    }
+
+                                                }
+
+                                            }
+
+
+                                        }
+                                        else if (accounts.IsPerCostCenter && accounts.IsPerBranch)
+                                        {
+                                            foreach (var b in branchAccountList)
+                                            {
+                                                foreach (var c in costcnetrlist)
+                                                {
+                                                    var p =
+                                                        payrolldatas.Where(
+                                                            x =>
+                                                                x.CostCenterAccountCode == c.ToString() && x.LocationCode == b)
+                                                            .ToList();
+                                                    if (p != null)
+                                                    {
+                                                        AccountHelper myAccountHelper = new AccountHelper();
+                                                        distribution = new PayrollDistribution();
+                                                        distribution.OrgBranchName =
+                                                            defaultBranch;
+                                                        distribution.GLPeriodId = id;
+                                                        distribution.BranchId = branchId;
+                                                        distribution.AccountDesc = accounts.Description;
+                                                        if (accountHelper.IsDynamicCoA())
+                                                        {
+                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+                                                        }
+                                                        else
+                                                        {
+                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
+                                                              SubAccCode);
+                                                        }
+                                                        distribution.CostCenterCode = c;
+                                                        distribution.LocationCode = b;
+                                                        distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
+                                                        distribution.Credit = 0;
+                                                        distribution.DateCreated = DateTime.Now.Date;
+                                                        distribution.LastModified = null;
+                                                        distribution.CreatedBy = User.Identity.Name;
+                                                        distribution.ModifiedBy = null;
+                                                        var checkExe =
+                                                            payrollDistributions.Where(
+                                                                x =>
+                                                                    x.AccountDesc == distribution.AccountDesc &&
+                                                                    x.Debit == distribution.Debit &&
+                                                                    x.Credit == distribution.Credit &&
+                                                                    x.AccountCode == distribution.AccountCode)
+                                                                .FirstOrDefault();
+
+                                                        if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                            checkExe == null)
+                                                        {
+                                                            //db.PayrollDistributions.Add(distribution);
+                                                            //db.SaveChanges();
+                                                            payrollDistributions.Add(distribution);
+                                                        }
+
+                                                    }
+
+                                                }
+                                            }
+
+                                        }
+                                        else if (accounts.IsPerCostCenter)
+                                        {
+                                            foreach (var c in costcnetrlist)
+                                            {
+                                                var p =
+                                                    payrolldatas.Where(x => x.CostCenterAccountCode == c.ToString()).ToList();
+                                                if (p != null)
+                                                {
+                                                    AccountHelper myAccountHelper = new AccountHelper();
+                                                    distribution = new PayrollDistribution();
+                                                    distribution.OrgBranchName = defaultBranch;
+                                                    distribution.GLPeriodId = id;
+                                                    distribution.BranchId = branchId;
+                                                    distribution.AccountDesc = accounts.Description;
+                                                    if (accountHelper.IsDynamicCoA())
+                                                    {
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+                                                    }
+                                                    else
+                                                    {
+                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
+                                                              SubAccCode);
+                                                    }
+                                                    distribution.CostCenterCode = c;
+                                                    distribution.LocationCode = branch;
+                                                    distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
+                                                    distribution.Credit = 0;
+                                                    distribution.DateCreated = DateTime.Now.Date;
+                                                    distribution.LastModified = null;
+                                                    distribution.CreatedBy = User.Identity.Name;
+                                                    distribution.ModifiedBy = null;
+                                                    var checkExe =
+                                                        payrollDistributions.Where(
+                                                            x =>
+                                                                x.AccountDesc == distribution.AccountDesc &&
+                                                                x.Debit == distribution.Debit &&
+                                                                x.Credit == distribution.Credit &&
+                                                                x.AccountCode == distribution.AccountCode).FirstOrDefault();
+
+                                                    if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                        checkExe == null)
+                                                    {
+                                                        //db.PayrollDistributions.Add(distribution);
+                                                        //db.SaveChanges();
+                                                        payrollDistributions.Add(distribution);
+                                                    }
+
+                                                }
+
+                                            }
+
+
+                                        }
+                                        else if (accounts.IsPerBranch)
+                                        {
+                                            foreach (var c in branchAccountList)
+                                            {
+                                                var p = payrolldatas.Where(x => x.LocationCode == c.ToString()).ToList();
+                                                if (p != null)
+                                                {
+                                                    AccountHelper myAccountHelper = new AccountHelper();
+                                                    distribution = new PayrollDistribution();
+                                                    distribution.OrgBranchName = defaultBranch;
+                                                    distribution.GLPeriodId = id;
+                                                    distribution.BranchId = branchId;
+                                                    distribution.AccountDesc = accounts.Description;
+                                                    if (accountHelper.IsDynamicCoA())
+                                                    {
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+                                                    }
+                                                    else
+                                                    {
+                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
+                                                              SubAccCode);
+                                                    }
+                                                    distribution.CostCenterCode = costCneter;
+                                                    distribution.LocationCode = c;
+                                                    distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
+                                                    distribution.Credit = 0;
+                                                    distribution.DateCreated = DateTime.Now.Date;
+                                                    distribution.LastModified = null;
+                                                    distribution.CreatedBy = User.Identity.Name;
+                                                    distribution.ModifiedBy = null;
+                                                    var checkExe =
+                                                        payrollDistributions.Where(
+                                                            x =>
+                                                                x.AccountDesc == distribution.AccountDesc &&
+                                                                x.Debit == distribution.Debit &&
+                                                                x.Credit == distribution.Credit &&
+                                                                x.AccountCode == distribution.AccountCode).FirstOrDefault();
+
+                                                    if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                        checkExe == null)
+                                                    {
+                                                        //db.PayrollDistributions.Add(distribution);
+                                                        //db.SaveChanges();
+                                                        payrollDistributions.Add(distribution);
+                                                    }
+
+                                                }
+
+                                            }
+
+
+                                        }
+                                        else
+                                        {
+                                            distribution.Debit = payrolldatass.Sum(x => x.TotalProjectAllowance);
+                                            distribution.Credit = 0;
+                                        }
+
+
+                                        break;
+
+                                    #endregion
 
                                     #region "TELEPHONE"
 
@@ -13318,6 +13550,239 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                     else
                                     {
                                         distribution.Debit = payrolldatass.Sum(x => x.TotalTransportAllowance);
+                                        distribution.Credit = 0;
+                                    }
+
+
+                                    break;
+
+                                #endregion
+
+                                #region "TRANSPORT"
+
+                                case "PROJECT":
+                                    if (accounts.IsPerEmployee)
+                                    {
+                                        foreach (var p in payrolldatas)
+                                        {
+                                            var emp =
+                                                employeeAccounts.Where(x => x.EmployeeId == p.EmployeeId).FirstOrDefault();
+                                            if (emp != null)
+                                            {
+                                                AccountHelper myAccountHelper = new AccountHelper();
+                                                distribution = new PayrollDistribution();
+                                                distribution.OrgBranchName = defaultBranch;
+                                                distribution.GLPeriodId = id;
+                                                distribution.BranchId = branchId;
+                                                distribution.AccountDesc = accounts.Description;
+                                                if (accountHelper.IsDynamicCoA())
+                                                {
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+                                                }
+                                                else
+                                                {
+                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
+                                                          emp.SubAccCode);
+                                                }
+                                                distribution.CostCenterCode = costCneter;
+                                                distribution.LocationCode = branch;
+                                                distribution.Debit = p.TotalProjectAllowance;
+                                                distribution.Credit = 0;
+                                                distribution.DateCreated = DateTime.Now.Date;
+                                                distribution.LastModified = null;
+                                                distribution.CreatedBy = User.Identity.Name;
+                                                distribution.ModifiedBy = null;
+                                                var checkExe =
+                                                    payrollDistributions.Where(
+                                                        x =>
+                                                            x.AccountDesc == distribution.AccountDesc &&
+                                                            x.Debit == distribution.Debit &&
+                                                            x.Credit == distribution.Credit &&
+                                                            x.AccountCode == distribution.AccountCode).FirstOrDefault();
+
+                                                if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                    checkExe == null)
+                                                {
+                                                    //db.PayrollDistributions.Add(distribution);
+                                                    //db.SaveChanges();
+                                                    payrollDistributions.Add(distribution);
+                                                }
+
+                                            }
+
+                                        }
+
+
+                                    }
+                                    else if (accounts.IsPerCostCenter && accounts.IsPerBranch)
+                                    {
+                                        foreach (var b in branchAccountList)
+                                        {
+                                            foreach (var c in costcnetrlist)
+                                            {
+                                                var p =
+                                                    payrolldatas.Where(
+                                                        x =>
+                                                            x.CostCenterAccountCode == c.ToString() && x.LocationCode == b)
+                                                        .ToList();
+                                                if (p != null)
+                                                {
+                                                    AccountHelper myAccountHelper = new AccountHelper();
+                                                    distribution = new PayrollDistribution();
+                                                    distribution.OrgBranchName =
+                                                        defaultBranch;
+                                                    distribution.GLPeriodId = id;
+                                                    distribution.BranchId = branchId;
+                                                    distribution.AccountDesc = accounts.Description;
+                                                    if (accountHelper.IsDynamicCoA())
+                                                    {
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+                                                    }
+                                                    else
+                                                    {
+                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
+                                                          SubAccCode);
+                                                    }
+                                                    distribution.CostCenterCode = c;
+                                                    distribution.LocationCode = b;
+                                                    distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
+                                                    distribution.Credit = 0;
+                                                    distribution.DateCreated = DateTime.Now.Date;
+                                                    distribution.LastModified = null;
+                                                    distribution.CreatedBy = User.Identity.Name;
+                                                    distribution.ModifiedBy = null;
+                                                    var checkExe =
+                                                        payrollDistributions.Where(
+                                                            x =>
+                                                                x.AccountDesc == distribution.AccountDesc &&
+                                                                x.Debit == distribution.Debit &&
+                                                                x.Credit == distribution.Credit &&
+                                                                x.AccountCode == distribution.AccountCode)
+                                                            .FirstOrDefault();
+
+                                                    if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                        checkExe == null)
+                                                    {
+                                                        //db.PayrollDistributions.Add(distribution);
+                                                        //db.SaveChanges();
+                                                        payrollDistributions.Add(distribution);
+                                                    }
+
+                                                }
+
+                                            }
+                                        }
+
+                                    }
+                                    else if (accounts.IsPerCostCenter)
+                                    {
+                                        foreach (var c in costcnetrlist)
+                                        {
+                                            var p =
+                                                payrolldatas.Where(x => x.CostCenterAccountCode == c.ToString()).ToList();
+                                            if (p != null)
+                                            {
+                                                AccountHelper myAccountHelper = new AccountHelper();
+                                                distribution = new PayrollDistribution();
+                                                distribution.OrgBranchName = defaultBranch;
+                                                distribution.GLPeriodId = id;
+                                                distribution.BranchId = branchId;
+                                                distribution.AccountDesc = accounts.Description;
+                                                if (accountHelper.IsDynamicCoA())
+                                                {
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+                                                }
+                                                else
+                                                {
+                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
+                                                          SubAccCode);
+                                                }
+                                                distribution.CostCenterCode = c;
+                                                distribution.LocationCode = branch;
+                                                distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
+                                                distribution.Credit = 0;
+                                                distribution.DateCreated = DateTime.Now.Date;
+                                                distribution.LastModified = null;
+                                                distribution.CreatedBy = User.Identity.Name;
+                                                distribution.ModifiedBy = null;
+                                                var checkExe =
+                                                    payrollDistributions.Where(
+                                                        x =>
+                                                            x.AccountDesc == distribution.AccountDesc &&
+                                                            x.Debit == distribution.Debit &&
+                                                            x.Credit == distribution.Credit &&
+                                                            x.AccountCode == distribution.AccountCode).FirstOrDefault();
+
+                                                if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                    checkExe == null)
+                                                {
+                                                    //db.PayrollDistributions.Add(distribution);
+                                                    //db.SaveChanges();
+                                                    payrollDistributions.Add(distribution);
+                                                }
+
+                                            }
+
+                                        }
+
+
+                                    }
+                                    else if (accounts.IsPerBranch)
+                                    {
+                                        foreach (var c in branchAccountList)
+                                        {
+                                            var p = payrolldatas.Where(x => x.LocationCode == c.ToString()).ToList();
+                                            if (p != null)
+                                            {
+                                                AccountHelper myAccountHelper = new AccountHelper();
+                                                distribution = new PayrollDistribution();
+                                                distribution.OrgBranchName = defaultBranch;
+                                                distribution.GLPeriodId = id;
+                                                distribution.BranchId = branchId;
+                                                distribution.AccountDesc = accounts.Description;
+                                                if (accountHelper.IsDynamicCoA())
+                                                {
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+                                                }
+                                                else
+                                                {
+                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
+                                                          SubAccCode);
+                                                }
+                                                distribution.CostCenterCode = costCneter;
+                                                distribution.LocationCode = c;
+                                                distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
+                                                distribution.Credit = 0;
+                                                distribution.DateCreated = DateTime.Now.Date;
+                                                distribution.LastModified = null;
+                                                distribution.CreatedBy = User.Identity.Name;
+                                                distribution.ModifiedBy = null;
+                                                var checkExe =
+                                                    payrollDistributions.Where(
+                                                        x =>
+                                                            x.AccountDesc == distribution.AccountDesc &&
+                                                            x.Debit == distribution.Debit &&
+                                                            x.Credit == distribution.Credit &&
+                                                            x.AccountCode == distribution.AccountCode).FirstOrDefault();
+
+                                                if ((distribution.Debit != 0 || distribution.Credit != 0) &&
+                                                    checkExe == null)
+                                                {
+                                                    //db.PayrollDistributions.Add(distribution);
+                                                    //db.SaveChanges();
+                                                    payrollDistributions.Add(distribution);
+                                                }
+
+                                            }
+
+                                        }
+
+
+                                    }
+                                    else
+                                    {
+                                        distribution.Debit = payrolldatass.Sum(x => x.TotalProjectAllowance);
                                         distribution.Credit = 0;
                                     }
 

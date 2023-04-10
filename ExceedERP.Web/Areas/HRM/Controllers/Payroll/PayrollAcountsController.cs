@@ -51,15 +51,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     .ToList();
                 foreach (var p in payrollAccountTypes)
                 {
-                    payrollAccounts = new PayrollAccounts();
-                    payrollAccounts.Description = p.ToString();
-                    payrollAccounts.ReferenceType = "Normal";
-                    payrollAccounts.IsPerEmployee = false;
-                    payrollAccounts.IsPerBranch= false;
-                     payrollAccounts.DateCreated = DateTime .Now ;
-               payrollAccounts. LastModified = null;
-               payrollAccounts. CreatedBy = User.Identity .Name ;
-               payrollAccounts. ModifiedBy = null;
+                    payrollAccounts = new PayrollAccounts
+                    {
+                        Description = p.ToString(),
+                        ReferenceType = "Normal",
+                        IsPerEmployee = false,
+                        IsPerBranch = false,
+                        DateCreated = DateTime.Now,
+                        LastModified = null,
+                        CreatedBy = User.Identity.Name,
+                        ModifiedBy = null
+                    };
                     payrollAccountses.Add(payrollAccounts);
                 }
                 #region Contributions
@@ -73,9 +75,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         payrollAccounts.Description = p.Description;
                         payrollAccounts.ReferenceType = "Cont";
                         payrollAccounts.DateCreated = DateTime .Now ;
-               payrollAccounts. LastModified = null;
-               payrollAccounts. CreatedBy = User.Identity .Name ;
-               payrollAccounts. ModifiedBy = null;
+                       payrollAccounts. LastModified = null;
+                       payrollAccounts. CreatedBy = User.Identity .Name ;
+                       payrollAccounts. ModifiedBy = null;
                var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
                if (checkTwo == null)
                {
@@ -83,7 +85,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                }
                     }
                 }
-#endregion
+            #endregion
                 #region allowances
                 var allowances = Enum.GetValues(typeof(AllowanceType))
                     .Cast<AllowanceType>()
@@ -333,7 +335,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         {
             List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<PayrollAccounts> payrollaccounts = db.PayrollAccounts;
-         payrollaccounts=   SetAccountTypesValue(payrollaccounts);
+            // payrollaccounts=   SetAccountTypesValue(payrollaccounts);
             //.Where(x => employees.Contains(x.EmployeeId.ToString()));
             DataSourceResult result = payrollaccounts.ToDataSourceResult(request, payrollAccounts => new {
                 PayrollAccountsId = payrollAccounts.PayrollAccountsId,
