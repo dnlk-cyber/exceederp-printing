@@ -10,13 +10,13 @@
           .Name("grid")
           .Columns(columns =>
           {
-              columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Category").Width(130).EditorTemplateName("ItemCategory");
-              columns.ForeignKey(p => p.SubCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Sub Category").Width(100).EditorTemplateName("ItemSubCategory");
-              columns.Bound(c => c.ItemCode).Width(90);
+              columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Category").Width(150).EditorTemplateName("ItemCategory").Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(p => p.SubCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Sub Category").Width(150).EditorTemplateName("ItemSubCategory").Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.ItemCode).Width(120);
               columns.Bound(c => c.Name).Width(250);
               columns.Bound(c => c.PartNo).Width(90);
               columns.Bound(c => c.UoMName).Width(80).EditorTemplateName("Unit");
-              columns.Bound(c => c.Balance).Width(70);
+              //columns.Bound(c => c.Balance).Width(70);
               //columns.Bound(c => c.TotalPrice).Width(90);|
               columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
                   "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
@@ -30,14 +30,13 @@
                   command =>
                   {
                       command.Edit();
-
-                      //command.Custom("En").Click("Enable");
-           command.Destroy();
-      }).Width(280);
+                      command.Destroy();
+                      command.Custom("Change").Click("Enable");
+                  }).Width(280);
           })
           .ToolBar(toolbar =>
           {
-              toolbar.Template(@<text>
+          toolbar.Template(@<text>
 <div class="toolbar row">
     <div class="col-md-4">
         <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
@@ -96,7 +95,7 @@
                 .Events(events => events.Edit("edit"))
                 .DataSource(dataSource => dataSource
                     .Ajax()
-                    .Sort(sort => sort.Add("DateCreated").Descending())
+                    .Sort(sort => sort.Add("ItemCategoryCode").Descending())
                     .Model(model =>
                     {
                         model.Id(p => p.ItemCode);
@@ -124,8 +123,7 @@
 
 
     function UpdateBalances(e) {
-
-       
+               
         $('#loading-image').show();
         $.ajax({
             type: "GET",
@@ -146,12 +144,20 @@
     }
 
     function Enable(e) {
-        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-        $.ajax({
-            type: "GET",
-            data: dataItem.Values,
-            url: '@Url.Action("Enable_Disable", "Item")/' + dataItem.ItemCode
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));        
 
+         $.ajax({
+            type: "POST",
+             data: dataItem.ItemCode,
+             url: '@Url.Action("Enable_Disable", "Item")/' + dataItem.ItemCode,
+            success: function (result) {
+                toastr.error(result.Message);
+                console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
         });
 
         $('#grid').data('kendoGrid').dataSource.read();
@@ -165,11 +171,11 @@
             var grid = $("#grid").data("kendoGrid");
 
             $("#ItemCode").attr("readonly", true);
-            var itemCategoryCode = $("#ItemCategoryCode").data("kendoDropDownList");
-            itemCategoryCode.readonly(true);
+            //var itemCategoryCode = $("#ItemCategoryCode").data("kendoDropDownList");
+            //itemCategoryCode.readonly(true);
 
-            var subCategoryCode = $("#SubCategoryCode").data("kendoDropDownList");
-            subCategoryCode.readonly(true);
+            //var subCategoryCode = $("#SubCategoryCode").data("kendoDropDownList");
+            //subCategoryCode.readonly(true);
 
           
         }

@@ -83,7 +83,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             //}
             var storeItem = db.StoreItemAssignments.FirstOrDefault(x => x.ItemCode == issueItem.ItemCode && x.StoreCode ==issue.StoreCode);
             if (storeItem == null)
-                ModelState.AddModelError("not defined", "The item " + issueItem.InventoryItem.Name + " is not available in store " + issue.StoreCode);
+                ModelState.AddModelError("not defined", "The item " + issueItem.Name + " is not available in store " + issue.StoreCode);
 
             if (storeItem != null && storeItem.Balance < issueItem.IssuedQuantity)
                 ModelState.AddModelError("minBalance", "The remaining balance in Store" + storeItem.StoreCode + " is only " + storeItem.Balance);
@@ -154,7 +154,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
             var storeItem = db.StoreItemAssignments.FirstOrDefault(x => x.ItemCode == issueItem.ItemCode && x.StoreCode == issue.StoreCode);
             if (storeItem == null)
-                ModelState.AddModelError("not defined", "The item " + issueItem.InventoryItem.Name + " is not available in store " + issue.StoreCode);
+                ModelState.AddModelError("not defined", "The item " + issueItem.Name + " is not available in store " + issue.StoreCode);
 
             if (storeItem != null && storeItem.Balance < issueItem.IssuedQuantity)
                 ModelState.AddModelError("minBalance", "The remaining balance in Store" + storeItem.StoreCode + " is only " + storeItem.Balance);
