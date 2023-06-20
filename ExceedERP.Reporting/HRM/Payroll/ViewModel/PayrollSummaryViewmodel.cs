@@ -11,17 +11,9 @@
         public decimal Overtime { get; set; }
         public decimal TotalTaxableAllowance { get; set; }
         public decimal TotalNonTaxableAllowance { get; set; }
-
-        //public decimal TotalTaxablePositionAllowance { get; set; }
-        //public decimal TotalNonTaxablePositionAllowance { get; set; }
-        //public decimal TotalTaxableTopUpAllowance { get; set; }
-        //public decimal TotalNonTaxableTopUpAllowance { get; set; }
-        //public decimal TotalTaxableProfessionalAllowance { get; set; }
-        //public decimal TotalNonTaxableProfessionalAllowance { get; set; }
-        //public decimal TotalTaxableTransportAllowance { get; set; }
-        //public decimal TotalNonTaxableTransportAllowance { get; set; }
-        //public decimal TotalTaxableHouseAllowance { get; set; }
-        //public decimal TotalNonTaxableHouseAllowance { get; set; }
+        public decimal TotalTaxAdditions { get; set; }
+        public decimal TotalNonTaxAdditions { get; set; }
+       
         public decimal TotalTaxablePay { get; set; }
         public decimal TotalNonTaxablePay { get; set; }
         //

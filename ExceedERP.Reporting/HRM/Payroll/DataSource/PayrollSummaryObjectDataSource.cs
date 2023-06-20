@@ -63,17 +63,16 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                                 payrolldataSummary.Sum(x => x.NonTaxableAllowance);
 
 
-                            EmployeeInfo.OtherAddition = payrolldataSummary.Sum(x => x.TotalAdditions);
+                            EmployeeInfo.TotalTaxAdditions = payrolldataSummary.Sum(x => x.TotalTaxAdditions);
+                            EmployeeInfo.TotalNonTaxAdditions = payrolldataSummary.Sum(x => x.TotalNonTaxAdditions);
                             EmployeeInfo.TotalTaxablePay = EmployeeInfo.BasicSalary
                                                            + EmployeeInfo.Overtime
                                                            + EmployeeInfo.TotalTaxableAllowance
-
-
-                                                           + payrolldataSummary.Sum(x => x.TotalTaxAdditions);
-                            ;
+                                                           + EmployeeInfo.TotalTaxAdditions;
+                            
 
                             EmployeeInfo.TotalNonTaxablePay = EmployeeInfo.TotalNonTaxableAllowance +
-                                                              payrolldataSummary.Sum(x => x.TotalNonTaxAdditions);
+                                                              EmployeeInfo.TotalNonTaxAdditions;
 
                             EmployeeInfo.IncomeTax = payrolldataSummary.Sum(x => x.IncomeTax);
                             EmployeeInfo.Pension = payrolldataSummary.Sum(x => x.PensionFromEmployee);
