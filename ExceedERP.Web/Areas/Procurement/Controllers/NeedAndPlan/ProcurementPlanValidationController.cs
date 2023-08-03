@@ -20,14 +20,14 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser, ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser, ProcurementRoles.ProcurementPlanApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser, ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser, ProcurementRoles.ProcurementPlanApprover)]
         public ActionResult PlanValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<ProcurementPlanValidation> planvalidations = db.ProcurementPlanValidations.Where(x => x.ProcurementPlanId == id);
@@ -48,7 +48,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
         public ActionResult PlanValidations_Create(int id, ProcurementPlanValidation planValidation)
         {
             planValidation.CreatedBy = User.Identity.Name;
@@ -111,7 +111,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { planValidation }.ToDataSourceResult(new DataSourceRequest(), ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PlanValidations_Update([DataSourceRequest]DataSourceRequest request, ProcurementPlanValidation planValidation)
         {
@@ -137,7 +137,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { planValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PlanValidations_Destroy([DataSourceRequest]DataSourceRequest request, ProcurementPlanValidation planValidation)
         {
@@ -163,7 +163,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { planValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -172,7 +172,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return File(fileContents, contentType, fileName);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {

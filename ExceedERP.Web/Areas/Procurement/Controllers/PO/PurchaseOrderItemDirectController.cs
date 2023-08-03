@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult PurchaseOrderItemDirects_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchaseOrderItem> purchaseOrderItemDirects = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id);
@@ -60,7 +60,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderItemDirects_Create(int id, [DataSourceRequest]DataSourceRequest request, PurchaseOrderItem purchaseOrderItem)
         {
@@ -133,7 +133,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
         }
         
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderItemDirects_Update([DataSourceRequest]DataSourceRequest request, PurchaseOrderItem purchaseOrderItem)
         {
@@ -200,7 +200,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { purchaseOrderItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderItemDirects_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseOrderItem purchaseOrderItem)
         {
@@ -241,9 +241,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             return Json(new[] { purchaseOrderItem }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdmin, ProcurementConstants.ProcurementTenderApprover, ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdmin, ProcurementRoles.ProcurementTenderApprover, ProcurementRoles.ProcurementTenderUser)]
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -251,7 +251,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             return File(fileContents, contentType, fileName);
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdmin, ProcurementConstants.ProcurementTenderApprover, ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdmin, ProcurementRoles.ProcurementTenderApprover, ProcurementRoles.ProcurementTenderUser)]
 
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)

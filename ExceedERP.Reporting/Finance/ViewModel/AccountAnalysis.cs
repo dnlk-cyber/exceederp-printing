@@ -35,5 +35,6 @@ namespace ExceedERP.Reporting.Finance.ViewModel
         public string ReferenceDoc { get; set; }//manual
         public string PaymentReference { get; set; }//receipt or payment reference
         public string InvoiceReferenceDoc { get; set; }//manual
+        public string PostStatus { get; set; }
     }
 }

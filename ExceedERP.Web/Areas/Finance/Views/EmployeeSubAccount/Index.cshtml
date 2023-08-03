@@ -4,7 +4,7 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(200).EditorTemplateName("EmployeeSelector");
+        columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(200).EditorTemplateName("EmployeeSelector");
         columns.Bound(c => c.SubAccountCode).Width(150).EditorTemplateName("SubAccountSelector");
           columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
@@ -60,3 +60,10 @@
           .Destroy(destroy => destroy.Action("EmployeeSubAccounts_Destroy", "EmployeeSubAccount"))
       )
 )
+
+<script>
+    function filterEmployees()
+    {
+        text: $("#EmployeeId").data("kendoDropDownList").filterInput.val()
+    }
+</script>

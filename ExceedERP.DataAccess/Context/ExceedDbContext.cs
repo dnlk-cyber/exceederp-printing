@@ -94,6 +94,9 @@ using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.Core.Domain.JobCosting.Setting;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.Core.Domain.PrintingEstimation;
+using ExceedERP.Core.Domain.Finance.AP;
+using ExceedERP.Core.Domain.Finance.Bank;
+using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -247,7 +250,7 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<InventoryItem>().Property(e => e.Balance).HasPrecision(18, 4);
 
-            
+
 
             #endregion
             #region finance
@@ -255,6 +258,22 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.Debit).HasPrecision(18, 4);
 
             modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.Credit).HasPrecision(18, 4);
+
+            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.ExRate).HasPrecision(18, 4);
+            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.DebitNonFun).HasPrecision(18, 4);
+
+            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.CreditNonFun).HasPrecision(18, 4);
+
+            modelBuilder.Entity<ReconciliationBankAccount>().Property(e => e.ExRate).HasPrecision(18, 4);
+            modelBuilder.Entity<ReconciliationBankAccount>().Property(e => e.DebitNonFun).HasPrecision(18, 4);
+            modelBuilder.Entity<ReconciliationBankAccount>().Property(e => e.CreditNonFun).HasPrecision(18, 4);
+
+            modelBuilder.Entity<ReconciliationBookAccount>().Property(e => e.ExRate).HasPrecision(18, 4);
+            modelBuilder.Entity<ReconciliationBookAccount>().Property(e => e.DebitNonFun).HasPrecision(18, 4);
+            modelBuilder.Entity<ReconciliationBookAccount>().Property(e => e.CreditNonFun).HasPrecision(18, 4);
+
+            modelBuilder.Entity<ReconciliationBankServiceCharge>().Property(e => e.ExRate).HasPrecision(18, 4);
+            modelBuilder.Entity<ReconciliationBankServiceCharge>().Property(e => e.AmountNonFun).HasPrecision(18, 4);
 
 
 
@@ -264,13 +283,14 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.Balance).HasPrecision(18, 4);
 
+            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.ExRate).HasPrecision(18, 4);
+            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.DebitNonFun).HasPrecision(18, 4);
+
+            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.CreditNonFun).HasPrecision(18, 4);
+
+            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.BalanceNonFun).HasPrecision(18, 4);
 
 
-            modelBuilder.Entity<GlSecondayLedgerLine>().Property(e => e.Debit).HasPrecision(18, 4);
-
-            modelBuilder.Entity<GlSecondayLedgerLine>().Property(e => e.Credit).HasPrecision(18, 4);
-
-            modelBuilder.Entity<GlSecondayLedgerLine>().Property(e => e.Balance).HasPrecision(18, 4);
 
 
 
@@ -362,7 +382,7 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<ArInvoiceLines>().Property(e => e.UnitPrice).HasPrecision(18, 4);
 
-
+            modelBuilder.Entity<ApTPayment>().Property(e => e.Amount).HasPrecision(18, 4);
 
 
             #endregion
@@ -3025,7 +3045,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<StoreRequisitionPropertyValidationArchive> StoreRequisitionPropertyValidationArchive { get; set; }
 
         public DbSet<BinCardLineArchive> BinCardLineArchive { get; set; }
-        #endregion 
+        #endregion
 
 
         #endregion
@@ -3035,7 +3055,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<TenderExtension> TenderExtensions { get; set; }
         public DbSet<TenderCancellation> TenderCancellations { get; set; }
         public DbSet<TenderCancellationUploadDbModel> TenderCancellationUploadDbModels { get; set; }
-        
+
         public DbSet<GuaranteeMode> GuaranteeModes { get; set; }
         public DbSet<ContractPaymentSchedule> ContractPaymentSchedules { get; set; }
 
@@ -3049,6 +3069,12 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ContractPaymentAttachment> ContractPaymentAttachments { get; set; }
         public DbSet<ContractPaymentGrn> ContractPaymentGrns { get; set; }
         public DbSet<ContractPaymentValidation> ContractPaymentValidations { get; set; }
+        //new generic payment request
+        public DbSet<PurchasePayment> PurchasePayments { get; set; }
+        public DbSet<PurchasePaymentAttachment> PurchasePaymentAttachments { get; set; }
+        public DbSet<PurchasePaymentGrn> PurchasePaymentGrns { get; set; }
+        public DbSet<PurchasePaymentValidation> PurchasePaymentValidations { get; set; }
+        public DbSet<PurchasePaymentBudgetValidation> PurchasePaymentBudgetValidations { get; set; }
 
         public DbSet<ContractTermination> ContractTerminations { get; set; }
         public DbSet<ContractTerminationAttachment> ContractTerminationAttachments { get; set; }
@@ -3156,7 +3182,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<LotItems> LotItems { get; set; }
 
         public DbSet<LotFinancialOffer> LotFinancialOffers { get; set; }
-       
+
 
         public DbSet<PurchaseFollowUp> PurchaseFollowUps { get; set; }
         public DbSet<PurchaseFollowUpStatus> PurchaseStatus { get; set; }
@@ -3276,14 +3302,12 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<GlRuleValue> GlRuleValues { get; set; }
         public DbSet<GLSegmentSetup> GlSegmentSetups { get; set; }
         public DbSet<GLChartOfAccountSegment> GlChartOfAccountSegments { get; set; }
+        public DbSet<GlCostAllocationSetup> GlCostAllocationSetups { get; set; }
         public DbSet<JournalSourceMap> JournalSourceMaps { get; set; }
         public DbSet<GlFiscalYear> GLFiscalYears { get; set; }
         public DbSet<AgingPeriodSetup> AgingPeriodSetups { get; set; }
         public DbSet<GLLedgerPosting> GLLedgerPostings { get; set; }
         public DbSet<GLLedgerPostingLines> GLLedgerPostingLines { get; set; }
-        
-        public DbSet<GlSecondayLedger> GlSecondayLedgers { get; set; }
-        public DbSet<GlSecondayLedgerLine> GlSecondayLedgerLines { get; set; }
         public DbSet<GlRetainedEarningAccount> GlRetainedEarningAccounts { get; set; }
         public DbSet<GlEarningLedger> GlEarningLedgers { get; set; }
         public DbSet<GlEarningLedgerLine> GlEarningLedgerLines { get; set; }
@@ -3293,13 +3317,17 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<PaymentRequest> PaymentRequests { get; set; }
         public DbSet<PaymentRequestLine> PaymentRequestLines { get; set; }
-
+        public DbSet<FundTransferLine> FundTransferLines { get; set; }
+        public DbSet<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }
         public DbSet<PaymentRequestDepartmentValidation> PaymentRequestDepartmentValidations { get; set; }
+        public DbSet<PaymentRequestBudgetValidation> PaymentRequestBudgetValidations { get; set; }
         public DbSet<PaymentRequestValidation> PaymentRequestValidations { get; set; }
         public DbSet<ApTravelOrder> ApTravelOrders { get; set; }
         public DbSet<ApTravelOrderAdvancePayment> ApTravelOrderAdvancePayments { get; set; }
         public DbSet<ApTravelOrderDeparture> ApTravelOrderDepartures { get; set; }
         public DbSet<ApTravelOrderValidation> ApTravelOrderValidations { get; set; }
+        public DbSet<ApTravelOrderDepartmentValidation> ApTravelOrderDepartmentValidations { get; set; }
+        public DbSet<ApTravelOrderBudgetValidation> ApTravelOrderBudgetValidations { get; set; }
         public DbSet<ApTravelOrderDistribution> ApTravelOrderDistributions { get; set; }
 
         public DbSet<ApTravelExpenseClaim> ApTravelExpenseClaims { get; set; }
@@ -3307,66 +3335,71 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ApTravelExpensePayment> ApTravelExpensePayments { get; set; }
         public DbSet<ApTravelExpenseRefund> ApTravelExpenseRefunds { get; set; }
         public DbSet<ApTravelExpenseValidation> ApTravelExpenseValidations { get; set; }
+        public DbSet<ApTravelExpenseDepartmentValidation> ApTravelExpenseDepartmentValidations { get; set; }
+        public DbSet<ApTravelExpenseBudgetValidation> ApTravelExpenseBudgetValidations { get; set; }
         public DbSet<ApTravelExpenseDistribution> ApTravelExpenseDistributions { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApCashierSetup> CashierSetups { get; set; }
+        public DbSet<ApCashierSetup> CashierSetups { get; set; }
         public DbSet<ApPettyCash> ApPettyCash { get; set; }
         public DbSet<ApPettyCashPayment> ApPettyCashPayments { get; set; }
         public DbSet<ApPettyCashUtilization> ApPettyCashUtilizations { get; set; }
         public DbSet<ApPettyCashValidation> ApPettyCashValidations { get; set; }
         public DbSet<ApPettyCashDistribution> ApPettyCashDistributions { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApSetupItem> ApSetupItems { get; set; }
-        public DbSet<Core.Domain.Finance.AP.APBusinessType> APBusinessTypes { get; set; }
-        public DbSet<Core.Domain.Finance.AP.APSupplierType> APSupplierTypes { get; set; }
+        public DbSet<ApSetupItem> ApSetupItems { get; set; }
+        public DbSet<APBusinessType> APBusinessTypes { get; set; }
+        public DbSet<APSupplierType> APSupplierTypes { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApSetupReceiptBalanceAccount> ApSetupReceiptBalanceAccounts { get; set; }
+        public DbSet<ApSetupReceiptBalanceAccount> ApSetupReceiptBalanceAccounts { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApMiscellaneousPaymentDistribution> APMiscellaneousPaymentDistributions { get; set; }
+        public DbSet<ApMiscellaneousPaymentDistribution> APMiscellaneousPaymentDistributions { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApMiscellaneousPayment> APMiscellaneousPayments { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApMiscellaneousPaymentLine> ApMiscellaneousPaymentLines { get; set; }
+        public DbSet<ApMiscellaneousPayment> APMiscellaneousPayments { get; set; }
+        public DbSet<ApMiscellaneousPaymentLine> ApMiscellaneousPaymentLines { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApMiscellaneousPaymentValidation> APMiscellaneousPaymentValidations { get; set; }
+        public DbSet<ApMiscellaneousPaymentValidation> APMiscellaneousPaymentValidations { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPaymentSettlement> ApPaymentSettlements { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApPaymentSettlementLine> ApPaymentSettlementLines { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApPaymentSettlementDistribution> ApPaymentSettlementDistributions { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApPaymentSettlementValidation> ApPaymentSettlementValidations { get; set; }
+        public DbSet<ApPaymentSettlement> ApPaymentSettlements { get; set; }
+        public DbSet<ApPaymentSettlementLine> ApPaymentSettlementLines { get; set; }
+        public DbSet<ApPaymentSettlementGrn> ApPaymentSettlementGrns { get; set; }
+        public DbSet<ApPaymentSettlementDistribution> ApPaymentSettlementDistributions { get; set; }
+        public DbSet<ApPaymentSettlementValidation> ApPaymentSettlementValidations { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApDirectPayment> ApDirectPayments { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApDirectPaymentLine> ApDirectPaymentLines { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApDirectPaymentDistribution> ApDirectPaymentDistributions { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApDirectPaymentValidation> ApDirectPaymentValidations { get; set; }
-        public DbSet<Core.Domain.Finance.AP.ApPaybleInvoiceDistribution> APPaybleInvoiceDistributions { get; set; }
+        public DbSet<ApDirectPayment> ApDirectPayments { get; set; }
+        public DbSet<ApDirectPaymentLine> ApDirectPaymentLines { get; set; }
+        public DbSet<ApDirectPaymentDistribution> ApDirectPaymentDistributions { get; set; }
+        public DbSet<ApDirectPaymentValidation> ApDirectPaymentValidations { get; set; }
+        public DbSet<ApPaybleInvoiceDistribution> APPaybleInvoiceDistributions { get; set; }
+        public DbSet<APPaybleInvoicePrepayment> APPaybleInvoicePrepayments { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPaybleInvoices> APPaybleInvoices { get; set; }
+        public DbSet<ApPaybleInvoices> APPaybleInvoices { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPaybleInvoicesLines> APPaybleInvoicesLines { get; set; }
+        public DbSet<ApPaybleInvoicesLines> APPaybleInvoicesLines { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPaybleInvoiceValidation> APPaybleInvoiceValidations { get; set; }
+        public DbSet<ApPaybleInvoiceValidation> APPaybleInvoiceValidations { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPaymentDistribution> APPaymentDistributions { get; set; }
+        public DbSet<ApPaymentDistribution> APPaymentDistributions { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPayment> APPayments { get; set; }
+        public DbSet<ApPayment> APPayments { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.ApPaymentValidation> APPaymentValidations { get; set; }
+        public DbSet<ApPaymentValidation> APPaymentValidations { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.APsupplierBlacklist> APsupplierBlacklists { get; set; }
+        public DbSet<APsupplierBlacklist> APsupplierBlacklists { get; set; }
 
-        public DbSet<Core.Domain.Finance.AP.APSupplierRegistration> APSupplierRegistrations { get; set; }
+        public DbSet<APSupplierRegistration> APSupplierRegistrations { get; set; }
+        public DbSet<ApTPayment> ApTPayments { get; set; }
+        public DbSet<ApTPaymentValidation> ApTPaymentValidations { get; set; }
+        public DbSet<ApTPaymentRequestResponse> ApTPaymentRequestResponses { get; set; }
         #endregion
+        public DbSet<ReconciliationBankAccount> ReconcilationBankAccounts { get; set; }
 
-       
-        public DbSet<Core.Domain.Finance.Bank.ReconciliationBankAccount> ReconcilationBankAccounts { get; set; }
-
-        public DbSet<Core.Domain.Finance.Bank.ReconciliationBookAccount> ReconcilationBookAccounts { get; set; }
+        public DbSet<ReconciliationBookAccount> ReconcilationBookAccounts { get; set; }
 
 
-        public DbSet<Core.Domain.Finance.Bank.ReconciliationSchedule> ReconciliationSchedules { get; set; }
-        public DbSet<Core.Domain.Finance.Bank.ReconciliationBankServiceCharge> ReconciliationBankServiceCharges { get; set; }
-        public DbSet<Core.Domain.Finance.Bank.ReconciliationBankServiceChargeValidation> ReconciliationBankServiceChargeValidations { get; set; }
-        public DbSet<Core.Domain.Finance.Bank.ReconciliationBankServiceChargeDistribution> ReconciliationBankServiceChargeDistributions { get; set; }
+        public DbSet<ReconciliationSchedule> ReconciliationSchedules { get; set; }
+        public DbSet<ReconciliationBankServiceCharge> ReconciliationBankServiceCharges { get; set; }
+        public DbSet<ReconciliationBankServiceChargeValidation> ReconciliationBankServiceChargeValidations { get; set; }
+        public DbSet<ReconciliationBankServiceChargeDistribution> ReconciliationBankServiceChargeDistributions { get; set; }
 
         public DbSet<Core.Domain.Finance.Common.BankAccount> BankAccounts { get; set; }
 
@@ -3377,11 +3410,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Core.Domain.Finance.Common.PaymentTerms> PaymentTerms { get; set; }
 
         public DbSet<GLChartOfAccountAccount> GLChartOfAccountAccounts { get; set; }
-
-        public DbSet<GLChartOfAccountLocation> GLChartOfAccountLocations { get; set; }
-
-        public DbSet<GLChartOfAccountSubAccount> GLChartOfAccountSubAccounts { get; set; }
-
+        public DbSet<GLAccountConfig> GLAccountConfigs { get; set; }
         public DbSet<GLCountryType> GLCountryTypes { get; set; }
 
         public DbSet<GLJournalCategoriers> GLJournalCategoriers { get; set; }
@@ -3389,7 +3418,6 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<GLJournalSources> GLJournalSources { get; set; }
 
         public DbSet<GLPeriod> GLPeriods { get; set; }
-
         public DbSet<GlRecordJournal> GLRecordJournals { get; set; }
 
         public DbSet<GLRecordJournalDetail> GLRecordJournalDetails { get; set; }
@@ -3406,8 +3434,6 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FinSetupCurrency> FinSetupCurrencies { get; set; }
 
         public DbSet<FinSetupCurrencyExchange> FinSetupCurrencyExchanges { get; set; }
-
-        public DbSet<GLChartOfAccountCostCenter> GLChartOfAccountCostCenters { get; set; }
 
         public DbSet<IfrsStatementOfComprehensiveIncome> IfrsStatementOfComprehensiveIncomes { get; set; }
 
@@ -3448,9 +3474,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<IfrsStatementOfChangesInEquity> IfrsStatementOfChangesInEquities { get; set; }
 
         public DbSet<IfrsStatementOfChangesInEquityRange> IfrsStatementOfChangesInEquityRanges { get; set; }
-        public DbSet<GlSegmentSequence> GlSegmentSequences { get; set; }
 
-        public DbSet<GlSegmentLength> GlSegmentLengths { get; set; }
 
         public DbSet<RevenueBySalesType> RevenueBySalesTypes { get; set; }
         public DbSet<RevenueList> RevenueLists { get; set; }
@@ -3463,9 +3487,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<GaapIncomeStatementOperationExpense> GaapIncomeStatementOperationExpenses { get; set; }
         public DbSet<GaapIncomeStatementOperationExpenseRange> GaapIncomeStatementOperationExpenseRanges { get; set; }
 
-       
 
-        
+
+
 
         public DbSet<GaapBalanceSheet> GapBalanceSheets { get; set; }
 
@@ -3491,9 +3515,6 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Core.Domain.Dashboard.FinanceDashboardRange> FinanceDashboardRanges { get; set; }
         public DbSet<FinanceSetting> FinanceSettings { get; set; }
         public DbSet<InvoiceArchive> InvoiceArchives { get; set; }
-
-
-
 
         #endregion
 

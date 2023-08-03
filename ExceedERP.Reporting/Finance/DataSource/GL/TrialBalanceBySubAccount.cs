@@ -21,6 +21,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
         public List<TrialBalalnceViewModel> TrialBalanceReport(string fromperiod, string toperiod, string subaccount, string segmentType, string segmentValue, bool summarizeByAccount)
         {
+            _db.Database.CommandTimeout = 7200;//added
             List<TrialBalalnceViewModel> list = new List<TrialBalalnceViewModel> { };
 
 

@@ -3,11 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using ExceedERP.Core.Domain.Procurement.Settings;
 
 namespace ExceedERP.Core.Domain.Procurement.ForeignPurchase
 {
 
-
+ 
     public enum ForeignPaymentMethod
     {
         LC,

@@ -1,7 +1,6 @@
-﻿  using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.HRM.Company
 {
@@ -17,7 +16,7 @@ namespace ExceedERP.Core.Domain.HRM.Company
         public virtual MainCompanyStructure MainCompanyStructure { get; set; }
         [Display(Name = "HR_Company_BranchCostCenter_Values", ResourceType = typeof(Localization.Resources))]
         public string Values { get; set; }
-        public virtual  GLChartOfAccountCostCenter GLChartOfAccountCostCenter{get;set;}
+        //public virtual  GLChartOfAccountCostCenter GLChartOfAccountCostCenter{get;set;}
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }   
         [NotMapped ]

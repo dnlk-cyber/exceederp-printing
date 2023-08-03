@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult TenderExtension_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<TenderExtension> tenderExtensions = _db.TenderExtensions.Where(t => t.TenderID == id);
@@ -42,7 +42,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderExtension_Create([DataSourceRequest]DataSourceRequest request, TenderExtension tenderExtension, int id)
         {
@@ -86,7 +86,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
        
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderExtension_Update([DataSourceRequest]DataSourceRequest request, TenderExtension tenderExtension)
         {
@@ -128,7 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderExtension }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderExtension_Destroy([DataSourceRequest]DataSourceRequest request, TenderExtension tenderExtension)
         {

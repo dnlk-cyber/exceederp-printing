@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.Finance.Bank
 {
@@ -38,6 +39,8 @@ namespace ExceedERP.Core.Domain.Finance.Bank
         public int ReconciliationScheduleId { get; set; }
         public virtual ReconciliationSchedule Schedule { get; set; }
         public decimal Amount { get; set; }
+        public decimal ExRate { get; set; }
+        public decimal AmountNonFun { get; set; }
         [Display(Name = "Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

@@ -37,7 +37,7 @@
               "# } #" +
               "/>"
               );
-
+          columns.Bound(c => c.Type).Width(100);
           columns.Command(command => { command.Edit(); /*command.Destroy();*/  command.Custom("En").Click("Enable"); }).Width(180);
       })
       .ToolBar(toolbar => {

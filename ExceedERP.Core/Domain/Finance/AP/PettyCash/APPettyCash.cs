@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
 
 namespace ExceedERP.Core.Domain.Finance.AP.PettyCash
@@ -24,6 +25,8 @@ namespace ExceedERP.Core.Domain.Finance.AP.PettyCash
         public decimal CurrentBalance { get; set; }
         [Display(Name = "Reference")]
         public string Reference { get; set; }
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<ApPettyCashPayment> PettyCashPayments { get; set; }
         public virtual ICollection<ApPettyCashUtilization> PettyCashUtilizations { get; set; }
         public virtual ICollection<ApPettyCashValidation> PettyCashValidations { get; set; }

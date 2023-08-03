@@ -20,7 +20,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index()
         {
             return View();
@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierListMinuteFiles_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<SupplierListMinuteFile> supplierlistminutefiles = db.SupplierListMinuteFiles;
@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierListMinuteFiles_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file)
         {
@@ -89,7 +89,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierListMinuteFiles_Update([DataSourceRequest]DataSourceRequest request, SupplierListMinuteFile supplierListMinuteFile)
         {
@@ -111,7 +111,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierListMinuteFile }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierListMinuteFiles_Destroy([DataSourceRequest]DataSourceRequest request, SupplierListMinuteFile supplierListMinuteFile)
         {

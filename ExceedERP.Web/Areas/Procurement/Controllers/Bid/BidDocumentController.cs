@@ -21,7 +21,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult TenderBidDocuments_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<TenderBidDocument> tenderbiddocuments = _db.TenderBidDocuments.Where(x => x.TenderID == id);
@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderBidDocuments_Create([DataSourceRequest]DataSourceRequest request, IEnumerable<HttpPostedFileBase> bidDocuments, int id)
         {
@@ -90,7 +90,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { bidDocuments }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderMinuteUploads_Update([DataSourceRequest]DataSourceRequest request, TenderMinuteUploadDBModel tenderMinuteUploadDbModel)
         {
@@ -111,7 +111,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderMinuteUploadDbModel }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderBidDocuments_Destroy([DataSourceRequest]DataSourceRequest request, TenderBidDocument tenderBidDocument)
         {

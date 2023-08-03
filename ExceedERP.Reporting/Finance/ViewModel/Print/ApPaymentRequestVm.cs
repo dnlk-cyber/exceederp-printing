@@ -27,8 +27,18 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string WorkUnit { get; set; }
         public string Employee { get; set; }
         public string PreparedBy { get; set; }
-        public string DepartmentApprovedBy { get; set; }        
+        public DateTime? PreparedDate { get; set; }
+        public string DepartmentApprovedBy { get; set; }
+        public DateTime? DepartmentApprovedDate { get; set; }
+        public string DepartmentSecondApprovedBy { get; set; }
+        public DateTime? DepartmentSecondApprovedDate { get; set; }
+        public string AccountantCheckedBy { get; set; }
+        public DateTime? AccountantCheckedDate { get; set; }
         public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public string BudgetApprovedBy { get; set; }
+        public DateTime? BudgetApprovedDate { get; set; }
+        public decimal Total { get; set; }
     }
 
 

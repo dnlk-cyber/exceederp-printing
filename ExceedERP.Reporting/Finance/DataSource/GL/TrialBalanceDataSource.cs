@@ -19,8 +19,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
         [DataObjectMethod(DataObjectMethodType.Select)]
 
-        public List<TrialBalalnceViewModel> TrialBalanceReport(string fromperiod, string toperiod, string balancingSegment, string amounttype,string account, string segmentType, string segmentValue, bool summarizeByAccount)
+        public List<TrialBalalnceViewModel> TrialBalanceReport(string fromperiod, string toperiod, string balancingSegment, string amounttype,string account, string segmentType, string segmentValue, bool summarizeByAccount, string businessUnit)
         {
+            _db.Database.CommandTimeout = 7200;//added
             List<TrialBalalnceViewModel> list = new List<TrialBalalnceViewModel> { };
 
 
@@ -72,6 +73,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                 if (!String.IsNullOrEmpty(account))
                     postedAccounts = postedAccounts.Where(x => x.AccountSegment == account).AsQueryable();
+
+                if (!String.IsNullOrEmpty(businessUnit))
+                    postedAccounts = postedAccounts.Where(x => x.BusinessUnit == businessUnit).AsQueryable();
 
                 if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                 {

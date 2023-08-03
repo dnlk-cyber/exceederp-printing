@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
 
         private ExceedDbContext _db = new ExceedDbContext();
       
-       [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser , ProcurementConstants.ProcurementForeignPurchaseApprover)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser , ProcurementRoles.ProcurementForeignPurchaseApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-       [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser , ProcurementConstants.ProcurementForeignPurchaseApprover)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser , ProcurementRoles.ProcurementForeignPurchaseApprover)]
         public ActionResult ContractPaymentGrns_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ContractPaymentGrn> contractPaymentGrns = _db.ContractPaymentGrns.Where(x => x.ContractPaymentId == id);
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(result);
         }
 
-       [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractPaymentGrns_Create(int id, [DataSourceRequest]DataSourceRequest request, ContractPaymentGrn contractPaymentGrn)
         {
@@ -73,7 +73,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractPaymentGrn }.ToDataSourceResult(request, ModelState));
         }
 
-       [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractPaymentGrns_Update(int id, [DataSourceRequest]DataSourceRequest request, ContractPaymentGrn contractPaymentGrn)
         {
@@ -102,7 +102,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractPaymentGrn }.ToDataSourceResult(request, ModelState));
         }
 
-       [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractPaymentGrns_Destroy([DataSourceRequest]DataSourceRequest request, ContractPaymentGrn contractPaymentGrn)
         {

@@ -17,14 +17,14 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
 
-         [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ProformaEvaluationResults_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<ProformaEvaluationResult> proformaevaluationresults = _db.ProformaEvaluationResults.Where(p => p.ProformaPurchaseID == id);
@@ -57,7 +57,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaEvaluationResults_Create([DataSourceRequest]DataSourceRequest request, ProformaEvaluationResult proformaEvaluationResult , int id)
             {
@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaEvaluationResult }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaEvaluationResults_Update([DataSourceRequest]DataSourceRequest request, ProformaEvaluationResult proformaEvaluationResult)
         {
@@ -144,7 +144,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaEvaluationResult }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public ActionResult ProformaEvaluationResults_Destroy([DataSourceRequest]DataSourceRequest request, ProformaEvaluationResult proformaEvaluationResult)
         {
             if (ModelState.IsValid)

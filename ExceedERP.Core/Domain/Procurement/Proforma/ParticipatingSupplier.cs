@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Inventory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

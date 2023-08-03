@@ -22,7 +22,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
         
         public ActionResult GoodReceive()
         {
-            var periods = _db.InventoryPeriods.ToList();
+             var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -69,7 +69,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<GoodReceive> goodreceives = _db.GoodReceives.Where(x => x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if(myBusinessUnit!=0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -122,7 +122,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.GoodReceives.Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -167,7 +167,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
         }
         public ActionResult Issue()
         {
-            var periods = _db.InventoryPeriods.ToList();
+             var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -209,7 +209,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<Issue> issues = _db.Issues.Where(x => x.IsFuel == false && x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -257,7 +257,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.Issues.Where(x=>x.IsFuel==false).Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -302,7 +302,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
 
         public ActionResult IssueFuel()
         {
-            var periods = _db.InventoryPeriods.ToList();
+             var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -343,7 +343,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<Issue> issues = _db.Issues.Where(x => x.IsFuel && x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -397,7 +397,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.Issues.Where(x => x.IsFuel).Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -442,7 +442,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
 
         public ActionResult ItemTransfer()
         {
-            var periods = _db.InventoryPeriods.ToList();
+             var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -487,7 +487,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<ItemTransfer> itemtransfersends = _db.ItemTransfers.Where(st => st.IsOnlineApproved && !st.IsVoid && !st.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -536,7 +536,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.ItemTransfers.Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -582,7 +582,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
 
         public ActionResult ItemTransferReceive()
         {
-            var periods = _db.InventoryPeriods.ToList();
+            var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -625,7 +625,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<ItemTransferReceive> itemtransferreceives = _db.ItemTransferReceive.Where(st => st.IsOnlineApproved && !st.IsVoid && !st.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -674,7 +674,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.ItemTransferReceive.Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -718,7 +718,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
         }
         public ActionResult StoreReturn()
         {
-            var periods = _db.InventoryPeriods.ToList();
+             var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -758,7 +758,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<StoreReturn> storereturns = _db.StoreReturns.Where(x=>x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -798,7 +798,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.StoreReturns.Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -842,7 +842,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
 
         public ActionResult GoodSalesOrLend()
         {
-            var periods = _db.InventoryPeriods.ToList();
+             var periods = _db.InventoryPeriods.OrderByDescending(x=>x.DateFrom).ToList();
             ViewData["PeriodList"] = periods
                 .Select(e => new InventoryPeriod
                 {
@@ -882,7 +882,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             IQueryable<GoodSellingAndLending> goodsellingandlendings = _db.GoodSellingAndLendings.Where(x => x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);
@@ -920,7 +920,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var untransffered = _db.GoodSellingAndLendings.Where(x => x.GLPeriodId.ToString() == id).Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
-                int myBusinessUnit = UserInformationHelper.GetUserBusinessUnit(User.Identity.Name);
+                int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                 if (myBusinessUnit != 0)
                 {
                     List<string> storesinBusinessUnit = InventoryHelper.GetStoreByBusinessUnit(myBusinessUnit);

@@ -24,13 +24,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         private readonly ExceedDbContext db = new ExceedDbContext();
         private readonly DashboardHelper _dashboardHelper = new DashboardHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseRequisitionPurchaseDepartmentValidations_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
             var purchaserequisitionpurchasedepartmentvalidations =
@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionPurchaseDepartmentValidations_Create([DataSourceRequest] DataSourceRequest request, PurchaseRequisitionPurchaseDepartmentValidation purchaseRequisitionPurchaseDepartmentValidation, int id)
         {
@@ -271,7 +271,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             return Json(new[] { purchaseRequisitionPurchaseDepartmentValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
     
 
@@ -309,6 +309,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
                         var proforma = new ProformaPurchase
                         {
+                            BranchId = purchaseRequisition.BranchId,
+                            BusinessUnitId = purchaseRequisition.BusinessUnitId,
                             PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                             ProformaReference = (String.IsNullOrEmpty(purchaseRequisition.ReferenceNo))? purchaseRequisition.ReferenceNo: "NA",
                             Description = "NA",
@@ -418,7 +420,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
                         var purchaseOrder = new PurchaseOrder
                         {
-
+                            BranchId = purchaseRequisition.BranchId,
+                            BusinessUnitId = purchaseRequisition.BusinessUnitId,
                             PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                             SroreRequisition = sr,
                             ProcurementOfficer = assign.ProcurementOfficer,

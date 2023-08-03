@@ -5,9 +5,14 @@ using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.Finance
 {
-    class Setting
+    public enum FinanceSettingCategories
     {
+        ENABLE_PR_BUDGET_CONTROL,
+        ENABLE_TELEBIRR_PAYMENT_METHOD,
+        DISABLE_GRN_DISTRIBUTION,
+        APPLY_CLEARING_ACCOUNT_GRN_DISTRIBUTION,
     }
+
 
     public enum ApInvoiceTransactionType
     {
@@ -21,7 +26,19 @@ namespace ExceedERP.Core.Domain.Finance
         Close
     }
 
-   
+
+    public class GlCostAllocationSetup : TrackUserOperation
+    {
+        public int GlCostAllocationSetupId { get; set; }
+        [Display(Name = "Segment Type")]
+        public int GLSegmentSetupId { get; set; }
+        [Display(Name = "Segment Code")]
+        public string SegmentCode { get; set; }
+        [Display(Name = "Cost Center Code")]
+        public string CostCenterCode { get; set; }
+    }
+
+
 
     public class GlRetainedEarningAccount : TrackUserOperation
     {
@@ -237,7 +254,12 @@ namespace ExceedERP.Core.Domain.Finance
         Stock_Transfer,
         Stock_Transfer_Receive,
         Stock_Return,
-        Stock_SaleOrLend
+        Stock_SaleOrLend,
+        Deposit,
+        Credit_Settlement,
+        TDS,
+        AP_Payment_SubContract,
+        AR_Collection_Construction,
     }
 
     public class JournalSourceMap : TrackUserSettingOperation

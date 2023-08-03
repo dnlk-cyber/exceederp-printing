@@ -1,4 +1,11 @@
-﻿namespace ExceedERP.Core.Domain.Common.DocumentApproval
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.Common.DocumentApproval
 {
     public enum ForwardMethod
     {
@@ -7,13 +14,15 @@
     }
     public enum ApprovalHierarchy
     {
-        PlacementHierarchy,
-        AdhokHierarchy
+        [Description("HR Placement Hierarchy")]
+        Placement_Hierarchy,
+        [Description("Adhoc Hierarchy")]
+        Adhoc_Hierarchy
     }
     public enum ApprovalDocumentType//sync with below
     {
         ApInvoice,
-        ApPayment,
+        ApPayment,       
         ApMiscPayment,
         ApTravelOrder,
         ApTravelExpenseClaim,
@@ -22,7 +31,12 @@
         FixedAssetRequisition,
         PurchaseOrder,
         Tender,
-        ContractManagement
+        ContractManagement,
+        TBPayment,
+        ApPaymentRequestSelfCare,
+        PurchasePaymentRequest,
+        ApTravelOrderSelfCare,
+        ApTravelExpenseClaimSelfCare,
     }
     public enum ApprovalWorkflow
     {

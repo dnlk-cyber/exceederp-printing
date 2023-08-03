@@ -17,13 +17,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     public class LotPurchaseRequisitionController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult LotPurchaseRequisitions_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<LotPurchaseRequisition> lotpurchaserequisitions = _db.LotPurchaseRequisitions.Where(x=>x.LotID==id);
@@ -43,11 +43,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotPurchaseRequisitions_Create(int id,[DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
         {
-            //var exist = db.LotPurchaseRequisitions.Where(x =>x.PurchaseRequisitionID == lotPurchaseRequisition.PurchaseRequisitionID).ToList();
+            var exist = _db.LotPurchaseRequisitions
+                .Where(x => x.PurchaseRequisitionAssignmentId == lotPurchaseRequisition.PurchaseRequisitionAssignmentId).FirstOrDefault();
+            if (exist!=null)
+            {
+                ModelState.AddModelError("exist", $" The assignement is already added in lot {exist.LotID} - lot number {exist.Lot.LotNumber} ");
+            }
+            //var exist = db.LotPurchaseRequisitions.Where(x => x.PurchaseRequisitionID == lotPurchaseRequisition.PurchaseRequisitionID).ToList();
             //if (exist.Any())
             //{
             //    string tendereref = "";
@@ -55,7 +61,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             //    if (existlot != null)
             //    {
             //        var existtender = db.Tenders.Find(existlot.TenderID);
-            //        if (existtender != null && !existtender.IsCancelled) 
+            //        if (existtender != null && !existtender.IsCancelled)
             //            ModelState.AddModelError("exist", lotPurchaseRequisition.PurchaseRequisitionID + $" already exists in the system under tender { existtender.TenderReference }.");
             //    }
 
@@ -102,10 +108,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { lotPurchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotPurchaseRequisitions_Update([DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
         {
+
+            var exist = _db.LotPurchaseRequisitions
+                .Where(x => x.LotPurchaseRequisitionId != lotPurchaseRequisition.LotPurchaseRequisitionId)
+                .Where(x => x.PurchaseRequisitionAssignmentId == lotPurchaseRequisition.PurchaseRequisitionAssignmentId).FirstOrDefault();
+            if (exist != null)
+            {
+                ModelState.AddModelError("exist", $" The assignement is already added in lot {exist.LotID} - lot number {exist.Lot.LotNumber} ");
+            }
             //var exist = db.LotPurchaseRequisitions.Where(x => x.PurchaseRequisitionID == lotPurchaseRequisition.PurchaseRequisitionID).ToList();
             //if (exist.Any())
             //{
@@ -161,7 +175,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { lotPurchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotPurchaseRequisitions_Destroy([DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
         {
@@ -191,7 +205,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { lotPurchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         private void AddPrItems(int assignmentid, int id)
         {
             var record = _db.PurchaseRequisitionAssignments.Find(assignmentid);
@@ -291,9 +305,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             {
                 foreach (var item in record.PurchaseRequisitionReassignmentItems)
                 {
+
                     if (item.ItemType == PurchaseItemType.FixedAsset)
                     {
-                        #region fixed asset
+                        #region fixed asset from lot item
 
                         var existingLotItem = _db.LotItems
                             .Where(x => x.LotID == id)
@@ -317,10 +332,34 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         }
 
                         #endregion
+                        #region fixed asset from participant item item
+
+                        var existingPriceItem = _db.ParticipantsItems
+                            .Where(x => x.LotID == id)
+                            .Where(x => x.Name == item.Name)
+                            .FirstOrDefault(x => x.ItmCode == item.ItmCode);
+                        if (existingPriceItem != null)
+                        {
+                            decimal qty = existingPriceItem.Quantity - item.Quantity;
+                            if (qty <= 0)
+                            {
+                                _db.ParticipantsItems.Remove(existingPriceItem);
+                                _db.SaveChanges();
+                            }
+                            else
+                            {
+                                existingPriceItem.Quantity = qty;
+                                _db.Entry(existingPriceItem).State = EntityState.Modified;
+                                _db.SaveChanges();
+                            }
+
+                        }
+
+                        #endregion
                     }
                     else
                     {
-                        #region stock and service
+                        #region stock and service from lot item
 
                         var existingLotItem = _db.LotItems.Where(x => x.LotID == id)
                             .Where(x => x.ItemSpecification == item.ItemSpecification)//added
@@ -343,9 +382,32 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         }
 
                         #endregion
+                        #region stock and service from bid partifipant item
 
+                        var existingPriceItem = _db.ParticipantsItems.Where(x => x.LotID == id)
+                            .Where(x => x.ItemSpecification == item.ItemSpecification)//added
+                            .FirstOrDefault(x => x.ItmCode == item.ItmCode);
+                        if (existingPriceItem != null)
+                        {
+                            decimal qty = existingPriceItem.Quantity - item.Quantity;
+                            if (qty <= 0)
+                            {
+                                _db.ParticipantsItems.Remove(existingPriceItem);
+                                _db.SaveChanges();
+                            }
+                            else
+                            {
+                                existingPriceItem.Quantity = qty;
+                                _db.Entry(existingPriceItem).State = EntityState.Modified;
+                                _db.SaveChanges();
+                            }
+
+                        }
+
+                        #endregion
                     }
                 }
+              
             }
         }
         protected override void Dispose(bool disposing)

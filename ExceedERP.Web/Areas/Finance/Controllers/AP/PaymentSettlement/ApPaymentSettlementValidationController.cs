@@ -68,36 +68,36 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                        
                         #region pass data for reconciliation
 
-                        foreach (var distribution in record.ApPaymentSettlementDistributions)
-                        {
-                            string sourceid = record.ApPaymentSettlementId + "-" + distribution.ApPaymentSettlementDistributionId;
-                            //check if this is bank account
-                            if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                            {
-                                var book = new ReconciliationBookAccount
-                                {
-                                    CreatedBy = User.Identity.Name,
-                                    DateCreated = DateTime.Now,
-                                    AccountCode = distribution.AccountCode,
-                                    Debit = distribution.Debit,
-                                    Credit = distribution.Credit,
-                                    Date =record.PaymentDate,
-                                    Type = "Direct Payment Settlement",
-                                    ReferenceDoc = !String.IsNullOrWhiteSpace(record.Remark) ? record.Remark : "NA",
-                                    Reference = !String.IsNullOrWhiteSpace(record.Reference) ? record.Reference : "NA",
-                                    Source = JournalSources.DirectPaymentSettlement.ToString(),
-                                    SourceID = sourceid,
-                                    AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                                    SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                                };
-                                _db.ReconcilationBookAccounts.Add(book);
-                                _db.SaveChanges();
-                            }
-                        }
+                        //foreach (var distribution in record.ApPaymentSettlementDistributions)
+                        //{
+                        //    string sourceid = record.ApPaymentSettlementId + "-" + distribution.ApPaymentSettlementDistributionId;
+                        //    //check if this is bank account
+                        //    if (_accountHelper.IsBankAccount(distribution.AccountCode))
+                        //    {
+                        //        var book = new ReconciliationBookAccount
+                        //        {
+                        //            CreatedBy = User.Identity.Name,
+                        //            DateCreated = DateTime.Now,
+                        //            AccountCode = distribution.AccountCode,
+                        //            Debit = distribution.Debit,
+                        //            Credit = distribution.Credit,
+                        //            Date =record.PaymentDate,
+                        //            Type = "Direct Payment Settlement",
+                        //            ReferenceDoc = !String.IsNullOrWhiteSpace(record.Remark) ? record.Remark : "NA",
+                        //            Reference = !String.IsNullOrWhiteSpace(record.Reference) ? record.Reference : "NA",
+                        //            Source = JournalSources.DirectPaymentSettlement.ToString(),
+                        //            SourceID = sourceid,
+                        //            AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+                        //            SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+                        //        };
+                        //        _db.ReconcilationBookAccounts.Add(book);
+                        //        _db.SaveChanges();
+                        //    }
+                        //}
 
                         #endregion
                         //PostToSecondaryLedger(id);
-                        record.IsPostedToSecondLedger = true;
+                        //record.IsPostedToSecondLedger = true;
                         record.Status = "Approved";
                         record.IsOnlineApproved = true;
                         record.IsVoid = false;
@@ -156,52 +156,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
 
 
-        private void PostToSecondaryLedger(int id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            string user = User.Identity.Name;
-            var record = _db.ApDirectPayments.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName = "",
-                    JournalNumber = "",
-                    Description = "",
-                    CategoryName = "",
-                    SourcesName = "Direct. Payment",
-                    EffectiveDate = record.PaymentDate,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.PaymentDate),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.PaymentDate),
-                    PostingSource = JournalSources.AP_Direct_Payment,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.ApPaymentSettlementDistributions.Where(x => x.ApPaymentSettlementId == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.ApPaymentSettlementDistributionId,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-
-                secondLedgerHelper.PostToSecondLedger(ledger, user);
-            }
-        }
+       
 
         protected override void Dispose(bool disposing)
         {

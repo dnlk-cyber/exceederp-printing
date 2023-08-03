@@ -63,7 +63,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.FloatDate, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().DatePickerFor(model => model.FloatDate)
+                    @Html.Kendo().DateTimePickerFor(model => model.FloatDate)
                     @Html.ValidationMessageFor(model => model.FloatDate, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -72,7 +72,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.ClosingDate, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().DatePickerFor(model => model.ClosingDate)
+                    @Html.Kendo().DateTimePickerFor(model => model.ClosingDate)
                     @Html.ValidationMessageFor(model => model.ClosingDate, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -81,7 +81,7 @@
          
                 @Html.LabelFor(model => model.EvaluationDate, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().DatePickerFor(model => model.EvaluationDate)
+                    @Html.Kendo().DateTimePickerFor(model => model.EvaluationDate)
                     @Html.ValidationMessageFor(model => model.EvaluationDate, "", new { @class = "text-danger" })
                 </div>
           

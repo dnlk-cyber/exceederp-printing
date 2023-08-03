@@ -20,24 +20,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
     {
         private ExceedDbContext db = new ExceedDbContext();
         // GET: Finance/PaymentRequestLine
-        public ActionResult Index()
-        {
-            PopulateViewData();
-
-            return View();
-        }
-        private void PopulateViewData()
-        {
-            var employeName = db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
-
-            var tax = db.GLTaxRates.ToList();
-            ViewData["GLTaxRate"] = tax;
-
-            var payment = db.PaymentRequests.ToList();
-            ViewData["PaymentRequest"] = payment;
-        }
-      
+     
         public ActionResult PaymentRequestLine_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
 

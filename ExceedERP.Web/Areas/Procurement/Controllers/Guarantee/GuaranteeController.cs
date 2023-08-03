@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser, ProcurementConstants.ProcurementAdvanceBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser, ProcurementRoles.ProcurementAdvanceBondApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser, ProcurementConstants.ProcurementAdvanceBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser, ProcurementRoles.ProcurementAdvanceBondApprover)]
         public ActionResult Guarantees_Read([DataSourceRequest]DataSourceRequest request, bool isExpired, bool isSent)
         {
             
@@ -86,7 +86,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Guarantees_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.Guarantee.Guarantee guarantee)
         {
@@ -143,7 +143,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guarantee }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Guarantees_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.Guarantee.Guarantee guarantee)
         {
@@ -200,7 +200,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guarantee }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Guarantees_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.Guarantee.Guarantee guarantee)
         {
@@ -251,7 +251,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guarantee }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = db.Guarantees.Find(id);
@@ -304,7 +304,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
         }
         
 
-       [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser)]
         public JsonResult Release(int id)
         {
             var record = db.Guarantees.Find(id);
@@ -335,7 +335,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdvanceBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser)]
         public JsonResult Forfeit(int id)
         {
             var record = db.Guarantees.Find(id);

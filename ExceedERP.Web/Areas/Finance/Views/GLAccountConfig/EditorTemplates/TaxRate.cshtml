@@ -1,0 +1,152 @@
+﻿
+@model  ExceedERP.Core.Domain.Finance.GL.GlTaxRate
+          
+
+@Html.HiddenFor(model => model.GlTaxRateId)
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TaxName, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(m => m.TaxName)
+                    @Html.ValidationMessageFor(model => model.TaxName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Rate, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Rate)
+                    @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                <br />
+                @*  @Html.LabelFor(model => model.ApplyToAR, htmlAttributes: new { @class = "control-label col-md-6" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.ApplyToAr)
+                    @Html.ValidationMessageFor(model => model.ApplyToAr, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                <br />
+                @* @Html.LabelFor(model => model.ApplyToAP, htmlAttributes: new { @class = "control-label col-md-6" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.ApplyToAp)
+                    @Html.ValidationMessageFor(model => model.ApplyToAp, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                <br />
+                @* @Html.LabelFor(model => model.ApplyToWithholding, htmlAttributes: new { @class = "control-label col-md-6" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.ApplyToWithholding)
+                    @Html.ValidationMessageFor(model => model.ApplyToWithholding, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1"><div class="form-group">
+                @Html.LabelFor(model => model.ArAccountCode, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.ArAccountCode)
+                    @Html.ValidationMessageFor(model => model.ArAccountCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div>
+                <img src="~/Content/Images/search.png" onclick="SelectARAccCode()"/>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ApAccountCode, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.ApAccountCode)
+                    @Html.ValidationMessageFor(model => model.ApAccountCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div>
+                <img src="~/Content/Images/search.png" onclick="SelectAPAccCode()" />
+            </div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.WithholdingAccountCode, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.WithholdingAccountCode)
+                    @Html.ValidationMessageFor(model => model.WithholdingAccountCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div>
+                <img src="~/Content/Images/search.png" onclick="SelectWithholdingAccCode()" />
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Branch, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Branch)
+                    @Html.ValidationMessageFor(model => model.Branch, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                <br/>
+                @*@Html.LabelFor(model => model.Enable, htmlAttributes: new { @class = "control-label col-md-6" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.Enable)
+                    @Html.ValidationMessageFor(model => model.Enable, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var aCode;
+    var popup;
+
+    function SelectAccCode() {
+        popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function SelectARAccCode() {
+        popup = window.open('/Finance/AccountCode/ARAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function SelectAPAccCode() {
+        popup = window.open('/Finance/AccountCode/APAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function SelectWithholdingAccCode() {
+        popup = window.open('/Finance/AccountCode/WithholdingAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+</script>
+
+
+
+
+
+
+

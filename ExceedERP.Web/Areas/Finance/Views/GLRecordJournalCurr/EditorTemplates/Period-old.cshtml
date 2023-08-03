@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Period...")
+                  .DataTextField("Name")
+                  .DataValueField("Name")
+                  .BindTo((IEnumerable)ViewData["periods"])
+)
+@Html.ValidationMessageFor(m => m)

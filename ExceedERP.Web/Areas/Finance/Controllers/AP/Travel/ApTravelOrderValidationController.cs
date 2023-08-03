@@ -59,15 +59,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             if (record != null && record.IsOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
 
-            if (record != null && record.ForwardedTo != User.Identity.Name)
-                ModelState.AddModelError("notcorrectuser", "You can't approve this record,it is forwarded to another user.");
-
-            var hasApproved = _db.PurchaseOrderValidations
-                .Where(x => x.PurchaseOrderID == id)
-                .Where(x => x.CreatedBy == User.Identity.Name && x.Status == ApprovalStatuses.Approve).AsQueryable();
-            if (hasApproved.Any())
-                ModelState.AddModelError("hasapproved", "You can't approve again.You have already approved.");
-
             if (ModelState.IsValid)
             {
 
@@ -75,91 +66,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 {
                     if (apTravelOrderValidation.Status == ApprovalStatuses.Approve)
                     {
-                        if (record.IsFinalApproval)
-                        {
-                           // PostToSecondaryLedger(id);
-                            record.IsPostedToSecondLedger = true;
-                            record.Status = "Approved";
-                            record.IsOnlineApproved = true;
-                            record.OnlineApprovedBy = User.Identity.Name;
-                            record.OnlineApprovedTime = DateTime.Now;
-                            _db.Entry(record).State = EntityState.Modified;
-                            _db.SaveChanges();
-                            #region pass data for reconciliation
-
-                            foreach (ApTravelOrderDistribution distribution in record.ApTravelOrderDistributions)
-                            {
-                                string sourceid = record.ApTravelOrderId + "-" + distribution.ApTravelOrderDistributionId;
-                                //check if this is bank account
-                                if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                                {
-                                    var book = new ReconciliationBookAccount
-                                    {
-                                        CreatedBy = User.Identity.Name,
-                                        DateCreated = DateTime.Now,
-                                        AccountCode = distribution.AccountCode,
-                                        Debit = distribution.Debit,
-                                        Credit = distribution.Credit,
-                                        Date = record.RequestDate,
-                                        Type = "Travel Order",
-                                        ReferenceDoc = !String.IsNullOrWhiteSpace(record.Remark) ? record.Remark : "NA",
-                                        Reference = !String.IsNullOrWhiteSpace(record.Reference) ? record.Reference : "NA",
-                                        Source =JournalSources.AP_TravelOrder.ToString(),
-                                        SourceID = sourceid,
-                                        AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                                        SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                                    };
-                                    _db.ReconcilationBookAccounts.Add(book);
-                                    _db.SaveChanges();
-                                }
-                            }
-                            #endregion
-                            #region approval notification
-
-                            NotifModels notif = new NotifModels
-                            {
-                                UserId = record.ForwardedFrom,
-                                Message = $"Travel order document {record.ApTravelOrderId} is approved by User: {record.ForwardedTo} at {DateTime.Now}"
-                            };
-
-                            Notify.NotifyUser(notif);
-
-                            #endregion
-                        }
-                        else
-                        {
-                            record.Status = "Partialy Approved";
-                            record.OnlineApprovedBy = User.Identity.Name;
-                            record.OnlineApprovedTime = DateTime.Now;
-                            _db.Entry(record).State = EntityState.Modified;
-                            _db.SaveChanges();
-                            #region approval notification
-
-                            NotifModels notif = new NotifModels
-                            {
-                                UserId = record.ForwardedFrom,
-                                Message = $"Travel order document {record.ApTravelOrderId} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
-                            };
-
-                            Notify.NotifyUser(notif);
-
-                            #endregion
-                            #region forward to next approver
-
-                            decimal docamount = record.AdvanceAmount;
-                            DocApprovalWorkflowHelper.ForwardToApprover(record.ApTravelOrderId, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApTravelOrder, false);
-
-                            #endregion
-                        }
+                        record.Status = "Approved";
+                        record.IsOnlineApproved = true;
+                        record.OnlineApprovedBy = User.Identity.Name;
+                        record.OnlineApprovedTime = DateTime.Now;
+                        _db.Entry(record).State = EntityState.Modified;
+                        _db.SaveChanges();
 
                     }
-
-                
 
                     if (apTravelOrderValidation.Status == ApprovalStatuses.Reject)
                     {
                         record.IsSendForApproval = false;
-                        record.Status = "Rejected";
+                        record.Status = "Finance Rejected";
                         _db.Entry(record).State = EntityState.Modified;
                         _db.SaveChanges();
                     }
@@ -240,51 +159,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        private void PostToSecondaryLedger(int id)
-        {
-            string user = User.Identity.Name;
-            var record = _db.ApTravelOrders.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName = "",
-                    JournalNumber = "",
-                    Description = "",
-                    CategoryName = "",
-                    SourcesName = "Travel Order",
-                    EffectiveDate = record.RequestDate,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.RequestDate),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.RequestDate),
-                    PostingSource = JournalSources.AP_TravelExpenseClaim,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.ApTravelOrderDistributions.Where(x => x.ApTravelOrderId == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.ApTravelOrderDistributionId,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-                SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-                secondLedgerHelper.PostToSecondLedger(ledger, user);
-            }
-        }
+       
         protected override void Dispose(bool disposing)
         {
             _db.Dispose();

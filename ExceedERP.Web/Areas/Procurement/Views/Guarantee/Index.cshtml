@@ -53,7 +53,7 @@
 
             </text>);
 
-              })
+                  })
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .HtmlAttributes(new { style = "height: 550px;" })
                         .Pageable(pageable => pageable
@@ -73,8 +73,8 @@
                             sortable.SortMode(GridSortMode.SingleColumn);
                         })
                         .Filterable()
-                        .Groupable()
-                        .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+
+                        .Events(ev => ev.DetailExpand("detailExpand"))
                         .Scrollable(h => h.Height(500))
                         .Events(x => x.DataBound("onDataBoundMasterGuarantee"))
                         .ClientDetailTemplateId("templates")
@@ -88,6 +88,7 @@
                                     model.Id(p => p.GuaranteeId);
                                     model.Field(p => p.SupplierId).Editable(false);
                                     model.Field(p => p.ExpireDate).Editable(false);
+                                    model.Field(p => p.GuaranteeId).Editable(false);
                                     model.Field(p => p.VoidTime).Editable(false);
                                     model.Field(p => p.VoidBy).Editable(false);
                                     model.Field(p => p.isVoid).Editable(false);

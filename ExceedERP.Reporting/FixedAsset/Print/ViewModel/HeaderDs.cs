@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
 {

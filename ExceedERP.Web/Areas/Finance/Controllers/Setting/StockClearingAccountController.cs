@@ -26,6 +26,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
             IQueryable<StockClearingAccount> stockclearingaccounts = _db.StockClearingAccounts;
             DataSourceResult result = stockclearingaccounts.ToDataSourceResult(request, stockClearingAccount => new {
                 StockClearingAccountId = stockClearingAccount.StockClearingAccountId,
+                Type = stockClearingAccount.Type,
                 Description = stockClearingAccount.Description,
                 AccountCode = stockClearingAccount.AccountCode,
                 Enable = stockClearingAccount.Enable,
@@ -42,10 +43,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockClearingAccounts_Create([DataSourceRequest]DataSourceRequest request, StockClearingAccount stockClearingAccount)
         {
+            var exisit = _db.StockClearingAccounts.Where(x => x.Type == stockClearingAccount.Type).FirstOrDefault();
+            if (exisit != null)
+                ModelState.AddModelError("exisit", "The type already exisits");
+
             if (ModelState.IsValid)
             {
                 var entity = new StockClearingAccount
                 {
+                    Type = stockClearingAccount.Type,
                     Description = stockClearingAccount.Description,
                     AccountCode = stockClearingAccount.AccountCode,
                     Enable = stockClearingAccount.Enable,
@@ -71,11 +77,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockClearingAccounts_Update([DataSourceRequest]DataSourceRequest request, StockClearingAccount stockClearingAccount)
         {
+            var exisit = _db.StockClearingAccounts
+                .Where(x=>x.StockClearingAccountId!=stockClearingAccount.StockClearingAccountId)
+                .Where(x => x.Type == stockClearingAccount.Type).FirstOrDefault();
+
+            if (exisit != null)
+                ModelState.AddModelError("exisit", "The type already exisits");
             if (ModelState.IsValid)
             {
                 var entity = new StockClearingAccount
                 {
                     StockClearingAccountId = stockClearingAccount.StockClearingAccountId,
+                    Type = stockClearingAccount.Type,
                     Description = stockClearingAccount.Description,
                     AccountCode = stockClearingAccount.AccountCode,
                     Enable = stockClearingAccount.Enable,
@@ -106,6 +119,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                 var entity = new StockClearingAccount
                 {
                     StockClearingAccountId = stockClearingAccount.StockClearingAccountId,
+                    Type = stockClearingAccount.Type,
                     Description = stockClearingAccount.Description,
                     AccountCode = stockClearingAccount.AccountCode,
                     Enable = stockClearingAccount.Enable,

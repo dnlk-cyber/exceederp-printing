@@ -28,6 +28,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             PopulateViewData();
             return View();
         }
+        public ActionResult NewIndex()
+        {
+            PopulateViewData();
+            return View();
+        }
+
+    
+        
 
         private void PopulateViewData()
         {
@@ -50,6 +58,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     Name = e.Name
                 })
                 .AsQueryable();
+
+            var branches = _db.Branch.ToList();
+            ViewData["branches"] = branches
+               .Select(e => new
+               {
+                   BranchId = e.BranchId,
+                   Name = e.Name
+               })
+               .AsQueryable();
         }
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser , FinanceConstants.GeneralLedgerApprover ,FinanceConstants.GeneralLedgerView)]
@@ -58,23 +75,31 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
 
             IQueryable<GlRecordJournal> glRecordJournals = _db.GLRecordJournals
-                .Where(x => x.IsOnlineApproved == false);
+                .Where(x => x.IsOnlineApproved == false && x.IsNonFuncCurrency==false);
 
-            //if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover)) 
-            //    || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
-            //{
-            //    glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
-            //}
+            if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
+                || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
+            {
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+            }
 
             if (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerAdmin))
                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName) ||x.OrgBranchName==null || x.OrgBranchName == "");
             else
                 glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                //filter by business unit
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                glRecordJournals = glRecordJournals.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
             DataSourceResult result = glRecordJournals.ToDataSourceResult(request, glRecordJournal => new
             {
                 GlRecordJournalId = glRecordJournal.GlRecordJournalId,
                 BranchId = glRecordJournal.BranchId,
+                BusinessUnitId = glRecordJournal.BusinessUnitId,
                 JournalName = glRecordJournal.JournalName,
                 Description = glRecordJournal.Description,
                 FiscalYear = glRecordJournal.FiscalYear,
@@ -86,7 +111,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 DebitSum = glRecordJournal.DebitSum,
                 Posting = glRecordJournal.Posting,
                 isReversed = glRecordJournal.isReversed,
-                IsPostedToSecondLedger = glRecordJournal.IsPostedToSecondLedger,
+                IsUnPosted = glRecordJournal.IsUnPosted,
+                IsNonFuncCurrency = glRecordJournal.IsNonFuncCurrency,
+
                 IsVoidDoc = glRecordJournal.IsVoidDoc,
                 Remark = glRecordJournal.Remark,
                 ReferenceDoc = glRecordJournal.ReferenceDoc,
@@ -171,11 +198,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     EffectiveDate = glRecordJournal.EffectiveDate.Date,
                     Posting = glRecordJournal.Posting,
                     isReversed = glRecordJournal.isReversed,
+                    IsUnPosted = glRecordJournal.IsUnPosted,
                     IsSendForApproval = glRecordJournal.IsSendForApproval,
                     isPosted = glRecordJournal.isPosted,
                     PostedBy = glRecordJournal.PostedBy,
                     PostedTime = glRecordJournal.PostedTime,
-                    IsPostedToSecondLedger = glRecordJournal.IsPostedToSecondLedger,
+                    
                     IsVoidDoc = glRecordJournal.IsVoidDoc,
                     Remark = glRecordJournal.Remark,
                     ReferenceDoc = glRecordJournal.ReferenceDoc,
@@ -190,6 +218,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     VoidTime = glRecordJournal.VoidTime,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     DateCreated = DateTime.Now,
                     LastModified = glRecordJournal.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -298,13 +327,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     #region update sum
                     var lines = _db.GLRecordJournalDetails.Where(x=>x.GlRecordJournalId==glRecordJournal.GlRecordJournalId);
-                    glRecordJournal.DebitSum = lines.Sum(x => x.Debit);
+                    glRecordJournal.DebitSum = lines.Any()? lines.Sum(x => x.Debit):0;
                     #endregion
 
                     var entity = new GlRecordJournal
                     {
                         GlRecordJournalId = glRecordJournal.GlRecordJournalId,
                         BranchId=glRecordJournal.BranchId,
+                        BusinessUnitId = glRecordJournal.BusinessUnitId,
                         JournalName = glRecordJournal.JournalName,
                         Description = glRecordJournal.Description,
                         FiscalYear = thisYear,
@@ -315,10 +345,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                         EffectiveDate = glRecordJournal.EffectiveDate,
                         Posting = glRecordJournal.Posting,
                         isReversed = glRecordJournal.isReversed,
+                        IsUnPosted = glRecordJournal.IsUnPosted,
                         isPosted = glRecordJournal.isPosted,
                         PostedBy = glRecordJournal.PostedBy,
                         PostedTime = glRecordJournal.PostedTime,
-                        IsPostedToSecondLedger = glRecordJournal.IsPostedToSecondLedger,
+                        
                         IsVoidDoc = glRecordJournal.IsVoidDoc,
                         DebitSum= glRecordJournal.DebitSum,
                         Remark = glRecordJournal.Remark,
@@ -404,10 +435,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                         EffectiveDate = glRecordJournal.EffectiveDate,
                         Posting = glRecordJournal.Posting,
                         isReversed = glRecordJournal.isReversed,
+                        IsUnPosted = glRecordJournal.IsUnPosted,
                         isPosted = glRecordJournal.isPosted,
                         PostedBy = glRecordJournal.PostedBy,
                         PostedTime = glRecordJournal.PostedTime,
-                        IsPostedToSecondLedger = glRecordJournal.IsPostedToSecondLedger,
                         Remark = glRecordJournal.Remark,
 
                         IsSendForApproval = glRecordJournal.IsSendForApproval,
@@ -597,12 +628,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     PeriodName = record.PeriodName,
                     Status = "Reversed",
                     Posting = record.Posting,
+                    isPosted = record.isPosted,
+                    IsUnPosted = record.IsUnPosted,
                     isReversed = false,
-                    IsOnlineApproved = false,
-                    OnlineApprovedBy = "",
+                    IsOnlineApproved = record.IsOnlineApproved,
+                    OnlineApprovedBy = record.OnlineApprovedBy,
                     OnlineApprovedTime = record.OnlineApprovedTime,
                     CreatedBy = User.Identity.Name,
                     OrgBranchName=record.OrgBranchName,
+                    BusinessUnitId = record.BusinessUnitId,
                 };
                 ;
                 obj.DateCreated = DateTime.Now;
@@ -702,6 +736,41 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                             preparpay.IsOnlineTransferred = false;
                             _db.APPayments.Attach(preparpay);
                             _db.Entry(preparpay).State = EntityState.Modified;
+                            _db.SaveChanges();
+                            break;
+                        case "APMPAY":
+                            var apmiscpay = _db.APMiscellaneousPayments.Find(did);
+                            apmiscpay.IsOnlineTransferred = false;
+                            _db.APMiscellaneousPayments.Attach(apmiscpay);
+                            _db.Entry(apmiscpay).State = EntityState.Modified;
+                            _db.SaveChanges();
+                            break;
+                        case "APINV":
+                            var apinvoice = _db.APPaybleInvoices.Find(did);
+                            apinvoice.IsOnlineTransferred = false;
+                            _db.APPaybleInvoices.Attach(apinvoice);
+                            _db.Entry(apinvoice).State = EntityState.Modified;
+                            _db.SaveChanges();
+                            break;
+                        case "ARINV":
+                            var arinvoice = _db.ARInvoices.Find(did);
+                            arinvoice.IsOnlineTransferred = false;
+                            _db.ARInvoices.Attach(arinvoice);
+                            _db.Entry(arinvoice).State = EntityState.Modified;
+                            _db.SaveChanges();
+                            break;
+                        case "ARSMC":
+                            var armisc = _db.ARMiscelaneousCollections.Find(did);
+                            armisc.IsOnlineTransferred = false;
+                            _db.ARMiscelaneousCollections.Attach(armisc);
+                            _db.Entry(armisc).State = EntityState.Modified;
+                            _db.SaveChanges();
+                            break;
+                        case "ARSTC":
+                            var arstandard = _db.ARStandardCollections.Find(did);
+                            arstandard.IsOnlineTransferred = false;
+                            _db.ARStandardCollections.Attach(arstandard);
+                            _db.Entry(arstandard).State = EntityState.Modified;
                             _db.SaveChanges();
                             break;
                     }

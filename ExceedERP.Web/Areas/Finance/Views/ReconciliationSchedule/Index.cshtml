@@ -16,16 +16,16 @@
           columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
           columns.Command(command =>
           {
-              command.Edit(); 
+              command.Edit();
               //command.Destroy();
               command.Custom("✔ Reconcile").Click("Reconcile");
 
           }).Width(280);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
-                              //toolbar.Excel();
-                              //// toolbar.Pdf();
+          toolbar.Create();
+          //toolbar.Excel();
+          //// toolbar.Pdf();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -36,7 +36,9 @@
           .PageSizes(true)
           .ButtonCount(5))
 
+
       .Scrollable()
+      
       .Selectable(selectable =>
       {
           selectable.Mode(GridSelectionMode.Single);
@@ -47,12 +49,13 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable().
+      .
       Events(ev => ev.DetailExpand("detailExpand"))
       .Events(x => x.DataBound("onDataBoundMaster"))
-      .ClientDetailTemplateId("serviceChargeTemplates")        
+      .ClientDetailTemplateId("serviceChargeTemplates")
       .DataSource(dataSource => dataSource
           .Ajax()
+           .Sort(sort => sort.Add("Date").Descending())
           .Model(
               model =>
               {

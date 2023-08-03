@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseApprover, ProcurementConstants.ProcurementForeignPurchaseApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseApprover, ProcurementRoles.ProcurementForeignPurchaseApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseApprover, FinanceConstants.AccountPayableView, ProcurementConstants.ProcurementForeignPurchaseUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseApprover, FinanceConstants.AccountPayableView, ProcurementRoles.ProcurementForeignPurchaseUser)]
         public ActionResult ForeignPurchaseCostValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ForeignPurchaseCostValidation> foreignPurchaseCostValidations = _db.ForeignPurchaseCostValidations.Where(x=>x.ForeignPurchaseCostId==id);
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ForeignPurchaseCostValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ForeignPurchaseCostValidation foreignPurchaseCostValidation)
         {
@@ -104,7 +104,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(new[] { foreignPurchaseCostValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ForeignPurchaseCostValidations_Update([DataSourceRequest]DataSourceRequest request, ForeignPurchaseCostValidation foreignPurchaseCostValidation)
         {
@@ -130,7 +130,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(new[] { foreignPurchaseCostValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ForeignPurchaseCostValidations_Destroy([DataSourceRequest]DataSourceRequest request, ForeignPurchaseCostValidation foreignPurchaseCostValidation)
         {

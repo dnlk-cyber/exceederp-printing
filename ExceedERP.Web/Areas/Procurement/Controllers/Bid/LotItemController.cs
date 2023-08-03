@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult LotItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<LotItems> lotitems = _db.LotItems.Where(l => l.LotID == id);
@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotItems_Create([DataSourceRequest]DataSourceRequest request, LotItems lotItems, int id)
         {
@@ -96,7 +96,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotItems_Update([DataSourceRequest]DataSourceRequest request, LotItems lotItems)
         {
@@ -137,7 +137,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotItems_Destroy([DataSourceRequest]DataSourceRequest request, LotItems lotItems)
         {
@@ -179,7 +179,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             return File(fileContents, contentType, fileName);
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdmin)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdmin)]
 
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)

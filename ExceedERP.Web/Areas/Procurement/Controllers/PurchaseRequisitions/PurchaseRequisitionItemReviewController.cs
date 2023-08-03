@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseRequisitionItemReviews_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<PurchaseRequisitionItem> purchaserequisitionItems = db.PurchaseRequisitionItems.Where(pri => pri.PurchaseRequisitionID == id);
@@ -45,14 +45,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                 ItemSpecification = purchaseRequisitionItem.ItemSpecification,
                 Name = purchaseRequisitionItem.Name,
                 UoM = purchaseRequisitionItem.UoM,
-                ItemType = purchaseRequisitionItem.ItemType
+                ItemType = purchaseRequisitionItem.ItemType,
+                BudgetCode = purchaseRequisitionItem.BudgetCode,
             });
 
             return Json(result);
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItemReviews_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem , int id )
         {
@@ -76,7 +77,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
-                    CreatedBy=User.Identity.Name,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
+                    CreatedBy =User.Identity.Name,
                     DateCreated=DateTime.Now
                 };
 
@@ -93,7 +95,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItemReviews_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {
@@ -118,6 +120,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
 
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
@@ -136,7 +139,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItemReviews_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {
@@ -159,7 +162,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     ItemSpecification = purchaseRequisitionItem.ItemSpecification,
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
-                    ItemType = purchaseRequisitionItem.ItemType
+                    ItemType = purchaseRequisitionItem.ItemType,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                 };
 
                 db.PurchaseRequisitionItems.Attach(entity);

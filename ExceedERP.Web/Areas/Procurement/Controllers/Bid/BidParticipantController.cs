@@ -21,13 +21,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult BidPParticipatingSupplierses_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<BidPParticipatingSuppliers> bidpparticipatingsupplierses = _db.BidPParticipatingSupplierses.Where(l => l.LotID == id);
@@ -57,7 +57,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BidPParticipatingSupplierses_Create([DataSourceRequest]DataSourceRequest request, BidPParticipatingSuppliers bidPParticipatingSuppliers, int id)
         {
@@ -118,7 +118,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BidPParticipatingSupplierses_Update([DataSourceRequest]DataSourceRequest request, BidPParticipatingSuppliers bidPParticipatingSuppliers)
         {
@@ -174,7 +174,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BidPParticipatingSupplierses_Destroy([DataSourceRequest]DataSourceRequest request, BidPParticipatingSuppliers bidPParticipatingSuppliers)
         {

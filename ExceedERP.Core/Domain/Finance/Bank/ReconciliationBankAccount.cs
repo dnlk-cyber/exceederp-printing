@@ -17,6 +17,9 @@ namespace ExceedERP.Core.Domain.Finance.Bank
         public string Reference { get; set; }
         public decimal Debit { get; set; }
         public decimal Credit { get; set; }
+        public decimal ExRate { get; set; }
+        public decimal DebitNonFun { get; set; }
+        public decimal CreditNonFun { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Date")]
@@ -26,5 +29,6 @@ namespace ExceedERP.Core.Domain.Finance.Bank
         public DateTime? ReconciledDate { get; set; }
         public bool Reconciled { get; set; }
         public bool Check { get; set; }
+       
     }
 }

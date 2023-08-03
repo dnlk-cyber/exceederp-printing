@@ -6,7 +6,7 @@
         public const string AccountReceivableCollection = "Account_Receivable_Collection";
         public const string AccountReceivableInvoice = "Account_Receivable_Invoice";
         public const string AccountReceivableReport = "Account_Receivable_Report";
-        public const string AccountReceivableView = "Account_Receivable_view";
+        public const string AccountReceivableView = "Account_Receivable_View";
         public const string AccountReceivableApprover = "Account_Receivable_Approver";
         public const string AccountReceivableVoid = "Account_Receivable_Void";
 
@@ -35,6 +35,8 @@
         public const string AccountPayableTravelOrder = "Account_Payable_TravelOrder";
         public const string AccountPayableTravelExpenseClaimApprover = "Account_Payable_TravelExpenseClaim_Approver";
         public const string AccountPayableTravelExpenseClaim = "Account_Payable_TravelExpenseClaim";
+
+        public const string DisbursementTBPayment = "Disbursement_TBPayment";
 
         public const string BankReconciliationUser = "Bank_Reconciliation_User";
         public const string BankReconciliationApprover = "Bank_Reconciliation_Approver";

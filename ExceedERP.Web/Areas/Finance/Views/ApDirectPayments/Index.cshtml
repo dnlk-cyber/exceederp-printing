@@ -37,7 +37,7 @@
                    @<text>
 
                     <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+                    @*<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>*@
 
                     @(Html.Kendo().CheckBox()
                                     .Name("checktransfferable")
@@ -51,7 +51,7 @@
       })
 
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApDirectPaymnet").Window(w => w.Title("Direct Payment")))
-      .Groupable()
+
       .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
@@ -76,8 +76,8 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
-      
+
+
       .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(sort => sort.Add("ApDirectPaymentId").Descending())
@@ -86,8 +86,9 @@
               {
                   model.Id(p => p.ApDirectPaymentId);
                   model.Field(p => p.ApDirectPaymentId).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
 
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
 
                   model.Field(p => p.VoidTime).Editable(false);
                   model.Field(p => p.VoidBy).Editable(false);
@@ -209,19 +210,19 @@
                                               .Columns(columns =>
                                               {
                                                   columns.Bound(c => c.Purpose).Width(140);
-                                                  columns.Bound(c => c.ForexAmount).Width(90);
-                                                  columns.Bound(c => c.Currency).Width(90).EditorTemplateName("CurrencySelector");
-                                                  columns.Bound(c => c.ExchangeRate).Width(70);
+                                                  //columns.Bound(c => c.ForexAmount).Width(90);
+                                                  //columns.Bound(c => c.Currency).Width(90).EditorTemplateName("CurrencySelector");
+                                                  //columns.Bound(c => c.ExchangeRate).Width(70);
                                                   columns.Bound(c => c.Amount).Width(90);
-                                                   columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(180);
+                                                  columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(180);
                                                   columns.ForeignKey(p => p.GLTaxRateID, (System.Collections.IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelectorAP").Width(80);
                                                   columns.Bound(c => c.TaxAmount).Width(90);
                                                   columns.Bound(c => c.TotalAmount).Width(90);
                                                   columns.ForeignKey(p => p.WithholdingType, (System.Collections.IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(90).EditorTemplateName("TaxSelectorWithholding");
                                                   columns.Bound(c => c.WithholdingAmount).Width(90);
                                                   columns.Bound(c => c.WithholdTax).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= WithholdTax ? checked='checked' :'' \\# />");
-                                                  columns.Bound(c => c.NetPayable).Width(90);
                                                   columns.Bound(c => c.DeductAmount).Width(90);
+                                                  columns.Bound(c => c.NetPayable).Width(90);
 
                                                   columns.Command(command =>
                                                   {
@@ -242,7 +243,7 @@
                                               {
                                                   sortable.SortMode(GridSortMode.SingleColumn);
                                               })
-                                            
+
                                               .Scrollable()
                                              .Events(x => x.DataBound("onDataBoundLines"))
                                               .DataSource(dataSource => dataSource
@@ -256,7 +257,10 @@
                                                       {
                                                           model.Id(p => p.ApDirectPaymentLineId);
                                                           model.Field(p => p.Purpose).Editable(false);
-                                                          model.Field(p => p.Amount).Editable(false);
+                                                          //model.Field(p => p.Amount).Editable(false);
+                                                          model.Field(p => p.ForexAmount).Editable(false);
+                                                          model.Field(p => p.ExchangeRate).Editable(false);
+                                                          model.Field(p => p.Currency).Editable(false);
                                                           model.Field(p => p.WithholdTaxAmount).Editable(false);
                                                           model.Field(p => p.WithholdingAmount).Editable(false);
                                                           model.Field(p => p.TaxAmount).Editable(false);

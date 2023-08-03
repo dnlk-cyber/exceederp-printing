@@ -4,9 +4,13 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Construction;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
@@ -18,21 +22,23 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 {
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class ApTravelOrderRequestController : Controller
     {
 
-        private ExceedDbContext db = new ExceedDbContext();
+        private ExceedDbContext _db = new ExceedDbContext();
         public static int EmployeeId { get; set; }
         public static bool IsForOther { get; set; }
         public ActionResult Index()
         {
             PopulateViewData();
+         
             return View();
         }
 
         private void PopulateViewData()
         {
-            var employee = db.Person_Employee;
+            var employee = _db.Person_Employee;
             var selectedEmployee = employee.Select(
                 i => new
                 {
@@ -40,9 +46,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     Code = i.EmployeeId
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
-            var branches = db.Branch;
-            var structure = db.MainCompanyStructures;
-            var chartOfAccountSubAccounts = db.GLChartOfAccountSubAccounts;
+            var branches = _db.Branch;
+            var structure = _db.MainCompanyStructures;
+
+            var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            var subAccounts =_db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
+            var chartOfAccountSubAccounts = subAccounts;
             var subaccounts = chartOfAccountSubAccounts.Select(
                 i => new
                 {
@@ -56,84 +65,59 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             ViewData["Structure"] = structure;
 
             ViewData["Branches"] = branches;
+            var items = _db.ApSetupItems.ToList();
+            ViewData["Items"] = items;
         }
-        public string CheckStatus(int masterId)
-        {
-            var reques = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "TravelOrder");
-            if (reques != null)
-            {
-                var checkApprove = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "TravelOrder" && x.Status == RequestStatus.APPROVE);
-                if (checkApprove != null)
-                {
-                    return "approved";
-                }
-                var deptApproval = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "TravelOrder" && x.Status == RequestStatus.DEPARTMENT_APPROVAL).FirstOrDefault();
-                if (deptApproval != null)
-                {
-                    return "Dapproved";
-                }
-                return "true";
-            }
-            return "false";
-        }
-        public void SetEmployeeId(string fullName)
-        {
-            List<EmployeeIdView> EmployeeViews = new List<EmployeeIdView>();
-            EmployeeIdView EmployeeView = new EmployeeIdView();
-            var employeeList = db.Person_Employee.AsQueryable();
-            if (employeeList.Count() > 0)
-            {
-                employeeList = employeeList.Where(l => l.IsActive).AsQueryable();
-            }
-            foreach (var emp in employeeList)
-            {
-                EmployeeView = new EmployeeIdView();
-                EmployeeView.PersonId = emp.EmployeeId;
-                EmployeeView.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
-                EmployeeViews.Add(EmployeeView);
-            }
-            var employees = EmployeeViews.Where(p => p.FullName == fullName).FirstOrDefault();
-            if (employees != null)
-            {
-                HRMInputs.EmployeeId = employees.PersonId;
-            }
-         ;
-        }
-        public int SetEmployee(string x)
-        {
-            IsForOther = false;
 
-            if (x == "true")
-            {
-                var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
-
-                IsForOther = true;
-                return list.Count();
-
-            }
-            return 0;
-        }
         public ActionResult ApTravelOrderRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ApTravelOrder> aptravelorders = db.ApTravelOrders;
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
+            IQueryable<ApTravelOrder> aptravelorders = _db.ApTravelOrders;
+
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
+                 && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
+            {
+
+                aptravelorders = aptravelorders.Where(x => userworkunit.Contains(x.OrgStructureId)
+                || x.ForwardedTo == User.Identity.Name
+                || x.ForwardedFrom == User.Identity.Name
+                || x.CreatedBy == User.Identity.Name);
+
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
+            {
+                aptravelorders = aptravelorders.Where(x => x.CreatedBy == User.Identity.Name);
+            }
+
             DataSourceResult result = aptravelorders.ToDataSourceResult(request, apTravelOrder => new
             {
                 ApTravelOrderId = apTravelOrder.ApTravelOrderId,
-                //Name = apTravelOrder.Name,
                 BranchId = apTravelOrder.BranchId,
+                BusinessUnitId = apTravelOrder.BusinessUnitId,
                 EmployeeId = apTravelOrder.EmployeeId,
                 IsForOther = apTravelOrder.IsForOther,
                 OrgStructureId = apTravelOrder.OrgStructureId,
                 PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                 RequestDate = apTravelOrder.RequestDate,
                 AdvanceAmount = apTravelOrder.AdvanceAmount,
-                //PaymentMethod = apTravelOrder.PaymentMethod,
+                TransportReference = apTravelOrder.TransportReference,
                 Reference = apTravelOrder.Reference,
+
+                IsDepartmentOnlineApproved = apTravelOrder.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = apTravelOrder.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = apTravelOrder.DepartmentOnlineApprovedTime,
+                IsDepartmentSendForApproval = apTravelOrder.IsDepartmentSendForApproval,
+                DepartmentSendForApprovalBy = apTravelOrder.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = apTravelOrder.DepartmentSendForApprovalTime,
 
                 ForwardedFrom = apTravelOrder.ForwardedFrom,
                 ForwardedTo = apTravelOrder.ForwardedTo,
                 IsFinalApproval = apTravelOrder.IsFinalApproval,
+                CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
+
+                IsBudgetApproved = apTravelOrder.IsBudgetApproved,
+                BudgetApprovedBy = apTravelOrder.BudgetApprovedBy,
+                BudgetApprovedTime = apTravelOrder.BudgetApprovedTime,
 
                 IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
                 IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
@@ -161,43 +145,56 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrderRequest_Create([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
-
+            #region data 
+            var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
+            if (placement != null)
+            {
+                apTravelOrder.OrgStructureId = placement.OrgStructureId;
+                apTravelOrder.BranchId = placement.BranchId;
+                apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+            }
+            else
+            {
+                ModelState.AddModelError("placement", "Employee has not current placemnt");
+            }
+            #endregion
 
             if (ModelState.IsValid)
             {
-                if (!apTravelOrder.IsForOther)
-                {
-                    EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                }
-                else
-                {
-                    EmployeeId = apTravelOrder.EmployeeId;
-                }
-                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var branch = UserInformationHelper.GetEmployeeBranchId(User.Identity.Name);
-                var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == empId && x.isCurrent);
-                int orgId = 0 ;
-                if(placement != null)
-                {
-                    orgId = placement.OrgStructureId;
-                }
+             
+              
                 var entity = new ApTravelOrder
                 {
-                    //Name = apTravelOrder.Name,
                     EmployeeId = EmployeeId,
-                    BranchId = branch,
-                    OrgStructureId = orgId,
+                    BranchId = apTravelOrder.BranchId,
+                    BusinessUnitId = apTravelOrder.BusinessUnitId,
+                    OrgStructureId = apTravelOrder.OrgStructureId,
                     PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                     RequestDate = apTravelOrder.RequestDate,
                     AdvanceAmount = apTravelOrder.AdvanceAmount,
-                    //PaymentMethod = apTravelOrder.PaymentMethod,
+                    TransportReference = apTravelOrder.TransportReference,
                     Reference = apTravelOrder.Reference,
                     IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
                     IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
                     OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
                     Status = apTravelOrder.Status,
+
                     ForwardedFrom = User.Identity.Name,
                     ForwardedTo = User.Identity.Name,
+                    IsFinalApproval = apTravelOrder.IsFinalApproval,
+                    CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
+
+                    IsBudgetApproved = apTravelOrder.IsBudgetApproved,
+                    BudgetApprovedBy = apTravelOrder.BudgetApprovedBy,
+                    BudgetApprovedTime = apTravelOrder.BudgetApprovedTime,
+
+                    IsDepartmentOnlineApproved = apTravelOrder.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = apTravelOrder.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = apTravelOrder.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = apTravelOrder.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = apTravelOrder.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = apTravelOrder.DepartmentSendForApprovalTime,
+
                     IsOnlineApproved = apTravelOrder.IsOnlineApproved,
                     OnlineApprovedBy = apTravelOrder.OnlineApprovedBy,
                     OnlineApprovedTime = apTravelOrder.OnlineApprovedTime,
@@ -214,8 +211,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     ModifiedBy = apTravelOrder.ModifiedBy
                 };
 
-                db.ApTravelOrders.Add(entity);
-                db.SaveChanges();
+                _db.ApTravelOrders.Add(entity);
+                _db.SaveChanges();
                 apTravelOrder.ApTravelOrderId = entity.ApTravelOrderId;
 
                 #region operation log
@@ -229,25 +226,56 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrderRequest_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
+            #region data 
+            var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
+            if (placement != null)
+            {
+                apTravelOrder.OrgStructureId = placement.OrgStructureId;
+                apTravelOrder.BranchId = placement.BranchId;
+                apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+            }
+            else
+            {
+                ModelState.AddModelError("placement", "Employee has not current placemnt");
+            }
+            #endregion
+
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrder
                 {
                     ApTravelOrderId = apTravelOrder.ApTravelOrderId,
                     BranchId = apTravelOrder.BranchId,
+                    BusinessUnitId = apTravelOrder.BusinessUnitId,
                     EmployeeId = apTravelOrder.EmployeeId,
                     IsForOther = apTravelOrder.IsForOther,
                     OrgStructureId = apTravelOrder.OrgStructureId,
                     PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                     RequestDate = apTravelOrder.RequestDate,
                     AdvanceAmount = apTravelOrder.AdvanceAmount,
+                    TransportReference = apTravelOrder.TransportReference,
                     Reference = apTravelOrder.Reference,
                     IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
                     IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
                     OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
                     Status = apTravelOrder.Status,
+
                     ForwardedFrom = apTravelOrder.ForwardedFrom,
                     ForwardedTo = apTravelOrder.ForwardedTo,
+                    IsFinalApproval = apTravelOrder.IsFinalApproval,
+                    CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
+
+                    IsBudgetApproved = apTravelOrder.IsBudgetApproved,
+                    BudgetApprovedBy = apTravelOrder.BudgetApprovedBy,
+                    BudgetApprovedTime = apTravelOrder.BudgetApprovedTime,
+
+                    IsDepartmentOnlineApproved = apTravelOrder.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = apTravelOrder.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = apTravelOrder.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = apTravelOrder.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = apTravelOrder.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = apTravelOrder.DepartmentSendForApprovalTime,
+
                     IsOnlineApproved = apTravelOrder.IsOnlineApproved,
                     OnlineApprovedBy = apTravelOrder.OnlineApprovedBy,
                     OnlineApprovedTime = apTravelOrder.OnlineApprovedTime,
@@ -264,9 +292,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     ModifiedBy = User.Identity.Name
                 };
 
-                db.ApTravelOrders.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.ApTravelOrders.Attach(entity);
+                _db.Entry(entity).State = EntityState.Modified;
+                _db.SaveChanges();
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Self care travel order", "Success", User.Identity.Name, $"updated expense claim {entity.ApTravelOrderId} ", Modules.Finance);
@@ -286,6 +314,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     ApTravelOrderId = apTravelOrder.ApTravelOrderId,
                     //Name = apTravelOrder.Name,
                     BranchId = apTravelOrder.BranchId,
+                    BusinessUnitId = apTravelOrder.BusinessUnitId,
                     EmployeeId = apTravelOrder.EmployeeId,
                     IsForOther = apTravelOrder.IsForOther,
                     OrgStructureId = apTravelOrder.OrgStructureId,
@@ -314,73 +343,86 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     ModifiedBy = apTravelOrder.ModifiedBy
                 };
 
-                db.ApTravelOrders.Attach(entity);
-                db.ApTravelOrders.Remove(entity);
-                db.SaveChanges();
+                _db.ApTravelOrders.Attach(entity);
+                _db.ApTravelOrders.Remove(entity);
+                _db.SaveChanges();
             }
 
             return Json(new[] { apTravelOrder }.ToDataSourceResult(request, ModelState));
         }
 
 
-        public ActionResult SendForApproval()
+        public JsonResult SendforDepartmentApproval(int id)
         {
-            RequestesStatus requestesStatus;
-            db = new ExceedDbContext();
-            requestesStatus =
-                db.RequestesStatus.FirstOrDefault(x => x.RequestId == HRMInputs.RequestId &&
-                        x.ReferenceType == HRMInputs.ReferenceType && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
-            db = new ExceedDbContext();
-            if (requestesStatus == null)
-            {
-                var entityy = new RequestesStatus
-                {
-                    RequestId = HRMInputs.RequestId,
-                    ReferenceType = HRMInputs.ReferenceType,
-                    Status = RequestStatus.WAITING_FOR_APPROVAL,
-                    Date = DateTime.Now,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                };
+            var record = _db.ApTravelOrders.Find(id);
+            string errMsg = "";
 
-                db.RequestesStatus.Add(entityy);
-                db.SaveChanges();
+            if (record != null && record.IsDepartmentOnlineApproved)
+            {
+                errMsg = "You cannot manipulate this record,it is already approved";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            else
+            if (record != null && record.IsDepartmentSendForApproval)
             {
-                var entity = new RequestesStatus
+                errMsg = "This record is already sent for department approval.";
+                var formattedData = new
                 {
-                    RequestStatusId = requestesStatus.RequestStatusId,
-                    RequestId = requestesStatus.RequestId,
-                    ReferenceType = requestesStatus.ReferenceType,
-                    Status = requestesStatus.Status,
-                    Date = requestesStatus.Date,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(requestesStatus.Date.Day, requestesStatus.Date.Month, requestesStatus.Date.Year),
-                    Remark = requestesStatus.Remark
+                    Message = errMsg,
+                    Status = "NOT_OK"
                 };
-
-                db.RequestesStatus.Attach(entity);
-                db.RequestesStatus.Remove(entity);
-                db.SaveChanges();
-                db = new ExceedDbContext();
-
-                var entityy = new RequestesStatus
-                {
-                    RequestId = HRMInputs.RequestId,
-                    ReferenceType = HRMInputs.ReferenceType,
-                    Status = RequestStatus.WAITING_FOR_APPROVAL,
-                    Date = DateTime.Now,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                };
-
-                db.RequestesStatus.Add(entityy);
-                db.SaveChanges();
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            return RedirectToAction("Index");
+            var lines = _db.ApTravelOrderDepartures.Where(x => x.ApTravelOrderId == id);
+            if (!lines.Any())
+            {
+                errMsg = "Please add departure items.";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 16);
+                record.IsDepartmentSendForApproval = true;
+                record.DepartmentSendForApprovalBy = User.Identity.Name;
+                record.DepartmentSendForApprovalTime = DateTime.Now;
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+                #region approval workflow
+
+                bool isNewRecord = true;
+                var validations = record.ApTravelOrderDepartmentValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+                decimal docamount = record.AdvanceAmount;
+                int docid = record.ApTravelOrderId;
+
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApTravelOrderSelfCare, isNewRecord);
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "Successfully Sent.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+            }
+            return null;
         }
+      
         protected override void Dispose(bool disposing)
         {
-            db.Dispose();
+            _db.Dispose();
             base.Dispose(disposing);
         }
 

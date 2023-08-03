@@ -47,7 +47,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+      
           
       .Events(x => x.DataBound("onDataBoundMasterServiceRequisition"))
       .DataSource(dataSource => dataSource
@@ -64,6 +64,7 @@
               model.Field(p => p.OrgStructureId).Editable(false);
               model.Field(p => p.ForBranchId).Editable(false);
               model.Field(p => p.PreviousProcurementMethod).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               //model.Field(p => p.EmployeeId).Editable(false);
               //model.Field(p => p.BranchId).Editable(false);
               //model.Field(p => p.ProcurementOfficer).Editable(false);

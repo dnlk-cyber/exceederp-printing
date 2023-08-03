@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Transfers
 {

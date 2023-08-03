@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             PopulateCategories();
@@ -53,7 +53,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
     
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult ItemPriceIndexes_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ItemPriceIndex> itempriceindexes = db.ItemPriceIndexes;
@@ -82,7 +82,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ItemPriceIndexes_Create([DataSourceRequest]DataSourceRequest request, ItemPriceIndex itemPriceIndex)
         {
@@ -141,7 +141,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { itemPriceIndex }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ItemPriceIndexes_Update([DataSourceRequest]DataSourceRequest request, ItemPriceIndex itemPriceIndex)
         {
@@ -177,7 +177,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { itemPriceIndex }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ItemPriceIndexes_Destroy([DataSourceRequest]DataSourceRequest request, ItemPriceIndex itemPriceIndex)
         {
@@ -219,7 +219,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
             return File(fileContents, contentType, fileName);
         }
-    [AuthorizeRoles(ProcurementConstants.ProcurementAdmin, ProcurementConstants.ProcurementApprover, ProcurementConstants.ProcurementUser)]
+    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin, ProcurementRoles.ProcurementApprover, ProcurementRoles.ProcurementUser)]
     
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)

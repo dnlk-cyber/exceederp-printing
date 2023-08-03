@@ -48,6 +48,10 @@ namespace ExceedERP.Core.Domain.Procurement.Supplier
         public string SupplierReference { get; set; }
         public string Remark { get; set; }
         public string Rank { get; set; }
+        [DisplayName("T Code")]
+        public string TCode { get; set; }// telebirr
+        [DisplayName("T Account")]
+        public string TAccount { get; set; }// telebirr
         public virtual ICollection<SupplierBlackList> BlackLists { get; set; }
         public virtual ICollection<SupplierRemoveBlackList> SupplierRemoveBlackLists { get; set; }
         public virtual ICollection<SupplierPerformance> Performances { get; set; }

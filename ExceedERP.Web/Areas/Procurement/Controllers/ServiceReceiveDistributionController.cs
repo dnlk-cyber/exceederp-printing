@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         private ExceedDbContext _db = new ExceedDbContext();
         private AccountHelper accountHelper = new AccountHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementUserDepartmentUser, FinanceConstants.GeneralSubLedgerTransfer)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementUserDepartmentUser, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementUserDepartmentUser, FinanceConstants.GeneralSubLedgerTransfer)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementUserDepartmentUser, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult ServiceReceiveDistributions_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<ServiceReceiveDistribution> serviceReceiveDistributions = _db.ServiceReceiveDistributions.Where(gr => gr.ServiceReceiveId == id);

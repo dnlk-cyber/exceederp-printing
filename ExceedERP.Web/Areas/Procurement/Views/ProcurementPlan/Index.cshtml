@@ -19,7 +19,7 @@
                               //toolbar.Excel();
                               //toolbar.Pdf();
       })
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -41,7 +41,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .ClientDetailTemplateId("templates")
       .DataSource(dataSource => dataSource
           .Ajax()

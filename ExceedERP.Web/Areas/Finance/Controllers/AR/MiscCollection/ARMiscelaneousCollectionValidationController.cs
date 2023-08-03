@@ -71,35 +71,34 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.MiscCollection
                     {
                         #region pass data for reconciliation
 
-                        foreach (ARMiscelaneousCollectionDistribution distribution in record.ARMiscelaneousCollectionDistribution)
-                        {
-                            string sourceid = record.ARMiscelaneousCollectionID + "-" + distribution.ARMiscelaneousCollectionDistributionID;
+                        //foreach (ARMiscelaneousCollectionDistribution distribution in record.ARMiscelaneousCollectionDistribution)
+                        //{
+                        //    string sourceid = record.ARMiscelaneousCollectionID + "-" + distribution.ARMiscelaneousCollectionDistributionID;
 
-                            if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                            {
-                                var book = new ReconciliationBookAccount
-                                {
-                                    CreatedBy = User.Identity.Name,
-                                    DateCreated = DateTime.Now,
-                                    AccountCode = distribution.AccountCode,
-                                    Debit = distribution.Debit,
-                                    Credit = distribution.Credit,
-                                    Date = record.ReceiptDate,
-                                    Type = "Misc Collection",
-                                    ReferenceDoc = !String.IsNullOrWhiteSpace(record.ReceiptNumber) ? record.ReceiptNumber : "NA",
-                                    Reference = !String.IsNullOrWhiteSpace(record.Remark) ? record.Remark : "NA",
-                                    Source = JournalSources.AR_MiscCollection.ToString(),
-                                    SourceID = sourceid,
-                                    AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                                    SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                                };
-                                _db.ReconcilationBookAccounts.Add(book);
-                                _db.SaveChanges();
-                            }
-                        }
+                        //    if (_accountHelper.IsBankAccount(distribution.AccountCode))
+                        //    {
+                        //        var book = new ReconciliationBookAccount
+                        //        {
+                        //            CreatedBy = User.Identity.Name,
+                        //            DateCreated = DateTime.Now,
+                        //            AccountCode = distribution.AccountCode,
+                        //            Debit = distribution.Debit,
+                        //            Credit = distribution.Credit,
+                        //            Date = record.ReceiptDate,
+                        //            Type = "Misc Collection",
+                        //            ReferenceDoc = !String.IsNullOrWhiteSpace(record.ReceiptNumber) ? record.ReceiptNumber : "NA",
+                        //            Reference = !String.IsNullOrWhiteSpace(record.Remark) ? record.Remark : "NA",
+                        //            Source = JournalSources.AR_MiscCollection.ToString(),
+                        //            SourceID = sourceid,
+                        //            AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+                        //            SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+                        //        };
+                        //        _db.ReconcilationBookAccounts.Add(book);
+                        //        _db.SaveChanges();
+                        //    }
+                        //}
                         #endregion
                         //PostToSecondaryLedger(id);
-                        record.IsPostedToSecondLedger = true;
                         record.Status = "Approved";
                         record.IsOnlineApproved = true;
                         record.OnlineApprovedBy = User.Identity.Name;
@@ -138,52 +137,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.MiscCollection
             return Json(new[] { aRMiscelaneousCollectionValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        private void PostToSecondaryLedger(int id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            string user = User.Identity.Name;
-            var record = _db.ARMiscelaneousCollections.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName = "",
-                    JournalNumber = "",
-                    Description = "",
-                    CategoryName = "",
-                    SourcesName = "Misc. Collection",
-                    EffectiveDate = record.ReceiptDate,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.ReceiptDate),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.ReceiptDate),
-                    PostingSource = JournalSources.AR_MiscCollection,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.ARMiscelaneousCollectionDistributions.Where(x => x.ARMiscelaneousCollectionID == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.ARMiscelaneousCollectionDistributionID,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-
-                secondLedgerHelper.PostToSecondLedger(ledger, user);
-            }
-        }
+        
 
         protected override void Dispose(bool disposing)
         {

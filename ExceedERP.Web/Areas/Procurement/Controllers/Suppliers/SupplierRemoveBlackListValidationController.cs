@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
         private ExceedDbContext db = new ExceedDbContext();
         private readonly DashboardHelper _dashboardHelper = new DashboardHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierRemoveBlackListValidations_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<SupplierRemoveBlackListValidation> supplierremoveblacklistvalidations = db.SupplierRemoveBlackListValidations.Where(x=>x.SupplierRemoveBlackListId==id);
@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierRemoveBlackListValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, SupplierRemoveBlackListValidation supplierRemoveBlackListValidation)
         {
@@ -108,7 +108,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierRemoveBlackListValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierRemoveBlackListValidations_Update(int id,[DataSourceRequest]DataSourceRequest request, SupplierRemoveBlackListValidation supplierRemoveBlackListValidation)
         {
@@ -135,7 +135,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierRemoveBlackListValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierRemoveBlackListValidations_Destroy([DataSourceRequest]DataSourceRequest request, SupplierRemoveBlackListValidation supplierRemoveBlackListValidation)
         {

@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierPerformances_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<SupplierPerformance> supplierperformances = db.SupplierPerformances.Where(x => x.ProcurementSupplierID == id);
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierPerformances_Create(int id, [DataSourceRequest]DataSourceRequest request, SupplierPerformance supplierPerformance)
         {
@@ -98,7 +98,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierPerformance }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierPerformances_Update(int id, [DataSourceRequest]DataSourceRequest request, SupplierPerformance supplierPerformance)
         {
@@ -139,7 +139,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierPerformance }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierPerformances_Destroy([DataSourceRequest]DataSourceRequest request, SupplierPerformance supplierPerformance)
         {

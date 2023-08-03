@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Repository;
 using ExceedERP.Web.Areas.Inventory.Controllers;
@@ -30,41 +31,57 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         public JsonResult GetSubAccounts()
         {
-            
-            List<GLChartOfAccountSubAccount> subAccounts = _db.GLChartOfAccountSubAccounts.Where(x => x.Enable).Where(x => x.Parent == false).ToList();
+            var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            var subAccounts =
+                _db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
+                                            .Where(x => x.Enable).Where(x => x.Parent == false).ToList();
 
-            return Json(subAccounts.Select(c => new { value = c.Values, desc = c.Values + "_" + c.Description }), JsonRequestBehavior.AllowGet);
+            return Json(subAccounts.Select(c => 
+            new {
+                value = c.Values,
+                desc = c.Values + "_" + c.Description }), 
+                JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetCostCenter()
         {
-            List<GLChartOfAccountCostCenter> costCenters = _db.GLChartOfAccountCostCenters.Where(x => x.Enable).Where(x => x.Parent == false).ToList();
+            var costCenterSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var costCenters =
+                _db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId)
+                                            .Where(x => x.Enable).Where(x => x.Parent == false).ToList();
 
+       
             return Json(costCenters.Select(c => new { value = c.Values, desc = c.Values + "_" + c.Description }), JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetLocations()
         {
-            List<GLChartOfAccountLocation> locations =_db.GLChartOfAccountLocations.Where(x => x.Enable).Where(x => x.Parent == false).ToList();
+            var locationSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations =
+                _db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
+                                            .Where(x => x.Enable).Where(x => x.Parent == false).ToList();
+
 
             return Json(locations.Select(c => new { value = c.Values, desc = c.Values + "_" + c.Description }), JsonRequestBehavior.AllowGet);
         }
 
 
-        public IEnumerable<GLChartOfAccountSubAccount> GetSubAccountsList()
+        public IEnumerable<GLChartOfAccountSegment> GetSubAccountsList()
         {
-            var items = (List<GLChartOfAccountSubAccount>)System.Runtime.Caching.MemoryCache.Default["SubAccounts"];
+            var items = (List<GLChartOfAccountSegment>)System.Runtime.Caching.MemoryCache.Default["SubAccounts"];
             if (items == null)
             {
-                items  = _db.GLChartOfAccountSubAccounts
-                    .Where(x => x.Enable)
-                    .Where(x => x.Parent == false).ToList();
-                System.Runtime.Caching.MemoryCache.Default["SubAccounts"] = items;
+                var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+                var subAccounts =
+                    _db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
+                                                .Where(x => x.Enable).Where(x => x.Parent == false).ToList();
+                
+                System.Runtime.Caching.MemoryCache.Default["SubAccounts"] = subAccountSeg;
             }
             
 
 
-            return items.Select(item => new GLChartOfAccountSubAccount
+            return items.Select(item => new GLChartOfAccountSegment
             {
                 Values = item.Values,
                 Description = item.Values + "_" + item.Description
@@ -108,14 +125,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         public ActionResult GlAccountSelector(string q)
         {
             ViewBag.PreviousAccount = q;
-            var segmentSequence = _db.GlSegmentSequences.FirstOrDefault();
-            if (segmentSequence != null)
-            {
-                ViewBag.Segment1 = segmentSequence.FirstSegment;
-                ViewBag.Segment2 = segmentSequence.SecondSegment;
-                ViewBag.Segment3 = segmentSequence.ThirdSegment;
-                ViewBag.Segment4 = segmentSequence.FourthSegment;
-            }
+            //var segmentSequence = _db.GlSegmentSequences.FirstOrDefault();
+            //if (segmentSequence != null)
+            //{
+            //    ViewBag.Segment1 = segmentSequence.FirstSegment;
+            //    ViewBag.Segment2 = segmentSequence.SecondSegment;
+            //    ViewBag.Segment3 = segmentSequence.ThirdSegment;
+            //    ViewBag.Segment4 = segmentSequence.FourthSegment;
+            //}
                 
             return View();
         }

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
+using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {

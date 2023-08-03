@@ -58,8 +58,7 @@ namespace ExceedERP.Core.Domain.Finance.AR.SalesOrder
         public string Repeatition { get; set; }
         public bool IsOnlineTransferred { get; set; }
         public string OnlineTransferredBy { get; set; }
-        public DateTime? OnlineTransferredTime { get; set; }
-        public bool IsPostedToSecondLedger { get; set; }
+        public DateTime? OnlineTransferredTime { get; set; }       
         public bool IsReceiptPrinted { get; set; }
         public virtual ICollection<ArSalesOrderLine> ArSalesOrderLines { get; set; }
         public virtual ICollection<ArSalesOrderPartialPrint> ArSalesOrderPartialPrints { get; set; }

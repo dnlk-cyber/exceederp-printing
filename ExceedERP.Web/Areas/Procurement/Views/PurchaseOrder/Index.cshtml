@@ -10,13 +10,13 @@
           columns.ForeignKey(p => p.ProformaPurchaseID, (IEnumerable)ViewData["proformaPurchases"], "ProformaPurchaseID", "Remark").Title("Proforma No.").EditorTemplateName("ProformaSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
           columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(120).EditorTemplateName("EmployeeSelector");
           columns.Bound(c => c.SupplierId).Width(100).EditorTemplateName("SupplierSelector");
-          columns.Bound(c => c.IsNewSupplier).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsNewSupplier ? checked='checked' :'' # />");
+          columns.Bound(c => c.IsNewSupplier).Width(120).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsNewSupplier ? checked='checked' :'' # />");
           columns.Bound(c => c.SupplierName).Width(120);
           //columns.Bound(c => c.POType).EditorTemplateName("POTypeSelector").Width(150);  
           columns.Bound(c => c.OrderDate).Width(130);
           columns.Bound(c => c.DeliveryDate).Width(130);
           columns.Bound(c => c.DeliveryPlace).Width(130);
-          
+
           columns.Bound(c => c.Remark).Width(120);
           columns.Bound(c => c.PurchaseStatus).Width(130);
           columns.Bound(c => c.Status).Width(120);
@@ -28,9 +28,9 @@
           }).Width(180);
       })
       .ToolBar(toolbar => {
-                              //toolbar.Create();
-                              // toolbar.Excel();
-                              // toolbar.Excel();
+          //toolbar.Create();
+          // toolbar.Excel();
+          // toolbar.Excel();
       })
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PurchaseOrder").Window(w => w.Title("Purchase Order")))
 
@@ -52,7 +52,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .Events(ev => ev.Edit("onMasterEdit"))
       .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
       .Scrollable(h => h.Height(500))
@@ -72,6 +72,7 @@
                   model.Field(p => p.ProcurementOfficer).Editable(false);
                   model.Field(p => p.PurchaseOrderID).Editable(false);
                   model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                  model.Field(p => p.CurrentApprovalStep).Editable(false);
                   model.Field(p => p.SupplierName).Editable(false);
                   model.Field(p => p.SupplierId).Editable(false);
                   model.Field(p => p.IsNewSupplier).Editable(false);
@@ -79,6 +80,8 @@
                   model.Field(p => p.ProformaPurchaseID).Editable(false);
                   model.Field(p => p.IsTransferredToPayment).Editable(false);
                   model.Field(p => p.IsPaid).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
                   model.Field(p => p.IsFullfilled).Editable(false);
                   model.Field(p => p.Status).Editable(false);
                   model.Field(p => p.CreatedBy).Editable(false);
@@ -97,385 +100,398 @@
 
 <script id="templates" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_#=PurchaseOrderID#").SelectedIndex(0).Items(items =>
-                      {
-                          items.Add().Text("Detail").Content(
-                            @<text>
-                                # if (!IsOnlineApproved&&!IsSendForApproval)
-                                {#
-                                <a onclick='return sendForApproval("#=PurchaseOrderID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                <br />
-                                # } #
+                                      {
+                                          items.Add().Text("Detail").Content(
+                                            @<text>
+                                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                {#
+                                                <a onclick='return sendForApproval("#=PurchaseOrderID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                                # } #
 
-                                # if (IsOnlineApproved)
-                                {#
-                                <a href='@Url.Action("PurchaseOrderPrint", "ProcurementPrint")/#=PurchaseOrderID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                <br />
-                                # } #
+                                                # if (IsOnlineApproved)
+                                                {#
+                                                <a href='@Url.Action("PurchaseOrderPrint", "ProcurementPrint")/#=PurchaseOrderID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                                # } #
 
-                                # if (IsOnlineApproved && !IsTransferredToPayment &&!IsVoid)
-                                {#
-                                <a onclick='return transferToPayment("#=PurchaseOrderID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
-                                <br />
-                                # } #
+                                                # if (IsOnlineApproved && !IsTransferredToPayment &&!IsVoid)
+                                                {#
+                                                <a onclick='return transferToPayment("#=PurchaseOrderID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
+                                                
+                                                # } #
 
-                                # if (IsOnlineApproved && !IsTransferredToFollowUp &&!IsVoid )
-                                {#
+                                                # if (IsOnlineApproved && !IsTransferredToFollowUp &&!IsVoid )
+                                                {#
 
-                                <a onclick='return transferToFollowUp("#=PurchaseOrderID#")' href=' \#' title="Transfer to Foreign Followup"><i class="fa fa-check fa-2x"></i></a>
-                                <br />
-                                # } #
-
-
-                                <div>
-                                    <hr>
-                                    <dl class="dl-horizontal">
-                                        <dt>
-                                            PR No.
-                                        </dt>
-                                        <dd>
-                                            #= PurchaseOrderID #
-                                        </dd>
-
-                                        <dt>
-                                            Delivery Date
-                                        </dt>
-                                        <dd>
-
-                                            #=kendo.toString(kendo.parseDate(DeliveryDate), 'dd/MM/yyyy') #
-
-                                        </dd>
-                                        <dt>
-                                            Status
-                                        </dt>
-                                        <dd>
-                                            #= Status #
-                                        </dd>
-                                        <dt>
-                                            CreatedOn
-                                        </dt>
-                                        <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                        </dd>
-                                        <dt>
-                                            CreatedBy
-                                        </dt>
-                                        <dd>
-                                            #= CreatedBy #
-                                        </dd>
-                                        <dt>
-                                            Modified By
-                                        </dt>
-                                        <dd>
-                                            #= ModifiedBy #
-                                        </dd>
-                                        <dt>
-                                            Modified Date
-                                        </dt>
-                                        <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <hr>
-
-                                # if (IsOnlineApproved && !IsVoid)
-                                {#
-                                @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
-                                            {
-                                    <a onclick='return voidRecord("#=PurchaseOrderID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                            }
-                                /**/
-                                /**/
-                                # } #
-
-                            </text>
-                                            );
+                                                <a onclick='return transferToFollowUp("#=PurchaseOrderID#")' href=' \#' title="Transfer to Foreign Followup"><i class="fa fa-check fa-2x"></i></a>
+                                                <br />
+                                                # } #
 
 
-                                  items.Add().Text("PR").Content(@<text>
-                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PoPurchaseRequisition>()
-                                                                  .Name("PoPurchaseRequisition#=PurchaseOrderID#")
-                                                                  .Columns(columns =>
-                                                                  {
-                                                                                            columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("Assignment ID").Width(200).EditorTemplateName("PurchaseRequistionForPo");
-                                                                                            columns.Bound(c => c.PurchaseRequisitionID).Width(120);//.EditorTemplateName("PurchaseRequistionForProforma");
-                                                                                columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
-                                                                                            columns.Command(command =>
+                                                <div>
+                                                    <hr>
+                                                    <dl class="dl-horizontal">
+                                                        <dt>
+                                                            PR No.
+                                                        </dt>
+                                                        <dd>
+                                                            #= PurchaseOrderID #
+                                                        </dd>
+
+                                                        <dt>
+                                                            Delivery Date
+                                                        </dt>
+                                                        <dd>
+
+                                                            #=kendo.toString(kendo.parseDate(DeliveryDate), 'dd/MM/yyyy') #
+
+                                                        </dd>
+                                                        <dt>
+                                                            Status
+                                                        </dt>
+                                                        <dd>
+                                                            #= Status #
+                                                        </dd>
+                                                        <dt>
+                                                            CreatedOn
+                                                        </dt>
+                                                        <dd>
+                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                        </dd>
+                                                        <dt>
+                                                            CreatedBy
+                                                        </dt>
+                                                        <dd>
+                                                            #= CreatedBy #
+                                                        </dd>
+                                                        <dt>
+                                                            Modified By
+                                                        </dt>
+                                                        <dd>
+                                                            #= ModifiedBy #
+                                                        </dd>
+                                                        <dt>
+                                                            Modified Date
+                                                        </dt>
+                                                        <dd>
+                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                        </dd>
+                                                    </dl>
+                                                    # if (!IsOnlineApproved)
+                                                    {#
+                                                    <dl class="h6">
+                                                        <dt>
+                                                            Next Approver
+                                                        </dt>
+                                                        <dd>
+                                                            #= ForwardedTo # <snap id="user_name_display"></snap>
+                                                            <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                                            <a onclick='SelectNextApprover(this,"#=PurchaseOrderID#","PO")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                                            <snap id="new_user_name_display"></snap>
+                                                        </dd>
+                                                    </dl>
+                                                    # } #
+                                                </div>
+                                                <hr>
+
+                                                # if (IsOnlineApproved && !IsVoid)
+                                                {#
+                                                @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                                            {
+                                                    <a onclick='return voidRecord("#=PurchaseOrderID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                            }
+                                              
+                                                # } #
+
+                                            </text>
+                                                                            );
+
+
+                                                  items.Add().Text("PR").Content(@<text>
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PoPurchaseRequisition>()
+                                                                                                  .Name("PoPurchaseRequisition#=PurchaseOrderID#")
+                                                                                                  .Columns(columns =>
+                                                                                                  {
+                                                                                                                    columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("Assignment ID").Width(200).EditorTemplateName("PurchaseRequistionForPo");
+                                                                                                                    columns.Bound(c => c.PurchaseRequisitionID).Width(120);//.EditorTemplateName("PurchaseRequistionForProforma");
+                                                                                                        columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
+                                                                                                                    columns.Command(command =>
                                                                     {
                                                                                                   command.Edit();
                                                                                                   command.Destroy();
                                                                                               }).Width(580);
-                                                                                        })
-                                                                  .ToolBar(toolbar =>
-                                                                {
-                                                                                          toolbar.Create();
-
-                                                                                      })
-
-                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                  .Pageable()
-                                                                  .Navigatable()
-
-                                                                  .Sortable(sortable =>
-                                                                  {
-                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                        })
-                                                                  .Filterable()
-                                                                  .Scrollable()
-                                                                    .Events(x => x.DataBound("onDataBoundLineNew"))
-                                                                  .DataSource(dataSource => dataSource
-                                                                      .Ajax()
-                                                                      .Events(ev => ev
-                                                                          .Error("error_handler(\"PoPurchaseRequisition#=PurchaseOrderID#\")")
-                                                                          .RequestStart("onRequestStart(\"PoPurchaseRequisition#=PurchaseOrderID#\")")
-                                                                          .RequestEnd("onRequestEnd(\"PoPurchaseRequisition#=PurchaseOrderID#\")"))
-                                                                      .Model(model =>
-                                                                      {
-                                                                                                model.Id(p => p.PoPurchaseRequisitionId);
-                                                                                                model.Field(p => p.PurchaseRequisitionID).Editable(false);
-                                                                                                model.Field(p => p.StoreRequisitionID).Editable(false);
-                                                                                            })
-                                                                      .Read(read => read.Action("PoPurchaseRequisitions_Read", "PoPurchaseRequisition", new { id = "#= PurchaseOrderID #" }))
-                                                                      .Create(create => create.Action("PoPurchaseRequisitions_Create", "PoPurchaseRequisition", new { id = "#= PurchaseOrderID #" }))
-                                                                      .Update(update => update.Action("PoPurchaseRequisitions_Update", "PoPurchaseRequisition"))
-                                                                      .Destroy(destroy => destroy.Action("PoPurchaseRequisitions_Destroy", "PoPurchaseRequisition"))
-                                                                  ).ToClientTemplate())
-
-                                </text>);
-
-                                        items.Add().Text("Items").Content(@<text>
-                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderItem>()
-                                                                  .Name("Item#=PurchaseOrderID#")
-                                                                  .Columns(columns =>
-                                                                  {
-                                                                                            columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(120);
-                                                                                            columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(250);
-                                                                                            columns.Bound(c => c.Name).Width(90);
-                                                                                            columns.Bound(c => c.Quantity).Width(90);
-                                                                                            columns.Bound(c => c.UoM).Width(50);
-                                                                                            columns.Bound(c => c.UnitPrice).Width(90).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                            columns.Bound(c => c.SubTotal).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                            columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(90);
-                                                                                            columns.Bound(c => c.TaxAmount).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                            columns.Bound(c => c.Total).Width(110).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                            columns.Bound(c => c.Remark).Width(120);
-                                                                                            columns.Bound(c => c.CreatedBy).Hidden();
-                                                                                            columns.Bound(c => c.DateCreated).Hidden();
-                                                                                            columns.Bound(c => c.ModifiedBy).Hidden();
-                                                                                            columns.Bound(c => c.LastModified).Hidden();
-                                                                                            columns.Command(command =>
-                                                                                            {
-                                                                                                command.Edit();
-                                                                                   // command.Destroy();
-
-                                                                                }).Width(380);
-                                                                                        })
-                                                                  .ToolBar(toolbar =>
-                                                                  {
-                                                                                //toolbar.Create();
-                                                                                // toolbar.Excel();
-                                                                                // toolbar.Excel();
-                                                                            })
-                                                                  //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Item").Window(w => w.Title("Items")))
-                                                                  .Events(ev => ev.Edit("onItemEdit"))
-                                                                  .Events(x => x.DataBound("onDataBoundLineNew"))
-                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                  .Scrollable()
-                                                                  .Filterable()
-                                                                  .Selectable()
-                                                                  .DataSource(dataSource => dataSource
-                                                                      .Ajax()
-                                                                      .Aggregates(aggregates =>
-                                                                      {
-                                                                          aggregates.Add(p => p.UnitPrice).Sum();
-                                                                          aggregates.Add(p => p.TaxAmount).Sum();
-                                                                          aggregates.Add(p => p.SubTotal).Sum();
-                                                                          aggregates.Add(p => p.Total).Sum();
-                                                                      })
-                                                                      .Events(ev => ev
-                                                                          .Error("error_handler(\"Item#=PurchaseOrderID#\")")
-                                                                          .RequestStart("onRequestStart(\"Item#=PurchaseOrderID#\")")
-                                                                          .RequestEnd("onRequestEnd(\"Item#=PurchaseOrderID#\")"))
-                                                                      .Model(model =>
-                                                                      {
-                                                                                                model.Id(p => p.PurchaseOrderItemID);
-                                                                                                model.Field(p => p.CatCode).Editable(false);
-                                                                                                model.Field(p => p.ItmCode).Editable(false);
-                                                                                                model.Field(p => p.Name).Editable(false);
-                                                                                                model.Field(p => p.ItemType).Editable(false);
-                                                                                               // model.Field(p => p.Quantity).Editable(false);
-                                                                                                model.Field(p => p.UoM).Editable(false);
-                                                                                                model.Field(p => p.UnitPrice).Editable(false);
-                                                                                                model.Field(p => p.GLTaxRateID).Editable(false);
-                                                                                                model.Field(p => p.TaxAmount).Editable(false);
-                                                                                                model.Field(p => p.SubTotal).Editable(false);
-                                                                                                model.Field(p => p.Total).Editable(false);
-
-                                                                                                model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                model.Field(p => p.DateCreated).Editable(false);
-                                                                                                model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                model.Field(p => p.LastModified).Editable(false);
-
-                                                                                            })
-                                                                      .Read(read => read.Action("PurchaseOrderItems_Read", "PurchaseOrderItem", new { id = "#=PurchaseOrderID#" }))
-                                                                      .Create(create => create.Action("PurchaseOrderItems_Create", "PurchaseOrderItem", new { id = "#=PurchaseOrderID#" }))
-                                                                      .Update(update => update.Action("PurchaseOrderItems_Update", "PurchaseOrderItem"))
-                                                                      .Destroy(destroy => destroy.Action("PurchaseOrderItems_Destroy", "PurchaseOrderItem"))
-                                                                  )
-                                                                  .ToClientTemplate())
-
-                                        </text>
-                                   );
-                                                items.Add().Text("Payment Schedule").Content(@<text>
-
-                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PoPaymentSchedule>()
-                                                                          .Name("PoPaymentSchedule#=PurchaseOrderID#")
-                                                                          .Columns(columns =>
-                                                                          {
-                                                                                                            columns.Bound(p => p.PaymentType).EditorTemplateName("PaymentType").Width(150);
-                                                                                                            columns.Bound(p => p.Percentage).Width(150);
-                                                                                                            columns.Bound(p => p.Remark).Width(150);
-                                                                                                            columns.Command(command =>
+                                                                                                                })
+                                                                                                  .ToolBar(toolbar =>
                                                                                                 {
+                                                                                                                  toolbar.Create();
+
+                                                                                                              })
+
+                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                  .Pageable()
+                                                                                                  .Navigatable()
+
+                                                                                                  .Sortable(sortable =>
+                                                                                                  {
+                                                                                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                })
+                                                                                                  .Filterable()
+                                                                                                  .Scrollable()
+                                                                                                    .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                      .Ajax()
+                                                                                                      .Events(ev => ev
+                                                                                                          .Error("error_handler(\"PoPurchaseRequisition#=PurchaseOrderID#\")")
+                                                                                                          .RequestStart("onRequestStart(\"PoPurchaseRequisition#=PurchaseOrderID#\")")
+                                                                                                          .RequestEnd("onRequestEnd(\"PoPurchaseRequisition#=PurchaseOrderID#\")"))
+                                                                                                      .Model(model =>
+                                                                                                      {
+                                                                                                                        model.Id(p => p.PoPurchaseRequisitionId);
+                                                                                                                        model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                                                                                                                        model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                                                    })
+                                                                                                      .Read(read => read.Action("PoPurchaseRequisitions_Read", "PoPurchaseRequisition", new { id = "#= PurchaseOrderID #" }))
+                                                                                                      .Create(create => create.Action("PoPurchaseRequisitions_Create", "PoPurchaseRequisition", new { id = "#= PurchaseOrderID #" }))
+                                                                                                      .Update(update => update.Action("PoPurchaseRequisitions_Update", "PoPurchaseRequisition"))
+                                                                                                      .Destroy(destroy => destroy.Action("PoPurchaseRequisitions_Destroy", "PoPurchaseRequisition"))
+                                                                                                  ).ToClientTemplate())
+
+                                                </text>);
+
+                                                        items.Add().Text("Items").Content(@<text>
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderItem>()
+                                                                                                  .Name("Item#=PurchaseOrderID#")
+                                                                                                  .Columns(columns =>
+                                                                                                  {
+                                                                                                                            columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(120);
+                                                                                                                            columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(250);
+                                                                                                                            columns.Bound(c => c.Name).Width(90);
+                                                                                                                            columns.Bound(c => c.Quantity).Width(90);
+                                                                                                                            columns.Bound(c => c.UoM).Width(50);
+                                                                                                                            columns.Bound(c => c.UnitPrice).Width(90).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                                                                            columns.Bound(c => c.SubTotal).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                                                                            columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(90);
+                                                                                                                            columns.Bound(c => c.TaxAmount).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                                                                            columns.Bound(c => c.Total).Width(110).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                                                                            columns.Bound(c => c.Remark).Width(120);
+                                                                                                                            columns.Bound(c => c.CreatedBy).Hidden();
+                                                                                                                            columns.Bound(c => c.DateCreated).Hidden();
+                                                                                                                            columns.Bound(c => c.ModifiedBy).Hidden();
+                                                                                                                            columns.Bound(c => c.LastModified).Hidden();
+                                                                                                                            columns.Command(command =>
+                                                                                                    {
+                                                                                                                                          command.Edit();
+                                                                                                                              // command.Destroy();
+
+                                                                                                                          }).Width(380);
+                                                                                                                        })
+                                                                                                  .ToolBar(toolbar =>
+                                                                                                  {
+                                                                                                                //toolbar.Create();
+                                                                                                                // toolbar.Excel();
+                                                                                                                // toolbar.Excel();
+                                                                                                            })
+                                                                                                  //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Item").Window(w => w.Title("Items")))
+                                                                                                  .Events(ev => ev.Edit("onItemEdit"))
+                                                                                                  .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                  .Scrollable()
+                                                                                                  .Filterable()
+                                                                                                  .Selectable()
+                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                      .Ajax()
+                                                                                                      .Aggregates(aggregates =>
+                                                                                                      {
+                                                                                                                                aggregates.Add(p => p.UnitPrice).Sum();
+                                                                                                                                aggregates.Add(p => p.TaxAmount).Sum();
+                                                                                                                                aggregates.Add(p => p.SubTotal).Sum();
+                                                                                                                                aggregates.Add(p => p.Total).Sum();
+                                                                                                                            })
+                                                                                                      .Events(ev => ev
+                                                                                                          .Error("error_handler(\"Item#=PurchaseOrderID#\")")
+                                                                                                          .RequestStart("onRequestStart(\"Item#=PurchaseOrderID#\")")
+                                                                                                          .RequestEnd("onRequestEnd(\"Item#=PurchaseOrderID#\")"))
+                                                                                                      .Model(model =>
+                                                                                                      {
+                                                                                                                                model.Id(p => p.PurchaseOrderItemID);
+                                                                                                                                model.Field(p => p.CatCode).Editable(false);
+                                                                                                                                model.Field(p => p.ItmCode).Editable(false);
+                                                                                                                                model.Field(p => p.Name).Editable(false);
+                                                                                                                                model.Field(p => p.ItemType).Editable(false);
+                                                                                                                                // model.Field(p => p.Quantity).Editable(false);
+                                                                                                                                model.Field(p => p.UoM).Editable(false);
+                                                                                                                                model.Field(p => p.UnitPrice).Editable(false);
+                                                                                                                                model.Field(p => p.GLTaxRateID).Editable(false);
+                                                                                                                                model.Field(p => p.TaxAmount).Editable(false);
+                                                                                                                                model.Field(p => p.SubTotal).Editable(false);
+                                                                                                                                model.Field(p => p.Total).Editable(false);
+
+                                                                                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                model.Field(p => p.LastModified).Editable(false);
+
+                                                                                                                            })
+                                                                                                      .Read(read => read.Action("PurchaseOrderItems_Read", "PurchaseOrderItem", new { id = "#=PurchaseOrderID#" }))
+                                                                                                      .Create(create => create.Action("PurchaseOrderItems_Create", "PurchaseOrderItem", new { id = "#=PurchaseOrderID#" }))
+                                                                                                      .Update(update => update.Action("PurchaseOrderItems_Update", "PurchaseOrderItem"))
+                                                                                                      .Destroy(destroy => destroy.Action("PurchaseOrderItems_Destroy", "PurchaseOrderItem"))
+                                                                                                  )
+                                                                                                  .ToClientTemplate())
+
+                                                        </text>
+                                           );
+                                                                items.Add().Text("Payment Schedule").Content(@<text>
+
+                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PoPaymentSchedule>()
+                                                                                                          .Name("PoPaymentSchedule#=PurchaseOrderID#")
+                                                                                                          .Columns(columns =>
+                                                                                                          {
+                                                                                                                                            columns.Bound(p => p.PaymentType).EditorTemplateName("PaymentType").Width(150);
+                                                                                                                                            columns.Bound(p => p.Percentage).Width(150);
+                                                                                                                                            columns.Bound(p => p.Remark).Width(150);
+                                                                                                                                            columns.Command(command =>
+                                                                                                        {
                                                                                                                                                       command.Edit();
                                                                                                                                                       command.Destroy();
                                                                                                                                                   });
-                                                                                                        })
-                                                                          .ToolBar(toolbar =>
-                                                                          {
-                                                                                                            toolbar.Create();
-                                                                                                        })
-                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                          .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                                                                                                        })
+                                                                                                          .ToolBar(toolbar =>
+                                                                                                          {
+                                                                                                                                            toolbar.Create();
+                                                                                                                                        })
+                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                          .Events(x => x.DataBound("onDataBoundLineNew"))
 
-                                                                          .Scrollable()
-                                                                          .Sortable()
-                                                                          .Filterable()
-                                                                          .DataSource(dataSource => dataSource
-                                                                              .Ajax()
-                                                                              .Model(
-                                                                                  model =>
-                                                                                  {
-                                                                                                                    model.Id(p => p.PoPaymentScheduleId);
-                                                                                                                    model.Field(p => p.OrgBranchName).Editable(false);
-                                                                                                                    model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                    model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                    model.Field(p => p.LastModified).Editable(false);
-                                                                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                                                          .Scrollable()
+                                                                                                          .Sortable()
+                                                                                                          .Filterable()
+                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                              .Ajax()
+                                                                                                              .Model(
+                                                                                                                  model =>
+                                                                                                                  {
+                                                                                                                                                    model.Id(p => p.PoPaymentScheduleId);
+                                                                                                                                                    model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                    model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                    model.Field(p => p.DateCreated).Editable(false);
 
 
-                                                                                                                })
-                                                                              .Events(ev => ev
-                                                                                  .Error("error_handler(\"PoPaymentSchedule#=PurchaseOrderID#\")")
-                                                                                  .RequestStart("onRequestStart(\"PoPaymentSchedule#=PurchaseOrderID#\")")
-                                                                                  .RequestEnd("onRequestEnd(\"PoPaymentSchedule#=PurchaseOrderID#\")"))
+                                                                                                                                                })
+                                                                                                              .Events(ev => ev
+                                                                                                                  .Error("error_handler(\"PoPaymentSchedule#=PurchaseOrderID#\")")
+                                                                                                                  .RequestStart("onRequestStart(\"PoPaymentSchedule#=PurchaseOrderID#\")")
+                                                                                                                  .RequestEnd("onRequestEnd(\"PoPaymentSchedule#=PurchaseOrderID#\")"))
 
-                                                                              .Read(read => read.Action("PoPaymentSchedules_Read", "PoPaymentSchedule", new { id = "#=PurchaseOrderID#" }))
-                                                                              .Create(create => create.Action("PoPaymentSchedules_Create", "PoPaymentSchedule", new { id = "#=PurchaseOrderID#" }))
-                                                                              .Update(update => update.Action("PoPaymentSchedules_Update", "PoPaymentSchedule", new { id = "#=PurchaseOrderID#" }))
-                                                                              .Destroy(destroy => destroy.Action("PoPaymentSchedules_Destroy", "PoPaymentSchedule"))
-                                                                          )
-                                                                          .Events(events => events.DataBound("onDataBoundLines"))
-                                                                          .ToClientTemplate())
-                                                </text>
-                                                        );
+                                                                                                              .Read(read => read.Action("PoPaymentSchedules_Read", "PoPaymentSchedule", new { id = "#=PurchaseOrderID#" }))
+                                                                                                              .Create(create => create.Action("PoPaymentSchedules_Create", "PoPaymentSchedule", new { id = "#=PurchaseOrderID#" }))
+                                                                                                              .Update(update => update.Action("PoPaymentSchedules_Update", "PoPaymentSchedule", new { id = "#=PurchaseOrderID#" }))
+                                                                                                              .Destroy(destroy => destroy.Action("PoPaymentSchedules_Destroy", "PoPaymentSchedule"))
+                                                                                                          )
+                                                                                                          .Events(events => events.DataBound("onDataBoundLines"))
+                                                                                                          .ToClientTemplate())
+                                                                </text>
+                                                                );
 
-                                                        items.Add().Text("Validation").Content(@<text>
-                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderValidation>()
-                                                                                  .Name("validation#=PurchaseOrderID#")
-                                                                                  .Columns(columns =>
-                                                                                  {
-                                                                                                                            columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                                                                                                            columns.Bound(c => c.Remark).Width(170);
-                                                                                                                            columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
-                                                                                                                            columns.Bound(c => c.LastModified).Hidden(true);
-                                                                                                                            columns.Bound(c => c.CreatedBy).Width(200).Title("User");
-                                                                                                                            columns.Bound(c => c.ModifiedBy).Hidden(true);
-                                                                                                                            columns.Command(command =>
-                                                                                                                {
+                                                                        items.Add().Text("Validation").Content(@<text>
+                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderValidation>()
+                                                                                                                  .Name("validation#=PurchaseOrderID#")
+                                                                                                                  .Columns(columns =>
+                                                                                                                  {
+                                                                                                                                                            columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                                                                                                            columns.Bound(c => c.Remark).Width(170);
+                                                                                                                                                            columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                                                                                            columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                                                                                            columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                                                                                                            columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                                                                                            columns.Command(command =>
+                                                                                                                        {
                                                                                                                                                                               command.Edit();
                                                                                                                                                                   //command.Destroy();
                                                                                                                                                               });
-                                                                                                                        })
-                                                                                  .ToolBar(toolbar =>
-                                                                                  {
-                                                                                                                            toolbar.Create();
-                                                                                                                        })
-                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                  .Scrollable()
-                                                                                 .Events(x => x.DataBound("onDataBoundValidationNew"))
-                                                                                  .DataSource(dataSource => dataSource
-                                                                                      .Ajax()
-                                                                                      .Events(ev => ev
-                                                                                          .Error("error_handler(\"validation#=PurchaseOrderID#\")")
-                                                                                          .RequestStart("onRequestStart(\"validation#=PurchaseOrderID#\")")
-                                                                                          .RequestEnd("onRequestEnd(\"validation#=PurchaseOrderID#\")"))
-                                                                                      .Model(model =>
-                                                                                      {
-                                                                                                                                model.Id(p => p.PurchaseOrderValidationID);
-                                                                                                                            }
-                                                                                      )
-                                                                                      .Read(read => read.Action("PurchaseOrderValidations_Read", "PurchaseOrderValidation", new { id = "#=PurchaseOrderID#" }))
-                                                                                      .Create(create => create.Action("PurchaseOrderValidations_Create", "PurchaseOrderValidation", new { id = "#=PurchaseOrderID#" }))
-                                                                                      .Update(update => update.Action("PurchaseOrderValidations_Update", "PurchaseOrderValidation"))
-                                                                                      .Destroy(destroy => destroy.Action("PurchaseOrderValidations_Destroy", "PurchaseOrderValidation"))
-                                                                                  )
-                                                                                  .ToClientTemplate())
-                                                        </text>
-                                                                );
-
-                                                                items.Add().Text("GRN Info.").Content(@<text>
-                                                                    @(Html.Kendo().Grid<ExceedERP.Web.Areas.Procurement.Models.GrnViewModel>()
-                                                                                          .Name("GRNInfo#=PurchaseOrderID#")
-                                                                                          .Columns(columns =>
-                                                                                          {
-                                                                                                                                            columns.Bound(p => p.GrnType).Width(130);
-                                                                                                                                //columns.Bound(c => c.GrnId).Title("\\#").Width(120);
-                                                                                                                                columns.Bound(c => c.GrnId).Width(90).Title("\\#").ClientTemplate(
-                                                                                                                                                "\\#if(GrnType=='0'){\\#" +
-                                                                                                                                                "<a href='/Inventory/InventoryPrint/Goodreceive/\\#GrnId\\#'> \\#:GrnId\\#</a>" +
-                                                                                                                                                "\\#}else if(GrnType=='1'){\\#" +
-                                                                                                                                                "<a href='/FixedAsset/FixedAssetPrint/FixedAssetReceive/\\#GrnId\\#'> \\#:GrnId\\#</a>" +
-                                                                                                                                                "\\#}\\#"
-                                                                                                                                                );
-                                                                                                                                            columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
-                                                                                                                                            columns.Bound(p => p.ReceiveRef).Width(150);//until data entry.EditorTemplateName("ReceiveReferenceSelector");
-                                                                                                                                columns.Bound(p => p.Reference).Width(130);
-                                                                                                                                            columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
-                                                                                                                                            columns.Bound(p => p.SupplierId).Width(90);
-                                                                                                                                            columns.Bound(p => p.SupplierName).Width(150);//upto data entry.EditorTemplateName("ReceiveSupplierSelector");
-                                                                                                                                columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
-                                                                                                                                            columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector");
-                                                                                                                                            columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(130);
-
-                                                                                                                                            columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
-                                                                                                                                            columns.Bound(c => c.Status).Width(80);
-
-                                                                                                                                        })
-
-                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                          .Scrollable()
-                                                                                          .ClientDetailTemplateId("grntemplates")
-                                                                                          .DataSource(dataSource => dataSource
-                                                                                              .Ajax()
-                                                                                              .Events(ev => ev
-                                                                                                  .Error("error_handler(\"GRNInfo#=PurchaseOrderID#\")")
-                                                                                                  .RequestStart("onRequestStart(\"GRNInfo#=PurchaseOrderID#\")")
-                                                                                                  .RequestEnd("onRequestEnd(\"GRNInfo#=PurchaseOrderID#\")"))
-                                                                                              .Model(model =>
-                                                                                              {
-                                                                                                                                                model.Id(p => p.GrnId);
-                                                                                                                                            }
-                                                                                              )
-                                                                                              .Read(read => read.Action("GrnHeader_Read", "PurchaseOrder", new { id = "#=PurchaseOrderID#" }))
-                                                                                          )
-                                                                                          .ToClientTemplate())
-                                                                </text>
+                                                                                                                                                        })
+                                                                                                                  .ToolBar(toolbar =>
+                                                                                                                  {
+                                                                                                                                                            toolbar.Create();
+                                                                                                                                                        })
+                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                  .Scrollable()
+                                                                                                                 .Events(x => x.DataBound("onDataBoundValidationNew"))
+                                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                                      .Ajax()
+                                                                                                                      .Events(ev => ev
+                                                                                                                          .Error("error_handler(\"validation#=PurchaseOrderID#\")")
+                                                                                                                          .RequestStart("onRequestStart(\"validation#=PurchaseOrderID#\")")
+                                                                                                                          .RequestEnd("onRequestEnd(\"validation#=PurchaseOrderID#\")"))
+                                                                                                                      .Model(model =>
+                                                                                                                      {
+                                                                                                                                                                model.Id(p => p.PurchaseOrderValidationID);
+                                                                                                                                                            }
+                                                                                                                      )
+                                                                                                                      .Read(read => read.Action("PurchaseOrderValidations_Read", "PurchaseOrderValidation", new { id = "#=PurchaseOrderID#" }))
+                                                                                                                      .Create(create => create.Action("PurchaseOrderValidations_Create", "PurchaseOrderValidation", new { id = "#=PurchaseOrderID#" }))
+                                                                                                                      .Update(update => update.Action("PurchaseOrderValidations_Update", "PurchaseOrderValidation"))
+                                                                                                                      .Destroy(destroy => destroy.Action("PurchaseOrderValidations_Destroy", "PurchaseOrderValidation"))
+                                                                                                                  )
+                                                                                                                  .ToClientTemplate())
+                                                                        </text>
                                                                         );
 
-                                                                    })
-                                                                                                                      .ToClientTemplate()
+                                                                                items.Add().Text("GRN Info.").Content(@<text>
+                                                                                    @(Html.Kendo().Grid<ExceedERP.Web.Areas.Procurement.Models.GrnViewModel>()
+                                                                                                                          .Name("GRNInfo#=PurchaseOrderID#")
+                                                                                                                          .Columns(columns =>
+                                                                                                                          {
+                                                                                                                                                                            columns.Bound(p => p.GrnType).Width(130);
+                                                                                                                                                                //columns.Bound(c => c.GrnId).Title("\\#").Width(120);
+                                                                                                                                                                columns.Bound(c => c.GrnId).Width(90).Title("\\#").ClientTemplate(
+                                                                                                                                                                                "\\#if(GrnType=='0'){\\#" +
+                                                                                                                                                                                "<a href='/Inventory/InventoryPrint/Goodreceive/\\#GrnId\\#'> \\#:GrnId\\#</a>" +
+                                                                                                                                                                                "\\#}else if(GrnType=='1'){\\#" +
+                                                                                                                                                                                "<a href='/FixedAsset/FixedAssetPrint/FixedAssetReceive/\\#GrnId\\#'> \\#:GrnId\\#</a>" +
+                                                                                                                                                                                "\\#}\\#"
+                                                                                                                                                                                );
+                                                                                                                                                                            columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
+                                                                                                                                                                            columns.Bound(p => p.ReceiveRef).Width(150);//until data entry.EditorTemplateName("ReceiveReferenceSelector");
+                                                                                                                                                                columns.Bound(p => p.Reference).Width(130);
+                                                                                                                                                                            columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+                                                                                                                                                                            columns.Bound(p => p.SupplierId).Width(90);
+                                                                                                                                                                            columns.Bound(p => p.SupplierName).Width(150);//upto data entry.EditorTemplateName("ReceiveSupplierSelector");
+                                                                                                                                                                columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
+                                                                                                                                                                            columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                                                                                                                                            columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(130);
+
+                                                                                                                                                                            columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+                                                                                                                                                                            columns.Bound(c => c.Status).Width(80);
+
+                                                                                                                                                                        })
+
+                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                          .Scrollable()
+                                                                                                                          .ClientDetailTemplateId("grntemplates")
+                                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                                              .Ajax()
+                                                                                                                              .Events(ev => ev
+                                                                                                                                  .Error("error_handler(\"GRNInfo#=PurchaseOrderID#\")")
+                                                                                                                                  .RequestStart("onRequestStart(\"GRNInfo#=PurchaseOrderID#\")")
+                                                                                                                                  .RequestEnd("onRequestEnd(\"GRNInfo#=PurchaseOrderID#\")"))
+                                                                                                                              .Model(model =>
+                                                                                                                              {
+                                                                                                                                                                                model.Id(p => p.GrnId);
+                                                                                                                                                                            }
+                                                                                                                              )
+                                                                                                                              .Read(read => read.Action("GrnHeader_Read", "PurchaseOrder", new { id = "#=PurchaseOrderID#" }))
+                                                                                                                          )
+                                                                                                                          .ToClientTemplate())
+                                                                                </text>
+                                                                                );
+
+                                                                                    })
+                                                                                                                                                                                                                                  .ToClientTemplate()
     )
 
 </script>

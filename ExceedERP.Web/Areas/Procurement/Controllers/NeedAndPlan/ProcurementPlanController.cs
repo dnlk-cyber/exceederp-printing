@@ -21,7 +21,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -75,7 +75,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Plans_Read([DataSourceRequest]DataSourceRequest request)
         {
             var branch = UserHelper.GetUserDefaultBranch(User.Identity.Name);
@@ -111,7 +111,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         }
 
         
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PlanItems_Create(int id, ProcurementPlanItem planItem)
         {
@@ -157,7 +157,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { planItem }.ToDataSourceResult(new DataSourceRequest(), ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Plans_Create([DataSourceRequest]DataSourceRequest request, ProcurementPlan plan)
         {
@@ -208,7 +208,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
 
         
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Plans_Update([DataSourceRequest]DataSourceRequest request, ProcurementPlan plan)
         {
@@ -259,7 +259,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { plan }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Plans_Destroy([DataSourceRequest]DataSourceRequest request, ProcurementPlan plan)
         {
@@ -295,7 +295,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = db.ProcurementPlans.Find(id);

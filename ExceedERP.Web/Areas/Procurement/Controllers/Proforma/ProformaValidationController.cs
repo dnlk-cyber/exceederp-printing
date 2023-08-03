@@ -21,12 +21,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         private ExceedDbContext _db = new ExceedDbContext();
         private readonly DashboardHelper _dashboardHelper = new DashboardHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult PurchaseValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseValidation> purchasevalidations = _db.PurchaseValidations.Where(x => x.ProformaPurchaseID == id);
@@ -46,7 +46,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseValidations_Create([DataSourceRequest]DataSourceRequest request, PurchaseValidation purchaseValidation, int id)
         {
@@ -113,6 +113,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         record.OnlineApprovedTime = DateTime.Now;
                         _db.Entry(record).State = EntityState.Modified;
                         _db.SaveChanges();
+
                         TransferItemsToPo(id);
 
                         #region purchase status
@@ -174,7 +175,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { purchaseValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseValidations_Update([DataSourceRequest]DataSourceRequest request, PurchaseValidation purchaseValidation)
         {
@@ -200,7 +201,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { purchaseValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseValidations_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseValidation purchaseValidation)
         {
@@ -229,7 +230,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         private void TransferItemsToPo(int proformaid)
         {
            
-            var proformaPurchase = _db.ProformaPurchases.Find(proformaid);
+            var proforma = _db.ProformaPurchases.Find(proformaid);
             var winners = _db.WinningSuppliers.Where(x => x.ProformaPurchaseID == proformaid).ToList();
             var pr = _db.ProformaPurchaseRequisitions.Where(x => x.ProformaPurchaseID == proformaid).ToList();
             string sr = "";
@@ -241,16 +242,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             foreach (var uw in winners)
             {
                
-                if (proformaPurchase!=null)
+                if (proforma!=null)
                 {
                     #region send
                     #region create po
                     var purchaseOrder = new PurchaseOrder
                     {
                         
-                        PurchaseRequisitionID = proformaPurchase.PurchaseRequisitionID,
-                        ProcurementOfficer=proformaPurchase.ProcurementOfficer,
-                        BranchId = EmployeeHelper.GetEmployeePlacementBranch(proformaPurchase.ProcurementOfficer),
+                        PurchaseRequisitionID = proforma.PurchaseRequisitionID,
+                        ProcurementOfficer=proforma.ProcurementOfficer,
+                        BranchId =proforma.BranchId, //EmployeeHelper.GetEmployeePlacementBranch(proforma.ProcurementOfficer),
+                        BusinessUnitId=proforma.BusinessUnitId,
                         SroreRequisition = sr,
                         SupplierName = uw.SupplierName,
                         SupplierId = uw.SupplierId,
@@ -263,12 +265,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         DeliveryDate = DateTime.Today,
                         OrgStructureId = 0,
 
-                        ForwardedFrom = UserInformationHelper.GetEmployeeUserId(proformaPurchase.ProcurementOfficer),
-                        ForwardedTo = UserInformationHelper.GetEmployeeUserId(proformaPurchase.ProcurementOfficer),
+                        ForwardedFrom = UserInformationHelper.GetEmployeeUserId(proforma.ProcurementOfficer),
+                        ForwardedTo = UserInformationHelper.GetEmployeeUserId(proforma.ProcurementOfficer),
 
 
                         Status = "Editing",
-                        Remark = proformaPurchase.Remark,
+                        Remark = proforma.Remark,
 
                         DateCreated = DateTime.Now,
                         CreatedBy = User.Identity.Name

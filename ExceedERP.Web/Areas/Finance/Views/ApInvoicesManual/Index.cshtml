@@ -60,7 +60,7 @@
       )
 
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApInvoice").Window(w => w.Title("Payable Invoice")))
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -74,7 +74,7 @@
       .Scrollable()
 
       .Filterable()
-      .Groupable()
+
       .Selectable(selectable =>
       {
           selectable.Mode(GridSelectionMode.Single);
@@ -97,8 +97,15 @@
               {
                   model.Id(p => p.ApPaybleInvoicesId);
                   model.Field(p => p.ApPaybleInvoicesId).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+
+                  model.Field(p => p.GLTaxRateID).Editable(false);
+                  model.Field(p => p.WithholdingType).Editable(false);
+                  model.Field(p => p.WithholdTax).Editable(false);
+
                   model.Field(p => p.Source).Editable(false);
+                  model.Field(p => p.ForBranchId).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
               })
 
 

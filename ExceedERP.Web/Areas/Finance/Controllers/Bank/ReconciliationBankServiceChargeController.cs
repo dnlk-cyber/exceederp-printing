@@ -35,7 +35,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             IQueryable<ReconciliationBankServiceCharge> reconciliationbankservicecharges = _db.ReconciliationBankServiceCharges.Where(x=>x.ReconciliationScheduleId==id);
             DataSourceResult result = reconciliationbankservicecharges.ToDataSourceResult(request, reconciliationBankServiceCharge => new {
                 ReconciliationBankServiceChargeId = reconciliationBankServiceCharge.ReconciliationBankServiceChargeId,
+                ReconciliationScheduleId = reconciliationBankServiceCharge.ReconciliationScheduleId,
                 Amount = reconciliationBankServiceCharge.Amount,
+                ExRate = reconciliationBankServiceCharge.ExRate,
+                AmountNonFun = reconciliationBankServiceCharge.AmountNonFun,
                 Date = reconciliationBankServiceCharge.Date,
                 Remark = reconciliationBankServiceCharge.Remark,
 
@@ -59,6 +62,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 {
                     ReconciliationScheduleId = id,
                     Amount = reconciliationBankServiceCharge.Amount,
+                    ExRate = reconciliationBankServiceCharge.ExRate,
+                    AmountNonFun = reconciliationBankServiceCharge.AmountNonFun,
                     Date = reconciliationBankServiceCharge.Date.Date,
                     Remark = reconciliationBankServiceCharge.Remark,
                     DateCreated = reconciliationBankServiceCharge.DateCreated,
@@ -88,6 +93,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     ReconciliationBankServiceChargeId = reconciliationBankServiceCharge.ReconciliationBankServiceChargeId,
                     ReconciliationScheduleId = reconciliationBankServiceCharge.ReconciliationScheduleId,
                     Amount = reconciliationBankServiceCharge.Amount,
+                    ExRate = reconciliationBankServiceCharge.ExRate,
+                    AmountNonFun = reconciliationBankServiceCharge.AmountNonFun,
                     Date = reconciliationBankServiceCharge.Date,
                     Remark = reconciliationBankServiceCharge.Remark,
 
@@ -116,8 +123,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             {
                 var entity = new ReconciliationBankServiceCharge
                 {
+                    ReconciliationScheduleId = reconciliationBankServiceCharge.ReconciliationScheduleId,
                     ReconciliationBankServiceChargeId = reconciliationBankServiceCharge.ReconciliationBankServiceChargeId,
                     Amount = reconciliationBankServiceCharge.Amount,
+                    ExRate = reconciliationBankServiceCharge.ExRate,
+                    AmountNonFun = reconciliationBankServiceCharge.AmountNonFun,
                     Date = reconciliationBankServiceCharge.Date,
                     Remark = reconciliationBankServiceCharge.Remark,
                     DateCreated = reconciliationBankServiceCharge.DateCreated,

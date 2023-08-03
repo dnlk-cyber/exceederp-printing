@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementTeamLeader, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementTeamLeader, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
             {
             return View();
             }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementTeamLeader, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementTeamLeader, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseRequisitionAssignments_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionAssignment> purchaseRequisitionAssignments = _db.PurchaseRequisitionAssignments.Where(pri => pri.PurchaseRequisitionID == id);
@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTeamLeader)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTeamLeader)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAssignments_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionAssignment purchaseRequisitionAssignment, int id)
         {
@@ -114,7 +114,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTeamLeader)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTeamLeader)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAssignments_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionAssignment purchaseRequisitionAssignment)
         {
@@ -174,7 +174,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTeamLeader)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTeamLeader)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAssignments_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionAssignment purchaseRequisitionAssignment)
         {

@@ -19,7 +19,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
@@ -27,7 +27,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
         
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ProformaEvaluationItemResults_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<ProformaEvaluationItemResult> proformaEvaluationItemResults = _db.ProformaEvaluationItemResults.Where(x=>x.ProformaEvaluationResultID==id).AsQueryable();
@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaEvaluationItemResults_Create([DataSourceRequest]DataSourceRequest request, ProformaEvaluationItemResult proformaEvaluationItemResult , int id)
             {
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaEvaluationItemResult }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaEvaluationItemResults_Update([DataSourceRequest]DataSourceRequest request, ProformaEvaluationItemResult proformaEvaluationItemResult)
     {
@@ -128,7 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaEvaluationItemResult }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaEvaluationItemResults_Destroy([DataSourceRequest]DataSourceRequest request, ProformaEvaluationItemResult proformaEvaluationItemResult)
         {

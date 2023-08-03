@@ -1,0 +1,16 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                 .ValuePrimitive(true)
+                  .AutoBind(false)
+                  .OptionLabel("Select Award...")
+                      .DataTextField("Name")
+                              .DataValueField("Code")
+                          .Filter("contains")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetTenderAwards", "ProcurementDataProvider", new { area = "Procurement" }))
+                                            .ServerFiltering(false);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

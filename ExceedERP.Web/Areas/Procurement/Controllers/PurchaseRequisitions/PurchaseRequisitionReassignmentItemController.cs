@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseRequisitionReassignmentItems_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<PurchaseRequisitionReassignmentItem> purchaseRequisitionReassignmentItems = _db.PurchaseRequisitionReassignmentItems.Where(pri => pri.PurchaseRequisitionAssignmentId == id);
@@ -50,7 +50,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionReassignmentItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionReassignmentItem purchaseRequisitionReassignmentItem , int id )
         {
@@ -87,7 +87,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionReassignmentItems_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionReassignmentItem purchaseRequisitionReassignmentItem)
         {
@@ -128,7 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionReassignmentItems_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionReassignmentItem purchaseRequisitionReassignmentItem)
         {

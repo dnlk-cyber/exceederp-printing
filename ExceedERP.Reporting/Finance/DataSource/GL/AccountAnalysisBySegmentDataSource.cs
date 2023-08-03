@@ -18,6 +18,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<AccountAnalysisViewModel> AccountAnalysisBySegment(string category, string source, string acctFrom, string acctTo, string fromperiod, string toperiod,string segmentType,string segmentValue,string createdby, string branchid)
         {
+            _db.Database.CommandTimeout = 7200;//added
             List<AccountAnalysisViewModel> list = new List<AccountAnalysisViewModel> { };
            
             AccountAnalysisViewModel record;

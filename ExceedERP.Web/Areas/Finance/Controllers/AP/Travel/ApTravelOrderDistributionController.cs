@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 {
                     ApTravelOrderId = id,
                     AccountCode = apTravelOrderDistribution.AccountCode,
-                     AccountDesc = _accountHelper.GetAccountDesc(apTravelOrderDistribution.AccountCode),
+                    AccountDesc = _accountHelper.GetAccountDesc(apTravelOrderDistribution.AccountCode),
                     AdditionalDescription = apTravelOrderDistribution.AdditionalDescription,
                     Debit = apTravelOrderDistribution.Debit,
                     Credit = apTravelOrderDistribution.Credit,

@@ -1,8 +1,8 @@
-﻿using ExceedERP.Core.Domain.Budget;
+using ExceedERP.Core.Domain.Budget;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
 using System;
@@ -50,14 +50,14 @@ namespace ExceedERP.Helpers.Budget
                     List<GLChartOfAccountAccount> Accounts = BudgetGLAccount.GlChartOfAccountAccounts.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(acountfromSegment) >= 0)
                        .Where(x => x.Values.ToUpper().CompareTo(accounttoSegment) <= 0)
                        .ToList();
-                    List<GLChartOfAccountCostCenter> CostCenterAccounts = BudgetGLAccount.GlChartOfAccountCostCenters.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(costfromSegment) >= 0)
+                    List<GLChartOfAccountSegment> CostCenterAccounts = BudgetGLAccount.GlChartOfAccountCostCenters.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(costfromSegment) >= 0)
                            .Where(x => x.Values.ToUpper().CompareTo(costtoSegment) <= 0)
                            .ToList();
-                    List<GLChartOfAccountLocation> LocationAccounts = BudgetGLAccount.GlChartOfAccountLocations.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(comapnyfromSegment) >= 0)
+                    List<GLChartOfAccountSegment> LocationAccounts = BudgetGLAccount.GlChartOfAccountLocations.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(comapnyfromSegment) >= 0)
                           .Where(x => x.Values.ToUpper().CompareTo(companytoSegment) <= 0)
                           .ToList();
 
-                    List<GLChartOfAccountSubAccount> SubAccounts = BudgetGLAccount.GlChartOfAccountSubAccounts.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(subfromSegment) >= 0)
+                    List<GLChartOfAccountSegment> SubAccounts = BudgetGLAccount.GlChartOfAccountSubAccounts.Where(x => x.Enable && x.AllowBudgeting).Where(x => x.Values.ToUpper().CompareTo(subfromSegment) >= 0)
                            .Where(x => x.Values.ToUpper().CompareTo(subtoSegment) <= 0)
                            .ToList();
                     string Currency = string.Empty;
@@ -90,20 +90,18 @@ namespace ExceedERP.Helpers.Budget
                                         BudgetPlan Plan = new BudgetPlan();
                                         if (Branch.BranchTypes == BranchTypes.HEAD_OFFICE)
                                         {
-                                          
+
                                             Plan = new BudgetPlan()
                                             {
-                                          
-                                                 
-                                                BudgetCategoryID = Range.PlanCategory.PlanCategoryID,
+
+
+                                                PlanCategoryId = Range.PlanCategory.PlanCategoryID,
                                                 AccountCode = AccCode,
-                                                BranchId = Branch.BranchId,
-                                                GLChartOfAccountCostCenterId = costCenterId,
-                                                WorkUnitName = CostCenterAccount.Description,
+                                                BranchId = Branch.BranchId,                                                
                                                 AccountDesc = AccountHelper.GetAccountDesc(AccCode),
                                                 CurrentYearlyBudget = 0,
                                                 TotalYearlyBudget = Quota,
-                                                Unit = OtherSpecifcation.BudgetCurrency.BudgetCurrencyId
+                                                Unit = OtherSpecifcation.BudgetCurrency?.FinSetupCurrencyID ?? 0
                                             };
                                            db.BudgetPlans.Add(Plan);
                                        await    db.SaveChangesAsync();
@@ -112,15 +110,13 @@ namespace ExceedERP.Helpers.Budget
                                         {
                                             Plan = new BudgetPlan()
                                             {
-                                                BudgetCategoryID = Range.PlanCategory.PlanCategoryID,
+                                                PlanCategoryId = Range.PlanCategory.PlanCategoryID,
                                                 AccountCode = AccCode,
-                                                BranchId = Branch.BranchId,
-                                                GLChartOfAccountCostCenterId = costCenterId,
-                                                WorkUnitName = CostCenterAccount.Description,
+                                                BranchId = Branch.BranchId,                                              
                                                 AccountDesc = AccountHelper.GetAccountDesc(AccCode),
                                                 CurrentYearlyBudget = 0,
                                                 TotalYearlyBudget = Quota,
-                                                Unit = OtherSpecifcation.BudgetCurrency.BudgetCurrencyId
+                                                Unit = OtherSpecifcation.BudgetCurrency?.FinSetupCurrencyID ?? 0
                                             };
                                             db.BudgetPlans.Add(Plan);
                                             await db.SaveChangesAsync();
@@ -139,15 +135,11 @@ namespace ExceedERP.Helpers.Budget
 
                                                 var budgetpermonth = new BudgetPlanMonthly
                                                 {
-
-                                                    AccountCode = Plan.AccountCode,
-                                                    AccountDesc = Plan.AccountDesc,
                                                     GLPeriodId = Month.GLPeriodId,
                                                     MonthlyBudget = monthBuget,
                                                     CurrentBudget = monthBuget,
                                                     BudgetDefineID = Plan.BudgetPlanID,
                                                     DateCreated = DateTime.Now,
-                                                    Unit = OtherSpecifcation.BudgetCurrency.Name,
                                                
                                                 };
 

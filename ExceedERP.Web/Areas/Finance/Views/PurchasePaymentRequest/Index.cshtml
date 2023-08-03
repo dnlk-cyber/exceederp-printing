@@ -1,0 +1,587 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Procurement.PaymentRequest
+@using ExceedERP.Web.Areas.Procurement.Models
+
+<legend>Purchase Payment Request- Finance</legend>
+
+@(Html.Kendo().Grid<PurchasePayment>()
+                              .Name("grid")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.PurchasePaymentId).Title("Payment No.").Width(120).ClientTemplate("#=appendZeros(PurchasePaymentId)#");
+                                  columns.Bound(p => p.Date).Width(130);
+                                  columns.Bound(c => c.SupplierId).Width(100).EditorTemplateName("SupplierSelector");
+                                  columns.Bound(c => c.SupplierName).Width(120);
+                                  columns.Bound(p => p.SupplierInvoice).Width(130);
+                                  columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["Purchasers"], "EmployeeId", "FullNameEnglish").Width(130);
+                                  //columns.Bound(c => c.WithOutGRN).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= WithOutGRN ? checked='checked' :'' # />");
+                                  columns.Bound(c => c.Type).Width(110);
+                                  //columns.Bound(c => c.PoOrContractNumber).Width(80).Title("Ref.");
+                                  columns.Bound(o => o.PoOrContractNumber).Width(80).Title("Ref.").ClientTemplate(
+                                    "# if (PoOrContractNumber) { #" +
+                                    @Html.ActionLink("#=PoOrContractNumber#", "PurchaseOrderPrint", "ProcurementPrint", new { area = "Procurement", Id = "#=PoOrContractNumber#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+                                    + "# } #"
+                                    );
+                                  columns.Bound(c => c.PaymentType).Width(110);
+                                  columns.Bound(c => c.PurchasePaymentType).Width(130);
+                                  columns.Bound(p => p.PaymentAmount).Width(130);
+                                  //columns.Bound(p => p.PenalityAmount).Width(130);
+                                  //columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
+                                  columns.Bound(p => p.NetPayable).Width(130);
+                                  columns.Bound(p => p.AmountDue).Width(130);
+                                  columns.Bound(c => c.Paid).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' #= Paid ? checked='checked' :'' # />");
+                                  columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
+                                  columns.Bound(p => p.Remark).Width(150);
+                                  columns.Bound(p => p.Status).Width(150);
+                                  columns.Command(command =>
+                                  {
+                                      //command.Edit();
+                                      //command.Destroy();
+                                  }).Width(180);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  // toolbar.Create();
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                              .Scrollable()
+                              .Sortable()
+                              .Filterable()
+                               .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                              .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+                              .Scrollable(h => h.Height(500))
+                              .Events(x => x.DataBound("onDataBoundMasterNew"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Sort(sort => sort.Add("PurchasePaymentId").Descending())
+                                  .Model(
+                                      model =>
+                                      {
+                                          model.Id(p => p.PurchasePaymentId);
+                                          model.Field(p => p.PurchasePaymentId).Editable(false);
+                                          model.Field(p => p.ForBranchId).Editable(false);
+                                          model.Field(p => p.BranchId).Editable(false);
+                                          model.Field(p => p.BusinessUnitId).Editable(false);
+                                          model.Field(p => p.Paid).Editable(false);
+                                          model.Field(p => p.NetPayable).Editable(false);
+                                          model.Field(p => p.AmountDue).Editable(false);
+                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                          model.Field(p => p.Status).Editable(false);
+
+                                      })
+
+                                  .Events(ev => ev
+                                     .Error("error_handler(\"grid\")")
+                              .RequestStart("onRequestStart(\"grid\")")
+                              .RequestEnd("onRequestEnd(\"grid\")"))
+                                  .Read(read => read.Action("PurchasePayments_Read", "PurchasePaymentRequest"))
+                                  .Create(create => create.Action("PurchasePayments_Create", "PurchasePaymentRequest"))
+                                  .Update(update => update.Action("PurchasePayments_Update", "PurchasePaymentRequest"))
+                                  .Destroy(destroy => destroy.Action("PurchasePayments_Destroy", "PurchasePaymentRequest"))
+                              ).ClientDetailTemplateId("template")
+                              )
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=PurchasePaymentId#")
+                                            .SelectedIndex(0)
+                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                            .Items(items =>
+                                            {
+                                                items.Add().Text("Detail").Content(
+                                                    @<text>
+                                                        # if (!IsBudgetApproved)
+                                                        {#
+
+                                                        <a onclick='return sendForBudgetApproval("#=PurchasePaymentId#")' href=' \#' title="Approve Payment Request"><i class="fa fa-check-circle fa-2x"></i></a>
+
+                                                        # } #
+                                                        # if (IsOnlineApproved)
+                                                        {#
+                                                        <a href='@Url.Action("PurchasePaymentPrint", "ProcurementPrint", new { Area = "Procurement" })/#=PurchasePaymentId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                                        # } #
+
+
+
+
+                                                        <div>
+                                                            <hr>
+                                                            <dl class="dl-horizontal">
+
+                                                                <dt>
+                                                                    Payment No.
+                                                                </dt>
+                                                                <dd>
+                                                                    #= PurchasePaymentId #
+                                                                </dd>
+
+
+                                                                <dt>
+                                                                    Status
+                                                                </dt>
+                                                                <dd>
+                                                                    #= Status #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Created On
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Created By
+                                                                </dt>
+                                                                <dd>
+                                                                    #=CreatedBy #
+
+                                                                </dd>
+
+                                                                <dt>
+                                                                    Approved On
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Approved By
+                                                                </dt>
+                                                                <dd>
+                                                                    #=OnlineApprovedBy #
+
+                                                                </dd>
+
+                                                                <dt>
+                                                                    Budget Approved On
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Approved By
+                                                                </dt>
+                                                                <dd>
+                                                                    #=BudgetApprovedBy #
+
+                                                                </dd>
+                                                            </dl>
+
+                                                        </div>
+
+                                                    </text>
+                                                            );
+                                                        items.Add().Text("GRN/SRN").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<PurchasePaymentGrn>()
+                                                                          .Name("PurchasePaymentGrn#=PurchasePaymentId#")
+                                                                          .Columns(columns =>
+                                                                          {
+                                                                                      columns.Bound(c => c.PurchasePaymentGrnId).Hidden(true);
+                                                                                      columns.Bound(c => c.ItemType).Width(70).EditorTemplateName("PurchaseType");
+                                                                                      columns.Bound(o => o.GrnNo).Width(70).EditorTemplateName("GrnSelector").ClientTemplate(
+                                                                                        @Html.ActionLink("\\#=GrnNo\\#", "Goodreceive", "InventoryPrint", new { area = "Inventory", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+
+                                                                                        );
+
+                                                                                      columns.Command(command =>
+                                                                                      {
+
+                                                                              //  command.Edit();
+                                                                              //  command.Destroy();
+
+                                                                          }).Width(680);
+
+                                                                                  })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                                      toolbar.Create();
+                                                                                  })
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                                          .Sortable(sortable =>
+                                                                          {
+                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                  })
+                                                                          .Filterable()
+                                                                          .Scrollable()
+                                                                          .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                              .Model(
+                                                                                  model =>
+                                                                                  {
+                                                                                              model.Id(p => p.PurchasePaymentGrnId);
+                                                                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                              model.Field(p => p.CreatedBy).Editable(false);
+                                                                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                              model.Field(p => p.LastModified).Editable(false);
+                                                                                              model.Field(p => p.DateCreated).Editable(false);
+                                                                                          })
+                                                                              .Events(ev => ev
+                                                                                  .Error("error_handler(\"PurchasePaymentGrn#=PurchasePaymentId#\")")
+                                                                                  .RequestStart("onRequestStart(\"PurchasePaymentGrn#=PurchasePaymentId#\")")
+                                                                                  .RequestEnd("onRequestEnd(\"PurchasePaymentGrn#=PurchasePaymentId#\")"))
+                                                                              .Read(read => read.Action("PurchasePaymentGrns_Read", "PurchasePaymentRequestGrn", new { id = "#=PurchasePaymentId#" }))
+                                                                              .Create(create => create.Action("PurchasePaymentGrns_Create", "PurchasePaymentRequestGrn", new { id = "#=PurchasePaymentId#" }))
+                                                                              .Update(update => update.Action("PurchasePaymentGrns_Update", "PurchasePaymentRequestGrn"))
+                                                                              .Destroy(destroy => destroy.Action("PurchasePaymentGrns_Destroy", "PurchasePaymentRequestGrn"))
+                                                                          )
+                                                                          .ToClientTemplate())
+
+                        </text>);
+
+                                            items.Add().Text("Attachement").Content(@<text>
+
+                                                @PurchasePaymentFileUpload()
+
+                                            </text>);
+
+
+                                                    items.Add().Text("Validation").Content(
+    @<text>
+        @(Html.Kendo().Grid<PurchasePaymentValidation>()
+                                              .Name("PurchasePaymentValidation#=PurchasePaymentId#")
+                                              .Columns(columns =>
+                                              {
+                                                          columns.Bound(c => c.PurchasePaymentValidationId).Hidden(true);
+                                                          columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                          columns.Bound(c => c.Remark).Width(130);
+                                                          columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                          columns.Bound(c => c.LastModified).Hidden(true);
+                                                          columns.Bound(c => c.CreatedBy).Width(150).Title("User");
+                                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                          columns.Command(command =>
+                                  {
+                                                          command.Edit();
+
+                                                      });
+
+                                                      })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                          toolbar.Create();
+                                                      })
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                              .Pageable(pageable => pageable
+                                                  .Input(true)
+                                                  .Numeric(false)
+                                                  .Refresh(true)
+                                                  .PageSizes(true)
+                                                  .ButtonCount(5))
+                                              .Sortable(sortable =>
+                                              {
+                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                      })
+                                              //.Filterable()
+                                              .Scrollable()
+                                              .Events(events => events.DataBound("onDataBoundFisrtValidation"))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Model(
+                                                      model =>
+                                                      {
+                                                                  model.Id(p => p.PurchasePaymentValidationId);
+                                                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                              })
+                                                  .Events(ev => ev
+                                                      .Error("error_handler(\"PurchasePaymentValidation#=PurchasePaymentId#\")")
+                                                      .RequestStart("onRequestStart(\"PurchasePaymentValidation#=PurchasePaymentId#\")")
+                                                      .RequestEnd("onRequestEnd(\"PurchasePaymentValidation#=PurchasePaymentId#\")"))
+
+                                                  .Read(read => read.Action("PurchasePaymentValidations_Read", "PurchasePaymentRequestValidation", new { id = "#=PurchasePaymentId#" }))
+                                                  .Create(create => create.Action("PurchasePaymentValidations_Create", "PurchasePaymentRequestValidation", new { id = "#=PurchasePaymentId#" }))
+                                                  .Update(update => update.Action("PurchasePaymentValidations_Update", "PurchasePaymentRequestValidation", new { id = "#=PurchasePaymentId#" }))
+                                                  .Destroy(destroy => destroy.Action("PurchasePaymentValidations_Destroy", "PurchasePaymentRequestValidation"))
+                                              )
+                                              .ToClientTemplate())
+
+    </text>);
+
+
+                                })
+                      .ToClientTemplate()
+    )
+</script>
+
+
+
+
+
+
+
+
+@helper PurchasePaymentFileUpload()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PaymentRequest.PurchasePaymentAttachment>()
+                  .Name("Purchasedocument_#=PurchasePaymentId#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FileName).ClientTemplate("<a href='/PurchasePaymentDocument/FileDwonload?id=\\#=PurchasePaymentAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+                      columns.Command(command => {
+                          //command.Edit(); 
+                          //command.Destroy();
+                      }).Width(580);
+                  })
+                 
+
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .HtmlAttributes(new { style = "height: 350px;" })
+                            .Scrollable()
+                            .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                    .Error("error_handler(\"Purchasedocument_#=PurchasePaymentId#\")")
+                                    .RequestStart("onRequestStart(\"Purchasedocument_#=PurchasePaymentId#\")")
+                                    .RequestEnd("onRequestEnd(\"Purchasedocument_#=PurchasePaymentId#\")"))
+                                .Model(model => model.Id(p => p.PurchasePaymentAttachmentId))
+                                .Read(read => read.Action("PurchasePaymentAttachments_Read", "PurchasePaymentDocumentBudget", new { id = "#= PurchasePaymentId #" }))
+                                .Create(create => create.Action("PurchasePaymentAttachments_Create", "PurchasePaymentDocumentBudget", new { id = "#=PurchasePaymentId #" }))
+                                .Update(update => update.Action("PurchasePaymentAttachments_Update", "PurchasePaymentDocumentBudget"))
+                                .Destroy(destroy => destroy.Action("PurchasePaymentAttachments_Destroy", "PurchasePaymentDocumentBudget"))
+                            ).ToClientTemplate())
+}
+
+
+<script>
+
+
+    function sendForBudgetApproval(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to approve this Payment number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveBudget", "PurchasePaymentBudget", new { area = "Budget" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+   
+
+    
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;    
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+    var nextApprover;
+
+    function detailExpandMasterNew(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.PurchasePaymentId;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        nextApprover = masterDataItem.ForwardedTo;
+
+    }
+    function onDataBoundMasterNew(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsOnlineApproved && !dataItem.IsBudgetApproved) {
+                row.css("background-color", "lightgreen");
+            }
+          
+
+            if (dataItem.IsBudgetApproved) {
+                row.css("background-color", "gold");
+            }
+
+            if (dataItem.Paid) {
+                row.css("background-color", "honeydew");
+            }
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineNew(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationNew(e) {
+        var currentUser=@Html.Raw(Json.Encode(User.Identity.Name));
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        if (nextApprover !== currentUser) {
+            $(".k-grid-add", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+    
+
+ 
+    
+
+    function filterInventoryItems() {
+
+        return {
+            itemCategoryCode: $("#ItemCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+
+    function filterSuppliers() {
+        return { id: $("#PurchaseOrderID").data("kendoDropDownList").value() }
+    }
+
+
+    function isNewSupplier(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#supplierNameDiv").show();
+
+        } else {
+            $("#supplierNameDiv").hide();
+        }
+
+    }
+
+
+
+
+
+
+    function PurchaseAttachementSuccess(e) {
+        var gridname = "#Purchasedocument_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
+
+    function PurchasePaymentAttachementSuccess(e) {
+        //var gridname = "#Purchasedocument_" + codeid;
+        //$(gridname).data("kendoGrid").dataSource.read();
+    }
+
+
+
+    function getPurchaseId() {
+        //alert(codeid);
+        return {
+            id: codeid,
+            type:$("#ItemType").data("kendoDropDownList").value()
+        }
+
+    }
+
+    function getPoOrContractId() {
+        //alert(codeid);
+        return {
+            supplierId: $("#SupplierId").data("kendoDropDownList").value(),
+            type:$("#Type").data("kendoDropDownList").value()
+        }
+
+    }
+
+    function onSelectSupplier() {
+        $("#PoOrContractNumber").data("kendoDropDownList").innerText = null;
+
+    }
+
+    
+
+    function applyPenalty(obj) {
+
+        if ($(obj).is(":checked")) {
+            var amount = $("#PaymentAmount").val();
+            var penalty = $("#PenalityAmount").val();
+            var net = amount - penalty;
+            $("#NetPayable").val(net).trigger("change");        
+
+        } else {
+            var amount = $("#PaymentAmount").val();          
+            $("#NetPayable").val(amount).trigger("change");
+        }
+
+    }
+
+    
+</script>
+
+
+

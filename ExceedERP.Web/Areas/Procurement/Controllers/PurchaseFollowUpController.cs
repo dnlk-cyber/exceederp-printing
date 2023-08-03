@@ -19,7 +19,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -70,7 +70,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseFollowUps_Read([DataSourceRequest] DataSourceRequest request)
         {
             IQueryable<PurchaseFollowUp> purchaseFollowUps = db.PurchaseFollowUps.Where(x=>x.PurchaseCategory==PurchaseCategory.LocalPurchase);

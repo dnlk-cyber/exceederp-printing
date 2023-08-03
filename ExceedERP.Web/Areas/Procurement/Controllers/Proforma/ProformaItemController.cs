@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ProformaItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<ProformaItem> proformaitems = _db.ProformaItems.Where(p => p.ProformaPurchaseID == id);
@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Create([DataSourceRequest]DataSourceRequest request, ProformaItem proformaItem, int id)
         {
@@ -107,7 +107,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Update([DataSourceRequest]DataSourceRequest request, ProformaItem proformaItem)
         {
@@ -158,7 +158,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaItems_Destroy([DataSourceRequest]DataSourceRequest request, ProformaItem proformaItem)
         {

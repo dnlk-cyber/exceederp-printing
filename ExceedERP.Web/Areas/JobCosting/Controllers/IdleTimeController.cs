@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
@@ -21,7 +22,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
         public ActionResult Index()
         {
-            ViewData["CostCenters"] = db.GLChartOfAccountCostCenters.ToList();
+            var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
+            ViewData["CostCenters"] = costcenters.ToList();
 
             ViewData["ControllableIdleTimeCategories"] = db.IdleTimeCategories.Where(q=>q.IsControllable ==true).ToList();
             ViewData["NonControllableIdleTimeCategories"] = db.IdleTimeCategories.Where(q=>q.IsControllable == false).ToList();

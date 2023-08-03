@@ -3,8 +3,9 @@
       .Name("grid")
       .Columns(columns =>
       {
+          columns.Bound(c => c.Type).Width(120);
           columns.Bound(c => c.Description).Width(120);
-           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
           columns.Bound(c => c.Enable).Width(100).ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= Enable#' " +
               "# if (Enable) { #" +
@@ -42,7 +43,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .DataSource(dataSource => dataSource
           .Ajax()
           .Events(events => events

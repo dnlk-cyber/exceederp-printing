@@ -16,13 +16,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser, ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser, ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         public ActionResult GuaranteeRenewals_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<GuaranteeRenewal> guaranteerenewals = db.GuaranteeRenewals.Where(x => x.GuaranteeId == id);
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeRenewals_Create(int id, [DataSourceRequest]DataSourceRequest request, GuaranteeRenewal guaranteeRenewal)
         {
@@ -88,7 +88,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guaranteeRenewal }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeRenewals_Update(int id, [DataSourceRequest]DataSourceRequest request, GuaranteeRenewal guaranteeRenewal)
         {
@@ -120,7 +120,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guaranteeRenewal }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeRenewals_Destroy([DataSourceRequest]DataSourceRequest request, GuaranteeRenewal guaranteeRenewal)
         {

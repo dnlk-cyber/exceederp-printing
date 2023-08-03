@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ParticipantsItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<ParticipantsItem> participantsitems = _db.ParticipantsItems.Where(x => x.LotID == id);
@@ -60,7 +60,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ParticipantsItems_Create([DataSourceRequest]DataSourceRequest request, ParticipantsItem participantsItem, int id)
         {
@@ -130,7 +130,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { participantsItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ParticipantsItems_Update([DataSourceRequest]DataSourceRequest request, ParticipantsItem participantsItem)
         {
@@ -150,7 +150,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             if (ModelState.IsValid)
             {
-                var lotItems = _db.LotItems.FirstOrDefault(x => x.LotID == participantsItem.LotID && x.ItmCode == participantsItem.ItmCode && x.ItemSpecification == participantsItem.ItemSpecification);
+                //var lotItems = _db.LotItems.FirstOrDefault(x => x.LotID == participantsItem.LotID && x.ItmCode == participantsItem.ItmCode && x.ItemSpecification == participantsItem.ItemSpecification);
+                var lotItems = _db.LotItems.FirstOrDefault(x => x.LotID == participantsItem.LotID && x.LotItemsID == participantsItem.LotItemID);
                 GLTaxRate tax = _db.GLTaxRates.Find(participantsItem.GLTaxRateID);
                 if (lotItems != null)
                 {
@@ -196,7 +197,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { participantsItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ParticipantsItems_Destroy([DataSourceRequest]DataSourceRequest request, ParticipantsItem participantsItem)
         {

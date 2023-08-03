@@ -25,8 +25,17 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public decimal AdvanceAmount { get; set; }
         public string Reference { get; set; }
         public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
         public string DepartmentApprovedBy { get; set; }
+        public DateTime? DepartmentApprovedDate { get; set; }
+        public string DepartmentSecondApprovedBy { get; set; }
+        public DateTime? DepartmentSecondApprovedDate { get; set; }
+        public string AccountantCheckedBy { get; set; }
+        public DateTime? AccountantCheckedDate { get; set; }
         public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public string BudgetApprovedBy { get; set; }
+        public DateTime? BudgetApprovedDate { get; set; }
     }
 
 
@@ -60,10 +69,11 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         [Display(Name = "Date")]
         public DateTime Date { get; set; }
         [Display(Name = "Time")]
-        public DateTime Time { get; set; }
+        public DateTime ArrivalDate { get; set; }
 
         [Display(Name = "Mode of Transport")]
         public string TransportMode { get; set; }
+        public string Branch { get; set; }
         public string Remark { get; set; }
     }
 }

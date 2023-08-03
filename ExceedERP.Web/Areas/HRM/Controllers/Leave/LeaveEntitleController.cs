@@ -1109,7 +1109,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         {
             List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
 
-            var leavesentitle = db.LeavesEntitle.DistinctByField(x => x.EmployeeId).Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.EmployeeCode, x.BranchId, x.HireDate, x.TotlalAmount, x.SumOfBalances }).ToList();
+            var leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).DistinctByField(x => x.EmployeeId).Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.EmployeeCode, x.BranchId, x.HireDate, x.TotlalAmount, x.SumOfBalances }).ToList();
 
             DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
             {

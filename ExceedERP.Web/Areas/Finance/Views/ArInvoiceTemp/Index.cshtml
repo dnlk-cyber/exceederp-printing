@@ -47,7 +47,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       //.ClientDetailTemplateId("templates")
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Scrollable(h => h.Height(500))
@@ -62,7 +62,7 @@
                   model.Field(p => p.CustomerId).Editable(false);
                   model.Field(p => p.IsManual).Editable(false);
                   model.Field(p => p.CustomerName).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  
                   model.Field(p => p.ArSalesOrderId).Editable(false);
                   model.Field(p => p.ArSalesOrderPartialPrintId).Editable(false);
                   model.Field(p => p.DueDate).Editable(false);

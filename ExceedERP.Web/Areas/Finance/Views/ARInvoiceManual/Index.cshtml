@@ -66,7 +66,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .ClientDetailTemplateId("templates")
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Invoice").Window(w => w.Title("Invoice Registration")))
       .Scrollable(h => h.Height(500))
@@ -79,7 +79,9 @@
                   model.Id(p => p.ArInvoiceId);
                   model.Field(p => p.ArInvoiceId).Editable(false);
                   // model.Field(p => p.CustomerId).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
+
                   model.Field(p => p.ArSalesOrderId).Editable(false);
                   model.Field(p => p.LineAmount).Editable(false);
                   model.Field(p => p.TaxAmount).Editable(false);

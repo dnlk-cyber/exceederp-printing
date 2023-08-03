@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser, ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser, ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         [HttpGet]
         public ActionResult FileDwonload(int id)
         {
@@ -38,7 +38,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
                 return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         public ActionResult GuaranteeFiles_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<GuaranteeFile> guaranteefiles = db.GuaranteeFiles.Where(x => x.GuaranteeId == id);
@@ -53,7 +53,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeFiles_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file, int id)
         {
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeFiles_Update([DataSourceRequest]DataSourceRequest request, GuaranteeFile guaranteeFile)
         {
@@ -113,7 +113,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guaranteeFile }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeFiles_Destroy([DataSourceRequest]DataSourceRequest request, GuaranteeFile guaranteeFile)
         {

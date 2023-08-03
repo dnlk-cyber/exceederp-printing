@@ -23,9 +23,24 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
+        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelOrderApprover, FinanceConstants.AccountPayableTravelOrder)]
         public ActionResult Index()
         {
             PopulateViewData();
+            var t = _db.ApTravelOrders.ToList();
+            foreach (var o in t)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == o.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    o.OrgStructureId = placement.OrgStructureId;
+                    o.BranchId = placement.BranchId;
+                    o.BusinessUnitId = placement.BusinessUnitId;
+                    _db.ApTravelOrders.Attach(o);
+                    _db.Entry(o).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+            }
             return View();
         }
 
@@ -45,28 +60,39 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             ViewData["Structure"] = structure;
 
             ViewData["Branches"] = branches;
+
+            var items = _db.ApSetupItems.ToList();
+            ViewData["Items"] = items;
         }
+        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelOrderApprover, FinanceConstants.AccountPayableTravelOrder)]
         public ActionResult ApTravelOrders_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            var sentRequestIds = _db.RequestesStatus
-                .Where(x => x.ReferenceType == "TravelOrder")
-                .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
-                .Select(x => x.RequestId).ToList();
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
             IQueryable<ApTravelOrder> aptravelorders = _db.ApTravelOrders
-                .Where(x => sentRequestIds.Contains(x.ApTravelOrderId))
-                .Where(x => mybraches.Contains(x.OrgBranchName));
+                .Where(x => mybraches.Contains(x.BranchId))
+                .Where(x => x.IsDepartmentOnlineApproved);
+
+            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            {
+                aptravelorders = aptravelorders.Where(x => x.IsBudgetApproved);
+            }
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                aptravelorders = aptravelorders.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
             DataSourceResult result = aptravelorders.ToDataSourceResult(request, apTravelOrder => new {
-                ApTravelOrderId = apTravelOrder.ApTravelOrderId,
-               
+                ApTravelOrderId = apTravelOrder.ApTravelOrderId,               
                 BranchId = apTravelOrder.BranchId,
+                BusinessUnitId = apTravelOrder.BusinessUnitId,
                 OrgStructureId = apTravelOrder.OrgStructureId,
                 PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                 RequestDate = apTravelOrder.RequestDate,
                 AdvanceAmount = apTravelOrder.AdvanceAmount,
-                IsPostedToSecondLedger = apTravelOrder.IsPostedToSecondLedger,
 
+                TransportReference = apTravelOrder.TransportReference,
                 Reference = apTravelOrder.Reference,
                 EmployeeId = apTravelOrder.EmployeeId,
                 IsForOther = apTravelOrder.IsForOther,
@@ -74,6 +100,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 ForwardedFrom = apTravelOrder.ForwardedFrom,
                 ForwardedTo = apTravelOrder.ForwardedTo,
                 IsFinalApproval = apTravelOrder.IsFinalApproval,
+                CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
+
+                IsBudgetApproved = apTravelOrder.IsBudgetApproved,
+                BudgetApprovedBy = apTravelOrder.BudgetApprovedBy,
+                BudgetApprovedTime = apTravelOrder.BudgetApprovedTime,
+
 
                 IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
                 IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
@@ -98,6 +130,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             return Json(result);
         }
 
+        [AuthorizeRoles(FinanceConstants.AccountPayableTravelOrder)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrders_Create([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
@@ -115,26 +148,36 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 {
                     
                     BranchId = apTravelOrder.BranchId,
+                    BusinessUnitId = apTravelOrder.BusinessUnitId,
                     OrgStructureId = apTravelOrder.OrgStructureId,
                     PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                     RequestDate = apTravelOrder.RequestDate.Date,
                     AdvanceAmount = apTravelOrder.AdvanceAmount,
-                    
+
+                    TransportReference = apTravelOrder.TransportReference,
                     Reference = apTravelOrder.Reference,
                     IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
                     IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
                     OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
                     EmployeeId = apTravelOrder.EmployeeId,
                     IsForOther = apTravelOrder.IsForOther,
-                    IsPostedToSecondLedger = apTravelOrder.IsPostedToSecondLedger,
+                    
 
                     Status = apTravelOrder.Status,
+
                     ForwardedFrom = User.Identity.Name,
                     ForwardedTo = User.Identity.Name,
+                    IsFinalApproval = apTravelOrder.IsFinalApproval,
+                    CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
+
+                    IsBudgetApproved = apTravelOrder.IsBudgetApproved,
+                    BudgetApprovedBy = apTravelOrder.BudgetApprovedBy,
+                    BudgetApprovedTime = apTravelOrder.BudgetApprovedTime,
 
                     IsOnlineApproved = apTravelOrder.IsOnlineApproved,
                     OnlineApprovedBy = apTravelOrder.OnlineApprovedBy,
                     OnlineApprovedTime = apTravelOrder.OnlineApprovedTime,
+
                     IsVoid = apTravelOrder.IsVoid,
                     VoidBy = apTravelOrder.VoidBy,
                     VoidTime = apTravelOrder.VoidTime,
@@ -160,6 +203,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             return Json(new[] { apTravelOrder }.ToDataSourceResult(request, ModelState));
         }
 
+        [AuthorizeRoles(FinanceConstants.AccountPayableTravelOrder)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrders_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
@@ -170,22 +214,30 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     ApTravelOrderId = apTravelOrder.ApTravelOrderId,
                    
                     BranchId = apTravelOrder.BranchId,
+                    BusinessUnitId = apTravelOrder.BusinessUnitId,
                     OrgStructureId = apTravelOrder.OrgStructureId,
                     PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                     RequestDate = apTravelOrder.RequestDate,
                     AdvanceAmount = apTravelOrder.AdvanceAmount,
-                    
+
+                    TransportReference = apTravelOrder.TransportReference,
                     Reference = apTravelOrder.Reference,
                     EmployeeId = apTravelOrder.EmployeeId,
                     IsForOther = apTravelOrder.IsForOther,
-                    IsPostedToSecondLedger = apTravelOrder.IsPostedToSecondLedger,
+
+                    ForwardedFrom = apTravelOrder.ForwardedFrom,
+                    ForwardedTo = apTravelOrder.ForwardedTo,
+                    IsFinalApproval = apTravelOrder.IsFinalApproval,
+                    CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
+
+                    IsBudgetApproved = apTravelOrder.IsBudgetApproved,
+                    BudgetApprovedBy = apTravelOrder.BudgetApprovedBy,
+                    BudgetApprovedTime = apTravelOrder.BudgetApprovedTime,
 
                     IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
                     IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
                     OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
                     Status = apTravelOrder.Status,
-                    ForwardedFrom = apTravelOrder.ForwardedFrom,
-                    ForwardedTo = apTravelOrder.ForwardedTo,
                     IsOnlineApproved = apTravelOrder.IsOnlineApproved,
                     OnlineApprovedBy = apTravelOrder.OnlineApprovedBy,
                     OnlineApprovedTime = apTravelOrder.OnlineApprovedTime,
@@ -214,6 +266,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             return Json(new[] { apTravelOrder }.ToDataSourceResult(request, ModelState));
         }
 
+        [AuthorizeRoles(FinanceConstants.AccountPayableTravelOrder)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrders_Destroy([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
@@ -224,11 +277,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     ApTravelOrderId = apTravelOrder.ApTravelOrderId,
                    
                     BranchId = apTravelOrder.BranchId,
+                    BusinessUnitId = apTravelOrder.BusinessUnitId,
                     OrgStructureId = apTravelOrder.OrgStructureId,
                     PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                     RequestDate = apTravelOrder.RequestDate,
                     AdvanceAmount = apTravelOrder.AdvanceAmount,
-                    IsPostedToSecondLedger = apTravelOrder.IsPostedToSecondLedger,
+                    
 
                     Reference = apTravelOrder.Reference,
                     IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
@@ -344,13 +398,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();
                 #region approval workflow
-                bool isNewRecord = true;
-                var validations = record.ApTravelOrderValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
-                if (validations.Any())
-                    isNewRecord = false;
-                decimal docamount = record.AdvanceAmount;
-                int docid = record.ApTravelOrderId;
-                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", User.Identity.Name, ApprovalDocumentType.ApTravelOrder, isNewRecord);
+                //bool isNewRecord = true;
+                //var validations = record.ApTravelOrderValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+                //if (validations.Any())
+                //    isNewRecord = false;
+                //decimal docamount = record.AdvanceAmount;
+                //int docid = record.ApTravelOrderId;
+                //DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", User.Identity.Name, ApprovalDocumentType.ApTravelOrder, isNewRecord);
                 #endregion
 
                 var formattedData = new

@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ProformTechnicals_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<ProformTechnical> proformtechnicals = _db.ProformTechnicals.Where(x => x.ProformaPurchaseID == id).OrderBy(x=>x.ItmCode).ThenByDescending(x=>x.Result);
@@ -47,7 +47,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformTechnicals_Create(int id,[DataSourceRequest]DataSourceRequest request, ProformTechnical proformTechnical)
         {
@@ -123,7 +123,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformTechnical }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformTechnicals_Update([DataSourceRequest]DataSourceRequest request, ProformTechnical proformTechnical)
         {
@@ -252,7 +252,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformTechnical }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformTechnicals_Destroy([DataSourceRequest]DataSourceRequest request, ProformTechnical proformTechnical)
         {

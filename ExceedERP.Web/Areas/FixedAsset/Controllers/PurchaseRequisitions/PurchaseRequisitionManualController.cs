@@ -74,7 +74,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
             //new 
             int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
             {
@@ -86,18 +86,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.OrgStructureId == userworkunit || x.CreatedBy == User.Identity.Name);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover))
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit);
             }
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover))
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name);
             }

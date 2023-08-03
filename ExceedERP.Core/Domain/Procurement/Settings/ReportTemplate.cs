@@ -1,3 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Procurement.Settings;
+
 namespace ExceedERP.Core.Domain.Procurement.Settings
 {
     public class ReportTemplate

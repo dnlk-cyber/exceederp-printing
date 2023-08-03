@@ -35,8 +35,7 @@ namespace ExceedERP.Core.Domain.Finance.GL
         public DateTime EffectiveDate { get; set; }
         public string Posting { get; set; }
         public bool isReversed { get; set; }
-        public bool isPosted { get; set; }
-        public bool IsPostedToSecondLedger { get; set; }
+        public bool isPosted { get; set; }      
         public string PostedBy { get; set; }
         public DateTime? PostedTime { get; set; }
         [NotMapped]

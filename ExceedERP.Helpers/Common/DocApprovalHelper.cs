@@ -10,7 +10,17 @@ namespace ExceedERP.Helpers.Common
 {
     public static class DocApprovalHelper
     {
-         public static bool CanOwnerApprove(ApprovalDocumentType doctype)
+
+        public static ApprovalHierarchy HierarchyType(ApprovalDocumentType doctype)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var rule = db.DocumentApprovalRules.FirstOrDefault(x => x.DocumentType == doctype);
+            if (rule != null)
+                return rule.HierarchyType;
+            else
+                return ApprovalHierarchy.Placement_Hierarchy;
+        }
+        public static bool CanOwnerApprove(ApprovalDocumentType doctype)
         {
             ExceedDbContext db = new ExceedDbContext();
             var rule=db.DocumentApprovalRules.FirstOrDefault(x => x.DocumentType == doctype);
@@ -24,14 +34,34 @@ namespace ExceedERP.Helpers.Common
             return false;
         }
 
-        public static string GetJobInformation( int empid)
+        public static int GetJobInformation( int empid)
         {
             ExceedDbContext db = new ExceedDbContext();
             var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
 
             if (placement != null)
-                return placement.LookupId.ToString();
-            return "";
+                return placement.LookupId;
+            return 0;
+        }
+
+        public static int GetEmployeeWithJobTitle(int titleId,int branchid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var placements = db.Placements.Where(x => x.isCurrent && x.LookupId == titleId).ToList();
+
+            if (placements.Any())
+            {
+                var specificBranch = placements.Where(x => x.BranchId == branchid).FirstOrDefault();
+                if (specificBranch != null)
+                {
+                    return specificBranch.EmployeeId;
+                }
+                else
+                {
+                    return placements.FirstOrDefault().EmployeeId;
+                }
+            }
+            return 0;
         }
 
         //new
@@ -45,13 +75,13 @@ namespace ExceedERP.Helpers.Common
             return 0;
         }
 
-        public static AssignApprovalGroupAssignment GetApprovalAssignmentForJob(string job, ApprovalDocumentType doctype,int branchid)
+        public static AssignApprovalGroupAssignment GetApprovalAssignmentForJob(int job, ApprovalDocumentType doctype,int branchid)
         {
             ExceedDbContext db = new ExceedDbContext();
             var approvalassignment = db.AssignApprovalGroupAssignments
                 .Where(x=>x.DocumentType==doctype)
                 .Where(x=>x.ApprovalGroup.OpertatingUnit==branchid)//new
-                .Where(x => x.AssignApprovalGroup.OpertatingUnit == branchid.ToString())//new
+                .Where(x => x.AssignApprovalGroup.OpertatingUnit == branchid)//new
                 .FirstOrDefault(x => x.AssignApprovalGroup.Job == job);
             return approvalassignment;
         }
@@ -108,9 +138,9 @@ namespace ExceedERP.Helpers.Common
             if (docuapprovalrule != null)
                 return docuapprovalrule.ForwardMethod;
             return ForwardMethod.Hierarchy;
-        }
+        }   
 
-        public static int GetNextSupervisor(int empid,int branchid)
+        public static int GetNextSupervisor(int empid, int branchid)
         {
             ExceedDbContext db = new ExceedDbContext();
             int nextempid = 0;
@@ -124,15 +154,15 @@ namespace ExceedERP.Helpers.Common
                         db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == currentWorkunit.Parent);
                     var headPlacement = db.Placements
                         .Where(x => x.BranchId == branchid)//new
-                        .FirstOrDefault(x =>x.isCurrent && x.IsHead && x.OrgStructureId == parentworkunit.OrgStructureId);
+                        .FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == parentworkunit.OrgStructureId);
                     if (headPlacement != null)
                         nextempid = headPlacement.EmployeeId;
                 }
                 else
                 {
                     var head = db.Placements
-                        .Where(x=>x.BranchId==branchid)//new
-                        .FirstOrDefault(x =>x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
+                        .Where(x => x.BranchId == branchid)//new
+                        .FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
                     if (head != null)
                     {
                         nextempid = head.EmployeeId;
@@ -142,5 +172,52 @@ namespace ExceedERP.Helpers.Common
 
             return nextempid;
         }
+
+        //ver new
+        public static bool IsEmployeeWithinLimit(int empId, ApprovalDocumentType doctype, decimal docAmount,int branchid )
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            AssignApprovalGroupAssignment assignment = null;
+            var specifiEmpAssignment = db.AssignApprovalGroupAssignments
+            .Where(x => x.DocumentType == doctype)
+            .Where(x => x.ApprovalGroup.OpertatingUnit == branchid)//new
+            .Where(x => x.AssignApprovalGroup.OpertatingUnit == branchid)//new
+            .FirstOrDefault(x => x.AssignApprovalGroup.EmployeeId == empId);
+
+            if(specifiEmpAssignment == null)
+            {
+                var placement = db.Placements.Where(x => x.EmployeeId == empId && x.isCurrent).FirstOrDefault();
+                if (placement != null)
+                {
+                    var jobTitleAssignment = db.AssignApprovalGroupAssignments
+                   .Where(x => x.DocumentType == doctype)
+                   .Where(x => x.ApprovalGroup.OpertatingUnit == branchid)//new
+                   .Where(x => x.AssignApprovalGroup.OpertatingUnit == branchid)//new
+                   .FirstOrDefault(x => x.AssignApprovalGroup.Job == placement.LookupId);
+                    if (jobTitleAssignment != null)
+                        assignment = jobTitleAssignment;
+                }
+            }
+            else
+            {
+                assignment = specifiEmpAssignment;
+            }
+
+            if(assignment!=null)
+            {
+                var approvalGroup = GetApprovalGroupForApprovalAssignment(assignment);
+                bool withinAmountLimit = IsApprovalGroupWithinAmountLimit(approvalGroup, docAmount);
+                bool withinAccountLimit = IsApprovalGroupWithinAccountLimit(approvalGroup, "1000");
+
+                return (withinAccountLimit && withinAmountLimit);
+            }
+            else
+            {
+                //can't even approve
+            }
+
+            return true;
+        }
+
     }
 }

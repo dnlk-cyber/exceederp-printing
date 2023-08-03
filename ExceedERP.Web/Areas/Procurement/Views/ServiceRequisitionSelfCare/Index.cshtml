@@ -5,7 +5,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Service Purchase Requisition</legend>
+<legend>Self Service - Service Purchase Requisition</legend>
 @(Html.Kendo().Grid<PurchaseRequisition>()
       .Name("grid")
       .Columns(columns =>
@@ -47,7 +47,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+      
           
       .Events(x => x.DataBound("onDataBoundMasterServiceRequisition"))
       .DataSource(dataSource => dataSource
@@ -64,6 +64,8 @@
               model.Field(p => p.OrgStructureId).Editable(false);
               model.Field(p => p.ForBranchId).Editable(false);
               model.Field(p => p.PreviousProcurementMethod).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               //model.Field(p => p.EmployeeId).Editable(false);
               //model.Field(p => p.BranchId).Editable(false);
               //model.Field(p => p.ProcurementOfficer).Editable(false);
@@ -414,7 +416,7 @@
     function SelectApprover(e) {
 
         supplierTextBox = $(e).prev('input').attr('id');
-        popup = window.open('/Common/GlobalDataProvider/GetFixedAssetSecondApproverSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
+        popup = window.open('/Common/GlobalDataProvider/GetServiceRequisitionSecondApproverSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
         popup.focus();
         return false;
     }

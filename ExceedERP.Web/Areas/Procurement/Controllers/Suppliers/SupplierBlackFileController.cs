@@ -20,7 +20,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index()
         {
             return View();
@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierBlackFiles_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<SupplierBlackFile> supplierBlackFiles = db.SupplierBlackFiles.Where(x=>x.SupplierBlackFileId==id);
@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierBlackFiles_Create([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file, int id)
         {
@@ -89,7 +89,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierBlackFiles_Update([DataSourceRequest]DataSourceRequest request, SupplierBlackFile supplierBlackFile)
         {
@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierBlackFile }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierBlackFiles_Destroy([DataSourceRequest]DataSourceRequest request, SupplierBlackFile supplierBlackFile)
         {

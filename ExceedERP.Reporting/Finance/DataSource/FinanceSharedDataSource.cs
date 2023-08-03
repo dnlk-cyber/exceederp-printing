@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Reporting.Finance.DataSource
@@ -15,10 +16,13 @@ namespace ExceedERP.Reporting.Finance.DataSource
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<GLChartOfAccountLocation> BranchList()
+        public List<GLChartOfAccountSegment> BranchList()
         {
-            List<GLChartOfAccountLocation> list = new List<GLChartOfAccountLocation>();
-            list.AddRange(_db.GLChartOfAccountLocations.ToList());
+            List<GLChartOfAccountSegment> list = new List<GLChartOfAccountSegment>();
+
+            var locationSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var glChartOfAccountLocations = _db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            list.AddRange(glChartOfAccountLocations.ToList());
             return list;
         }
 

@@ -44,7 +44,7 @@
       .Scrollable()
       .Sortable()
       .Filterable()
-     
+
 
 
       .Events(x => x.DataBound("onDataBoundMasterPurchase"))
@@ -62,6 +62,7 @@
               model.Field(p => p.StoreRequisitionID).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
               model.Field(p => p.EmployeeId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.BranchId).Editable(false);
               model.Field(p => p.ReferenceNo).Editable(false);
               model.Field(p => p.ModelNo).Editable(false);
@@ -235,6 +236,7 @@
                                                                                                                   columns.Bound(c => c.UoM).Width(100);
                                                                                                                   columns.Bound(c => c.Quantity).Width(100);
                                                                                                                   columns.Bound(c => c.ItemSpecification).Width(150);
+                                                                                                                  columns.Bound(c => c.BudgetCode).Width(70);
                                                                                                                   columns.Command(command =>
                                                                                                                   {
                                                                                                                       //command.Edit();
@@ -335,7 +337,7 @@
                                                                                                                   .Columns(columns =>
                                                                                                                   {
                                                                                                                       columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("ID").Width(30);
-                                                                                                                      columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(140).EditorTemplateName("SubordinatePurchaserSelector");
+                                                                                                                      columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(140).EditorTemplateName("SubordinatePurchaserSelector");
                                                                                                                       columns.Bound(c => c.PurchaseCategory).EditorTemplateName("PurchaseCategory").Width(110);
                                                                                                                       columns.Bound(c => c.ProcurementMethod).EditorTemplateName("ProcurementMethod").Width(110);
                                                                                                                       columns.Bound(c => c.TenderType).EditorTemplateName("TenderType").Width(110);

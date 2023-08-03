@@ -28,6 +28,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 ApTravelOrderAdvancePaymentId = apTravelOrderAdvancePayment.ApTravelOrderAdvancePaymentId,
                 ApTravelOrderId = apTravelOrderAdvancePayment.ApTravelOrderId,
                 Type = apTravelOrderAdvancePayment.Type,
+                ItemName = apTravelOrderAdvancePayment.ItemName,
                 Description = apTravelOrderAdvancePayment.Description,
                 UoM = apTravelOrderAdvancePayment.UoM,
                 UnitPrice = apTravelOrderAdvancePayment.UnitPrice,
@@ -53,6 +54,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 {
                     ApTravelOrderId = id,
                     Type = apTravelOrderAdvancePayment.Type,
+                    ItemName = apTravelOrderAdvancePayment.ItemName,
                     Description = apTravelOrderAdvancePayment.Description,
                     UoM = apTravelOrderAdvancePayment.UoM,
                     UnitPrice = apTravelOrderAdvancePayment.UnitPrice,
@@ -95,6 +97,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     ApTravelOrderAdvancePaymentId = apTravelOrderAdvancePayment.ApTravelOrderAdvancePaymentId,
                     ApTravelOrderId=apTravelOrderAdvancePayment.ApTravelOrderId,
                     Type = apTravelOrderAdvancePayment.Type,
+                    ItemName = apTravelOrderAdvancePayment.ItemName,
                     Description = apTravelOrderAdvancePayment.Description,
                     UoM = apTravelOrderAdvancePayment.UoM,
                     UnitPrice = apTravelOrderAdvancePayment.UnitPrice,
@@ -132,6 +135,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 {
                     ApTravelOrderAdvancePaymentId = apTravelOrderAdvancePayment.ApTravelOrderAdvancePaymentId,
                     Type = apTravelOrderAdvancePayment.Type,
+                    ItemName = apTravelOrderAdvancePayment.ItemName,
                     Description = apTravelOrderAdvancePayment.Description,
                     UoM = apTravelOrderAdvancePayment.UoM,
                     UnitPrice = apTravelOrderAdvancePayment.UnitPrice,

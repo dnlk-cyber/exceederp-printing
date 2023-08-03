@@ -82,8 +82,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.SalesOrder
                 {
                     if (arSalesOrderValidation.Status == ApprovalStatuses.Approve)
                     {
-                        PostToSecondaryLedger(id);
-                        record.IsPostedToSecondLedger = true;
+                        
+                        
                         record.Status = "Approved";
                         record.IsOnlineApproved = true;
                         record.OnlineApprovedBy = User.Identity.Name;
@@ -188,52 +188,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.SalesOrder
             return Json(new[] { arSalesOrderValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        private void PostToSecondaryLedger(int id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            string user = User.Identity.Name;
-            var record = _db.ArSalesOrders.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName = "",
-                    JournalNumber = "",
-                    Description = "",
-                    CategoryName = "",
-                    SourcesName = "AR Sales Order",
-                    EffectiveDate = record.OrderDate,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.OrderDate),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.OrderDate),
-                    PostingSource = JournalSources.Sales,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.ArSalesOrderDistributions.Where(x => x.ArSalesOrderId == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.ArSalesOrderDistributionId,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-
-                secondLedgerHelper.PostToSecondLedger(ledger, user);
-            }
-        }
+        
         void TransferToStandardCollection(ArSalesOrder arSalesOrder)
         {
             throw new NotImplementedException();

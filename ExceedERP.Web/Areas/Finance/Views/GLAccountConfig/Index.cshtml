@@ -1,0 +1,58 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+<legend>GL Account config</legend>
+@(Html.Kendo().Grid<GLAccountConfig>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).Width(150); 
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);        
+          columns.Bound(c => c.Description).Width(220);         
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              //toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.GLAccountConfigId))
+       
+          .Read(read => read.Action("GLAccountConfigs_Read", "GLAccountConfig"))
+          .Create(create => create.Action("GLAccountConfigs_Create", "GLAccountConfig"))
+          .Update(update => update.Action("GLAccountConfigs_Update", "GLAccountConfig"))
+          .Destroy(destroy => destroy.Action("GLAccountConfigs_Destroy", "GLAccountConfig"))
+      ))
+
+
+
+

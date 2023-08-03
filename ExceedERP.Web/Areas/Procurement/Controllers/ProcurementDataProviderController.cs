@@ -15,6 +15,8 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Microsoft.Ajax.Utilities;
 using System.Data.Entity;
+using ExceedERP.Core.Domain.Finance.AP;
+using ExceedERP.Core.Domain.Finance;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
@@ -292,7 +294,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(prlist.Select(i => new
                 {
                     PurchaseRequisitionAssignmentId = i.PurchaseRequisitionAssignmentId,
-                    Description = i.PurchaseRequisitionID + "-" + i.PurchaseRequisitionAssignmentId
+                    Description = "PR-"+i.PurchaseRequisitionID + "-Assignment" + i.PurchaseRequisitionAssignmentId
                  }),
                 JsonRequestBehavior.AllowGet);
         }
@@ -323,10 +325,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         public JsonResult GetPurchasers()
         {
             var purchasers = db.Purchasers.Select(x => x.EmployeeId).ToList();
-            var employees = db.Person_Employee.Where(x => purchasers.Contains(x.EmployeeId)).AsQueryable();
+            var employees = db.Person_Employee.Where(x => purchasers.Contains(x.EmployeeId)).ToList();
             return Json(employees.Select(p => new
                 {
-                    Name = p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                    Name = p.EmployeeCode + " " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
                     Code = p.EmployeeId
                 }),
                 JsonRequestBehavior.AllowGet);
@@ -560,246 +562,260 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             }), JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult GetPurchaseReferences(string purReference,string text)//new optimized,for appayment advance
-        {
-            List<SelectorVm> list = new List<SelectorVm>();
 
-            if (purReference == "Purchase Order")
-            {
-                var purchaseOrders = db.PurchaseOrders                   
-                                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                                    .Where(x => x.IsPaid == false)
-                                    //.Include(x => x.PurchaseOrderItem)
-                                    .Select(x => new
-                                    {   x.PurchaseOrderID,
-                                        x.SupplierName,
-                                        //PurchaseOrderItem=x.PurchaseOrderItem
-                                    })
-                                    .AsNoTracking()
-                                    .AsQueryable();
+       
+        
+        //public JsonResult GetPurchaseReferences_old1(string purReference,string text)//new optimized,for appayment advance
+        //{
+        //    List<SelectorVm> list = new List<SelectorVm>();
 
-                if (!String.IsNullOrWhiteSpace(text))
-                    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
-                                                               ||x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+        //    if (purReference == "Purchase Order")
+        //    {
+        //        var purchaseOrders = db.PurchaseOrders                   
+        //                            .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+        //                            .Where(x => x.IsPaid == false)                                    
+        //                            .Select(x => new
+        //                            {   x.PurchaseOrderID,
+        //                                x.SupplierName,
+        //                                PurchaseOrderItem=x.PurchaseOrderItem,
+        //                                PoPaymentSchedule=x.PoPaymentSchedule
+        //                            })
+        //                            .AsNoTracking()
+        //                            .AsQueryable();
 
-                foreach (var po in purchaseOrders)
-                {
-                    #region check over advance taken
+        //        if (!String.IsNullOrWhiteSpace(text))
+        //            purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
+        //                                                       ||x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
 
-                    //var advanceTaken = db.APPayments
-                    //    .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
-                    //    .Where(x => x.PoType == "Purchase Order")
-                    //    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                    //    .Select(x=>new {x.PrepaymentAmount})
-                    //    .AsQueryable();
-                    //if (advanceTaken.Any())
-                    //{
-                    //    //decimal advanceAmount = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-                    //    //    .Select(x=>new{x.UnitPrice,x.Quantity}).ToList()
-                    //    //    .Sum(x => x.UnitPrice * x.Quantity);
-                    //    decimal advanceAmount = po.PurchaseOrderItem.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-                    //        .Select(x => new { x.UnitPrice, x.Quantity }).ToList()
-                    //        .Sum(x => x.UnitPrice * x.Quantity);
-                    //    decimal advanceTakenAmount=advanceTaken.Sum(x => x.PrepaymentAmount);
-                    //    if (advanceTakenAmount >= advanceAmount)
-                    //        continue;
-                    //}
+        //        foreach (var po in purchaseOrders)
+        //        {
+        //            #region check if po has advance payment schedule
+        //            var advanceAllowed = po.PoPaymentSchedule
+        //                .Where(x => x.PaymentType == PaymentType.Advance)
+        //                .Where(x => x.Percentage > 0).ToList();
 
-                    #endregion
+        //            if (!advanceAllowed.Any())
+        //                continue;
+                        
+        //            #endregion
+        //            #region check over advance taken
 
-                    var record = new SelectorVm
-                    {
-                        Name = po.PurchaseOrderID + "_" + po.SupplierName,
-                        Code = po.PurchaseOrderID.ToString()
-                    };
+        //            var advanceTaken = db.APPayments
+        //                .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
+        //                .Where(x => x.PoType == "Purchase Order")
+        //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+        //                .Select(x => new { x.PrepaymentAmount })
+        //                .AsQueryable();
+        //            if (advanceTaken.Any())
+        //            {                        
+        //                decimal amount = po.PurchaseOrderItem.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
+        //                    .Select(x => new { x.UnitPrice, x.Quantity,x.Total }).ToList()
+        //                    .Sum(x => x.Total);
 
-                    list.Add(record);
+        //                decimal totalAadvanceAmount = (amount*advanceAllowed.Sum(x=>x.Percentage))/100;
+        //                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
+        //                if (advanceTakenAmount >= totalAadvanceAmount)
+        //                    continue;
+        //            }
 
-                }
-            }
+        //            #endregion
 
-            else if (purReference == "Tender Award")
-            {
-                var contracts = db.ContractManagements.Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                            .Where(x => x.IsPaid == false)
-                            //.Where(x=>x.ProcurementRefNo==420)//test
-                            .Select(x => new { x.ContractManagementID, x.SupplierName, x.ProcurementRefNo, x.TenderRefNo }).AsNoTracking().AsQueryable();
+        //            var record = new SelectorVm
+        //            {
+        //                Name = po.PurchaseOrderID + "_" + po.SupplierName,
+        //                Code = po.PurchaseOrderID.ToString()
+        //            };
 
-                if (!String.IsNullOrWhiteSpace(text))
-                    contracts = contracts.Where(x => x.ProcurementRefNo.ToString() == text
-                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())
-                                               || x.TenderRefNo.ToUpper().Contains(text.ToUpper())).AsQueryable();
+        //            list.Add(record);
 
-                foreach (var contract in contracts)
-                {
-                    #region check over advance taken
+        //        }
+        //    }
 
-                    //var advanceTaken = db.APPayments
-                    //    .Where(x => x.PurchaseReference == contract.ProcurementRefNo.ToString())
-                    //    .Where(x => x.PoType == "Tender Award")
-                    //    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                    //    .ToList();
-                    //if (advanceTaken.Any())
-                    //{
-                    //    decimal advanceAmount = 0;
+        //    else if (purReference == "Tender Award")
+        //    {
+        //        var contracts = db.ContractManagements.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+        //                    .Where(x => x.IsPaid == false)
+        //                    //.Where(x=>x.ProcurementRefNo==420)//test
+        //                    .Select(x => new
+        //                    { x.ContractManagementID,
+        //                        x.SupplierName,
+        //                        x.ProcurementRefNo,
+        //                        x.TenderRefNo,
+        //                        ContractManagementItems=x.ContractManagementItem,
+        //                        ContractPaymentSchedules=x.ContractPaymentSchedules
+        //                    })
+        //                        .AsNoTracking()
+        //                        .AsQueryable();
 
-                    //    var items = db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).ToList();
+        //        if (!String.IsNullOrWhiteSpace(text))
+        //            contracts = contracts.Where(x => x.ProcurementRefNo.ToString() == text
+        //                                       || x.SupplierName.ToUpper().Contains(text.ToUpper())
+        //                                       || x.TenderRefNo.ToUpper().Contains(text.ToUpper())).AsQueryable();
 
-                    //    var schedule = db.ContractPaymentSchedules
-                    //        .Where(x => x.ContractManagementID == contract.ContractManagementID)
-                    //        .FirstOrDefault(x => x.PaymentType == PaymentType.Advance);
+        //        foreach (var contract in contracts)
+        //        {
+        //            #region check if contract has advance payment schedule
+        //            var advanceAllowed = contract.ContractPaymentSchedules
+        //                .Where(x => x.PaymentType == PaymentType.Advance)
+        //                .Where(x => x.Percentage > 0).ToList();
 
-                    //    //foreach (var item in items)
-                    //    //{
-                    //    //    //advanceAmount = advanceAmount + (item.Quantity + item.Addition + item.Omission) * item.UnitPrice;
+        //            if (!advanceAllowed.Any())
+        //                continue;
+        //            #endregion
+        //            #region check over advance taken
 
-                    //    //}
-                    //    advanceAmount = items.Sum(x=>x.Total);
+        //            var advanceTaken = db.APPayments
+        //                 .Where(x => x.PurchaseReference == contract.ProcurementRefNo.ToString())
+        //                .Where(x => x.PoType == "Tender Award")
+        //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+        //                .Select(x => new { x.PrepaymentAmount })
+        //                .AsQueryable();
+        //            if (advanceTaken.Any())
+        //            {
+        //                decimal amount = contract.ContractManagementItems.Sum(x => x.Total);
+        //                decimal totalAadvanceAmount = (amount * advanceAllowed.Sum(x => x.Percentage)) / 100;
+        //                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
+        //                if (advanceTakenAmount >= totalAadvanceAmount)
+        //                    continue;
+        //            }
 
-                    //    if (schedule != null && schedule.Percentage > 0)
-                    //        advanceAmount = advanceAmount * schedule.Percentage / 100;
-                    //    decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                    //    if (advanceTakenAmount >= advanceAmount)
-                    //        continue;
-                    //}
+        //            #endregion
 
-                    #endregion
+        //            var record = new SelectorVm
+        //            {
+        //                Name = contract.TenderRefNo + "_" + contract.SupplierName,
+        //                Code = contract.ProcurementRefNo.ToString()
+        //            };
 
-                    var record = new SelectorVm
-                    {
-                        Name = contract.TenderRefNo + "_" + contract.SupplierName,
-                        Code = contract.ProcurementRefNo.ToString()
-                    };
+        //            list.Add(record);
+        //        }
+        //    }
 
-                    list.Add(record);
-                }
-            }
+        //    return Json(list.Select(c => new
+        //    {
+        //        Name = c.Name,
+        //        Code = c.Code
+        //    }), JsonRequestBehavior.AllowGet);
 
-            return Json(list.Select(c => new
-            {
-                Name = c.Name,
-                Code = c.Code
-            }), JsonRequestBehavior.AllowGet);
+        //}
 
-        }
+        //public JsonResult GetPurchaseReferences_old(string purReference, string text)//for appayment advance
+        //{
+        //    List<SelectorVm> list = new List<SelectorVm>();
 
-        public JsonResult GetPurchaseReferences_old(string purReference, string text)//for appayment advance
-        {
-            List<SelectorVm> list = new List<SelectorVm>();
+        //    if (purReference == "Purchase Order")
+        //    {
+        //        var purchaseOrders = db.PurchaseOrders
+        //            .Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
 
-            if (purReference == "Purchase Order")
-            {
-                var purchaseOrders = db.PurchaseOrders
-                    .Where(x => x.IsOnlineApproved && x.IsVoid == false).ToList();
+        //        if (!String.IsNullOrWhiteSpace(text))
+        //            purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
+        //                                                       || x.SupplierName.ToUpper().Contains(text.ToUpper())).ToList();
 
-                if (!String.IsNullOrWhiteSpace(text))
-                    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
-                                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())).ToList();
+        //        foreach (var po in purchaseOrders)
+        //        {
+        //            #region check over advance taken
 
-                foreach (var po in purchaseOrders)
-                {
-                    #region check over advance taken
+        //            var advanceTaken = db.APPayments
+        //                .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
+        //                .Where(x => x.PoType == "Purchase Order")
+        //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+        //                .ToList();
+        //            if (advanceTaken.Any())
+        //            {
+        //                decimal advanceAmount = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID).ToList()
+        //                    .Sum(x => x.UnitPrice * x.Quantity);
+        //                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
+        //                if (advanceTakenAmount > advanceAmount)
+        //                    continue;
+        //            }
 
-                    var advanceTaken = db.APPayments
-                        .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
-                        .Where(x => x.PoType == "Purchase Order")
-                        .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                        .ToList();
-                    if (advanceTaken.Any())
-                    {
-                        decimal advanceAmount = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID).ToList()
-                            .Sum(x => x.UnitPrice * x.Quantity);
-                        decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                        if (advanceTakenAmount > advanceAmount)
-                            continue;
-                    }
+        //            #endregion
 
-                    #endregion
+        //            var record = new SelectorVm
+        //            {
+        //                Name = po.PurchaseOrderID + "_" + po.SupplierName,
+        //                Code = po.PurchaseOrderID.ToString()
+        //            };
 
-                    var record = new SelectorVm
-                    {
-                        Name = po.PurchaseOrderID + "_" + po.SupplierName,
-                        Code = po.PurchaseOrderID.ToString()
-                    };
+        //            list.Add(record);
 
-                    list.Add(record);
+        //        }
+        //    }
 
-                }
-            }
-
-            else if (purReference == "Tender Award")
-            {
-                var tenders = db.Tenders.Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsCancelled == false).ToList();
+        //    else if (purReference == "Tender Award")
+        //    {
+        //        var tenders = db.Tenders.Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsCancelled == false).ToList();
 
 
-                foreach (var tender in tenders)
-                {
-                    var lots = db.Lots.Where(x => x.TenderID == tender.TenderID).ToList();
+        //        foreach (var tender in tenders)
+        //        {
+        //            var lots = db.Lots.Where(x => x.TenderID == tender.TenderID).ToList();
 
-                    foreach (var lot in lots)
-                    {
+        //            foreach (var lot in lots)
+        //            {
 
-                        var awards = db.BidAwardedSuppliers.Where(x => x.LotID == lot.LotID).ToList();//change to contract...add not transferred since awards can be transffered separately
-                        if (!String.IsNullOrWhiteSpace(text))
-                            awards = awards.Where(x => x.BidAwardedSupplierID.ToString() == text
-                                                       || x.SupplierName.ToUpper().Contains(text.ToUpper())
-                                                       || tender.TenderReference.ToUpper().Contains(text.ToUpper())).ToList();
-                        foreach (var award in awards)
-                        {
-                            #region check over advance taken
+        //                var awards = db.BidAwardedSuppliers.Where(x => x.LotID == lot.LotID).ToList();//change to contract...add not transferred since awards can be transffered separately
+        //                if (!String.IsNullOrWhiteSpace(text))
+        //                    awards = awards.Where(x => x.BidAwardedSupplierID.ToString() == text
+        //                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())
+        //                                               || tender.TenderReference.ToUpper().Contains(text.ToUpper())).ToList();
+        //                foreach (var award in awards)
+        //                {
+        //                    #region check over advance taken
 
-                            var advanceTaken = db.APPayments
-                                .Where(x => x.PurchaseReference == award.BidAwardedSupplierID.ToString())
-                                .Where(x => x.PoType == "Tender Award")
-                                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                                .ToList();
-                            if (advanceTaken.Any())
-                            {
-                                decimal advanceAmount = 0;
-                                var contract = db.ContractManagements.FirstOrDefault(x => x.ProcurementRefNo == award.BidAwardedSupplierID);
+        //                    var advanceTaken = db.APPayments
+        //                        .Where(x => x.PurchaseReference == award.BidAwardedSupplierID.ToString())
+        //                        .Where(x => x.PoType == "Tender Award")
+        //                        .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+        //                        .ToList();
+        //                    if (advanceTaken.Any())
+        //                    {
+        //                        decimal advanceAmount = 0;
+        //                        var contract = db.ContractManagements.FirstOrDefault(x => x.ProcurementRefNo == award.BidAwardedSupplierID);
 
-                                if (contract != null)
-                                {
-                                    var items = db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).ToList();
+        //                        if (contract != null)
+        //                        {
+        //                            var items = db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).ToList();
 
-                                    var schedule = db.ContractPaymentSchedules
-                                        .Where(x => x.ContractManagementID == contract.ContractManagementID)
-                                        .FirstOrDefault(x => x.PaymentType == PaymentType.Advance);
+        //                            var schedule = db.ContractPaymentSchedules
+        //                                .Where(x => x.ContractManagementID == contract.ContractManagementID)
+        //                                .FirstOrDefault(x => x.PaymentType == PaymentType.Advance);
 
-                                    foreach (var item in items)
-                                    {
-                                        advanceAmount = advanceAmount + (item.Quantity + item.Addition + item.Omission) * item.UnitPrice;
-                                    }
+        //                            foreach (var item in items)
+        //                            {
+        //                                advanceAmount = advanceAmount + (item.Quantity + item.Addition + item.Omission) * item.UnitPrice;
+        //                            }
 
-                                    if (schedule != null && schedule.Percentage > 0)
-                                        advanceAmount = advanceAmount * schedule.Percentage / 100;
-                                }
-                                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
-                                if (advanceTakenAmount > advanceAmount)
-                                    continue;
-                            }
+        //                            if (schedule != null && schedule.Percentage > 0)
+        //                                advanceAmount = advanceAmount * schedule.Percentage / 100;
+        //                        }
+        //                        decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
+        //                        if (advanceTakenAmount > advanceAmount)
+        //                            continue;
+        //                    }
 
-                            #endregion
+        //                    #endregion
 
-                            var record = new SelectorVm
-                            {
-                                Name = tender.TenderReference + "_" + lot.Description + "_" + award.SupplierName,
-                                Code = award.BidAwardedSupplierID.ToString()
-                            };
+        //                    var record = new SelectorVm
+        //                    {
+        //                        Name = tender.TenderReference + "_" + lot.Description + "_" + award.SupplierName,
+        //                        Code = award.BidAwardedSupplierID.ToString()
+        //                    };
 
-                            list.Add(record);
-                        }
-                    }
-                }
-            }
+        //                    list.Add(record);
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return Json(list.Select(c => new
-            {
-                Name = c.Name,
-                Code = c.Code
-            }), JsonRequestBehavior.AllowGet);
+        //    return Json(list.Select(c => new
+        //    {
+        //        Name = c.Name,
+        //        Code = c.Code
+        //    }), JsonRequestBehavior.AllowGet);
 
-        }
+        //}
 
         public JsonResult GetPreviousPurchaseReference(int procurementMethod)
 
@@ -927,7 +943,325 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
-        public JsonResult GetContractGrns(string id,string type)
+        public JsonResult GetPOandContractGrns(string id,string type)
+
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            int did = int.Parse(id);
+            var purchasePayment = db.PurchasePayments.Find(did);
+            if(purchasePayment!=null)
+            {
+                if(purchasePayment.Type=="Tender Award")
+                {
+                    var receiveType = db.ReceiveTypes.FirstOrDefault(x => x.Type == GoodReceiveType.Tender);
+                    if (type == "0")
+                    {
+                        #region grn stock 
+
+                        var stockReceives = db.GoodReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                            .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        foreach (var goodReceive in stockReceives)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Name = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId,
+                                Code = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId
+                            };
+
+                            list.Add(record);
+                        }
+
+                        #endregion
+                    }
+                    else if (type == "2")
+                    {
+                        #region grn service 
+
+                        var serviceReceives = db.ServiceReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                            .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        foreach (var serviceReceive in serviceReceives)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Name = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId,
+                                Code = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId
+                            };
+
+                            list.Add(record);
+                        }
+
+                        #endregion
+                    }
+                    else if (type == "1")
+                    {
+                        #region grn fixed asset 
+
+                        var fixedAssetReceives = db.FixedAssetReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                            .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        foreach (var fixedAssetReceive in fixedAssetReceives)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Name = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId,
+                                Code = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId
+                            };
+
+                            list.Add(record);
+                        }
+
+                        #endregion
+                    }
+                }
+
+                else if(purchasePayment.Type == "Purchase Order")
+                {
+                    var receiveType = db.ReceiveTypes.FirstOrDefault(x => x.Type == GoodReceiveType.PurchaseOrder);
+                    if (type == "0")
+                    {
+                        #region grn stock 
+
+                        var stockReceives = db.GoodReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                            .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        foreach (var goodReceive in stockReceives)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Name = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId,
+                                Code =  goodReceive.GoodReceiveId.ToString()
+                            };
+
+                            list.Add(record);
+                        }
+
+                        #endregion
+                    }
+                    else if (type == "2")
+                    {
+                        #region grn service 
+
+                        var serviceReceives = db.ServiceReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                            .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        foreach (var serviceReceive in serviceReceives)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Name = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId,
+                                Code =  serviceReceive.ServiceReceiveId.ToString()
+                            };
+
+                            list.Add(record);
+                        }
+
+                        #endregion
+                    }
+                    else if (type == "1")
+                    {
+                        #region grn fixed asset 
+
+                        var fixedAssetReceives = db.FixedAssetReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                            .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                            .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        foreach (var fixedAssetReceive in fixedAssetReceives)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Name = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId,
+                                Code = fixedAssetReceive.FixedAssetReceiveId.ToString()
+                            };
+
+                            list.Add(record);
+                        }
+
+                        #endregion
+                    }
+                }
+            }
+            
+
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult GetPOandContractGrnsForSettlement(string id, string type)
+
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            int did = int.Parse(id);
+            var settlement = db.ApPaymentSettlements.Find(did);
+            var settlementLine = db.ApPaymentSettlementLines.Where(x => x.ApPaymentSettlementId == settlement.ApPaymentSettlementId).FirstOrDefault();
+
+            if (settlementLine!=null && settlementLine.Source == SettlemetSource.Prepayment)
+            {
+                var prepayment = db.APPayments.Find(settlementLine.SourceId);
+                int purchasePayId = int.Parse(prepayment.PurchaseReference);
+                var purchasePayment = db.PurchasePayments.Find(purchasePayId);
+                if (purchasePayment != null)
+                {
+                    if (purchasePayment.Type == "Tender Award")
+                    {
+                        var receiveType = db.ReceiveTypes.FirstOrDefault(x => x.Type == GoodReceiveType.Tender);
+                        if (type == "0")
+                        {
+                            #region grn stock 
+
+                            var stockReceives = db.GoodReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                                .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                            foreach (var goodReceive in stockReceives)
+                            {
+                                var record = new SelectorVm
+                                {
+                                    Name = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId,
+                                    Code = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId
+                                };
+
+                                list.Add(record);
+                            }
+
+                            #endregion
+                        }
+                        else if (type == "2")
+                        {
+                            #region grn service 
+
+                            var serviceReceives = db.ServiceReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                                .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                            foreach (var serviceReceive in serviceReceives)
+                            {
+                                var record = new SelectorVm
+                                {
+                                    Name = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId,
+                                    Code = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId
+                                };
+
+                                list.Add(record);
+                            }
+
+                            #endregion
+                        }
+                        else if (type == "1")
+                        {
+                            #region grn fixed asset 
+
+                            var fixedAssetReceives = db.FixedAssetReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                                .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                            foreach (var fixedAssetReceive in fixedAssetReceives)
+                            {
+                                var record = new SelectorVm
+                                {
+                                    Name = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId,
+                                    Code = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId
+                                };
+
+                                list.Add(record);
+                            }
+
+                            #endregion
+                        }
+                    }
+
+                    else if (purchasePayment.Type == "Purchase Order")
+                    {
+                        var receiveType = db.ReceiveTypes.FirstOrDefault(x => x.Type == GoodReceiveType.PurchaseOrder);
+                        if (type == "0")
+                        {
+                            #region grn stock 
+
+                            var stockReceives = db.GoodReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                                .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                            foreach (var goodReceive in stockReceives)
+                            {
+                                var record = new SelectorVm
+                                {
+                                    Name = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId,
+                                    Code = goodReceive.GoodReceiveId.ToString()
+                                };
+
+                                list.Add(record);
+                            }
+
+                            #endregion
+                        }
+                        else if (type == "2")
+                        {
+                            #region grn service 
+
+                            var serviceReceives = db.ServiceReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                                .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                            foreach (var serviceReceive in serviceReceives)
+                            {
+                                var record = new SelectorVm
+                                {
+                                    Name = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId,
+                                    Code = serviceReceive.ServiceReceiveId.ToString()
+                                };
+
+                                list.Add(record);
+                            }
+
+                            #endregion
+                        }
+                        else if (type == "1")
+                        {
+                            #region grn fixed asset 
+
+                            var fixedAssetReceives = db.FixedAssetReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
+                                .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                            foreach (var fixedAssetReceive in fixedAssetReceives)
+                            {
+                                var record = new SelectorVm
+                                {
+                                    Name = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId,
+                                    Code = fixedAssetReceive.FixedAssetReceiveId.ToString()
+                                };
+
+                                list.Add(record);
+                            }
+
+                            #endregion
+                        }
+                    }
+                }
+
+            }
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        public JsonResult GetContractGrns(string id, string type)
 
         {
             List<SelectorVm> list = new List<SelectorVm>();
@@ -1007,5 +1341,73 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
+        public JsonResult GetPoContractData(string id,string type, string paymenttype)
+        {
+           
+            decimal amount = 0;
+            string supplierId = "";
+            string supplierName = "";
+            int did = int.Parse(id);
+
+            if(type=="Purchase Order")
+            {
+                var po = db.PurchaseOrders.Find(did);
+                var paymentSchedule = db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == did);
+                if (po != null)
+                {
+                    supplierId = po.SupplierId;
+                    supplierName = po.SupplierName;
+                }
+
+                if (paymentSchedule.Any())
+                {
+                    decimal sumAdvancePercent = 0;
+                    decimal sumPaymentPercent = 0;
+                    var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).Where(x => x.PurchaseOrderID == did).ToList();
+                    var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).Where(x => x.PurchaseOrderID == did).ToList();
+
+                    var items = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == did).ToList();
+                    if (items.Any())
+                        amount = items.Sum(x => x.SubTotal);
+
+                    if (advances.Any() && paymenttype == "0")
+                    {
+                        sumAdvancePercent = advances.Sum(x => x.Percentage);
+                        amount = amount * (sumAdvancePercent / 100);
+                    }
+
+                    else if (payments.Any() && paymenttype == "1")
+                    {
+                        sumPaymentPercent = payments.Sum(x => x.Percentage);
+                        amount = amount * (sumPaymentPercent / 100);
+                    }
+                    else
+                        amount = 0;
+
+                }
+            }
+
+            else if (type == "Tender Award")
+            {
+                var contract = db.ContractManagements.Find(did);
+                if (contract != null)
+                {
+                    supplierId = contract.SupplierId;
+                    supplierName = contract.SupplierName;
+                }
+
+                var items = db.ContractManagementItems.Where(x => x.ContractManagementID == did).ToList();
+                if (items.Any())
+                    amount = items.Sum(x => x.Total)- items.Sum(x => x.TaxAmount);
+            }
+
+            var formattedData = new
+            {               
+                PaymentAmount = amount,
+                SupplierId=supplierId,
+                SupplierName=supplierName
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
     }
 }

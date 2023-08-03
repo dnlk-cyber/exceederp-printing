@@ -10,7 +10,7 @@ namespace ExceedERP.Core.Domain.Procurement.PR
         public int PurchaseRequisitionAssignmentId { get; set; }
         public int PurchaseRequisitionID { get; set; }
         public virtual PurchaseRequisition PurchaseRequisition { get; set; }
-        [Display(Name = "Purchaser")]
+        [Display(Name = "Procurement Officer")]
         public int ProcurementOfficer { get; set; }
         [Display(Name = "Method")]
         public ProcurementMethod ProcurementMethod { get; set; }

@@ -233,7 +233,7 @@
                     #}#
                 </text>);
 
-                items.Add().Text("Revenue Distribution").Content(
+                @*items.Add().Text("Revenue Distribution").Content(
                 @<text>
                      #if(!IsOnlineTransferred)
                     {#
@@ -248,7 +248,7 @@
                     #} else if(!IsOnlineTransferred){#
                         @RevenueDistributionContentWithCrud()
                     #}#
-                </text>);
+                </text>);*@
         items.Add().Text("Validation").Content(
             @<text>
                  #if(IsOnlineApproved){#
@@ -369,7 +369,7 @@
                     @CostDistributionContentWithCrud()
                 #}#
             </text>);
-            items.Add().Text("Revenue Distribution").Content(
+            @*items.Add().Text("Revenue Distribution").Content(
             @<text>
                  #if(!IsOnlineTransferred)
                     {#
@@ -384,7 +384,7 @@
                 #} else if(!IsOnlineTransferred){#
                     @RevenueDistributionContentWithCrud()
                 #}#
-            </text>);
+            </text>);*@
 
             items.Add().Text("Validation").Content(
             @<text>
@@ -502,7 +502,7 @@
                     @CostDistributionContentWithCrud()
                 #}#
             </text>);
-            items.Add().Text("Revenue Distribution").Content(
+            @*items.Add().Text("Revenue Distribution").Content(
             @<text>
                  #if(!IsOnlineTransferred)
                     {#
@@ -517,7 +517,7 @@
                 #} else if(!IsOnlineTransferred){#
                     @RevenueDistributionContentWithCrud()
                 #}#
-            </text>);
+            </text>);*@
 
             items.Add().Text("Validation").Content(
             @<text>
@@ -549,8 +549,11 @@
                 row.find(".k-grid-edit").hide();
                 row.find(".k-grid-delete").hide();
                 //row.find(".k-grid-customAction").text('ይከፈት');
-                row.addClass("k-state-Approved");
-            } else if (dataItem.IsSendForApproval) {
+                if (dataItem.Source == 2 && dataItem.IsJobOrderClosed) {
+                    row.addClass("k-state-JobOrder-Closed");
+                } else {
+                    row.addClass("k-state-Approved");
+                }            } else if (dataItem.IsSendForApproval) {
                 row.find(".k-grid-edit").hide();
                 row.find(".k-grid-delete").hide();
             }
@@ -672,8 +675,10 @@
         background: #b7ff9e;
         color: #040000;
     }
-
-
+    .k-grid table tr.k-state-JobOrder-Closed {
+        background: #83fccf;
+        color: #040000;
+    }
     .k-grid table tr.k-state-Rejected {
         background: #fcabab;
         color: #040000;
@@ -842,7 +847,7 @@
                         .Refresh(true)
                         .PageSizes(true)
                         .ButtonCount(5))
-                    //.Groupable()
+                    //
                     .Sortable(sortable =>
                     {
                         sortable.SortMode(GridSortMode.SingleColumn);
@@ -898,7 +903,7 @@
                         .Refresh(true)
                         .PageSizes(true)
                         .ButtonCount(5))
-                    //.Groupable()
+                    //
                     .Sortable(sortable =>
                     {
                         sortable.SortMode(GridSortMode.SingleColumn);

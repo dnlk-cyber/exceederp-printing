@@ -1,9 +1,11 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Procurement.Plan;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.Core.Domain.Procurement.Contract;
 using ExceedERP.Core.Domain.Procurement.Settings;
 
 namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
@@ -29,6 +31,10 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         public int? PurchaseRequisitionID { get; set; }
         [Display(Name = "Proforma No.")]
         public int?  ProformaPurchaseID { get; set; }
+        [Display(Name = "Tend No.")]
+        public int? TenderID { get; set; }
+        [Display(Name = "Award No.")]
+        public int? BidAwardedSupplierID { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Order Date")]
@@ -42,7 +48,7 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         
         [DisplayName("Cost Center")]
         public int OrgStructureId { get; set; }
-        [Display(Name = "Purchaser")]
+        [Display(Name = "Procurement Officer")]
         public int ProcurementOfficer { get; set; }       
         public bool IsManual { get; set; }
         [DisplayName("SroreRequisition")]
@@ -57,8 +63,10 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         public bool IsFullfilled { get; set; }
         [DisplayName("Is Paid")]
         public bool IsPaid { get; set; }
-
         public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
+        [DisplayName("Purchase Type")]
+        public PurchasePaymentType PurchasePaymentType { get; set; }
         public virtual ICollection<PurchaseOrderItem> PurchaseOrderItem { get; set; }
         public virtual ICollection<PurchaseOrderValidation> PurchaseOrderValidation { get; set; }
         public virtual ICollection<PurchaseOrderDistribution> PurchaseOrderDistribution { get; set; }

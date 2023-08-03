@@ -2,12 +2,13 @@
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Reporting.HRM.Payroll.DataSource
 {
     [DataObject]
-    public class PayrollCostCenterObjectDataSource : List<GLChartOfAccountCostCenter>
+    public class PayrollCostCenterObjectDataSource : List<GLChartOfAccountSegment>
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -16,7 +17,9 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
         {
             List<string> list = new List<string> { };
             //var periods = db.PayrollPeriods.Where(x => x.Status != "NEW").ToList();
-            var costCenters = db.GLChartOfAccountCostCenters.ToList().Select(s => new
+            var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var glChartOfAccountCostCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId);
+            var costCenters = glChartOfAccountCostCenters.ToList().Select(s => new
             {
                 valueSelector = s.Values
             }).OrderBy(x => x.valueSelector);

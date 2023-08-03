@@ -1,7 +1,0 @@
-﻿namespace ExceedERP.Helpers.Finance
-{
-
-    
-
-    
-}

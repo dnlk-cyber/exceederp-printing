@@ -15,8 +15,19 @@ namespace ExceedERP.Core.Domain.Finance.GL
         public string AccountCode { get; set; }
         [Display(Name = "Description")]
         public string AccountDesc { get; set; }
+        [Display(Name = "Exchange Rate")]
+        [Range(0.0, 9999999999, ErrorMessage = "Rate can't be negative value")]
+        public decimal ExRate { get; set; }
+        [Display(Name = "Debit")]
+        [Range(0.0, 9999999999, ErrorMessage = "Debit can't be negative value")]
+        public decimal DebitNonFun { get; set; }
+        [Display(Name = "Debit")]
         [Range(0.0, 9999999999, ErrorMessage = "Debit can't be negative value")]
         public decimal Debit { get; set; }
+        [Display(Name = "Credit")]
+        [Range(0.0, 9999999999, ErrorMessage = "Credit can't be negative value")]
+        public decimal CreditNonFun { get; set; }
+        [Display(Name = "Credit")]
         [Range(0.0, 9999999999, ErrorMessage = "Credit can't be negative value")]
         public decimal Credit { get; set; }
         [Display(Name = "Additional Description")]

@@ -92,10 +92,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 if (gLRecordJournalValidation.Status == ApprovalStatuses.Approve)
                 {
                     if (record != null)
-                    {
-                        //PostToSecondaryLedger(id);
-                        record.IsPostedToSecondLedger = true;
-                        record.Status = "Approved";
+                    {                       
+                         record.Status = "Approved";
                         record.IsOnlineApproved = true;
                         record.OnlineApprovedBy = User.Identity.Name;
                         record.OnlineApprovedTime = DateTime.Now;
@@ -107,40 +105,40 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                         //_financeHelper.PostSingleToLedger(record.GlRecordJournalId, User.Identity.Name);
                     }
 
-                    if (record != null && record.SourcesName == "GL" && !record.IsVoidDoc)
-                    {
-                        #region pass data for bank reconciliation
+                    //if (record != null && record.SourcesName == "GL" && !record.IsVoidDoc)
+                    //{
+                    //    #region pass data for bank reconciliation
 
-                        foreach (GLRecordJournalDetail distribution in record.GLRecordJournalDetail)
-                        {
-                            string sourceid = record.GlRecordJournalId + "-" + distribution.GlRecordJournalDetailId;
-                            //check if this is bank account
-                            if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                            {
-                                var book = new ReconciliationBookAccount
-                                {
-                                    CreatedBy = User.Identity.Name,
-                                    DateCreated = DateTime.Now,
-                                    AccountCode = distribution.AccountCode,
-                                    Debit = distribution.Debit,
-                                    Credit = distribution.Credit,
-                                    Date = distribution.GLRecordJournal.EffectiveDate,
-                                    Type = "GL Record",
-                                    ReferenceDoc = !String.IsNullOrWhiteSpace(record.JournalNumber) ? record.JournalNumber : "NA",
-                                    Reference = !String.IsNullOrWhiteSpace(distribution.AdditionalDescription) ? distribution.AdditionalDescription : "NA",
-                                    Source = JournalSources.GeneralLedger.ToString(),
-                                    SourceID = sourceid,
-                                    AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                                    SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                                };
-                                _db.ReconcilationBookAccounts.Add(book);
-                                _db.SaveChanges();
-                            }
-                        }
+                    //    foreach (GLRecordJournalDetail distribution in record.GLRecordJournalDetail)
+                    //    {
+                    //        string sourceid = record.GlRecordJournalId + "-" + distribution.GlRecordJournalDetailId;
+                    //        //check if this is bank account
+                    //        if (_accountHelper.IsBankAccount(distribution.AccountCode))
+                    //        {
+                    //            var book = new ReconciliationBookAccount
+                    //            {
+                    //                CreatedBy = User.Identity.Name,
+                    //                DateCreated = DateTime.Now,
+                    //                AccountCode = distribution.AccountCode,
+                    //                Debit = distribution.Debit,
+                    //                Credit = distribution.Credit,
+                    //                Date = distribution.GLRecordJournal.EffectiveDate,
+                    //                Type = "GL Record",
+                    //                ReferenceDoc = !String.IsNullOrWhiteSpace(record.JournalNumber) ? record.JournalNumber : "NA",
+                    //                Reference = !String.IsNullOrWhiteSpace(distribution.AdditionalDescription) ? distribution.AdditionalDescription : "NA",
+                    //                Source = JournalSources.GeneralLedger.ToString(),
+                    //                SourceID = sourceid,
+                    //                AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+                    //                SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+                    //            };
+                    //            _db.ReconcilationBookAccounts.Add(book);
+                    //            _db.SaveChanges();
+                    //        }
+                    //    }
 
-                        #endregion
+                    //    #endregion
 
-                    }
+                    //}
 
                     if (record != null && !record.IsVoidDoc)
                     {
@@ -189,52 +187,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             return Json(new[] { gLRecordJournalValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        private void PostToSecondaryLedger(int id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            string user = User.Identity.Name;
-            var record = _db.GLRecordJournals.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName =record.JournalName,
-                    JournalNumber = record.JournalNumber,
-                    Description = record.Description,
-                    CategoryName =record.CategoryName,
-                    SourcesName = "General Ledger",
-                    EffectiveDate = record.EffectiveDate,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.EffectiveDate),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.EffectiveDate),
-                    PostingSource = JournalSources.GeneralLedger,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalDetailId == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.GlRecordJournalDetailId,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-
-                secondLedgerHelper.PostToSecondLedger(ledger, user);
-            }
-        }
+        
 
         protected override void Dispose(bool disposing)
         {

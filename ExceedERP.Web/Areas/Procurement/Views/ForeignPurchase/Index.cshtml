@@ -25,7 +25,7 @@
       .ToolBar(toolbar => {
                               toolbar.Create();
       })
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ForeignPurchase").Window(w => w.Title("Foreign Purchase")))
       .HtmlAttributes(new { style = "height: 600px;" })
@@ -47,7 +47,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+      
       .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(sort => sort.Add("ForeignPurchaseId").Descending())

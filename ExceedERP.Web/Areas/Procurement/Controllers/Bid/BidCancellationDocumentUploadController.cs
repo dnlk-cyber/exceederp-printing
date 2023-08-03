@@ -21,7 +21,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult TenderCancellationUploadDbModels_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<TenderCancellationUploadDbModel> tenderCancellationUploadDbModels = _db.TenderCancellationUploadDbModels.Where(x => x.TenderCancellationId == id);
@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderCancellationUploadDbModels_Create([DataSourceRequest]DataSourceRequest request, IEnumerable<HttpPostedFileBase> bidCancellationDocuments, int id)
         {
@@ -89,7 +89,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { bidCancellationDocuments }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderCancellationUploadDbModels_Update([DataSourceRequest]DataSourceRequest request, TenderMinuteUploadDBModel tenderMinuteUploadDbModel)
         {
@@ -110,7 +110,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderMinuteUploadDbModel }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderCancellationUploadDbModels_Destroy([DataSourceRequest]DataSourceRequest request, TenderCancellationUploadDbModel tenderCancellationUploadDbModel)
         {

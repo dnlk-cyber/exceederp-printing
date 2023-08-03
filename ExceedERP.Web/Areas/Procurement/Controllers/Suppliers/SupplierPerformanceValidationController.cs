@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierPerformanceValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<SupplierPerformanceValidation> supplierperformancevalidations = db.SupplierPerformanceValidations.Where(x => x.SupplierPerformanceId == id);
@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierPerformanceValidations_Create(int id, [DataSourceRequest]DataSourceRequest request, SupplierPerformanceValidation supplierPerformanceValidation)
         {
@@ -103,7 +103,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierPerformanceValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierPerformanceValidations_Update(int id, [DataSourceRequest]DataSourceRequest request, SupplierPerformanceValidation supplierPerformanceValidation)
         {
@@ -130,7 +130,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierPerformanceValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierPerformanceValidations_Destroy([DataSourceRequest]DataSourceRequest request, SupplierPerformanceValidation supplierPerformanceValidation)
         {

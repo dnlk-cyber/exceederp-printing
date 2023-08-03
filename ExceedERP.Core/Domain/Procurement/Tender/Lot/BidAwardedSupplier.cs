@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.PR;
 
 namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
@@ -28,6 +30,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
         public DateTime DeliveryDate { get; set; }
         public string Remark { get; set; }
         public bool IsTransferredToContract { get; set; }
+        public bool IsTransferredToPo { get; set; }
         [Display(Name = "Award Given ?")]
         public bool AwardGiven { get; set; }
         [Display(Name = "Tender Reference")]

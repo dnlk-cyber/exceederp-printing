@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult Index()
         {
             return View();
@@ -36,7 +36,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult PurchaseRequisitionAttachments_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionAttachment> purchaseRequisitionAttachments = _db.PurchaseRequisitionAttachments.Where(x => x.PurchaseRequisitionID == id);
@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAttachments_Create([DataSourceRequest]DataSourceRequest request, IEnumerable<HttpPostedFileBase> PurchaseRequisitionAttachments, int id)
         {
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return Json(new[] { PurchaseRequisitionAttachments }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAttachments_Update([DataSourceRequest]DataSourceRequest request, TenderMinuteUploadDBModel tenderMinuteUploadDbModel)
         {
@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return Json(new[] { tenderMinuteUploadDbModel }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAttachments_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionAttachment purchaseRequisitionAttachment)
         {

@@ -3006,11 +3006,7 @@ namespace ExceedERP.Web.Controllers
 
             return View("Success");
         }
-        public ActionResult Bank()
-        {
-            _financeHelper.TransferGlRecordsToBank();
-            return View("Success");
-        }
+      
         public string IsBank(string ac)
         {
             return _accountHelper.IsBankAccount(ac).ToString();
@@ -3444,11 +3440,7 @@ namespace ExceedERP.Web.Controllers
             return View("Success");
         }
 
-        public ActionResult SplitLedger2()
-        {
-            _accountHelper.SplitSecondLedgerAccountCombination();
-            return View("Success");
-        }
+     
 
         public ActionResult SplitJournal()
         {
@@ -3511,68 +3503,8 @@ namespace ExceedERP.Web.Controllers
             }
             return View("Success");
         }
-        public ActionResult TakeToBeg2(string id)
-        {
-            string searchKey = id + "-";
-            var lines = _db.GlSecondayLedgerLines.Where(x => x.PostingSource == JournalSources.GeneralLedger)
-                .Where(x => x.JournalNumber.StartsWith(searchKey)).AsNoTracking().AsQueryable();
-            foreach (var l in lines)
-            {
-                l.Type = LedgerPostTypes.Begining;
-                _db.Entry(l).State = EntityState.Modified;
-                _db.SaveChanges();
-            }
-            return View("Success");
-        }
-        public ActionResult PostBegToLedger2(string id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            secondLedgerHelper.PostBegToLedger(int.Parse(id),User.Identity.Name);
-            return View("Success");
-        }
-        public ActionResult CopyLedger()
-        {
-            var primaryledger = _db.GLLedgerPostings.ToList();
-            foreach (var glLedgerPosting in primaryledger)
-            {
-                var secondLedger = _db.GlSecondayLedgers.FirstOrDefault(x => x.AccountCode == glLedgerPosting.AccountCode);
-                if (secondLedger == null)
-                {
-                    secondLedger = new GlSecondayLedger();
-                    AccountHelper accountHelper = new AccountHelper();
-                    secondLedger.AccountCode = glLedgerPosting.AccountCode.ToUpper();
-                    secondLedger.AccountDesc = accountHelper.GetAccountDesc(secondLedger.AccountCode);
-                    secondLedger.AccountType = accountHelper.GetAccountType(secondLedger.AccountCode);
-                    _db.GlSecondayLedgers.Add(secondLedger);
-                    _db.SaveChanges();
-
-                }
-
-                foreach (var gLRecordJournal in glLedgerPosting.GLLedgerPostingLines)
-                {
-                    var ledgerpostline = new GlSecondayLedgerLine
-                    {
-                        GlSecondayLedger = secondLedger,
-                        JournalNumber = gLRecordJournal.JournalNumber,
-                        JournalReference = gLRecordJournal.JournalNumber,
-                        EffectiveDate = gLRecordJournal.EffectiveDate,
-                        JournalName = gLRecordJournal.JournalName,
-                        CategoryName = gLRecordJournal.CategoryName,
-                        SourcesName = gLRecordJournal.SourcesName,
-                        GLPeriodId = gLRecordJournal.GLPeriodId,
-                        Debit=gLRecordJournal.Debit,
-                        Credit=gLRecordJournal.Credit,
-                        Balance=gLRecordJournal.Balance,
-                        Type = gLRecordJournal.Type,
-                        GlFiscalYearId = gLRecordJournal.GlFiscalYearId,
-                        PostingSource = JournalSources.GeneralLedger
-                    };
-                    _db.GlSecondayLedgerLines.Add(ledgerpostline);
-                    _db.SaveChanges();
-                }
-            }
-            return View("Success");
-        }
+    
+       
         //public ActionResult PostBegEnd(string id)
         //{
         //    if (!String.IsNullOrEmpty(id))

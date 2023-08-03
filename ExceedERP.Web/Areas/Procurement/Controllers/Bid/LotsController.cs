@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Lots_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<Lot> lots = _db.Lots.Where(t => t.TenderID == id);
@@ -33,6 +33,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 LotID = lot.LotID,
                 TenderID = lot.TenderID,
                 LotNumber = lot.LotNumber,
+                Category = lot.Category,
                 Description = lot.Description,
                 EvaluateTotalFinance = lot.EvaluateTotalFinance,
                 OrgBranchName = lot.OrgBranchName,
@@ -45,12 +46,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Lots_Create([DataSourceRequest]DataSourceRequest request, Lot lot, int id)
         {
             #region validation
+
+            if (lot.LotNumber<=0)
+            {
+                ModelState.AddModelError("", lot.LotNumber + " is not valid number.");
+            }
             var exists = _db.Lots.Where(x => x.LotNumber == lot.LotNumber)
+                .Where(x => x.Category == lot.Category)// OCC--- cat and lot number refer the same lot
                 .Where(x => x.TenderID == id).ToList();
 
             if (exists.Any())
@@ -65,6 +72,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     {
                         LotNumber = lot.LotNumber,
                         TenderID = id,
+                        Category = lot.Category,
                         Description = lot.Description,
                         OrgBranchName = lot.OrgBranchName,
                         EvaluateTotalFinance = lot.EvaluateTotalFinance,
@@ -89,13 +97,20 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
        
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Lots_Update([DataSourceRequest]DataSourceRequest request, Lot lot)
         {
             #region validation
+
+            if (lot.LotNumber <= 0)
+            {
+                ModelState.AddModelError("", lot.LotNumber + " is not valid number.");
+            }
+
             var exists = _db.Lots.Where(x => x.LotID != lot.LotID)
                 .Where(x => x.LotNumber == lot.LotNumber)
+                .Where(x => x.Category == lot.Category)// OCC--- cat and lot number refer the same lot
                 .Where(x => x.TenderID == lot.TenderID).ToList();
 
             if (exists.Any())
@@ -110,6 +125,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     {
                         LotID = lot.LotID,
                         TenderID = lot.TenderID,
+                        Category = lot.Category,
                         LotNumber = lot.LotNumber,
                         Description = lot.Description,
                         EvaluateTotalFinance = lot.EvaluateTotalFinance,
@@ -134,7 +150,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { lot }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Lots_Destroy([DataSourceRequest]DataSourceRequest request, Lot lot)
         {
@@ -162,6 +178,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 {
                     LotID = lot.LotID,
                     LotNumber = lot.LotNumber,
+                    Category = lot.Category,
                     Description = lot.Description,
                     OrgBranchName = lot.OrgBranchName,
                     DateCreated = lot.DateCreated,

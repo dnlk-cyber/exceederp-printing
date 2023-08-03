@@ -23,9 +23,10 @@
           columns.Bound(c => c.PaymentDate).Width(120).Format("{0:dd/MM/yyyy}");
           columns.Bound(c => c.PaymentAmount).Width(120);
           columns.Bound(c => c.RemainingBalance).Width(120);
-          columns.Bound(c => c.PrepaymentAmount).Width(130);
+          //columns.Bound(c => c.PrepaymentAmount).Width(130);
           columns.Bound(c => c.PaymentMethod).EditorTemplateName("PaymentMethods").Width(130);
           columns.Bound(c => c.PaymentReference).Width(130);
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
           columns.Bound(c => c.Remark).Width(120);
           columns.Bound(c => c.Status).Width(80);
 
@@ -36,7 +37,7 @@
                                   @<text>
 
                     <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+                    @*<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>*@
 
                     @(Html.Kendo().CheckBox()
                                     .Name("checktransfferable")
@@ -54,7 +55,7 @@
           .AllPages(true)
       )
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApPayment").Window(w => w.Title("Payment")))
-                .Groupable()
+
       .Events(ev => ev.DetailExpand("detailExpand"))
                     .Scrollable(h => h.Height(500))
                      .Events(x => x.DataBound("onDataBoundMaster"))
@@ -77,7 +78,7 @@
                         sortable.SortMode(GridSortMode.SingleColumn);
                     })
                         .Filterable()
-                        .Groupable()
+
                         .ClientDetailTemplateId("templates")
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -86,8 +87,11 @@
                     model =>
                     {
                         model.Id(p => p.ApPaymentId);
+                        model.Field(p => p.GLTaxRateID).Editable(false);
                         model.Field(p => p.RemainingBalance).Editable(false);
-                        model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                        model.Field(p => p.BranchId).Editable(false);
+                        model.Field(p => p.BusinessUnitId).Editable(false);
+
 
                         model.Field(p => p.VoidTime).Editable(false);
                         model.Field(p => p.VoidBy).Editable(false);
@@ -103,6 +107,10 @@
                         model.Field(p => p.IsOnlineTransferredBy).Editable(false);
                         model.Field(p => p.OnlineTransferredTime).Editable(false);
 
+                        model.Field(p => p.ForBranchId).Editable(false);
+                        model.Field(p => p.BranchId).Editable(false);
+                        model.Field(p => p.BusinessUnitId).Editable(false);
+
                         model.Field(p => p.OrgBranchName).Editable(false);
                         model.Field(p => p.CreatedBy).Editable(false);
                         model.Field(p => p.ModifiedBy).Editable(false);
@@ -116,6 +124,7 @@
                       .RequestStart("onRequestStart(\"grid\")")
                       .RequestEnd("onRequestEnd(\"grid\")"))
             .Read(read => read.Action("APPayments_Read", "APPayment").Data("passReadData"))
+
             .Create(create => create.Action("APPayments_Create", "APPayment"))
             .Update(update => update.Action("APPayments_Update", "APPayment"))
             .Destroy(destroy => destroy.Action("APPayments_Destroy", "APPayment"))
@@ -329,7 +338,7 @@
 
                                     </text>);
 
-                                                          items.Add().Text("Purchase Info.").Content(
+                                                          @*items.Add().Text("Purchase Info.").Content(
                                             @<text>
                                                 @(Html.Kendo().Grid<PurchaseViewModel>()
                                                                             .Name("PurchaseViewModel#=ApPaymentId#")
@@ -385,7 +394,7 @@
                                                                             )
                                                                             .ToClientTemplate())
 
-                                            </text>);
+                                            </text>);*@
 
 
                                                               })
@@ -663,7 +672,40 @@
     }
 
 
-  
+
+    function onSelectReferenceNumber(e) {
+        //alert("change");
+        var sourceType = $("#PoType").data("kendoDropDownList").value();
+        var id = $("#PurchaseReference").data("kendoDropDownList").value();
+        //var source = $("#PoType").data("kendoDropDownList").value();
+        // alert(id);
+        //begin
+        $.ajax({
+            url: '/Finance/FinanceDataProvider/GetPaymentRequestDataForPayment',
+            type: 'GET',
+            data: { id: id, sourceType: sourceType },
+            success: function (result) {
+                $("#SupplierId").val(result.SupplierId).trigger("change");
+                $("#SupplierName").val(result.SupplierName).trigger("change");
+                $("#InvoiceAmount").val(result.Amount).trigger("change");
+                $("#PaymentAmount").val(result.Amount).trigger("change");
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+        //end
+    }
+
+    function filterPurchaseReferences() {
+
+        return {
+            sourceType: $("#PoType").data("kendoDropDownList").value(),
+            text: $("#PurchaseReference").data("kendoDropDownList").filterInput.val()
+            //purchaser: $("#EmployeeId").data("kendoDropDownList").value()
+        };
+    }
 
     function onSelectInvoiceNumber(e) {
         //alert("change");

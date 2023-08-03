@@ -42,12 +42,31 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     Name = e,
                     Code = e
                 });
-               
+
+           
+
             return View();
+        }
+        public ActionResult JId()
+        {
+            var lines = _db.GLLedgerPostingLines.Where(x => x.Type == LedgerPostTypes.Standard && x.JournalId == 0).ToList();
+
+            foreach (var l in lines)
+            {              
+               int.TryParse(l.JournalNumber.Split('-')[0],out int jid);
+                l.JournalId = jid;
+                _db.GLLedgerPostingLines.Attach(l);
+                _db.Entry(l).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
+            
+
+            return View("Success");
         }
 
         private List<AccountChekerVm> GetCheckerData(string errorType)
         {
+            _db.Database.CommandTimeout = 7200;//added
             List<AccountChekerVm> chekerVms = new List<AccountChekerVm>();
 
             switch (errorType)
@@ -188,7 +207,54 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                     #endregion
                     break;
+                case "Duplicate_Beginning_Ledger_Line":
+                    #region duplicate ledger line
 
+                    var duplicateBegLines = _db.GLLedgerPostingLines
+                        .Where(x => x.Type == LedgerPostTypes.Begining)
+                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID})
+                        .Where(g => g.Count() > 1)
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })
+                        .ToList();
+                    foreach (var duplicate in duplicateBegLines)
+                    {
+                        var cheker = new AccountChekerVm
+                        {
+                            Type = ErrorType.Duplicate_Beginning_Ledger_Line,
+                            Description = $"Duplicate Ledger ID {duplicate.Element.GLLedgerPostingID} {duplicate.Element.JournalNumber}",
+                            Details = duplicate.Counter.ToString(),
+                            Id = duplicate.Element.GLLedgerPostingID.ToString()
+                        };
+                        chekerVms.Add(cheker);
+                    }
+
+                    #endregion
+                    break;
+                case "Duplicate_Ending_Ledger_Line":
+                    #region duplicate ledger line
+
+                    var duplicateEndLines = _db.GLLedgerPostingLines
+                        .Where(x => x.Type == LedgerPostTypes.Ending)
+                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID })
+                        .Where(g => g.Count() > 1)
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })
+                        .ToList();
+                    foreach (var duplicate in duplicateEndLines)
+                    {
+                        var cheker = new AccountChekerVm
+                        {
+                            Type = ErrorType.Duplicate_Ending_Ledger_Line,
+                            Description = $"Duplicate Ledger ID {duplicate.Element.GLLedgerPostingID} {duplicate.Element.JournalNumber}",
+                            Details = duplicate.Counter.ToString(),
+                            Id = duplicate.Element.GLLedgerPostingID.ToString()
+                        };
+                        chekerVms.Add(cheker);
+                    }
+
+                    #endregion
+                    break;
+
+               
                 case "Unposted_Journal_Line":
                 #region unposted journal line
 
@@ -281,6 +347,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         public JsonResult FixeIssue(string type,string id)
         {
             ErrorType e = (ErrorType)(int.Parse(type));
+           
 
             switch (e.ToString())
             {
@@ -393,6 +460,145 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         }
 
+        public JsonResult FixeIssueBatch(string type)
+        {
+            ErrorType e = (ErrorType)Enum.Parse(typeof(ErrorType),type);
+
+            switch (e.ToString())
+            {
+                case "Unsplitted_Journal":
+                    #region Unsplitted Journal
+
+                   // _accountHelper.SplitJournalAccountCombination();
+
+                    #endregion
+                    break;
+                case "Unsplitted_Ledger":
+
+                    #region Unsplitted Ledger
+                    //_accountHelper.SplitLedgerAccountCombination();
+
+                    #endregion
+
+                    break;
+                case "Wrong_Period":
+
+                    #region wrong period
+
+
+
+                    #endregion
+
+                    break;
+
+                case "Wrong_Account":
+                    #region wrong account
+
+
+
+                    #endregion
+                    break;
+
+                case "Duplicate_Ledger":
+                    #region fix duplicate ledger 
+
+                   
+                    #endregion
+                    break;
+
+                case "Duplicate_Ledger_Line":
+                   
+                    break;
+
+                case "Duplicate_Beginning_Ledger_Line":
+                    #region fixe duplicate beginning ledger line
+                    _db.Database.CommandTimeout = 7200;
+                    var duplicateBegLines = _db.GLLedgerPostingLines
+                        .Where(x => x.Type == LedgerPostTypes.Begining)
+                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID })
+                        .Where(g => g.Count() > 1)
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })   
+                        .AsNoTracking()
+                        .ToList();
+
+                    foreach (var duplicate in duplicateBegLines)
+                    {
+                        var duplicateledgerlines = _db.GLLedgerPostingLines
+                            .Where(x => x.JournalNumber == duplicate.Element.JournalNumber)
+                            .Where(x => x.GLLedgerPostingID == duplicate.Element.GLLedgerPostingID).ToList();
+                        if (duplicateledgerlines.Any())
+                        {
+                            var minline = duplicateledgerlines.Min(x => x.GLLedgerPostingLinesID);
+                            var toberemoved = duplicateledgerlines.Where(x => x.GLLedgerPostingLinesID != minline).ToList();
+                            _db.GLLedgerPostingLines.RemoveRange(toberemoved);
+                            _db.SaveChanges();
+                        }
+
+                    }
+
+                    #endregion
+                    break;
+                case "Duplicate_Ending_Ledger_Line":
+                    #region fixe duplicate ending ledger line
+                    _db.Database.CommandTimeout = 7200;
+                    var duplicateEndLines = _db.GLLedgerPostingLines
+                        .Where(x => x.Type == LedgerPostTypes.Ending)
+                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID })
+                        .Where(g => g.Count() > 1)
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })
+                        .AsNoTracking()
+                        .ToList();
+
+                    foreach (var duplicate in duplicateEndLines)
+                    {
+                        var duplicateledgerlines = _db.GLLedgerPostingLines
+                            .Where(x => x.JournalNumber == duplicate.Element.JournalNumber)
+                            .Where(x => x.GLLedgerPostingID == duplicate.Element.GLLedgerPostingID).ToList();
+                        if (duplicateledgerlines.Any())
+                        {
+                            var minline = duplicateledgerlines.Min(x => x.GLLedgerPostingLinesID);
+                            var toberemoved = duplicateledgerlines.Where(x => x.GLLedgerPostingLinesID != minline).ToList();
+                            _db.GLLedgerPostingLines.RemoveRange(toberemoved);
+                            _db.SaveChanges();
+                        }
+
+                    }
+
+                    #endregion
+                    break;
+
+                case "Unposted_Journal_Line":
+                    #region unposted journal line
+
+
+
+                    #endregion
+                    break;
+
+                case "Having_both_debit_credit":
+                    #region Having_both_debit_credit
+
+
+
+                    #endregion
+                    break;
+                case "Journal_Unbalanced_debit_credit":
+                    #region Having_both_debit_credit
+
+
+
+                    #endregion
+                    break;
+            }
+
+            var formattedData = new
+            {
+                Message = "Operation completed.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
 
         public JsonResult UpdateBalance(string id)
         {
@@ -401,9 +607,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             var year = _db.GLFiscalYears.Find(did);
 
             var firstPeriodOfYear = _db.GLPeriods.Where(x => x.GlFiscalYearId == did).FirstOrDefault(x => x.Index == 1);
-
-
-
+                       
             if (firstPeriodOfYear != null)
             {
                 _financeHelper.UpdateAllBegEndBalancesFastP(firstPeriodOfYear.GLPeriodId, User.Identity.Name);

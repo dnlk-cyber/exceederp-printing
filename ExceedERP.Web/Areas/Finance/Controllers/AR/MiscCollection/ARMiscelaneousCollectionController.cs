@@ -86,7 +86,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.MiscCollection
                 ReceiptDate = aRMiscelaneousCollection.ReceiptDate,
                 ReceiptMethod = aRMiscelaneousCollection.ReceiptMethod,
                 IsDirectCollection = aRMiscelaneousCollection.IsDirectCollection,
-                IsPostedToSecondLedger = aRMiscelaneousCollection.IsPostedToSecondLedger,
+                BusinessUnitId = aRMiscelaneousCollection.BusinessUnitId,
                 BranchId = aRMiscelaneousCollection.BranchId,
                 Remark = aRMiscelaneousCollection.Remark,
 
@@ -159,7 +159,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.MiscCollection
                     
                     ReceiptDate = aRMiscelaneousCollection.ReceiptDate.Date,
                     ReceiptMethod = aRMiscelaneousCollection.ReceiptMethod,
-                    IsPostedToSecondLedger = aRMiscelaneousCollection.IsPostedToSecondLedger,
+                    BusinessUnitId = aRMiscelaneousCollection.BusinessUnitId,
                     BranchId = aRMiscelaneousCollection.BranchId,
                     Remark = aRMiscelaneousCollection.Remark,
 
@@ -268,7 +268,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.MiscCollection
                         TotalAmount = aRMiscelaneousCollection.TotalAmount,
                         ReceiptDate = aRMiscelaneousCollection.ReceiptDate,
                         ReceiptMethod = aRMiscelaneousCollection.ReceiptMethod,
-                        IsPostedToSecondLedger = aRMiscelaneousCollection.IsPostedToSecondLedger,
+                        BusinessUnitId = aRMiscelaneousCollection.BusinessUnitId,
                         BranchId = aRMiscelaneousCollection.BranchId,
                         Remark = aRMiscelaneousCollection.Remark,
 
@@ -350,7 +350,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.MiscCollection
                         LineAmount = aRMiscelaneousCollection.LineAmount,
                         TaxAmount = aRMiscelaneousCollection.TaxAmount,
                         TotalAmount = aRMiscelaneousCollection.TotalAmount,
-                        IsPostedToSecondLedger = aRMiscelaneousCollection.IsPostedToSecondLedger,
+                        BusinessUnitId = aRMiscelaneousCollection.BusinessUnitId,
                         BranchId = aRMiscelaneousCollection.BranchId,
 
                         IsSendForApproval = aRMiscelaneousCollection.IsSendForApproval,

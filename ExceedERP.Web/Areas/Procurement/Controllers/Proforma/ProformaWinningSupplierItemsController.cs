@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult WinningSupplierItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<WinningSupplierItem> winningSupplierItems = _db.WinningSupplierItems.Where(p => p.WinningSupplierID == id);
@@ -63,7 +63,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult WinningSupplierItems_Create([DataSourceRequest]DataSourceRequest request, WinningSupplierItem winningSupplierItem , int id )
         {
@@ -122,7 +122,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 return Json(new[] { winningSupplierItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult WinningSupplierItems_Update([DataSourceRequest]DataSourceRequest request, WinningSupplierItem winningSupplierItem)
         {
@@ -182,7 +182,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { winningSupplierItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult WinningSupplierItems_Destroy([DataSourceRequest]DataSourceRequest request, WinningSupplierItem winningSupplierItem)
         {

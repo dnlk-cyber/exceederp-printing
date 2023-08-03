@@ -39,21 +39,32 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             //ViewData["methods"] = paymentMethod;
 
-            //var tax = _db.GLTaxRates.Where(x => x.ApplyToAp).ToList();
+            var tax = _db.GLTaxRates.Where(x => x.ApplyToAp).ToList();
 
-            //ViewData["taxes"] = tax;
+            ViewData["taxes"] = tax;
 
-            //var witholdings = _db.GLTaxRates.Where(x => x.ApplyToWithholding).Where(x => x.ApplyToAp).ToList();
+            var witholdings = _db.GLTaxRates.Where(x => x.ApplyToWithholding).Where(x => x.ApplyToAp).ToList();
 
-            //ViewData["witholdingType"] = witholdings;
+            ViewData["witholdingType"] = witholdings;
 
-            var suppliers = _db.ApDirectPayments.ToList();
+            var suppliers = _db.ProcurementSuppliers;
+            var selectedSuppliers = suppliers.Select(
+              i => new
+              {
+                  Name = i.SupplierId +" "+i.Name,
+                  Code = i.SupplierId
+              }).AsQueryable();
 
-            ViewData["DirectPayments"] = suppliers.Select(i => new
-            {
-                Name = i.ApDirectPaymentId+ "_" + i.SupplierName ,//+ "_" + i.PaymentReference,
-                Code = i.ApDirectPaymentId
-            }).AsQueryable();
+            var employees = _db.Person_Employee;
+            var selectedEmployees = employees.Select(
+              i => new
+              {
+                  Name = i.EmployeeCode + " " + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                  Code = i.EmployeeId
+              }).AsQueryable();
+
+            ViewData["suppliers"] = selectedSuppliers;
+            ViewData["employees"] = selectedEmployees;
         }
 
         [AuthorizeRoles(FinanceConstants.AccountPayableView ,FinanceConstants.AccountPayableApprover ,FinanceConstants.AccountPayableSettlement)]
@@ -71,12 +82,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             DataSourceResult result = ApPaymentSettlements.ToDataSourceResult(request, apPaymentsettlement => new {
                 ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
                 SupplierId = apPaymentsettlement.SupplierId,
-                IsNewSupplier = apPaymentsettlement.IsNewSupplier,
-                SupplierName = apPaymentsettlement.SupplierName,
+                CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
+                EmployeeId = apPaymentsettlement.EmployeeId,
                 Reference = apPaymentsettlement.Reference,
-                Po = apPaymentsettlement.Po,
+               
                 PaymentDate = apPaymentsettlement.PaymentDate,
-                IsPostedToSecondLedger = apPaymentsettlement.IsPostedToSecondLedger,
+                
                 Remark = apPaymentsettlement.Remark,
                 IsSendForApproval = apPaymentsettlement.IsSendForApproval,
                 IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
@@ -105,26 +116,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         {
             #region  validation
             
-            if (!ApPaymentSettlements.IsNewSupplier)
+            if (!ApPaymentSettlements.CollectedByPurchaser)
             {
                 if (String.IsNullOrEmpty(ApPaymentSettlements.SupplierId))
                 {
                     ModelState.AddModelError("supplierid", "Please select supplier.");
                 }
-                else
-                {
-                    var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == ApPaymentSettlements.SupplierId);
-                    if (supplier != null) ApPaymentSettlements.SupplierName = supplier.Name;
-                }
+
+                ApPaymentSettlements.EmployeeId = 0;
             }
 
             else
             {
-                ApPaymentSettlements.SupplierId = "";
-                if (String.IsNullOrEmpty(ApPaymentSettlements.SupplierName))
+                if (ApPaymentSettlements.EmployeeId==null)
                 {
-                    ModelState.AddModelError("suppliername", "Please enter supplier name.");
+                    ModelState.AddModelError("purchaser", "Please select Purchaser.");
                 }
+                ApPaymentSettlements.SupplierId = "";
             }
 
             #endregion
@@ -134,12 +142,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 var entity = new ApPaymentSettlement
                 {
                     SupplierId = ApPaymentSettlements.SupplierId,
-                    IsNewSupplier = ApPaymentSettlements.IsNewSupplier,
-                    SupplierName = ApPaymentSettlements.SupplierName,
+                    CollectedByPurchaser = ApPaymentSettlements.CollectedByPurchaser,
+                    EmployeeId = ApPaymentSettlements.EmployeeId,
                     Reference = ApPaymentSettlements.Reference,
-                    Po = ApPaymentSettlements.Po,
+                  
                     PaymentDate = ApPaymentSettlements.PaymentDate.Date,
-                    IsPostedToSecondLedger = ApPaymentSettlements.IsPostedToSecondLedger,
+                    
                     Remark = ApPaymentSettlements.Remark,
                     IsSendForApproval = ApPaymentSettlements.IsSendForApproval,
                     IsOnlineTransferred = ApPaymentSettlements.IsOnlineTransferred,
@@ -177,26 +185,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         {
             #region  validation
 
-            if (!ApPaymentSettlements.IsNewSupplier)
+            if (!ApPaymentSettlements.CollectedByPurchaser)
             {
                 if (String.IsNullOrEmpty(ApPaymentSettlements.SupplierId))
                 {
                     ModelState.AddModelError("supplierid", "Please select supplier.");
                 }
-                else
-                {
-                    var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == ApPaymentSettlements.SupplierId);
-                    if (supplier != null) ApPaymentSettlements.SupplierName = supplier.Name;
-                }
+                ApPaymentSettlements.EmployeeId = 0;
             }
 
             else
             {
-                ApPaymentSettlements.SupplierId = "";
-                if (String.IsNullOrEmpty(ApPaymentSettlements.SupplierName))
+                if (ApPaymentSettlements.EmployeeId == null)
                 {
-                    ModelState.AddModelError("suppliername", "Please enter supplier name.");
+                    ModelState.AddModelError("purchaser", "Please select Purchaser.");
                 }
+
+                ApPaymentSettlements.SupplierId = "";
             }
 
             #endregion
@@ -208,12 +213,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         ApPaymentSettlementId = ApPaymentSettlements.ApPaymentSettlementId,
                         SupplierId = ApPaymentSettlements.SupplierId,
-                        IsNewSupplier = ApPaymentSettlements.IsNewSupplier,
-                        SupplierName = ApPaymentSettlements.SupplierName,
+                        CollectedByPurchaser = ApPaymentSettlements.CollectedByPurchaser,
+                        EmployeeId = ApPaymentSettlements.EmployeeId,
                         Reference = ApPaymentSettlements.Reference,
-                        Po = ApPaymentSettlements.Po,
+                       
                         PaymentDate = ApPaymentSettlements.PaymentDate,
-                        IsPostedToSecondLedger = ApPaymentSettlements.IsPostedToSecondLedger,
+                        
                         Remark = ApPaymentSettlements.Remark,
                         IsSendForApproval = ApPaymentSettlements.IsSendForApproval,
                         IsOnlineTransferred = ApPaymentSettlements.IsOnlineTransferred,
@@ -257,12 +262,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         ApPaymentSettlementId = ApPaymentSettlements.ApPaymentSettlementId,
                         SupplierId = ApPaymentSettlements.SupplierId,
-                        IsNewSupplier = ApPaymentSettlements.IsNewSupplier,
-                        SupplierName = ApPaymentSettlements.SupplierName,
+                        CollectedByPurchaser = ApPaymentSettlements.CollectedByPurchaser,
+                        EmployeeId = ApPaymentSettlements.EmployeeId,
                         Reference = ApPaymentSettlements.Reference,
-                        Po = ApPaymentSettlements.Po,
+                       
                         PaymentDate = ApPaymentSettlements.PaymentDate,
-                        IsPostedToSecondLedger = ApPaymentSettlements.IsPostedToSecondLedger,
+                        
                         Remark = ApPaymentSettlements.Remark,
                         IsSendForApproval = ApPaymentSettlements.IsSendForApproval,
                         IsOnlineTransferred = ApPaymentSettlements.IsOnlineTransferred,

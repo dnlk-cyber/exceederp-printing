@@ -5,10 +5,12 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
+using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
@@ -27,7 +29,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -107,16 +109,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
         }
     
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult PurchaseOrderDirects_Read([DataSourceRequest]DataSourceRequest request)
         {
 
             IQueryable<PurchaseOrder> purchaseorders = _db.PurchaseOrders.Where(x=>x.IsManual);
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTenderApprover))
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderApprover))
             {
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTenderUser))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderUser))
             {
                 int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 purchaseorders = purchaseorders.Where(x => x.ProcurementOfficer == empid && empid != 0 ||x.ForwardedTo== User.Identity.Name);
@@ -129,16 +131,20 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 PurchaseOrderID = purchaseOrder.PurchaseOrderID,
                 ProcurementOfficer = purchaseOrder.ProcurementOfficer,
                 BranchId = purchaseOrder.BranchId,
+                BusinessUnitId = purchaseOrder.BusinessUnitId,
                 SupplierId = purchaseOrder.SupplierId,
                 IsNewSupplier = purchaseOrder.IsNewSupplier,
                 SupplierName = purchaseOrder.SupplierName,
                 POType = purchaseOrder.POType,
                 ProcurementMethod = purchaseOrder.ProcurementMethod,
                 ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
-                OrgStructureId = purchaseOrder.OrgStructureId,
+                   TenderID = purchaseOrder.TenderID,
+                   BidAwardedSupplierID = purchaseOrder.BidAwardedSupplierID,
+                   OrgStructureId = purchaseOrder.OrgStructureId,
                 OrderDate = purchaseOrder.OrderDate,
                 DeliveryDate = purchaseOrder.DeliveryDate,
                 DeliveryPlace = purchaseOrder.DeliveryPlace,
+                PurchasePaymentType = purchaseOrder.PurchasePaymentType,
                 Status = purchaseOrder.Status,
                 IsTransferredToPayment = purchaseOrder.IsTransferredToPayment,
                 IsTransferredToFollowUp = purchaseOrder.IsTransferredToFollowUp,
@@ -148,11 +154,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 ForwardedFrom = purchaseOrder.ForwardedFrom,
                 ForwardedTo = purchaseOrder.ForwardedTo,
                 IsFinalApproval = purchaseOrder.IsFinalApproval,
+                CurrentApprovalStep = purchaseOrder.CurrentApprovalStep,
 
-                   IsFullfilled = purchaseOrder.IsFullfilled,
-                   IsPaid = purchaseOrder.IsPaid,
+                IsFullfilled = purchaseOrder.IsFullfilled,
+                IsPaid = purchaseOrder.IsPaid,
 
-                   IsSendForApproval = purchaseOrder.IsSendForApproval,
+                IsSendForApproval = purchaseOrder.IsSendForApproval,
                 SendForApprovalBy = purchaseOrder.SendForApprovalBy,
                 SendForApprovalTime = purchaseOrder.SendForApprovalTime,
 
@@ -173,11 +180,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderDirects_Create([DataSourceRequest] DataSourceRequest request,PurchaseOrder purchaseOrder)
         {
-
 
             #region  validation
             if(purchaseOrder.OrderDate>purchaseOrder.DeliveryDate)
@@ -211,29 +217,33 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             #endregion
 
-            var purchaseRequisition = _db.PurchaseRequisitions.Find(purchaseOrder.PurchaseRequisitionID);
-            if (purchaseRequisition != null)
+            var pr = _db.PurchaseRequisitions.Find(purchaseOrder.PurchaseRequisitionID);
+            if (pr != null)
             {
-                purchaseOrder.SroreRequisition = purchaseRequisition.StoreRequisitionID.ToString();
-                purchaseOrder.OrgStructureId = purchaseRequisition.OrgStructureId;
+                purchaseOrder.SroreRequisition = pr.StoreRequisitionID.ToString();
+                purchaseOrder.OrgStructureId = pr.OrgStructureId;              
             }
 
             if (ModelState.IsValid)
             {
-                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+               
                     var entity = new PurchaseOrder
                     {
                         IsManual=true,
                         PurchaseRequisitionID = 0,
                         SroreRequisition =purchaseOrder.SroreRequisition,
-                        ProcurementOfficer = empid,
-                        BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                        BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                        ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name),
                         SupplierId = purchaseOrder.SupplierId,
                         IsNewSupplier = purchaseOrder.IsNewSupplier,
                         SupplierName = purchaseOrder.SupplierName,
                         POType = purchaseOrder.POType,
                         ProcurementMethod = purchaseOrder.ProcurementMethod,
                         ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                        TenderID = purchaseOrder.TenderID,
+                        BidAwardedSupplierID = purchaseOrder.BidAwardedSupplierID,
+                        PurchasePaymentType = purchaseOrder.PurchasePaymentType,
                         OrderDate = purchaseOrder.OrderDate.Date,
                         DeliveryDate = purchaseOrder.DeliveryDate.Date,
                         DeliveryPlace = purchaseOrder.DeliveryPlace,
@@ -251,6 +261,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         ForwardedFrom = User.Identity.Name,
                         ForwardedTo = User.Identity.Name,
                         IsFinalApproval = purchaseOrder.IsFinalApproval,
+                        CurrentApprovalStep = purchaseOrder.CurrentApprovalStep,
 
                         IsOnlineApproved = purchaseOrder.IsOnlineApproved,
                         OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
@@ -280,7 +291,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] {purchaseOrder}.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderDirects_Update([DataSourceRequest]DataSourceRequest request, PurchaseOrder purchaseOrder)
         {
@@ -317,31 +328,35 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             #endregion
 
-            var purchaseRequisition = _db.PurchaseRequisitions.Find(purchaseOrder.PurchaseRequisitionID);
-            if (purchaseRequisition != null)
+            var pr = _db.PurchaseRequisitions.Find(purchaseOrder.PurchaseRequisitionID);
+            if (pr != null)
             {
-                purchaseOrder.SroreRequisition = purchaseRequisition.StoreRequisitionID.ToString();
-                purchaseOrder.OrgStructureId = purchaseRequisition.OrgStructureId;
+                purchaseOrder.SroreRequisition = pr.StoreRequisitionID.ToString();
+                purchaseOrder.OrgStructureId = pr.OrgStructureId;                
             }
 
             if (ModelState.IsValid)
             {
-                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+                
 
                 var entity = new PurchaseOrder
                     {
                         IsManual = purchaseOrder.IsManual,
                         PurchaseRequisitionID = purchaseOrder.PurchaseRequisitionID,
                         SroreRequisition = purchaseOrder.SroreRequisition,
-                        ProcurementOfficer = empid,
-                        BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
-                    PurchaseOrderID = purchaseOrder.PurchaseOrderID,
+                        ProcurementOfficer = purchaseOrder.ProcurementOfficer,
+                        BranchId = purchaseOrder.BranchId,
+                        BusinessUnitId = purchaseOrder.BusinessUnitId,
+                        PurchaseOrderID = purchaseOrder.PurchaseOrderID,
                         SupplierId = purchaseOrder.SupplierId,
                         IsNewSupplier = purchaseOrder.IsNewSupplier,
                         SupplierName = purchaseOrder.SupplierName,
                         POType = purchaseOrder.POType,
                         ProcurementMethod = purchaseOrder.ProcurementMethod,
                         ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                    TenderID = purchaseOrder.TenderID,
+                    BidAwardedSupplierID = purchaseOrder.BidAwardedSupplierID,
+                    PurchasePaymentType = purchaseOrder.PurchasePaymentType,
                         OrderDate = purchaseOrder.OrderDate,
                         DeliveryDate = purchaseOrder.DeliveryDate,
                         DeliveryPlace = purchaseOrder.DeliveryPlace,
@@ -356,10 +371,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         IsPaid = purchaseOrder.IsPaid,
 
                     ForwardedFrom = purchaseOrder.ForwardedFrom,
-                        ForwardedTo = purchaseOrder.ForwardedTo,
-                        IsFinalApproval = purchaseOrder.IsFinalApproval,
+                    ForwardedTo = purchaseOrder.ForwardedTo,
+                    IsFinalApproval = purchaseOrder.IsFinalApproval,
+                    CurrentApprovalStep = purchaseOrder.CurrentApprovalStep,
 
-                        IsOnlineApproved = purchaseOrder.IsOnlineApproved,
+                    IsOnlineApproved = purchaseOrder.IsOnlineApproved,
                         OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
                         OnlineApprovedTime = purchaseOrder.OnlineApprovedTime,
 
@@ -386,7 +402,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { purchaseOrder }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderDirects_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseOrder purchaseOrder)
         {
@@ -397,6 +413,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     SroreRequisition = purchaseOrder.SroreRequisition,
                     ProcurementOfficer = purchaseOrder.ProcurementOfficer,
                     BranchId = purchaseOrder.BranchId,
+                    BusinessUnitId = purchaseOrder.BusinessUnitId,
                     PurchaseOrderID = purchaseOrder.PurchaseOrderID,
                     SupplierId = purchaseOrder.SupplierId,
                     IsNewSupplier = purchaseOrder.IsNewSupplier,
@@ -405,6 +422,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     ProcurementMethod = purchaseOrder.ProcurementMethod,
                     PurchaseRequisitionID = purchaseOrder.PurchaseRequisitionID,
                     ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                    TenderID = purchaseOrder.TenderID,
+                    BidAwardedSupplierID = purchaseOrder.BidAwardedSupplierID,
+                    PurchasePaymentType = purchaseOrder.PurchasePaymentType,
                     OrderDate = purchaseOrder.OrderDate,
                     DeliveryDate = purchaseOrder.DeliveryDate,
                     DeliveryPlace = purchaseOrder.DeliveryPlace,
@@ -432,7 +452,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { purchaseOrder }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.PurchaseOrders.Find(id);
@@ -480,8 +500,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     isNewRecord = false;
                 decimal docamount = record.PurchaseOrderItem.Sum(x => x.Total);
                 int docid = record.PurchaseOrderID;
-
-                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "",record.ForwardedTo, ApprovalDocumentType.PurchaseOrder, isNewRecord);
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "",record.ForwardedTo, ApprovalDocumentType.PurchaseOrder, isNewRecord,step);
                 #endregion
               
                 var formattedData = new
@@ -534,58 +554,327 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult TransferToPayment(int id)
         {
-            var record = _db.PurchaseOrders.Find(id);
-            if (record != null && !record.IsTransferredToPayment && record.IsOnlineApproved && !record.IsVoid)
-            {
-                #region create payment
-                var entity = new ApPayment
-                {
-                    IsPrepayment = true,
-                    SupplierName = record.SupplierName,
-                    SupplierId = record.SupplierId,
-                    InvoiceNumber = "",
-                    InvoiceAmount = 0,
-                    PaymentAmount = 0,
-                    RemainingBalance = 0,
-                    HasPrepayment = false,
-                    PrepaymentAmount = 0,
-                    NetAmount = 0,
-                    PaymentMethod = "Na",
-                    PaymentReference = "NA",
-                    PaymentDate = DateTime.Today,
-                    PoTypeEnum = PurchaseType.PurchaseOrder,
-                    PoType = "Purchase Order",
-                    PurchaseReference = record.PurchaseOrderID.ToString(),
-                    CollectedByPurchaser = true,
-                    EmployeeId=record.ProcurementOfficer,
-                    Remark = record.Remark,
-                    OrgBranchName = record.OrgBranchName,
-                    DateCreated = DateTime.Now,
-                    LastModified = record.LastModified,
-                    CreatedBy = User.Identity.Name,
-                    ModifiedBy = record.ModifiedBy
-                };
-                _db.APPayments.Add(entity);
-                _db.SaveChanges();
+            bool transferred = false;
+            var po = _db.PurchaseOrders.Find(id);
+            var paymentSchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id);
+            decimal amount = 0;
+            var items = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
+            if(items.Any())
+                amount=items.Sum(x => x.SubTotal);
 
-                #endregion
-                record.Status = Enum.GetName(typeof(OperationStatuses), 14);
-                record.IsTransferredToPayment = true;
-                _db.PurchaseOrders.Attach(record);
-                _db.Entry(record).State = EntityState.Modified;
-                _db.SaveChanges();
+            if (paymentSchedule == null)
+            {
                 var formattedData = new
                 {
-                    Message = "Successfully Sent for Payment.",
-                    Status = "OK"
+                    Message = "There is no payment schedule defined.",
+                    Status = "NOT_OK"
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record == null)
+
+            if (paymentSchedule.Sum(x => x.Percentage) <= 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Advance percentage should be more than zero.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (po != null && !po.IsTransferredToPayment && po.IsOnlineApproved && !po.IsVoid && paymentSchedule.Any() && amount > 0)
+            {
+                decimal sumAdvancePercent = 0;
+                decimal sumPaymentPercent = 0;
+                var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).ToList();
+                var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).ToList();
+                if (advances.Any())
+                {
+                    sumAdvancePercent = advances.Sum(x => x.Percentage);
+                    if (sumAdvancePercent > 0)
+                    {
+                        #region create payment request
+                        var entity = new PurchasePayment
+                        {
+                            Date = DateTime.Today,
+                            PurchasePaymentType=po.PurchasePaymentType,
+                            SupplierId = po.SupplierId,
+                            SupplierName = po.SupplierName,
+                            SupplierInvoice = "",
+                            WithOutGRN = false,
+                            PaymentAmount = amount * (sumAdvancePercent / 100),
+                            ApplyPenality = false,
+                            PenalityAmount = 0,
+                            NetPayable = amount * (sumAdvancePercent / 100),
+                            AmountDue = amount * (sumAdvancePercent / 100),
+
+                            Type = "Purchase Order",
+                            PaymentType = PaymentType.Advance,
+                            PoOrContractNumber = po.PurchaseOrderID.ToString(),
+                            PurposeOfPayment = "Supplier Payment",
+                            ProcurementOfficer = po.ProcurementOfficer,
+                            BranchId = po.BranchId,
+                            BusinessUnitId = po.BusinessUnitId,
+
+
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name
+                        };
+
+                        _db.PurchasePayments.Add(entity);
+                        //_db.SaveChanges();
+                        #endregion
+                        #region create advance payment
+                        //var entity = new ApPayment
+                        //{
+                        //    IsPrepayment = true,
+                        //    SupplierName = po.SupplierName,
+                        //    SupplierId = po.SupplierId,
+                        //    InvoiceNumber = "",
+                        //    InvoiceAmount = 0,
+                        //    PaymentAmount = 0,
+                        //    RemainingBalance = 0,
+                        //    HasPrepayment = false,
+                        //    PrepaymentAmount = amount * (sumAdvancePercent / 100),
+                        //    NetAmount = amount * (sumAdvancePercent / 100),
+                        //    PaymentMethod = "Na",
+                        //    PaymentReference = "NA",
+                        //    GLTaxRateID = 0,
+                        //    PaymentDate = DateTime.Today,
+                        //    PoTypeEnum = PurchaseType.PurchaseOrder,
+                        //    PoType = "Purchase Order",
+                        //    PurchaseReference = po.PurchaseOrderID.ToString(),
+                        //    CollectedByPurchaser = true,
+                        //    EmployeeId = po.ProcurementOfficer,
+                        //    Remark = po.Remark,
+                        //    OrgBranchName = po.OrgBranchName,
+                        //    DateCreated = DateTime.Now,
+                        //    LastModified = po.LastModified,
+                        //    CreatedBy = User.Identity.Name,
+                        //    ModifiedBy = po.ModifiedBy
+                        //};
+                        //_db.APPayments.Add(entity);
+                        //_db.SaveChanges();
+
+
+                        #endregion
+                        //record.Status = Enum.GetName(typeof(OperationStatuses), 14);
+                        //record.IsTransferredToPayment = true;
+                        //_db.PurchaseOrders.Attach(record);
+                        //_db.Entry(record).State = EntityState.Modified;
+                        //_db.SaveChanges();
+                        //var formattedData1 = new
+                        //{
+                        //    Message = "Successfully Sent for Payment.",
+                        //    Status = "OK"
+                        //};
+                        //return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                        transferred = true;
+                    }
+                }
+                if (payments.Any())
+                {
+                    sumPaymentPercent = payments.Sum(x => x.Percentage);
+                    if (sumPaymentPercent > 0)
+                    {
+
+                        #region create payment request
+                        var entity = new PurchasePayment
+                        {
+                            Date = DateTime.Today,
+                            PurchasePaymentType = po.PurchasePaymentType,
+                            SupplierId = po.SupplierId,
+                            SupplierName = po.SupplierName,
+                            SupplierInvoice = "",
+                            WithOutGRN = false,
+                            PaymentAmount = amount * (sumPaymentPercent / 100),
+                            ApplyPenality = false,
+                            PenalityAmount = 0,
+                            NetPayable = amount * (sumPaymentPercent / 100),
+                            AmountDue = amount * (sumPaymentPercent / 100),
+
+                            Type = "Purchase Order",
+                            PaymentType = PaymentType.Payment,
+                            PoOrContractNumber = po.PurchaseOrderID.ToString(),
+                            PurposeOfPayment = "Supplier Payment",
+                            ProcurementOfficer = po.ProcurementOfficer,
+                            BranchId = po.BranchId,
+                            BusinessUnitId = po.BusinessUnitId,
+
+
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name
+                        };
+
+                        _db.PurchasePayments.Add(entity);
+                        //_db.SaveChanges();
+                        #endregion
+                        #region create invoice
+                        //var apPaybleInvoice = new ApPaybleInvoices
+                        //{
+                        //    BranchId = purchaseOrder.BranchId,
+                        //    BusinessUnitId = purchaseOrder.BusinessUnitId,
+                        //    IsManual = false,
+                        //    SupplierName = purchaseOrder.SupplierName,
+                        //    SupplierId = purchaseOrder.SupplierId,
+                        //    EmployeeId = purchaseOrder.ProcurementOfficer,
+                        //    Type = ApInvoiceTransactionType.Invoice,
+                        //    PrNo = purchaseOrder.PurchaseRequisitionID.ToString(),
+                        //    PoNum = purchaseOrder.PurchaseOrderID.ToString(),
+                        //    PurposeOfPayment = "Supplier payment",
+                        //    InvoiceDate = DateTime.Today.Date,
+                        //    InvoiceNumber = "",
+                        //    PaymentTerms = 0,
+                        //    InvoiceAmount = amount * (sumPaymentPercent / 100),
+                        //    AdvanceAmount = 0,
+                        //    TaxAmount = 0,
+                        //    WithholdingAmount = 0,
+                        //    Subtotal = 0,
+                        //    WithholdTaxAmount = 0,
+                        //    NetPayable = amount * (sumPaymentPercent / 100),
+                        //    AmountDue = amount * (sumPaymentPercent / 100),
+                        //    InvoiceStatus = InvoiceStatus.New,
+
+                        //    Status = "",
+                        //    Source = GrnSource.StockGrn,
+                        //    Grn = "",
+
+                        //    DateCreated = DateTime.Now,
+                        //    CreatedBy = User.Identity.Name,
+                        //};
+
+                        //_db.APPaybleInvoices.Add(apPaybleInvoice);
+                        //_db.SaveChanges();
+                        //foreach(var item in items)
+                        //{
+                        //    var invoiceLine = new ApPaybleInvoicesLines
+                        //    {
+                        //        ApPaybleInvoicesId = id,
+                        //        Name = item.Name,
+                        //        Description = item.ItemName,
+                        //        AccountCode = "NA",
+                        //        AccountDesc = "",//_accountHelper.GetAccountDesc(aPPaybleInvoicesLines.AccountCode),
+                        //        InvoiceAmount = item.SubTotal,
+                        //        AdvanceAmount = 0,
+                        //        NetPayable = item.SubTotal,
+                        //        ReceiptNo = "",
+                        //        TaxType = item.GLTaxRateID.ToString(),
+                        //        TaxAmount = item.TaxAmount,
+                        //        WithholdingType = "",
+                        //        WithholdingAmount = 0,
+                        //        WithholdTax = false,
+                        //        WithholdTaxAmount =0,
+                        //        PoNo = purchaseOrder.PurchaseOrderID.ToString(),
+                        //        DateCreated = DateTime.Now,
+                        //        CreatedBy = User.Identity.Name,
+                        //    };
+
+                        //    _db.APPaybleInvoicesLines.Add(invoiceLine);
+                        //    _db.SaveChanges();
+
+                        //}
+                        //// _db.SaveChanges();
+
+                        #endregion
+                        #region create payment
+                        //var entity = new ApPayment
+                        //{
+                        //    IsPrepayment = false,
+                        //    SupplierName = purchaseOrder.SupplierName,
+                        //    SupplierId = purchaseOrder.SupplierId,
+                        //    InvoiceNumber = "",
+                        //    InvoiceAmount = 0,
+                        //    PaymentAmount = amount * (sumPaymentPercent / 100),
+                        //    RemainingBalance = 0,
+                        //    HasPrepayment = false,
+                        //    PrepaymentAmount = 0,
+                        //    NetAmount = amount * (sumPaymentPercent / 100),
+                        //    PaymentMethod = "Na",
+                        //    PaymentReference = "NA",
+                        //    GLTaxRateID = 0,
+                        //    PaymentDate = DateTime.Today,
+                        //    PoTypeEnum = PurchaseType.PurchaseOrder,
+                        //    PoType = "Purchase Order",
+                        //    PurchaseReference = purchaseOrder.PurchaseOrderID.ToString(),
+                        //    CollectedByPurchaser = true,
+                        //    EmployeeId = purchaseOrder.ProcurementOfficer,
+                        //    Remark = purchaseOrder.Remark,
+                        //    OrgBranchName = purchaseOrder.OrgBranchName,
+                        //    DateCreated = DateTime.Now,
+                        //    LastModified = purchaseOrder.LastModified,
+                        //    CreatedBy = User.Identity.Name,
+                        //    ModifiedBy = purchaseOrder.ModifiedBy
+                        //};
+                        //_db.APPayments.Add(entity);
+                        // _db.SaveChanges();
+
+                        #endregion
+                        //record.Status = Enum.GetName(typeof(OperationStatuses), 14);
+                        //record.IsTransferredToPayment = true;
+                        //_db.PurchaseOrders.Attach(record);
+                        //_db.Entry(record).State = EntityState.Modified;
+                        //_db.SaveChanges();
+
+                        //var formattedData1 = new
+                        //{
+                        //    Message = "Successfully Sent for Payment.",
+                        //    Status = "OK"
+                        //};
+                        //return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                        transferred = true;
+                    }
+                }
+
+                if (transferred)
+                {
+                    po.Status = Enum.GetName(typeof(OperationStatuses), 14);
+                    po.IsTransferredToPayment = true;
+                    _db.PurchaseOrders.Attach(po);
+                    _db.Entry(po).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                    var formattedData1 = new
+                    {
+                        Message = "Successfully Sent for Payment.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {                   
+                    var formattedData = new
+                    {
+                        Message = "There is no payment to be transferred.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            if (amount == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Total amount is 0.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!paymentSchedule.Any())
+            {
+                var formattedData = new
+                {
+                    Message = "Please payment shcedule.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (po == null)
             {
                 var formattedData = new
                 {
@@ -595,7 +884,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record.IsVoid)
+            if (po.IsVoid)
             {
                 var formattedData = new
                 {
@@ -605,7 +894,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record.IsTransferredToPayment)
+            if (po.IsTransferredToPayment)
             {
                 var formattedData = new
                 {
@@ -618,11 +907,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             return null;
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult TransferToForeignFollowup(int id)
         {
             var record = _db.PurchaseOrders.Find(id);
-            var items = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderItemID == id).ToList();
+            var items = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
 
             if (record != null)
             {
@@ -768,7 +1057,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementVoid)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.PurchaseOrders.Find(id);
@@ -895,7 +1184,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendToChecker(int id, string user)
         {
             var record = _db.PurchaseOrders.Find(id);

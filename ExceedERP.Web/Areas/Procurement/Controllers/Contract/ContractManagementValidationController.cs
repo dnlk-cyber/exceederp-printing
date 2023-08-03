@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult ContractManagementValidations_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<ContractManagementValidation> contractmanagementvalidations = db.ContractManagementValidations.Where(x=>x.ContractManagementID==id);
@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractManagementValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ContractManagementValidation contractManagementValidation)
         {
@@ -153,7 +153,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractManagementValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractManagementValidations_Update(int id,[DataSourceRequest]DataSourceRequest request, ContractManagementValidation contractManagementValidation)
         {
@@ -180,7 +180,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractManagementValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractManagementValidations_Destroy([DataSourceRequest]DataSourceRequest request, ContractManagementValidation contractManagementValidation)
         {

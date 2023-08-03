@@ -9,9 +9,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
  using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
 {
+    [Authorize(Roles = "Admin")]
     public class DocumentApprovalRuleController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -36,6 +38,18 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
 
             var branches = db.Branch;
             ViewData["Branches"] = branches;
+
+         
+            var bizUnits = db.BusinessUnits.ToList();
+            var bizUnitdisplay = bizUnits.ToList();
+
+            ViewData["businesUnits"] = bizUnitdisplay.Select(
+              i => new
+              {
+                  Name = i.Name,
+                  BusinessUnitId = i.BusinessUnitId
+              }).AsQueryable(); ;
+           
         }
         void UpdateDocTypes()
         {

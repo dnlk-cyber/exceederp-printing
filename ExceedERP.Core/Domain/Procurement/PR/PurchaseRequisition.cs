@@ -20,7 +20,9 @@ namespace ExceedERP.Core.Domain.Procurement.PR
         public int PurchaseRequisitionID { get; set; }
         [Display(Name = "Store Requisition Number")]
         public int StoreRequisitionID { get; set; }//
-        //public virtual StoreRequisition StoreRequisition { get; set; }
+         //public virtual StoreRequisition StoreRequisition { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [Required]
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
@@ -66,12 +68,15 @@ namespace ExceedERP.Core.Domain.Procurement.PR
 
         [DisplayName("Is Fullfilled")]
         public bool IsFullfilled { get; set; }
-        public string NextApprover { get; set; }
+        public string NextApprover { get; set; }       
+        //budget controll
+        public bool IsBudgetApproved { get; set; }
+        public string BudgetApprovedBy { get; set; }
+        public DateTime? BudgetApprovedTime { get; set; }
         public virtual ICollection<PurchaseRequisitionItem> PurchaseRequisitionItems { get; set; }
         public virtual ICollection<PurchaseRequisitionUserDepartmentValidation> PurchaseRequisitionUserDepartmentValidation { get; set; }
         public virtual ICollection<PurchaseRequisitionSecondValidation> PurchaseRequisitionSecondValidation { get; set; }
         public virtual ICollection<PurchaseRequisitionPurchaseDepartmentValidation> PurchaseRequisitionPurchaseDepartmentValidation { get; set; }
-        //public virtual ICollection<PurchaseRequisitionDistribution> PurchaseRequisitionDistribution { get; set; }
         public virtual ICollection<PurchaseRequisitionAssignment> PurchaseRequisitionAssignments { get; set; }
         public virtual ICollection<PurchaseRequisitionAttachment> PurchaseRequisitionAttachments { get; set; }
     }

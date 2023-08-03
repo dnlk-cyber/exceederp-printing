@@ -20,7 +20,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -78,46 +78,47 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
 
-            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType==PurchaseItemType.Service).Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Service);//.Where(x => mybraches.Contains(x.OrgStructureId));
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser))
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
+                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover)
+                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit || x.CreatedBy == User.Identity.Name);
+                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
             }
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover)
+                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.OrgStructureId == userworkunit || x.CreatedBy == User.Identity.Name);
+                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
+                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentApprover))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
+                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit);
+                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId));
             }
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementServiceRequisitionSecondApprover))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover))
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentApprover))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.OrgStructureId == userworkunit);
+                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId));
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
                 purchaserequisitions = purchaserequisitions.Where(x => x.CreatedBy == User.Identity.Name).AsQueryable();
             }
@@ -127,6 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -187,7 +189,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Create([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -214,8 +216,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             if (purchaseRequisition.EmployeeId == 0)
                 ModelState.AddModelError("requester", "Please choose requetster");
 
-            if (purchaseRequisition.BranchId == 0)
-                ModelState.AddModelError("requester", "Please choose branch");
+            //if (purchaseRequisition.BranchId == 0)
+            //    ModelState.AddModelError("requester", "Please choose branch");
 
             #endregion
             if (ModelState.IsValid)
@@ -223,7 +225,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                    BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -267,7 +270,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         public ActionResult PurchaseRequisitions_Update([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
             #region validation 
@@ -293,8 +296,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             if (purchaseRequisition.EmployeeId == 0)
                 ModelState.AddModelError("requester", "Please choose requetster");
 
-            if (purchaseRequisition.BranchId == 0)
-                ModelState.AddModelError("branch", "Please choose branch");
+            //if (purchaseRequisition.BranchId == 0)
+            //    ModelState.AddModelError("branch", "Please choose branch");
 
             #endregion
 
@@ -304,6 +307,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
@@ -348,7 +352,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -358,9 +362,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     {
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                        BranchId = purchaseRequisition.BranchId,
-                        OrgStructureId = purchaseRequisition.OrgStructureId,
-                        EmployeeId = purchaseRequisition.EmployeeId,
+                    BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                    OrgStructureId = purchaseRequisition.OrgStructureId,
+                    EmployeeId = purchaseRequisition.EmployeeId,
                         ReferenceNo = purchaseRequisition.ReferenceNo,
                         ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
                         RequestDate = purchaseRequisition.RequestDate,
@@ -396,7 +401,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);
@@ -457,7 +462,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         public JsonResult SendForSecondApproval(int id, string user)
         {
             var record = db.PurchaseRequisitions.Find(id);

@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Finance.AR
 {

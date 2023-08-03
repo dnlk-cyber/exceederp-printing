@@ -16,7 +16,7 @@ using ExceedERP.Core.Domain.Procurement;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
-    [AuthorizeRoles(ProcurementConstants.ProcurementAdmin)]
+    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin)]
 
     public class ProcurementPoTypeController : Controller
     {

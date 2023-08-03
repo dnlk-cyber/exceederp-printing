@@ -46,9 +46,9 @@
                                     {
                                         sortable.SortMode(GridSortMode.SingleColumn);
                                     })
-                                    .Groupable()
+                                    
                                      .Events(ev => ev.Edit("onMasterEdit"))
-                                    //.Groupable().Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+                                    //.Events(ev => ev.DetailExpand("detailExpandMasterNew"))
                                     .Scrollable(h => h.Height(500))
                                      .Events(x => x.DataBound("onDataBoundMasterNew"))
                               .DataSource(dataSource => dataSource

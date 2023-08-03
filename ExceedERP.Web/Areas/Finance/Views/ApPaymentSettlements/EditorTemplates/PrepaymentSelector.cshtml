@@ -1,0 +1,17 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                
+                  
+                  .OptionLabel("Select Prepayment...")
+                      .DataTextField("Name")
+                      .DataValueField("Code")
+                      .Filter("contains")
+                     .CascadeFrom("Source")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPrepaymentForSettlements", "FinanceDataProvider", new { area = "Finance" }).Data("getParameters"))
+                       .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

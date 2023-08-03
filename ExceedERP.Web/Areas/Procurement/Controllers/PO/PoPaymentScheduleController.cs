@@ -16,13 +16,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult PoPaymentSchedules_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<PoPaymentSchedule> poPaymentSchedules = _db.PoPaymentSchedules.Where(x=>x.PurchaseOrderID==id);
@@ -42,12 +42,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PoPaymentSchedules_Create(int id,[DataSourceRequest]DataSourceRequest request, PoPaymentSchedule poPaymentSchedule)
         {
             #region validation
 
+            var po = _db.PurchaseOrders.Find(id);
+            if((po.PurchasePaymentType== PurchasePaymentType.Credit) &&(poPaymentSchedule.PaymentType==PaymentType.Advance))
+                ModelState.AddModelError("ilegitimate", "The PO is credit type hence can't allow Advance payment. ");
+            
             decimal prev = 0;
 
             var previous = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
@@ -87,7 +91,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { poPaymentSchedule }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PoPaymentSchedules_Update(int id,[DataSourceRequest]DataSourceRequest request, PoPaymentSchedule poPaymentSchedule)
         {
@@ -135,7 +139,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { poPaymentSchedule }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PoPaymentSchedules_Destroy([DataSourceRequest]DataSourceRequest request, PoPaymentSchedule poPaymentSchedule)
         {

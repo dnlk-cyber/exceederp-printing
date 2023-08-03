@@ -22,13 +22,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         private readonly ExceedDbContext _db = new ExceedDbContext();
         private readonly DashboardHelper _dashboardHelper = new DashboardHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult TenderValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<TenderValidation> tendervalidations = _db.TenderValidations.Where(x => x.TenderID == id);
@@ -47,7 +47,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderValidations_Create([DataSourceRequest]DataSourceRequest request, TenderValidation tenderValidation, int id)
         {
@@ -207,7 +207,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderValidations_Update([DataSourceRequest]DataSourceRequest request, TenderValidation tenderValidation)
         {
@@ -233,7 +233,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderValidations_Destroy([DataSourceRequest]DataSourceRequest request, TenderValidation tenderValidation)
         {

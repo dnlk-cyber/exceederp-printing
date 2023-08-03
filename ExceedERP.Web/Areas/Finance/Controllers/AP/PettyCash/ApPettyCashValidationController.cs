@@ -79,7 +79,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
                         if (record.IsFinalApproval)
                         {
                             //PostToSecondaryLedger(id);
-                            record.IsPostedToSecondLedger = true;
+                            //record.IsPostedToSecondLedger = true;
                             record.Status = "Approved";
                             record.IsOnlineApproved = true;
                             record.IsVoid = false;
@@ -90,35 +90,35 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
 
                             #region pass data for reconciliation
 
-                            foreach (ApPettyCashDistribution distribution in record.PettyCashDistributions)
-                            {
-                                string sourceid = record.ApPettyCashId + "-" + distribution.ApPettyCashDistributionId;
-                                //check if this is bank account
-                                if (_accountHelper.IsBankAccount(distribution.AccountCode))
-                                {
-                                    var book = new ReconciliationBookAccount
-                                    {
-                                        CreatedBy = User.Identity.Name,
-                                        DateCreated = DateTime.Now,
-                                        AccountCode = distribution.AccountCode,
-                                        Debit = distribution.Debit,
-                                        Credit = distribution.Credit,
-                                        Date = record.Date,
-                                        Type = "Petty Cash",
-                                        ReferenceDoc =
-                                            !String.IsNullOrWhiteSpace(record.Reference) ? record.Reference : "NA",
-                                        Reference = !String.IsNullOrWhiteSpace(distribution.AdditionalDescription)
-                                            ? distribution.AdditionalDescription
-                                            : "NA",
-                                        Source = JournalSources.AP_PettyCash.ToString(),
-                                        SourceID = sourceid,
-                                        AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
-                                        SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
-                                    };
-                                    _db.ReconcilationBookAccounts.Add(book);
-                                    _db.SaveChanges();
-                                }
-                            }
+                            //foreach (ApPettyCashDistribution distribution in record.PettyCashDistributions)
+                            //{
+                            //    string sourceid = record.ApPettyCashId + "-" + distribution.ApPettyCashDistributionId;
+                            //    //check if this is bank account
+                            //    if (_accountHelper.IsBankAccount(distribution.AccountCode))
+                            //    {
+                            //        var book = new ReconciliationBookAccount
+                            //        {
+                            //            CreatedBy = User.Identity.Name,
+                            //            DateCreated = DateTime.Now,
+                            //            AccountCode = distribution.AccountCode,
+                            //            Debit = distribution.Debit,
+                            //            Credit = distribution.Credit,
+                            //            Date = record.Date.Date,
+                            //            Type = "Petty Cash",
+                            //            ReferenceDoc =
+                            //                !String.IsNullOrWhiteSpace(record.Reference) ? record.Reference : "NA",
+                            //            Reference = !String.IsNullOrWhiteSpace(distribution.AdditionalDescription)
+                            //                ? distribution.AdditionalDescription
+                            //                : "NA",
+                            //            Source = JournalSources.AP_PettyCash.ToString(),
+                            //            SourceID = sourceid,
+                            //            AccountSegment = _accountHelper.GetNaturalAccountSegment(distribution.AccountCode),
+                            //            SubAccountSegment = _accountHelper.GetSubAccountSegment(distribution.AccountCode)
+                            //        };
+                            //        _db.ReconcilationBookAccounts.Add(book);
+                            //        _db.SaveChanges();
+                            //    }
+                            //}
 
                             #endregion
 
@@ -206,52 +206,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
             return Json(new[] { apPettyCashValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        private void PostToSecondaryLedger(int id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            string user = User.Identity.Name;
-            var record = _db.ApPettyCash.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName = "",
-                    JournalNumber = "",
-                    Description = "",
-                    CategoryName = "",
-                    SourcesName = "Petty Cash",
-                    EffectiveDate = record.Date,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.Date),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.Date),
-                    PostingSource = JournalSources.AP_PettyCash,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.ApPettyCashDistributions.Where(x => x.ApPettyCashId == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.ApPettyCashDistributionId,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-
-                secondLedgerHelper.PostToSecondLedger(ledger, user);
-            }
-        }
         protected override void Dispose(bool disposing)
         {
             _db.Dispose();

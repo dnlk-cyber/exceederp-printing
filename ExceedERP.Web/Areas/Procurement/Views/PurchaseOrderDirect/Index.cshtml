@@ -11,12 +11,13 @@
               //columns.ForeignKey(p => p.ProformaPurchaseID, (IEnumerable)ViewData["proformaPurchases"], "ProformaPurchaseID", "Remark").Title("Proforma No.").EditorTemplateName("ProformaSelector").Width(100);
               columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(120).EditorTemplateName("EmployeeSelector");
               columns.Bound(c => c.SupplierId).Width(100).EditorTemplateName("SupplierSelector");
-              columns.Bound(c => c.IsNewSupplier).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsNewSupplier ? checked='checked' :'' # />");
+              columns.Bound(c => c.IsNewSupplier).Width(120).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsNewSupplier ? checked='checked' :'' # />");
               columns.Bound(c => c.SupplierName).Width(120);
               //columns.Bound(c => c.POType).EditorTemplateName("POTypeSelector").Width(150);
               columns.Bound(c => c.OrderDate).Width(130);
               columns.Bound(c => c.DeliveryDate).Width(130);
               columns.Bound(c => c.DeliveryPlace).Width(130);
+              columns.Bound(c => c.PurchasePaymentType).Width(130);
 
               columns.Bound(c => c.Remark).Width(120);
               columns.Bound(c => c.PurchaseStatus).Width(130);
@@ -26,15 +27,15 @@
               {
                   command.Edit();
                   command.Destroy();
-  }).Width(180);
+              }).Width(180);
           })
           .ToolBar(toolbar =>
           {
-   toolbar.Create();
-  // toolbar.Excel();
-  // toolbar.Excel();
-})
-          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PurchaseOrderDirect").Window(w => w.Title("Purchase Order")))
+              toolbar.Create();
+              // toolbar.Excel();
+              // toolbar.Excel();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PurchaseOrder").Window(w => w.Title("Purchase Order")))
 
           .HtmlAttributes(new { style = "height: 550px;" })
           .Pageable(pageable => pageable
@@ -54,7 +55,7 @@
               sortable.SortMode(GridSortMode.SingleColumn);
           })
           .Filterable()
-          .Groupable()
+
           .Events(ev => ev.Edit("onMasterEdit"))
           .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
           .Scrollable(h => h.Height(500))
@@ -74,10 +75,13 @@
                       model.Field(p => p.ProcurementOfficer).Editable(false);
                       model.Field(p => p.PurchaseOrderID).Editable(false);
                       model.Field(p => p.IsTransferredToPayment).Editable(false);
-          //model.Field(p => p.PurchaseRequisitionID).Editable(false);
-          //model.Field(p => p.PurchaseOrderID).Editable(false);
-          model.Field(p => p.IsManual).Editable(false);
+                      //model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                      //model.Field(p => p.PurchaseOrderID).Editable(false);
+                      model.Field(p => p.CurrentApprovalStep).Editable(false);
+                      model.Field(p => p.IsManual).Editable(false);
                       model.Field(p => p.IsPaid).Editable(false);
+                      model.Field(p => p.BranchId).Editable(false);
+                      model.Field(p => p.BusinessUnitId).Editable(false);
                       model.Field(p => p.IsFullfilled).Editable(false);
                       model.Field(p => p.Status).Editable(false);
                       model.Field(p => p.CreatedBy).Editable(false);
@@ -112,77 +116,91 @@
                                 </div>
                                 <br />
                                 # } #
+                              
+                                    # if (IsOnlineApproved)
+                                    {#
+                                    <a href='@Url.Action("PurchaseOrderPrint", "ProcurementPrint")/#=PurchaseOrderID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    # } #
 
-                                # if (IsOnlineApproved)
-                                {#
-                                <a href='@Url.Action("PurchaseOrderPrint", "ProcurementPrint")/#=PurchaseOrderID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                <br />
-                                # } #
+                                    # if (IsOnlineApproved && !IsTransferredToPayment )
+                                    {#
+                                    <a onclick='return transferToPayment("#=PurchaseOrderID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
+                                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                    # } #
 
-                                # if (IsOnlineApproved && !IsTransferredToPayment )
-                                {#
-                                <a onclick='return transferToPayment("#=PurchaseOrderID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
-                                <br />
-                                # } #
+                                    # if (IsOnlineApproved && !IsTransferredToFollowUp &&!IsVoid )
+                                    {#
 
-                                # if (IsOnlineApproved && !IsTransferredToFollowUp &&!IsVoid )
-                                {#
+                                    <a onclick='return transferToFollowUp("#=PurchaseOrderID#")' href=' \#' title="Transfer to Foreign Followup"><i class="fa fa-check fa-2x"></i></a>
 
-                                <a onclick='return transferToFollowUp("#=PurchaseOrderID#")' href=' \#' title="Transfer to Foreign Followup"><i class="fa fa-check fa-2x"></i></a>
-                                <br />
-                                # } #
+                                    # } #                            
 
-                                <div>
-                                    <hr>
-                                    <dl class="dl-horizontal">
-                                        <dt>
-                                            PR No.
-                                        </dt>
-                                        <dd>
-                                            #= PurchaseOrderID #
-                                        </dd>
+                                    <div>
+                                        <hr>
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                PR No.
+                                            </dt>
+                                            <dd>
+                                                #= PurchaseOrderID #
+                                            </dd>
 
-                                        <dt>
-                                            Delivery Date
-                                        </dt>
-                                        <dd>
+                                            <dt>
+                                                Delivery Date
+                                            </dt>
+                                            <dd>
 
-                                            #=kendo.toString(kendo.parseDate(DeliveryDate), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DeliveryDate), 'dd/MM/yyyy') #
 
-                                        </dd>
-                                        <dt>
-                                            Status
-                                        </dt>
-                                        <dd>
-                                            #= Status #
-                                        </dd>
-                                        <dt>
-                                            CreatedOn
-                                        </dt>
-                                        <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            </dd>
+                                            <dt>
+                                                Status
+                                            </dt>
+                                            <dd>
+                                                #= Status #
+                                            </dd>
+                                            <dt>
+                                                CreatedOn
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
 
-                                        </dd>
-                                        <dt>
-                                            CreatedBy
-                                        </dt>
-                                        <dd>
-                                            #= CreatedBy #
-                                        </dd>
-                                        <dt>
-                                            Modified By
-                                        </dt>
-                                        <dd>
-                                            #= ModifiedBy #
-                                        </dd>
-                                        <dt>
-                                            Modified Date
-                                        </dt>
-                                        <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                                        </dd>
-                                    </dl>
-                                </div>
+                                            </dd>
+                                            <dt>
+                                                CreatedBy
+                                            </dt>
+                                            <dd>
+                                                #= CreatedBy #
+                                            </dd>
+                                            <dt>
+                                                Modified By
+                                            </dt>
+                                            <dd>
+                                                #= ModifiedBy #
+                                            </dd>
+                                            <dt>
+                                                Modified Date
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            </dd>
+                                        </dl>
+                                        # if (!IsOnlineApproved)
+                                        {#
+                                        <dl class="h6">
+                                            <dt>
+                                                Next Approver
+                                            </dt>
+                                            <dd>
+                                                #= ForwardedTo # <snap id="user_name_display"></snap>
+                                                <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                                <a onclick='SelectNextApprover(this,"#=PurchaseOrderID#","PO")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                                <snap id="new_user_name_display"></snap>
+                                            </dd>
+                                        </dl>
+                                        # } #
+                                    </div>
 
                                 <hr>
 
@@ -192,8 +210,7 @@
                                             {
                                     <a onclick='return voidRecord("#=PurchaseOrderID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                             }
-                                /**/
-                                /**/
+                              
                                 # } #
 
                             </text>
@@ -258,6 +275,7 @@
                                                                       columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(120);                                                                     
                                                                       columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(250);
                                                                       columns.Bound(c => c.Name).Width(80);
+                                                                      columns.Bound(c => c.ItemType).Width(80);
                                                                       columns.Bound(c => c.UoM).Width(60);
                                                                       columns.Bound(c => c.Quantity).Width(90);
                                                                       columns.Bound(c => c.UnitPrice).Width(90).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
@@ -771,6 +789,10 @@
         });
     }
 
+
+    
+
+   
     //var supplierTextBox;
     //var popup;
     //var supplier;

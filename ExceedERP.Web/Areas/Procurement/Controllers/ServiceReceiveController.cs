@@ -33,7 +33,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         private ExceedDbContext _db = new ExceedDbContext();
         private readonly DistributionHelper _distributionHelper = new DistributionHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult Index()
         {
 
@@ -72,7 +72,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult ServiceReceives_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
@@ -120,7 +120,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         }
 
       
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceives_Create([DataSourceRequest]DataSourceRequest request, ServiceReceive serviceReceive)
         {
@@ -239,7 +239,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { serviceReceive }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceives_Update([DataSourceRequest]DataSourceRequest request, ServiceReceive serviceReceive)
         {
@@ -330,7 +330,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { serviceReceive }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceives_Destroy([DataSourceRequest]DataSourceRequest request, ServiceReceive serviceReceive)
         {
@@ -376,7 +376,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
        
       
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.ServiceReceives.Find(id);
@@ -437,7 +437,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return null;
         }
 
-       // [AuthorizeRoles(ProcurementConstants.PropertyVoid)]
+       // [AuthorizeRoles(ProcurementRoles.PropertyVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.ServiceReceives.Find(id);
@@ -458,7 +458,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
            
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         public JsonResult ServiceReceive_OnlineTransfer(string id)
         {
             int myid = int.Parse(id);

@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -180,7 +181,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
+        public ActionResult UpdateMissingFsRef()
+        {
+            var emptyJornals = db.GLRecordJournals.Where(j =>
+                j.Source == JournalSources.Sales.ToString()
+                && j.JournalName == "CRM Sales Invoice"
+                && string.IsNullOrEmpty(j.ReferenceDoc)
+                ).ToList();
+            foreach(var journal in emptyJornals)
+            {
+                var invoice = db.CashSalesInvoices.FirstOrDefault(c => c.CashSalesInvoiceID.ToString() == journal.SourceId);
+                if(invoice != null)
+                {
+                    journal.ReferenceDoc = $"FS No. {invoice.FsInvoiceNo}";
+                    journal.InvoiceReferenceDoc = $"Invoice No. {invoice.InvoiceNumber}";
 
+                    db.GLRecordJournals.Attach(journal);
+                    db.Entry(journal).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            return RedirectToAction(nameof(CashSalesInvoice));
+        }
         public ActionResult CreditSalesInvoice()
         {
             ViewData["Tax"] = db.GLTaxRates.ToList();
@@ -401,6 +423,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 SendForApprovalTime = shipment.SendForApprovalTime,
                 VoidBy = shipment.VoidBy,
                 VoidTime = shipment.VoidTime,
+
+                IsJobOrderClosed = false,
 
                 CreatedBy = shipment.CreatedBy,
                 DateCreated = shipment.DateCreated,

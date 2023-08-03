@@ -84,18 +84,28 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
         [DataObjectMethod(DataObjectMethodType.Select)]
         public IOrderedEnumerable<GeneralLedgerVm> GetLedgerBalance(string fromperiod, string toperiod, string acctFrom, string acctTo,string subaccountFrom, string subaccountTo, string costcenter, bool onlysummary, string segmentType, string segmentValue)
         {
+            _db.Database.CommandTimeout = 7200;//added
             List<GeneralLedgerVm> balances = new List<GeneralLedgerVm>();
             if (!String.IsNullOrEmpty(fromperiod) && !String.IsNullOrEmpty(toperiod))
             {
-                int from = int.Parse(fromperiod);
-                int to = int.Parse(toperiod);
+                int fromPeriodD = int.Parse(fromperiod);
+                int toPeriodD = int.Parse(toperiod);
 
-                DateTime dt11 = _db.GLPeriods.Find(from).DateFrom.Date;
-                DateTime dt22 = _db.GLPeriods.Find(to).DateTo.Date;
-               
+                var from = _db.GLPeriods
+                   .Select(x => new { x.DateFrom, x.DateTo, x.GLPeriodId })//added
+                   .FirstOrDefault(x => x.GLPeriodId == fromPeriodD);
 
-               // var accountRange = _accountHelper.GeAccountRange(acctFrom, acctTo, GlSegmentTypes.Account);
+                var to = _db.GLPeriods
+                    .Select(x => new { x.DateFrom, x.DateTo, x.GLPeriodId })//added
+                    .FirstOrDefault(x => x.GLPeriodId == toPeriodD);
 
+
+                var periodList = _db.GLPeriods.Where(x => x.DateFrom >= from.DateFrom)
+                                              .Where(x => x.DateTo <= to.DateTo)
+                                                .Select(x => new { x.DateFrom, x.DateTo, x.GLPeriodId, x.GlFiscalYear, x.Name })//added
+                                                .ToList();
+
+              
                 var ledgers = _db.GLLedgerPostings
                     .Include(x => x.GLLedgerPostingLines)
                     .Where(x => String.Compare(x.AccountSegment, acctFrom, StringComparison.Ordinal) >= 0)
@@ -116,37 +126,20 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                         x.Segment6,
                         x.Segment7,
                         x.Segment8,
-                        GLLedgerPostingLines = x.GLLedgerPostingLines.Where(b => b.EffectiveDate >= dt11 && b.EffectiveDate <= dt22)
+                        x.GLLedgerPostingLines
+                       // GLLedgerPostingLines = x.GLLedgerPostingLines.Where(b => b.EffectiveDate >= dt11 && b.EffectiveDate <= dt22)
 
                     })
                     .AsNoTracking().AsQueryable();
-                //List<GLLedgerPosting> ledgers = new List<GLLedgerPosting>();
-                List<GLPeriod> periods = new List<GLPeriod>();
-                //List<GLPeriod> sortedPeriodsBeforeLast = new List<GLPeriod>();
-                //foreach (var acct in accountRange)
-                //{
-                //    var acct1 = acct;
-                //    var exist = ledgerposts.Where(x => x.AccountSegment == acct1);
-                //    var glLedgerPostings = exist as IList<GLLedgerPosting> ?? exist.ToList();
-                //    if (glLedgerPostings.Any())
-                //    {
-                //        ledgers.AddRange(glLedgerPostings.ToList());
-                //    }
-                //}
-
-                //var ledgerPostingLines = _db.GLLedgerPostingLines
-                //    .Where(b => b.EffectiveDate >= dt11 && b.EffectiveDate <= dt22)
-                //    .Select(x => new
-                //    { x.ReferenceDoc,x.InvoiceReferenceDoc,x.PaymentReference,x.AdditionalDescription,x.EffectiveDate,x.JournalReference,x.CategoryName,x.Remark,x.Description, x.GLPeriodId, x.Type, x.Debit, x.Credit, x.Balance, x.GLLedgerPostingID, x.GLLedgerPosting,x.GLLedgerPostingLinesID })
-                //    .AsNoTracking().ToList();
+               
+                
 
                 #region get covered periods for sorting data
 
-                var periodList = _db.GLPeriods.Where(x=>x.DateFrom>=dt11).Where(x => x.DateTo <= dt22).ToList();
-                periods.AddRange(periodList);
+              
 
-                var sortedPeriods = periods.OrderBy(x => x.DateTo).Select(x=>new {x.GLPeriodId}).ToList();
-                var lastPeriod = periods.OrderByDescending(x => x.DateTo).Take(1).FirstOrDefault();
+                var sortedPeriods = periodList.OrderBy(x => x.DateTo).Select(x=>new {x.GLPeriodId}).ToList();
+                var lastPeriod = periodList.OrderByDescending(x => x.DateTo).Take(1).FirstOrDefault();
                 //remove last period to avoid duplication
                 //foreach (var glPeriod in sortedPeriods)
                 //{
@@ -251,8 +244,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     Id = balance.GLLedgerPostingLinesID.ToString(),
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
+                                    Description = balance.Description,
                                     Journal = balance.CategoryName,
-                                    TransDesc = balance.Description,
+                                    TransDesc = balance.AdditionalDescription,
                                     Debit = balance.Debit,
                                     Credit = balance.Credit,
                                     Balance = balance.Balance,
@@ -280,8 +274,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     Id = balance.GLLedgerPostingLinesID.ToString(),
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
+                                    Description = balance.Description,
                                     Journal = balance.CategoryName,
-                                    TransDesc = balance.Description,
+                                    TransDesc = balance.AdditionalDescription,
                                     Debit = balance.Debit,
                                     Credit = balance.Credit,
                                     Balance = balance.Balance,
@@ -315,8 +310,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     Id = balance.GLLedgerPostingLinesID.ToString(),
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
+                                    Description = balance.Description,
                                     Journal = balance.CategoryName,
-                                    TransDesc = balance.Description,
+                                    TransDesc = balance.AdditionalDescription,
                                     Debit = balance.Debit,
                                     Credit = balance.Credit,
                                     Balance = balance.Balance,
@@ -341,6 +337,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     Id = balance.GLLedgerPostingLinesID.ToString(),
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
+                                    Description = balance.Description,
                                     ReferenceDoc = balance.ReferenceDoc,
                                     PaymentReference = balance.PaymentReference,
                                     InvoiceReferenceDoc = balance.InvoiceReferenceDoc,
@@ -390,7 +387,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                 Debit = debitchange,
                                 Credit = creditchange,
                                 Balance= netChange,
-                                Type =2
+                                Type =3
                             };
 
                             ledgeritem.GeneralLedgerVmLines.Add(netChangeLine);
@@ -410,8 +407,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     Id = balance.GLLedgerPostingLinesID.ToString(),
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
+                                    Description = balance.Description,
                                     Journal = balance.CategoryName,
-                                    TransDesc = balance.Description,
+                                    TransDesc = balance.AdditionalDescription,
                                     Debit = balance.Debit,
                                     Credit = balance.Credit,
                                     Balance = balance.Balance,
@@ -439,8 +437,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     Id = balance.GLLedgerPostingLinesID.ToString(),
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
+                                    Description = balance.Description,
                                     Journal = balance.CategoryName,
-                                    TransDesc = balance.Description,
+                                    TransDesc = balance.AdditionalDescription,
                                     Debit = balance.Debit,
                                     Credit = balance.Credit,
                                     Balance = balance.Balance,

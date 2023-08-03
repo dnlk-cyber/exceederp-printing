@@ -71,29 +71,35 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
         [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelExpenseClaimApprover, FinanceConstants.AccountPayableTravelExpenseClaim)]
         public ActionResult ApTravelExpenseClaims_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            var sentRequestIds = _db.RequestesStatus
-                .Where(x => x.ReferenceType == "TravelExpenseClaim")
-                .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
-                .Select(x => x.RequestId).ToList();
 
-            IQueryable<ApTravelExpenseClaim> aptravelexpenseclaims = _db.ApTravelExpenseClaims.Where(x => sentRequestIds.Contains(x.ApTravelExpenseClaimId))
-                                                    .Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<ApTravelExpenseClaim> aptravelexpenseclaims = _db.ApTravelExpenseClaims.Where(x => x.IsDepartmentOnlineApproved);
+
+            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            {
+                aptravelexpenseclaims = aptravelexpenseclaims.Where(x => x.IsBudgetApproved);
+            }
+
             DataSourceResult result = aptravelexpenseclaims.ToDataSourceResult(request, apTravelExpenseClaim => new {
                 ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
-                ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,
-              
+                ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,              
                 BranchId = apTravelExpenseClaim.BranchId,
+                BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                 OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                 PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                 ClaimDate = apTravelExpenseClaim.ClaimDate,
-                IsPostedToSecondLedger = apTravelExpenseClaim.IsPostedToSecondLedger,
+               
                 Reference = apTravelExpenseClaim.Reference,
                 EmployeeId = apTravelExpenseClaim.EmployeeId,
                 IsForOther = apTravelExpenseClaim.IsForOther,
 
                 ForwardedFrom = apTravelExpenseClaim.ForwardedFrom,
                 ForwardedTo = apTravelExpenseClaim.ForwardedTo,
+                IsFinalApproval = apTravelExpenseClaim.IsFinalApproval,
+                CurrentApprovalStep = apTravelExpenseClaim.CurrentApprovalStep,
+
+                IsBudgetApproved = apTravelExpenseClaim.IsBudgetApproved,
+                BudgetApprovedBy = apTravelExpenseClaim.BudgetApprovedBy,
+                BudgetApprovedTime = apTravelExpenseClaim.BudgetApprovedTime,
 
                 IsOnlineTransferred = apTravelExpenseClaim.IsOnlineTransferred,
                 IsOnlineTransferredBy = apTravelExpenseClaim.IsOnlineTransferredBy,
@@ -136,16 +142,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
                     
                     BranchId = apTravelExpenseClaim.BranchId,
+                    BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate.Date,
-                    IsPostedToSecondLedger = apTravelExpenseClaim.IsPostedToSecondLedger,
+                   
                     Reference = apTravelExpenseClaim.Reference,
                     EmployeeId = apTravelExpenseClaim.EmployeeId,
                     IsForOther = apTravelExpenseClaim.IsForOther,
 
                     ForwardedFrom = User.Identity.Name,
                     ForwardedTo = User.Identity.Name,
+                    IsFinalApproval = apTravelExpenseClaim.IsFinalApproval,
+                    CurrentApprovalStep = apTravelExpenseClaim.CurrentApprovalStep,
+
+                    IsBudgetApproved = apTravelExpenseClaim.IsBudgetApproved,
+                    BudgetApprovedBy = apTravelExpenseClaim.BudgetApprovedBy,
+                    BudgetApprovedTime = apTravelExpenseClaim.BudgetApprovedTime,
 
                     IsOnlineTransferred = apTravelExpenseClaim.IsOnlineTransferred,
                     IsOnlineTransferredBy = apTravelExpenseClaim.IsOnlineTransferredBy,
@@ -191,16 +204,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,
                    
                     BranchId = apTravelExpenseClaim.BranchId,
+                    BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate,
-                    IsPostedToSecondLedger = apTravelExpenseClaim.IsPostedToSecondLedger,
+                   
                     Reference = apTravelExpenseClaim.Reference,
                     EmployeeId = apTravelExpenseClaim.EmployeeId,
                     IsForOther = apTravelExpenseClaim.IsForOther,
 
                     ForwardedFrom = apTravelExpenseClaim.ForwardedFrom,
                     ForwardedTo = apTravelExpenseClaim.ForwardedTo,
+                    IsFinalApproval = apTravelExpenseClaim.IsFinalApproval,
+                    CurrentApprovalStep = apTravelExpenseClaim.CurrentApprovalStep,
+
+                    IsBudgetApproved = apTravelExpenseClaim.IsBudgetApproved,
+                    BudgetApprovedBy = apTravelExpenseClaim.BudgetApprovedBy,
+                    BudgetApprovedTime = apTravelExpenseClaim.BudgetApprovedTime,
 
                     IsOnlineTransferred = apTravelExpenseClaim.IsOnlineTransferred,
                     IsOnlineTransferredBy = apTravelExpenseClaim.IsOnlineTransferredBy,
@@ -246,10 +266,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,
                     
                     BranchId = apTravelExpenseClaim.BranchId,
+                    BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate,
-                    IsPostedToSecondLedger = apTravelExpenseClaim.IsPostedToSecondLedger,
+                   
                     Reference = apTravelExpenseClaim.Reference,
                     EmployeeId = apTravelExpenseClaim.EmployeeId,
                     IsForOther = apTravelExpenseClaim.IsForOther,
@@ -374,7 +395,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     isNewRecord = false;
                 decimal docamount = record.Payments.Sum(x => x.Amount);
                 int docid = record.ApTravelExpenseClaimId;
-                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", User.Identity.Name, ApprovalDocumentType.ApTravelExpenseClaim, isNewRecord);
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", User.Identity.Name, ApprovalDocumentType.ApTravelExpenseClaim, isNewRecord,step);
                 #endregion
                 var formattedData = new
                 {

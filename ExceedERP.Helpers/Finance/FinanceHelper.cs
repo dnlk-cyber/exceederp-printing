@@ -11,7 +11,8 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Finance;
 using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.Finance.ViewModels;
-
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace ExceedERP.Helpers.Finance
 {
@@ -21,6 +22,8 @@ namespace ExceedERP.Helpers.Finance
         readonly AccountHelper _accountHelper = new AccountHelper();
         readonly DynamicAccountHelper _dynamicAccountHelper = new DynamicAccountHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
+        //lock
+        static object linksLock = new object();
 
 
         public static bool CalculateProfitTax()
@@ -161,7 +164,9 @@ namespace ExceedERP.Helpers.Finance
 
             DateTime dt11 = new DateTime();
             DateTime dt22 = new DateTime();
-            var locations = db.GLChartOfAccountLocations.ToList();
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            //var locations = db.GLChartOfAccountLocations.ToList();
             var revenueAccounts = db.GLChartOfAccountAccounts.Where(x => x.AccountType.Equals(GlAccountTypes.Revenue)).ToList();
             var expenseAccounts = db.GLChartOfAccountAccounts.Where(x => x.AccountType.Equals(GlAccountTypes.Expense)).ToList();
 
@@ -194,7 +199,7 @@ namespace ExceedERP.Helpers.Finance
                             var journals = db.GLRecordJournalDetails.Where(x => x.GLRecordJournal.IsOnlineApproved == true)
                                                                     .Where(x => x.GLRecordJournal.EffectiveDate >= dt11)
                                                                     .Where(x => x.GLRecordJournal.EffectiveDate <= dt22).ToList();
-                            foreach (GLChartOfAccountLocation location in locations)
+                            foreach (var location in locations)
                             {
                                 foreach (GLChartOfAccountAccount account in revenueAccounts)
                                 {
@@ -567,10 +572,17 @@ namespace ExceedERP.Helpers.Finance
                 }
                 else
                 {
-                    if (status.Status == "Finished")
+                    if (status.Status == "Finished" && !gLRecordJournal.IsUnPosted)
                     {
                         db.GlobalStatus.Remove(status);
                         db.SaveChanges();
+                    }
+                    else if (status.Status == "Finished" && gLRecordJournal.IsUnPosted)
+                    {
+                        db.GlobalStatus.Remove(status);
+                        db.SaveChanges();
+                        //because it is unposted ,need to post again
+                        Post(journalId, user);
                     }
                     else
                     {
@@ -1087,6 +1099,8 @@ namespace ExceedERP.Helpers.Finance
                                 {
                                     GLLedgerPosting = ledger,
                                     JournalNumber = journalNumber,
+                                    JournalId= journalline.GlRecordJournalId,
+                                    Description = gLRecordJournal.Description,
                                     JournalReference = gLRecordJournal.JournalNumber,
                                     EffectiveDate = journalline.GLRecordJournal.EffectiveDate,
                                     JournalName = journalline.GLRecordJournal.JournalName,
@@ -1154,6 +1168,7 @@ namespace ExceedERP.Helpers.Finance
                                 {
                                     GLLedgerPosting = newledgerpost,
                                     JournalNumber = journalNumber,
+                                    JournalId = journalline.GlRecordJournalId,
                                     JournalReference = gLRecordJournal.JournalNumber,
                                     EffectiveDate = journalline.GLRecordJournal.EffectiveDate,
                                     JournalName = journalline.GLRecordJournal.JournalName,
@@ -1211,7 +1226,37 @@ namespace ExceedERP.Helpers.Finance
                                 #endregion
                             }
                         }
-                        #endregion                       
+                        #endregion
+                        //new
+                        #region transfer to bank recon
+                        //check if this is bank account
+                           //if (_accountHelper.IsBankAccount(journalline.AccountCode))
+                           // {
+                           //     var bookExist = context.ReconcilationBookAccounts.FirstOrDefault(x => x.SourceID == journalNumber);
+                           //     if (bookExist == null)
+                           //     {
+                           //         var book = new ReconciliationBookAccount
+                           //         {
+                           //             CreatedBy = user,
+                           //             DateCreated = DateTime.Now,
+                           //             AccountCode = journalline.AccountCode,
+                           //             Debit = journalline.Debit,
+                           //             Credit = journalline.Credit,
+                           //             Date = journalline.GLRecordJournal.EffectiveDate,
+                           //             Type = "Posting",
+                           //             ReferenceDoc = !String.IsNullOrWhiteSpace(gLRecordJournal.JournalNumber) ? gLRecordJournal.JournalNumber : "NA",
+                           //             Reference = !String.IsNullOrWhiteSpace(journalline.AdditionalDescription) ? journalline.AdditionalDescription : "NA",
+                           //             Source = gLRecordJournal.SourcesName,
+                           //             SourceID = journalNumber,
+                           //             AccountSegment = _accountHelper.GetNaturalAccountSegment(journalline.AccountCode),
+                           //             SubAccountSegment = _accountHelper.GetSubAccountSegment(journalline.AccountCode)
+                           //         };
+                           //         context.ReconcilationBookAccounts.Add(book);
+                           //         context.SaveChanges();
+                           //     }
+                           // }
+                        #endregion
+                       
                     }
                 }
 
@@ -1220,6 +1265,7 @@ namespace ExceedERP.Helpers.Finance
                 gLRecordJournal.Posting = "POSTED";
                 gLRecordJournal.Status = "POSTED";
                 gLRecordJournal.isPosted = true;
+                gLRecordJournal.IsUnPosted = false;
                 gLRecordJournal.PostedBy = user;
                 gLRecordJournal.PostedTime = DateTime.Now;
                 db.Entry(gLRecordJournal).State = EntityState.Modified;
@@ -1265,8 +1311,8 @@ namespace ExceedERP.Helpers.Finance
                         #endregion
 
                         #region check and remove if book
-                        if (journal.SourcesName == "GL" || journal.Source == "Payroll")
-                        {
+                        //if (journal.SourcesName == "GL" || journal.Source == "Payroll")
+                        //{
                             var bookline = db.ReconcilationBookAccounts.FirstOrDefault(x => x.SourceID == sourceid);
 
                             if (bookline != null)
@@ -1274,18 +1320,18 @@ namespace ExceedERP.Helpers.Finance
                                 db.ReconcilationBookAccounts.Attach(bookline);
                                 db.ReconcilationBookAccounts.Remove(bookline);
                             }
-                        }
-                        else
-                        {
-                            var booklines = db.ReconcilationBookAccounts
-                                .Where(x => x.Source == journal.Source)
-                                .Where(x => x.SourceID.StartsWith(journal.SourceId + "-")).ToList();
+                        //}
+                        //else
+                        //{
+                        //    var booklines = db.ReconcilationBookAccounts
+                        //        .Where(x=>x.Source==journal.Source)
+                        //        .Where(x => x.SourceID.StartsWith(journal.SourceId+"-")).ToList();
 
-                            if (booklines.Any())
-                            {
-                                db.ReconcilationBookAccounts.RemoveRange(booklines);
-                            }
-                        }
+                        //    if (booklines.Any())
+                        //    {
+                        //        db.ReconcilationBookAccounts.RemoveRange(booklines);
+                        //    }
+                        //}
                         #endregion
                     }
 
@@ -1294,6 +1340,7 @@ namespace ExceedERP.Helpers.Finance
                     journal.Posting = "UN_POSTED";
                     journal.Status = "UN_POSTED";
                     journal.isPosted = false;
+                    journal.IsUnPosted = true;
                     journal.IsOnlineApproved = false;
                     journal.IsSendForApproval = false;
                     db.Entry(journal).State = EntityState.Modified;
@@ -2306,6 +2353,593 @@ namespace ExceedERP.Helpers.Finance
         //    }
         //}
 
+        public void UpdateAllBegEndBalancesFastP1(int id, string user)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            string strcon = ConfigurationManager.ConnectionStrings["ExceedDbContext"].ConnectionString;
+            SqlConnection con = new SqlConnection(strcon);
+            SqlDataReader myReader = null;
+            DateTime timeStamp = DateTime.Now;
+            var ledgerLines = db.GLLedgerPostingLines.AsNoTracking().AsQueryable();
+            var ledgerPostingIds = db.GLLedgerPostings.OrderBy(x => x.GLLedgerPostingID).Select(x => x.GLLedgerPostingID).ToList();
+            // var ledger = Db.GLLedgerPostings.OrderBy(x => x.GLLedgerPostingID).ToList();
+            var beginningPeriod = db.GLPeriods.Find(id);
+            if (beginningPeriod != null)
+            {
+                var nextPeriods = db.GLPeriods
+                    .Where(x => x.DateFrom > beginningPeriod.DateFrom)
+                    .Where(x => x.GlFiscalYearId == beginningPeriod.GlFiscalYearId)
+                    .OrderBy(x => x.DateFrom)
+                    .ToList();
+
+                foreach (var ledgerId in ledgerPostingIds)
+                {
+                    //db = new ExceedDbContext();
+                    decimal begninning = 0;
+                    decimal ending = 0;
+                    decimal netIncrement = 0;
+                    decimal debit = 0;
+                    decimal credit = 0;
+                    decimal nextBegining = 0;
+
+                    var posting = db.GLLedgerPostings.Find(ledgerId);
+                    var selectedLines = ledgerLines.Where(x => x.GLLedgerPosting.GLLedgerPostingID == posting.GLLedgerPostingID);
+
+                    if (posting != null)
+                    {
+                        #region beginning period
+
+                        var begRecord = selectedLines.Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
+                            .FirstOrDefault(x => x.Type == LedgerPostTypes.Begining);
+                        var standardRecord = selectedLines.Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
+                            .Where(x => x.Type == LedgerPostTypes.Standard);
+                        var endRecord = selectedLines.Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
+                            .FirstOrDefault(x => x.Type == LedgerPostTypes.Ending);
+
+                        if (begRecord != null)
+                        {
+
+                            if (posting.AccountType == GlAccountTypes.Asset ||
+                                posting.AccountType == GlAccountTypes.Expense)
+                            {
+                                begninning = begRecord.Debit - begRecord.Credit;
+                                begRecord.Balance = begninning;
+
+                            }
+                            else if (posting.AccountType == GlAccountTypes.Liability ||
+                                     posting.AccountType == GlAccountTypes.Capital ||
+                                     posting.AccountType == GlAccountTypes.Revenue)
+                            {
+                                begninning = begRecord.Credit - begRecord.Debit;
+                                begRecord.Balance = begninning;
+                            }
+
+                            // db.Entry(begRecord).State = EntityState.Modified;
+                            #region UPDATE DATA
+                            try
+                            {
+                                con.Open();
+                                SqlCommand cmd = new SqlCommand("UPDATE [EXCEED].GLLedgerPostingLines SET Balance=Balance,ModifiedBy=@ModifiedBy,LastModified=@LastModified  " +
+                                    "WHERE GLLedgerPostingLinesID= @Id", con);
+                                cmd.Parameters.AddWithValue("@Id", begRecord.GLLedgerPostingLinesID);
+                                cmd.Parameters.AddWithValue("@Balance", begRecord.Balance);
+                                cmd.Parameters.AddWithValue("@ModifiedBy", "Fast (Raw SQL)" + user);
+                                cmd.Parameters.AddWithValue("@LastModified", timeStamp);
+
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                //log
+                                throw ex;
+                            }
+                            finally
+                            {
+                                if (myReader != null)
+                                {
+                                    myReader.Close();
+                                }
+                                if (con != null)
+                                {
+                                    con.Close();
+                                }
+                            }
+                            #endregion
+                        }
+                        else
+                        {
+                            begninning = 0;
+
+                            #region add beginning ledger line
+
+                            var newBeginning = new GLLedgerPostingLines
+                            {
+                                GLLedgerPosting = posting,
+                                JournalNumber = "Beginning-" + beginningPeriod.Name,
+                                JournalReference = "Beginning-" + beginningPeriod.Name,
+                                EffectiveDate = beginningPeriod.DateFrom,
+                                JournalName = "Beginning-" + beginningPeriod.Name,
+                                CategoryName = "Beginning-" + beginningPeriod.Name,
+                                SourcesName = "Beginning-" + beginningPeriod.Name,
+                                GLPeriodId = beginningPeriod.GLPeriodId,
+                                GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                                Type = LedgerPostTypes.Begining,
+                                Balance = begninning,
+                                CreatedBy = "Fast" + user,
+                                DateCreated = timeStamp
+                            };
+                            //db.GLLedgerPostingLines.Add(newBeginning);
+                            //db.SaveChanges();
+                            #region INSERT DATA
+                            try
+                            {
+                                con.Open();
+                                SqlCommand cmd = new SqlCommand("INSERT INTO [EXCEED].GLLedgerPostingLines (GLLedgerPostingID,JournalNumber,JournalReference,EffectiveDate,CategoryName,JournalName,SourcesName,GlFiscalYearId" +
+                                    ",GLPeriodId,Type,Debit,Credit,Balance,CreatedBy,DateCreated) VALUES (@ParentId,@JournalNumber,@JournalReference,@EffectiveDate,@CategoryName,@JournalName,@SourcesName,@GlFiscalYearId" +
+                                    ",@GLPeriodId,@Type,@Debit,@Credit,@Balance,@CreatedBy,@DateCreated)", con);
+                                cmd.Parameters.AddWithValue("@ParentId", posting.GLLedgerPostingID);
+                                cmd.Parameters.AddWithValue("@JournalNumber", newBeginning.JournalNumber);
+                                cmd.Parameters.AddWithValue("@JournalReference", newBeginning.JournalReference);
+                                cmd.Parameters.AddWithValue("@EffectiveDate", newBeginning.EffectiveDate);
+                                cmd.Parameters.AddWithValue("@CategoryName", newBeginning.CategoryName);
+                                cmd.Parameters.AddWithValue("@JournalName", newBeginning.JournalName);
+                                cmd.Parameters.AddWithValue("@SourcesName", newBeginning.SourcesName);
+                                cmd.Parameters.AddWithValue("@GlFiscalYearId", newBeginning.GlFiscalYearId);
+                                cmd.Parameters.AddWithValue("@GLPeriodId", newBeginning.GLPeriodId);
+                                cmd.Parameters.AddWithValue("@Type", newBeginning.Type);
+                                cmd.Parameters.AddWithValue("@Debit", newBeginning.Debit);
+                                cmd.Parameters.AddWithValue("@Credit", newBeginning.Credit);
+                                cmd.Parameters.AddWithValue("@Balance", newBeginning.Balance);
+                                cmd.Parameters.AddWithValue("@CreatedBy", "Fast (Raw SQL)" + user);
+                                cmd.Parameters.AddWithValue("@DateCreated", timeStamp);
+
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                //log
+                                throw ex;
+                            }
+                            finally
+                            {
+                                if (myReader != null)
+                                {
+                                    myReader.Close();
+                                }
+                                if (con != null)
+                                {
+                                    con.Close();
+                                }
+                            }
+                            #endregion
+
+                            #endregion
+                        }
+
+                        if (standardRecord.Any())
+                        {
+                            debit = standardRecord.Sum(x => x.Debit);
+                            credit = standardRecord.Sum(x => x.Credit);
+                        }
+
+
+                        if (posting.AccountType == GlAccountTypes.Asset ||
+                            posting.AccountType == GlAccountTypes.Expense)
+                        {
+                            netIncrement = debit - credit;
+                            ending = begninning + netIncrement;
+                            nextBegining = begninning + netIncrement;
+
+                        }
+                        else if (posting.AccountType == GlAccountTypes.Liability ||
+                                 posting.AccountType == GlAccountTypes.Capital ||
+                                 posting.AccountType == GlAccountTypes.Revenue)
+                        {
+                            netIncrement = credit - debit;
+                            ending = begninning + netIncrement;
+                            nextBegining = begninning + netIncrement;
+                        }
+
+                        //update or create
+                        if (endRecord != null)
+                        {
+                            #region update ending post ledger line
+
+                            endRecord.Debit = debit;
+                            endRecord.Credit = credit;
+                            endRecord.Balance = ending;
+                            endRecord.ModifiedBy = "Fast" + user;
+                            endRecord.LastModified = timeStamp;
+                            //db.Entry(endRecord).State = EntityState.Modified;
+                            // db.SaveChanges();
+
+                            #region UPDATE DATA
+                            try
+                            {
+                                con.Open();
+                                SqlCommand cmd = new SqlCommand("UPDATE [EXCEED].GLLedgerPostingLines SET Debit=@Debit ,Credit=@Credit,Balance=Balance,ModifiedBy=@ModifiedBy,LastModified=@LastModified  " +
+                                    "WHERE GLLedgerPostingLinesID= @Id", con);
+                                cmd.Parameters.AddWithValue("@Id", endRecord.GLLedgerPostingLinesID);
+                                cmd.Parameters.AddWithValue("@Debit", endRecord.Debit);
+                                cmd.Parameters.AddWithValue("@Credit", endRecord.Credit);
+                                cmd.Parameters.AddWithValue("@Balance", endRecord.Balance);
+                                cmd.Parameters.AddWithValue("@ModifiedBy", "Fast (Raw SQL)" + user);
+                                cmd.Parameters.AddWithValue("@LastModified", timeStamp);
+
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                //log
+                                throw ex;
+                            }
+                            finally
+                            {
+                                if (myReader != null)
+                                {
+                                    myReader.Close();
+                                }
+                                if (con != null)
+                                {
+                                    con.Close();
+                                }
+                            }
+                            #endregion
+                            #endregion
+                        }
+                        else
+                        {
+                            #region add ending post ledger line
+
+                            var newLedgerEnding = new GLLedgerPostingLines
+                            {
+                                GLLedgerPosting = posting,
+                                JournalNumber = "Ending-" + beginningPeriod.Name,
+                                JournalReference = "Ending-" + beginningPeriod.Name,
+                                EffectiveDate = beginningPeriod.DateTo,
+                                JournalName = "Ending-" + beginningPeriod.Name,
+                                CategoryName = "Ending-" + beginningPeriod.Name,
+                                SourcesName = "Ending-" + beginningPeriod.Name,
+                                GLPeriodId = beginningPeriod.GLPeriodId,
+                                GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                                Type = LedgerPostTypes.Ending,
+                                Debit = debit,
+                                Credit = credit,
+                                Balance = ending,
+                                CreatedBy = "Fast" + user,
+                                DateCreated = timeStamp
+                            };
+                            //db.GLLedgerPostingLines.Add(newLedgerEnding);
+                            //db.SaveChanges();
+                            #region INSERT DATA
+                            try
+                            {
+                                con.Open();
+                                SqlCommand cmd = new SqlCommand("INSERT INTO [EXCEED].GLLedgerPostingLines (GLLedgerPostingID,JournalNumber,JournalReference,EffectiveDate,CategoryName,JournalName,SourcesName,GlFiscalYearId" +
+                                    ",GLPeriodId,Type,Debit,Credit,Balance,CreatedBy,DateCreated) VALUES (@ParentId,@JournalNumber,@JournalReference,@EffectiveDate,@CategoryName,@JournalName,@SourcesName,@GlFiscalYearId" +
+                                    ",@GLPeriodId,@Type,@Debit,@Credit,@Balance,@CreatedBy,@DateCreated)", con);
+                                cmd.Parameters.AddWithValue("@ParentId", posting.GLLedgerPostingID);
+                                cmd.Parameters.AddWithValue("@JournalNumber", newLedgerEnding.JournalNumber);
+                                cmd.Parameters.AddWithValue("@JournalReference", newLedgerEnding.JournalReference);
+                                cmd.Parameters.AddWithValue("@EffectiveDate", newLedgerEnding.EffectiveDate);
+                                cmd.Parameters.AddWithValue("@CategoryName", newLedgerEnding.CategoryName);
+                                cmd.Parameters.AddWithValue("@JournalName", newLedgerEnding.JournalName);
+                                cmd.Parameters.AddWithValue("@SourcesName", newLedgerEnding.SourcesName);
+                                cmd.Parameters.AddWithValue("@GlFiscalYearId", newLedgerEnding.GlFiscalYearId);
+                                cmd.Parameters.AddWithValue("@GLPeriodId", newLedgerEnding.GLPeriodId);
+                                cmd.Parameters.AddWithValue("@Type", newLedgerEnding.Type);
+                                cmd.Parameters.AddWithValue("@Debit", newLedgerEnding.Debit);
+                                cmd.Parameters.AddWithValue("@Credit", newLedgerEnding.Credit);
+                                cmd.Parameters.AddWithValue("@Balance", newLedgerEnding.Balance);
+                                cmd.Parameters.AddWithValue("@CreatedBy", "Fast (Raw SQL)" + user);
+                                cmd.Parameters.AddWithValue("@DateCreated", timeStamp);
+
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                //log
+                                throw ex;
+                            }
+                            finally
+                            {
+                                if (myReader != null)
+                                {
+                                    myReader.Close();
+                                }
+                                if (con != null)
+                                {
+                                    con.Close();
+                                }
+                            }
+                            #endregion
+
+                            #endregion
+                        }
+
+                        #endregion
+
+                        foreach (var p in nextPeriods)
+                        {
+                            netIncrement = 0;
+                            debit = 0;
+                            credit = 0;
+                            var period = p;
+
+                            #region next periods
+
+                            var begnningRecod = selectedLines.Where(x => x.GLPeriodId == period.GLPeriodId)
+                                .FirstOrDefault(x => x.Type == LedgerPostTypes.Begining);
+
+                            var standardRecords = selectedLines.Where(x => x.GLPeriodId == period.GLPeriodId)
+                                .Where(x => x.Type == LedgerPostTypes.Standard);
+
+                            var endingRecord = selectedLines.Where(x => x.GLPeriodId == period.GLPeriodId)
+                                .FirstOrDefault(x => x.Type == LedgerPostTypes.Ending);
+
+
+                            begninning = nextBegining;
+
+                            //update or create beginning
+                            if (begnningRecod != null)
+                            {
+                                #region update beginning ledger line
+
+                                begnningRecod.Balance = begninning;
+                                begnningRecod.ModifiedBy = "Fast" + user;
+                                begnningRecod.LastModified = timeStamp;
+                                //db.Entry(begnningRecod).State = EntityState.Modified;
+                                //db.SaveChanges();
+
+                                #region UPDATE DATA
+                                try
+                                {
+                                    con.Open();
+                                    SqlCommand cmd = new SqlCommand("UPDATE [EXCEED].GLLedgerPostingLines SET Balance=Balance,ModifiedBy=@ModifiedBy,LastModified=@LastModified  " +
+                                        "WHERE GLLedgerPostingLinesID= @Id", con);
+                                    cmd.Parameters.AddWithValue("@Id", begnningRecod.GLLedgerPostingLinesID);
+                                    cmd.Parameters.AddWithValue("@Balance", begnningRecod.Balance);
+                                    cmd.Parameters.AddWithValue("@ModifiedBy", "Fast (Raw SQL)" + user);
+                                    cmd.Parameters.AddWithValue("@LastModified", timeStamp);
+
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    //log
+                                    throw ex;
+                                }
+                                finally
+                                {
+                                    if (myReader != null)
+                                    {
+                                        myReader.Close();
+                                    }
+                                    if (con != null)
+                                    {
+                                        con.Close();
+                                    }
+                                }
+                                #endregion
+                                #endregion
+                            }
+                            else
+                            {
+                                #region add beginning ledger line
+
+                                var newBeginning = new GLLedgerPostingLines
+                                {
+                                    GLLedgerPosting = posting,
+                                    JournalNumber = "Beginning-" + period.Name,
+                                    JournalReference = "Beginning-" + period.Name,
+                                    EffectiveDate = period.DateFrom,
+                                    JournalName = "Beginning-" + period.Name,
+                                    CategoryName = "Beginning-" + period.Name,
+                                    SourcesName = "Beginning-" + period.Name,
+                                    GLPeriodId = period.GLPeriodId,
+                                    GlFiscalYearId = period.GlFiscalYearId,
+                                    Type = LedgerPostTypes.Begining,
+                                    Balance = begninning,
+                                    CreatedBy = "Fast" + user,
+                                    DateCreated = timeStamp,
+                                };
+                                //db.GLLedgerPostingLines.Add(newBeginning);
+                                //db.SaveChanges();
+                                #region INSERT DATA
+                                try
+                                {
+                                    con.Open();
+                                    SqlCommand cmd = new SqlCommand("INSERT INTO [EXCEED].GLLedgerPostingLines (GLLedgerPostingID,JournalNumber,JournalReference,EffectiveDate,CategoryName,JournalName,SourcesName,GlFiscalYearId" +
+                                        ",GLPeriodId,Type,Debit,Credit,Balance,CreatedBy,DateCreated) VALUES (@ParentId,@JournalNumber,@JournalReference,@EffectiveDate,@CategoryName,@JournalName,@SourcesName,@GlFiscalYearId" +
+                                        ",@GLPeriodId,@Type,@Debit,@Credit,@Balance,@CreatedBy,@DateCreated)", con);
+                                    cmd.Parameters.AddWithValue("@ParentId", posting.GLLedgerPostingID);
+                                    cmd.Parameters.AddWithValue("@JournalNumber", newBeginning.JournalNumber);
+                                    cmd.Parameters.AddWithValue("@JournalReference", newBeginning.JournalReference);
+                                    cmd.Parameters.AddWithValue("@EffectiveDate", newBeginning.EffectiveDate);
+                                    cmd.Parameters.AddWithValue("@CategoryName", newBeginning.CategoryName);
+                                    cmd.Parameters.AddWithValue("@JournalName", newBeginning.JournalName);
+                                    cmd.Parameters.AddWithValue("@SourcesName", newBeginning.SourcesName);
+                                    cmd.Parameters.AddWithValue("@GlFiscalYearId", newBeginning.GlFiscalYearId);
+                                    cmd.Parameters.AddWithValue("@GLPeriodId", newBeginning.GLPeriodId);
+                                    cmd.Parameters.AddWithValue("@Type", newBeginning.Type);
+                                    cmd.Parameters.AddWithValue("@Debit", newBeginning.Debit);
+                                    cmd.Parameters.AddWithValue("@Credit", newBeginning.Credit);
+                                    cmd.Parameters.AddWithValue("@Balance", newBeginning.Balance);
+                                    cmd.Parameters.AddWithValue("@CreatedBy", "Fast (Raw SQL)" + user);
+                                    cmd.Parameters.AddWithValue("@DateCreated", timeStamp);
+
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    //log
+                                    throw ex;
+                                }
+                                finally
+                                {
+                                    if (myReader != null)
+                                    {
+                                        myReader.Close();
+                                    }
+                                    if (con != null)
+                                    {
+                                        con.Close();
+                                    }
+                                }
+                                #endregion
+
+                                #endregion
+                            }
+
+                            if (standardRecords.Any())
+                            {
+                                debit = standardRecords.Sum(x => x.Debit);
+                                credit = standardRecords.Sum(x => x.Credit);
+                            }
+
+                            if (posting.AccountType == GlAccountTypes.Asset ||
+                                posting.AccountType == GlAccountTypes.Expense)
+                            {
+                                netIncrement = debit - credit;
+                                ending = begninning + netIncrement;
+                                nextBegining = begninning + netIncrement;
+
+                            }
+                            else if (posting.AccountType == GlAccountTypes.Liability ||
+                                     posting.AccountType == GlAccountTypes.Capital ||
+                                     posting.AccountType == GlAccountTypes.Revenue)
+                            {
+                                netIncrement = credit - debit;
+                                ending = begninning + netIncrement;
+                                nextBegining = begninning + netIncrement;
+                            }
+
+                            //update or create
+                            if (endingRecord != null)
+                            {
+                                #region update ending post ledger line
+
+                                endingRecord.Debit = debit;
+                                endingRecord.Credit = credit;
+                                endingRecord.Balance = ending;
+                                endingRecord.ModifiedBy = "Fast" + user;
+                                endingRecord.LastModified = timeStamp;
+                                //db.Entry(endingRecord).State = EntityState.Modified;
+                                //db.SaveChanges();
+                                #region UPDATE DATA
+                                try
+                                {
+                                    con.Open();
+                                    SqlCommand cmd = new SqlCommand("UPDATE [EXCEED].GLLedgerPostingLines SET Debit=@Debit ,Credit=@Credit,Balance=Balance,ModifiedBy=@ModifiedBy,LastModified=@LastModified  " +
+                                        "WHERE GLLedgerPostingLinesID= @Id", con);
+                                    cmd.Parameters.AddWithValue("@Id", endingRecord.GLLedgerPostingLinesID);
+                                    cmd.Parameters.AddWithValue("@Debit", endingRecord.Debit);
+                                    cmd.Parameters.AddWithValue("@Credit", endingRecord.Credit);
+                                    cmd.Parameters.AddWithValue("@Balance", endingRecord.Balance);
+                                    cmd.Parameters.AddWithValue("@ModifiedBy", "Fast (Raw SQL)" + user);
+                                    cmd.Parameters.AddWithValue("@LastModified", timeStamp);
+
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    //log
+                                    throw ex;
+                                }
+                                finally
+                                {
+                                    if (myReader != null)
+                                    {
+                                        myReader.Close();
+                                    }
+                                    if (con != null)
+                                    {
+                                        con.Close();
+                                    }
+                                }
+                                #endregion
+                                #endregion
+                            }
+                            else
+                            {
+                                #region add ending post ledger line
+
+                                var newEnding = new GLLedgerPostingLines
+                                {
+                                    GLLedgerPosting = posting,
+                                    JournalNumber = "Ending-" + period.Name,
+                                    JournalReference = "Ending-" + period.Name,
+                                    EffectiveDate = period.DateTo,
+                                    JournalName = "Ending-" + period.Name,
+                                    CategoryName = "Ending-" + period.Name,
+                                    SourcesName = "Ending-" + period.Name,
+                                    GLPeriodId = period.GLPeriodId,
+                                    GlFiscalYearId = period.GlFiscalYearId,
+                                    Type = LedgerPostTypes.Ending,
+                                    Debit = debit,
+                                    Credit = credit,
+                                    Balance = ending,
+                                    CreatedBy = "Fast" + user,
+                                    DateCreated = timeStamp
+                                };
+                                //db.GLLedgerPostingLines.Add(newEnding);
+                                //db.SaveChanges();
+                                #region INSERT DATA
+                                try
+                                {
+                                    con.Open();
+                                    SqlCommand cmd = new SqlCommand("INSERT INTO [EXCEED].GLLedgerPostingLines (GLLedgerPostingID,JournalNumber,JournalReference,EffectiveDate,CategoryName,JournalName,SourcesName,GlFiscalYearId" +
+                                        ",GLPeriodId,Type,Debit,Credit,Balance,CreatedBy,DateCreated) VALUES (@ParentId,@JournalNumber,@JournalReference,@EffectiveDate,@CategoryName,@JournalName,@SourcesName,@GlFiscalYearId" +
+                                        ",@GLPeriodId,@Type,@Debit,@Credit,@Balance,@CreatedBy,@DateCreated)", con);
+                                    cmd.Parameters.AddWithValue("@ParentId", posting.GLLedgerPostingID);
+                                    cmd.Parameters.AddWithValue("@JournalNumber", newEnding.JournalNumber);
+                                    cmd.Parameters.AddWithValue("@JournalReference", newEnding.JournalReference);
+                                    cmd.Parameters.AddWithValue("@EffectiveDate", newEnding.EffectiveDate);
+                                    cmd.Parameters.AddWithValue("@CategoryName", newEnding.CategoryName);
+                                    cmd.Parameters.AddWithValue("@JournalName", newEnding.JournalName);
+                                    cmd.Parameters.AddWithValue("@SourcesName", newEnding.SourcesName);
+                                    cmd.Parameters.AddWithValue("@GlFiscalYearId", newEnding.GlFiscalYearId);
+                                    cmd.Parameters.AddWithValue("@GLPeriodId", newEnding.GLPeriodId);
+                                    cmd.Parameters.AddWithValue("@Type", newEnding.Type);
+                                    cmd.Parameters.AddWithValue("@Debit", newEnding.Debit);
+                                    cmd.Parameters.AddWithValue("@Credit", newEnding.Credit);
+                                    cmd.Parameters.AddWithValue("@Balance", newEnding.Balance);
+                                    cmd.Parameters.AddWithValue("@CreatedBy", "Fast (Raw SQL)" + user);
+                                    cmd.Parameters.AddWithValue("@DateCreated", timeStamp);
+
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (Exception ex)
+                                {
+                                    //log
+                                    throw ex;
+                                }
+                                finally
+                                {
+                                    if (myReader != null)
+                                    {
+                                        myReader.Close();
+                                    }
+                                    if (con != null)
+                                    {
+                                        con.Close();
+                                    }
+                                }
+                                #endregion
+                                #endregion
+                            }
+
+                            #endregion
+
+                        }
+
+                    }
+
+                }
+
+
+            }
+        }
         public void UpdateAllBegEndBalancesFastP(int id,string user)
         {
             ExceedDbContext db = new ExceedDbContext();
@@ -3214,7 +3848,7 @@ namespace ExceedERP.Helpers.Finance
         //    }
         //}
 
-        public  void TransferGlRecordsToBank()
+        public  void TransferGlRecordsToBank1()
         {
             ExceedDbContext db = new ExceedDbContext();
             #region journal
@@ -3656,7 +4290,591 @@ namespace ExceedERP.Helpers.Finance
 
             #endregion
         }
+        //new method, Dapper
+        private class GLLedgerPostingLine
+        {
+            public int GLLedgerPostingLinesID { get; set; }
+            public int GLLedgerPostingID { get; set; }
+            public string AccountCode { get; set; }
+            public string AccountDesc { get; set; }
+            public GlAccountTypes AccountType { get; set; }
+            public LedgerPostTypes Type { get; set; }
+            public int GLPeriodId { get; set; }
+            public decimal Debit { get; set; }
+            public decimal Credit { get; set; }
+            public decimal Balance { get; set; }
+        }
+        public void TransferFiscalYearEndingFast(int sourcePeriod, int destPeriod, string user)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            db.Database.CommandTimeout = 7200;//added
+            DateTime timeStamp = DateTime.Now;
 
+            var beginningPeriod = db.GLPeriods.Find(destPeriod);
+
+            List<GLLedgerPostingLine> postings = new List<GLLedgerPostingLine>();
+            #region transfer permanent accounts
+
+            string strcon = ConfigurationManager.ConnectionStrings["ExceedDbContext"].ConnectionString;
+            SqlConnection con = new SqlConnection(strcon);
+            SqlDataReader myReader = null;
+            try
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand("Select GLLedgerPostingLinesID,[EXCEED].GLLedgerPosting.GLLedgerPostingID,AccountType,AccountCode,Type,GLPeriodId,Debit,Credit,Balance from [EXCEED].GLLedgerPosting INNER JOIN [EXCEED].GLLedgerPostingLines ON [EXCEED].GLLedgerPosting.GLLedgerPostingID=[EXCEED].GLLedgerPostingLines.GLLedgerPostingID " +
+                    "where (GLPeriodId=@sourcePeriod OR GLPeriodId=@destPeriod) AND (Type=2 OR Type=1)", con);
+                cmd.Parameters.AddWithValue("@destPeriod", destPeriod);
+                cmd.Parameters.AddWithValue("@sourcePeriod", sourcePeriod);
+                cmd.CommandTimeout = 7200;//added
+                myReader = cmd.ExecuteReader();
+                while (myReader.Read())
+                {
+                    var record = new GLLedgerPostingLine
+                    {
+                        GLLedgerPostingLinesID = int.Parse(myReader[0].ToString()),
+                        GLLedgerPostingID = int.Parse(myReader[1].ToString()),
+                        AccountType = (GlAccountTypes)int.Parse(myReader[2].ToString()),
+                        AccountCode = myReader[3].ToString(),
+                        Type = (LedgerPostTypes)int.Parse(myReader[4].ToString()),
+                        GLPeriodId = int.Parse(myReader[5].ToString()),
+                        Debit = decimal.Parse(myReader[6].ToString()),
+                        Credit = decimal.Parse(myReader[7].ToString()),
+                        Balance = decimal.Parse(myReader[8].ToString()),
+
+                    };
+                    postings.Add(record);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (myReader != null)
+                {
+                    myReader.Close();
+                }
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+
+
+            foreach (var posting in postings)
+            {
+
+                #region beginning period
+
+                var endRecord = postings
+                    .Where(x => x.GLLedgerPostingID == posting.GLLedgerPostingID)
+                    .Where(x => x.GLPeriodId == sourcePeriod)
+                   .FirstOrDefault(x => x.Type == LedgerPostTypes.Ending);
+
+                var begRecord = postings
+                     .Where(x => x.GLLedgerPostingID == posting.GLLedgerPostingID)
+                    .Where(x => x.GLPeriodId == destPeriod)
+                    .FirstOrDefault(x => x.Type == LedgerPostTypes.Begining);
+
+
+                if (endRecord != null)
+                {
+                    if (begRecord != null)
+                    {
+                        #region balance type
+                        if (posting.AccountType == GlAccountTypes.Revenue ||
+                               posting.AccountType == GlAccountTypes.Expense)
+                        {
+                            begRecord.Debit = 0;
+                            begRecord.Credit = 0;
+                            begRecord.Balance = 0;
+                        }
+                        if (posting.AccountType == GlAccountTypes.Asset)
+                        {
+                            if (endRecord.Balance >= 0)
+                            {
+                                begRecord.Debit = endRecord.Balance;
+                                begRecord.Credit = 0;
+                                begRecord.Balance = endRecord.Balance;
+                            }
+                            else
+                            {
+                                begRecord.Debit = 0;
+                                begRecord.Credit = Math.Abs(endRecord.Balance);
+                                begRecord.Balance = endRecord.Balance;
+                            }
+
+                        }
+                        else if (posting.AccountType == GlAccountTypes.Liability ||
+                                 posting.AccountType == GlAccountTypes.Capital)
+                        {
+                            if (endRecord.Balance >= 0)
+                            {
+                                begRecord.Debit = 0;
+                                begRecord.Credit = endRecord.Balance;
+                                begRecord.Balance = endRecord.Balance;
+
+                            }
+                            else
+                            {
+                                begRecord.Debit = Math.Abs(endRecord.Balance);
+                                begRecord.Credit = 0;
+                                begRecord.Balance = endRecord.Balance;
+                            }
+                        }
+                        #endregion
+                        #region UPDATE DATA
+                        try
+                        {
+                            con.Open();
+                            SqlCommand cmd = new SqlCommand("UPDATE [EXCEED].GLLedgerPostingLines SET Debit=@Debit ,Credit=@Credit,Balance=@Balance,ModifiedBy=@ModifiedBy,LastModified=@LastModified  " +
+                                "WHERE GLLedgerPostingLinesID= @Id", con);
+                            cmd.Parameters.AddWithValue("@Id", begRecord.GLLedgerPostingLinesID);
+                            cmd.Parameters.AddWithValue("@Debit", begRecord.Debit);
+                            cmd.Parameters.AddWithValue("@Credit", begRecord.Credit);
+                            cmd.Parameters.AddWithValue("@Balance", begRecord.Balance);
+                            cmd.Parameters.AddWithValue("@ModifiedBy", "Transfer Ending (Raw SQL)" + user);
+                            cmd.Parameters.AddWithValue("@LastModified", timeStamp);
+
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            //log
+                            throw ex;
+                        }
+                        finally
+                        {
+                            if (myReader != null)
+                            {
+                                myReader.Close();
+                            }
+                            if (con != null)
+                            {
+                                con.Close();
+                            }
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        #region add beginning ledger line
+
+
+                        var newBeginning = new GLLedgerPostingLines
+                        {
+                            GLLedgerPostingID = posting.GLLedgerPostingID,
+                            JournalNumber = "Beginning-" + beginningPeriod.Name,
+                            JournalReference = "Beginning-" + beginningPeriod.Name,
+                            EffectiveDate = beginningPeriod.DateFrom,
+                            JournalName = "Beginning-" + beginningPeriod.Name,
+                            CategoryName = "Beginning-" + beginningPeriod.Name,
+                            SourcesName = "Beginning-" + beginningPeriod.Name,
+                            GLPeriodId = beginningPeriod.GLPeriodId,
+                            GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                            Type = LedgerPostTypes.Begining,
+                            CreatedBy = "Transfer " + user,
+                            DateCreated = timeStamp
+                        };
+
+
+                        #region balance type
+
+                        if (posting.AccountType == GlAccountTypes.Revenue ||
+                              posting.AccountType == GlAccountTypes.Expense)
+                        {
+                            newBeginning.Debit = 0;
+                            newBeginning.Credit = 0;
+                            newBeginning.Balance = 0;
+                        }
+
+                        if (posting.AccountType == GlAccountTypes.Asset)
+                        {
+                            if (endRecord.Balance >= 0)
+                            {
+                                newBeginning.Debit = endRecord.Balance;
+                                newBeginning.Credit = 0;
+                                newBeginning.Balance = endRecord.Balance;
+                            }
+                            else
+                            {
+                                newBeginning.Debit = 0;
+                                newBeginning.Credit = Math.Abs(endRecord.Balance);
+                                newBeginning.Balance = endRecord.Balance;
+                            }
+
+                        }
+                        else if (posting.AccountType == GlAccountTypes.Liability ||
+                                 posting.AccountType == GlAccountTypes.Capital)
+                        {
+                            if (endRecord.Balance >= 0)
+                            {
+                                newBeginning.Debit = 0;
+                                newBeginning.Credit = endRecord.Balance;
+                                newBeginning.Balance = endRecord.Balance;
+
+
+                            }
+                            else
+                            {
+                                newBeginning.Debit = Math.Abs(endRecord.Balance);
+                                newBeginning.Credit = 0;
+                                newBeginning.Balance = endRecord.Balance;
+                            }
+                        }
+                        #endregion
+                        #region INSERT DATA
+                        try
+                        {
+                            con.Open();
+                            SqlCommand cmd = new SqlCommand("INSERT INTO [EXCEED].GLLedgerPostingLines (GLLedgerPostingID,JournalNumber,JournalReference,EffectiveDate,CategoryName,JournalName,SourcesName,GlFiscalYearId" +
+                                ",GLPeriodId,Type,Debit,Credit,Balance,CreatedBy,DateCreated) VALUES (@ParentId,@JournalNumber,@JournalReference,@EffectiveDate,@CategoryName,@JournalName,@SourcesName,@GlFiscalYearId" +
+                                ",@GLPeriodId,@Type,@Debit,@Credit,@Balance,@CreatedBy,@DateCreated)", con);
+                            cmd.Parameters.AddWithValue("@ParentId", newBeginning.GLLedgerPostingID);
+                            cmd.Parameters.AddWithValue("@JournalNumber", newBeginning.JournalNumber);
+                            cmd.Parameters.AddWithValue("@JournalReference", newBeginning.JournalReference);
+                            cmd.Parameters.AddWithValue("@EffectiveDate", newBeginning.EffectiveDate);
+                            cmd.Parameters.AddWithValue("@CategoryName", newBeginning.CategoryName);
+                            cmd.Parameters.AddWithValue("@JournalName", newBeginning.JournalName);
+                            cmd.Parameters.AddWithValue("@SourcesName", newBeginning.SourcesName);
+                            cmd.Parameters.AddWithValue("@GlFiscalYearId", newBeginning.GlFiscalYearId);
+                            cmd.Parameters.AddWithValue("@GLPeriodId", newBeginning.GLPeriodId);
+                            cmd.Parameters.AddWithValue("@Type", newBeginning.Type);
+                            cmd.Parameters.AddWithValue("@Debit", newBeginning.Debit);
+                            cmd.Parameters.AddWithValue("@Credit", newBeginning.Credit);
+                            cmd.Parameters.AddWithValue("@Balance", newBeginning.Balance);
+                            cmd.Parameters.AddWithValue("@CreatedBy", "Transfer Ending (Raw SQL)" + user);
+                            cmd.Parameters.AddWithValue("@DateCreated", timeStamp);
+
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            //log
+                            throw ex;
+                        }
+                        finally
+                        {
+                            if (myReader != null)
+                            {
+                                myReader.Close();
+                            }
+                            if (con != null)
+                            {
+                                con.Close();
+                            }
+                        }
+                        #endregion
+
+                        #endregion
+                    }
+
+
+                }
+
+                #endregion
+
+            }
+
+            #endregion
+            #region transfer retained earning and profit tax
+
+            decimal earningAmount = 0;
+            decimal profittax = 0;
+            decimal earningAfterTaxAmount = 0;
+
+            var profittaxRate = db.FinanceSettings.FirstOrDefault();
+            var retainedAccount = db.GlRetainedEarningAccounts.Where(x => x.Type == EarningTypes.RetainedEarning).FirstOrDefault();
+            var profitTaxAccount = db.GlRetainedEarningAccounts.Where(x => x.Type == EarningTypes.ProfitTax).FirstOrDefault();
+
+            var expense = db.GLLedgerPostingLines.Where(x => x.GLPeriodId == sourcePeriod)
+                      .Where(x => x.Type == LedgerPostTypes.Ending)
+                      .Where(x => x.GLLedgerPosting.AccountType == GlAccountTypes.Expense).ToList();
+
+            var revenue = db.GLLedgerPostingLines.Where(x => x.GLPeriodId == sourcePeriod)
+                .Where(x => x.Type == LedgerPostTypes.Ending)
+                .Where(x => x.GLLedgerPosting.AccountType == GlAccountTypes.Revenue).ToList();
+
+            earningAmount = revenue.Sum(x => x.Balance) - expense.Sum(x => x.Balance);
+
+
+            decimal rate = profittaxRate?.ProfitTaxCalculatedRate ?? 0;
+            profittax = earningAmount * rate;
+            earningAfterTaxAmount = earningAmount - profittax;
+            if (earningAfterTaxAmount != 0)
+            {
+                #region update earning
+                var retainedEarningEnd = db.GLLedgerPostingLines
+                                        .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == retainedAccount.AccountCode.ToUpper())
+                                        .Where(x => x.GLPeriodId == sourcePeriod)
+                                        .Where(x => x.Type == LedgerPostTypes.Ending)
+                                        .FirstOrDefault();
+                var retainedEarningBeg = db.GLLedgerPostingLines
+                                        .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == retainedAccount.AccountCode.ToUpper())
+                                        .Where(x => x.GLPeriodId == destPeriod)
+                                        .Where(x => x.Type == LedgerPostTypes.Begining)
+                                        .FirstOrDefault();
+
+
+                if (retainedEarningBeg != null)
+                {
+                    decimal balance = earningAfterTaxAmount;
+                    if (retainedEarningEnd != null)
+                        balance = retainedEarningEnd.Balance + earningAfterTaxAmount;
+
+                    if (balance > 0)
+                        retainedEarningBeg.Credit = balance;
+                    if (balance < 0)
+                        retainedEarningBeg.Debit = Math.Abs(balance);
+
+                    retainedEarningBeg.Balance = balance;
+
+                    db.GLLedgerPostingLines.Attach(retainedEarningBeg);
+                    db.Entry(retainedEarningBeg).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    var ledger = db.GLLedgerPostings.FirstOrDefault(x =>
+                        x.AccountCode.ToUpper() == retainedAccount.AccountCode.ToUpper());
+                    if (ledger == null)
+                    {
+                        #region create ledger
+
+                        var ledgerPosting = new GLLedgerPosting
+                        {
+                            AccountCode = retainedAccount.AccountCode.ToUpper()
+                        };
+                        AccountHelper accountHelper = new AccountHelper();
+                        ledgerPosting.AccountDesc = accountHelper.GetAccountDesc(ledgerPosting.AccountCode);
+                        ledgerPosting.AccountType = accountHelper.GetAccountType(ledgerPosting.AccountCode);
+                        ledgerPosting.CreatedBy = "System earning-" + user;
+                        ledgerPosting.DateCreated = DateTime.Now;
+                        db.GLLedgerPostings.Add(ledgerPosting);
+                        db.SaveChanges();
+                        #endregion
+                        #region add beginning ledger line for earning
+
+
+                        var newEarningLine = new GLLedgerPostingLines
+                        {
+                            GLLedgerPosting = ledgerPosting,
+                            JournalNumber = "Beginning-" + beginningPeriod.Name,
+                            JournalReference = "Beginning-" + beginningPeriod.Name,
+                            EffectiveDate = beginningPeriod.DateFrom,
+                            JournalName = "Beginning-" + beginningPeriod.Name,
+                            CategoryName = "Beginning-" + beginningPeriod.Name,
+                            SourcesName = "Beginning-" + beginningPeriod.Name,
+                            GLPeriodId = beginningPeriod.GLPeriodId,
+                            GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                            Type = LedgerPostTypes.Begining,
+                            Debit = 0,
+                            Credit = 0,
+                            Balance = 0,
+                            CreatedBy = "Transfer " + user,
+                            DateCreated = timeStamp
+                        };
+
+                        decimal balance = earningAfterTaxAmount;
+                        if (retainedEarningEnd != null)
+                            balance = retainedEarningEnd.Balance + earningAfterTaxAmount;
+
+                        if (balance > 0)
+                            newEarningLine.Credit = balance;
+                        if (balance < 0)
+                            newEarningLine.Debit = Math.Abs(balance);
+
+                        newEarningLine.Balance = balance;
+
+                        db.GLLedgerPostingLines.Add(newEarningLine);
+                        db.SaveChanges();
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region add beginning ledger line for earning
+
+
+                        var newEarningLine = new GLLedgerPostingLines
+                        {
+                            GLLedgerPostingID = ledger.GLLedgerPostingID,
+                            JournalNumber = "Beginning-" + beginningPeriod.Name,
+                            JournalReference = "Beginning-" + beginningPeriod.Name,
+                            EffectiveDate = beginningPeriod.DateFrom,
+                            JournalName = "Beginning-" + beginningPeriod.Name,
+                            CategoryName = "Beginning-" + beginningPeriod.Name,
+                            SourcesName = "Beginning-" + beginningPeriod.Name,
+                            GLPeriodId = beginningPeriod.GLPeriodId,
+                            GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                            Type = LedgerPostTypes.Begining,
+                            Debit = 0,
+                            Credit = 0,
+                            Balance = earningAfterTaxAmount,
+                            CreatedBy = "Transfer " + user,
+                            DateCreated = timeStamp
+                        };
+
+                        decimal balance = earningAfterTaxAmount;
+                        if (retainedEarningEnd != null)
+                            balance = retainedEarningEnd.Balance + earningAfterTaxAmount;
+
+                        if (balance > 0)
+                            newEarningLine.Credit = balance;
+                        if (balance < 0)
+                            newEarningLine.Debit = Math.Abs(balance);
+
+                        newEarningLine.Balance = balance;
+
+                        db.GLLedgerPostingLines.Add(newEarningLine);
+                        db.SaveChanges();
+
+                        #endregion
+                    }
+                }
+                #endregion
+            }
+
+            if (profittax != 0)
+            {
+                #region update profit tax
+
+                var profitTaxEnd = db.GLLedgerPostingLines
+                                      .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == profitTaxAccount.AccountCode.ToUpper())
+                                      .Where(x => x.GLPeriodId == sourcePeriod)
+                                      .Where(x => x.Type == LedgerPostTypes.Ending)
+                                      .FirstOrDefault();
+
+                var profitTaxBeg = db.GLLedgerPostingLines
+                                       .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == profitTaxAccount.AccountCode.ToUpper())
+                                       .Where(x => x.GLPeriodId == destPeriod)
+                                       .Where(x => x.Type == LedgerPostTypes.Begining)
+                                       .FirstOrDefault();
+
+                if (profitTaxBeg != null)
+                {
+                    decimal balance = profittax;
+                    if (profitTaxEnd != null)
+                        balance = profitTaxEnd.Balance + profittax;
+
+                    if (balance > 0)
+                        profitTaxBeg.Credit = balance;
+                    if (balance < 0)
+                        profitTaxBeg.Debit = Math.Abs(balance);
+
+                    profitTaxBeg.Balance = balance;
+
+                    db.GLLedgerPostingLines.Attach(profitTaxBeg);
+                    db.Entry(profitTaxBeg).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    var ledger = db.GLLedgerPostings.FirstOrDefault(x =>
+                        x.AccountCode.ToUpper() == profitTaxAccount.AccountCode.ToUpper());
+                    if (ledger == null)
+                    {
+                        #region create ledger
+
+                        var ledgerPosting = new GLLedgerPosting
+                        {
+                            AccountCode = profitTaxAccount.AccountCode.ToUpper()
+                        };
+                        AccountHelper accountHelper = new AccountHelper();
+                        ledgerPosting.AccountDesc = accountHelper.GetAccountDesc(ledgerPosting.AccountCode);
+                        ledgerPosting.AccountType = accountHelper.GetAccountType(ledgerPosting.AccountCode);
+                        ledgerPosting.CreatedBy = "System-" + user;
+                        ledgerPosting.DateCreated = DateTime.Now;
+                        db.GLLedgerPostings.Add(ledgerPosting);
+                        db.SaveChanges();
+                        #endregion
+                        #region add beginning ledger line for profit tax
+
+
+                        var newProfitTaxLine = new GLLedgerPostingLines
+                        {
+                            GLLedgerPosting = ledgerPosting,
+                            JournalNumber = "Beginning-" + beginningPeriod.Name,
+                            JournalReference = "Beginning-" + beginningPeriod.Name,
+                            EffectiveDate = beginningPeriod.DateFrom,
+                            JournalName = "Beginning-" + beginningPeriod.Name,
+                            CategoryName = "Beginning-" + beginningPeriod.Name,
+                            SourcesName = "Beginning-" + beginningPeriod.Name,
+                            GLPeriodId = beginningPeriod.GLPeriodId,
+                            GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                            Type = LedgerPostTypes.Begining,
+                            Debit = 0,
+                            Credit = 0,
+                            Balance = 0,
+                            CreatedBy = "Transfer " + user,
+                            DateCreated = timeStamp
+                        };
+
+                        decimal balance = profittax;
+                        if (profitTaxEnd != null)
+                            balance = profitTaxEnd.Balance + profittax;
+
+                        if (balance > 0)
+                            newProfitTaxLine.Credit = balance;
+                        if (balance < 0)
+                            newProfitTaxLine.Debit = Math.Abs(balance);
+
+                        newProfitTaxLine.Balance = balance;
+
+                        db.GLLedgerPostingLines.Add(newProfitTaxLine);
+                        db.SaveChanges();
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region add beginning ledger line for profit tax
+
+
+                        var newProfitTaxLine = new GLLedgerPostingLines
+                        {
+                            GLLedgerPostingID = ledger.GLLedgerPostingID,
+                            JournalNumber = "Beginning-" + beginningPeriod.Name,
+                            JournalReference = "Beginning-" + beginningPeriod.Name,
+                            EffectiveDate = beginningPeriod.DateFrom,
+                            JournalName = "Beginning-" + beginningPeriod.Name,
+                            CategoryName = "Beginning-" + beginningPeriod.Name,
+                            SourcesName = "Beginning-" + beginningPeriod.Name,
+                            GLPeriodId = beginningPeriod.GLPeriodId,
+                            GlFiscalYearId = beginningPeriod.GlFiscalYearId,
+                            Type = LedgerPostTypes.Begining,
+                            Debit = 0,
+                            Credit = 0,
+                            Balance = profittax,
+                            CreatedBy = "Transfer " + user,
+                            DateCreated = timeStamp
+                        };
+
+                        decimal balance = profittax;
+                        if (profitTaxEnd != null)
+                            balance = profitTaxEnd.Balance + profittax;
+
+                        if (balance > 0)
+                            newProfitTaxLine.Credit = balance;
+                        if (balance < 0)
+                            newProfitTaxLine.Debit = Math.Abs(balance);
+
+                        newProfitTaxLine.Balance = balance;
+
+                        db.GLLedgerPostingLines.Add(newProfitTaxLine);
+                        db.SaveChanges();
+
+                        #endregion
+                    }
+                }
+                #endregion
+            }
+
+            #endregion           
+
+        }
+        //original method, EF
         public void TransferFiscalYearEnding(int sourcePeriod, int destPeriod, string user)
         {
             ExceedDbContext db = new ExceedDbContext();
@@ -4087,6 +5305,7 @@ namespace ExceedERP.Helpers.Finance
         public void DetectAndRemoveDuplicateLedgerLines()
         {
             ExceedDbContext db = new ExceedDbContext();
+            db.Database.CommandTimeout = 7200;//added
             List<AccountChekerVm> chekerVms = new List<AccountChekerVm>();
             List<GLPeriod> affectedPeriods = new List<GLPeriod>();
             #region detect duplicate ledger line

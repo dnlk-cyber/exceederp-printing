@@ -16,13 +16,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser, ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondUser, ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         public ActionResult GuaranteeValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<GuaranteeValidation> guaranteevalidations = db.GuaranteeValidations.Where(x => x.GuaranteeId == id);
@@ -42,7 +42,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeValidations_Create(int id, [DataSourceRequest]DataSourceRequest request, GuaranteeValidation guaranteeValidation)
         {
@@ -71,7 +71,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guaranteeValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeValidations_Update(int id, [DataSourceRequest]DataSourceRequest request, GuaranteeValidation guaranteeValidation)
         {
@@ -98,7 +98,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             return Json(new[] { guaranteeValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementBondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementBondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GuaranteeValidations_Destroy([DataSourceRequest]DataSourceRequest request, GuaranteeValidation guaranteeValidation)
         {

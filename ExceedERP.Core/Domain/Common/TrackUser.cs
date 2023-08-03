@@ -14,7 +14,7 @@ namespace ExceedERP.Core.Domain.Common
    
     public class Operations : TrackUserSettingOperation
     {
-        public bool IsPostedToSecondLedger { get; set; }
+        //public bool IsPostedToSecondLedger { get; set; }
         public string Status { get; set; }
         public string Remark { get; set; }
         public bool IsVoid { get; set; }
@@ -33,9 +33,27 @@ namespace ExceedERP.Core.Domain.Common
         public DateTime? SendForApprovalTime { get; set; }
     }
 
+    public class NewOperations : Operations
+    {
+        public string ForwardedFrom { get; set; }
+        public string ForwardedTo { get; set; }
+        public bool IsFinalApproval { get; set; }
+        public int? CurrentApprovalStep { get; set; }
+    }
+
+    public class DepartmentNewOperations : NewOperations
+    {
+        //for departmental ..like self service
+        public bool IsDepartmentOnlineApproved { get; set; }
+        public string DepartmentOnlineApprovedBy { get; set; }
+        public DateTime? DepartmentOnlineApprovedTime { get; set; }
+        public bool IsDepartmentSendForApproval { get; set; }
+        public string DepartmentSendForApprovalBy { get; set; }
+        public DateTime? DepartmentSendForApprovalTime { get; set; }
+    }
     public class DepartmentOperations : TrackUserSettingOperation
     {
-        public bool IsPostedToSecondLedger { get; set; }
+        //public bool IsPostedToSecondLedger { get; set; }
         public string Status { get; set; }
         public string Remark { get; set; }
         public bool IsVoid { get; set; }

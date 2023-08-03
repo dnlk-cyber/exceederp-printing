@@ -6,6 +6,7 @@ namespace ExceedERP.Core.Domain.Finance
     public class StockClearingAccount : TrackUserOperation
     {
         public int StockClearingAccountId { get; set; }
+        public ClearingAccountTypes Type { get; set; }        
         [Required]
         [Display(Name = "Description")]
         public string Description { get; set; }

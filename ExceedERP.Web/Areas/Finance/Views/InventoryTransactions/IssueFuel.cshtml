@@ -90,8 +90,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable()
+      
+      
       .Events(ev => ev.DetailExpand("detailExpand").Edit("onMasterEdit"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
@@ -349,8 +349,8 @@
               {
                   model.Id(p => p.IssueDistributionID);
                   model.Field(p => p.AccountDesc).Editable(false);
-                  model.Field(p => p.Debit).Editable(false);
-                  model.Field(p => p.Credit).Editable(false);
+                  //model.Field(p => p.Debit).Editable(false);
+                  //model.Field(p => p.Credit).Editable(false);
               })
               .Read(read => read.Action("IssueDistributions_Read", "IssueDistribution", new { area = "Inventory", id = "#=IssueID#" }))
               .Create(create => create.Action("IssueDistributions_Create", "IssueDistribution", new { area = "Inventory", id = "#=IssueID#" }))

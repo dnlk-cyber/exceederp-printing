@@ -26,6 +26,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         private readonly ReportHelper _reportHelper = new ReportHelper();
         readonly AccountHelper _accountHelper = new AccountHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
+        private readonly object refreshLock = new object();
 
         public ActionResult Index()
         {
@@ -205,25 +206,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return Json(new[] { reconciliationSchedule }.ToDataSourceResult(request, ModelState));
         }
 
-        [HttpPost]
-        public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
-        {
-            var fileContents = Convert.FromBase64String(base64);
-
-            return File(fileContents, contentType, fileName);
-        }
-
-        [HttpPost]
-        public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
-        {
-            var fileContents = Convert.FromBase64String(base64);
-
-            return File(fileContents, contentType, fileName);
-        }
-
+        
         // [Authorize(Roles = Bank + "," + Bank_Admin)]
         public ActionResult Reconcile(int? id)
         {
+            string naturalAccount = "";
+            string subAccount ="";
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -241,18 +229,39 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
             var bankaccountobj = _db.BankAccounts.FirstOrDefault(x => x.AccountNumber == reconciliationSchedule.BankAccount);
 
-            var beginningbookdata = _db.ReconcilationBookAccounts.Where(x => x.Date < dt1).ToList();
+            if (bankaccountobj != null)
+            {
+                naturalAccount = _accountHelper.GetNaturalAccountSegment(bankaccountobj.AccountCode);
+                subAccount = _accountHelper.GetSubAccountSegment(bankaccountobj.AccountCode);                
+            }
 
-            var bookdata = _db.ReconcilationBookAccounts.Where(x => x.Date >= dt1)
-                                                             .Where(x => x.Date < dt2).ToList();
+            var beginningbookdata = _db.ReconcilationBookAccounts
+                                    .Where(x => x.Date < dt1)
+                                    .Where(x => x.AccountSegment==naturalAccount)
+                                    .Where(x => x.SubAccountSegment == subAccount)
+                                    .ToList();
 
-            var unreconcileddata = _db.ReconcilationBookAccounts.Where(x => x.Date < dt2)
-                                                                .Where(x => x.Reconciled == false).ToList();
+            var bookdata = _db.ReconcilationBookAccounts
+                                    .Where(x => x.Date >= dt1)
+                                    .Where(x => x.Date < dt2)
+                                    .Where(x => x.AccountSegment == naturalAccount)
+                                    .Where(x => x.SubAccountSegment == subAccount)
+                                    .ToList();
+
+            var unreconcileddata = _db.ReconcilationBookAccounts
+                                    .Where(x => x.Date < dt2)
+                                    .Where(x => x.Reconciled == false)
+                                    .Where(x => x.AccountSegment == naturalAccount)
+                                    .Where(x => x.SubAccountSegment == subAccount)
+                                    .ToList();
 
             ViewBag.Unreconciledbook = Convert.ToDecimal(unreconcileddata.Sum(x => x.Debit) - unreconcileddata.Sum(x => x.Credit)).ToString("#,##0.00");
 
-            var unreconciledbakdata = _db.ReconcilationBankAccounts.Where(x => x.Date < dt2)
-                                                   .Where(x => x.Reconciled == false).ToList();
+            var unreconciledbakdata = _db.ReconcilationBankAccounts
+                                         .Where(x => x.Date < dt2)
+                                        .Where(x => x.Reconciled == false)
+                                        .Where(x => x.BankAccount == reconciliationSchedule.BankAccount)
+                                        .ToList();
 
             ViewBag.UnreconciledBank = Convert.ToDecimal(unreconciledbakdata.Sum(x => x.Debit) - unreconciledbakdata.Sum(x => x.Credit)).ToString("#,##0.00");
 
@@ -288,13 +297,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 {
                     int yearid = period.GlFiscalYearId;
                     List<GLLedgerPostingLines> balances = _reportHelper.GetAccountBalance(yearid, periodid);
-                    if (bankaccountobj != null)
-                    {
-                        string nataccount = _accountHelper.GetNaturalAccountSegment(bankaccountobj.AccountCode);
-                        string subaccount = _accountHelper.GetSubAccountSegment(bankaccountobj.AccountCode);
-                        bookBeginingBalance = _reportHelper.GetAccountBegBalancesWithSubAccount(balances,nataccount,subaccount);
-                        bookEndingBalance = _reportHelper.GetAccountEndBalancesWithSubAccount(balances, nataccount, subaccount);
-                    }
+                    bookBeginingBalance = _reportHelper.GetAccountBegBalancesWithSubAccount(balances, naturalAccount, subAccount);
+                    bookEndingBalance = _reportHelper.GetAccountEndBalancesWithSubAccount(balances, naturalAccount, subAccount);
                 }
             }
 
@@ -318,6 +322,91 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             ViewBag.TUnreconciledDifference = tUnreconciledDiff;
 
             return View(reconciliationSchedule);
+        }
+
+        public JsonResult Refresh(int? id)
+        {
+            string naturalAccount = "";
+            string subAccount = "";
+            if (id == null)
+            {              
+                var formattedData1 = new
+                {
+                    Message = "Please select a schedule",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+            ReconciliationSchedule reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
+            if (reconciliationSchedule == null)
+            {
+                var formattedData1 = new
+                {
+                    Message = "Reconciliation schedule not founf",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+
+            var bankaccountobj = _db.BankAccounts.FirstOrDefault(x => x.AccountNumber == reconciliationSchedule.BankAccount);
+
+            if (bankaccountobj != null)
+            {
+                naturalAccount = _accountHelper.GetNaturalAccountSegment(bankaccountobj.AccountCode);
+                subAccount = _accountHelper.GetSubAccountSegment(bankaccountobj.AccountCode);
+                GetBookDataFromLedger(naturalAccount, subAccount);
+            }
+
+            var formattedData = new
+            {
+                Message = "Operation complete",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        private void GetBookDataFromLedger(string naturalAcc,string subAcc)
+        {
+            lock (refreshLock)
+            {
+                var ledgers = _db.GLLedgerPostings.Where(x => x.AccountSegment == naturalAcc)
+                                                .Where(x => x.SubAccountSegment == subAcc).AsNoTracking().ToList();
+                foreach (var ledger in ledgers)
+                {
+                    var lines = _db.GLLedgerPostingLines
+                    .Where(x => x.GLLedgerPostingID == ledger.GLLedgerPostingID)
+                    .Where(x => x.Type == LedgerPostTypes.Standard)
+                                               .AsNoTracking().ToList();
+
+                    foreach (var l in lines)
+                    {
+                        var book = _db.ReconcilationBookAccounts.Where(x => x.SourceID == l.JournalNumber).FirstOrDefault();
+                        if (book == null)
+                        {
+                            #region create book record
+                            string reference = l.ReferenceDoc+" "+l.PaymentReference + " " +l.AdditionalDescription;
+                            var bookRecord = new ReconciliationBookAccount
+                            {
+                                CreatedBy = User.Identity.Name,
+                                DateCreated = DateTime.Now,
+                                AccountCode = ledger.AccountCode,
+                                Debit = l.Debit,
+                                Credit = l.Credit,
+                                Date = l.EffectiveDate,
+                                Type = "From Ledger",
+                                ReferenceDoc = !String.IsNullOrWhiteSpace(l.JournalNumber) ? l.JournalNumber : "NA",
+                                Reference = !String.IsNullOrWhiteSpace(reference) ? reference : "NA",
+                                Source = l.SourcesName,
+                                SourceID = l.JournalNumber,
+                                AccountSegment = _accountHelper.GetNaturalAccountSegment(ledger.AccountCode),
+                                SubAccountSegment = _accountHelper.GetSubAccountSegment(ledger.AccountCode)
+                            };
+                            _db.ReconcilationBookAccounts.Add(bookRecord);
+                            _db.SaveChanges();
+                            #endregion
+                        }
+                    }
+                }
+            }
         }
 
         // [Authorize(Roles = Bank + "," + Bank_Admin)]
@@ -479,475 +568,515 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 int parentid = int.Parse(book.SourceID.Split('-')[0]);
                 int lineid = int.Parse(book.SourceID.Split('-')[1]);
 
-                switch (book.Source)
+                #region GL
+
+                var glrecord = _db.GLRecordJournals.Find(parentid);
+                var glLines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == parentid).ToList();
+                if (glrecord != null)
                 {
-                    case "GeneralLedger":
+                    header = new BookDrillDownVm
+                    {
+                        Id = glrecord.GlRecordJournalId.ToString(),
+                        Description = glrecord.Description,
+                        FiscalYear = glrecord.FiscalYear,
+                        PeriodName = glrecord.PeriodName,
+                        CategoryName = glrecord.CategoryName,
+                        SourcesName = glrecord.SourcesName,
+                        Reference = glrecord.JournalName,
+                        Date = glrecord.EffectiveDate,
+                        BookDrillDownLineVms = new List<BookDrillDownLineVm>()
 
-                        #region GL
+                    };
 
-                        var glrecord = _db.GLRecordJournals.Find(parentid);
-                        var glLines = _db.GLRecordJournalDetails.Where(x=>x.GlRecordJournalId==parentid).ToList();
-                        if (glrecord != null)
+                    foreach (var line in glLines)
+                    {
+                        var newLine = new BookDrillDownLineVm
                         {
-                             header = new BookDrillDownVm
-                            {
-                                Id = glrecord.GlRecordJournalId.ToString(),
-                                Description = glrecord.Description,
-                                FiscalYear = glrecord.FiscalYear,
-                                PeriodName = glrecord.PeriodName,
-                                CategoryName = glrecord.CategoryName,
-                                SourcesName = glrecord.SourcesName,
-                                Reference = glrecord.JournalName,
-                                Date = glrecord.EffectiveDate,
-                                BookDrillDownLineVms=new List<BookDrillDownLineVm>()
+                            LineId = line.GlRecordJournalDetailId.ToString(),
+                            AccountCode = line.AccountCode,
+                            AccountDesc = line.AccountDesc,
+                            Debit = line.Debit,
+                            Credit = line.Credit,
+                            AdditionalDescription = line.AdditionalDescription
+                        };
+                        header.BookDrillDownLineVms.Add(newLine);
+                    }
 
-                            };
 
-                            foreach (var line in glLines)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.GlRecordJournalDetailId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc =line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit =line.Credit,
-                                    AdditionalDescription =line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-                            
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AR_Invoice":
-
-                        #region AR_Invoice
-
-                        var arInvoice = _db.ARInvoices.Find(parentid);
-                        var arInvoiceDistributions = _db.ARInvoiceDistributions.Where(x => x.ArInvoiceId == parentid).ToList();
-                        if (arInvoice != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = arInvoice.ArInvoiceId.ToString(),
-                                Description = arInvoice.CustomerName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = arInvoice.Reference,
-                                Date = arInvoice.Date,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in arInvoiceDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ArInvoiceDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AR_Collection":
-
-                        #region AR_Collection
-
-                        var standardCollection = _db.ARStandardCollections.Find(parentid);
-                        var arStandardCollectionDistributions = _db.ARStandardCollectionDistributions.Where(x => x.ArStandardCollectionId == parentid).ToList();
-                        if (standardCollection != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = standardCollection.ArStandardCollectionId.ToString(),
-                                Description = standardCollection.CustomerName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = standardCollection.Reference,
-                                Date = standardCollection.ReceiptDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in arStandardCollectionDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ArStandardCollectionDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AR_MiscCollection":
-
-                        #region AR_MiscCollection
-
-                        var arMiscelaneousCollection = _db.ARMiscelaneousCollections.Find(parentid);
-                        var arMiscelaneousCollectionDistributions = _db.ARMiscelaneousCollectionDistributions.Where(x => x.ARMiscelaneousCollectionID == parentid).ToList();
-                        if (arMiscelaneousCollection != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = arMiscelaneousCollection.ARMiscelaneousCollectionID.ToString(),
-                                Description = arMiscelaneousCollection.CustomerName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = arMiscelaneousCollection.ReceiptNumber,
-                                Date = arMiscelaneousCollection.ReceiptDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in arMiscelaneousCollectionDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ARMiscelaneousCollectionDistributionID.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_Invoice":
-
-                        #region AP_Invoice
-
-                        var apPaybleInvoices = _db.APPaybleInvoices.Find(parentid);
-                        var apPaybleInvoiceDistributions = _db.APPaybleInvoiceDistributions.Where(x => x.ApPaybleInvoiceDistributionId == parentid).ToList();
-                        if (apPaybleInvoices != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = apPaybleInvoices.ApPaybleInvoicesId.ToString(),
-                                Description = apPaybleInvoices.SupplierName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = apPaybleInvoices.InvoiceNumber,
-                                Date = apPaybleInvoices.InvoiceDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apPaybleInvoiceDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApPaybleInvoiceDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_Payment":
-                    case "AP_PrePayment":
-
-                        #region AP_Payment
-
-                        var apPayment = _db.APPayments.Find(parentid);
-                        var apPaymentDistributions = _db.APPaymentDistributions.Where(x => x.ApPaymentId == parentid).ToList();
-                        if (apPayment != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = apPayment.ApPaymentId.ToString(),
-                                Description = apPayment.SupplierName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = apPayment.InvoiceNumber,
-                                Date = apPayment.PaymentDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apPaymentDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApPaymentDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_MiscPayment":
-
-                        #region AP_MiscPayment
-
-                        var apMiscellaneousPayment = _db.APMiscellaneousPayments.Find(parentid);
-                        var apMiscellaneousPaymentDistributions = _db.APMiscellaneousPaymentDistributions.Where(x => x.ApMiscellaneousPaymentId == parentid).ToList();
-                        if (apMiscellaneousPayment != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = apMiscellaneousPayment.ApMiscellaneousPaymentId.ToString(),
-                                Description = apMiscellaneousPayment.SupplierName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = apMiscellaneousPayment.PaymentReference,
-                                Date = apMiscellaneousPayment.PaymentDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apMiscellaneousPaymentDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApMiscellaneousPaymentDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_TravelOrder":
-
-                        #region AP_TravelOrder
-
-                        var apTravelOrder = _db.ApTravelOrders.Find(parentid);
-                        var apTravelOrderDistributions = _db.ApTravelOrderDistributions.Where(x => x.ApTravelOrderId == parentid).ToList();
-                        if (apTravelOrder != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = apTravelOrder.ApTravelOrderId.ToString(),
-                                Description = apTravelOrder.PurposeOfTravel,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = apTravelOrder.Reference,
-                                Date = apTravelOrder.RequestDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apTravelOrderDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApTravelOrderDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_TravelExpenseClaim":
-
-                        #region AP_TravelExpenseClaim
-
-                        var travelExpenseClaim = _db.ApTravelExpenseClaims.Find(parentid);
-                        var apTravelExpenseDistributions = _db.ApTravelExpenseDistributions.Where(x => x.ApTravelExpenseClaimId == parentid).ToList();
-                        if (travelExpenseClaim != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = travelExpenseClaim.ApTravelExpenseClaimId.ToString(),
-                                Description = travelExpenseClaim.PurposeOfTravel,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = travelExpenseClaim.Reference,
-                                Date = travelExpenseClaim.ClaimDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apTravelExpenseDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApTravelExpenseDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_PettyCash":
-
-                        #region AP_PettyCash
-
-                        var apPettyCash = _db.ApPettyCash.Find(parentid);
-                        var apPettyCashDistributions = _db.ApPettyCashDistributions.Where(x => x.ApPettyCashId == parentid).ToList();
-                        if (apPettyCash != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = apPettyCash.ApPettyCashId.ToString(),
-                                Description = apPettyCash.PurposeOfPayment,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = apPettyCash.Reference,
-                                Date = apPettyCash.Date,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apPettyCashDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApPettyCashDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    case "AP_Direct_Payment":
-
-                        #region AP_Direct_Payment
-
-                        var apDirectPayment = _db.ApDirectPayments.Find(parentid);
-                        var apDirectPaymentDistributions = _db.ApDirectPaymentDistributions.Where(x => x.ApDirectPaymentId == parentid).ToList();
-                        if (apDirectPayment != null)
-                        {
-                            header = new BookDrillDownVm
-                            {
-                                Id = apDirectPayment.ApDirectPaymentId.ToString(),
-                                Description = apDirectPayment.SupplierName,
-                                //FiscalYear = arInvoice.,
-                                //PeriodName = arInvoice.PeriodName,
-                                //CategoryName = arInvoice.CategoryName,
-                                //SourcesName = arInvoice.SourcesName,
-                                Reference = apDirectPayment.PaymentReference,
-                                Date = apDirectPayment.PaymentDate,
-                                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
-
-                            };
-
-                            foreach (var line in apDirectPaymentDistributions)
-                            {
-                                var newLine = new BookDrillDownLineVm
-                                {
-                                    LineId = line.ApDirectPaymentDistributionId.ToString(),
-                                    AccountCode = line.AccountCode,
-                                    AccountDesc = line.AccountDesc,
-                                    Debit = line.Debit,
-                                    Credit = line.Credit,
-                                    AdditionalDescription = line.AdditionalDescription
-                                };
-                                header.BookDrillDownLineVms.Add(newLine);
-                            }
-
-
-                        }
-
-                        #endregion
-                        return View(header);
-
-                    default:
-                       break;
-                       
                 }
+
+                #endregion
+                return View(header);
+
+                //switch (book.Source)
+                //{
+                //    case "GeneralLedger":
+
+                //        #region GL
+
+                //        var glrecord = _db.GLRecordJournals.Find(parentid);
+                //        var glLines = _db.GLRecordJournalDetails.Where(x=>x.GlRecordJournalId==parentid).ToList();
+                //        if (glrecord != null)
+                //        {
+                //             header = new BookDrillDownVm
+                //            {
+                //                Id = glrecord.GlRecordJournalId.ToString(),
+                //                Description = glrecord.Description,
+                //                FiscalYear = glrecord.FiscalYear,
+                //                PeriodName = glrecord.PeriodName,
+                //                CategoryName = glrecord.CategoryName,
+                //                SourcesName = glrecord.SourcesName,
+                //                Reference = glrecord.JournalName,
+                //                Date = glrecord.EffectiveDate,
+                //                BookDrillDownLineVms=new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in glLines)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.GlRecordJournalDetailId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc =line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit =line.Credit,
+                //                    AdditionalDescription =line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AR_Invoice":
+
+                //        #region AR_Invoice
+
+                //        var arInvoice = _db.ARInvoices.Find(parentid);
+                //        var arInvoiceDistributions = _db.ARInvoiceDistributions.Where(x => x.ArInvoiceId == parentid).ToList();
+                //        if (arInvoice != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = arInvoice.ArInvoiceId.ToString(),
+                //                Description = arInvoice.CustomerName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = arInvoice.Reference,
+                //                Date = arInvoice.Date,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in arInvoiceDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ArInvoiceDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AR_Collection":
+
+                //        #region AR_Collection
+
+                //        var standardCollection = _db.ARStandardCollections.Find(parentid);
+                //        var arStandardCollectionDistributions = _db.ARStandardCollectionDistributions.Where(x => x.ArStandardCollectionId == parentid).ToList();
+                //        if (standardCollection != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = standardCollection.ArStandardCollectionId.ToString(),
+                //                Description = standardCollection.CustomerName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = standardCollection.Reference,
+                //                Date = standardCollection.ReceiptDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in arStandardCollectionDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ArStandardCollectionDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AR_MiscCollection":
+
+                //        #region AR_MiscCollection
+
+                //        var arMiscelaneousCollection = _db.ARMiscelaneousCollections.Find(parentid);
+                //        var arMiscelaneousCollectionDistributions = _db.ARMiscelaneousCollectionDistributions.Where(x => x.ARMiscelaneousCollectionID == parentid).ToList();
+                //        if (arMiscelaneousCollection != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = arMiscelaneousCollection.ARMiscelaneousCollectionID.ToString(),
+                //                Description = arMiscelaneousCollection.CustomerName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = arMiscelaneousCollection.ReceiptNumber,
+                //                Date = arMiscelaneousCollection.ReceiptDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in arMiscelaneousCollectionDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ARMiscelaneousCollectionDistributionID.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_Invoice":
+
+                //        #region AP_Invoice
+
+                //        var apPaybleInvoices = _db.APPaybleInvoices.Find(parentid);
+                //        var apPaybleInvoiceDistributions = _db.APPaybleInvoiceDistributions.Where(x => x.ApPaybleInvoiceDistributionId == parentid).ToList();
+                //        if (apPaybleInvoices != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = apPaybleInvoices.ApPaybleInvoicesId.ToString(),
+                //                Description = apPaybleInvoices.SupplierName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = apPaybleInvoices.InvoiceNumber,
+                //                Date = apPaybleInvoices.InvoiceDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apPaybleInvoiceDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApPaybleInvoiceDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_Payment":
+                //    case "AP_PrePayment":
+
+                //        #region AP_Payment
+
+                //        var apPayment = _db.APPayments.Find(parentid);
+                //        var apPaymentDistributions = _db.APPaymentDistributions.Where(x => x.ApPaymentId == parentid).ToList();
+                //        if (apPayment != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = apPayment.ApPaymentId.ToString(),
+                //                Description = apPayment.SupplierName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = apPayment.InvoiceNumber,
+                //                Date = apPayment.PaymentDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apPaymentDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApPaymentDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_MiscPayment":
+
+                //        #region AP_MiscPayment
+
+                //        var apMiscellaneousPayment = _db.APMiscellaneousPayments.Find(parentid);
+                //        var apMiscellaneousPaymentDistributions = _db.APMiscellaneousPaymentDistributions.Where(x => x.ApMiscellaneousPaymentId == parentid).ToList();
+                //        if (apMiscellaneousPayment != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = apMiscellaneousPayment.ApMiscellaneousPaymentId.ToString(),
+                //                Description = apMiscellaneousPayment.SupplierName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = apMiscellaneousPayment.PaymentReference,
+                //                Date = apMiscellaneousPayment.PaymentDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apMiscellaneousPaymentDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApMiscellaneousPaymentDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_TravelOrder":
+
+                //        #region AP_TravelOrder
+
+                //        var apTravelOrder = _db.ApTravelOrders.Find(parentid);
+                //        var apTravelOrderDistributions = _db.ApTravelOrderDistributions.Where(x => x.ApTravelOrderId == parentid).ToList();
+                //        if (apTravelOrder != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = apTravelOrder.ApTravelOrderId.ToString(),
+                //                Description = apTravelOrder.PurposeOfTravel,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = apTravelOrder.Reference,
+                //                Date = apTravelOrder.RequestDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apTravelOrderDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApTravelOrderDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_TravelExpenseClaim":
+
+                //        #region AP_TravelExpenseClaim
+
+                //        var travelExpenseClaim = _db.ApTravelExpenseClaims.Find(parentid);
+                //        var apTravelExpenseDistributions = _db.ApTravelExpenseDistributions.Where(x => x.ApTravelExpenseClaimId == parentid).ToList();
+                //        if (travelExpenseClaim != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = travelExpenseClaim.ApTravelExpenseClaimId.ToString(),
+                //                Description = travelExpenseClaim.PurposeOfTravel,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = travelExpenseClaim.Reference,
+                //                Date = travelExpenseClaim.ClaimDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apTravelExpenseDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApTravelExpenseDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_PettyCash":
+
+                //        #region AP_PettyCash
+
+                //        var apPettyCash = _db.ApPettyCash.Find(parentid);
+                //        var apPettyCashDistributions = _db.ApPettyCashDistributions.Where(x => x.ApPettyCashId == parentid).ToList();
+                //        if (apPettyCash != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = apPettyCash.ApPettyCashId.ToString(),
+                //                Description = apPettyCash.PurposeOfPayment,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = apPettyCash.Reference,
+                //                Date = apPettyCash.Date,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apPettyCashDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApPettyCashDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    case "AP_Direct_Payment":
+
+                //        #region AP_Direct_Payment
+
+                //        var apDirectPayment = _db.ApDirectPayments.Find(parentid);
+                //        var apDirectPaymentDistributions = _db.ApDirectPaymentDistributions.Where(x => x.ApDirectPaymentId == parentid).ToList();
+                //        if (apDirectPayment != null)
+                //        {
+                //            header = new BookDrillDownVm
+                //            {
+                //                Id = apDirectPayment.ApDirectPaymentId.ToString(),
+                //                Description = apDirectPayment.SupplierName,
+                //                //FiscalYear = arInvoice.,
+                //                //PeriodName = arInvoice.PeriodName,
+                //                //CategoryName = arInvoice.CategoryName,
+                //                //SourcesName = arInvoice.SourcesName,
+                //                Reference = apDirectPayment.PaymentReference,
+                //                Date = apDirectPayment.PaymentDate,
+                //                BookDrillDownLineVms = new List<BookDrillDownLineVm>()
+
+                //            };
+
+                //            foreach (var line in apDirectPaymentDistributions)
+                //            {
+                //                var newLine = new BookDrillDownLineVm
+                //                {
+                //                    LineId = line.ApDirectPaymentDistributionId.ToString(),
+                //                    AccountCode = line.AccountCode,
+                //                    AccountDesc = line.AccountDesc,
+                //                    Debit = line.Debit,
+                //                    Credit = line.Credit,
+                //                    AdditionalDescription = line.AdditionalDescription
+                //                };
+                //                header.BookDrillDownLineVms.Add(newLine);
+                //            }
+
+
+                //        }
+
+                //        #endregion
+                //        return View(header);
+
+                //    default:
+                //       break;
+
+                //}
             }
            return null;
         }

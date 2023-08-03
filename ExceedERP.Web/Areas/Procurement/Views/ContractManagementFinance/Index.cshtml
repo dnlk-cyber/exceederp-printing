@@ -57,7 +57,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .ClientDetailTemplateId("template")
       .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
       .Scrollable(h => h.Height(500))
@@ -375,7 +375,7 @@
                           .Sortable()
                           //.Filterable()
                           .ClientDetailTemplateId("renewaltemplates")
-                          //.Groupable()
+                          //
                           .Events(ev => ev.DetailExpand("detailExpandRenewal"))
                           .Scrollable(h => h.Height(500))
                           .Events(x => x.DataBound("onDataBoundMasterRenewal"))
@@ -476,7 +476,7 @@
                           .Sortable()
                           //.Filterable()
                           .ClientDetailTemplateId("paymenttemplates")
-                          //.Groupable().
+                          //.
                           .Events(ev => ev.DetailExpand("detailExpandRenewal"))
                           .Scrollable(h => h.Height(500))
                           .Events(x => x.DataBound("onDataBoundMasterRenewal"))

@@ -7,7 +7,7 @@
           columns.Bound(c => c.Category).Width(200);
           columns.Bound(c => c.SupplierId).Width(100);
           columns.Bound(c => c.Name).Width(200);
-           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(120);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(120);
           columns.Bound(c => c.TradeLicense).Width(130);
           columns.Bound(c => c.TIN).Width(100);
           columns.Bound(c => c.Telephone).Title("Phone").Width(90);
@@ -25,8 +25,8 @@
               "# } #" +
               "/>"
               );
-          
-         
+
+
           //columns.Bound(c => c.Remark).Width(120);
           //columns.Bound(c => c.Rank).Width(150);
           columns.Bound(c => c.OrgBranchName).Width(200).Hidden(true);
@@ -34,7 +34,7 @@
           columns.Bound(c => c.LastModified).Width(200).Format("{0:dd/MM/yyyy}").Hidden(true);
           columns.Bound(c => c.CreatedBy).Width(200).Hidden(true);
           columns.Bound(c => c.ModifiedBy).Width(200).Hidden(true);
-        
+
           columns.Command(command =>
           {
               command.Edit();// command.Destroy();
@@ -68,19 +68,20 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .ClientDetailTemplateId("templates")
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .Sort(sort => sort.Add("ProcurementSupplierID").Descending()) 
+          .Sort(sort => sort.Add("ProcurementSupplierID").Descending())
           .PageSize(20)
           .Model(
               model =>
               {
                   model.Id(p => p.ProcurementSupplierID);
+                  model.Field(p => p.TCode).Editable(false);
                   model.Field(p => p.OrgBranchName).Editable(false);
                   model.Field(p => p.CreatedBy).Editable(false);
                   model.Field(p => p.ModifiedBy).Editable(false);
@@ -253,7 +254,7 @@
                               {
                                   toolbar.Create();
                               })
-                              .Groupable().Events(ev => ev.DetailExpand("detailExpandDetail"))
+                              .Events(ev => ev.DetailExpand("detailExpandDetail"))
                               .Scrollable(h => h.Height(500))
                               .Events(x => x.DataBound("onDataBoundMasterlDetail"))
 
@@ -327,7 +328,7 @@
                                   {
                                       toolbar.Create();
                                   })
-                                  .Groupable().Events(ev => ev.DetailExpand("detailExpandDetail"))
+                                  .Events(ev => ev.DetailExpand("detailExpandDetail"))
                                   .Scrollable(h => h.Height(500))
                                   .Events(x => x.DataBound("onDataBoundMasterlDetail"))
 
@@ -401,7 +402,7 @@
                                   {
                                       toolbar.Create();
                                   })
-                                  .Groupable().Events(ev => ev.DetailExpand("detailExpandDetail"))
+                                  .Events(ev => ev.DetailExpand("detailExpandDetail"))
                                   .Scrollable(h => h.Height(500))
                                   .Events(x => x.DataBound("onDataBoundMasterlDetail"))
 

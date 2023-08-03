@@ -52,7 +52,7 @@
                             sortable.SortMode(GridSortMode.SingleColumn);
                         })
                         .Filterable()
-                        .Groupable()
+                        
       .DataSource(dataSource => dataSource
           .Ajax()
               .Sort(sort => sort.Add("BankAccountId").Descending())

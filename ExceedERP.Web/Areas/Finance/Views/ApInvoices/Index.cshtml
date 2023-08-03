@@ -7,6 +7,7 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.ApPaybleInvoicesId).Title("ID").Width(100).ClientTemplate("#=appendZeros(ApPaybleInvoicesId)#");
+          columns.Bound(c => c.SourceId).Width(180);
           columns.Bound(c => c.SupplierId).Width(180);
           columns.Bound(c => c.SupplierName).Width(180);
           //columns.ForeignKey(c => c.SupplierId, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier").Width(200);
@@ -15,23 +16,25 @@
           columns.Bound(c => c.InvoiceDate).Width(130).Format("{0:dd/MM/yyyy}");
           columns.Bound(c => c.InvoiceNumber).Width(110);
           columns.Bound(c => c.InvoiceAmount).Width(110);
-          columns.Bound(c => c.Type).EditorTemplateName("InvoiceType").Width(140);
+          columns.Bound(c => c.Type).EditorTemplateName("InvoiceType").Width(120);
+          columns.Bound(c => c.InvoiceSource).Width(100);
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
           columns.Bound(o => o.PrNo).Width(120).ClientTemplate(
               "# if (PrNo) { #"+
               @Html.ActionLink("#=PrNo#", "PurchaseRequistionPrint", "InventoryPrint", new {area = "Inventory", Id = "#=PrNo#"}, new {@class = "detail-link"}
                   ).ToHtmlString()
-              + "# } #" 
+              + "# } #"
               );
-           
+
           columns.Bound(o => o.PoNum).Width(120).ClientTemplate(
               "# if (PoNum) { #"+
               @Html.ActionLink("#=PoNum#", "PurchaseOrderPrint", "ProcurementPrint", new {area = "Procurement", Id = "#=PoNum#"}, new {@class = "detail-link"}).ToHtmlString()
-              + "# } #" 
+              + "# } #"
               );
           columns.Bound(o => o.Grn).Width(120).ClientTemplate(
-              "# if (PoNum) { #"+
+              "# if (Grn) { #" +
               @Html.ActionLink("#=Grn#", "Goodreceive", "InventoryPrint", new {area = "Inventory", Id = "#=Grn#"}, new {@class = "detail-link"}).ToHtmlString()
-              + "# } #" 
+              + "# } #"
               );
           columns.ForeignKey(c => c.PaymentTerms, (IEnumerable)ViewData["terms"], "PaymentTermsDays", "PaymentTermsDays").Width(130);
           columns.Bound(c => c.Status).Width(80);
@@ -43,7 +46,7 @@
               @<text>
 
                     <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+                    @*<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>*@
 
                     @(Html.Kendo().CheckBox()
                                     .Name("checktransfferable")
@@ -87,7 +90,7 @@
       )
 
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApInvoice").Window(w => w.Title("Payable Invoice")))
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -101,7 +104,7 @@
       .Scrollable()
 
       .Filterable()
-      .Groupable()
+
       .Selectable(selectable =>
       {
           selectable.Mode(GridSelectionMode.Single);
@@ -124,8 +127,11 @@
               {
                   model.Id(p => p.ApPaybleInvoicesId);
                   model.Field(p => p.ApPaybleInvoicesId).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+
                   model.Field(p => p.Source).Editable(false);
+                  model.Field(p => p.ForBranchId).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
               })
 
 
@@ -135,362 +141,364 @@
           .Destroy(destroy => destroy.Action("APPaybleInvoices_Destroy", "ApInvoices"))
       ))
 
-<script id="templates" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-          .Name("tabStrip#=ApPaybleInvoicesId#")
-          .SelectedIndex(0)
-          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-          .Items(items =>
-          {
-              items.Add().Text("Invoice Detail").Content(@<text>
+                    <script id="templates" type="text/kendo-tmpl">
+                        @(Html.Kendo().TabStrip()
+                                      .Name("tabStrip#=ApPaybleInvoicesId#")
+                                      .SelectedIndex(0)
+                                      .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                      .Items(items =>
+                                      {
+                                          items.Add().Text("Invoice Detail").Content(@<text>
 
-                <div>
-                    <p><b>Record Status :#= Status #</b></p>                   
-                    
-                    # if (!IsOnlineApproved&&!IsSendForApproval)
-                    {#
-                    <a onclick='return sendForApproval("#=ApPaybleInvoicesId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                    <br />
-                    # } #
-                    
-                    # if (IsOnlineApproved)
-                    {#
-                    <a target="new" href='@Url.Action("ApInvoice", "FinancePrint")/#=ApPaybleInvoicesId#'><i class="fa fa-print fa-2x"></i></a>
-                    <br />
-                    # } #
+                                            <div>
+                                                <p><b>Record Status :#= Status #</b></p>
 
-                    # if (IsOnlineApproved && !IsOnlineTransferred )
-                    {#
-                    <a onclick='return transferToGl("#=ApPaybleInvoicesId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
-                    # } #
-                </div>
-                <div>
-        <hr>
-        <dl class="dl-horizontal">
+                                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                {#
+                                                <a onclick='return sendForApproval("#=ApPaybleInvoicesId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                <br />
+                                                # } #
+
+                                                # if (IsOnlineApproved)
+                                                {#
+                                                <a target="new" href='@Url.Action("ApInvoice", "FinancePrint")/#=ApPaybleInvoicesId#'><i class="fa fa-print fa-2x"></i></a>
+                                                <br />
+                                                # } #
+
+                                                # if (IsOnlineApproved && !IsOnlineTransferred )
+                                                {#
+                                                <a onclick='return transferToGl("#=ApPaybleInvoicesId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                                                # } #
+                                            </div>
+                                            <div>
+                                                <hr>
+                                                <dl class="dl-horizontal">
 
 
-            <dt>
-                Created On
-            </dt>
-            <dd>
-                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                    <dt>
+                                                        Created On
+                                                    </dt>
+                                                    <dd>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
 
-            </dd>
-            <dt>
-                Created By
-            </dt>
-            <dd>
-                #= CreatedBy #
-            </dd>
-            <dt>
-                Modified By
-            </dt>
-            <dd>
-                #= ModifiedBy #
-            </dd>
-            <dt>
-                Modified Date
-            </dt>
-            <dd>
-                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-            </dd>
-        </dl>
-    </div>
-    
-     <hr>
+                                                    </dd>
+                                                    <dt>
+                                                        Created By
+                                                    </dt>
+                                                    <dd>
+                                                        #= CreatedBy #
+                                                    </dd>
+                                                    <dt>
+                                                        Modified By
+                                                    </dt>
+                                                    <dd>
+                                                        #= ModifiedBy #
+                                                    </dd>
+                                                    <dt>
+                                                        Modified Date
+                                                    </dt>
+                                                    <dd>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                    </dd>
+                                                </dl>
+                                            </div>
 
-        # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
-        {#
-        @if (HttpContext.Current.User.IsInRole("Account_Payable_Void"))
-        {
-            <a onclick='return voidRecord("#=ApPaybleInvoicesId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-        }
-        # } #
+                                            <hr>
 
-    
-            </text>);
-              items.Add().Text("Invoice Lines").Content(@<text>
-                    @(Html.Kendo().Grid<ApPaybleInvoicesLines>()
-                          .Name("APPaybleInvoicesLines#=ApPaybleInvoicesId#")
-                          .Columns(columns =>
-                          {
-                              columns.Bound(c => c.Name).EditorTemplateName("ProductOrService").Width(150);
-                              columns.Bound(c => c.Description).Width(120);
-                              columns.Bound(c => c.GrnNo).Width(90);
-                               columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
-                              columns.Bound(c => c.AccountDesc).Title("Account Description").Width(150);
-                              columns.Bound(c => c.InvoiceAmount).Title("Amount").Width(100);
-                              columns.Bound(c => c.AdvanceAmount).Hidden(true).Width(150);
-                              columns.Bound(c => c.TaxType).Width(120).EditorTemplateName("TaxType");
-                              columns.Bound(c => c.WithholdingType).Width(140).EditorTemplateName("WithholdingType");
-                              columns.Bound(c => c.WithholdTax).Title("Withold VAT ?").Width(140).ClientTemplate(
-                                  "<input type='checkbox' disabled = 'true' value='\\#= WithholdTax\\#' " +
-                                  "\\# if (WithholdTax) { \\#" +
-                                  "checked='checked'" +
-                                  "\\# } \\#" +
-                                  "/>"
-                                  );
-                              
-                              columns.Bound(c => c.TaxAmount).Width(120).ClientFooterTemplate(" \\#=sum\\# ");
-                              columns.Bound(c => c.NetPayable).Width(140);
-                              columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
-                              columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
-                              columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
-                              columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
-                              columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
-                              columns.Command(command =>
-                              {
+                                            # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                                            {#
+                                            @if (HttpContext.Current.User.IsInRole("Account_Payable_Void"))
+                                                        {
+                                                <a onclick='return voidRecord("#=ApPaybleInvoicesId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                        }
+                                            /**/
+                                            # } #
 
-                                  command.Edit();
-                                 // command.Destroy();
 
-                              }).Width(120);
-                          })
-                          .ToolBar(toolbar =>
-                          {
-                              //toolbar.Create();
-                          })
-
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Events(x => x.DataBound("onDataBoundLines"))
-
-                          .Scrollable()
-                          .Sortable()
-                          .Filterable()
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                              .Events(ev => ev
-                                  .Error("error_handler(\"APPaybleInvoicesLines#=ApPaybleInvoicesId#\")")
-                                  .RequestStart("onRequestStart(\"APPaybleInvoicesLines#=ApPaybleInvoicesId#\")")
-                                  .RequestEnd("onRequestEnd(\"APPaybleInvoicesLines#=ApPaybleInvoicesId#\")"))
-                              .Aggregates(aggregates =>
-                              {
-
-                                  aggregates.Add(p => p.TaxAmount).Sum();
-                              })
-                              .Model(
-                                  model =>
+                                        </text>);
+                                    @*items.Add().Text("Invoice Lines").Content(@<text>
+                            @(Html.Kendo().Grid<ApPaybleInvoicesLines>()
+                                  .Name("APPaybleInvoicesLines#=ApPaybleInvoicesId#")
+                                  .Columns(columns =>
                                   {
-                                      model.Id(p => p.ApPaybleInvoicesLinesId);
-                                      model.Field(p => p.GrnNo).Editable(false);
-                                      model.Field(p => p.Name).Editable(false);
-                                      model.Field(p => p.Description).Editable(false);
-                                      model.Field(p => p.NetPayable).Editable(false);
-                                      model.Field(p => p.TaxType).Editable(false);
-                                      model.Field(p => p.AccountCode).Editable(false);
-                                      model.Field(p => p.AccountDesc).Editable(false);
-                                      model.Field(p => p.InvoiceAmount).Editable(false);
-                                      model.Field(p => p.AdvanceAmount).Editable(false);
-                                      model.Field(p => p.TaxAmount).Editable(false);
-                                      model.Field(p => p.NetPayable).Editable(false);
-                                      model.Field(p => p.WithholdingAmount).Editable(false);
-                                      model.Field(p => p.WithholdTaxAmount).Editable(false);
+                                      columns.Bound(c => c.Name).EditorTemplateName("ProductOrService").Width(150);
+                                      columns.Bound(c => c.Description).Width(120);
+                                      columns.Bound(c => c.GrnNo).Width(90);
+                                       columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+                                      columns.Bound(c => c.AccountDesc).Title("Account Description").Width(150);
+                                      columns.Bound(c => c.InvoiceAmount).Title("Amount").Width(100);
+                                      columns.Bound(c => c.AdvanceAmount).Hidden(true).Width(150);
+                                      columns.Bound(c => c.TaxType).Width(120).EditorTemplateName("TaxType");
+                                      columns.Bound(c => c.WithholdingType).Width(140).EditorTemplateName("WithholdingType");
+                                      columns.Bound(c => c.WithholdTax).Title("Withold VAT ?").Width(140).ClientTemplate(
+                                          "<input type='checkbox' disabled = 'true' value='\\#= WithholdTax\\#' " +
+                                          "\\# if (WithholdTax) { \\#" +
+                                          "checked='checked'" +
+                                          "\\# } \\#" +
+                                          "/>"
+                                          );
 
-                                  
-                                      model.Field(p => p.OrgBranchName).Editable(false);
-                                      model.Field(p => p.CreatedBy).Editable(false);
-                                      model.Field(p => p.ModifiedBy).Editable(false);
-                                      model.Field(p => p.LastModified).Editable(false);
-                                      model.Field(p => p.DateCreated).Editable(false);
+                                      columns.Bound(c => c.TaxAmount).Width(120).ClientFooterTemplate(" \\#=sum\\# ");
+                                      columns.Bound(c => c.NetPayable).Width(140);
+                                      columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+                                      columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+                                      columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+                                      columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+
+                                          command.Edit();
+                                         // command.Destroy();
+
+                                      }).Width(120);
                                   })
-                             
-                              .Read(read => read.Action("APPaybleInvoicesLines_Read", "ApInvoicesLines", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Create(create => create.Action("APPaybleInvoicesLines_Create", "ApInvoicesLines", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Update(update => update.Action("APPaybleInvoicesLines_Update", "ApInvoicesLines", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Destroy(destroy => destroy.Action("APPaybleInvoicesLines_Destroy", "ApInvoicesLines"))
-                          )
-                          .Events(events => events.DataBound("dataBoundLines"))
-                          .ToClientTemplate())
-            </text>);
-
-              items.Add().Text("Validation").Content(
-                  @<text>
-                    @(Html.Kendo().Grid<ApPaybleInvoiceValidation>()
-                          .Name("APPaybleInvoiceValidation#=ApPaybleInvoicesId#")
-                          .Columns(columns =>
-                          {
-                              columns.Bound(c => c.ApPaybleInvoiceValidationId).Hidden(true);
-                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
-                              columns.Bound(c => c.Remark).Width(200);
-                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
-                              columns.Bound(c => c.LastModified).Hidden(true);
-                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
-                              columns.Bound(c => c.ModifiedBy).Hidden(true);
-                              columns.Command(command =>
-                              {
-                                  command.Edit();
-
-                              });
-
-                          })
-                          .ToolBar(toolbar =>
-                          {
-                              toolbar.Create();
-                          })
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Events(x => x.DataBound("onDataBoundFisrtValidation"))
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-                          .Filterable()
-                          .Scrollable()
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                              .Events(ev => ev
-                                  .Error("error_handler(\"APPaybleInvoiceValidation#=ApPaybleInvoicesId#\")")
-                                  .RequestStart("onRequestStart(\"APPaybleInvoiceValidation#=ApPaybleInvoicesId#\")")
-                                  .RequestEnd("onRequestEnd(\"APPaybleInvoiceValidation#=ApPaybleInvoicesId#\")"))
-                              .Model(
-                                  model =>
+                                  .ToolBar(toolbar =>
                                   {
-                                      model.Id(p => p.ApPaybleInvoiceValidationId);
-                                      model.Field(p => p.OrgBranchName).Editable(false);
-                                      model.Field(p => p.CreatedBy).Editable(false);
-                                      model.Field(p => p.ModifiedBy).Editable(false);
-                                      model.Field(p => p.LastModified).Editable(false);
-                                      model.Field(p => p.DateCreated).Editable(false);
+                                      //toolbar.Create();
                                   })
-                             
-                              .Read(read => read.Action("APPaybleInvoiceValidations_Read", "ApInvoiceValidation", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Create(create => create.Action("APPaybleInvoiceValidations_Create", "ApInvoiceValidation", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Update(update => update.Action("APPaybleInvoiceValidations_Update", "ApInvoiceValidation", new {id = "#=ApPaybleInvoicesId#"}))
-                          )
-                          .ToClientTemplate())
 
-                </text>);
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Events(x => x.DataBound("onDataBoundLines"))
 
-              items.Add().Text("Distribution").Content(@<text>
-                    @(Html.Kendo().Grid<ApPaybleInvoiceDistribution>()
-                          .Name("APPaybleInvoiceDistribution#=ApPaybleInvoicesId#")
-                          .Columns(columns =>
-                          {
-                              columns.Bound(c => c.ApPaybleInvoiceDistributionId).Hidden(true);
-                               columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(130);
-                              columns.Bound(c => c.AccountDesc).Title("Account Description").Width(200);
-                              columns.Bound(c => c.Debit).Width(100).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
-                              columns.Bound(c => c.Credit).Width(100).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+                                  .Scrollable()
+                                  .Sortable()
+                                  .Filterable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"APPaybleInvoicesLines#=ApPaybleInvoicesId#\")")
+                                          .RequestStart("onRequestStart(\"APPaybleInvoicesLines#=ApPaybleInvoicesId#\")")
+                                          .RequestEnd("onRequestEnd(\"APPaybleInvoicesLines#=ApPaybleInvoicesId#\")"))
+                                      .Aggregates(aggregates =>
+                                      {
 
-                              columns.Bound(c => c.DateCreated).Hidden(true).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
-                              columns.Bound(c => c.LastModified).Hidden(true);
-                              columns.Bound(c => c.CreatedBy).Width(200).Title("User").Hidden(true);
-                              columns.Bound(c => c.ModifiedBy).Hidden(true);
-                              columns.Command(command =>
-                              {
+                                          aggregates.Add(p => p.TaxAmount).Sum();
+                                      })
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.ApPaybleInvoicesLinesId);
+                                              model.Field(p => p.GrnNo).Editable(false);
+                                              model.Field(p => p.Name).Editable(false);
+                                              model.Field(p => p.Description).Editable(false);
+                                              model.Field(p => p.NetPayable).Editable(false);
+                                              model.Field(p => p.TaxType).Editable(false);
+                                              model.Field(p => p.AccountCode).Editable(false);
+                                              model.Field(p => p.AccountDesc).Editable(false);
+                                              model.Field(p => p.InvoiceAmount).Editable(false);
+                                              model.Field(p => p.AdvanceAmount).Editable(false);
+                                              model.Field(p => p.TaxAmount).Editable(false);
+                                              model.Field(p => p.NetPayable).Editable(false);
+                                              model.Field(p => p.WithholdingAmount).Editable(false);
+                                              model.Field(p => p.WithholdTaxAmount).Editable(false);
 
-                                  command.Edit();
-                                  command.Destroy();
 
-                              }).Width(480).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
 
-                          })
-                          .ToolBar(toolbar =>
-                          {
-                              toolbar.Create();
-                          })
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-                          .Filterable()
-                          .Scrollable()
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                              .Events(ev => ev
-                                  .Error("error_handler(\"APPaybleInvoiceDistribution#=ApPaybleInvoicesId#\")")
-                                  .RequestStart("onRequestStart(\"APPaybleInvoiceDistribution#=ApPaybleInvoicesId#\")")
-                                  .RequestEnd("onRequestEnd(\"APPaybleInvoiceDistribution#=ApPaybleInvoicesId#\")"))
-                              .Aggregates(aggregates =>
-                              {
-                                  aggregates.Add(p => p.Debit).Sum();
-                                  aggregates.Add(p => p.Credit).Sum();
-                              })
-                              .Model(
-                                  model =>
-                                  {
-                                      model.Id(p => p.ApPaybleInvoiceDistributionId);
-                                      model.Field(p => p.AccountDesc).Editable(false);
-                                      model.Field(p => p.OrgBranchName).Editable(false);
-                                      model.Field(p => p.CreatedBy).Editable(false);
-                                      model.Field(p => p.ModifiedBy).Editable(false);
-                                      model.Field(p => p.LastModified).Editable(false);
-                                      model.Field(p => p.DateCreated).Editable(false);
-                                  })
-                              
-                              .Read(read => read.Action("APPaybleInvoiceDistributions_Read", "ApInvoiceDistribution", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Create(create => create.Action("APPaybleInvoiceDistributions_Create", "ApInvoiceDistribution", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Update(update => update.Action("APPaybleInvoiceDistributions_Update", "ApInvoiceDistribution", new {id = "#=ApPaybleInvoicesId#"}))
-                              .Destroy(destroy => destroy.Action("APPaybleInvoiceDistributions_Destroy", "ApInvoiceDistribution"))
-                          )
-                          .ToClientTemplate())
+                                      .Read(read => read.Action("APPaybleInvoicesLines_Read", "ApInvoicesLines", new {id = "#=ApPaybleInvoicesId#"}))
+                                      .Create(create => create.Action("APPaybleInvoicesLines_Create", "ApInvoicesLines", new {id = "#=ApPaybleInvoicesId#"}))
+                                      .Update(update => update.Action("APPaybleInvoicesLines_Update", "ApInvoicesLines", new {id = "#=ApPaybleInvoicesId#"}))
+                                      .Destroy(destroy => destroy.Action("APPaybleInvoicesLines_Destroy", "ApInvoicesLines"))
+                                  )
+                                  .Events(events => events.DataBound("dataBoundLines"))
+                                  .ToClientTemplate())
+                    </text>);*@
 
-                </text>);
 
-                items.Add().Text("Purchase Info.").Content(
-                                            @<text>
-                                                @(Html.Kendo().Grid<PurchaseViewModel>()
-                                                                            .Name("PurchaseViewModel#=ApPaybleInvoicesId#")
-                                                                            .Columns(columns =>
-                                                                            {
-                                                                                columns.Bound(p => p.PurchaseId).Title("No.").Width(70);
-                                                                                columns.Bound(p => p.PoTypeEnum).Title("Type").Width(70);
-                                                                                columns.Bound(p => p.TenderRef).Title("Tender Info").Width(70);
-                                                                                columns.Bound(o => o.ProformaPurchaseID).Title("Purchase Req.").ClientTemplate(@Html.ActionLink("\\#=PurchaseRequisitionID\\#","PurchaseRequistionPrint", "InventoryPrint", new {area="Inventory", ID = "\\#=PurchaseRequisitionID\\#"},new { @class = "detail-link"}).ToHtmlString()).Width(80);
-                                                                                columns.Bound(o => o.ProformaPurchaseID).Title("Proforma").ClientTemplate(@Html.ActionLink("\\#=ProformaPurchaseID\\#","ProformaResultEn", "ProcurementPrint", new {area="Procurement", ID = "\\#=ProformaPurchaseID\\#"},new { @class = "detail-link"}).ToHtmlString()).Width(70);
-                                                                                columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(120).EditorTemplateName("EmployeeSelector");
-                                                                                columns.Bound(c => c.SupplierId).Width(100);
-                                                                                columns.Bound(c => c.IsNewSupplier).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsNewSupplier ? checked='checked' :'' \\# />");
-                                                                                columns.Bound(c => c.SupplierName).Width(120);
-                                                                                columns.Bound(c => c.OrderDate).Width(130);
-                                                                                columns.Bound(c => c.DeliveryDate).Width(130);
-                                                                                columns.Bound(c => c.DeliveryPlace).Width(130);
-                                                                                columns.Bound(c => c.Remark).Width(120);
-                                                                                columns.Bound(c => c.Status).Width(120);
+                                                items.Add().Text("Distribution").Content(@<text>
+                                                    @(Html.Kendo().Grid<ApPaybleInvoiceDistribution>()
+                                                                  .Name("APPaybleInvoiceDistribution#=ApPaybleInvoicesId#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                                columns.Bound(c => c.ApPaybleInvoiceDistributionId).Hidden(true);
+                                                                                columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(130);
+                                                                                columns.Bound(c => c.AccountDesc).Title("Account Description").Width(200);
+                                                                                columns.Bound(c => c.Debit).Width(100).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
+                                                                                columns.Bound(c => c.Credit).Width(100).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+
+                                                                                columns.Bound(c => c.DateCreated).Hidden(true).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                columns.Bound(c => c.CreatedBy).Width(200).Title("User").Hidden(true);
+                                                                                columns.Bound(c => c.ModifiedBy).Hidden(true);
                                                                                 columns.Command(command =>
                                                                                 {
-                                                                                }).Width(280);
+
+                                                                                    command.Edit();
+                                                                                    command.Destroy();
+
+                                                                                }).Width(480).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
 
                                                                             })
-                                                                            
-                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                            
-                                                                            .ClientDetailTemplateId("purchasetemplates")
-                                                                            .Sortable(sortable =>
-                                                                            {
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                                toolbar.Create();
+                                                                            })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                                  .Sortable(sortable =>
+                                                                  {
                                                                                 sortable.SortMode(GridSortMode.SingleColumn);
                                                                             })
-                                                                            
-                                                                            .Scrollable()
-                                                                            .DataSource(dataSource => dataSource
-                                                                                .Ajax()
-                                                                                .Model(
-                                                                                    model =>
-                                                                                    {
-                                                                                        model.Id(p => p.PurchaseId);
+                                                                  .Filterable()
+                                                                  .Scrollable()
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .Events(ev => ev
+                                                                          .Error("error_handler(\"APPaybleInvoiceDistribution#=ApPaybleInvoicesId#\")")
+                                                                          .RequestStart("onRequestStart(\"APPaybleInvoiceDistribution#=ApPaybleInvoicesId#\")")
+                                                                          .RequestEnd("onRequestEnd(\"APPaybleInvoiceDistribution#=ApPaybleInvoicesId#\")"))
+                                                                      .Aggregates(aggregates =>
+                                                                      {
+                                                                                    aggregates.Add(p => p.Debit).Sum();
+                                                                                    aggregates.Add(p => p.Credit).Sum();
+                                                                                })
+                                                                      .Model(
+                                                                          model =>
+                                                                          {
+                                                                                        model.Id(p => p.ApPaybleInvoiceDistributionId);
+                                                                                        model.Field(p => p.AccountDesc).Editable(false);
                                                                                         model.Field(p => p.OrgBranchName).Editable(false);
                                                                                         model.Field(p => p.CreatedBy).Editable(false);
                                                                                         model.Field(p => p.ModifiedBy).Editable(false);
                                                                                         model.Field(p => p.LastModified).Editable(false);
                                                                                         model.Field(p => p.DateCreated).Editable(false);
                                                                                     })
-                                                                                .Events(ev => ev
-                                                                                    .Error("error_handler(\"PurchaseViewModel#=ApPaybleInvoicesId#\")")
-                                                                                    .RequestStart("onRequestStart(\"PurchaseViewModel#=ApPaybleInvoicesId#\")")
-                                                                                    .RequestEnd("onRequestEnd(\"PurchaseViewModel#=ApPaybleInvoicesId#\")"))
-                                                                                .Read(read => read.Action("PurchaseHeader_Read", "ApInvoices", new { id = "#=ApPaybleInvoicesId#" }))
-                                                                                
-                                                                            )
-                                                                            .ToClientTemplate())
+
+                                                                      .Read(read => read.Action("APPaybleInvoiceDistributions_Read", "ApInvoiceDistribution", new { id = "#=ApPaybleInvoicesId#" }))
+                                                                      .Create(create => create.Action("APPaybleInvoiceDistributions_Create", "ApInvoiceDistribution", new { id = "#=ApPaybleInvoicesId#" }))
+                                                                      .Update(update => update.Action("APPaybleInvoiceDistributions_Update", "ApInvoiceDistribution", new { id = "#=ApPaybleInvoicesId#" }))
+                                                                      .Destroy(destroy => destroy.Action("APPaybleInvoiceDistributions_Destroy", "ApInvoiceDistribution"))
+                                                                  )
+                                                                  .ToClientTemplate())
+
+                                                </text>);
+
+                                                        items.Add().Text("Validation").Content(
+                                            @<text>
+                                                @(Html.Kendo().Grid<ApPaybleInvoiceValidation>()
+                                                              .Name("APPaybleInvoiceValidation#=ApPaybleInvoicesId#")
+                                                              .Columns(columns =>
+                                                              {
+                                                                        columns.Bound(c => c.ApPaybleInvoiceValidationId).Hidden(true);
+                                                                        columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                        columns.Bound(c => c.Remark).Width(200);
+                                                                        columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                        columns.Bound(c => c.LastModified).Hidden(true);
+                                                                        columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                        columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                        columns.Command(command =>
+                                                                        {
+                                                                            command.Edit();
+
+                                                                        });
+
+                                                                    })
+                                                              .ToolBar(toolbar =>
+                                                              {
+                                                                        toolbar.Create();
+                                                                    })
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                              .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                              .Sortable(sortable =>
+                                                              {
+                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                    })
+                                                              .Filterable()
+                                                              .Scrollable()
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .Events(ev => ev
+                                                                      .Error("error_handler(\"APPaybleInvoiceValidation#=ApPaybleInvoicesId#\")")
+                                                                      .RequestStart("onRequestStart(\"APPaybleInvoiceValidation#=ApPaybleInvoicesId#\")")
+                                                                      .RequestEnd("onRequestEnd(\"APPaybleInvoiceValidation#=ApPaybleInvoicesId#\")"))
+                                                                  .Model(
+                                                                      model =>
+                                                                      {
+                                                                                model.Id(p => p.ApPaybleInvoiceValidationId);
+                                                                                model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                model.Field(p => p.LastModified).Editable(false);
+                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                            })
+
+                                                                  .Read(read => read.Action("APPaybleInvoiceValidations_Read", "ApInvoiceValidation", new { id = "#=ApPaybleInvoicesId#" }))
+                                                                  .Create(create => create.Action("APPaybleInvoiceValidations_Create", "ApInvoiceValidation", new { id = "#=ApPaybleInvoicesId#" }))
+                                                                  .Update(update => update.Action("APPaybleInvoiceValidations_Update", "ApInvoiceValidation", new { id = "#=ApPaybleInvoicesId#" }))
+                                                              )
+                                                              .ToClientTemplate())
 
                                             </text>);
-          })
 
-          .ToClientTemplate()
-          )
+                                    @*items.Add().Text("Purchase Info.").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<PurchaseViewModel>()
+                                                    .Name("PurchaseViewModel#=ApPaybleInvoicesId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.Bound(p => p.PurchaseId).Title("No.").Width(70);
+                                                        columns.Bound(p => p.PoTypeEnum).Title("Type").Width(70);
+                                                        columns.Bound(p => p.TenderRef).Title("Tender Info").Width(70);
+                                                        columns.Bound(o => o.ProformaPurchaseID).Title("Purchase Req.").ClientTemplate(@Html.ActionLink("\\#=PurchaseRequisitionID\\#","PurchaseRequistionPrint", "InventoryPrint", new {area="Inventory", ID = "\\#=PurchaseRequisitionID\\#"},new { @class = "detail-link"}).ToHtmlString()).Width(80);
+                                                        columns.Bound(o => o.ProformaPurchaseID).Title("Proforma").ClientTemplate(@Html.ActionLink("\\#=ProformaPurchaseID\\#","ProformaResultEn", "ProcurementPrint", new {area="Procurement", ID = "\\#=ProformaPurchaseID\\#"},new { @class = "detail-link"}).ToHtmlString()).Width(70);
+                                                        columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(120).EditorTemplateName("EmployeeSelector");
+                                                        columns.Bound(c => c.SupplierId).Width(100);
+                                                        columns.Bound(c => c.IsNewSupplier).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsNewSupplier ? checked='checked' :'' \\# />");
+                                                        columns.Bound(c => c.SupplierName).Width(120);
+                                                        columns.Bound(c => c.OrderDate).Width(130);
+                                                        columns.Bound(c => c.DeliveryDate).Width(130);
+                                                        columns.Bound(c => c.DeliveryPlace).Width(130);
+                                                        columns.Bound(c => c.Remark).Width(120);
+                                                        columns.Bound(c => c.Status).Width(120);
+                                                        columns.Command(command =>
+                                                        {
+                                                        }).Width(280);
 
-</script>
+                                                    })
+
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                    .ClientDetailTemplateId("purchasetemplates")
+                                                    .Sortable(sortable =>
+                                                    {
+                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                    })
+
+                                                    .Scrollable()
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                        .Model(
+                                                            model =>
+                                                            {
+                                                                model.Id(p => p.PurchaseId);
+                                                                model.Field(p => p.OrgBranchName).Editable(false);
+                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                model.Field(p => p.LastModified).Editable(false);
+                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                            })
+                                                        .Events(ev => ev
+                                                            .Error("error_handler(\"PurchaseViewModel#=ApPaybleInvoicesId#\")")
+                                                            .RequestStart("onRequestStart(\"PurchaseViewModel#=ApPaybleInvoicesId#\")")
+                                                            .RequestEnd("onRequestEnd(\"PurchaseViewModel#=ApPaybleInvoicesId#\")"))
+                                                        .Read(read => read.Action("PurchaseHeader_Read", "ApInvoices", new { id = "#=ApPaybleInvoicesId#" }))
+
+                                                    )
+                                                    .ToClientTemplate())
+
+                    </text>);*@
+                                            })
+
+                                            .ToClientTemplate()
+                        )
+
+                    </script>
 
 <script id="purchasetemplates" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
@@ -752,6 +760,17 @@
         }
     }
 
+
+
+    function filterPurchaseReferences() {
+
+        return {
+            //sourceType: $("#PoType").data("kendoDropDownList").value(),
+            text: $("#SourceId").data("kendoDropDownList").filterInput.val()
+            //purchaser: $("#EmployeeId").data("kendoDropDownList").value()
+        };
+    }
+
     function onSelectPaymentRequest(e) {
         //alert("change");
         var id = $("#SourceId").data("kendoDropDownList").value();
@@ -768,7 +787,8 @@
                 $("#EmployeeId").val(result.ProcurementOfficer).trigger("change");
                 $("#PoNum").val(result.PONo).trigger("change");
                 $("#InvoiceNumber").val(result.InvoiceNumber).trigger("change");
-                $("#InvoiceAmount").val(result.InvoiceAmount).trigger("change");
+                $("#InvoiceAmount").val(result.Amount).trigger("change");
+                $("#PurposeOfPayment").val(result.Purpose).trigger("change");
 
             }, //end succ
             error: function (result) {
@@ -811,20 +831,6 @@
 
 
 
-<script>
-    var popup;
-    var aCode;
-    function SelectAccCode() {
-        popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
-        popup.focus();
-        return false;
-    }
-
-    function setLang(accCode) {
-        aCode = accCode;
-        $("#AccountCode").val(aCode).trigger("change");
-    }
-</script>
 
 <script type="text/javascript">
 

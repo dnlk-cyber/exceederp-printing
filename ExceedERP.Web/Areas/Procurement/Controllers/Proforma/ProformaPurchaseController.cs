@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -88,15 +88,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ProformaPurchases_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ProformaPurchase> proformapurchases = _db.ProformaPurchases;
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTenderApprover))
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderApprover))
             {
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTenderUser))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderUser))
             {
                 int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 proformapurchases = proformapurchases.Where(x => x.ProcurementOfficer == empid && empid != 0 || x.ForwardedTo == User.Identity.Name);
@@ -109,6 +109,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 ProformaPurchaseID = proformaPurchase.ProformaPurchaseID,
                 ProcurementOfficer = proformaPurchase.ProcurementOfficer,
                 BranchId = proformaPurchase.BranchId,
+                BusinessUnitId = proformaPurchase.BusinessUnitId,
                 PurchaseRequisitionAssignmentId = proformaPurchase.PurchaseRequisitionAssignmentId,
                 PurchaseRequisitionID = proformaPurchase.PurchaseRequisitionID,
                 StoreRequisitionID = proformaPurchase.StoreRequisitionID,
@@ -145,7 +146,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaPurchases_Create([DataSourceRequest]DataSourceRequest request, ProformaPurchase proformaPurchase)
         {
@@ -174,19 +175,30 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 {
                     proformaPurchase.StoreRequisitionID = pr.StoreRequisitionID;
                     proformaPurchase.PurchaseRequisitionID = pr.PurchaseRequisitionID;
+                    proformaPurchase.BranchId = pr.BranchId;
+                    proformaPurchase.BusinessUnitId = pr.BusinessUnitId;
+                    proformaPurchase.ProcurementOfficer = pr.ProcurementOfficer;
+                }
+
+                else
+                {
+                    proformaPurchase.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+                    proformaPurchase.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+                    proformaPurchase.ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 }
             }
 
             if (ModelState.IsValid)
             {
-                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+               
                 var entity = new ProformaPurchase
                 {
                     PurchaseRequisitionAssignmentId = proformaPurchase.PurchaseRequisitionAssignmentId,
                     StoreRequisitionID = proformaPurchase.StoreRequisitionID,
                     ProformaReference = proformaPurchase.ProformaReference,
-                    ProcurementOfficer = empid,
-                    BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
+                    ProcurementOfficer = proformaPurchase.ProcurementOfficer,
+                    BranchId = proformaPurchase.BranchId,
+                    BusinessUnitId = proformaPurchase.BusinessUnitId,
                     Description = proformaPurchase.Description,
                     FloatDate = proformaPurchase.FloatDate,
                     PurchaseRequisitionID = proformaPurchase.PurchaseRequisitionID,
@@ -227,7 +239,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaPurchase }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaPurchases_Update([DataSourceRequest]DataSourceRequest request, ProformaPurchase proformaPurchase)
         {
@@ -256,19 +268,30 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 {
                     proformaPurchase.StoreRequisitionID = pr.StoreRequisitionID;
                     proformaPurchase.PurchaseRequisitionID = pr.PurchaseRequisitionID;
+                    proformaPurchase.BranchId = pr.BranchId;
+                    proformaPurchase.BusinessUnitId = pr.BusinessUnitId;
+                    proformaPurchase.ProcurementOfficer = pr.ProcurementOfficer;
+                }
+
+                else
+                {
+                    proformaPurchase.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+                    proformaPurchase.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+                    proformaPurchase.ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 }
             }
 
             if (ModelState.IsValid)
             {
-                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+               
                 var entity = new ProformaPurchase
                 {
                     PurchaseRequisitionAssignmentId = proformaPurchase.PurchaseRequisitionAssignmentId,
                     PurchaseRequisitionID = proformaPurchase.PurchaseRequisitionID,
                     StoreRequisitionID = proformaPurchase.StoreRequisitionID,
-                    ProcurementOfficer = empid,
-                    BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
+                    ProcurementOfficer = proformaPurchase.ProcurementOfficer,
+                    BranchId = proformaPurchase.BranchId,
+                    BusinessUnitId = proformaPurchase.BusinessUnitId,
                     ProformaPurchaseID = proformaPurchase.ProformaPurchaseID,
                     ProformaReference = proformaPurchase.ProformaReference,
                     Description = proformaPurchase.Description,
@@ -308,7 +331,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaPurchase }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaPurchases_Destroy([DataSourceRequest]DataSourceRequest request, ProformaPurchase proformaPurchase)
         {
@@ -320,6 +343,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     PurchaseRequisitionID = proformaPurchase.PurchaseRequisitionID,
                     ProcurementOfficer = proformaPurchase.ProcurementOfficer,
                     BranchId = proformaPurchase.BranchId,
+                    BusinessUnitId = proformaPurchase.BusinessUnitId,
                     ProformaPurchaseID = proformaPurchase.ProformaPurchaseID,
                     ProformaReference = proformaPurchase.ProformaReference,
                     Description = proformaPurchase.Description,
@@ -349,7 +373,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return Json(new[] { proformaPurchase }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         private void PurchaseRequistionItems(int  assignmentid, int id)
         {
             var assignment = _db.PurchaseRequisitionAssignments.Find(assignmentid);
@@ -388,7 +412,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
             _db.SaveChanges();
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.ProformaPurchases.Find(id);
@@ -474,7 +498,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendToChecker(int id, string user)
         {
             var record = _db.ProformaPurchases.Find(id);
@@ -538,7 +562,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
         
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementVoid)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.ProformaPurchases.Find(id);

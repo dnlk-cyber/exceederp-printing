@@ -59,7 +59,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .ClientDetailTemplateId("templates")
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Order").Window(w => w.Title("Sales Order Registration")))
       .Scrollable(h => h.Height(500))
@@ -71,7 +71,7 @@
               {
                   model.Id(p => p.ArSalesOrderId);
                   model.Field(p => p.ArSalesOrderId).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  
                   model.Field(p => p.VoidTime).Editable(false);
                   model.Field(p => p.VoidBy).Editable(false);
                   model.Field(p => p.isVoid).Editable(false);

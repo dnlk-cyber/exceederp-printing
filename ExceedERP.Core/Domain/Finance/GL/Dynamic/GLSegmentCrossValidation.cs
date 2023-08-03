@@ -8,6 +8,7 @@ namespace ExceedERP.Core.Domain.Finance.GL.Dynamic
     {
         public int GLSegmentCrossValidationId { get; set; }
         [Required]
+        [Display(Name = "Account")]
         public string Name { get; set; }
         public string Description { get; set; }
         [Display(Name = "Enable?")]

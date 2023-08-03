@@ -1,0 +1,78 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Finance Configurations</legend>
+@(Html.Kendo().Grid<Configuration>()
+          .Name("ConfigurationGrid")
+      .Columns(columns =>
+      {
+       // columns.Bound(c => c.Category);
+          columns.Bound(c => c.Reference).EditorTemplateName("Categories").Width(300).ClientGroupHeaderTemplate("Setting");
+          columns.Bound(c => c.Attribute).EditorTemplateName("Attribute").Width(200);
+          columns.Bound(c => c.CurrentValue).Width(150);
+       // columns.Bound(c => c.PreviousValue);
+        //columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                // 
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                                                {
+                                                    events.Error("error_handler(\"ConfigurationGrid\")");
+                                                    events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
+                                                    events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+                                                })
+                     
+          .Model(model => model.Id(p => p.ConfigurationId))
+          .Read(read => read.Action("Configurations_Read", "FinanceConfigs"))
+              .Create(create => create.Action("Configurations_Create", "FinanceConfigs", new { Attribute = "#=Attribute#", CurrentValue = "#=CurrentValue#" }))
+          .Update(update => update.Action("Configurations_Update", "FinanceConfigs"))
+          .Destroy(destroy => destroy.Action("Configurations_Destroy", "FinanceConfigs"))
+      )
+      )
+
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>
+<script>
+    function filterAttributes() {
+        return {
+            Attribute: $("#Attribute").val()
+        };
+    }
+
+
+</script>
+<script>
+    function filterCurrentValue() {
+        return {
+            Attribute: $("#CurrentValue").val()
+        };
+    }
+
+
+</script>

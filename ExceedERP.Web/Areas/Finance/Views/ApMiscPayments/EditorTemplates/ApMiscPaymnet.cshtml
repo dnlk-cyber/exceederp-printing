@@ -2,7 +2,7 @@
 @using ExceedERP.Core.Domain.Common
 @using ExceedERP.Core.Domain.Finance
 @using ExceedERP.Core.Domain.Finance.AP
-@using ExceedERP.Helpers
+@using ExceedERP.Helpers.Common
 @model ExceedERP.Core.Domain.Finance.AP.ApMiscellaneousPayment
 
 @Html.HiddenFor(model => model.ApMiscellaneousPaymentId)
@@ -62,50 +62,60 @@
         
 
         <div class="col-md-3 ro1">
-            
+
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.IsDirectPayment, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-8">
+                @Html.Kendo().CheckBoxFor(model => model.IsDirectPayment)
+                @Html.ValidationMessageFor(model => model.IsDirectPayment, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row"></div>
+        <br/>*@
+
             <div class="form-group">
-                @*@Html.LabelFor(model => model.IsDirectPayment, htmlAttributes: new { @class = "control-label col-md-8" })*@
-                <div class="col-md-8">
-                    @Html.Kendo().CheckBoxFor(model => model.IsDirectPayment)
-                    @Html.ValidationMessageFor(model => model.IsDirectPayment, "", new { @class = "text-danger" })
+                @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Reference)
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
-            <br/>
             <div class="form-group">
                 @Html.LabelFor(model => model.PaymentMethod, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.PaymentMethod)
-                          .ValuePrimitive(true)
-                          .OptionLabel("Payment Method")
-                                  .DataTextField("Method")
-                                  .DataValueField("Method")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetApPaymentMethods", "FinanceDataProvider", new { area = "Finance" }))
-                                  .ServerFiltering(false);
-                          })
-                          )
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Payment Method")
+                                          .DataTextField("Method")
+                                          .DataValueField("Method")
+                                          .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetApPaymentMethods", "FinanceDataProvider", new { area = "Finance" }))
+                                          .ServerFiltering(false);
+                                  })
+                    )
                     @Html.ValidationMessageFor(model => model.PaymentMethod, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
-            
+
             <div class="form-group">
                 @Html.LabelFor(model => model.PaymentType, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(m => m.PaymentType)
-                          .DataTextField("Text")
-                          .DataValueField("Value")
-                          .ValuePrimitive(true)
-                          .BindTo(EnumExtension.EnumToSelectList(typeof(PaymentDocType)))
- 
-                          )
+                                  .DataTextField("Text")
+                                  .DataValueField("Value")
+                                  .ValuePrimitive(true)
+                                  .BindTo(EnumExtension.EnumToSelectList(typeof(PaymentDocType)))
+
+                    )
                     @Html.ValidationMessageFor(model => model.PaymentType, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
-            
+
             <div class="form-group">
                 @Html.LabelFor(model => model.PaymentReference, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
@@ -113,8 +123,8 @@
                     @Html.ValidationMessageFor(model => model.PaymentReference, "", new { @class = "text-danger" })
                 </div>
             </div>
-            <div class="row"></div>        
-           
+            <div class="row"></div>
+
 
 
         </div>

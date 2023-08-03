@@ -66,8 +66,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
                 Debit = reconciliationBookAccount.Debit,
                 Credit = reconciliationBookAccount.Credit,
+                ExRate = reconciliationBookAccount.ExRate,
+                DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                CreditNonFun = reconciliationBookAccount.CreditNonFun,
                 Date = reconciliationBookAccount.Date,
                 Reconciled = reconciliationBookAccount.Reconciled,
+                ReconciledDate = reconciliationBookAccount.ReconciledDate,
                 RecordType = reconciliationBookAccount.RecordType,
                 Check = reconciliationBookAccount.Check,
                 Source = reconciliationBookAccount.Source,
@@ -117,6 +121,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     DataSourceResult result = reconcilationbookaccounts.ToDataSourceResult(request,
                         reconciliationBookAccount => new
                         {
+                           
                             ReconciliationBookAccountId = reconciliationBookAccount.ReconciliationBookAccountId,
                             AccountCode = reconciliationBookAccount.AccountCode,
                             Type = reconciliationBookAccount.Type,
@@ -124,8 +129,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                             ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
+                            ExRate = reconciliationBookAccount.ExRate,
+                            DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                            CreditNonFun = reconciliationBookAccount.CreditNonFun,
                             Date = reconciliationBookAccount.Date,
                             Reconciled = reconciliationBookAccount.Reconciled,
+                            ReconciledDate = reconciliationBookAccount.ReconciledDate,
                             RecordType = reconciliationBookAccount.RecordType,
                             Check = reconciliationBookAccount.Check,
                             Source = reconciliationBookAccount.Source,
@@ -152,37 +161,50 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult UnreconciledBookAccounts_Create_Edit([DataSourceRequest]DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<ReconciliationBookAccount> reconciliationBookAccounts , int id)
         {
-            var reconciliationBankAccounts = reconciliationBookAccounts.ToList();
+            var reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
+            if (reconciliationSchedule == null)
+            {
+                ModelState.AddModelError("s", "Schdule not found.");
+            }
+            
+            DateTime reconcileDate = _fiscalYearHelper.GetEndOfPeriod(reconciliationSchedule.Date).Date;
+
+            var bookList = reconciliationBookAccounts.ToList();
             if (ModelState.IsValid)
             {
-                foreach (var reconciliationBankAccount in reconciliationBankAccounts)
+                
+                foreach (var record in bookList)
                 {
                     var entity = new ReconciliationBookAccount
                     {
-                        ReconciliationBookAccountId = reconciliationBankAccount.ReconciliationBookAccountId,
-                        AccountCode = reconciliationBankAccount.AccountCode,
-                        Type = reconciliationBankAccount.Type,
-                        ReferenceDoc = reconciliationBankAccount.ReferenceDoc,
-                        Reference = reconciliationBankAccount.Reference,
-                        Debit = reconciliationBankAccount.Debit,
-                        Credit = reconciliationBankAccount.Credit,
-                        Date = reconciliationBankAccount.Date.Date,
-                        RecordType = reconciliationBankAccount.RecordType,
-                        Reconciled = reconciliationBankAccount.Reconciled,
-                        Source = reconciliationBankAccount.Source,
-                        SourceID = reconciliationBankAccount.SourceID,
-                        Check = reconciliationBankAccount.Check,
-                        AccountSegment = reconciliationBankAccount.AccountSegment,
-                        BranchSegment = reconciliationBankAccount.BranchSegment,
-                        CostCenterSegment = reconciliationBankAccount.CostCenterSegment,
-                        SubAccountSegment = reconciliationBankAccount.SubAccountSegment,
-                        ChannelSegment = reconciliationBankAccount.ChannelSegment,
-                        BusinessUnitSegment = reconciliationBankAccount.BusinessUnitSegment,
-                        OrgBranchName = reconciliationBankAccount.OrgBranchName,
-                        DateCreated = reconciliationBankAccount.DateCreated,
-                        LastModified = reconciliationBankAccount.LastModified,
-                        CreatedBy = reconciliationBankAccount.CreatedBy,
-                        ModifiedBy = reconciliationBankAccount.ModifiedBy
+                        ReconciliationBookAccountId = record.ReconciliationBookAccountId,
+                        AccountCode = record.AccountCode,
+                        Type = record.Type,
+                        ReferenceDoc = record.ReferenceDoc,
+                        Reference = record.Reference,
+                        Debit = record.Debit,
+                        Credit = record.Credit,
+                        ExRate = record.ExRate,
+                        DebitNonFun = record.DebitNonFun,
+                        CreditNonFun = record.CreditNonFun,
+                        Date = record.Date.Date,
+                        RecordType = record.RecordType,
+                        Reconciled = record.Reconciled,
+                        ReconciledDate = record.Reconciled==true? reconcileDate : (DateTime?)null,
+                        Source = record.Source,
+                        SourceID = record.SourceID,
+                        Check = record.Check,
+                        AccountSegment = record.AccountSegment,
+                        BranchSegment = record.BranchSegment,
+                        CostCenterSegment = record.CostCenterSegment,
+                        SubAccountSegment = record.SubAccountSegment,
+                        ChannelSegment = record.ChannelSegment,
+                        BusinessUnitSegment = record.BusinessUnitSegment,
+                        OrgBranchName = record.OrgBranchName,
+                        DateCreated = record.DateCreated,
+                        LastModified = record.LastModified,
+                        CreatedBy = record.CreatedBy,
+                        ModifiedBy = record.ModifiedBy
                     };
 
                     _db.ReconcilationBookAccounts.Attach(entity);
@@ -195,7 +217,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 }
             }
 
-            return Json(new[] { reconciliationBankAccounts }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { bookList }.ToDataSourceResult(request, ModelState));
         }
 
 
@@ -214,14 +236,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     {
                         var entity = new ReconciliationBookAccount
                         {
-                            AccountCode=accountcode.AccountCode,
+                           
+                            AccountCode =accountcode.AccountCode,
                             Type = reconciliationBookAccount.Type,
                             Reference = reconciliationBookAccount.Reference,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
+                            ExRate = reconciliationBookAccount.ExRate,
+                            DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                            CreditNonFun = reconciliationBookAccount.CreditNonFun,
                             Date = reconciliationBookAccount.Date.Date,
                             RecordType = RecordType.Beginning,
                             Reconciled = false,
+                            ReconciledDate = reconciliationBookAccount.ReconciledDate,
                             Check = false,
                             AccountSegment = reconciliationBookAccount.AccountSegment,
                             BranchSegment = reconciliationBookAccount.BranchSegment,
@@ -248,6 +275,134 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
             return Json(new[] { reconciliationBookAccount }.ToDataSourceResult(request, ModelState));
         }
+        #region reconciled
+
+        public ActionResult ReconciledBookAccounts_Read([DataSourceRequest]DataSourceRequest request, int id, decimal? amount)
+        {
+            ReconciliationSchedule reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
+            if (reconciliationSchedule != null)
+            {
+                DateTime reconcileDate = _fiscalYearHelper.GetEndOfPeriod(reconciliationSchedule.Date).Date;
+                var bankaccount = _db.BankAccounts.FirstOrDefault(x => x.AccountNumber == reconciliationSchedule.BankAccount);
+                string account = _accountHelper.GetNaturalAccountSegment(bankaccount.AccountCode);
+                string subaccount = _accountHelper.GetSubAccountSegment(bankaccount.AccountCode);
+
+                if (bankaccount != null)
+                {
+
+                    var reconcilationbook = _db.ReconcilationBookAccounts
+                                                                  
+                                                                  .Where(x => x.AccountSegment == account && x.SubAccountSegment == subaccount)//neew
+                                                                  .Where(x => x.ReconciledDate ==reconcileDate)
+                                                                  .Where(x => x.RecordType != RecordType.Beginning)
+                                                                  .Where(x => x.Reconciled == true);
+
+
+                    IQueryable<ReconciliationBookAccount> reconcilationbookaccounts = reconcilationbook.AsQueryable();
+
+                    //filter
+
+                    DataSourceResult result = reconcilationbookaccounts.ToDataSourceResult(request,
+                        reconciliationBookAccount => new
+                        {
+
+                            ReconciliationBookAccountId = reconciliationBookAccount.ReconciliationBookAccountId,
+                            AccountCode = reconciliationBookAccount.AccountCode,
+                            Type = reconciliationBookAccount.Type,
+                            Reference = reconciliationBookAccount.Reference,
+                            ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                            Debit = reconciliationBookAccount.Debit,
+                            Credit = reconciliationBookAccount.Credit,
+                            ExRate = reconciliationBookAccount.ExRate,
+                            DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                            CreditNonFun = reconciliationBookAccount.CreditNonFun,
+                            Date = reconciliationBookAccount.Date,
+                            Reconciled = reconciliationBookAccount.Reconciled,
+                            ReconciledDate = reconciliationBookAccount.ReconciledDate,
+                            RecordType = reconciliationBookAccount.RecordType,
+                            Check = reconciliationBookAccount.Check,
+                            Source = reconciliationBookAccount.Source,
+                            SourceID = reconciliationBookAccount.SourceID,
+                            AccountSegment = reconciliationBookAccount.AccountSegment,
+                            BranchSegment = reconciliationBookAccount.BranchSegment,
+                            CostCenterSegment = reconciliationBookAccount.CostCenterSegment,
+                            SubAccountSegment = reconciliationBookAccount.SubAccountSegment,
+                            ChannelSegment = reconciliationBookAccount.ChannelSegment,
+                            BusinessUnitSegment = reconciliationBookAccount.BusinessUnitSegment,
+                            OrgBranchName = reconciliationBookAccount.OrgBranchName,
+                            DateCreated = reconciliationBookAccount.DateCreated,
+                            LastModified = reconciliationBookAccount.LastModified,
+                            CreatedBy = reconciliationBookAccount.CreatedBy,
+                            ModifiedBy = reconciliationBookAccount.ModifiedBy
+                        });
+                    return Json(result);
+                }
+            }
+            return null;
+
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult ReconciledBookAccounts_Create_Edit([DataSourceRequest]DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<ReconciliationBookAccount> reconciliationBookAccounts, int id)
+        {
+            var reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
+            if (reconciliationSchedule == null)
+            {
+                ModelState.AddModelError("s", "Schdule not found.");
+            }
+
+            DateTime reconcileDate = _fiscalYearHelper.GetEndOfPeriod(reconciliationSchedule.Date).Date;
+
+            var bookList = reconciliationBookAccounts.ToList();
+            if (ModelState.IsValid)
+            {
+
+                foreach (var record in bookList)
+                {
+                    var entity = new ReconciliationBookAccount
+                    {
+                        ReconciliationBookAccountId = record.ReconciliationBookAccountId,
+                        AccountCode = record.AccountCode,
+                        Type = record.Type,
+                        ReferenceDoc = record.ReferenceDoc,
+                        Reference = record.Reference,
+                        Debit = record.Debit,
+                        Credit = record.Credit,
+                        ExRate = record.ExRate,
+                        DebitNonFun = record.DebitNonFun,
+                        CreditNonFun = record.CreditNonFun,
+                        Date = record.Date.Date,
+                        RecordType = record.RecordType,
+                        Reconciled = false,
+                        ReconciledDate = null,
+                        Source = record.Source,
+                        SourceID = record.SourceID,
+                        Check = record.Check,
+                        AccountSegment = record.AccountSegment,
+                        BranchSegment = record.BranchSegment,
+                        CostCenterSegment = record.CostCenterSegment,
+                        SubAccountSegment = record.SubAccountSegment,
+                        ChannelSegment = record.ChannelSegment,
+                        BusinessUnitSegment = record.BusinessUnitSegment,
+                        OrgBranchName = record.OrgBranchName,
+                        LastModified = DateTime.Now,
+                        ModifiedBy = User.Identity.Name
+                    };
+
+                    _db.ReconcilationBookAccounts.Attach(entity);
+                    _db.Entry(entity).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Bank reconciliation book record", "Success", User.Identity.Name, $"unreconciled book record {entity.AccountCode}  {entity.AdditionalDescription}", Modules.Finance);
+                    #endregion
+                }
+            }
+
+            return Json(new[] { bookList }.ToDataSourceResult(request, ModelState));
+        }
+
+        #endregion
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ReconcilationBookAccounts_Update([DataSourceRequest]DataSourceRequest request, ReconciliationBookAccount reconciliationBookAccount)
@@ -256,6 +411,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             {
                 var entity = new ReconciliationBookAccount
                 {
+                  
                     ReconciliationBookAccountId = reconciliationBookAccount.ReconciliationBookAccountId,
                     AccountCode = reconciliationBookAccount.AccountCode,
                     Type = reconciliationBookAccount.Type,
@@ -263,9 +419,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
                     Debit = reconciliationBookAccount.Debit,
                     Credit = reconciliationBookAccount.Credit,
+                    ExRate = reconciliationBookAccount.ExRate,
+                    DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                    CreditNonFun = reconciliationBookAccount.CreditNonFun,
                     Date = reconciliationBookAccount.Date.Date,
                     RecordType = reconciliationBookAccount.RecordType,
                     Reconciled = reconciliationBookAccount.Reconciled,
+                    ReconciledDate = reconciliationBookAccount.ReconciledDate,
                     Check = reconciliationBookAccount.Check,
                     AccountSegment = reconciliationBookAccount.AccountSegment,
                     BranchSegment = reconciliationBookAccount.BranchSegment,
@@ -290,36 +450,37 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ReconciliationBookAccounts_Destroy([DataSourceRequest]DataSourceRequest request, ReconciliationBankAccount reconciliationBankAccount)
+        public ActionResult ReconciliationBookAccounts_Destroy([DataSourceRequest]DataSourceRequest request, ReconciliationBookAccount reconciliationBookAccount)
         {
             if (ModelState.IsValid)
             {
                 var entity = new ReconciliationBankAccount
                 {
-                    ReconciliationBankAccountId = reconciliationBankAccount.ReconciliationBankAccountId,
-                    Type = reconciliationBankAccount.Type,
-                    Reference = reconciliationBankAccount.Reference,
-                    Debit = reconciliationBankAccount.Debit,
-                    Credit = reconciliationBankAccount.Credit,
-                    Date = reconciliationBankAccount.Date,
-                    Reconciled = reconciliationBankAccount.Reconciled,
-                    Check = reconciliationBankAccount.Check,
-                    OrgBranchName = reconciliationBankAccount.OrgBranchName,
-                    DateCreated = reconciliationBankAccount.DateCreated,
-                    LastModified = reconciliationBankAccount.LastModified,
-                    CreatedBy = reconciliationBankAccount.CreatedBy,
-                    ModifiedBy = reconciliationBankAccount.ModifiedBy
+                   
+                    Type = reconciliationBookAccount.Type,
+                    Reference = reconciliationBookAccount.Reference,
+                    Debit = reconciliationBookAccount.Debit,
+                    Credit = reconciliationBookAccount.Credit,
+                    Date = reconciliationBookAccount.Date,
+                    Reconciled = reconciliationBookAccount.Reconciled,
+                    ReconciledDate = reconciliationBookAccount.ReconciledDate,
+                    Check = reconciliationBookAccount.Check,
+                    OrgBranchName = reconciliationBookAccount.OrgBranchName,
+                    DateCreated = reconciliationBookAccount.DateCreated,
+                    LastModified = reconciliationBookAccount.LastModified,
+                    CreatedBy = reconciliationBookAccount.CreatedBy,
+                    ModifiedBy = reconciliationBookAccount.ModifiedBy
                 };
 
                 _db.ReconcilationBankAccounts.Attach(entity);
                 _db.ReconcilationBankAccounts.Remove(entity);
                 _db.SaveChanges();
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted reconciliation bank " + reconciliationBankAccount.ReconciliationBankAccountId + " " + reconciliationBankAccount.BankAccount, Modules.Finance);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted reconciliation bank " + reconciliationBookAccount.ReconciliationBookAccountId + " " + reconciliationBookAccount.AccountCode, Modules.Finance);
                 #endregion
             }
 
-            return Json(new[] { reconciliationBankAccount }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { reconciliationBookAccount }.ToDataSourceResult(request, ModelState));
         }
 
 
@@ -376,6 +537,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     DataSourceResult result = reconcilationbookaccounts.ToDataSourceResult(request,
                         reconciliationBookAccount => new
                         {
+                            
                             ReconciliationBookAccountId = reconciliationBookAccount.ReconciliationBookAccountId,
                             AccountCode = reconciliationBookAccount.AccountCode,
                             Type = reconciliationBookAccount.Type,
@@ -383,8 +545,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                             ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
+                            ExRate = reconciliationBookAccount.ExRate,
+                            DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                            CreditNonFun = reconciliationBookAccount.CreditNonFun,
                             Date = reconciliationBookAccount.Date,
                             Reconciled = reconciliationBookAccount.Reconciled,
+                            ReconciledDate = reconciliationBookAccount.ReconciledDate,
                             RecordType = reconciliationBookAccount.RecordType,
                             Check = reconciliationBookAccount.Check,
                             Source = reconciliationBookAccount.Source,
@@ -435,12 +601,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 {
                     var entity = new ReconciliationBookAccount
                     {
+                        
                         AccountCode = accountcode.AccountCode,
                         Type = reconciliationBookAccount.Type,
                         Reference = reconciliationBookAccount.Reference,
                         ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
                         Debit = reconciliationBookAccount.Debit,
                         Credit = reconciliationBookAccount.Credit,
+                        ExRate = reconciliationBookAccount.ExRate,
+                        DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                        CreditNonFun = reconciliationBookAccount.CreditNonFun,
                         Date = reconciliationBookAccount.Date,
                         RecordType = RecordType.Beginning,
                         Reconciled = false,
@@ -469,7 +639,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
         public ActionResult BeginningBookAccounts_Update([DataSourceRequest]DataSourceRequest request, ReconciliationBookAccount reconciliationBookAccount)
         {
-            ModelState.Clear();
+           
 
             if (reconciliationBookAccount.Debit != 0 && reconciliationBookAccount.Credit != 0)
                 ModelState.AddModelError("both", "Both debit and credit can not have value at same time.");
@@ -485,6 +655,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             {
                 var entity = new ReconciliationBookAccount
                 {
+                    
                     ReconciliationBookAccountId = reconciliationBookAccount.ReconciliationBookAccountId,
                     AccountCode = reconciliationBookAccount.AccountCode,
                     Type = reconciliationBookAccount.Type,
@@ -492,9 +663,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
                     Debit = reconciliationBookAccount.Debit,
                     Credit = reconciliationBookAccount.Credit,
+                    ExRate = reconciliationBookAccount.ExRate,
+                    DebitNonFun = reconciliationBookAccount.DebitNonFun,
+                    CreditNonFun = reconciliationBookAccount.CreditNonFun,
                     Date = reconciliationBookAccount.Date,
                     RecordType = reconciliationBookAccount.RecordType,
                     Reconciled = reconciliationBookAccount.Reconciled,
+                    ReconciledDate = reconciliationBookAccount.ReconciledDate,
                     Check = reconciliationBookAccount.Check,
                     AccountSegment = reconciliationBookAccount.AccountSegment,
                     BranchSegment = reconciliationBookAccount.BranchSegment,

@@ -38,13 +38,58 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.RequestDate = apTravelOrder.RequestDate;
                 headerDs.AdvanceAmount = apTravelOrder.AdvanceAmount;
                 headerDs.Reference = apTravelOrder.Reference;
+
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.CreatedBy));
-                var departmentApproval = _db.RequestesStatus
-                    .Where(x => x.ReferenceType == "TravelOrder")
-                    .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
-                    .FirstOrDefault(x => x.RequestId == apTravelOrder.ApTravelOrderId);
-                headerDs.DepartmentApprovedBy= EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(departmentApproval?.ChangedBy));
+                headerDs.PreparedDate = apTravelOrder.DateCreated != null ? apTravelOrder.DateCreated : null;
+
+                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.SendForApprovalBy));
+                headerDs.AccountantCheckedDate = apTravelOrder.SendForApprovalTime != null ? apTravelOrder.SendForApprovalTime : null;
+
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.OnlineApprovedBy));
+                headerDs.ApprovedDate = apTravelOrder.OnlineApprovedTime;
+
+                headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.BudgetApprovedBy));
+                headerDs.BudgetApprovedDate = apTravelOrder.BudgetApprovedTime;
+
+                #region prepared checker approver               
+
+                var paymentReqValidations = _db.ApTravelOrderDepartmentValidations
+                    .Where(x => x.ApTravelOrderId == apTravelOrder.ApTravelOrderId).ToList();
+
+                if (paymentReqValidations.Any())
+                {
+                    int maxid = paymentReqValidations.Max(x => x.ApTravelOrderDepartmentValidationId);
+                    var approver =
+                        paymentReqValidations.FirstOrDefault(x => x.ApTravelOrderDepartmentValidationId == maxid);
+                    if (approver != null)
+                    {
+                        headerDs.DepartmentSecondApprovedBy =
+                            EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                        headerDs.DepartmentSecondApprovedDate = approver.DateCreated != null ? approver.DateCreated : null;
+
+                        var checker = paymentReqValidations.OrderByDescending(x => x.ApTravelOrderDepartmentValidationId)
+                            .FirstOrDefault(x => x.ApTravelOrderDepartmentValidationId < maxid);
+
+                        if (checker != null)
+                        {
+                            headerDs.DepartmentApprovedBy =
+                                EmployeeHelper.GetEmployeeEnglishName(
+                                    UserHelper.GetUserEmployeeId(checker.CreatedBy));
+                            headerDs.DepartmentApprovedDate = checker.DateCreated != null ? checker.DateCreated : null;
+                        }
+                        else
+                        {
+                            headerDs.DepartmentApprovedBy =
+                                EmployeeHelper.GetEmployeeEnglishName(
+                                    UserHelper.GetUserEmployeeId(apTravelOrder.DepartmentSendForApprovalBy));
+                            headerDs.DepartmentApprovedDate = apTravelOrder.DepartmentSendForApprovalTime != null ? apTravelOrder.DepartmentSendForApprovalTime : null;
+
+                        }
+                    }
+
+                }
+
+                #endregion
             }
 
             if (organization != null)
@@ -116,8 +161,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                     From = line.From,
                     To = line.To,
                     Date = line.Date,
-                    Time = line.Time,
+                    ArrivalDate = line.ArrivalDate,
                     TransportMode = line.TransportMode,
+                    Branch=_db.Branch.Find(line.DestinationBranchId)?.Name,
                     Remark = line.Remark
                 };
                 list.Add(entity);

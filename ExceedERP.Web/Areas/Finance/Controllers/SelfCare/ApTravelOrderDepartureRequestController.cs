@@ -35,7 +35,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 From = apTravelOrderDeparture.From,
                 To = apTravelOrderDeparture.To,
                 Date = apTravelOrderDeparture.Date,
-                Time = apTravelOrderDeparture.Time,
+                ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                Duration = apTravelOrderDeparture.Duration,
+                DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
                 TransportMode = apTravelOrderDeparture.TransportMode,
                 Remark = apTravelOrderDeparture.Remark,
                 OrgBranchName = apTravelOrderDeparture.OrgBranchName,
@@ -49,9 +51,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApTravelOrderDepartures_Create([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrder,int id)
+        public ActionResult ApTravelOrderDepartures_Create([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrderDeparture, int id)
         {
+            if (apTravelOrderDeparture.ArrivalDate < apTravelOrderDeparture.Date)
+                ModelState.AddModelError("start","Start date should be before arrival date");
 
+            apTravelOrderDeparture.Duration = (decimal)(apTravelOrderDeparture.ArrivalDate - apTravelOrderDeparture.Date).TotalDays;
 
             if (ModelState.IsValid)
             {           
@@ -61,54 +66,63 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 {                 
                    
                    ApTravelOrderId = id,
-                   From = apTravelOrder.From,
-                   To = apTravelOrder.To,
-                   Date = apTravelOrder.Date,
-                   Time = apTravelOrder.Time,
-                   Type = apTravelOrder.Type,
-                   TravelOrder= apTravelOrder.TravelOrder,
-                   TransportMode = apTravelOrder.TransportMode,
-                    OrgBranchName = apTravelOrder.OrgBranchName,
-                    DateCreated = apTravelOrder.DateCreated,
-                    LastModified = apTravelOrder.LastModified,
-                    CreatedBy = apTravelOrder.CreatedBy,
-                    ModifiedBy = apTravelOrder.ModifiedBy
+                   From = apTravelOrderDeparture.From,
+                   To = apTravelOrderDeparture.To,
+                   Date = apTravelOrderDeparture.Date,
+                    ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                    Duration = apTravelOrderDeparture.Duration,
+                    DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
+                    Type = apTravelOrderDeparture.Type,
+                   TravelOrder= apTravelOrderDeparture.TravelOrder,
+                   TransportMode = apTravelOrderDeparture.TransportMode,
+                    OrgBranchName = apTravelOrderDeparture.OrgBranchName,
+                    DateCreated = apTravelOrderDeparture.DateCreated,
+                    LastModified = apTravelOrderDeparture.LastModified,
+                    CreatedBy = apTravelOrderDeparture.CreatedBy,
+                    ModifiedBy = apTravelOrderDeparture.ModifiedBy
                 };
 
                 db.ApTravelOrderDepartures.Add(entity);
                 db.SaveChanges();
-                apTravelOrder.ApTravelOrderDepartureId = entity.ApTravelOrderDepartureId;
+                apTravelOrderDeparture.ApTravelOrderDepartureId = entity.ApTravelOrderDepartureId;
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Self care travel order departure item", "Success", User.Identity.Name, $"created departure item {entity.Type} under record {entity.ApTravelOrderId} ", Modules.Finance);
                 #endregion
             }
 
-            return Json(new[] { apTravelOrder }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { apTravelOrderDeparture }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApTravelOrderDepartures_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrder)
+        public ActionResult ApTravelOrderDepartures_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrderDeparture)
         {
+            if (apTravelOrderDeparture.ArrivalDate < apTravelOrderDeparture.Date)
+                ModelState.AddModelError("start", "Start date should be before arrival date");
+
+            apTravelOrderDeparture.Duration = (decimal)(apTravelOrderDeparture.ArrivalDate - apTravelOrderDeparture.Date).TotalDays;
+
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrderDeparture
                 {
 
-                    ApTravelOrderDepartureId = apTravelOrder.ApTravelOrderDepartureId,
-                    ApTravelOrderId = apTravelOrder.ApTravelOrderId,
-                    From = apTravelOrder.From,
-                    To = apTravelOrder.To,
-                    Date = apTravelOrder.Date,
-                    Time = apTravelOrder.Time,
-                    Type = apTravelOrder.Type,
-                    TravelOrder = apTravelOrder.TravelOrder,
-                    TransportMode = apTravelOrder.TransportMode,
-                    OrgBranchName = apTravelOrder.OrgBranchName,
-                    DateCreated = apTravelOrder.DateCreated,
-                    LastModified = apTravelOrder.LastModified,
-                    CreatedBy = apTravelOrder.CreatedBy,
-                    ModifiedBy = apTravelOrder.ModifiedBy
+                    ApTravelOrderDepartureId = apTravelOrderDeparture.ApTravelOrderDepartureId,
+                    ApTravelOrderId = apTravelOrderDeparture.ApTravelOrderId,
+                    From = apTravelOrderDeparture.From,
+                    To = apTravelOrderDeparture.To,
+                    Date = apTravelOrderDeparture.Date,
+                    ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                    Duration = apTravelOrderDeparture.Duration,
+                    DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
+                    Type = apTravelOrderDeparture.Type,
+                    TravelOrder = apTravelOrderDeparture.TravelOrder,
+                    TransportMode = apTravelOrderDeparture.TransportMode,
+                    OrgBranchName = apTravelOrderDeparture.OrgBranchName,
+                    DateCreated = apTravelOrderDeparture.DateCreated,
+                    LastModified = apTravelOrderDeparture.LastModified,
+                    CreatedBy = apTravelOrderDeparture.CreatedBy,
+                    ModifiedBy = apTravelOrderDeparture.ModifiedBy
                 };
 
                 db.ApTravelOrderDepartures.Attach(entity);
@@ -120,31 +134,33 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 #endregion
             }
 
-            return Json(new[] { apTravelOrder }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { apTravelOrderDeparture }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApTravelOrderDepartures_Destroy([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrder)
+        public ActionResult ApTravelOrderDepartures_Destroy([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrderDeparture)
         {
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrderDeparture
                 {
 
-                    ApTravelOrderDepartureId = apTravelOrder.ApTravelOrderDepartureId,
-                    ApTravelOrderId = apTravelOrder.ApTravelOrderId,
-                    From = apTravelOrder.From,
-                    To = apTravelOrder.To,
-                    Date = apTravelOrder.Date,
-                    Time = apTravelOrder.Time,
-                    Type = apTravelOrder.Type,
-                    TravelOrder = apTravelOrder.TravelOrder,
-                    TransportMode = apTravelOrder.TransportMode,
-                    OrgBranchName = apTravelOrder.OrgBranchName,
-                    DateCreated = apTravelOrder.DateCreated,
-                    LastModified = apTravelOrder.LastModified,
-                    CreatedBy = apTravelOrder.CreatedBy,
-                    ModifiedBy = apTravelOrder.ModifiedBy
+                    ApTravelOrderDepartureId = apTravelOrderDeparture.ApTravelOrderDepartureId,
+                    ApTravelOrderId = apTravelOrderDeparture.ApTravelOrderId,
+                    From = apTravelOrderDeparture.From,
+                    To = apTravelOrderDeparture.To,
+                    Date = apTravelOrderDeparture.Date,
+                    ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                    Duration = apTravelOrderDeparture.Duration,
+                    DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
+                    Type = apTravelOrderDeparture.Type,
+                    TravelOrder = apTravelOrderDeparture.TravelOrder,
+                    TransportMode = apTravelOrderDeparture.TransportMode,
+                    OrgBranchName = apTravelOrderDeparture.OrgBranchName,
+                    DateCreated = apTravelOrderDeparture.DateCreated,
+                    LastModified = apTravelOrderDeparture.LastModified,
+                    CreatedBy = apTravelOrderDeparture.CreatedBy,
+                    ModifiedBy = apTravelOrderDeparture.ModifiedBy
                 };
 
                 db.ApTravelOrderDepartures.Attach(entity);
@@ -152,7 +168,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 db.SaveChanges();
             }
 
-            return Json(new[] { apTravelOrder }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { apTravelOrderDeparture }.ToDataSourceResult(request, ModelState));
         }
         protected override void Dispose(bool disposing)
         {

@@ -13,7 +13,14 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers
 {
-  
+    public class AccountCodeCacheVm
+    {
+        public int SegmentId { get; set; }
+        public string Values { get; set; }
+        public string Description { get; set; }
+        public DynamicSegmentTypes SegmentType { get; set; }
+
+    }
     public class AccountCodeSelectorController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -114,23 +121,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                         if (segment.SegmentType == DynamicSegmentTypes.Location)
                         {
-                            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+                            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-                            List<string> locationCodes = _db.Branch.Where(x => mybraches.Contains(x.BranchId.ToString())).Select(x => x.LocationAccount).ToList();
+                            List<string> locationCodes = _db.Branch.Where(x => mybraches.Contains(x.BranchId)).Select(x => x.LocationAccount).ToList();
 
                             segments = segments.Where(x => locationCodes.Contains(x.Values)).ToList();
                         }
 
                         if (segment.SegmentType == DynamicSegmentTypes.BusinessUnit)
                         {
-                            var userid = UserInformationHelper.GetUserId(User.Identity.Name);
-                            List<string> bizmap = _db.UserBusinessUnitMaps
-                                .Where(x => x.UserId == userid)
-                                .Select(x => x.BusinessUnitId).ToList();
+                            //var userid = UserInformationHelper.GetUserId(User.Identity.Name);
+                            //List<int> bizmap = _db.UserBusinessUnitMaps
+                            //    .Where(x => x.UserId == userid)
+                            //    .Select(x => x.BusinessUnitId).ToList();
 
-                            List<string> bizunits = _db.BusinessUnits.Where(x => bizmap.Contains(x.BusinessUnitId.ToString())).Select(x => x.Accountcode).ToList();
+                            //List<string> bizunits = _db.BusinessUnits.Where(x => bizmap.Contains(x.BusinessUnitId)).Select(x => x.Accountcode).ToList();
 
-                            segments = segments.Where(x => bizunits.Contains(x.Values)).ToList();
+                            //segments = segments.Where(x => bizunits.Contains(x.Values)).ToList();
                         }
 
                         foreach (var acc in segments)

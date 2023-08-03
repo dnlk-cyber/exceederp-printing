@@ -12,7 +12,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
 {
-    [AuthorizeRoles(ProcurementConstants.ProcurementAdmin)]
+    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin)]
     public class GuaranteeRuleController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

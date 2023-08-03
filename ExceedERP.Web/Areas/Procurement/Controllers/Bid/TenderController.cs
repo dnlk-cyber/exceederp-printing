@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Contract;
 using ExceedERP.Core.Domain.Procurement.Proforma;
@@ -20,6 +19,7 @@ using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 {
@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             PopulateCategories();
@@ -50,7 +50,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             ViewData["tax"] = tax;
 
 
-            var selecteditems = items.Select(
+            var selecteditems = items.DistinctByField(f => f.ItmCode).Select(
                 i => new
                 {
                     Name = i.ItmCode + "_" + i.ItemName,
@@ -68,7 +68,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             ViewData["LotItems"] = lotitems;
 
-            var selectedcatedories = items.Select(
+            var selectedcatedories = items.DistinctByField(c => c.CatCode).Select(
                 i => new
                 {
                     Name = i.CatCode + "_" + i.CategoryName,
@@ -119,22 +119,23 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public ActionResult Send_For_Evaluation()
         {
             return RedirectToAction("Index");
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public ActionResult Tenders_Read([DataSourceRequest]DataSourceRequest request)
         {
             int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
-            IQueryable<Tender> tenders = _db.Tenders.Where(x => x.ProcurementOfficer == empid && empid != 0);
+            IQueryable<Tender> tenders = _db.Tenders;//.Where(x => x.ProcurementOfficer == empid && empid != 0);
             DataSourceResult result = tenders.ToDataSourceResult(request, tender => new
             {
                 TenderID = tender.TenderID,
                 ProcurementOfficer=tender.ProcurementOfficer,
                 BranchId = tender.BranchId,
+                BusinessUnitId = tender.BusinessUnitId,
                 TenderReference = tender.TenderReference,
                 Description = tender.Description,
                 FloatDate = tender.FloatDate,
@@ -174,7 +175,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Tenders_Create([DataSourceRequest]DataSourceRequest request, Tender tender)
         {
@@ -199,13 +200,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             if (ModelState.IsValid)
             {
-                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                  var entity = new Tender
                     {
-                        ProcurementOfficer =empid ,
-                        BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
-                       TenderReference = tender.TenderReference,
-                        Description = tender.Description,
+                     ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name),
+                     BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                     BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                     TenderReference = tender.TenderReference,
+                     Description = tender.Description,
                         FloatDate = tender.FloatDate,
                         ClosingDate = tender.ClosingDate,
                         OpenigDate = tender.OpenigDate,
@@ -244,7 +245,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tender }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Tenders_Update([DataSourceRequest]DataSourceRequest request, Tender tender)
         {
@@ -270,12 +271,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             #endregion
             if (ModelState.IsValid)
             {
-                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+               
                 var entity = new Tender
                 {
                     TenderID = tender.TenderID,
-                    ProcurementOfficer = empid,
-                    BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
+                    ProcurementOfficer = tender.ProcurementOfficer,
+                    BranchId =tender.BranchId,
+                    BusinessUnitId = tender.BusinessUnitId,
                     TenderReference = tender.TenderReference,
                     Description = tender.Description,
                     FloatDate = tender.FloatDate,
@@ -316,7 +318,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tender }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Tenders_Destroy([DataSourceRequest]DataSourceRequest request, Tender tender)
         {
@@ -337,6 +339,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     TenderID = tender.TenderID,
                     ProcurementOfficer = tender.ProcurementOfficer,
                     BranchId = tender.BranchId,
+                    BusinessUnitId = tender.BusinessUnitId,
                     TenderReference = tender.TenderReference,
                     Description = tender.Description,
                     FloatDate = tender.FloatDate,
@@ -367,7 +370,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tender }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -376,7 +379,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return File(fileContents, contentType, fileName);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {
@@ -385,7 +388,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return File(fileContents, contentType, fileName);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.Tenders.Find(id);
@@ -448,7 +451,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendToContract(int id)
         {
             var record = _db.Tenders.Find(id);
@@ -496,7 +499,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementVoid)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.Tenders.Find(id);
@@ -630,11 +633,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         {
                             if (lotitem.ItemType == PurchaseItemType.FixedAsset)
                             {
-                                var proformPassFail = _db.TenderPassFailResult.FirstOrDefault(
+                                var proformPassFail = _db.TenderPassFailResult.Where(
                                     x => x.LotID == lotId && x.ItmCode == lotitem.ItmCode && 
                                     x.Name == lotitem.Name &&
                                      x.ModelNo == lotitem.ModelNo &&
-                                         x.SupplierName == supplier.SupplierName);
+                                         x.SupplierName == supplier.SupplierName).FirstOrDefault();
 
                                 if (proformPassFail?.Result == PassFailStatus.Fail)
                                     continue;
@@ -660,12 +663,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         if (lotitem.ItemType == PurchaseItemType.FixedAsset)
                         {
                             //if exists jump
-                            var exists = _db.ParticipantsItems.FirstOrDefault(
+                            var exists = _db.ParticipantsItems.Where(
                                 x => x.LotID == lotId 
                                 && x.ItmCode == lotitem.ItmCode 
                                  && x.Name == lotitem.Name
                                   && x.ModelNo == lotitem.ModelNo
-                                 && x.SupplierName == supplier.SupplierName);
+                                 && x.SupplierName == supplier.SupplierName).FirstOrDefault();
 
                             if (exists == null)
                             {
@@ -677,6 +680,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                                     ItemName = lotitem.ItemName,
                                     Name = lotitem.Name,
                                     ModelNo = lotitem.ModelNo,
+                                    ItemSpecification = lotitem.ItemSpecification,
                                     UoM = lotitem.UoM,
                                     SupplierId = supplier.SupplierId,
                                     IsNewSupplier = supplier.IsNewSupplier,
@@ -1573,6 +1577,149 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         }
 
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
+        public JsonResult TransferAwardToPO(int id)
+        {
+            var record = _db.BidAwardedSuppliers.Find(id);
+
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.BidWinningItems.Count == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Please add award items first.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record != null && !record.IsTransferredToPo && record.BidWinningItems.Count > 0)
+            {
+                decimal contractamount = record.BidWinningItems.Sum(x => x.TPrice);
+                var lot = _db.Lots.Find(record.LotID);
+                if (lot != null)
+                {
+                    var tender = _db.Tenders.Find(lot.TenderID);
+                    #region send to po
+                    if (tender != null)
+                    {                        
+                        #region create po
+                        var purchaseOrder = new PurchaseOrder
+                        {
+
+                            TenderID = tender.TenderID,
+                            ProcurementOfficer = tender.ProcurementOfficer,
+                            BranchId = tender.BranchId, 
+                            BusinessUnitId = tender.BusinessUnitId,
+                            SroreRequisition = "",
+                            SupplierName = record.SupplierName,
+                            SupplierId = record.SupplierId,
+                            POType = POType.CashBase,
+                            ProcurementMethod = ProcurementMethod.Tender,
+                            OrderDate = DateTime.Today,
+                            DeliveryPlace = "",
+                            DeliveryDate = DateTime.Today,
+                            PurchaseRequisitionID=0,
+                            OrgStructureId = 0,
+
+                            ForwardedFrom = UserInformationHelper.GetEmployeeUserId(tender.ProcurementOfficer),
+                            ForwardedTo = UserInformationHelper.GetEmployeeUserId(tender.ProcurementOfficer),
+
+
+                            Status = "Editing",
+                            Remark = record.Remark,
+
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name
+                        };
+                        _db.PurchaseOrders.Add(purchaseOrder);
+                        _db.SaveChanges();
+
+
+                        #endregion
+
+                        #region items
+
+                        var winnerItems = _db.BidAwardedSupplierItems.Where(x => x.BidAwardedSupplierID == record.BidAwardedSupplierID).ToList();
+                        foreach (var item in winnerItems)
+                        {
+                            var tax = _db.GLTaxRates.Find(item.GLTaxRateID);
+                            if (item.Quanity > 0)
+                            {
+                                #region item
+
+                                if (tax != null)
+                                {
+                                    var proformaItem = new PurchaseOrderItem
+                                    {
+                                        PurchaseOrder = purchaseOrder,
+                                        CatCode = item.CatCode,
+                                        CategoryName = item.CategoryName,
+                                        ItmCode = item.ItmCode,
+                                        ItemName = item.ItemName,
+                                        Name = item.Name,
+                                        ModelNo = item.ModelNo,
+                                        PartNo = item.PartNo,
+                                        Quantity = item.Quanity,
+                                        UnitPrice = item.UPrice,
+                                        GLTaxRateID = item.GLTaxRateID,
+                                        TaxAmount = (tax.CalculatedRate * item.Quanity * item.UPrice),
+                                        SubTotal = item.UPrice * item.Quanity,
+                                        Total = item.TPrice,
+                                        IsApproved = item.IsApproved,
+                                        ItemSpecification = item.ItemSpecification,
+                                        UoM = item.UoM,
+                                        ItemType = item.ItemType,
+
+                                        CreatedBy = User.Identity.Name,
+                                        DateCreated = DateTime.Today
+                                    };
+                                    _db.PurchaseOrderItems.Add(proformaItem);
+                                }
+
+                                _db.SaveChanges();
+                                #endregion
+                            }
+
+                        }
+
+                        #endregion
+                    }
+                    #endregion
+
+                }
+
+                record.IsTransferredToPo = true;
+                _db.BidAwardedSuppliers.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+                var formattedData = new
+                {
+                    Message = "Transfer to PO succesful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var formattedData1 = new
+            {
+                Message = "Transfer to PO not successful.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
+
         public ActionResult GrnHeader_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             List<GrnViewModel> grnVms = new List<GrnViewModel>();
@@ -2020,6 +2167,85 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 Name = /*i.CatCode + "_" + i.CategoryName + "_" +*/ i.ItmCode + "_" + i.ItemName + "_" + i.Name,
                 Code = i.LotItemID
             }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult Getlots(string id, string lotid)
+        {
+            int tenderid = int.Parse(id);
+            int did = int.Parse(lotid);//self
+            var lots = _db.Lots
+                .Where(x=>x.TenderID== tenderid)
+                .Where(x => x.LotID != did).AsQueryable();
+            return Json(lots.Select(i => new
+            {
+                LotID = i.LotID,
+                LotNum =i.LotNumber +"-"+i.Description
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult LoadBidPurchaseSuppliers(string id, string lotid)
+        {
+            int sourceLotId = int.Parse(id);
+            int destLotId = int.Parse(lotid);
+
+            if (sourceLotId != destLotId)
+            {
+                var suppliers = _db.BidPurchasingSupplierses.Where(x => x.LotID == sourceLotId).ToList();
+
+                foreach (var s in suppliers)
+                {
+                    var exist = _db.BidPurchasingSupplierses
+                        .Where(x => x.SupplierName == s.SupplierName)
+                        .Where(x => x.LotID == destLotId).FirstOrDefault();
+                    if (exist == null)
+                    {
+                        var entity = new BidPurchasingSuppliers
+                        {
+                            LotID = destLotId,
+                            SupplierId = s.SupplierId,
+                            IsNewSupplier = s.IsNewSupplier,
+                            SupplierName = s.SupplierName,
+                            Representative = s.Representative,
+                            PurchaseDate = s.PurchaseDate,
+                            ReceiptNo = s.ReceiptNo,
+                            ReceiptNotRequired = s.ReceiptNotRequired,
+                            Address = s.Address,
+                            Telephone = s.Telephone,
+                            Remark = s.Remark,
+                            OrgBranchName = s.OrgBranchName,
+                            LastModified = s.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Now,
+                        };
+
+                        _db.BidPurchasingSupplierses.Add(entity);
+                        _db.SaveChanges();
+
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, $"lot bid document purchase copied from lot {sourceLotId}", "Success", User.Identity.Name, $"created bid purchase by {entity.SupplierName} under record {entity.LotID} ", Modules.Procurement);
+                        #endregion
+
+                    }
+                }
+                var formattedData1 = new
+                {
+                    Message = "Operation completed.",
+                    Status = "OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+
+            else
+            {
+                var formattedData = new
+                {
+                    Message = "Update completed.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
         }
         protected override void Dispose(bool disposing)
         {

@@ -89,6 +89,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
         [DataObjectMethod(DataObjectMethodType.Select)]
         public IOrderedEnumerable<GeneralLedgerAccountVm> GetLedgerBalanceSummary(string periodFrom, string periodTo, string acctFrom, string acctTo,string subaccount,string costcenter, string segmentType, string segmentValue, bool summarizeByAccount,bool showSubAccount)
         {
+            _db.Database.CommandTimeout = 7200;//added
             List<GeneralLedgerAccountVm> glBalances = new List<GeneralLedgerAccountVm>();
             if (!String.IsNullOrEmpty(periodFrom) && !String.IsNullOrEmpty(periodTo))
             {
@@ -253,8 +254,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     }
                                     else
                                     {
-                                        var subAcc = _db.GLChartOfAccountSubAccounts.FirstOrDefault(x => x.Values == subAccount);
-                                        subAccDesc = subAcc?.Description;
+                                        //var subAcc = _db.GLChartOfAccountSubAccounts.FirstOrDefault(x => x.Values == subAccount);
+                                        //subAccDesc = subAcc?.Description;
                                     }
                                     var lineData = new GeneralLedgerAccountVm
                                     {

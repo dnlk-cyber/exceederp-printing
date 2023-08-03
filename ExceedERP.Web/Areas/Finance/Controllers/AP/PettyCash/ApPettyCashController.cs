@@ -59,7 +59,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
                 IsFinalApproval = apPettyCash.IsFinalApproval,
 
                 Status = apPettyCash.Status,
-                IsPostedToSecondLedger = apPettyCash.IsPostedToSecondLedger,
+                
 
                 IsSendForApproval = apPettyCash.IsSendForApproval,
                 SendForApprovalBy = apPettyCash.SendForApprovalBy,
@@ -120,7 +120,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
                     ForwardedFrom = User.Identity.Name,
                     ForwardedTo = User.Identity.Name,
                     Status = apPettyCash.Status,
-                    IsPostedToSecondLedger = apPettyCash.IsPostedToSecondLedger,
+                    
                     IsOnlineApproved = apPettyCash.IsOnlineApproved,
                     OnlineApprovedBy = apPettyCash.OnlineApprovedBy,
                     OnlineApprovedTime = apPettyCash.OnlineApprovedTime,
@@ -177,7 +177,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
                     ForwardedFrom = apPettyCash.ForwardedFrom,
                     ForwardedTo = apPettyCash.ForwardedTo,
                     Status = apPettyCash.Status,
-                    IsPostedToSecondLedger = apPettyCash.IsPostedToSecondLedger,
+                    
                     IsOnlineApproved = apPettyCash.IsOnlineApproved,
                     OnlineApprovedBy = apPettyCash.OnlineApprovedBy,
                     OnlineApprovedTime = apPettyCash.OnlineApprovedTime,
@@ -227,7 +227,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PettyCash
                     ForwardedFrom = apPettyCash.ForwardedFrom,
                     ForwardedTo = apPettyCash.ForwardedTo,
                     Status = apPettyCash.Status,
-                    IsPostedToSecondLedger = apPettyCash.IsPostedToSecondLedger,
+                    
                     IsOnlineApproved = apPettyCash.IsOnlineApproved,
                     OnlineApprovedBy = apPettyCash.OnlineApprovedBy,
                     OnlineApprovedTime = apPettyCash.OnlineApprovedTime,

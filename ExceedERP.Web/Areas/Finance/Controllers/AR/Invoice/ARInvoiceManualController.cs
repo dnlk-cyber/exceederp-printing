@@ -82,6 +82,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             DataSourceResult result = arinvoices.ToDataSourceResult(request, aRInvoice => new
             {
                 ArInvoiceId = aRInvoice.ArInvoiceId,
+                BranchId = aRInvoice.BranchId,
+                BusinessUnitId = aRInvoice.BusinessUnitId,
                 CustomerName = aRInvoice.CustomerName,
                 CustomerId = aRInvoice.CustomerId,
                 TransactionClass = aRInvoice.TransactionClass,
@@ -95,8 +97,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                 InvoiceStatus = aRInvoice.InvoiceStatus,
                 IsManual = aRInvoice.IsManual,
                 Reference = aRInvoice.Reference,
-                BranchId = aRInvoice.BranchId,
-                IsPostedToSecondLedger = aRInvoice.IsPostedToSecondLedger,
+               
                 ArSalesOrderId = aRInvoice.ArSalesOrderId,
                 SourceInvoiceId = aRInvoice.SourceInvoiceId,
                 IsSendForApproval = aRInvoice.IsSendForApproval,
@@ -157,6 +158,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             {
                 var entity = new ArInvoice
                 {
+                    BranchId = aRInvoice.BranchId,
+                    BusinessUnitId = aRInvoice.BusinessUnitId,
                     CustomerName = customername,
                     CustomerId = aRInvoice.CustomerId,
                     TransactionClass = aRInvoice.TransactionClass,
@@ -170,8 +173,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                     InvoiceStatus = aRInvoice.InvoiceStatus,
                     IsManual = true,
                     Reference = aRInvoice.Reference,
-                    BranchId = aRInvoice.BranchId,
-                    IsPostedToSecondLedger = aRInvoice.IsPostedToSecondLedger,
+                  
                     ArSalesOrderId = aRInvoice.ArSalesOrderId,
                     SourceInvoiceId = aRInvoice.SourceInvoiceId,
                     IsSendForApproval = aRInvoice.IsSendForApproval,
@@ -265,6 +267,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                     var entity = new ArInvoice
                     {
                         ArInvoiceId = aRInvoice.ArInvoiceId,
+                        BranchId = aRInvoice.BranchId,
+                        BusinessUnitId = aRInvoice.BusinessUnitId,
                         CustomerName = customername,
                         CustomerId = aRInvoice.CustomerId,
                         TransactionClass = aRInvoice.TransactionClass,
@@ -278,8 +282,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                         InvoiceStatus = aRInvoice.InvoiceStatus,
                         IsManual = aRInvoice.IsManual,
                         Reference = aRInvoice.Reference,
-                        BranchId = aRInvoice.BranchId,
-                        IsPostedToSecondLedger = aRInvoice.IsPostedToSecondLedger,
+                        
                         ArSalesOrderId = aRInvoice.ArSalesOrderId,
                         SourceInvoiceId = aRInvoice.SourceInvoiceId,
                         IsSendForApproval = aRInvoice.IsSendForApproval,
@@ -350,6 +353,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                 var entity = new ArInvoice
                     {
                         ArInvoiceId = aRInvoice.ArInvoiceId,
+                        BranchId = aRInvoice.BranchId,
+                        BusinessUnitId = aRInvoice.BusinessUnitId,
                         CustomerName = aRInvoice.CustomerName,
                         CustomerId = aRInvoice.CustomerId,
                         TransactionClass = aRInvoice.TransactionClass,
@@ -361,7 +366,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                         TotalAmount = aRInvoice.TotalAmount,
                         AmountDue = aRInvoice.AmountDue,
                         InvoiceStatus = aRInvoice.InvoiceStatus,
-                        BranchId = aRInvoice.BranchId,
+                    
                         IsSendForApproval = aRInvoice.IsSendForApproval,
                         IsOnlineTransferred = aRInvoice.IsOnlineTransferred,
                         IsOnlineTransferredBy = aRInvoice.IsOnlineTransferredBy,

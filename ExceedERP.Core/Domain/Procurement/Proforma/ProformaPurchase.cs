@@ -1,13 +1,17 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Inventory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.Core.Domain.Procurement.Tender;
+using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 
 namespace ExceedERP.Core.Domain.Procurement.Proforma
 {
-
+   
     public class ProformaPurchase : NewOperations
     {
         public int ProformaPurchaseID { get; set; }
@@ -16,26 +20,27 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public string ProformaReference { get; set; }
         [Required]
         public string Description { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd :hh mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Float Date")]
         public DateTime FloatDate { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd :hh mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Closing Date")]
         public DateTime ClosingDate { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd :hh mm}", ApplyFormatInEditMode = true)]
         [Display(Name = "Evaluation Date")]
         public DateTime EvaluationDate { get; set; }
         [Display(Name = "Store Requisition Number")]
         public int? StoreRequisitionID { get; set; }
         [DisplayName("Purchase Requisition")]
         public int? PurchaseRequisitionID { get; set; }
+        [DisplayName("PR Assignment")]
         public int PurchaseRequisitionAssignmentId { get; set; }
         [Display(Name = "Category")]
         public PurchaseCategory PurchaseCategory { get; set; }
-        [Display(Name = "Purchaser")]
+        [Display(Name = "Procurement Officer")]
         public int ProcurementOfficer { get; set; }
         [DisplayName("Is Fullfilled")]
         public bool IsFullfilled { get; set; }
@@ -43,7 +48,9 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public PurchaseStatus PurchaseStatus { get; set; }
         [Display(Name = "Evaluate Total Finance")]
         public bool EvaluateTotalFinance { get; set; }
+        [Display(Name = "Branch/Project")]
         public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<ProformaPurchaseRequisition> ProformaPurchaseRequisitions { get; set; }
         public virtual ICollection<ProformaItem> ProformaItem { get; set; }
         public virtual ICollection<RequestedSupplier> ProformaRequestedSuppliers { get; set; }

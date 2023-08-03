@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, FinanceConstants.AccountPayableView, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, FinanceConstants.AccountPayableView, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult ContractRenewals_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<ContractRenewal> contractrenewals = db.ContractRenewals.Where(x => x.ContractManagementID==id);
@@ -56,7 +56,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractRenewals_Create(int id,[DataSourceRequest]DataSourceRequest request, ContractRenewal contractRenewal)
         {
@@ -93,7 +93,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractRenewal }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractRenewals_Update([DataSourceRequest]DataSourceRequest request, ContractRenewal contractRenewal)
         {
@@ -131,7 +131,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractRenewal }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractRenewals_Destroy([DataSourceRequest]DataSourceRequest request, ContractRenewal contractRenewal)
         {

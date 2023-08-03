@@ -76,9 +76,9 @@
                             sortable.SortMode(GridSortMode.SingleColumn);
                         })
                 .Filterable()
-                .Groupable()
+
                .ClientDetailTemplateId("templates")
-                   .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+                   .Events(ev => ev.DetailExpand("detailExpand"))
                     .Scrollable(h => h.Height(500))
                      .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
@@ -92,7 +92,9 @@
                   model.Field(p => p.LineAmount).Editable(false);
                   model.Field(p => p.TaxAmount).Editable(false);
                   model.Field(p => p.TotalAmount).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
+
                   model.Field(p => p.VoidTime).Editable(false);
                   model.Field(p => p.VoidBy).Editable(false);
                   model.Field(p => p.IsVoid).Editable(false);

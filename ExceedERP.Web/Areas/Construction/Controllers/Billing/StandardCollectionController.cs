@@ -280,7 +280,7 @@ namespace ExceedERP.Web.Areas.Construction.Controllers.Billing
         }
 
 
-        //[AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        //[AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = db.ConsARStandardCollections.Find(id);

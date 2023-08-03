@@ -21,13 +21,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, FinanceConstants.AccountPayableView, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, FinanceConstants.AccountPayableView, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult ContractTerminations_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<ContractTermination> contractTerminations = _db.ContractTerminations.Where(x => x.ContractManagementID==id);
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractTerminations_Create(int id,[DataSourceRequest]DataSourceRequest request, ContractTermination contractTermination)
         {
@@ -98,7 +98,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractTermination }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractTerminations_Update([DataSourceRequest]DataSourceRequest request, ContractTermination contractTermination)
         {
@@ -137,7 +137,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractTermination }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractTerminations_Destroy([DataSourceRequest]DataSourceRequest request, ContractTermination contractTermination)
         {
@@ -171,7 +171,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractTermination }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.ContractTerminations.Find(id);

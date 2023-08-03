@@ -41,10 +41,15 @@ namespace ExceedERP.Core.Domain.Finance.GL
         public decimal Debit { get; set; }
         public decimal Credit { get; set; }
         public decimal Balance { get; set; }
+        public decimal ExRate { get; set; }
+        public decimal DebitNonFun { get; set; }
+        public decimal CreditNonFun { get; set; }
+        public decimal BalanceNonFun { get; set; }
         public string AdditionalDescription { get; set; }//comes from distribution line
         public string Remark { get; set; }
         public string ReferenceDoc { get; set; }//manual
         public string PaymentReference { get; set; }//receipt or payment reference
         public string InvoiceReferenceDoc { get; set; }//manual
+        public int JournalId { get; set; }
     }
 }

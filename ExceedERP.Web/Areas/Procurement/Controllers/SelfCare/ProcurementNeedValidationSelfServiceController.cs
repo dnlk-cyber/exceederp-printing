@@ -21,13 +21,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         private ExceedDbContext db = new ExceedDbContext();
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementPlanApprover, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementPlanApprover, ProcurementRoles.ProcurementPlanUser)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementPlanApprover, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementPlanApprover, ProcurementRoles.ProcurementPlanUser)]
 
         public ActionResult AnnualNeedAssesmentValidations_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
@@ -48,7 +48,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesmentValidations_Create(int id, [DataSourceRequest]DataSourceRequest request, AnnualNeedAssesmentValidation annualNeedAssesmentValidation)
@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { annualNeedAssesmentValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesmentValidations_Update([DataSourceRequest]DataSourceRequest request, AnnualNeedAssesmentValidation annualNeedAssesmentValidation)
@@ -139,7 +139,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { annualNeedAssesmentValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanApprover)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesmentValidations_Destroy([DataSourceRequest]DataSourceRequest request, AnnualNeedAssesmentValidation annualNeedAssesmentValidation)

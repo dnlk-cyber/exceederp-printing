@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
     public class ProcurementNeedItemSelfServiceController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementPlanApprover, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementPlanApprover, ProcurementRoles.ProcurementPlanUser)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementPlanApprover, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementPlanApprover, ProcurementRoles.ProcurementPlanUser)]
         public ActionResult AnnualNeedAssesmentItems_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<AnnualNeedAssesmentItem> annualneedassesmentitems = db.AnnualNeedAssesmentItems.Where(x => x.AnnualNeedAssesmentID == id);
@@ -76,7 +76,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementPlanUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesmentItems_Create(int id, [DataSourceRequest]DataSourceRequest request, AnnualNeedAssesmentItem annualNeedAssesmentItem)
         {
@@ -158,7 +158,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { annualNeedAssesmentItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementPlanUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesmentItems_Update([DataSourceRequest]DataSourceRequest request, AnnualNeedAssesmentItem annualNeedAssesmentItem)
         {
@@ -234,7 +234,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { annualNeedAssesmentItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementPlanUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesmentItems_Destroy([DataSourceRequest]DataSourceRequest request, AnnualNeedAssesmentItem annualNeedAssesmentItem)
         {

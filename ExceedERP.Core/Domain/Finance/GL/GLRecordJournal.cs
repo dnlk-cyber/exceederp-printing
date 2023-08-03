@@ -35,11 +35,12 @@ namespace ExceedERP.Core.Domain.Finance.GL
         public DateTime EffectiveDate { get; set; }
         public string Posting { get; set; }
         public bool isReversed { get; set; }
+        public bool IsUnPosted { get; set; }
         public bool isPosted { get; set; }
-        public bool IsPostedToSecondLedger { get; set; }
+        public bool IsNonFuncCurrency { get; set; }
         public string PostedBy { get; set; }
         public DateTime? PostedTime { get; set; }
-      
+       
         public decimal DebitSum { get; set; }
         public string Remark { get; set; }
         //ap ,ar,or gl
@@ -50,6 +51,7 @@ namespace ExceedERP.Core.Domain.Finance.GL
         public string PaymentReference { get; set; }//receipt or payment reference
         public string InvoiceReferenceDoc { get; set; }//manual
         public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<GLRecordJournalDetail> GLRecordJournalDetail { get; set; }
         public virtual ICollection<GLRecordJournalValidation> GLRecordJournalValidation { get; set; }
     }

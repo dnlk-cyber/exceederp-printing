@@ -334,6 +334,10 @@
     <Compile Include="Migrations\202210260938453_CRMModuleUpgrade.Designer.cs">
       <DependentUpon>202210260938453_CRMModuleUpgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202308031100509_financeandprocurementu.cs" />
+    <Compile Include="Migrations\202308031100509_financeandprocurementu.Designer.cs">
+      <DependentUpon>202308031100509_financeandprocurementu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -541,6 +545,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202210260938453_CRMModuleUpgrade.resx">
       <DependentUpon>202210260938453_CRMModuleUpgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308031100509_financeandprocurementu.resx">
+      <DependentUpon>202308031100509_financeandprocurementu.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -8,7 +8,8 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
  using ExceedERP.Core.Domain.Inventory;
  using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Inventory;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
  using ExceedERP.Web.Helpers;
  using Kendo.Mvc.Extensions;
 ﻿using Kendo.Mvc.UI;
@@ -39,6 +40,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                    });
 
 
+            var branches = _db.Branch.ToList();
+            ViewData["branches"] = branches
+               .Select(e => new
+               {
+                   BranchId = e.BranchId,
+                   Name = e.Name
+               })
+               .AsQueryable();
+
             //var users = _db.GLRecordJournals
             //                .Where(x => x.IsOnlineApproved && !x.isVoid && !x.isPosted).AsNoTracking().OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
 
@@ -59,11 +69,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
            IQueryable<GlRecordJournal> glRecordJournals = _db.GLRecordJournals.Where(x => x.isPosted);
 
-            //if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
-            //      || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
-            //{
-            //    glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
-            //}
+            if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
+                  || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
+            {
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+            }
 
             //new
             if (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerAdmin))
@@ -71,9 +81,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             else
                 glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                //filter by business unit
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                glRecordJournals = glRecordJournals.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
             DataSourceResult result = glRecordJournals.ToDataSourceResult(request, glRecordJournal => new
             {
                 GlRecordJournalId = glRecordJournal.GlRecordJournalId,
+                BranchId = glRecordJournal.BranchId,
                 JournalName = glRecordJournal.JournalName,
                 Description = glRecordJournal.Description,
                 FiscalYear = glRecordJournal.FiscalYear,
@@ -101,6 +118,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 VoidBy = glRecordJournal.VoidBy,
                 VoidTime = glRecordJournal.VoidTime,
                 OrgBranchName = glRecordJournal.OrgBranchName,
+                BusinessUnitId = glRecordJournal.BusinessUnitId,
                 DateCreated = glRecordJournal.DateCreated,
                 LastModified = glRecordJournal.LastModified,
                 CreatedBy = glRecordJournal.CreatedBy,
@@ -125,10 +143,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                         PeriodName = glRecordJournal.PeriodName,
                         CategoryName = glRecordJournal.CategoryName,
                         SourcesName = glRecordJournal.SourcesName,
-                        JournalNumber = "",
+                        JournalNumber = glRecordJournal.JournalNumber,
                         EffectiveDate = glRecordJournal.EffectiveDate,
-                        IsSendForApproval = glRecordJournal.IsSendForApproval,
-                        IsPostedToSecondLedger = false,
+                        IsSendForApproval = false,
+                      
+                        ReferenceDoc = glRecordJournal.ReferenceDoc,
+                        PaymentReference = glRecordJournal.PaymentReference,
+                        InvoiceReferenceDoc = glRecordJournal.InvoiceReferenceDoc,
                         Remark = glRecordJournal.Remark,
                         Status = "Editing",
                         IsOnlineApproved = false,
@@ -197,7 +218,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-           
+
 
         }
         protected override void Dispose(bool disposing)

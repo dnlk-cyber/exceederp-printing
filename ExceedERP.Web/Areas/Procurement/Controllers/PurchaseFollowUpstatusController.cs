@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseFollowUpSystemStatus_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseFollowUpSystemStatus> purchaseFollowUpStatuses = db.PurchaseFollowUpSystemStatus.Where(pri => pri.PurchaseFollowUpID == id);
@@ -40,7 +40,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseFollowUpstatus_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<PurchaseFollowUpStatus> purchaseFollowUpStatuses = db.PurchaseStatus.Where(pri => pri.PurchaseFollowUpID == id);
@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseFollowUpstatus_Create([DataSourceRequest]DataSourceRequest request, PurchaseFollowUpStatus purchaseFollowUpStatus , int id )
         {
@@ -79,7 +79,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseFollowUpstatus_Update([DataSourceRequest]DataSourceRequest request, PurchaseFollowUpStatus purchaseFollowUpStatus)
         {
@@ -104,7 +104,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
        public ActionResult PurchaseFollowUpstatus_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseFollowUpStatus purchaseFollowUpStatus)
         {

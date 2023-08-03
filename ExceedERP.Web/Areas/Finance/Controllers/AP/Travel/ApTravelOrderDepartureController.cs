@@ -32,7 +32,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 From = apTravelOrderDeparture.From,
                 To = apTravelOrderDeparture.To,
                 Date = apTravelOrderDeparture.Date,
-                Time = apTravelOrderDeparture.Time,
+                ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                Duration = apTravelOrderDeparture.Duration,
+                DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
                 TransportMode = apTravelOrderDeparture.TransportMode,
                 Remark = apTravelOrderDeparture.Remark,
                 OrgBranchName = apTravelOrderDeparture.OrgBranchName,
@@ -48,6 +50,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrderDepartures_Create(int id,[DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrderDeparture)
         {
+            if (apTravelOrderDeparture.ArrivalDate < apTravelOrderDeparture.Date)
+                ModelState.AddModelError("start", "Start date should be before arrival date");
+
+            apTravelOrderDeparture.Duration = (decimal)(apTravelOrderDeparture.ArrivalDate - apTravelOrderDeparture.Date).TotalDays;
+
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrderDeparture
@@ -57,7 +64,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     From = apTravelOrderDeparture.From,
                     To = apTravelOrderDeparture.To,
                     Date = apTravelOrderDeparture.Date,
-                    Time = apTravelOrderDeparture.Time,
+                    ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                    Duration = apTravelOrderDeparture.Duration,
+                    DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
                     TransportMode = apTravelOrderDeparture.TransportMode,
                     Remark = apTravelOrderDeparture.Remark,
                     OrgBranchName = apTravelOrderDeparture.OrgBranchName,
@@ -82,6 +91,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelOrderDepartures_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrderDeparture apTravelOrderDeparture)
         {
+            if (apTravelOrderDeparture.ArrivalDate < apTravelOrderDeparture.Date)
+                ModelState.AddModelError("start", "Start date should be before arrival date");
+
+            apTravelOrderDeparture.Duration = (decimal)(apTravelOrderDeparture.ArrivalDate - apTravelOrderDeparture.Date).TotalDays;
+
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrderDeparture
@@ -91,7 +105,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     From = apTravelOrderDeparture.From,
                     To = apTravelOrderDeparture.To,
                     Date = apTravelOrderDeparture.Date,
-                    Time = apTravelOrderDeparture.Time,
+                    ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                    Duration = apTravelOrderDeparture.Duration,
+                    DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
                     TransportMode = apTravelOrderDeparture.TransportMode,
                     Remark = apTravelOrderDeparture.Remark,
                     OrgBranchName = apTravelOrderDeparture.OrgBranchName,
@@ -125,7 +141,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     From = apTravelOrderDeparture.From,
                     To = apTravelOrderDeparture.To,
                     Date = apTravelOrderDeparture.Date,
-                    Time = apTravelOrderDeparture.Time,
+                    ArrivalDate = apTravelOrderDeparture.ArrivalDate,
+                    Duration = apTravelOrderDeparture.Duration,
+                    DestinationBranchId = apTravelOrderDeparture.DestinationBranchId,
                     TransportMode = apTravelOrderDeparture.TransportMode,
                     Remark = apTravelOrderDeparture.Remark,
                     OrgBranchName = apTravelOrderDeparture.OrgBranchName,

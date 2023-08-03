@@ -13,6 +13,7 @@ using ExceedERP.Web.Helpers;
 using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 {
@@ -54,30 +55,41 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         {
             #region validation
 
-            bool valid = true;
+          
             var exists = _db.GLFiscalYears.Where(x => x.GlFiscalYearId != gLFiscalYear.GlFiscalYearId).Where(x => x.Name.ToUpper().Equals(gLFiscalYear.Name.ToUpper())).ToList();
 
             if (exists.Any())
-            {
                 ModelState.AddModelError("", gLFiscalYear.Name + " already exists in the system.");
-                valid = false;
-            }
 
-            if (gLFiscalYear.DateFrom > gLFiscalYear.DateTo)
-            {
-                ModelState.AddModelError("", "Start Date should be before End Date.");
-                valid = false;
-            }
+            //if (gLFiscalYear.DateFrom > gLFiscalYear.DateTo)
+            //    ModelState.AddModelError("", "Start Date should be before End Date.");
 
             var overlaps = _db.GLFiscalYears.Where(x => x.Name != gLFiscalYear.Name)
                                                 .Where(x => x.DateFrom <= gLFiscalYear.DateTo)
                                                 .Where(x => x.DateTo >= gLFiscalYear.DateFrom).ToList();
             if (overlaps.Any())
-            {
                 ModelState.AddModelError("", "The Fiscal Year's range overlaps with one or more previous Fiscal Years.");
-                valid = false;
+
+            if (GlobalHelper.GetFiscalYearType()== FiscalYearTypeAttribute.Unknown)
+                ModelState.AddModelError("superuser", "Type of fiscal year is not defined in master configuration.");
+
+            if (GlobalHelper.GetFiscalYearType() == FiscalYearTypeAttribute.Ethiopian)
+            {
+                int day = XAPI.EthiopicDateTime.GetEthiopicDay(gLFiscalYear.DateFrom.Day, gLFiscalYear.DateFrom.Month, gLFiscalYear.DateFrom.Year);
+                int month = XAPI.EthiopicDateTime.GetEthiopicMonth(gLFiscalYear.DateFrom.Day, gLFiscalYear.DateFrom.Month, gLFiscalYear.DateFrom.Year);
+                if (day!=1 && month!=11)
+                    ModelState.AddModelError("start date", "Ethiopian fiscal year should start at 1st of the 11th month of Ethiopian calendar.");
             }
+
+            if (GlobalHelper.GetFiscalYearType() == FiscalYearTypeAttribute.Standard)
+            {
+                if (gLFiscalYear.DateFrom.Day!=1)
+                    ModelState.AddModelError("start date", "Fiscal year should start at 1st a month of Gregorian calendar.");
+            }
+
             #endregion
+
+            gLFiscalYear.DateTo=gLFiscalYear.DateFrom.AddYears(1).AddDays(-1);
             if (ModelState.IsValid)
             {
                     var entity = new GlFiscalYear
@@ -85,7 +97,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                         Name = gLFiscalYear.Name,
                         DateFrom = gLFiscalYear.DateFrom.Date,
                         DateTo = gLFiscalYear.DateTo.Date,
-                        Status = FiscalYearStatus.Open,
+                        Status = FiscalYearStatus.FuturePeriod,
 
                         OrgBranchName = gLFiscalYear.OrgBranchName,
                         DateCreated = DateTime.Now,
@@ -97,77 +109,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     _db.GLFiscalYears.Add(entity);
                     _db.SaveChanges();
                     gLFiscalYear.GlFiscalYearId = entity.GlFiscalYearId;
-                    //#region generate periods in the fiscal year with 30 days..ethiopian calendar
 
-                    //List<GLPeriod> periods = new List<GLPeriod>();
-                    //GLPeriod period;
-                    //DateTime d1 = gLFiscalYear.DateFrom;
-                    //DateTime d2 = gLFiscalYear.DateTo;
-                    //DateTime d12 = d1;
-                    //DateTime d22 = d12.AddDays(30);
-
-                    //while (d22 <= d2)
-                    //{
-                    //    period = new GLPeriod
-                    //    {
-                    //        Name = d12.ToString("MMMM", CultureInfo.InvariantCulture) + "-" + d12.Year.ToString(),
-                    //        DateFrom = d12,
-                    //        DateTo = d22,
-                    //        Status = FiscalYearStatus.Open,
-                    //        GlFiscalYearId = entity.GlFiscalYearId
-                    //    };
-                    //    periods.Add(period);
-                    //    //get next period
-                    //    d12 = d22.AddDays(1);
-                    //    d22 = d12.AddDays(30);
-                    //}
-                    //if (d22 > d2 && periods.Count < 12)
-                    //{
-                    //    period = new GLPeriod
-                    //    {
-                    //        Name = d12.ToString("MMMM", CultureInfo.InvariantCulture) + "-" + d12.Year.ToString(),
-                    //        DateFrom = d12,
-                    //        DateTo = d2,
-                    //        Status = FiscalYearStatus.Open,
-                    //        GlFiscalYearId = entity.GlFiscalYearId
-                    //    };
-                    //    periods.Add(period);
-                    //}
-
-                    //foreach (var glPeriod in periods)
-                    //{
-                    //    db.GLPeriods.Add(glPeriod);
-                    //    db.SaveChanges();
-                    //    var branchs = db.Branch.ToList();
-                    //    foreach (var b in branchs)
-                    //    {
-                    //        var entityy = new PeriodStatus
-                    //        {
-                    //            GLPeriodId = glPeriod.GLPeriodId,
-                    //            GLPeriod = glPeriod,
-                    //            Status = PeriodStatusList.NEW,
-                    //            BranchId = b.BranchId
-                    //        };
-                    //        db.PeriodStatuses.Add(entityy);
-                    //        db.SaveChanges();
-                    //    }
-
-
-                    //}
-                    //#endregion
+                if (GlobalHelper.GetFiscalYearType() == FiscalYearTypeAttribute.Ethiopian)
+                {
                     #region generate periods in the fiscal year European July 1
 
-                    int leapyear = 0;
-                    if (DateTime.IsLeapYear(gLFiscalYear.DateTo.Year))
-                        leapyear = 1;
+                    bool leapyear = DateTime.IsLeapYear(gLFiscalYear.DateTo.Year);
+                  
 
                     List<GLPeriod> periods = new List<GLPeriod>();
                     var july = new GLPeriod
                     {
-                        Name = "July-" + gLFiscalYear.DateFrom.Year,
-                        Index=1,
-                        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 7, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 7, 31),
+                        Name = $" {gLFiscalYear.DateFrom.ToString("MMMM")} - { gLFiscalYear.DateFrom.Year}",
+                        Index = 1,
+                        DateFrom = gLFiscalYear.DateFrom.Date,
+                        DateTo = gLFiscalYear.DateFrom.Date.AddDays(29),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -175,10 +131,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var august = new GLPeriod
                     {
-                        Name = "August-" + gLFiscalYear.DateFrom.Year,
+                        Name = $" {july.DateTo.AddDays(1).ToString("MMMM")} - { july.DateTo.AddDays(1).Year}",
                         Index = 2,
-                        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 8, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 8, 31),
+                        DateFrom = july.DateTo.AddDays(1),
+                        DateTo = leapyear? july.DateTo.AddDays(36) : july.DateTo.AddDays(35),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -186,10 +142,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var september = new GLPeriod
                     {
-                        Name = "September-" + gLFiscalYear.DateFrom.Year,
+                        Name = $" {august.DateTo.AddDays(1).ToString("MMMM")} - { august.DateTo.AddDays(1).Year}",
                         Index = 3,
-                        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 9, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 9, 30),
+                        DateFrom = august.DateTo.AddDays(1),
+                        DateTo = august.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -197,10 +153,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var october = new GLPeriod
                     {
-                        Name = "October-" + gLFiscalYear.DateFrom.Year,
+                        Name = $" {september.DateTo.AddDays(1).ToString("MMMM")} - { september.DateTo.AddDays(1).Year}",
                         Index = 4,
-                        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 10, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 10, 31),
+                        DateFrom = september.DateTo.AddDays(1),
+                        DateTo = september.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -208,10 +164,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var november = new GLPeriod
                     {
-                        Name = "November-" + gLFiscalYear.DateFrom.Year,
+                        Name = $" {october.DateTo.AddDays(1).ToString("MMMM")} - {october.DateTo.AddDays(1).Year}",
                         Index = 5,
-                        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 11, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 11, 30),
+                        DateFrom = october.DateTo.AddDays(1),
+                        DateTo = october.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -219,10 +175,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var december = new GLPeriod
                     {
-                        Name = "December-" + gLFiscalYear.DateFrom.Year,
+                        Name = $" {november.DateTo.AddDays(1).ToString("MMMM")} - { november.DateTo.AddDays(1).Year}",
                         Index = 6,
-                        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 12, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 12, 31),
+                        DateFrom = november.DateTo.AddDays(1),
+                        DateTo = november.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -230,10 +186,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var january = new GLPeriod
                     {
-                        Name = "January-" + gLFiscalYear.DateTo.Year,
+                        Name = $" {december.DateTo.AddDays(1).ToString("MMMM")} - { december.DateTo.AddDays(1).Year}",
                         Index = 7,
-                        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 1, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 1, 31),
+                        DateFrom = december.DateTo.AddDays(1),
+                        DateTo = december.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -241,10 +197,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var february = new GLPeriod
                     {
-                        Name = "February-" + gLFiscalYear.DateTo.Year,
+                        Name = $" {january.DateTo.AddDays(1).ToString("MMMM")} - { january.DateTo.AddDays(1).Year}",
                         Index = 8,
-                        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 2, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 2, 28 + leapyear),
+                        DateFrom = january.DateTo.AddDays(1),
+                        DateTo = january.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -252,10 +208,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var march = new GLPeriod
                     {
-                        Name = "March-" + gLFiscalYear.DateTo.Year,
+                        Name = $" {february.DateTo.AddDays(1).ToString("MMMM")} - { february.DateTo.AddDays(1).Year}",
                         Index = 9,
-                        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 3, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 3, 31),
+                        DateFrom = february.DateTo.AddDays(1),
+                        DateTo = february.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -263,10 +219,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var april = new GLPeriod
                     {
-                        Name = "April-" + gLFiscalYear.DateTo.Year,
+                        Name = $" {march.DateTo.AddDays(1).ToString("MMMM")} - { march.DateTo.AddDays(1).Year}",
                         Index = 10,
-                        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 4, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 4, 30),
+                        DateFrom = march.DateTo.AddDays(1),
+                        DateTo = march.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -274,10 +230,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var may = new GLPeriod
                     {
-                        Name = "May-" + gLFiscalYear.DateTo.Year,
+                        Name = $" {april.DateTo.AddDays(1).ToString("MMMM")} - { april.DateTo.AddDays(1).Year}",
                         Index = 11,
-                        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 5, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 5, 31),
+                        DateFrom = april.DateTo.AddDays(1),
+                        DateTo = april.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -285,10 +241,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     var june = new GLPeriod
                     {
-                        Name = "June-" + gLFiscalYear.DateTo.Year,
+                        Name = $" {may.DateTo.AddDays(1).ToString("MMMM")} - {may.DateTo.AddDays(1).Year}",
                         Index = 12,
-                        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 6, 1),
-                        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 6, 30),
+                        DateFrom = may.DateTo.AddDays(1),
+                        DateTo = may.DateTo.AddDays(30),
                         Status = FiscalYearStatus.FuturePeriod,
                         GlFiscalYearId = entity.GlFiscalYearId
                     };
@@ -302,9 +258,200 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                         _db.SaveChanges();
                     }
                     #endregion
+                }
+                else if (GlobalHelper.GetFiscalYearType() == FiscalYearTypeAttribute.Standard)
+                {
+                    #region generate periods in the fiscal year Gregorian
 
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "GL fiscal year setup", "Success", User.Identity.Name, $"created fiscal year {entity.Name}", Modules.Finance);
+                    DateTime startDate = gLFiscalYear.DateFrom; // Specify your desired start date
+
+                    List<GLPeriod> periods = new List<GLPeriod>();
+
+                    for (int i = 0; i < 12; i++)
+                    {
+                        DateTime currentDate = startDate.AddMonths(i);
+
+                        int year = currentDate.Year;
+                        int month = currentDate.Month;
+                        int daysInMonth = DateTime.DaysInMonth(year, month);
+
+                        DateTime periodStartDate = new DateTime(year, month, 1);
+                        DateTime periodEndDate = new DateTime(year, month, daysInMonth);
+
+                        var period = new GLPeriod
+                        {
+                            Name = $"{periodStartDate.ToString("MMMM")} - {year}",
+                            Index = i + 1,
+                            DateFrom = periodStartDate,
+                            DateTo = periodEndDate,
+                            Status = FiscalYearStatus.FuturePeriod,
+                            GlFiscalYearId = entity.GlFiscalYearId
+                        };
+
+                        periods.Add(period);
+                    }
+                    
+
+
+
+
+                    foreach (var glPeriod in periods)
+                    {
+                        _db.GLPeriods.Add(glPeriod);
+                        _db.SaveChanges();
+                    }
+                    #endregion
+                }
+                //    #region generate periods in the fiscal year European July 1
+
+                //int leapyear = 0;
+                //    if (DateTime.IsLeapYear(gLFiscalYear.DateTo.Year))
+                //        leapyear = 1;
+
+                //    List<GLPeriod> periods = new List<GLPeriod>();
+                //    var july = new GLPeriod
+                //    {
+                //        Name = "July-" + gLFiscalYear.DateFrom.Year,
+                //        Index=1,
+                //        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 7, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 7, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(july);
+
+                //    var august = new GLPeriod
+                //    {
+                //        Name = "August-" + gLFiscalYear.DateFrom.Year,
+                //        Index = 2,
+                //        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 8, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 8, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(august);
+
+                //    var september = new GLPeriod
+                //    {
+                //        Name = "September-" + gLFiscalYear.DateFrom.Year,
+                //        Index = 3,
+                //        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 9, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 9, 30),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(september);
+
+                //    var october = new GLPeriod
+                //    {
+                //        Name = "October-" + gLFiscalYear.DateFrom.Year,
+                //        Index = 4,
+                //        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 10, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 10, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(october);
+
+                //    var november = new GLPeriod
+                //    {
+                //        Name = "November-" + gLFiscalYear.DateFrom.Year,
+                //        Index = 5,
+                //        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 11, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 11, 30),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(november);
+
+                //    var december = new GLPeriod
+                //    {
+                //        Name = "December-" + gLFiscalYear.DateFrom.Year,
+                //        Index = 6,
+                //        DateFrom = new DateTime(gLFiscalYear.DateFrom.Year, 12, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateFrom.Year, 12, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(december);
+
+                //    var january = new GLPeriod
+                //    {
+                //        Name = "January-" + gLFiscalYear.DateTo.Year,
+                //        Index = 7,
+                //        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 1, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 1, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(january);
+
+                //    var february = new GLPeriod
+                //    {
+                //        Name = "February-" + gLFiscalYear.DateTo.Year,
+                //        Index = 8,
+                //        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 2, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 2, 28 + leapyear),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(february);
+
+                //    var march = new GLPeriod
+                //    {
+                //        Name = "March-" + gLFiscalYear.DateTo.Year,
+                //        Index = 9,
+                //        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 3, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 3, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(march);
+
+                //    var april = new GLPeriod
+                //    {
+                //        Name = "April-" + gLFiscalYear.DateTo.Year,
+                //        Index = 10,
+                //        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 4, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 4, 30),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(april);
+
+                //    var may = new GLPeriod
+                //    {
+                //        Name = "May-" + gLFiscalYear.DateTo.Year,
+                //        Index = 11,
+                //        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 5, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 5, 31),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(may);
+
+                //    var june = new GLPeriod
+                //    {
+                //        Name = "June-" + gLFiscalYear.DateTo.Year,
+                //        Index = 12,
+                //        DateFrom = new DateTime(gLFiscalYear.DateTo.Year, 6, 1),
+                //        DateTo = new DateTime(gLFiscalYear.DateTo.Year, 6, 30),
+                //        Status = FiscalYearStatus.FuturePeriod,
+                //        GlFiscalYearId = entity.GlFiscalYearId
+                //    };
+                //    periods.Add(june);
+
+
+
+                //    foreach (var glPeriod in periods)
+                //    {
+                //        _db.GLPeriods.Add(glPeriod);
+                //        _db.SaveChanges();
+                //    }
+                //    #endregion
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "GL fiscal year setup", "Success", User.Identity.Name, $"created fiscal year {entity.Name}", Modules.Finance);
                     #endregion
                 
             }
@@ -721,7 +868,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     //}
                     #endregion
                     FinanceHelper financeHelper = new FinanceHelper();
-                    financeHelper.TransferFiscalYearEnding(currentyearLastPeriod, nextyearfirstPeriod, User.Identity.Name);
+                    financeHelper.TransferFiscalYearEndingFast(currentyearLastPeriod, nextyearfirstPeriod, User.Identity.Name);
                     var transferjobId = BackgroundJob.Enqueue(() => financeHelper.UpdateAllBegEndBalancesFastP(nextyearfirstPeriod, "Automatic update after transfer ending"));
                     #region  log
                     UserHelper.OperationLog(Request.UserHostAddress, "Fiscal Year Ending transfer", "Success", User.Identity.Name, "Fiscal year " + year.Name, Modules.Finance);

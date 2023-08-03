@@ -20,7 +20,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
@@ -56,7 +56,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             }
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult TenderMessages_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<TenderMessages> tendermessages = _db.TenderMessages;
@@ -77,7 +77,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderMessages_Create([DataSourceRequest]DataSourceRequest request, TenderMessages tenderMessages, int id)
         {
@@ -109,7 +109,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderMessages }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderMessages_Update([DataSourceRequest]DataSourceRequest request, TenderMessages tenderMessages)
         {
@@ -150,7 +150,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return File(record.PhysicalPath, "application/force-download", Path.GetFileName(record.PhysicalPath));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderMessages_Destroy([DataSourceRequest]DataSourceRequest request, TenderMessages tenderMessages)
         {

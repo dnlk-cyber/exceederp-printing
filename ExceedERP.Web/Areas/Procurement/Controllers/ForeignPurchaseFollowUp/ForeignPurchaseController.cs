@@ -20,7 +20,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser, ProcurementConstants.ProcurementForeignPurchaseApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser, ProcurementRoles.ProcurementForeignPurchaseApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser, ProcurementConstants.ProcurementForeignPurchaseApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser, ProcurementRoles.ProcurementForeignPurchaseApprover)]
         public ActionResult ForeignPurchases_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<Core.Domain.Procurement.ForeignPurchase.ForeignPurchase> foreignpurchases = _db.ForeignPurchases;
@@ -105,7 +105,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ForeignPurchases_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.ForeignPurchase.ForeignPurchase foreignPurchase)
         {
@@ -175,7 +175,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(new[] { foreignPurchase }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ForeignPurchases_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.ForeignPurchase.ForeignPurchase foreignPurchase)
         {
@@ -250,7 +250,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(new[] { foreignPurchase }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ForeignPurchases_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.Procurement.ForeignPurchase.ForeignPurchase foreignPurchase)
         {
@@ -304,7 +304,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return Json(new[] { foreignPurchase }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementForeignPurchaseUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementForeignPurchaseUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.ForeignPurchases.Find(id);
@@ -383,7 +383,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.ForeignPurchaseFollowUp
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementVoid)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.ForeignPurchases.Find(id);

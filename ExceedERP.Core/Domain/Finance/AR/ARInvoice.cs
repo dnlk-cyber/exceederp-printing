@@ -45,9 +45,13 @@ namespace ExceedERP.Core.Domain.Finance.AR
         public bool IsManual { get; set; }
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
-        public bool IsPostedToSecondLedger { get; set; }
+        public int BusinessUnitId { get; set; }
         [DisplayName("Invoice No.")]
         public int? SourceInvoiceId { get; set; }//for credit and debit memo
+
+        // Flag used to show if this invoice is fully used (example, in daily advert transmission
+        // schedule if IsFullFilled is true, it means there is no remaining quantity)
+        public bool IsFullFilled { get; set; }
         public virtual ICollection<ArInvoiceLines> ArInvoiceLines { get; set; }
         public virtual ICollection<ArStandardCollectionViewModel> ArStandardCollectionViewModel { get; set; }
         public virtual ICollection<ArInvoiceDistribution> ArInvoiceDistribution { get; set; }

@@ -2,7 +2,7 @@
 @using ExceedERP.Core.Domain.Common
 @using ExceedERP.Core.Domain.Finance
 @using ExceedERP.Core.Domain.Finance.AP
-@using ExceedERP.Helpers
+@using ExceedERP.Helpers.Common
 @model ExceedERP.Core.Domain.Finance.AP.ApPaymentSettlement
 
 @Html.HiddenFor(model => model.ApPaymentSettlementId)
@@ -18,16 +18,16 @@
                 @Html.LabelFor(model => model.SupplierId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.SupplierId)
-                                                  .ValuePrimitive(true)
-                                                  .OptionLabel("Select Supplier...")
-                                                  .DataTextField("Name")
-                                                  .DataValueField("SupplierId")
-                                                  .Filter("contains")
-                                                  .DataSource(dataSource =>
-                                                  {
-                                                      dataSource.Read(read => read.Action("GetSuppliersList", "ProcurementDataProvider", new { area = "Procurement" }))
-                                                          .ServerFiltering(false);
-                                                  })
+                                                          .ValuePrimitive(true)
+                                                          .OptionLabel("Select Supplier...")
+                                                          .DataTextField("Name")
+                                                          .DataValueField("SupplierId")
+                                                          .Filter("contains")
+                                                          .DataSource(dataSource =>
+                                                          {
+                                                              dataSource.Read(read => read.Action("GetSuppliersList", "ProcurementDataProvider", new { area = "Procurement" }))
+                                                                  .ServerFiltering(false);
+                                                          })
                     )
                     @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
                 </div>
@@ -36,22 +36,34 @@
 
             <br />
             <div class="form-group">
-                @*@Html.LabelFor(model => model.IsNewSupplier, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                @*@Html.LabelFor(model => model.CollectedByPurchaser, htmlAttributes: new { @class = "control-label col-md-8" })*@
                 <div class="col-md-8">
-                    @Html.Kendo().CheckBoxFor(model => model.IsNewSupplier).HtmlAttributes(new { onchange = "isNewSupplier(this)" })
-                    @Html.ValidationMessageFor(model => model.IsNewSupplier, "", new { @class = "text-danger" })
+                    @Html.Kendo().CheckBoxFor(model => model.CollectedByPurchaser).HtmlAttributes(new { onchange = "isNewSupplier(this)" })
+                    @Html.ValidationMessageFor(model => model.CollectedByPurchaser, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
 
-            <div class="form-group" >
-                @Html.LabelFor(model => model.SupplierName, htmlAttributes: new { @class = "control-label col-md-8" })
+           <div class="form-group">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.SupplierName)
-                    @Html.ValidationMessageFor(model => model.SupplierName, "", new { @class = "text-danger" })
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Select Purchaser")
+                                .DataTextField("Name")
+                                .DataValueField("Code")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetPurchasers", "ProcurementDataProvider", new { area = "Procurement" }))
+                                        .ServerFiltering(false);
+                                })
+                    )
+                    @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
+
 
 
 

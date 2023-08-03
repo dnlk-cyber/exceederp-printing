@@ -16,13 +16,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult LotEvaluationByDocuments_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<LotEvaluationByDocument> lotevaluationbydocuments = _db.LotEvaluationByDocuments.Where(x => x.LotID == id);
@@ -46,7 +46,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotEvaluationByDocuments_Create(int id, [DataSourceRequest]DataSourceRequest request, LotEvaluationByDocument lotEvaluationByDocument)
         {
@@ -88,7 +88,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { lotEvaluationByDocument }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotEvaluationByDocuments_Update([DataSourceRequest]DataSourceRequest request, LotEvaluationByDocument lotEvaluationByDocument)
         {
@@ -129,7 +129,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { lotEvaluationByDocument }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LotEvaluationByDocuments_Destroy([DataSourceRequest]DataSourceRequest request, LotEvaluationByDocument lotEvaluationByDocument)
         {

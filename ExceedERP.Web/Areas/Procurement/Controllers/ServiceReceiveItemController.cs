@@ -20,13 +20,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         private ExceedDbContext _db = new ExceedDbContext();
         private readonly DistributionHelper _distributionHelper = new DistributionHelper();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult ServiceReceiveItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
 
@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceiveItems_Create([DataSourceRequest]DataSourceRequest request, ServiceReceiveItem serviceReceiveItem, int id)
         {
@@ -102,7 +102,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceiveItems_Update([DataSourceRequest]DataSourceRequest request, ServiceReceiveItem serviceReceiveItem, int id)
         {
@@ -156,7 +156,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceiveItems_Destroy([DataSourceRequest]DataSourceRequest request, ServiceReceiveItem serviceReceiveItem)
         {

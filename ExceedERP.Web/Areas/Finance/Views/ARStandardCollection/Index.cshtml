@@ -61,16 +61,16 @@
 
                     .Scrollable()
                          .Selectable(selectable =>
-                            {
-                                selectable.Mode(GridSelectionMode.Single);
-                                selectable.Type(GridSelectionType.Row);
-                            })
+                         {
+                             selectable.Mode(GridSelectionMode.Single);
+                             selectable.Type(GridSelectionType.Row);
+                         })
                         .Sortable(sortable =>
                         {
                             sortable.SortMode(GridSortMode.SingleColumn);
                         })
                     .Filterable()
-                    .Groupable()
+
               .Events(events => events.DetailExpand("detailExpandCollection"))
               .Events(events => events.DataBound("onDataBoundMasterCollection"))
       .DataSource(dataSource => dataSource
@@ -89,21 +89,23 @@
                     model.Field(p => p.OnAccountBalance).Editable(false);
                     model.Field(p => p.UnappliedBalance).Editable(false);
                     model.Field(p => p.PrepaymentBalance).Editable(false);
+                    model.Field(p => p.BranchId).Editable(false);
+                    model.Field(p => p.BusinessUnitId).Editable(false);
 
                     model.Field(p => p.VoidTime).Editable(false);
                     model.Field(p => p.VoidBy).Editable(false);
                     model.Field(p => p.IsVoid).Editable(false);
-                    
+
                     model.Field(p => p.OnlineApprovedTime).Editable(false);
                     model.Field(p => p.OnlineApprovedBy).Editable(false);
                     model.Field(p => p.IsOnlineApproved).Editable(false);
                     model.Field(p => p.Status).Editable(false);
-                    
+
                     model.Field(p => p.IsSendForApproval).Editable(false);
-                     model.Field(p => p.IsOnlineTransferred).Editable(false);
+                    model.Field(p => p.IsOnlineTransferred).Editable(false);
                     model.Field(p => p.IsOnlineTransferredBy).Editable(false);
                     model.Field(p => p.OnlineTransferredTime).Editable(false);
-                    
+
                     model.Field(p => p.OrgBranchName).Editable(false);
                     model.Field(p => p.CreatedBy).Editable(false);
                     model.Field(p => p.ModifiedBy).Editable(false);
@@ -122,7 +124,7 @@
           .Destroy(destroy => destroy.Action("ARStandardCollections_Destroy", "ARStandardCollection"))
       )
       .ClientDetailTemplateId("templates")
-     
+
 )
 
 <script id="templates" type="text/kendo-tmpl">

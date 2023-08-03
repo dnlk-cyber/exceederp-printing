@@ -7,7 +7,7 @@
           columns.Bound(c => c.Category).Width(200);
           columns.Bound(c => c.SupplierId).Width(100);
           columns.Bound(c => c.Name).Width(150);
-           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
           columns.Bound(c => c.TradeLicense).Width(200);
           columns.Bound(c => c.TIN).Width(100);
           columns.Bound(c => c.Address).Width(150);
@@ -35,7 +35,8 @@
               "# } #" +
           "/>"
       );
-       
+
+          columns.Bound(c => c.TCode).Width(50);
           columns.Bound(c => c.Remark).Width(150);
           columns.Bound(c => c.Rank).Width(150);
           columns.Bound(c => c.OrgBranchName).Width(200).Hidden(true);
@@ -59,16 +60,16 @@
 
                         .Scrollable()
                              .Selectable(selectable =>
-                        {
-                            selectable.Mode(GridSelectionMode.Single);
-                            selectable.Type(GridSelectionType.Row);
-                        })
+                             {
+                                 selectable.Mode(GridSelectionMode.Single);
+                                 selectable.Type(GridSelectionType.Row);
+                             })
                     .Sortable(sortable =>
                     {
                         sortable.SortMode(GridSortMode.SingleColumn);
                     })
                         .Filterable()
-                        .Groupable()
+
                               .ClientDetailTemplateId("templates")
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -101,8 +102,8 @@
           .Read(read => read.Action("ProcurementSuppliers_Read", "APProcurementSupplier"))
           .Update(update => update.Action("ProcurementSuppliers_Update", "APProcurementSupplier"))
       )
-      
-      
+
+
 )
 
 <script id="templates" type="text/kendo-tmpl">

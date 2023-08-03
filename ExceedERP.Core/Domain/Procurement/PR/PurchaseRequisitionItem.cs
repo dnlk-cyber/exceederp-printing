@@ -41,6 +41,8 @@ namespace ExceedERP.Core.Domain.Procurement.PR
         [Display(Name = "Unit")]
         public string UoM { get; set; }
         public PurchaseItemType ItemType { get; set; }
+        [DisplayName("Budget Code")]
+        public string BudgetCode { get; set; }
         public virtual ICollection<PurchaseRequisitionItemSpecification> Specifications { get; set; }
 
     }

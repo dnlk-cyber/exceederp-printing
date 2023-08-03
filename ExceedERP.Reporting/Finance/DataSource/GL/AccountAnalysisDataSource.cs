@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<AccountAnalysisViewModel> AccountAnalysis(string category,string source, string fromperiod, string toperiod,string postStatus,string approvalstatus,string createdby,string branchid)
         {
-
+            _db.Database.CommandTimeout = 7200;//added
             List<AccountAnalysisViewModel> list = new List<AccountAnalysisViewModel> { };
             AccountAnalysisViewModel record;
             if (category == null)
@@ -29,7 +29,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                 DateTime dt11 = _db.GLPeriods.Find(from).DateFrom;
                 DateTime dt22 = _db.GLPeriods.Find(to).DateTo;
 
-                var journals = _db.GLRecordJournalDetails
+                var journal_lines = _db.GLRecordJournalDetails
                     .Where(x => x.GLRecordJournal.isVoid==false)
                     .Where(x => x.GLRecordJournal.EffectiveDate >= dt11)
                     .Where(x => x.GLRecordJournal.EffectiveDate <= dt22)
@@ -41,14 +41,14 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                 {
                     if(approvalstatus== "APPROVED")
                     {
-                        journals =journals
+                        journal_lines =journal_lines
                             .Where(x => x.GLRecordJournal.IsOnlineApproved)
                             .AsNoTracking().AsQueryable();
                         
                     }
                     else
                     {
-                        journals =journals
+                        journal_lines =journal_lines
                                 .Where(x => x.GLRecordJournal.IsOnlineApproved==false)
                                 .AsNoTracking().AsQueryable();
                     }
@@ -58,14 +58,14 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                 {
                     if (postStatus == "POSTED")
                     {
-                        journals =journals
+                        journal_lines =journal_lines
                                 .Where(x => x.GLRecordJournal.isPosted)
                                 .AsNoTracking().AsQueryable();
 
                     }
                     else
                     {
-                        journals =journals
+                        journal_lines =journal_lines
                                 .Where(x => x.GLRecordJournal.isPosted == false)
                                 .AsNoTracking().AsQueryable();
                     }
@@ -73,32 +73,32 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                 if (!String.IsNullOrEmpty(category))
                 {
-                    journals =
-                        journals.Where(x => x.GLRecordJournal.CategoryName.ToUpper() == category.ToUpper())
+                    journal_lines =
+                        journal_lines.Where(x => x.GLRecordJournal.CategoryName.ToUpper() == category.ToUpper())
                             .AsNoTracking().AsQueryable();
                 }
 
                 if (!String.IsNullOrEmpty(source))
                 {
-                    journals =
-                        journals.Where(x => x.GLRecordJournal.SourcesName.ToUpper() == source.ToUpper()).AsNoTracking().AsQueryable();
+                    journal_lines =
+                        journal_lines.Where(x => x.GLRecordJournal.SourcesName.ToUpper() == source.ToUpper()).AsNoTracking().AsQueryable();
                 }
 
                 if (!String.IsNullOrEmpty(createdby))
                 {
-                    journals =
-                        journals.Where(x => x.GLRecordJournal.CreatedBy== createdby).AsNoTracking().AsQueryable();
+                    journal_lines =
+                        journal_lines.Where(x => x.GLRecordJournal.CreatedBy== createdby).AsNoTracking().AsQueryable();
                 }
 
                 if (!String.IsNullOrEmpty(branchid))
                 {
                     int did = int.Parse(branchid);
-                    journals =
-                        journals.Where(x => x.GLRecordJournal.BranchId == did).AsQueryable();
+                    journal_lines =
+                        journal_lines.Where(x => x.GLRecordJournal.BranchId == did).AsQueryable();
                 }
 
 
-                foreach (var journal in journals)
+                foreach (var journal in journal_lines)
                 {
                     record = new AccountAnalysisViewModel
                     {
@@ -118,6 +118,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                         ReferenceDoc = journal.GLRecordJournal.ReferenceDoc,
                         PaymentReference = journal.GLRecordJournal.PaymentReference,
                         InvoiceReferenceDoc = journal.GLRecordJournal.InvoiceReferenceDoc,
+                        PostStatus=journal.GLRecordJournal.isPosted? "Psted":"Not Posted"
                     };
                     list.Add(record);
                 }

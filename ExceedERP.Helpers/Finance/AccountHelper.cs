@@ -6,13 +6,13 @@ using System.Data.Entity;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Helpers.Finance
 {
-    public  class AccountHelper
+    public class AccountHelper
     {
-        private  readonly ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db = new ExceedDbContext();
         private readonly DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
         //AccountHelper accountHelper = new AccountHelper();
 
@@ -30,22 +30,22 @@ namespace ExceedERP.Helpers.Finance
         }
 
         //delegated
-        public  GlAccountTypes GetAccountType(string accountAcode)
+        public GlAccountTypes GetAccountType(string accountAcode)
         {
             AccountHelper accountHelper = new AccountHelper();
             GlAccountTypes type = GlAccountTypes.Undefined;
             if (IsDynamicCoA())
             {
-                type= _dynamicAccount.GetAccountType(accountAcode);
+                type = _dynamicAccount.GetAccountType(accountAcode);
             }
             else
             {
-                
+
                 try
                 {
                     string[] account = accountAcode.Split('-');
                     string acccountSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
-                    var accountObj = _db.GLChartOfAccountAccounts.FirstOrDefault(x => x.Values.ToUpper() == acccountSeG.ToUpper());
+                    var accountObj = _db.GLChartOfAccountAccounts.FirstOrDefault(x => x.Values == acccountSeG);
                     if (accountObj != null)
                         type = accountObj.AccountType;
                 }
@@ -69,45 +69,14 @@ namespace ExceedERP.Helpers.Finance
             string desc = "";
             if (IsDynamicCoA())
             {
-                desc= _dynamicAccount.GetAccountDesc(accountAcode);
+                desc = _dynamicAccount.GetAccountDesc(accountAcode);
             }
-            else
-            {
 
-                var segmentSequence = _db.GlSegmentSequences.FirstOrDefault();
-
-
-                try
-                {
-                    if (segmentSequence != null)
-                    {
-                        var first = segmentSequence.FirstSegment;
-                        var second = segmentSequence.SecondSegment;
-                        var third = segmentSequence.ThirdSegment;
-                        var fourth = segmentSequence.FourthSegment;
-
-
-                        string firstSegment = accountAcode.Split('-')[0];
-                        string secondSegment = accountAcode.Split('-')[1];
-                        string thirdSegment = accountAcode.Split('-')[2];
-                        string fourthSegment = accountAcode.Split('-')[3];
-                        string firstDesc = GetSequenceDesc(first, firstSegment);
-                        string secondDesc = GetSequenceDesc(second, secondSegment);
-                        string thirdDesc = GetSequenceDesc(third, thirdSegment);
-                        string fourthDesc = GetSequenceDesc(fourth, fourthSegment);
-                        desc = firstDesc + "-" + secondDesc + "-" + thirdDesc + "-" + fourthDesc;
-                    }
-                }
-                catch (Exception x)
-                {
-                    // ignored
-                }
-            }
 
             return desc;
         }
         //only here
-        private  string GetSequenceDesc(GlSegmentTypes segment, string segmentvalue)
+        private string GetSequenceDesc(GlSegmentTypes segment, string segmentvalue)
         {
             string segmentdesc = "";
             switch (segment)
@@ -116,13 +85,22 @@ namespace ExceedERP.Helpers.Finance
                     segmentdesc = _db.GLChartOfAccountAccounts.Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
                     break;
                 case GlSegmentTypes.Location:
-                    segmentdesc = _db.GLChartOfAccountLocations.Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
+                    var locationSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+                    segmentdesc = _db.GlChartOfAccountSegments
+                        .Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
+                        .Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
                     break;
                 case GlSegmentTypes.CostCenter:
-                    segmentdesc = _db.GLChartOfAccountCostCenters.Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
+                    var costCenterSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                    segmentdesc = _db.GlChartOfAccountSegments
+                        .Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId)
+                        .Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
                     break;
                 case GlSegmentTypes.SubAccount:
-                    segmentdesc = _db.GLChartOfAccountSubAccounts.Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
+                    var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                    segmentdesc = _db.GlChartOfAccountSegments
+                        .Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
+                        .Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
                     break;
                 default:
                     segmentdesc = "";
@@ -145,7 +123,7 @@ namespace ExceedERP.Helpers.Finance
                     string baccount = GetNaturalAccountSegment(bank.AccountCode);
                     string bsubAccount = GetSubAccountSegment(bank.AccountCode);
 
-                    if(account==baccount && subAccount==bsubAccount)
+                    if (account == baccount && subAccount == bsubAccount)
                         return true;
                 }
 
@@ -154,7 +132,7 @@ namespace ExceedERP.Helpers.Finance
             return false;
         }
 
-        public bool IsSameBankAccount_1(string accountcode,string bankAccountCode)
+        public bool IsSameBankAccount_1(string accountcode, string bankAccountCode)
         {
             string account = GetNaturalAccountSegment(accountcode);
             string subAccount = GetSubAccountSegment(accountcode);
@@ -167,12 +145,12 @@ namespace ExceedERP.Helpers.Finance
 
             return false;
         }
-        public  bool IsBankAccount2(string accountcode)
+        public bool IsBankAccount2(string accountcode)
         {
-           
+
             using (var context = new ExceedDbContext())
             {
-                var banckaccounts = context.BankAccounts.Where(x=>x.AccountCode==accountcode).ToList();
+                var banckaccounts = context.BankAccounts.Where(x => x.AccountCode == accountcode).ToList();
                 if (banckaccounts.Any())
                     return true;
             }
@@ -180,7 +158,7 @@ namespace ExceedERP.Helpers.Finance
             return false;
         }
         //delegated
-        public  bool IsBankAccount1(string accountcode)
+        public bool IsBankAccount1(string accountcode)
         {
             if (IsDynamicCoA())
             {
@@ -188,7 +166,7 @@ namespace ExceedERP.Helpers.Finance
             }
             else
             {
-                
+
                 bool bankaccount = false;
                 string[] account = accountcode.Split('-');
                 string subAccount = account[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
@@ -213,29 +191,29 @@ namespace ExceedERP.Helpers.Finance
             }
         }
         //different implementation
-        public static int GetSegmentLength(GlSegmentTypes segment)
-        {
-            int length = 0;
+        //public static int GetSegmentLength(GlSegmentTypes segment)
+        //{
+        //    int length = 0;
 
-            using (var context = new ExceedDbContext())
-            {
-                var segmentLength = context.GlSegmentLengths.FirstOrDefault();
-                if (segmentLength != null)
-                {
-                    if (segment == GlSegmentTypes.Account)
-                        length = segmentLength.AccountLength;
-                    else if (segment == GlSegmentTypes.Location)
-                        length = segmentLength.LocationLength;
-                    else if (segment == GlSegmentTypes.CostCenter)
-                        length = segmentLength.CostCenterLength;
-                    else if (segment == GlSegmentTypes.SubAccount)
-                        length = segmentLength.SubAccountLength;
-                }
-            }
+        //    using (var context = new ExceedDbContext())
+        //    {
+        //        var segmentLength = context.GlSegmentLengths.FirstOrDefault();
+        //        if (segmentLength != null)
+        //        {
+        //            if (segment == GlSegmentTypes.Account)
+        //                length = segmentLength.AccountLength;
+        //            else if (segment == GlSegmentTypes.Location)
+        //                length = segmentLength.LocationLength;
+        //            else if (segment == GlSegmentTypes.CostCenter)
+        //                length = segmentLength.CostCenterLength;
+        //            else if (segment == GlSegmentTypes.SubAccount)
+        //                length = segmentLength.SubAccountLength;
+        //        }
+        //    }
 
-            return length;
-        }
-     
+        //    return length;
+        //}
+
         //diff --> only distribution helper remains
         public int GetAccountSequenceIndex(GlSegmentTypes segment)
         {
@@ -259,26 +237,7 @@ namespace ExceedERP.Helpers.Finance
                         break;
                 }
             }
-            else
-            {
-                using (var context = new ExceedDbContext())
-                {
-                   
-                    var segmentSequence = context.GlSegmentSequences.FirstOrDefault();
-                    if (segmentSequence != null)
-                    {
-                        if (segmentSequence.FirstSegment == segment)
-                            index = 0;
-                        else if (segmentSequence.SecondSegment == segment)
-                            index = 1;
-                        else if (segmentSequence.ThirdSegment == segment)
-                            index = 2;
-                        else if (segmentSequence.FourthSegment == segment)
-                            index = 3;
-                    }
-                }
-            }
-           
+
 
             return index;
         }
@@ -318,90 +277,92 @@ namespace ExceedERP.Helpers.Finance
         //    return balance;
         //}
         //different impl
-        public  List<string> GeAccountRange(string fromAccountCombination, string toAccountCombination, GlSegmentTypes segment)
+        public List<string> GeAccountRange(string fromAccountCombination, string toAccountCombination, GlSegmentTypes segment)
         {
             AccountHelper accountHelper = new AccountHelper();
             List<string> accountRange = null;
-           
-                int index = accountHelper.GetAccountSequenceIndex(segment);
-                var fromSegment = GetAccountSegment(fromAccountCombination, index);
-                var toSegment = GetAccountSegment(toAccountCombination, index);
 
-                if (segment == GlSegmentTypes.Account)
+            int index = accountHelper.GetAccountSequenceIndex(segment);
+            var fromSegment = GetAccountSegment(fromAccountCombination, index);
+            var toSegment = GetAccountSegment(toAccountCombination, index);
+
+            if (segment == GlSegmentTypes.Account)
+            {
+                if (accountHelper.IsDynamicCoA())
                 {
-                    if (accountHelper.IsDynamicCoA())
-                    {
-                        accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
-                            _dynamicAccount.GetNaturalAccountSequenceIndex());
-                    }
-                    else
-                    {
-                        using (var context = new ExceedDbContext())
-                        {
-                            accountRange = context.GLChartOfAccountAccounts
-                                .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                                .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                                .Select(x => x.Values)
-                                .ToList();
-                        }
-                    }
+                    accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                        _dynamicAccount.GetNaturalAccountSequenceIndex());
                 }
-
-                else if (segment == GlSegmentTypes.Location)
+                else
                 {
                     using (var context = new ExceedDbContext())
                     {
-                        accountRange = context.GLChartOfAccountLocations
+                        accountRange = context.GLChartOfAccountAccounts
                             .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
                             .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
                             .Select(x => x.Values)
                             .ToList();
                     }
                 }
+            }
 
-                else if (segment == GlSegmentTypes.CostCenter)
+            else if (segment == GlSegmentTypes.Location)
+            {
+                using (var context = new ExceedDbContext())
                 {
-                    if (accountHelper.IsDynamicCoA())
-                    {
-                        accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
-                            _dynamicAccount.GetCostCenterAccountSequenceIndex());
-                    }
-                    else
-                    {
-                        using (var context = new ExceedDbContext())
-                        {
+                    var locationSeg = context.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.Location);
+                    accountRange = context.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
+                          .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
+                          .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
+                          .Select(x => x.Values)
+                          .ToList();
+                }
+            }
 
-                            accountRange = context.GLChartOfAccountCostCenters
-                                .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                                .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                                .Select(x => x.Values)
-                                .ToList();
-                        }
+            else if (segment == GlSegmentTypes.CostCenter)
+            {
+                if (accountHelper.IsDynamicCoA())
+                {
+                    accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                        _dynamicAccount.GetCostCenterAccountSequenceIndex());
+                }
+                else
+                {
+                    using (var context = new ExceedDbContext())
+                    {
+                        var costCenterSeg = context.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                        accountRange = context.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId)
+                          .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
+                        .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
+                        .Select(x => x.Values)
+                        .ToList();
                     }
                 }
+            }
 
-                else if (segment == GlSegmentTypes.SubAccount)
+            else if (segment == GlSegmentTypes.SubAccount)
+            {
+                if (accountHelper.IsDynamicCoA())
                 {
-                    if (accountHelper.IsDynamicCoA())
+                    accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                        _dynamicAccount.GetSubAccountSequenceIndex());
+                }
+                else
+                {
+                    using (var context = new ExceedDbContext())
                     {
-                        accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
-                            _dynamicAccount.GetSubAccountSequenceIndex());
-                    }
-                    else
-                    {
-                        using (var context = new ExceedDbContext())
-                        {
 
-                            accountRange = context.GLChartOfAccountSubAccounts
-                                .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                                .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                                .Select(x => x.Values)
-                                .ToList();
-                        }
+                        var subAccountSeg = context.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+                        accountRange = context.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
+                    .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
+                            .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
+                            .Select(x => x.Values)
+                            .ToList();
                     }
                 }
-                
-            
+            }
+
+
             return accountRange;
         }
 
@@ -418,9 +379,9 @@ namespace ExceedERP.Helpers.Finance
         static string _subaccountGlobal = "";
 
         //needed here only
-        public  string RearrangeAccountSequence(string account, string location, string costcenter, string subaccount)
+        public string RearrangeAccountSequence(string account, string location, string costcenter, string subaccount)
         {
-        
+
 
             _companyGlobal = location;
             _accountGlobal = account;
@@ -428,25 +389,25 @@ namespace ExceedERP.Helpers.Finance
             _subaccountGlobal = subaccount;
 
             string accountCombination = "";
-            using (var context = new ExceedDbContext())
-            {
-                var segmentSequence = context.GlSegmentSequences.FirstOrDefault();
-                if (segmentSequence != null)
-                {
-                    var first = segmentSequence.FirstSegment;
-                    var second = segmentSequence.SecondSegment;
-                    var third = segmentSequence.ThirdSegment;
-                    var fourth = segmentSequence.FourthSegment;
+            //using (var context = new ExceedDbContext())
+            //{
+            //    var segmentSequence = context.GlSegmentSequences.FirstOrDefault();
+            //    if (segmentSequence != null)
+            //    {
+            //        var first = segmentSequence.FirstSegment;
+            //        var second = segmentSequence.SecondSegment;
+            //        var third = segmentSequence.ThirdSegment;
+            //        var fourth = segmentSequence.FourthSegment;
 
-                    //get the sequence
-                    _firstSegment = GetSequenceValue(first);
-                    _secondSegment = GetSequenceValue(second);
-                    _thirdSegment = GetSequenceValue(third);
-                    _fourthSegment = GetSequenceValue(fourth);
+            //        //get the sequence
+            //        _firstSegment = GetSequenceValue(first);
+            //        _secondSegment = GetSequenceValue(second);
+            //        _thirdSegment = GetSequenceValue(third);
+            //        _fourthSegment = GetSequenceValue(fourth);
 
-                    accountCombination = _firstSegment + "-" + _secondSegment + "-" + _thirdSegment + "-" + _fourthSegment;
-                }
-            }
+            //        accountCombination = _firstSegment + "-" + _secondSegment + "-" + _thirdSegment + "-" + _fourthSegment;
+            //    }
+            //}
 
 
 
@@ -487,7 +448,7 @@ namespace ExceedERP.Helpers.Finance
             else
             {
                 var ledgers = _db.GLLedgerPostings
-                   //.Where(x => x.AccountSegment == null)
+                    //.Where(x => x.AccountSegment == null)
                     .ToList();
                 foreach (var ledger in ledgers)
                 {
@@ -495,33 +456,13 @@ namespace ExceedERP.Helpers.Finance
                 }
             }
 
-            
-        }
-
-        //delegated
-        public void SplitSecondLedgerAccountCombination()
-        {
-            if (IsDynamicCoA())
-            {
-                _dynamicAccount.SplitSecondLedgerAccountCombination();
-            }
-
-            else
-            {
-                var ledgers = _db.GlSecondayLedgers
-                    .Where(x => x.SubAccountSegment == null)
-                    .ToList();
-                foreach (var ledger in ledgers)
-                {
-                    SplitSecondaryLedgerAccount(ledger);
-                }
-            }
-
 
         }
+
+
 
         //local
-        public  void SplitLedgerAccount(GLLedgerPosting ledger)
+        public void SplitLedgerAccount(GLLedgerPosting ledger)
         {
             AccountHelper accountHelper = new AccountHelper();
             string[] account = ledger.AccountCode.Split('-');
@@ -540,26 +481,9 @@ namespace ExceedERP.Helpers.Finance
             _db.SaveChanges();
         }
 
-        public  void SplitSecondaryLedgerAccount(GlSecondayLedger ledger)
-        {
-            AccountHelper accountHelper = new AccountHelper();
-            string[] account = ledger.AccountCode.Split('-');
 
-            ledger.AccountSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
-            ledger.BranchSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Location)];
-            ledger.CostCenterSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-            ledger.SubAccountSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
-
-            ledger.Segment1 = account[0];
-            ledger.Segment2 = account[1];
-            ledger.Segment3 = account[2];
-            ledger.Segment4 = account[3];
-
-            _db.Entry(ledger).State = EntityState.Modified;
-            _db.SaveChanges();
-        }
         //delegated
-        public  void SplitJournalAccountCombination()
+        public void SplitJournalAccountCombination()
         {
             if (IsDynamicCoA())
             {
@@ -567,17 +491,17 @@ namespace ExceedERP.Helpers.Finance
             }
             else
             {
-                var journalDetails = _db.GLRecordJournalDetails.Where(x => x.AccountSegment == null ||x.BranchSegment==null).ToList();
+                var journalDetails = _db.GLRecordJournalDetails.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
                 foreach (var journalDetail in journalDetails)
                 {
                     SplitJournal(journalDetail.GlRecordJournalDetailId);
                 }
             }
 
-           
+
         }
 
-        public  void SplitJournal(int id)
+        public void SplitJournal(int id)
         {
             using (var context = new ExceedDbContext())
             {
@@ -608,7 +532,7 @@ namespace ExceedERP.Helpers.Finance
         {
             if (IsDynamicCoA())
             {
-                _dynamicAccount.SplitJournalAccountCombination();
+                _dynamicAccount.SplitBegJournalAccountCombination();
             }
             else
             {
@@ -674,7 +598,7 @@ namespace ExceedERP.Helpers.Finance
                 var bookRecord = context.ReconcilationBookAccounts.Find(id);
                 if (IsDynamicCoA())
                 {
-                    _dynamicAccount.SplitJournal(id);
+                    _dynamicAccount.SplitBookRecord(id);
                 }
                 else
                 {
@@ -707,6 +631,30 @@ namespace ExceedERP.Helpers.Finance
 
         //new 
         //delegated
+        public void UpdateLedgerAccountType(string GLValue, GlAccountTypes type)
+        {
+            _dynamicAccount.UpdateLedgerAccountType(GLValue, type);
+        }
+
+
+        public string ValidateAccountType(GlAccountTypes type,string value)
+        {
+            string errror = "";
+            if (type == GlAccountTypes.Undefined)
+                errror = "You can't define undefined account type";
+            if (type==GlAccountTypes.Asset && !value.StartsWith("1"))
+                errror= "Asset account should start with 1.";
+            else if (type == GlAccountTypes.Liability && !value.StartsWith("2"))
+                errror = "Liability account should start with 2.";
+            else if (type == GlAccountTypes.Capital && !value.StartsWith("3"))
+                errror = "Capital/Equity account should start with 3.";
+            else if (type == GlAccountTypes.Revenue && !value.StartsWith("4"))
+                errror = "Capital/Equity account should start with 4.";
+            else if (type == GlAccountTypes.Expense && (value.StartsWith("0") || value.StartsWith("1") || value.StartsWith("2") || value.StartsWith("3") || value.StartsWith("4")))
+                errror = "Expense/Cost account should not start start with 0 to 4.";
+
+            return errror;
+        }
         public string ValidateSegmentCombinationLength(string accountComb)
         {
             string errror = "";
@@ -718,23 +666,7 @@ namespace ExceedERP.Helpers.Finance
                 errror=_dynamicAccount.ValidateSegmentCombinationLength(accountComb);
 
             }
-            else
-            {
-                var length = _db.GlSegmentLengths.FirstOrDefault();
-                if (length != null)
-                {
-                    int totalLength = length.AccountLength + length.CostCenterLength + length.LocationLength +length.SubAccountLength;
-                    totalLength = totalLength + 3;
-                    if(combLength!=totalLength)
-                        errror = $"Account combination segment length for {accountComb} should be {totalLength} characters.";
-                }
-                else
-                {
-                    errror = "Segment length setting is not defined.";
-                }
-
             
-            }
 
             return errror;
         }
@@ -870,6 +802,8 @@ namespace ExceedERP.Helpers.Finance
             return errorMsg;
         }
 
+    
+
         //both
         public  string GetNaturalAccountSegment(string acct)
         {
@@ -912,13 +846,13 @@ namespace ExceedERP.Helpers.Finance
 
         public string GetBusinessUnitSegment(string acct)
         {
-            AccountHelper accountHelper = new AccountHelper();
             int accountindex = 0;
             string bizunitSegment = "";//for non dynamic no biz unit
             if (IsDynamicCoA())
             {
                 accountindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
-                bizunitSegment = acct.Split('-')[accountindex];
+                if (accountindex != -1)
+                    bizunitSegment = acct.Split('-')[accountindex];
             }
 
             return bizunitSegment;

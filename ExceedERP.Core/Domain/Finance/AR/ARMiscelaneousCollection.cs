@@ -32,11 +32,11 @@ namespace ExceedERP.Core.Domain.Finance.AR
         [Required]
         [Display(Name = "Receipt Method ")]
         public string ReceiptMethod { get; set; }
-        [DisplayName("Branch or Project")]
-        public int BranchId { get; set; }
+      
         [Display(Name = "Is Direct Collection")]
         public bool IsDirectCollection { get; set; }
-        public bool IsPostedToSecondLedger { get; set; }
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<ArMiscelaneousCollectionLine> ArMiscelaneousCollectionLines { get; set; }
         public virtual ICollection<ARMiscelaneousCollectionDistribution> ARMiscelaneousCollectionDistribution { get; set; }
         public virtual ICollection<ARMiscelaneousCollectionValidation> ARMiscelaneousCollectionValidation { get; set; }

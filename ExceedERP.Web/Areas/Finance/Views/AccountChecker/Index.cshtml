@@ -29,18 +29,23 @@
                                 <td>
                                     <i>Error Type:</i>
                                     @(Html.Kendo().DropDownListFor(m => m)
-                                                                  .Name("ErrorTypeList")
-                                                                  .BindTo((IEnumerable)ViewData["ErrorTypeList"])
-                                                                  .DataTextField("Name")
-                                                                  .DataValueField("Code")
-                                                                  .HtmlAttributes(new { style = "width: 300px;" })
-                                                          .ValuePrimitive(true))
+                                                                          .Name("ErrorTypeList")
+                                                                          .BindTo((IEnumerable)ViewData["ErrorTypeList"])
+                                                                          .DataTextField("Name")
+                                                                          .DataValueField("Code")
+                                                                          .HtmlAttributes(new { style = "width: 300px;" })
+                                                                  .ValuePrimitive(true))
 
                                     @(Html.Kendo().Button()
-                                                          .Name("btnFilter")
-                                                          .HtmlAttributes(new { type = "search", @class = "k-primary" })
-                                                          .Events(e => e.Click("filterErrors"))
-                                                          .Content("Check Error"))
+                                                                  .Name("btnFilter")
+                                                                  .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                                  .Events(e => e.Click("filterErrors"))
+                                                                  .Content("Check Error"))
+                                    @(Html.Kendo().Button()
+                                                                 .Name("btnFixErrors")
+                                                                 .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                                 .Events(e => e.Click("fixErrors"))
+                                                                 .Content("Fix Errors"))
                                 </td>
 
 
@@ -48,8 +53,7 @@
                                     <i>Year:</i>
                                     @(Html.Kendo().DropDownListFor(m => m)
                                                 .OptionLabel("Please Select Year")
-                                                                  .Name("FiscalYears")
-                                                                  .BindTo((IEnumerable)ViewData["ErrorTypeList"])
+                                                                  .Name("FiscalYears")                                                                 
                                                                   .DataTextField("Name")
                                                                   .DataValueField("GlFiscalYearId")
                                                                   .HtmlAttributes(new { style = "width: 200px;" })
@@ -271,6 +275,30 @@
         return {
             type: errorValue
         };
+    }
+
+    //batch
+    function fixErrors(e) {
+        var errorObject = $("#ErrorTypeList").data("kendoDropDownList");
+        var errorValue = errorObject.value();
+        $("#loading-image").show();
+        $.ajax({
+            type: "GET",
+            data: { type: errorValue},
+            url: '@Url.Action("FixeIssueBatch", "AccountChecker")',
+            success: function (result) {
+                //toastr.error(result.Message);
+                alert(result.Message);
+                // console.log(result);
+                $("#loading-image").hide();
+
+            }, //end succ
+
+            error: function (result) {
+                alert(result);
+            }
+
+        });
     }
 
     function fixIssue(e) {

@@ -10,8 +10,21 @@ namespace ExceedERP.Helpers.Finance
 {
     public  class FiscalYearHelper
     {
-       
-        
+
+
+        public void UpdatePeriodIndex(int id)
+        {
+            ExceedDbContext Db = new ExceedDbContext();
+            var periods = Db.GLPeriods.Where(x => x.GlFiscalYearId == id).OrderBy(x => x.DateFrom).ToArray();
+            for (int i = 0; i < periods.Length; i++)
+            {
+                periods[i].Index = i + 1;
+                Db.Entry(periods[i]).State = EntityState.Modified;
+            }
+            Db.SaveChanges();
+
+        }
+
         public  string GetCurrentFYearName()
         { 
            ExceedDbContext Db = new ExceedDbContext();

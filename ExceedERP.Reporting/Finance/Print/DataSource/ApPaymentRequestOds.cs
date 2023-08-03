@@ -44,14 +44,61 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.GRN = paymentRequest.GRN;
                 headerDs.Branch = _db.Branch.Find(paymentRequest.BranchId)?.Name;
                 headerDs.WorkUnit = _db.MainCompanyStructures.Find(paymentRequest.OrgStuructureId)?.Name;
+
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.CreatedBy));
-                //var departmentApproval = _db.RequestesStatus
-                //   .Where(x => x.ReferenceType == "Payment")
-                //   .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
-                //   .FirstOrDefault(x => x.RequestId == paymentRequest.PaymentRequestId);
-                //headerDs.DepartmentApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(departmentApproval?.ChangedBy));
-                headerDs.DepartmentApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.DepartmentOnlineApprovedBy));
+                headerDs.PreparedDate = paymentRequest.DateCreated != null ? paymentRequest.DateCreated : null;
+
+                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.SendForApprovalBy));
+                headerDs.AccountantCheckedDate =paymentRequest.SendForApprovalTime!=null? paymentRequest.SendForApprovalTime:null;
+
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.OnlineApprovedBy));
+                headerDs.ApprovedDate = paymentRequest.OnlineApprovedTime;
+
+                headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.BudgetApprovedBy));
+                headerDs.BudgetApprovedDate = paymentRequest.BudgetApprovedTime;
+
+                #region prepared checker approver               
+
+                var paymentReqValidations = _db.PaymentRequestDepartmentValidations
+                    .Where(x => x.PaymentRequestId == paymentRequest.PaymentRequestId).ToList();
+
+                if (paymentReqValidations.Any())
+                {
+                    int maxid = paymentReqValidations.Max(x => x.PaymentRequestDepartmentValidationId);
+                    var approver =
+                        paymentReqValidations.FirstOrDefault(x => x.PaymentRequestDepartmentValidationId == maxid);
+                    if (approver != null)
+                    {
+                        headerDs.DepartmentSecondApprovedBy =
+                            EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                        headerDs.DepartmentSecondApprovedDate = approver.DateCreated != null ? approver.DateCreated : null;
+
+                        var checker = paymentReqValidations.OrderByDescending(x => x.PaymentRequestDepartmentValidationId)
+                            .FirstOrDefault(x => x.PaymentRequestDepartmentValidationId < maxid);
+
+                        if (checker != null)
+                        {
+                            headerDs.DepartmentApprovedBy =
+                                EmployeeHelper.GetEmployeeEnglishName(
+                                    UserHelper.GetUserEmployeeId(checker.CreatedBy));
+                            headerDs.DepartmentApprovedDate = checker.DateCreated != null ? checker.DateCreated : null;
+                        }
+                        else
+                        {
+                            headerDs.DepartmentApprovedBy =
+                                EmployeeHelper.GetEmployeeEnglishName(
+                                    UserHelper.GetUserEmployeeId(paymentRequest.DepartmentSendForApprovalBy));
+                            headerDs.DepartmentApprovedDate = paymentRequest.DepartmentSendForApprovalTime != null ? paymentRequest.DepartmentSendForApprovalTime : null;
+
+                        }
+                    }
+
+                }
+
+                #endregion
+                var items = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id).ToList();
+                if (items.Any())
+                    headerDs.Total = items.Sum(x => x.TotalAmount);
             }
 
             if (organization != null)

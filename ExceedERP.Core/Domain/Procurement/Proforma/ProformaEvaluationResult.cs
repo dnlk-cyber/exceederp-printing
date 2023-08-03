@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Procurement.Tender;
 
 namespace ExceedERP.Core.Domain.Procurement.Proforma
 {

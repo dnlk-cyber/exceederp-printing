@@ -58,6 +58,48 @@ namespace ExceedERP.Web.Helpers
             return branch;
 
         }
+
+        public static List<int> GetUserBranchsAsInt(string user)
+        {
+            ApplicationDbContext _dbApplication = new ApplicationDbContext();
+            var userInfo = _dbApplication.Users.FirstOrDefault(x => x.UserName == user);
+            if (userInfo != null)
+            {
+                var branchesUserBelongsTo = _dbApplication.UserBranches.Where(x => x.ApplicationUserId == userInfo.Id).Select(x => x.UserBranchId).ToList();
+                return branchesUserBelongsTo.Select(int.Parse).ToList();
+            }
+            return new List<int>();
+        }
+        public static List<int> GetUserHeadWorkUnitAndChildWorkUnits(string userName)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> list = new List<int>();
+
+            var userdetail = new ApplicationDbContext();
+            var userempId = userdetail.Users.FirstOrDefault(x => x.UserName == userName);
+            if (userempId != null)
+            {
+
+                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId == userempId.EmployeeId && x.isCurrent);
+                if (placment != null)
+                {
+                    if (placment.IsHead)
+                    {
+                        list.Add(placment.OrgStructureId);
+                        var childOrds = db.MainCompanyStructures.Where(x => x.Parent == placment.OrgStructureId).Select(x => x.OrgStructureId).ToList();
+                        list.AddRange(childOrds);
+                    }
+                    else
+                    {
+                        return list;
+                    }
+                }
+            }
+
+
+            return list;
+
+        }
         public static string GetEmployeeBranch(string userName)
         {
 
@@ -107,6 +149,12 @@ namespace ExceedERP.Web.Helpers
             return department;
 
         }
+
+        internal static List<int> GetUserBusinessUnits(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         public static string GetEmployeeCostCenter(string userName)
         {
             ExceedDbContext db = new ExceedDbContext();
@@ -298,6 +346,12 @@ namespace ExceedERP.Web.Helpers
             return fullName;
 
         }
+
+        internal static int GetUserDefaultBusinessUnitId(string name)
+        {
+            return 0;
+        }
+
         public static int GetEmployeeId(string userName)
         {
             ExceedDbContext db = new ExceedDbContext();

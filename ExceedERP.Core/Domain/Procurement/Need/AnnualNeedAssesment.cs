@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.Procurement.Need
 {
-
+   
     public class AnnualNeedAssesment : TrackTransaction
     {
         public int AnnualNeedAssesmentID { get; set; }

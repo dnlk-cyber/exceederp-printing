@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
     public class ProcurementPlanItemController : Controller   
     {
         private ExceedDbContext db = new ExceedDbContext();
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser, ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser, ProcurementRoles.ProcurementPlanApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser, ProcurementConstants.ProcurementPlanApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser, ProcurementRoles.ProcurementPlanApprover)]
         public ActionResult PlanItems_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ProcurementPlanItem> planitems = db.ProcurementPlanItems.Where(x => x.ProcurementPlanId == id);
@@ -78,7 +78,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser)]
         public ActionResult PlanItems_Create(int id, ProcurementPlanItem planItem)
         {
 
@@ -168,7 +168,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PlanItems_Update([DataSourceRequest]DataSourceRequest request, ProcurementPlanItem planItem)
         {
@@ -255,7 +255,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { planItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PlanItems_Destroy([DataSourceRequest]DataSourceRequest request, ProcurementPlanItem planItem)
         {
@@ -309,7 +309,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return Json(new[] { planItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser)]
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -318,7 +318,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             return File(fileContents, contentType, fileName);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementPlanUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPlanUser)]
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {

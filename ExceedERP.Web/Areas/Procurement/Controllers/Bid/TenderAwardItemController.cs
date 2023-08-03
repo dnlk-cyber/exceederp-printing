@@ -19,7 +19,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
@@ -28,7 +28,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult BidAwardedSupplierItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<BidAwardedSupplierItem> bidAwardedSupplierItems = _db.BidAwardedSupplierItems.Where(l => l.BidAwardedSupplierID == id);
@@ -65,7 +65,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BidAwardedSupplierItems_Create([DataSourceRequest]DataSourceRequest request, BidAwardedSupplierItem bidAwardedSupplierItem, int id)
         {
@@ -158,7 +158,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { bidAwardedSupplierItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BidAwardedSupplierItems_Update([DataSourceRequest]DataSourceRequest request, BidAwardedSupplierItem bidAwardedSupplierItem)
         {
@@ -219,7 +219,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { bidAwardedSupplierItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BidAwardedSupplierItems_Destroy([DataSourceRequest]DataSourceRequest request, BidAwardedSupplierItem bidAwardedSupplierItem)
         {

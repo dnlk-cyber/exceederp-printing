@@ -31,7 +31,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
             {
                 headerDs.VoucherId = payment.ApPaymentSettlementId.ToString();
                 headerDs.DocTitile = "PAYMENT SETTLEMENT";
-                headerDs.SupplierName = payment.SupplierName;
+                headerDs.SupplierName = "";
                 headerDs.NetPayable = netpayment;
                 headerDs.PaymentReference = payment.Reference;
                 headerDs.PaymentDate = payment.PaymentDate;

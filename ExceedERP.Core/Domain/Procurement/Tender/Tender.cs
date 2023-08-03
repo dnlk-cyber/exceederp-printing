@@ -45,7 +45,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
         [Required]
         [Display(Name = "Purchase Type")]
         public PurchaseCategory PurchaseCategory { get; set; }
-        [Display(Name = "Purchaser")]
+        [Display(Name = "Procurement Officer")]
         public int ProcurementOfficer { get; set; }
 
         [DisplayName("Is Fullfilled")]
@@ -59,6 +59,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender
         [DisplayName("Purchase Status")]
         public PurchaseStatus PurchaseStatus { get; set; }
         public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<Lot.Lot> Lots { get; set; }
         public virtual ICollection<TenderValidation> TenderValidation { get; set; }
         public virtual ICollection<TenderMinuteUploadDBModel> TenderMinuteUploadDBModel { get; set; }

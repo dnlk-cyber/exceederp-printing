@@ -89,8 +89,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable()
+      
+      
       .Events(ev => ev.DetailExpand("detailExpand").Edit("onMasterEdit"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))

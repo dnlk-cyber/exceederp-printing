@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         {
         private readonly ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult Index()
             {
             return View();
             }
          
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult PurchaseRequisitionUserDepartmentValidations_Read([DataSourceRequest] DataSourceRequest request, int id)
             {
             var purchaserequisitionuserdepartmentvalidations =
@@ -42,7 +42,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(result);
             }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionUserDepartmentValidations_Create([DataSourceRequest] DataSourceRequest request,PurchaseRequisitionUserDepartmentValidation purchaseRequisitionUserDepartmentValidation, int id)
         {
@@ -107,7 +107,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] {purchaseRequisitionUserDepartmentValidation}.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionUserDepartmentValidations_Update([DataSourceRequest] DataSourceRequest request,PurchaseRequisitionUserDepartmentValidation purchaseRequisitionUserDepartmentValidation)
             {
@@ -130,7 +130,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] {purchaseRequisitionUserDepartmentValidation}.ToDataSourceResult(request, ModelState));
             }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionUserDepartmentValidations_Destroy([DataSourceRequest] DataSourceRequest request,PurchaseRequisitionUserDepartmentValidation purchaseRequisitionUserDepartmentValidation)
             {

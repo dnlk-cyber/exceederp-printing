@@ -39,6 +39,56 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
             }), JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetPrepaymentForSettlements(string id, string type)
+
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            int did = int.Parse(id);
+            var settlement = _db.ApPaymentSettlements.Find(did);
+            if (settlement != null)
+            {
+                if (type == "0")
+                {
+                    #region prepayment
+
+                    var unsettledPayments = _db.APPayments.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                        .Where(x => x.IsPrepayment);//add settled false
+
+                    if (settlement.CollectedByPurchaser)
+                        unsettledPayments = unsettledPayments.Where(x => x.EmployeeId == settlement.EmployeeId);
+
+                    if (!settlement.CollectedByPurchaser)
+                        unsettledPayments = unsettledPayments.Where(x => x.SupplierId == settlement.SupplierId);
+
+                    foreach (var p in unsettledPayments)
+                    {
+                        var record = new SelectorVm
+                        {
+                            Name = "Prepayment" + "_" + p.ApPaymentId,
+                            Code =  p.ApPaymentId.ToString()
+                        };
+
+                        list.Add(record);
+                    }
+
+                    #endregion
+                }
+                else
+                {
+
+                }
+            }
+
+
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+        }
         public JsonResult GetPeriodDateRangeByName(string name)
         {
 
@@ -71,6 +121,91 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             }), JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetCostCenterValues()
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+            var costCenterType =
+                _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+
+            if (costCenterType != null)
+            {
+                var segmentSetups = _db.GlChartOfAccountSegments
+                    .Where(x => x.GLSegmentSetupId == costCenterType.GLSegmentSetupId)
+                    .Where(x => x.Enable).AsQueryable();
+
+                foreach (var accountSegment in segmentSetups)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = accountSegment.Values + "-" + accountSegment.Description,
+                        Code = accountSegment.Values
+                    };
+                    list.Add(record);
+                }
+
+            }
+            return Json(list.Select(c => new
+            {
+                Code = c.Code,
+                Name = c.Name
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetSegmentValues(int segmentid,string text)
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+
+            var segmentType = _db.GlSegmentSetups.Find(segmentid);
+            if (segmentType.SegmentType == DynamicSegmentTypes.NaturalAccount)
+            {
+                var segmentSetups = _db.GLChartOfAccountAccounts
+                    .Where(x => x.Enable).AsQueryable();
+
+                if (!string.IsNullOrEmpty(text))
+                {
+                    segmentSetups = segmentSetups.Where(x => x.Values.Contains(text) || x.Description.Contains(text));
+                }
+
+                foreach (var accountSegment in segmentSetups)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = accountSegment.Values + "-" + accountSegment.Description,
+                        Code = accountSegment.Values
+                    };
+                    list.Add(record);
+                }
+            }
+            else
+            {
+                var segmentSetups = _db.GlChartOfAccountSegments
+                    .Where(x => x.GLSegmentSetupId == segmentid)
+                    .Where(x => x.Enable).AsQueryable();
+
+                if (!string.IsNullOrEmpty(text))
+                {
+                    segmentSetups = segmentSetups.Where(x => x.Values.Contains(text) || x.Description.Contains(text));
+                }
+
+                foreach (var accountSegment in segmentSetups)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = accountSegment.Values + "-" + accountSegment.Description,
+                        Code = accountSegment.Values
+                    };
+                    list.Add(record);
+                }
+            }
+            
+            return Json(list.Select(c => new
+            {
+                Code = c.Code,
+                Name = c.Name
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetCoAType()
         {
             return Json(new
@@ -87,6 +222,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 .Where(i => i.IsOnlineApproved)
                 .Where(i => i.IsVoid==false)
                 .Where(i => i.InvoiceStatus == InvoiceStatus.Open)
+                .Where(i => i.AmountDue >0)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(text))
@@ -95,8 +231,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                                || x.SupplierName.Contains(text)).AsQueryable();
             return Json(invoices.Select(i => new
             {
-                Name = i.ApPaybleInvoicesId + "-" + i.InvoiceNumber+"-"+i.SupplierName,
-                Code = i.InvoiceNumber
+                Name = i.ApPaybleInvoicesId + "-" + i.SupplierName + "-"+i.InvoiceNumber,
+                Code = i.ApPaybleInvoicesId
 
             }), JsonRequestBehavior.AllowGet);
         }
@@ -242,6 +378,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     Code = c.GLSegmentSetupId,
                     Name=c.Name
                 }),
+                JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAllSegmentTypes()
+        {
+            var glSegmentSetups = _db.GlSegmentSetups
+                .Where(x => x.Enabled).AsQueryable();
+            return Json(glSegmentSetups.Select(c => new
+            {
+                Code = c.GLSegmentSetupId,
+                Name = c.Name
+            }),
                 JsonRequestBehavior.AllowGet);
         }
 
@@ -399,6 +547,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
             var payments = _db.PaymentRequests
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
+
             foreach (var c in payments)
             {
                 var record = new SelectorVm
@@ -451,16 +600,379 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetPaymentRequests()
+        public JsonResult GetPOorContractForPaymentRequests(string type, string text)
         {
-            var customers = _db.ContractPayments
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            if (type == "Purchase Order")
+            {
+                var purchaseOrders = _db.PurchaseOrders
+                                        .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                        .Where(x => x.IsPaid == false)
+                                        .Select(x => new
+                                        {
+                                            x.PurchaseOrderID,
+                                            x.SupplierName,
+                                            x.SupplierId
+                                        })
+
+                                        .AsQueryable();
+
+                if (!String.IsNullOrWhiteSpace(text))
+                    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString().Contains(text)).AsQueryable();
+
+                foreach (var po in purchaseOrders)
+                {                
+                    var record = new SelectorVm
+                    {
+                        Name = "PO_" + po.PurchaseOrderID + "_" + po.SupplierName,
+                        Code = po.PurchaseOrderID.ToString()
+                    };
+
+                    list.Add(record);
+                }
+            }
+
+            else if (type == "Tender Award")
+            {                
+
+                var contracts = _db.ContractManagements
+                                      .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                      .Where(x => x.IsPaid == false)
+                                      .Select(x => new
+                                      {
+                                          x.ContractManagementID,
+                                          x.SupplierName,
+                                          x.SupplierId
+                                      })
+
+                                      .AsQueryable();
+
+                if (!String.IsNullOrWhiteSpace(text))
+                    contracts = contracts.Where(x => x.ContractManagementID.ToString().Contains(text)).AsQueryable();
+
+
+                foreach (var co in contracts)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = "CO_" + co.ContractManagementID + "_" + co.SupplierName,
+                        Code = co.ContractManagementID.ToString()
+                    };
+
+                    list.Add(record);
+                }
+            }
+            //if (!String.IsNullOrWhiteSpace(text))
+            //    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
+            //                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+            //foreach (var po in purchaseOrders)
+            //{
+            //    #region check if po has advance payment schedule
+            //    var advanceAllowed = po.PoPaymentSchedule
+            //        .Where(x => x.PaymentType == PaymentType.Payment)
+            //        .Where(x => x.Percentage > 0).ToList();
+
+            //    if (!advanceAllowed.Any())
+            //        continue;
+
+            //    #endregion
+            //    #region check over advance taken
+
+            //    //var advanceTaken = _db.APPayments
+            //    //    .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
+            //    //    .Where(x => x.PoType == "Purchase Order")
+            //    //    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+            //    //    .Select(x => new { x.PrepaymentAmount })
+            //    //    .AsQueryable();
+            //    //if (advanceTaken.Any())
+            //    //{
+            //    //    decimal amount = po.PurchaseOrderItem.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
+            //    //        .Select(x => new { x.UnitPrice, x.Quantity, x.Total }).ToList()
+            //    //        .Sum(x => x.Total);
+
+            //    //    decimal totalAadvanceAmount = (amount * advanceAllowed.Sum(x => x.Percentage)) / 100;
+            //    //    decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
+            //    //    if (advanceTakenAmount >= totalAadvanceAmount)
+            //    //        continue;
+            //    //}
+
+
+
+            //}
+            //original was from contract 
+
+
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+            //return Json(contractPayments.Select(c => new
+            //{
+            //    Code = c.ContractPaymentId,
+            //    Name = c.ContractManagement.ContractRefNo + "_" + c.ContractManagement.TenderRefNo + "_" + c.ContractManagement.SupplierName
+            //}),JsonRequestBehavior.AllowGet);
+        }
+        
+        
+        public JsonResult GetPaymentRequestData(string id)
+        {
+            string supplierId = "";
+            string supplierName = "";
+            string purchaser = "";
+            string prno = "";
+            string pono = "";
+            string invoivenumber = "";
+            string purposeofpayment = "";
+            decimal amount = 0;
+
+            if (!String.IsNullOrEmpty(id))
+            {
+                int did = int.Parse(id);
+
+                var paymentRequest = _db.PurchasePayments.Find(did);
+                if (paymentRequest != null)
+                {
+                    pono = paymentRequest.PoOrContractNumber;
+                    invoivenumber = paymentRequest.SupplierInvoice;
+                    prno = "";
+                    purchaser = paymentRequest.ProcurementOfficer.ToString();
+                    supplierId = paymentRequest.SupplierId;
+                    supplierName = paymentRequest.SupplierName;
+                    amount = paymentRequest.AmountDue;
+                    purposeofpayment = paymentRequest.PurposeOfPayment;
+                }
+            }
+
+            var formattedData = new
+            {
+                SupplierId = supplierId,
+                SupplierName = supplierName,
+                ProcurementOfficer = purchaser,
+                PurchaseRequisitionID = prno,
+                PONo = pono,
+                InvoiceNumber = invoivenumber,
+                Amount = amount,
+                Purpose= purposeofpayment,
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetPaymentRequestDataForPayment(string id,string sourceType)
+        {
+            string supplierId = "";
+            string supplierName = "";
+            string purchaser = "";
+            string prno = "";
+            string pono = "";
+            string invoivenumber = "";
+            string purposeofpayment = "";
+            decimal amount = 0;
+
+            if (!String.IsNullOrEmpty(id))
+            {
+                int did = int.Parse(id);
+
+                if (sourceType == "Purchase Payment")
+                {
+                    var paymentRequest = _db.PurchasePayments.Find(did);
+                    if (paymentRequest != null)
+                    {
+                        pono = paymentRequest.PoOrContractNumber;
+                        invoivenumber = paymentRequest.SupplierInvoice;
+                        prno = "";
+                        purchaser = paymentRequest.ProcurementOfficer.ToString();
+                        supplierId = paymentRequest.SupplierId;
+                        supplierName = paymentRequest.SupplierName;
+                        amount = paymentRequest.AmountDue;
+                        purposeofpayment = paymentRequest.PurposeOfPayment;
+                    }
+                }
+
+                else if (sourceType == "Invoice")
+                {
+                    var invoice = _db.APPaybleInvoices.Find(did);
+                    if (invoice != null)
+                    {
+                        pono = invoice.SourceId;
+                        invoivenumber = invoice.InvoiceNumber;
+                        prno = "";
+                        purchaser = invoice.EmployeeId.ToString();
+                        supplierId = invoice.SupplierId;
+                        supplierName = invoice.SupplierName;
+                        amount = invoice.AmountDue;
+                        purposeofpayment = invoice.PurposeOfPayment;
+                    }
+                }
+
+            }
+
+            var formattedData = new
+            {
+                SupplierId = supplierId,
+                SupplierName = supplierName,
+                ProcurementOfficer = purchaser,
+                PurchaseRequisitionID = prno,
+                PONo = pono,
+                InvoiceNumber = invoivenumber,
+                Amount = amount,
+                Purpose = purposeofpayment,
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetPaymentRequests_prev()
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            var purchaseOrders = _db.PurchaseOrders
+                                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                    .Where(x => x.IsPaid == false)
+                                    .Select(x => new
+                                    {
+                                        x.PurchaseOrderID,
+                                        x.SupplierName,
+                                        PurchaseOrderItem = x.PurchaseOrderItem,
+                                        PoPaymentSchedule = x.PoPaymentSchedule
+                                    })
+                                    
+                                    .AsQueryable();
+
+            //if (!String.IsNullOrWhiteSpace(text))
+            //    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
+            //                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+            foreach (var po in purchaseOrders)
+            {
+                #region check if po has advance payment schedule
+                var advanceAllowed = po.PoPaymentSchedule
+                    .Where(x => x.PaymentType == PaymentType.Payment)
+                    .Where(x => x.Percentage > 0).ToList();
+
+                if (!advanceAllowed.Any())
+                    continue;
+
+                #endregion
+                #region check over advance taken
+
+                //var advanceTaken = _db.APPayments
+                //    .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
+                //    .Where(x => x.PoType == "Purchase Order")
+                //    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                //    .Select(x => new { x.PrepaymentAmount })
+                //    .AsQueryable();
+                //if (advanceTaken.Any())
+                //{
+                //    decimal amount = po.PurchaseOrderItem.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
+                //        .Select(x => new { x.UnitPrice, x.Quantity, x.Total }).ToList()
+                //        .Sum(x => x.Total);
+
+                //    decimal totalAadvanceAmount = (amount * advanceAllowed.Sum(x => x.Percentage)) / 100;
+                //    decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount);
+                //    if (advanceTakenAmount >= totalAadvanceAmount)
+                //        continue;
+                //}
+
+                #endregion
+
+                var record = new SelectorVm
+                {
+                    Name = "PO_"+po.PurchaseOrderID + "_" + po.SupplierName,
+                    Code = "PO_" + po.PurchaseOrderID.ToString()
+                };
+
+                list.Add(record);
+
+            }
+            //original was from contract 
+            var contractPayments = _db.ContractPayments
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false)
                 .AsQueryable();
-            return Json(customers.Select(c => new
+
+            foreach (var c in contractPayments)
+            {
+                var record = new SelectorVm
                 {
-                    Code = c.ContractPaymentId,
-                    Name = c.ContractManagement.ContractRefNo + "_" + c.ContractManagement.TenderRefNo + "_" + c.ContractManagement.SupplierName
-            }),JsonRequestBehavior.AllowGet);
+                    Name = "CO_" + c.ContractManagement.ContractRefNo + "_" + c.ContractManagement.TenderRefNo + "_" + c.ContractManagement.SupplierName,
+                    Code = "CO_" + c.ContractPaymentId.ToString()
+                };
+
+                list.Add(record);
+            }
+
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+            //return Json(contractPayments.Select(c => new
+            //{
+            //    Code = c.ContractPaymentId,
+            //    Name = c.ContractManagement.ContractRefNo + "_" + c.ContractManagement.TenderRefNo + "_" + c.ContractManagement.SupplierName
+            //}),JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPaymentRequestData_prev(string id)
+        {
+            string supplierId = "";
+            string supplierName = "";
+            string purchaser = "";
+            string prno = "";
+            string pono = "";
+            string invoivenumber = "";
+            decimal invoiceamount = 0;
+            string[] source = id.Split('_');
+            int did = int.Parse(source[1]);
+            switch (source[0])
+            {
+               
+                case "PO":
+                    var purchaseOrder = _db.PurchaseOrders.FirstOrDefault(x => x.PurchaseOrderID == did);
+                    if (purchaseOrder != null)
+                    {
+                        pono = purchaseOrder.PurchaseOrderID.ToString();
+                        invoivenumber = "";
+                        prno = "";
+                        purchaser = purchaseOrder.ProcurementOfficer.ToString();
+                        supplierId = purchaseOrder.SupplierId;
+                        supplierName = purchaseOrder.SupplierName;
+                        invoiceamount = 0;
+                    }
+                    break;
+                case "CO":
+                    var contractPayment = _db.ContractPayments.FirstOrDefault(x => x.ContractPaymentId.ToString() == id);
+                    if (contractPayment != null)
+                    {
+                        var contract = _db.ContractManagements.Find(contractPayment.ContractManagementID);
+                        if (contract != null)
+                        {
+                            pono = contract.ContractRefNo;
+                            invoivenumber = contractPayment.SupplierInvoice;
+                            prno = "";
+                            purchaser = contract.ProcurementOfficer.ToString();
+                            supplierId = contract.SupplierId;
+                            supplierName = contract.SupplierName;
+                            invoiceamount = contractPayment.NetPayable;
+                        }
+                    }
+                    break;
+            }
+            
+        
+
+            var formattedData = new
+            {
+                SupplierId = supplierId,
+                SupplierName = supplierName,
+                ProcurementOfficer = purchaser,
+                PurchaseRequisitionID = prno,
+                PONo = pono,
+                InvoiceNumber = invoivenumber,
+                InvoiceAmount = invoiceamount
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetAccounts()
@@ -499,13 +1011,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             }
             else
             {
-               var subAccounts = _db.GLChartOfAccountSubAccounts.Where(x => x.Enable && !x.Parent);
-                return Json(subAccounts.Select(e => new
-                    {
-                        Description = e.Values + "-" + e.Description,
-                        Values = e.Values
-                    }),
-                    JsonRequestBehavior.AllowGet);
+               //var subAccounts = _db.GLChartOfAccountSubAccounts.Where(x => x.Enable && !x.Parent);
+               // return Json(subAccounts.Select(e => new
+               //     {
+               //         Description = e.Values + "-" + e.Description,
+               //         Values = e.Values
+               //     }),
+               //     JsonRequestBehavior.AllowGet);
             }
 
             return null;
@@ -795,8 +1307,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             string supplierId = "";
             string supplierName = "";
             string amountdue = "";
+            int did = int.Parse(id);
 
-            var invoice = _db.APPaybleInvoices.FirstOrDefault(a => a.InvoiceNumber == id);
+            var invoice = _db.APPaybleInvoices.Find(did);
             if (invoice != null)
             {
                 supplierId = invoice.SupplierId;
@@ -1066,49 +1579,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetPaymentRequestData(string id)
-        {
-            string supplierId = "";
-            string supplierName = "";
-            string purchaser = "";
-            string prno = "";
-            string pono = "";
-            string invoivenumber = "";
-            decimal invoiceamount = 0;
-
-            var contractPayment = _db.ContractPayments.FirstOrDefault(x => x.ContractPaymentId.ToString() == id);
-            if (contractPayment != null)
-            {
-                var contract = _db.ContractManagements.Find(contractPayment.ContractManagementID);
-                if (contract != null)
-                {
-                    pono = contract.ContractRefNo;
-                    invoivenumber = contractPayment.SupplierInvoice;
-                    prno = "";
-                    purchaser = contract.ProcurementOfficer.ToString();
-                    supplierId = contract.SupplierId;
-                    supplierName = contract.SupplierName;
-                    invoiceamount = contractPayment.NetPayable;
-                }
-            }
-
-            var formattedData = new
-            {
-                SupplierId = supplierId,
-                SupplierName = supplierName,
-                ProcurementOfficer = purchaser,
-                PurchaseRequisitionID = prno,
-                PONo = pono,
-                InvoiceNumber = invoivenumber,
-                InvoiceAmount = invoiceamount
-            };
-            return Json(formattedData, JsonRequestBehavior.AllowGet);
-        }
+       
 
         public JsonResult GetSupplierBalance(string id)
         {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            decimal advanceBalance = secondLedgerHelper.GetSupplierAdvanceBalance(id);
+            //SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
+            decimal advanceBalance = 0;// secondLedgerHelper.GetSupplierAdvanceBalance(id);
             var formattedData =  new
             {
                 OutstandingBalance =0,
@@ -1143,7 +1619,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         public JsonResult GetGlFiscalYear()
         {
-            var fiscalYears = _db.GLFiscalYears.AsQueryable();
+            var fiscalYears = _db.GLFiscalYears.OrderByDescending(x=>x.DateFrom).AsQueryable();
             return Json(fiscalYears.Select(p => new
                 {
                     Name = p.Name,
@@ -1175,7 +1651,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetPurchaseTypes()//apapyment
+        public JsonResult GetPurchaseTypes()//apapyment and payment request
         {
             string[] types = {"Purchase Order", "Tender Award"};
             return Json(types.Select(p => new
@@ -1185,5 +1661,182 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 }),
                 JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetPaymentSources()//apapyment and payment request
+        {
+            string[] types = { "Purchase Payment", "Invoice" };
+            return Json(types.Select(p => new
+            {
+                Name = p,
+                Code = p
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPurchaseReferencesCreditPayment(string purReference, string text)//new based on payment request
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            var paymentRequests = _db.PurchasePayments
+                                    .Where(x => x.IsBudgetApproved && x.IsVoid == false)
+                                    .Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
+                                    .Where(x => x.PurchasePaymentType == PurchasePaymentType.Credit)
+                                    .Select(x => new
+                                    {
+                                        x.PurchasePaymentId,
+                                        x.SupplierName,
+                                        x.Type
+                                    })
+
+                                    .AsQueryable();
+
+            //if (!String.IsNullOrWhiteSpace(text))
+            //    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
+            //                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+            foreach (var p in paymentRequests)
+            {
+
+                var record = new SelectorVm
+                {
+                    Name = p.PurchasePaymentId.ToString() + "_" + p.SupplierName,
+                    Code = p.PurchasePaymentId.ToString()
+                };
+
+                list.Add(record);
+
+            }
+
+
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+
+        }
+        public JsonResult GetPurchaseReferencesPayment(string sourceType, string text)//new based on payment request
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            if (sourceType == "Purchase Payment")
+            {
+                var paymentRequests = _db.PurchasePayments
+                                        .Where(x => x.IsBudgetApproved && x.IsVoid == false)
+                                        .Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
+                                        .Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
+                                        .Select(x => new
+                                        {
+                                            x.PurchasePaymentId,
+                                            x.SupplierName,
+                                            x.Type
+                                        })
+
+                                        .AsQueryable();
+
+                if (!String.IsNullOrWhiteSpace(text))
+                    paymentRequests = paymentRequests.Where(x => x.PurchasePaymentId.ToString() == text
+                                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+                foreach (var p in paymentRequests)
+                {
+
+                    var record = new SelectorVm
+                    {
+                        Name = p.PurchasePaymentId.ToString() + "_" + p.SupplierName,
+                        Code = p.PurchasePaymentId.ToString()
+                    };
+
+                    list.Add(record);
+
+                }
+
+            }
+
+            else if (sourceType == "Invoice")
+            {
+                var payableInvoices = _db.APPaybleInvoices
+                                        .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                        .Where(x => x.InvoiceStatus != InvoiceStatus.Close)
+                                        .Select(x => new
+                                        {
+                                            x.ApPaybleInvoicesId,
+                                            x.SupplierName,
+                                            x.Type
+                                        })
+
+                                        .AsQueryable();
+
+                if (!String.IsNullOrWhiteSpace(text))
+                    payableInvoices = payableInvoices.Where(x => x.ApPaybleInvoicesId.ToString() == text
+                                                               || x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+                foreach (var i in payableInvoices)
+                {
+
+                    var record = new SelectorVm
+                    {
+                        Name = i.ApPaybleInvoicesId.ToString() + "_" + i.SupplierName,
+                        Code = i.ApPaybleInvoicesId.ToString()
+                    };
+
+                    list.Add(record);
+
+                }
+
+            }
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+
+        }
+        public JsonResult GetPurchaseReferencesPrePayment(string purReference, string text)//new based on payment request
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            var paymentRequests = _db.PurchasePayments
+                                    .Where(x => x.IsBudgetApproved && x.IsVoid == false)
+                                    .Where(x => x.Paid == false && x.PaymentType == PaymentType.Advance)
+                                    .Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
+                                    .Select(x => new
+                                    {
+                                        x.PurchasePaymentId,
+                                        x.SupplierName,
+                                        x.Type
+                                    })
+
+                                    .AsQueryable();
+
+            if (!String.IsNullOrWhiteSpace(text))
+                paymentRequests = paymentRequests.Where(x => x.PurchasePaymentId.ToString() == text
+                                                           || x.SupplierName.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+            foreach (var p in paymentRequests)
+            {
+
+                var record = new SelectorVm
+                {
+                    Name = p.PurchasePaymentId.ToString() + "_" + p.SupplierName,
+                    Code = p.PurchasePaymentId.ToString()
+                };
+
+                list.Add(record);
+
+            }
+
+
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+
+        }
+
     }
 }

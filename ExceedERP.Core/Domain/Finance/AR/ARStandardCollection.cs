@@ -42,7 +42,8 @@ namespace ExceedERP.Core.Domain.Finance.AR
         [Display(Name = "Prepayment")]
         public decimal PrepaymentBalance { get; set; }
         public string Reference { get; set; }
-        public bool IsPostedToSecondLedger { get; set; }
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
 
         public virtual ICollection<ArStandardCollectionLines> ARStandardCollectionLines { get; set; }
         public virtual ICollection<ArStandardCollectionDistribution> ARStandardCollectionDistribution { get; set; }

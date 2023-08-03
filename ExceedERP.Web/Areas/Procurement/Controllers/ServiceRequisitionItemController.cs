@@ -1,14 +1,20 @@
-﻿using System;
+﻿﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.Procurement.PR;
-using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Inventory;
+ using ExceedERP.Core.Domain.Procurement;
+ using ExceedERP.Core.Domain.Procurement.PR;
+ using ExceedERP.Core.Domain.Procurement.Settings;
+ using ExceedERP.DataAccess.Context;
+ using ExceedERP.DataAccess.Migrations;
+ using ExceedERP.Helpers.Common;
+ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
@@ -16,13 +22,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult ServiceRequisitionItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionItem> purchaserequisitionItems = db.PurchaseRequisitionItems.Where(pri => pri.PurchaseRequisitionID == id);
@@ -46,12 +52,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(result);
         }
 
-       [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+       [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem, int id)
         {
             var serviceCategory = db.ServiceCategories.Find(purchaseRequisitionItem.CatCode);
-           // purchaseRequisitionItem.Quantity = purchaseRequisitionItem.RequestedQuantity;
+            purchaseRequisitionItem.Quantity = purchaseRequisitionItem.RequestedQuantity;
             #region validation
 
 
@@ -94,7 +100,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {
@@ -144,7 +150,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceRequisitionItems_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {

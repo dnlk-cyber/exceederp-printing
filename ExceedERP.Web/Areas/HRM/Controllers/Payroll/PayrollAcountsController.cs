@@ -260,11 +260,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 db.SaveChanges();
             }
         }
-    
+
         public JsonResult GetCompany()
         {
-            var glCompany = db.GLChartOfAccountLocations.AsQueryable();
-            return Json(glCompany.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+
+            return Json(locations.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetCostCenter()
@@ -284,15 +286,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             }
             else
             {
-                var glchartofaccountaccount = db.GLChartOfAccountCostCenters.AsQueryable();
-                ViewData["CostAcc"] = glchartofaccountaccount;
+                //var glchartofaccountaccount = db.GLChartOfAccountCostCenters.AsQueryable();
+                //ViewData["CostAcc"] = glchartofaccountaccount;
 
-                return Json(glchartofaccountaccount.Select(i => new
-                {
-                    GlchartAccunt = i.Values + "_" + i.Description,
-                    GlValue = i.Values
+                //return Json(glchartofaccountaccount.Select(i => new
+                //{
+                //    GlchartAccunt = i.Values + "_" + i.Description,
+                //    GlValue = i.Values
 
-                }), JsonRequestBehavior.AllowGet);
+                //}), JsonRequestBehavior.AllowGet);
+                return null;
             }
             
         }
@@ -319,13 +322,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             }
             else
             {
-                var glchartofaccountaccount = db.GLChartOfAccountSubAccounts.AsQueryable();
-                ViewData["SubAccCode"] = glchartofaccountaccount;
-                return Json(glchartofaccountaccount.Select(i => new
-                {
-                    GlchartSubAccunt = i.Values + "_" + i.Description,
-                    GlValue = i.Values
-                }), JsonRequestBehavior.AllowGet);
+                //var glchartofaccountaccount = db.GLChartOfAccountSubAccounts.AsQueryable();
+                //ViewData["SubAccCode"] = glchartofaccountaccount;
+                //return Json(glchartofaccountaccount.Select(i => new
+                //{
+                //    GlchartSubAccunt = i.Values + "_" + i.Description,
+                //    GlValue = i.Values
+                //}), JsonRequestBehavior.AllowGet);
+                return null;
             }
 
            

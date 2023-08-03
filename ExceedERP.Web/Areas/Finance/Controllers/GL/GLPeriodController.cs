@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -22,6 +23,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         public ActionResult GLPeriods_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
+
+            FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
+            fiscalYearHelper.UpdatePeriodIndex(id);
             IQueryable<GLPeriod> glperiods = _db.GLPeriods.Where(x => x.GlFiscalYearId == id);
             DataSourceResult result = glperiods.ToDataSourceResult(request, gLPeriod => new
             {
@@ -127,8 +131,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             }
             #endregion
             if (ModelState.IsValid)
-            {
-                
+            {               
              
                     var entity = new GLPeriod
                     {
@@ -147,10 +150,31 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     _db.GLPeriods.Attach(entity);
                     _db.Entry(entity).State = EntityState.Modified;
-                    _db.SaveChanges();
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "GL period", "Success", User.Identity.Name, $"updated period {entity.Name}", Modules.Finance);
-                    #endregion
+
+                #region update payroll period
+                var pyarollPeriod = _db.PayrollPeriods.Where(x => x.Name == gLPeriod.Name).FirstOrDefault();
+                if (pyarollPeriod != null)
+                {
+                    pyarollPeriod.DateFrom = gLPeriod.DateFrom.Date;
+                    pyarollPeriod.DateTo = gLPeriod.DateTo.Date;
+                    _db.PayrollPeriods.Attach(pyarollPeriod);
+                    _db.Entry(pyarollPeriod).State = EntityState.Modified;
+                }
+                #endregion
+                #region update inventory period
+                var inventoryPeriod = _db.InventoryPeriods.Where(x => x.Name == gLPeriod.Name).FirstOrDefault();
+                if (inventoryPeriod != null)
+                {
+                    inventoryPeriod.DateFrom = gLPeriod.DateFrom.Date;
+                    inventoryPeriod.DateTo = gLPeriod.DateTo.Date;
+                    _db.InventoryPeriods.Attach(inventoryPeriod);
+                    _db.Entry(inventoryPeriod).State = EntityState.Modified;
+                }
+                #endregion 
+                _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "GL period", "Success", User.Identity.Name, $"updated period {entity.Name}", Modules.Finance);
+                #endregion
                 
             }
 

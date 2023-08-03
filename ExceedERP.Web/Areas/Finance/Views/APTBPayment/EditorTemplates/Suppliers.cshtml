@@ -1,0 +1,13 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select supplier...")
+                                      .DataTextField("Name")
+                                      .DataValueField("Name")
+                              .BindTo((IEnumerable)ViewData["suppliers"])
+                                  .Events(e =>
+                                {
+                                    e.Select("onSupplierSelect");
+                                })
+)
+@Html.ValidationMessageFor(m => m)

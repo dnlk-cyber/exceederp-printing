@@ -106,7 +106,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.StandardCollection
                 UnappliedBalance = aRStandardCollection.UnappliedBalance,
                 PrepaymentBalance = aRStandardCollection.PrepaymentBalance,
                 Reference = aRStandardCollection.Reference,
-                IsPostedToSecondLedger = aRStandardCollection.IsPostedToSecondLedger,
+              
 
                 IsSendForApproval = aRStandardCollection.IsSendForApproval,
                 IsOnlineTransferred = aRStandardCollection.IsOnlineTransferred,
@@ -191,7 +191,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.StandardCollection
                     UnappliedBalance = aRStandardCollection.UnappliedBalance,
                     PrepaymentBalance = aRStandardCollection.PrepaymentBalance,
                     Reference = aRStandardCollection.Reference,
-                    IsPostedToSecondLedger = aRStandardCollection.IsPostedToSecondLedger,
+                    
 
                     IsSendForApproval = aRStandardCollection.IsSendForApproval,
                     IsOnlineTransferred = aRStandardCollection.IsOnlineTransferred,
@@ -286,7 +286,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.StandardCollection
                         UnappliedBalance = aRStandardCollection.UnappliedBalance,
                         PrepaymentBalance = aRStandardCollection.PrepaymentBalance,
                         Reference = aRStandardCollection.Reference,
-                        IsPostedToSecondLedger = aRStandardCollection.IsPostedToSecondLedger,
+                      
 
                         IsSendForApproval = aRStandardCollection.IsSendForApproval,
                         IsOnlineTransferred = aRStandardCollection.IsOnlineTransferred,
@@ -371,7 +371,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.StandardCollection
                         OnAccountBalance = aRStandardCollection.OnAccountBalance,
                         UnappliedBalance = aRStandardCollection.UnappliedBalance,
                         PrepaymentBalance = aRStandardCollection.PrepaymentBalance,
-                        IsPostedToSecondLedger = aRStandardCollection.IsPostedToSecondLedger,
+                       
 
                         IsSendForApproval = aRStandardCollection.IsSendForApproval,
                         IsOnlineTransferred = aRStandardCollection.IsOnlineTransferred,

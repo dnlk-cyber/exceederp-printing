@@ -216,30 +216,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                         #region set cost center
 
-                        var costcenter =
+                        var employeeAccount =
                             db.PayrollEmployeeAccounts.Where(x => x.EmployeeId == employee.PersonId)
                                 .FirstOrDefault();
-                        if (costcenter != null)
+                        if (employeeAccount != null)
                         {
-                            payroldata.CostCenterAccountCode = costcenter.CostCenterAccountCode;
-                            payroldata.LocationCode = costcenter.LocationAccCode;
-                            var description =
-                                db.GLChartOfAccountCostCenters.Where(x => x.Values == costcenter.CostCenterAccountCode)
-                                    .FirstOrDefault();
-                            if (description != null)
-                            {
-                                payroldata.CostCenterAccountDesc = description.Description;
-                            }
+                            payroldata.CostCenterAccountCode = employeeAccount.CostCenterAccountCode;
+                            payroldata.LocationCode = employeeAccount.LocationAccCode;
+                            //var description =
+                            //    db.GLChartOfAccountCostCenters.Where(x => x.Values == employeeAccount.CostCenterAccountCode)
+                            //        .FirstOrDefault();
+                            //if (description != null)
+                            //{
+                            //    payroldata.CostCenterAccountDesc = description.Description;
+                            //}
 
-                            payroldata.OrgBranchAccountCode = costcenter.LocationAccCode;
-                            payroldata.LocationCode = costcenter.LocationAccCode;
+                            payroldata.OrgBranchAccountCode = employeeAccount.LocationAccCode;
+                            //payroldata.LocationCode = employeeAccount.LocationAccCode;
                         }
                         else
                         {
                             payroldata.CostCenterAccountCode = "";
                             payroldata.CostCenterAccountDesc = "";
-                            payroldata.OrgBranchAccountCode = costcenter.LocationAccCode;
-                            payroldata.LocationCode = costcenter.LocationAccCode;
+                            payroldata.OrgBranchAccountCode = employeeAccount.LocationAccCode;
+                            payroldata.LocationCode = employeeAccount.LocationAccCode;
                         }
                         var locationCode = placments.Where(x => x.EmployeeId == employee.PersonId).FirstOrDefault();
                         if (locationCode != null)

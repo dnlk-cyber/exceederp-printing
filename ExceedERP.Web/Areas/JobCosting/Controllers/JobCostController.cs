@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
@@ -22,7 +23,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         public ActionResult Index()
         {
             ViewData["FiscalYears"] = db.GLFiscalYears.ToList();
-            ViewData["CostCenters"] = db.GLChartOfAccountCostCenters.ToList();
+            var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
+            ViewData["CostCenters"] = costcenters.ToList();
             ViewData["Periods"] = db.GLPeriods.ToList();
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                  s.OrganizationCustomerID,
@@ -38,8 +41,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
         }
         public JsonResult GetAllCostCenters()
         {
-            var data = db.GLChartOfAccountCostCenters;
-            return Json(data.Select(s => new { s.Values }), JsonRequestBehavior.AllowGet);
+            var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
+            return Json(costcenters.Select(s => new { s.Values }), JsonRequestBehavior.AllowGet);
         }
        
         public ActionResult JobCosts_Read([DataSourceRequest]DataSourceRequest request)

@@ -1,7 +1,6 @@
-﻿using ExceedERP.Core.Domain.Budget;
+using ExceedERP.Core.Domain.Budget;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
@@ -19,9 +18,10 @@ namespace ExceedERP.Helpers.Budget
     public class BudgetDynamicGenerationHelper
     {
         private readonly AccountHelper _accountHelper = new AccountHelper();
+        #region Generate Account Code By Range
 
-        public async Task<bool> GenrateAccountCodeByRange(AccountCodeRangeViewModel range,
-            OtherSpecifcationViewModel otherSpecifcation, BudgetGLAccountViewModel budgetGlAccount)
+        
+        public async Task<bool> GenrateAccountCodeByRange(AccountCodeRangeViewModel range, OtherSpecifcationViewModel otherSpecifcation, BudgetGLAccountViewModel budgetGlAccount)
         {
             ExceedDbContext db = new ExceedDbContext();
 
@@ -260,13 +260,15 @@ namespace ExceedERP.Helpers.Budget
                     seg4From = range.BudgetCategory.FromAccountCode.Split('-')[3];
                     seg4To = range.BudgetCategory.ToAccountCode.Split('-')[3];
 
-
+                    // < 0 the first string precceds the second string in the sort order
+                    //=0 both are equal in value
+                    //> 0 the first string follows the second string  in the sort order
                     if (firstSegmentType != null && firstSegmentType.SegmentType == DynamicSegmentTypes.NaturalAccount)
                     {
                         segmentOneRange = db.GLChartOfAccountAccounts
                             .Where(x => x.Enable && x.AllowBudgeting)
-                            .Where(x => String.Compare(x.Values.ToUpper(), seg1From, StringComparison.Ordinal) >= 0)
-                            .Where(x => String.Compare(x.Values.ToUpper(), seg1To, StringComparison.Ordinal) <= 0)
+                            .Where(x => String.Compare(x.Values.ToUpper(), seg1From, StringComparison.Ordinal) >= 0)//the first string follows the second string  in the sort order
+                            .Where(x => String.Compare(x.Values.ToUpper(), seg1To, StringComparison.Ordinal) <= 0)//the first string precceds the second string in the sort order
                             .Select(x => x.Values)
                             .ToList();
                     }
@@ -342,12 +344,13 @@ namespace ExceedERP.Helpers.Budget
                             .Select(x => x.Values)
                             .ToList();
                     }
+                    //number of branches * no of seg one range * ....
+                    totalQuota = otherSpecifcation.Branches.Count * segmentOneRange.Count * segmentTwoRange.Count * segmentThirdRange.Count * segmentFourthRange.Count;
 
-                    totalQuota =
-                        otherSpecifcation.Branches.Count * segmentOneRange.Count *
-                        segmentTwoRange.Count * segmentThirdRange.Count * segmentFourthRange.Count;
-                    quota = range.PlanCategory.GrandTotal /
-                            BudgetPlanHelper.DefalutIntZeroHelper(totalQuota);
+
+
+                    quota = range.PlanCategory.GrandTotal / BudgetPlanHelper.DefalutIntZeroHelper(totalQuota); //DefaultIntZeroHelper(val) returns the value back if val is not 0 1 if 0
+
                     foreach (var branch in otherSpecifcation.Branches)
                     {
                         foreach (var segment1 in segmentOneRange)
@@ -520,27 +523,29 @@ namespace ExceedERP.Helpers.Budget
 
             return true;
         }
+        #endregion
+        #region Generate BudgetPlan
 
-
-        public async Task<bool> GenerateBudgetPlan(AccountCodeRangeViewModel range,
-            OtherSpecifcationViewModel otherSpecifcation, string accountCode, Branch branch, decimal quota)
+        
+        //Generates BudgetPlan and BudgetPlanMonthly 
+        public async Task<bool> GenerateBudgetPlan(AccountCodeRangeViewModel range, OtherSpecifcationViewModel otherSpecifcation, string accountCode, Branch branch, decimal quota)
         {
             ExceedDbContext db = new ExceedDbContext();
-            int costCenterIndex = new DynamicAccountHelper().GetCostCenterAccountSequenceIndex();
+            int costCenterIndex = new DynamicAccountHelper().GetCostCenterAccountSequenceIndex();//return costcenter - 1 costcenter == 3
 
             BudgetPlan plan = new BudgetPlan();
             if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
             {
                 plan = new BudgetPlan()
                 {
-                    BudgetCategoryID = range.PlanCategory.PlanCategoryID,
+                    PlanCategoryId = range.PlanCategory.PlanCategoryID,
                     AccountCode = accountCode,
                     BranchId = branch.BranchId,
-
+                    FiscalYearId = range.GlFiscalYear.GlFiscalYearId,//new added
                     AccountDesc = _accountHelper.GetAccountDesc(accountCode),
-                    CurrentYearlyBudget = 0,
+                    CurrentYearlyBudget = quota,//changed from CurrentYearlyBudget = 0 , related change lies in BudgetPlanController-> BudgetPlan_Create
                     TotalYearlyBudget = quota,
-                    Unit = otherSpecifcation.BudgetCurrency.BudgetCurrencyId
+                    Unit = otherSpecifcation.BudgetCurrency?.FinSetupCurrencyID ?? 0
                 };
                 
                 if (costCenterIndex >= 0)
@@ -554,11 +559,11 @@ namespace ExceedERP.Helpers.Budget
 
                     if (currentCostCenter != null)
                     {
-                        int costCenterId = 0;
-                        int.TryParse(currentCostCenter.Values, out costCenterId);
+                        //int costCenterId = 0;
+                        //int.TryParse(currentCostCenter.Values, out costCenterId);
 
-                        plan.GLChartOfAccountCostCenterId = costCenterId;
-                        plan.WorkUnitName = currentCostCenter.Description;
+                        //plan.GLChartOfAccountCostCenterValue = currentCostCenter.Values; //costCenterId; made change here 
+                        //plan.WorkUnitName = currentCostCenter.Description;
                     }
 
                 }
@@ -568,15 +573,17 @@ namespace ExceedERP.Helpers.Budget
             }
             else
             {
+                //Here assign values for BudgetPlan and save it to the db 
                 plan = new BudgetPlan()
                 {
-                    BudgetCategoryID = range.PlanCategory.PlanCategoryID,
+                    PlanCategoryId = range.PlanCategory.PlanCategoryID,
                     AccountCode = accountCode,
                     BranchId = branch.BranchId,
                     AccountDesc = _accountHelper.GetAccountDesc(accountCode),
-                    CurrentYearlyBudget = 0,
+                    FiscalYearId = range.GlFiscalYear.GlFiscalYearId,//new added
+                    CurrentYearlyBudget = quota,//changed from CurrentYearlyBudget = 0  related change lies in BudgetPlanController-> BudgetPlan_Create
                     TotalYearlyBudget = quota,
-                    Unit = otherSpecifcation.BudgetCurrency.BudgetCurrencyId
+                    Unit = otherSpecifcation.BudgetCurrency?.FinSetupCurrencyID??0
                 };
 
               
@@ -586,16 +593,16 @@ namespace ExceedERP.Helpers.Budget
 
                     var costCenterValue = accountCode.Split('-')[costCenterIndex];
                     var currentCostCenter = db.GlChartOfAccountSegments
-                    .Where(x => x.GLSegmentSetupId == glSetupCostCenter.GLSegmentSetupId)
-                    .FirstOrDefault(x => x.Values == costCenterValue);
+                            .Where(x => x.GLSegmentSetupId == glSetupCostCenter.GLSegmentSetupId)
+                            .FirstOrDefault(x => x.Values == costCenterValue);
 
                     if (currentCostCenter != null)
                     {
-                        int costCenterId = 0;
-                        int.TryParse(currentCostCenter.Values, out costCenterId);
+                        //int costCenterId = 0;
+                        //int.TryParse(currentCostCenter.Values, out costCenterId);//not changing string to int so changed this
 
-                        plan.GLChartOfAccountCostCenterId = costCenterId;
-                        plan.WorkUnitName = currentCostCenter.Description;
+                        //plan.GLChartOfAccountCostCenterValue = currentCostCenter.Values; //costCenterId; //change to currentCostCenter.value change BudgetPlan.GLChartOfAccountCostCenterId to string instead
+                        //plan.WorkUnitName = currentCostCenter.Description; //assignes the GLchartofaccountsegement.Description part to BudgetPlan.WorkUnit
                     }
 
                 }
@@ -603,14 +610,15 @@ namespace ExceedERP.Helpers.Budget
                 await db.SaveChangesAsync();
             }
 
-
+            //Generate BudgetPlanMonthly
             if (range.GLPeriods.Any())
             {
+                //Generate BudgetPlanMonthly
                 var budgetPlanMonthlys = new List<BudgetPlanMonthly>();
-                var months = range.GLPeriods;
-                int intervals = months.Count;
-                decimal monthBuget = quota / intervals;
-
+                var months = range.GLPeriods; 
+                int intervals = months.Count;//12 
+                decimal monthBuget = quota / intervals; // monthlyBudget is hence the yearlyBudget/quota divided by the number of month
+                //iterate months times and assign values to BudgetPlanMonthly
                 foreach (var month in months)
                 {
                     string Currency = string.Empty;
@@ -620,17 +628,14 @@ namespace ExceedERP.Helpers.Budget
                     }
                     var budgetPlanMonthly = new BudgetPlanMonthly
                     {
-                        AccountCode = plan.AccountCode,
-                        AccountDesc = plan.AccountDesc,
                         GLPeriodId = month.GLPeriodId,
                         MonthlyBudget = monthBuget,
                         CurrentBudget = monthBuget,
                         BudgetDefineID = plan.BudgetPlanID,
                         DateCreated = DateTime.Now,
-                        Unit = Currency,
                     };
 
-
+                    
                     budgetPlanMonthlys.Add(budgetPlanMonthly);
 
                 }
@@ -641,5 +646,6 @@ namespace ExceedERP.Helpers.Budget
 
             return true;
         }
+        #endregion
     }
 }

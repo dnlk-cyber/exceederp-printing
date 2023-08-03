@@ -30,6 +30,7 @@ namespace ExceedERP.Core.Domain.Common.HRM
           public virtual Lookup Lookup { get; set; }
           public string SubAccount { get; set; }
           public string LocationAccount { get; set; }
+        public int? ParentBranchId { get; set; }
         public bool IsActive { get; set; }
 
     }

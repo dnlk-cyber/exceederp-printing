@@ -8,7 +8,7 @@
           columns.Bound(c => c.Description).Width(130);
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
           columns.Bound(c => c.AccountCode).Width(200).EditorTemplateName("AccountCode");
-          columns.Bound(c => c.IsActive).Width(80).Title("IsActive").ClientTemplate(
+          columns.Bound(c => c.IsActive).Width(80).Title("Is Active").ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= IsActive #' " +
               "# if (IsActive) { #" +
               "checked='checked'" +

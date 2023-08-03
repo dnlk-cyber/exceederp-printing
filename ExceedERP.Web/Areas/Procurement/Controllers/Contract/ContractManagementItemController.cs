@@ -20,14 +20,14 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser, FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableView, ProcurementConstants.ProcurementContractApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableView, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult ContractManagementItems_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ContractManagementItem> contractmanagementitems = db.ContractManagementItems.Where(x => x.ContractManagementID == id);
@@ -65,7 +65,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
         }
 
    
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractManagementItems_Create(int id, [DataSourceRequest]DataSourceRequest request, ContractManagementItem contractManagementItem)
         {
@@ -128,7 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractManagementItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractManagementItems_Update([DataSourceRequest]DataSourceRequest request, ContractManagementItem contractManagementItem)
         {
@@ -185,7 +185,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             return Json(new[] { contractManagementItem }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(ProcurementConstants.ProcurementContractUser)]
+         [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ContractManagementItems_Destroy([DataSourceRequest]DataSourceRequest request, ContractManagementItem contractManagementItem)
          {

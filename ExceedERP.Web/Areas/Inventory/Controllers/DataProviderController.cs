@@ -22,7 +22,7 @@ using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Helpers.Common;
 using Microsoft.AspNet.Identity;
 using Telerik.Reporting;
-
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
@@ -1563,14 +1563,17 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         }
         public JsonResult GetSubAccountCode()
         {
-            var glchartofaccountaccount = db.GLChartOfAccountSubAccounts.AsQueryable();
-            return Json(glchartofaccountaccount.Select(i => new { GlchartSubAccunt = i.Values + "_" + i.Description, GlValue = i.Values }),
+            var subAccountSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            var subAccounts = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
+            return Json(subAccounts.Select(i => new { GlchartSubAccunt = i.Values + "_" + i.Description, GlValue = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetCompany()
         {
-            var glCompany = db.GLChartOfAccountLocations.AsQueryable();
-            return Json(glCompany.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+
+            return Json(locations.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
 
@@ -1591,8 +1594,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
         public JsonResult MapCostCenter()
         {
-            var costcenter = db.GLChartOfAccountCostCenters;
-            return Json(costcenter.Select(i => new { Name = i.Values + "-" + i.Description, code = i.Values }), JsonRequestBehavior.AllowGet);
+            var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var costCenters =
+                db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId);
+
+            return Json(costCenters.Select(i => new { Name = i.Values + "-" + i.Description, code = i.Values }), JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetWorkUnitCostCenters()

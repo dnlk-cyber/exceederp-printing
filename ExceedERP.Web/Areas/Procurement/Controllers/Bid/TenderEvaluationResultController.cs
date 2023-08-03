@@ -18,7 +18,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
@@ -26,7 +26,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult TenderEvaluationResults_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<TenderEvaluationResult> tenderevaluationresults = _db.TenderEvaluationResults.Where(x=>x.LotID==id).AsQueryable();
@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderEvaluationResults_Create([DataSourceRequest]DataSourceRequest request, TenderEvaluationResult tenderEvaluationResult , int id)
             {
@@ -80,7 +80,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderEvaluationResult }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderEvaluationResults_Update([DataSourceRequest]DataSourceRequest request, TenderEvaluationResult tenderEvaluationResult)
     {
@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { tenderEvaluationResult }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TenderEvaluationResults_Destroy([DataSourceRequest]DataSourceRequest request, TenderEvaluationResult tenderEvaluationResult)
         {
@@ -150,7 +150,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             return File(fileContents, contentType, fileName);
         }
-        [AuthorizeRoles(ProcurementConstants.ProcurementAdmin, ProcurementConstants.ProcurementTenderApprover, ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementBondUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementAdmin, ProcurementRoles.ProcurementTenderApprover, ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementBondUser)]
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {

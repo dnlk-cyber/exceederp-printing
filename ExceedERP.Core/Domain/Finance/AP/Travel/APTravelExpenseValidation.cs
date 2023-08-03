@@ -9,4 +9,20 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public virtual ApTravelExpenseClaim ApTravelExpenseClaim { get; set; }
 
     }
+
+    public class ApTravelExpenseDepartmentValidation : VoucherValidation
+    {
+        public int ApTravelExpenseDepartmentValidationId { get; set; }
+        public int ApTravelExpenseClaimId { get; set; }
+        public virtual ApTravelExpenseClaim ApTravelExpenseClaim { get; set; }
+
+    }
+
+    public class ApTravelExpenseBudgetValidation : VoucherValidation
+    {
+        public int ApTravelExpenseBudgetValidationId { get; set; }
+        public int ApTravelExpenseClaimId { get; set; }
+        public virtual ApTravelExpenseClaim ApTravelExpenseClaim { get; set; }
+
+    }
 }

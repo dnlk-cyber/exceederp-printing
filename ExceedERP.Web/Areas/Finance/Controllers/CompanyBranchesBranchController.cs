@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers
 {
@@ -25,7 +26,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             var types = _db.Lookups.Where(x => x.LookupType == LookUpTypes.PROJECT_TYPE);
             ViewData["types"] = types;
 
-            var branches = _db.GLChartOfAccountSubAccounts;
+            var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            var subAccounts = _db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
+            var branches = subAccounts;
 
             ViewData["subaccounts"] = branches;
             return View();

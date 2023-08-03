@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierBlackLists_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<SupplierBlackList> supplierblacklists = db.SupplierBlackLists.Where(x => x.ProcurementSupplierID == id);
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierBlackLists_Create(int id, [DataSourceRequest]DataSourceRequest request, SupplierBlackList supplierBlackList)
         {
@@ -102,7 +102,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierBlackList }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierBlackLists_Update(int id, [DataSourceRequest]DataSourceRequest request, SupplierBlackList supplierBlackList)
         {
@@ -143,7 +143,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierBlackList }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SupplierBlackLists_Destroy([DataSourceRequest]DataSourceRequest request, SupplierBlackList supplierBlackList)
         {
@@ -180,7 +180,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { supplierBlackList }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = db.SupplierBlackLists.Find(id);

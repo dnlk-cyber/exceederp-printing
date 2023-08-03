@@ -1,5 +1,7 @@
 ﻿﻿using ExceedERP.Core.Domain.Finance.Common;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -71,6 +73,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 _db.BankAccounts.Add(entity);
                 _db.SaveChanges();
                 bankAccount.BankAccountId = entity.BankAccountId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Bank Account", "Success", User.Identity.Name, $"created account {entity.AccountCode}  {entity.AccountNumber}", Modules.Finance);
+                #endregion
             }
 
             return Json(new[] { bankAccount }.ToDataSourceResult(request, ModelState));
@@ -104,6 +109,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 _db.BankAccounts.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                bankAccount.BankAccountId = entity.BankAccountId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Bank Account", "Success", User.Identity.Name, $"modified account {entity.AccountCode}  {entity.AccountNumber}", Modules.Finance);
+                #endregion
             }
 
             return Json(new[] { bankAccount }.ToDataSourceResult(request, ModelState));
@@ -137,6 +146,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 _db.BankAccounts.Attach(entity);
                 _db.BankAccounts.Remove(entity);
                 _db.SaveChanges();
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted bank account " + bankAccount.AccountNumber + " " + bankAccount.AccountCode, Modules.Finance);
+                #endregion
             }
 
             return Json(new[] { bankAccount }.ToDataSourceResult(request, ModelState));

@@ -84,6 +84,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             DataSourceResult result = arinvoices.ToDataSourceResult(request, aRInvoice => new
             {
                 ArInvoiceId = aRInvoice.ArInvoiceId,
+                BranchId = aRInvoice.BranchId,
+                BusinessUnitId = aRInvoice.BusinessUnitId,
                 CustomerName = aRInvoice.CustomerName,
                 CustomerId = aRInvoice.CustomerId,
                 TransactionClass = aRInvoice.TransactionClass,
@@ -97,7 +99,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                 InvoiceStatus = aRInvoice.InvoiceStatus,
                 IsManual = aRInvoice.IsManual,
                 Reference = aRInvoice.Reference,
-                BranchId = aRInvoice.BranchId,
                 ArSalesOrderId = aRInvoice.ArSalesOrderId,
                 ArSalesOrderPartialPrintId = aRInvoice.ArSalesOrderPartialPrintId,
                 SourceInvoiceId = aRInvoice.SourceInvoiceId,
@@ -208,6 +209,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             {
                 var entity = new ArInvoice
                 {
+                    BranchId = aRInvoice.BranchId,
+                    BusinessUnitId = aRInvoice.BusinessUnitId,
                     CustomerName = customername,
                     CustomerId = aRInvoice.CustomerId,
                     TransactionClass = aRInvoice.TransactionClass,
@@ -221,8 +224,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                     InvoiceStatus = aRInvoice.InvoiceStatus,
                     IsManual = aRInvoice.IsManual,
                     Reference = aRInvoice.Reference,
-                    BranchId = aRInvoice.BranchId,
-                    IsPostedToSecondLedger = aRInvoice.IsPostedToSecondLedger,
                     ArSalesOrderId = aRInvoice.ArSalesOrderId,
                     SourceInvoiceId = aRInvoice.SourceInvoiceId,
                     ArSalesOrderPartialPrintId = 0,
@@ -328,6 +329,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                     var entity = new ArInvoice
                     {
                         ArInvoiceId = aRInvoice.ArInvoiceId,
+                        BranchId = aRInvoice.BranchId,
+                        BusinessUnitId = aRInvoice.BusinessUnitId,
                         CustomerName = aRInvoice.CustomerName,
                         CustomerId = aRInvoice.CustomerId,
                         TransactionClass = aRInvoice.TransactionClass,
@@ -341,8 +344,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                         InvoiceStatus = aRInvoice.InvoiceStatus,
                         IsManual = aRInvoice.IsManual,
                         Reference = aRInvoice.Reference,
-                        BranchId = aRInvoice.BranchId,
-                        IsPostedToSecondLedger = aRInvoice.IsPostedToSecondLedger,
                         ArSalesOrderId = aRInvoice.ArSalesOrderId,
                         ArSalesOrderPartialPrintId = aRInvoice.ArSalesOrderPartialPrintId,
                         SourceInvoiceId = aRInvoice.SourceInvoiceId,
@@ -416,6 +417,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                     var entity = new ArInvoice
                     {
                         ArInvoiceId = aRInvoice.ArInvoiceId,
+                        BranchId = aRInvoice.BranchId,
+                        BusinessUnitId = aRInvoice.BusinessUnitId,
                         CustomerName = aRInvoice.CustomerName,
                         CustomerId = aRInvoice.CustomerId,
                         TransactionClass = aRInvoice.TransactionClass,
@@ -431,10 +434,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                         IsOnlineTransferred = aRInvoice.IsOnlineTransferred,
                         IsOnlineTransferredBy = aRInvoice.IsOnlineTransferredBy,
                         OnlineTransferredTime = aRInvoice.OnlineTransferredTime,
-                        BranchId = aRInvoice.BranchId,
                         Status = aRInvoice.Status,
                         IsManual = aRInvoice.IsManual,
-                        IsPostedToSecondLedger = aRInvoice.IsPostedToSecondLedger,
                         ArSalesOrderId = aRInvoice.ArSalesOrderId,
                         ArSalesOrderPartialPrintId = aRInvoice.ArSalesOrderPartialPrintId,
                         IsOnlineApproved = aRInvoice.IsOnlineApproved,

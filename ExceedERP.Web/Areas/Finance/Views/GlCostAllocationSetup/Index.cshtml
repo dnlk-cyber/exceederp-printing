@@ -1,0 +1,56 @@
+﻿@using ExceedERP.Core.Domain.Finance
+<legend>Cost Allocation</legend>
+@(Html.Kendo().Grid<GlCostAllocationSetup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.GLSegmentSetupId, (System.Collections.IEnumerable)ViewData["SetupSegments"], "GLSegmentSetupId", "Name").Width(130).Title("Type").Width(120).EditorTemplateName("AllSegmentTypeSelector");
+          columns.Bound(c => c.SegmentCode).Width(130).EditorTemplateName("SegmentValueSelector");
+          columns.Bound(c => c.CostCenterCode).Width(180).EditorTemplateName("CostCenterSelector");
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.GlCostAllocationSetupId))
+          .Read(read => read.Action("GlCostAllocationSetups_Read", "GlCostAllocationSetup"))
+          .Create(create => create.Action("GlCostAllocationSetups_Create", "GlCostAllocationSetup"))
+          .Update(update => update.Action("GlCostAllocationSetups_Update", "GlCostAllocationSetup"))
+          .Destroy(destroy => destroy.Action("GlCostAllocationSetups_Destroy", "GlCostAllocationSetup"))
+      ))
+<script>
+
+    function filterSegmentValues() {
+        return {
+            segmentid: $("#GLSegmentSetupId").data("kendoDropDownList").value(),
+            text: $("#SegmentCode").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+</script>

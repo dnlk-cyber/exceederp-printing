@@ -17,9 +17,11 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string PaymentMethod { get; set; }
         public string PaymentRequest { get; set; }
         public string Remark { get; set; }
-
-        //
         public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public string AccountantCheckedBy { get; set; }
+        public DateTime? AccountantCheckedDate { get; set; }
         public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
     }
 }

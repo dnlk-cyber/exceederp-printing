@@ -9,6 +9,7 @@ using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -20,7 +21,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementTeamLeader, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementTeamLeader, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             PopulateViewData();
@@ -35,7 +36,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             var selecteditems = items.Select(
                 i => new
                 {
-                    Name = i.ItmCode + "-" + i.ItemName + "-" + i.Name,
+                    Name = i.ItmCode + "-" + i.ItemName, //+ "-" + i.Name,
                     ItmCode = i.ItmCode
                 }).AsQueryable();
 
@@ -78,37 +79,51 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementTeamLeader, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementTeamLeader, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseRequisitionReviews_Read([DataSourceRequest] DataSourceRequest request)
         {
             //IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions
             //    .Where(x => x.IsOnlineApproved&& x.ItemType!=PurchaseItemType.Service ||
             //                x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
+            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions;
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                purchaserequisitions = purchaserequisitions.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+           
 
-            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions
-                .Where(x => x.IsOnlineApproved && x.IsManual==false && x.ItemType != PurchaseItemType.Service ||
-                            x.IsMiddleOnlineApproved && x.IsManual  && x.ItemType != PurchaseItemType.Service ||
-                            x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
+            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            {
+                purchaserequisitions = db.PurchaseRequisitions.Where(x=>x.IsBudgetApproved);
+            }
+            else
+            {
+                purchaserequisitions = db.PurchaseRequisitions
+                   .Where(x => x.IsOnlineApproved && x.IsManual == false && x.ItemType != PurchaseItemType.Service ||
+                               x.IsMiddleOnlineApproved && x.IsManual && x.ItemType != PurchaseItemType.Service ||
+                               x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
+            }
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementApprover) ||
-                     System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementApprover))
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementApprover) ||
+                     System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementApprover))
             {
 
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTeamLeader)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementOfficer))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTeamLeader)
+                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementOfficer))
             {
                 int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 List<int> assignedPRs = db.PurchaseRequisitionAssignments
                     .Where(x => x.ProcurementOfficer == empid && empid != 0).Select(x => x.PurchaseRequisitionID).Distinct().ToList();
                 purchaserequisitions = purchaserequisitions.Where(x => x.ProcurementOfficer == empid || assignedPRs.Contains(x.PurchaseRequisitionID));
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTeamLeader))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTeamLeader))
             {
                 int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 purchaserequisitions = purchaserequisitions.Where(x => x.ProcurementOfficer == empid && empid != 0);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementOfficer))
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementOfficer))
             {
                 int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 List<int> assignedPRs = db.PurchaseRequisitionAssignments
@@ -121,6 +136,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     ForBranchId = purchaseRequisition.ForBranchId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
@@ -171,7 +187,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     SecondVoidBy = purchaseRequisition.SecondVoidBy,
                     SecondVoidTime = purchaseRequisition.SecondVoidTime,
 
-                    CreatedBy = purchaseRequisition.CreatedBy,
+
+                IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
+                CreatedBy = purchaseRequisition.CreatedBy,
                     DateCreated = purchaseRequisition.DateCreated,
                     ModifiedBy = purchaseRequisition.ModifiedBy,
                     LastModified = purchaseRequisition.LastModified,
@@ -182,7 +203,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionReviews_Create([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -219,6 +240,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
+                        BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         ForBranchId = purchaseRequisition.ForBranchId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
@@ -254,6 +276,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         SecondOnlineApprovedBy = purchaseRequisition.SecondOnlineApprovedBy,
                         SecondOnlineApprovedTime = purchaseRequisition.SecondOnlineApprovedTime,
 
+                        IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                        BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                        BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
                         DateCreated = DateTime.Now,
                         CreatedBy = User.Identity.Name,
                         LastModified = purchaseRequisition.LastModified,
@@ -275,7 +301,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         public ActionResult PurchaseRequisitionReviews_Update([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
 
@@ -321,6 +347,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
+                        BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         ForBranchId = purchaseRequisition.ForBranchId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
@@ -366,6 +393,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         SecondOnlineApprovedBy = purchaseRequisition.SecondOnlineApprovedBy,
                         SecondOnlineApprovedTime = purchaseRequisition.SecondOnlineApprovedTime,
 
+
+                        IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                        BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                        BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
                         CreatedBy = purchaseRequisition.CreatedBy,
                         DateCreated = purchaseRequisition.DateCreated,
                         ModifiedBy = User.Identity.Name,
@@ -385,7 +417,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionReviews_Destroy([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -396,7 +428,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
-                        ForBranchId = purchaseRequisition.ForBranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                    ForBranchId = purchaseRequisition.ForBranchId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
                         ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -456,7 +489,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             }
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser)]
         public ActionResult SendForApproval(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);
@@ -519,7 +552,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             return null;
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementVoid)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);
@@ -534,16 +567,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                 db.PurchaseRequisitions.Attach(record);
                 db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
-                #region delete related data
+                #region delete related data //check if not approved first
 
-                var lotPurchaseRequisitions = db.LotPurchaseRequisitions.Where(x => x.PurchaseRequisitionID == id).ToList();
-                db.LotPurchaseRequisitions.RemoveRange(lotPurchaseRequisitions);
+                //var lotPurchaseRequisitions = db.LotPurchaseRequisitions.Where(x => x.PurchaseRequisitionID == id).ToList();
+                //db.LotPurchaseRequisitions.RemoveRange(lotPurchaseRequisitions);
 
-                var purchaseOrders = db.PurchaseOrders.Where(x => x.PurchaseRequisitionID == id).ToList();
-                db.PurchaseOrders.RemoveRange(purchaseOrders);
+                //var purchaseOrders = db.PurchaseOrders.Where(x => x.PurchaseRequisitionID == id).ToList();
+                //db.PurchaseOrders.RemoveRange(purchaseOrders);
 
-                var proformaPurchases = db.ProformaPurchases.Where(x => x.PurchaseRequisitionID == id).ToList();
-                db.ProformaPurchases.RemoveRange(proformaPurchases);
+                //var proformaPurchases = db.ProformaPurchases.Where(x => x.PurchaseRequisitionID == id).ToList();
+                //db.ProformaPurchases.RemoveRange(proformaPurchases);
 
                 db.SaveChanges();
 

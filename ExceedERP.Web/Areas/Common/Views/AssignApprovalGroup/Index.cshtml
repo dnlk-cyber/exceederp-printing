@@ -1,15 +1,21 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Common.DocumentApproval
-
+@using ExceedERP.Helpers.Common
+<legend>Approval Group Assignment</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.DocumentApproval.AssignApprovalGroup>()
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.AssignApprovalGroupId).Width(60).Title("#");
-          columns.ForeignKey(p => p.OpertatingUnit, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120).EditorTemplateName("AllBranchSelector");
+          //columns.Bound(c => c.AssignApprovalGroupId).Width(60).Title("#");
+          if (GlobalHelper.IsMultipleBusinessUnit())
+          {
+              columns.ForeignKey(c => c.BusinessUnit, (IEnumerable)ViewData["businesUnits"], "BusinessUnitId", "Name").Width(110).EditorTemplateName("BusinessUnitSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          }
+          columns.ForeignKey(p => p.OpertatingUnit, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(100).EditorTemplateName("AllBranchSelector");
           columns.Bound(c => c.Organization).Width(100);
           columns.Bound(c => c.Position).Width(100);
-          columns.ForeignKey(p => p.Job, (IEnumerable)ViewData["JobTitles"], "LookupId", "Description").Width(100).EditorTemplateName("DocumentJobTitles");
+          columns.ForeignKey(p => p.Job, (IEnumerable)ViewData["JobTitles"], "LookupId", "Description").Width(220).EditorTemplateName("DocumentJobTitles");
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("AllEmployeeSelector").Width(150);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
@@ -35,15 +41,17 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+
+     .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
-      .Events(x => x.DataBound("onDataBoundMaster"))
+      //.Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(sort => sort.Add("AssignApprovalGroupId").Descending())
           .Model(model =>
           {
               model.Id(p => p.AssignApprovalGroupId);
+              model.Field(p => p.AssignApprovalGroupId).Editable(false);
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
               model.Field(p => p.ModifiedBy).Editable(false);
@@ -166,7 +174,7 @@
     var masterDataItem;
     var masterRow;
     var masterGrid;
-
+    var masterId;
     var branch;
 
     function detailExpand(e) {
@@ -175,6 +183,7 @@
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
         branch = masterDataItem.OpertatingUnit;
+        masterId = masterDataItem.AssignApprovalGroupId;
 
     }
 
@@ -182,9 +191,16 @@
     function filterApprovalGroup() {
 
         return {
-            operatingUnit: branch,
+            id: masterId,
             text: $("#ApprovalGroupId").data("kendoDropDownList").filterInput.val()
         };
     }
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
 
 </script>

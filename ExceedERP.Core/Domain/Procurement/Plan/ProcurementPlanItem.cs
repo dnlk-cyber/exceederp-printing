@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.Need;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 
 namespace ExceedERP.Core.Domain.Procurement.Plan
 {
 
-
+   
 
     public enum FundSources
     {

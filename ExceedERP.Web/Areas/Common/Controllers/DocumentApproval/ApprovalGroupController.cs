@@ -27,8 +27,10 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
             DataSourceResult result = approvalgroups.ToDataSourceResult(request, approvalGroup => new {
                 DocumentApprovalRuleId = approvalGroup.DocumentApprovalRuleId,
                 ApprovalGroupId = approvalGroup.ApprovalGroupId,
+                BusinessUnit = approvalGroup.BusinessUnit,
                 OpertatingUnit = approvalGroup.OpertatingUnit,
                 Name = approvalGroup.Name,
+                Step = approvalGroup.Step,
                 Enabled = approvalGroup.Enabled,
                 Description = approvalGroup.Description
             });
@@ -39,13 +41,39 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApprovalGroups_Create(int id,[DataSourceRequest]DataSourceRequest request, ApprovalGroup approvalGroup)
         {
+            #region validation
+            if (String.IsNullOrEmpty(approvalGroup.Name))
+                ModelState.AddModelError("required","Please give name to approval group");
+
+            if(approvalGroup.Step<=0)
+                ModelState.AddModelError("positive", "Step should start at 1");
+
+            var exisit = db.ApprovalGroups
+                .Where(x => x.DocumentApprovalRuleId == id)
+                .Where(x => x.BusinessUnit == approvalGroup.BusinessUnit)
+                .Where(x => x.OpertatingUnit == approvalGroup.OpertatingUnit)
+                .Where(x => x.Step == approvalGroup.Step).ToList();
+            if (exisit.Any())
+                ModelState.AddModelError("exisit", "Step already exisits");
+
+            var nameExisit = db.ApprovalGroups
+                .Where(x => x.DocumentApprovalRuleId == id)
+                .Where(x => x.BusinessUnit == approvalGroup.BusinessUnit)
+                .Where(x => x.OpertatingUnit == approvalGroup.OpertatingUnit)
+                .Where(x => x.Name == approvalGroup.Name).ToList();
+            if (nameExisit.Any())
+                ModelState.AddModelError("exisit", "Name already exisits");
+            #endregion
+
             if (ModelState.IsValid)
             {
                 var entity = new ApprovalGroup
                 {
                     DocumentApprovalRuleId=id,
+                    BusinessUnit = approvalGroup.BusinessUnit,
                     OpertatingUnit = approvalGroup.OpertatingUnit,
                     Name = approvalGroup.Name,
+                    Step = approvalGroup.Step,
                     Enabled = approvalGroup.Enabled,
                     Description = approvalGroup.Description
                 };
@@ -61,14 +89,41 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApprovalGroups_Update([DataSourceRequest]DataSourceRequest request, ApprovalGroup approvalGroup)
         {
+            #region validation
+            if (String.IsNullOrEmpty(approvalGroup.Name))
+                ModelState.AddModelError("required", "Please give name to approval group");
+
+            if (approvalGroup.Step <= 0)
+                ModelState.AddModelError("positive", "Step should start at 1");
+
+            var exisit = db.ApprovalGroups
+                .Where(x => x.ApprovalGroupId != approvalGroup.ApprovalGroupId)
+                .Where(x => x.DocumentApprovalRuleId == approvalGroup.DocumentApprovalRuleId)
+                .Where(x => x.BusinessUnit == approvalGroup.BusinessUnit)
+                .Where(x => x.OpertatingUnit == approvalGroup.OpertatingUnit)
+                .Where(x => x.Step == approvalGroup.Step).ToList();
+            if (exisit.Any())
+                ModelState.AddModelError("exisit", "Step already exisits");
+
+            var nameExisit = db.ApprovalGroups
+                .Where(x=>x.ApprovalGroupId!=approvalGroup.ApprovalGroupId)
+                .Where(x => x.DocumentApprovalRuleId == approvalGroup.DocumentApprovalRuleId)
+                .Where(x => x.BusinessUnit == approvalGroup.BusinessUnit)
+                .Where(x => x.OpertatingUnit == approvalGroup.OpertatingUnit)
+                .Where(x => x.Name == approvalGroup.Name).ToList();
+            if (nameExisit.Any())
+                ModelState.AddModelError("exisit", "Name already exisits");
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new ApprovalGroup
                 {
                     DocumentApprovalRuleId=approvalGroup.DocumentApprovalRuleId,
                     ApprovalGroupId = approvalGroup.ApprovalGroupId,
+                    BusinessUnit = approvalGroup.BusinessUnit,
                     OpertatingUnit = approvalGroup.OpertatingUnit,
                     Name = approvalGroup.Name,
+                    Step = approvalGroup.Step,
                     Enabled = approvalGroup.Enabled,
                     Description = approvalGroup.Description
                 };
@@ -90,8 +145,10 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 {
                     DocumentApprovalRuleId = approvalGroup.DocumentApprovalRuleId,
                     ApprovalGroupId = approvalGroup.ApprovalGroupId,
+                    BusinessUnit = approvalGroup.BusinessUnit,
                     OpertatingUnit = approvalGroup.OpertatingUnit,
                     Name = approvalGroup.Name,
+                    Step = approvalGroup.Step,
                     Enabled = approvalGroup.Enabled,
                     Description = approvalGroup.Description
                 };

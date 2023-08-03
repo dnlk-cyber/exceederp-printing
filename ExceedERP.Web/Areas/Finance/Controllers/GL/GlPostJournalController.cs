@@ -63,11 +63,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     })
                 ;
 
+            var branches = _db.Branch.ToList();
+            ViewData["branches"] = branches
+               .Select(e => new
+               {
+                   BranchId = e.BranchId,
+                   Name = e.Name
+               })
+               .AsQueryable();
 
         }
         [AuthorizeRoles(FinanceConstants.GeneralLedgerPostUser,FinanceConstants.GeneralLedgerAdmin)]
         public JsonResult BatchPost(string id,string category,string user)
         {
+            if (String.IsNullOrEmpty(id))
+            {
+                var formattedData = new
+                {
+                    Message = "Please select a period for batch posting.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
             //if (FinanceGlobalStaticValues.BATCH_POST_RUNNING)
             //{
             //    var formattedData = new
@@ -80,8 +97,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
             //try
             //{
-                //FinanceGlobalStaticValues.BATCH_POST_RUNNING = true;
-                int did = int.Parse(id);
+            //FinanceGlobalStaticValues.BATCH_POST_RUNNING = true;
+            int did = int.Parse(id);
                 var period = _db.GLPeriods.Find(did);
                 if (period != null)
                 {
@@ -178,6 +195,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         {
             int myid = int.Parse(id);
             var gLRecordJournal = _db.GLRecordJournals.Find(myid);
+
+            if (gLRecordJournal.isPosted)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already posted",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
             string validForPostError = _accountHelper.IsValidJournal(gLRecordJournal?.GLRecordJournalDetail);
             if (!string.IsNullOrEmpty(validForPostError))
             {
@@ -226,6 +253,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     // var jobUpdateStandard = BackgroundJob.Enqueue(() => );
 
+                    //due to error
                     RecurringJob.AddOrUpdate(() => _financeHelper.UpdateAllStandardBalancesMonthlyFastP(glperiod.GLPeriodId, User.Identity.Name), "0 19 * * *");//7pm
 
                     #endregion
@@ -252,7 +280,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 }
             }
 
-            return null;
+            var formattedData1 = new
+            {
+                Message = $"Not able to post.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
         }
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUnPostUser)]
@@ -354,11 +387,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
            IQueryable<GlRecordJournal> glRecordJournals = _db.GLRecordJournals.Where(x => x.IsOnlineApproved)
                .Where(x => x.isPosted == false && x.IsVoidDoc == false);
 
-            //if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
-            //      || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
-            //{
-            //    glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
-            //}
+            if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
+                  || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
+            {
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+            }
 
             //new
             if (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerAdmin))
@@ -366,6 +399,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             else
                 glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                //filter by business unit
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                glRecordJournals = glRecordJournals.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
             DataSourceResult result = glRecordJournals.ToDataSourceResult(request, glRecordJournal => new
             {
                 GlRecordJournalId = glRecordJournal.GlRecordJournalId,
@@ -382,6 +421,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 ReferenceDoc = glRecordJournal.ReferenceDoc,
                 Posting = glRecordJournal.Posting,
                 isReversed = glRecordJournal.isReversed,
+                IsUnPosted = glRecordJournal.IsUnPosted,
                 IsSendForApproval = glRecordJournal.IsSendForApproval,
                 isPosted = glRecordJournal.isPosted,
                 Status = glRecordJournal.Status,

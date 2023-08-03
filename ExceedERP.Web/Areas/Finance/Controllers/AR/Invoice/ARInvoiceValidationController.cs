@@ -77,8 +77,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                     if (aRInvoiceValidation.Status == ApprovalStatuses.Approve)
                     {
                        // PostToSecondaryLedger(id);
-                        record.IsPostedToSecondLedger = true;
-
+                       
                         if(record.TransactionClass==TransactionClass.CreditMemo)
                             UpdateRelatedInvoiceTotals(record.ArInvoiceId);
 
@@ -260,52 +259,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             return Json(new[] { aRInvoiceValidation }.ToDataSourceResult(request, ModelState));
         }
         
-        private void PostToSecondaryLedger(int id)
-        {
-            SecondLedgerHelper secondLedgerHelper = new SecondLedgerHelper();
-            string user = User.Identity.Name;
-            var record = _db.ARInvoices.Find(id);
-            if (record != null)
-            {
-                #region header
-
-                var ledger = new PostJournalVm
-                {
-                    PostJournalVmId = id,
-                    JournalName = "",
-                    JournalNumber = "",
-                    Description = "",
-                    CategoryName = "",
-                    SourcesName = "AR Invoice",
-                    EffectiveDate = record.Date,
-                    GlPeriodId = _fiscalYearHelper.GetPeriodOfDate(record.Date),
-                    GlFiscalYearId = _fiscalYearHelper.GetFiscalYearOfDate(record.Date),
-                    PostingSource = JournalSources.AR_Invoice,
-                    PostJournalLineVms = new List<PostJournalVm.PostJournalLineVm>(),
-                };
-
-                #endregion
-                #region distribution
-
-                var distributions = _db.ARInvoiceDistributions.Where(x => x.ArInvoiceId == id).ToList();
-
-                foreach (var distribution in distributions)
-                {
-                    var ledgerline = new PostJournalVm.PostJournalLineVm
-                    {
-                        PostJournalLineVmId = distribution.ArInvoiceDistributionId,
-                        AccountCode = distribution.AccountCode,
-                        Debit = distribution.Debit,
-                        Credit = distribution.Credit
-                    };
-                    ledger.PostJournalLineVms.Add(ledgerline);
-                }
-
-                #endregion
-
-                secondLedgerHelper.PostToSecondLedger(ledger,user);
-            }
-        }
+        
 
         private void UpdateRelatedInvoiceTotals(int id)
         {

@@ -13,7 +13,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Settings
 {
    
-    [AuthorizeRoles(ProcurementConstants.ProcurementAdmin )]
+    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin )]
     public class ReportTemplateController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

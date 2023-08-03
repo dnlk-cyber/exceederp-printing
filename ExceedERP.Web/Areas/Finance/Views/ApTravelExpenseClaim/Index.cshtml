@@ -6,8 +6,8 @@
                   .Columns(columns =>
                   {
                       columns.Bound(c => c.ApTravelExpenseClaimId).ClientTemplate("#=appendZeros(ApTravelExpenseClaimId)#").Width(100).Title("ID");
-                    
-                      columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+
+                      columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
                       columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
                       columns.Bound(c => c.PurposeOfTravel).Width(150);
@@ -18,7 +18,7 @@
                   })
                   .ToolBar(toolbar =>
                   {
-                     // toolbar.Create();
+                      // toolbar.Create();
                   })
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ExpenseClaim").Window(w => w.Title("Expense Claim")))
                  .HtmlAttributes(new { style = "height: 550px;" })
@@ -40,14 +40,13 @@
                                     {
                                         sortable.SortMode(GridSortMode.SingleColumn);
                                     })
-                                    .Groupable()
+
                                      .Events(ev => ev.Edit("onMasterEdit"))
-                                     .Groupable().Events(ev => ev.DetailExpand("detailExpandMasterNew"))
-                                    .Scrollable(h => h.Height(500))
-                                     .Events(x => x.DataBound("onDataBoundMasterNew"))
+                                   .Events(ev => ev.DetailExpand("detailExpand"))
+                                 .Events(x => x.DataBound("onDataBoundMaster"))
                               .DataSource(dataSource => dataSource
                                   .Ajax()
-                                  
+
                                     .Sort(sort => sort.Add("ApTravelExpenseClaimId").Descending())
                                                            .Events(ev => ev
                                                         .Error("error_handler(\"grid\")")
@@ -59,8 +58,8 @@
                                       model.Field(p => p.ApTravelExpenseClaimId).Editable(false);
                                       model.Field(p => p.OrgStructureId).Editable(false);
                                       model.Field(p => p.BranchId).Editable(false);
+                                      model.Field(p => p.BusinessUnitId).Editable(false);
                                       model.Field(p => p.PurposeOfTravel).Editable(false);
-                                      model.Field(p => p.IsPostedToSecondLedger).Editable(false);
                                       model.Field(p => p.IsForOther).Editable(false);
 
                                       model.Field(p => p.Status).Editable(false);
@@ -159,6 +158,53 @@
                     <dd>
                         #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
                     </dd>
+                    <dt>
+                        Department Approved On
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                    </dd>
+                    <dt>
+                        Approved By
+                    </dt>
+                    <dd>
+                        #=DepartmentOnlineApprovedBy #
+
+                    </dd>
+
+                    <dt>
+                        Budget Approved On
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                    </dd>
+                    <dt>
+                        Approved By
+                    </dt>
+                    <dd>
+                        #=BudgetApprovedBy #
+
+                    </dd>
+
+                    <dt>
+                        Finance Approved On
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                    </dd>
+                    <dt>
+                        Approved By
+                    </dt>
+                    <dd>
+                        #=OnlineApprovedBy #
+
+                    </dd>
                 </dl>
             </div>
             <hr>
@@ -205,7 +251,7 @@
                             toolbar.Create();
                         })
                        
-                        .Events(x => x.DataBound("onDataBoundLineNew"))
+                        .Events(x => x.DataBound("onDataBoundLines"))
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .Scrollable()
                         .Selectable()
@@ -264,7 +310,7 @@
                                     toolbar.Create();
                                 })
                                
-                                .Events(x => x.DataBound("onDataBoundLineNew"))
+                                .Events(x => x.DataBound("onDataBoundLines"))
                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
                                 .Scrollable()
                                 .Selectable()
@@ -322,7 +368,7 @@
                                             toolbar.Create();
                                         })
 
-                                        .Events(x => x.DataBound("onDataBoundLineNew"))
+                                        .Events(x => x.DataBound("onDataBoundLines"))
                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                                         .Scrollable()
                                         .Selectable()
@@ -420,7 +466,7 @@
                                                                 })
                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                     .Scrollable()
-                                                            .Events(x => x.DataBound("onDataBoundValidationNew"))
+                                                            .Events(x => x.DataBound("onDataBoundFisrtValidation"))
                                                     .DataSource(dataSource => dataSource
                                                         .Ajax()
                                                                 .Events(ev => ev
@@ -462,6 +508,11 @@
 
 <script type="text/javascript">
 
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function voidRecord(id) {
         var recordStatus = "";
@@ -622,7 +673,7 @@
             }
         });
     }
-    function onDataBoundLineNew(e) {
+    function onDataBoundLines(e) {
 
         var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
         if (isapproved || isSendForApproval) {

@@ -3,7 +3,7 @@
 @(Html.Kendo().Grid<GlFiscalYear>()
       .Name("grid")
       .Columns(columns =>
-      {         
+      {
           columns.Bound(c => c.Name).Width(120);
           columns.Bound(c => c.DateFrom).Width(130);
           columns.Bound(c => c.DateTo).Width(130);
@@ -41,7 +41,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      //.Groupable()
+      //
 
       .Events(events => events.Edit("edit"))
       .Events(ev => ev.DetailExpand("detailExpand"))
@@ -54,6 +54,7 @@
               model =>
               {
                   model.Id(p => p.GlFiscalYearId);
+                  model.Field(p => p.DateTo).Editable(false);
                   model.Field(p => p.Status).Editable(false);
                   model.Field(p => p.OrgBranchName).Editable(false);
                   model.Field(p => p.CreatedBy).Editable(false);
@@ -68,7 +69,8 @@
           .Update(update => update.Action("GLFiscalYears_Update", "GlFiscalYear"))
           .Destroy(destroy => destroy.Action("GLFiscalYears_Destroy", "GlFiscalYear"))
       ).Events(events => events.Change("change"))
-      .Events(events => events.DataBound("onDataBoundLines")))
+      .Events(events => events.DataBound("onDataBoundLines")
+      ))
 
 
 <h5>Periods</h5>
@@ -85,24 +87,24 @@
           columns.Bound(c => c.Status).EditorTemplateName("PeriodStatus").Width(150);
           columns.Command(command =>
           {
-              command.Edit();
+              //command.Edit();
               command.Custom("Close").Click("ClosePeriods");
               command.Custom("Open").Click("OpenPeriod");
           }).Width(180);
       })
       .ToolBar(toolbar =>
       {
-        
+
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 400px;" })
             .Scrollable()
             .Selectable()
                  .Selectable(selectable =>
-                            {
-                                selectable.Mode(GridSelectionMode.Single);
-                                selectable.Type(GridSelectionType.Row);
-                            })
+                 {
+                     selectable.Mode(GridSelectionMode.Single);
+                     selectable.Type(GridSelectionType.Row);
+                 })
                         .Sortable(sortable =>
                         {
                             sortable.SortMode(GridSortMode.SingleColumn);
@@ -110,7 +112,7 @@
             .Filterable()
                 .Events(events => events.Edit("edit"))
                 .Events(ev => ev.DetailExpand("detailExpand"))
-                .Events(x => x.DataBound("onDataBoundMaster"))
+                // .Events(x => x.DataBound("onDataBoundMaster"))
                 .AutoBind(false)
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -119,6 +121,8 @@
             {
                 model.Id(p => p.GLPeriodId);
                 model.Field(p => p.Index).Editable(false);
+                model.Field(p => p.DateFrom).Editable(false);
+                model.Field(p => p.DateTo).Editable(false);
                 model.Field(p => p.Status).Editable(false);
                 model.Field(p => p.OrgBranchName).Editable(false);
                 model.Field(p => p.CreatedBy).Editable(false);
@@ -133,7 +137,7 @@
                 .Update(update => update.Action("GLPeriods_Update", "GLPeriod").Data("data"))
             .Destroy(destroy => destroy.Action("GLPeriods_Destroy", "GLPeriod"))
       )
-             
+
 )
 
 
@@ -157,6 +161,14 @@
     function edit(e) {
         if (e.model.isNew() === false) {
             $("#Name").attr("readonly", true);
+            $("#DateFrom").attr("readonly", true);
+            $("#DateTo").attr("readonly", true);
+           
+        }
+        else {
+            //if (!confirm("Are you sure you want to generate a new fiscal year ?")) {
+            //    e.preventDefault();
+            //}
         }
     }
 

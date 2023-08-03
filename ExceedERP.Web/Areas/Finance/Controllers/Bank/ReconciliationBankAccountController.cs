@@ -30,12 +30,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         {
             IQueryable<ReconciliationBankAccount> reconcilationbankaccounts = _db.ReconcilationBankAccounts;
             DataSourceResult result = reconcilationbankaccounts.ToDataSourceResult(request, reconciliationBankAccount => new {
+               
                 ReconciliationBankAccountId = reconciliationBankAccount.ReconciliationBankAccountId,
                 BankAccount = reconciliationBankAccount.BankAccount,
                 Type = reconciliationBankAccount.Type,
                 Reference = reconciliationBankAccount.Reference,
                 Debit = reconciliationBankAccount.Debit,
                 Credit = reconciliationBankAccount.Credit,
+                ExRate = reconciliationBankAccount.ExRate,
+                DebitNonFun = reconciliationBankAccount.DebitNonFun,
+                CreditNonFun = reconciliationBankAccount.CreditNonFun,
                 Date = reconciliationBankAccount.Date,
                 Reconciled = reconciliationBankAccount.Reconciled,
                 ReconciledDate = reconciliationBankAccount.ReconciledDate,
@@ -50,13 +54,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return Json(result);
         }
 
-        public ActionResult UnreconcilationBankAccounts_Read([DataSourceRequest]DataSourceRequest request, int? id, decimal? amount)
+        public ActionResult UnreconcilationBankAccounts_Read([DataSourceRequest]DataSourceRequest request, int id, decimal? amount)
         {
-            ReconciliationSchedule reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
-            if (reconciliationSchedule != null)
+            var schedule = _db.ReconciliationSchedules.Find(id);
+            if (schedule != null)
             {
-                DateTime dt2 = _fiscalYearHelper.GetEndOfMonth(reconciliationSchedule.Date).AddDays(1).Date;
-                var bankaccount = _db.BankAccounts.FirstOrDefault(x => x.AccountNumber == reconciliationSchedule.BankAccount);
+                DateTime dt2 = _fiscalYearHelper.GetEndOfMonth(schedule.Date).AddDays(1).Date;
+                var bankaccount = _db.BankAccounts.FirstOrDefault(x => x.AccountNumber == schedule.BankAccount);
 
                 IQueryable<ReconciliationBankAccount> reconcilationbankaccounts = _db.ReconcilationBankAccounts
                                                                                         .Where(x => x.BankAccount==bankaccount.AccountNumber)
@@ -66,7 +70,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
                 DataSourceResult result = reconcilationbankaccounts.ToDataSourceResult(request, reconciliationBankAccount => new
                 {
+                   
                     ReconciliationBankAccountId = reconciliationBankAccount.ReconciliationBankAccountId,
+                    BankAccount = reconciliationBankAccount.BankAccount,
                     Type = reconciliationBankAccount.Type,
                     Reference = reconciliationBankAccount.Reference,
                     Debit = reconciliationBankAccount.Debit,
@@ -104,17 +110,24 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
             reconciliationBankAccount.Type = "Manual";
             var record = _db.ReconciliationSchedules.Find(id);
-            if (record != null)
+            if(record==null)
+                ModelState.AddModelError("schedule", "Schedule not found");
+
+            if (ModelState.IsValid)
             {
                 reconciliationBankAccount.BankAccount = record.BankAccount;
             
                 var entity = new ReconciliationBankAccount
                 {
-                    BankAccount= reconciliationBankAccount.BankAccount,
+                   
+                    BankAccount = reconciliationBankAccount.BankAccount,
                     Type = reconciliationBankAccount.Type,
                     Reference = reconciliationBankAccount.Reference,
                     Debit = reconciliationBankAccount.Debit,
                     Credit = reconciliationBankAccount.Credit,
+                    ExRate = reconciliationBankAccount.ExRate,
+                    DebitNonFun = reconciliationBankAccount.DebitNonFun,
+                    CreditNonFun = reconciliationBankAccount.CreditNonFun,
                     Date = reconciliationBankAccount.Date,
                     Reconciled = false,
                     Check = false,
@@ -138,10 +151,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ReconcilationBankAccounts_Update([DataSourceRequest]DataSourceRequest request, ReconciliationBankAccount reconciliationBankAccount)
+        public ActionResult ReconcilationBankAccounts_Update([DataSourceRequest]DataSourceRequest request, ReconciliationBankAccount reconciliationBankAccount,int id)
         {
             ModelState.Clear();
-
             if (reconciliationBankAccount.Debit != 0 && reconciliationBankAccount.Credit != 0)
                 ModelState.AddModelError("both", "Both debit and credit can not have value at same time.");
             if (reconciliationBankAccount.Debit == 0 && reconciliationBankAccount.Credit == 0)
@@ -152,18 +164,31 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             if (String.IsNullOrWhiteSpace(reconciliationBankAccount.Reference))
                 ModelState.AddModelError("ref", "Please add reference.");
 
+            var reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
+            if (reconciliationSchedule == null)
+            {
+                ModelState.AddModelError("s", "Schdule not found.");
+            }
+
+            DateTime reconcileDate = _fiscalYearHelper.GetEndOfPeriod(reconciliationSchedule.Date).Date;
+
             if (ModelState.IsValid)
             {
                 var entity = new ReconciliationBankAccount
                 {
+                   
                     ReconciliationBankAccountId = reconciliationBankAccount.ReconciliationBankAccountId,
+                    BankAccount = reconciliationBankAccount.BankAccount,
                     Type = reconciliationBankAccount.Type,
                     Reference = reconciliationBankAccount.Reference,
                     Debit = reconciliationBankAccount.Debit,
                     Credit = reconciliationBankAccount.Credit,
+                    ExRate = reconciliationBankAccount.ExRate,
+                    DebitNonFun = reconciliationBankAccount.DebitNonFun,
+                    CreditNonFun = reconciliationBankAccount.CreditNonFun,
                     Date = reconciliationBankAccount.Date,
                     Reconciled = reconciliationBankAccount.Reconciled,
-                    ReconciledDate = reconciliationBankAccount.ReconciledDate,
+                    ReconciledDate = reconciliationBankAccount.Reconciled == true ? reconcileDate : (DateTime?)null,
                     Check = reconciliationBankAccount.Check,
                     OrgBranchName = reconciliationBankAccount.OrgBranchName,
                     DateCreated = reconciliationBankAccount.DateCreated,
@@ -188,17 +213,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ReconciliationBankAccounts_Destroy([DataSourceRequest]DataSourceRequest request, ReconciliationBankAccount reconciliationBankAccount)
         {
-            ModelState.Clear();
+          
 
             if (ModelState.IsValid)
             {
                 var entity = new ReconciliationBankAccount
                 {
+                   
                     ReconciliationBankAccountId = reconciliationBankAccount.ReconciliationBankAccountId,
+                    BankAccount = reconciliationBankAccount.BankAccount,
                     Type = reconciliationBankAccount.Type,
                     Reference = reconciliationBankAccount.Reference,
                     Debit = reconciliationBankAccount.Debit,
                     Credit = reconciliationBankAccount.Credit,
+                    ExRate = reconciliationBankAccount.ExRate,
+                    DebitNonFun = reconciliationBankAccount.DebitNonFun,
+                    CreditNonFun = reconciliationBankAccount.CreditNonFun,
                     Date = reconciliationBankAccount.Date,
                     Reconciled = reconciliationBankAccount.Reconciled,
                     Check = reconciliationBankAccount.Check,
@@ -330,6 +360,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
                                 var import = new ReconciliationBankAccount
                                 {
+                                   
                                     BankAccount = bankaccount.AccountNumber,
                                     Type = "Manual",
                                     Reconciled = false,

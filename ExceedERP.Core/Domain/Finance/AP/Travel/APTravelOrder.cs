@@ -6,12 +6,7 @@ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.Finance.AP.Travel
 {
-    public class NewOperations : Operations
-    {
-        public string ForwardedFrom { get; set; }
-        public string ForwardedTo { get; set; }
-        public bool IsFinalApproval { get; set; }
-    }
+   
     public enum TravelPaymentType
     {
         PerDiem,
@@ -19,15 +14,13 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         Transport,
         Other
     }
-    public class ApTravelOrder : NewOperations
+    public class ApTravelOrder : DepartmentNewOperations
     {
         public int ApTravelOrderId { get; set; }
         [Required]
         [Display(Name = "Name")]
         public int EmployeeId { get; set; }
-        [Required]
-        [DisplayName("Branch")]
-        public int BranchId { get; set; }
+       
         [Required]
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
@@ -42,11 +35,23 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
        
         [Display(Name = "Reference")]
         public string Reference { get; set; }
+
+        [Display(Name = "Transport Request")]
+        public string TransportReference { get; set; }
         public bool IsForOther { get; set; }
         public bool Paid { get; set; }
+        //budget controll
+        public bool IsBudgetApproved { get; set; }
+        public string BudgetApprovedBy { get; set; }
+        public DateTime? BudgetApprovedTime { get; set; }
+        [Required]
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<ApTravelOrderAdvancePayment> ApTravelOrderAdvancePayments { get; set; }
         public virtual ICollection<ApTravelOrderDeparture> ApTravelOrderDepartures { get; set; }
         public virtual ICollection<ApTravelOrderValidation> ApTravelOrderValidations { get; set; }
+        public virtual ICollection<ApTravelOrderDepartmentValidation> ApTravelOrderDepartmentValidations { get; set; }
+        public virtual ICollection<ApTravelOrderBudgetValidation> ApTravelOrderBudgetValidations { get; set; }
         public virtual ICollection<ApTravelOrderDistribution> ApTravelOrderDistributions { get; set; }
     }
 }

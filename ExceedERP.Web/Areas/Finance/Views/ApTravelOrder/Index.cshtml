@@ -7,13 +7,13 @@
               .Columns(columns =>
               {
                   columns.Bound(c => c.ApTravelOrderId).ClientTemplate("#=appendZeros(ApTravelOrderId)#").Width(100).Title("ID");
-                  columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+                  columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
                   columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
                   columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
                   columns.Bound(c => c.PurposeOfTravel).Width(150);
                   columns.Bound(c => c.RequestDate).Width(130);
                   columns.Bound(c => c.AdvanceAmount).Width(120);
-                 
+
                   columns.Bound(c => c.Reference).Width(150);
                   columns.Bound(c => c.Status).Width(90);
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -42,12 +42,12 @@
                         {
                             sortable.SortMode(GridSortMode.SingleColumn);
                         })
-                        .Groupable()
+
                          .Events(ev => ev.Edit("onMasterEdit"))
-                         .Groupable()
+
                         .Scrollable(h => h.Height(500))
-                         .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
-                         .Events(x => x.DataBound("onDataBoundMasterNew"))
+                         .Events(ev => ev.DetailExpand("detailExpand"))      
+      .Events(x => x.DataBound("onDataBoundMaster"))
                   .DataSource(dataSource => dataSource
                       .Ajax()
                         .Sort(sort => sort.Add("ApTravelOrderId").Descending())
@@ -58,12 +58,13 @@
                       .Model(model =>
                       {
                           model.Id(p => p.ApTravelOrderId);
-                          model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+
                           model.Field(p => p.ApTravelOrderId).Editable(false);
                           model.Field(p => p.AdvanceAmount).Editable(false);
                           model.Field(p => p.Status).Editable(false);
                           model.Field(p => p.OrgStructureId).Editable(false);
                           model.Field(p => p.BranchId).Editable(false);
+                          model.Field(p => p.BusinessUnitId).Editable(false);
                           model.Field(p => p.IsForOther).Editable(false);
                           model.Field(p => p.CreatedBy).Editable(false);
                           model.Field(p => p.DateCreated).Editable(false);
@@ -153,6 +154,53 @@
                                                                             <dd>
                                                                                 #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
                                                                             </dd>
+                                                                            <dt>
+                                                                                Department Approved On
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                            </dd>
+                                                                            <dt>
+                                                                                Approved By
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=DepartmentOnlineApprovedBy #
+
+                                                                            </dd>
+
+                                                                            <dt>
+                                                                                Budget Approved On
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                            </dd>
+                                                                            <dt>
+                                                                                Approved By
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=BudgetApprovedBy #
+
+                                                                            </dd>
+
+                                                                            <dt>
+                                                                                Finance Approved On
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                            </dd>
+                                                                            <dt>
+                                                                                Approved By
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=OnlineApprovedBy #
+
+                                                                            </dd>
                                                                         </dl>
                                                                     </div>
                                                                     <hr>
@@ -177,29 +225,28 @@ items.Add().Text("Advance Payment").Content(
 .Name("ApTravelOrderAdvancePayment#=ApTravelOrderId#")
 .Columns(columns =>
 {
-columns.Bound(c => c.Description).Width(90);
-columns.Bound(c => c.UoM).Width(70);
-columns.Bound(c => c.UnitPrice).Width(70);
-columns.Bound(c => c.Quantity).Width(70);
-columns.Bound(c => c.Total).Width(70).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-columns.Bound(c => c.PaymentMethod).Width(130).EditorTemplateName("PaymentMethodSelectorAP");
-columns.Bound(c => c.CreatedBy).Hidden();
-columns.Bound(c => c.DateCreated).Hidden();
-columns.Bound(c => c.ModifiedBy).Hidden();
-columns.Bound(c => c.LastModified).Hidden();
-columns.Command(command =>
-{
-command.Edit();
-command.Destroy();
-}).Width(180);
+    columns.Bound(c => c.Type).Width(70).EditorTemplateName("TravelOrderPaymentType");
+    columns.ForeignKey(c => c.ItemName, (IEnumerable)ViewData["Items"], "ApSetupItemId", "Name").EditorTemplateName("ItemName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+    columns.Bound(c => c.Description).Width(90);
+    columns.Bound(c => c.UoM).Width(50);
+    columns.Bound(c => c.UnitPrice).Width(60);
+    columns.Bound(c => c.Quantity).Width(60);
+    columns.Bound(c => c.Total).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+    columns.Bound(c => c.PaymentMethod).Width(130).EditorTemplateName("PaymentMethodSelectorAP");
+
+    columns.Command(command =>
+    {
+        command.Edit();
+        command.Destroy();
+    }).Width(280);
 })
 .ToolBar(toolbar =>
 {
-toolbar.Create();
+    toolbar.Create();
 
 })
 
-.Events(x => x.DataBound("onDataBoundLineNew"))
+.Events(x => x.DataBound("onDataBoundLines"))
 .Editable(editable => editable.Mode(GridEditMode.InLine))
 .Scrollable()
 .Selectable()
@@ -207,7 +254,7 @@ toolbar.Create();
 .Ajax()
 .Aggregates(aggregates =>
 {
-aggregates.Add(p => p.Total).Sum();
+    aggregates.Add(p => p.Total).Sum();
 })
 .Events(ev => ev
 .Error("error_handler(\"ApTravelOrderAdvancePayment#=ApTravelOrderId#\")")
@@ -215,14 +262,14 @@ aggregates.Add(p => p.Total).Sum();
 .RequestEnd("onRequestEnd(\"ApTravelOrderAdvancePayment#=ApTravelOrderId#\")"))
 .Model(model =>
 {
-model.Id(p => p.ApTravelOrderAdvancePaymentId);
-model.Field(p => p.ApTravelOrderAdvancePaymentId).Editable(false);
-model.Field(p => p.Total).Editable(false);
+    model.Id(p => p.ApTravelOrderAdvancePaymentId);
+    model.Field(p => p.ApTravelOrderAdvancePaymentId).Editable(false);
+    model.Field(p => p.Total).Editable(false);
 
-model.Field(p => p.CreatedBy).Editable(false);
-model.Field(p => p.DateCreated).Editable(false);
-model.Field(p => p.ModifiedBy).Editable(false);
-model.Field(p => p.LastModified).Editable(false);
+    model.Field(p => p.CreatedBy).Editable(false);
+    model.Field(p => p.DateCreated).Editable(false);
+    model.Field(p => p.ModifiedBy).Editable(false);
+    model.Field(p => p.LastModified).Editable(false);
 
 })
 .Read(read => read.Action("ApTravelOrderAdvancePayments_Read", "ApTravelOrderAdvancePayment", new { id = "#=ApTravelOrderId#" }))
@@ -243,11 +290,14 @@ items.Add().Text("Departure").Content(
 .Columns(columns =>
 {
     columns.Bound(c => c.Date).Width(130);
-    columns.Bound(c => c.Time).Width(120).Format("{0:HH:mm}").EditorTemplateName("Time");
+    columns.Bound(c => c.ArrivalDate).Width(130);
+    columns.Bound(c => c.Duration).Width(80);
+    //columns.Bound(c => c.Time).Width(120).Format("{0:HH:mm}").EditorTemplateName("Time");
     columns.Bound(c => c.Type).Width(120).EditorTemplateName("TravelOrderDepartureTypeSelector");
     columns.Bound(c => c.From).Width(110);
     columns.Bound(c => c.To).Width(110);
     columns.Bound(c => c.TransportMode).Width(130);
+    columns.ForeignKey(p => p.DestinationBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
     columns.Bound(c => c.Remark).Width(150);
 
     columns.Bound(c => c.CreatedBy).Hidden();
@@ -255,17 +305,17 @@ items.Add().Text("Departure").Content(
     columns.Bound(c => c.ModifiedBy).Hidden();
     columns.Bound(c => c.LastModified).Hidden();
     columns.Command(command =>
-{
-command.Edit();
-command.Destroy();
-}).Width(180);
+    {
+        command.Edit();
+        command.Destroy();
+    }).Width(180);
 })
     .ToolBar(toolbar =>
     {
-                toolbar.Create();
-            })
+        toolbar.Create();
+    })
 
-    .Events(x => x.DataBound("onDataBoundLineNew"))
+    .Events(x => x.DataBound("onDataBoundLines"))
     .Editable(editable => editable.Mode(GridEditMode.InLine))
     .Scrollable()
     .Selectable()
@@ -277,16 +327,16 @@ command.Destroy();
                         .RequestEnd("onRequestEnd(\"ApTravelOrderDeparture#=ApTravelOrderId#\")"))
         .Model(model =>
         {
-                    model.Id(p => p.ApTravelOrderDepartureId);
-                    model.Field(p => p.ApTravelOrderDepartureId).Editable(false);
+            model.Id(p => p.ApTravelOrderDepartureId);
+            model.Field(p => p.ApTravelOrderDepartureId).Editable(false);
 
 
-                    model.Field(p => p.CreatedBy).Editable(false);
-                    model.Field(p => p.DateCreated).Editable(false);
-                    model.Field(p => p.ModifiedBy).Editable(false);
-                    model.Field(p => p.LastModified).Editable(false);
+            model.Field(p => p.CreatedBy).Editable(false);
+            model.Field(p => p.DateCreated).Editable(false);
+            model.Field(p => p.ModifiedBy).Editable(false);
+            model.Field(p => p.LastModified).Editable(false);
 
-                })
+        })
                         .Read(read => read.Action("ApTravelOrderDepartures_Read", "ApTravelOrderDeparture", new { id = "#=ApTravelOrderId#" }))
                         .Create(create => create.Action("ApTravelOrderDepartures_Create", "ApTravelOrderDeparture", new { id = "#=ApTravelOrderId#" }))
                         .Update(update => update.Action("ApTravelOrderDepartures_Update", "ApTravelOrderDeparture", new { id = "#=ApTravelOrderId#" }))
@@ -303,7 +353,7 @@ items.Add().Text("Distribution").Content(
                     .Name("ApTravelOrderDistribution#=ApTravelOrderId#")
                     .Columns(columns =>
                     {
-                         columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+                        columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(180);
                         columns.Bound(c => c.AccountDesc).Width(200);
                         columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
                         columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
@@ -324,7 +374,13 @@ items.Add().Text("Distribution").Content(
                     .Scrollable()
                     .Events(ev => ev.DataBound("onDataBoundDistributionNew"))
                     .DataSource(dataSource => dataSource
+
                         .Ajax()
+                         .Aggregates(aggregates =>
+                         {
+                             aggregates.Add(p => p.Debit).Sum();
+                             aggregates.Add(p => p.Credit).Sum();
+                         })
                         .Model(model =>
                         {
                             model.Id(p => p.ApTravelOrderDistributionId);
@@ -367,7 +423,7 @@ command.Edit();
             })
 .Editable(editable => editable.Mode(GridEditMode.InLine))
 .Scrollable()
-        .Events(x => x.DataBound("onDataBoundValidationNew"))
+        .Events(x => x.DataBound("onDataBoundFisrtValidation"))
 .DataSource(dataSource => dataSource
     .Ajax()
             .Events(ev => ev
@@ -407,6 +463,11 @@ command.Edit();
 
 <script type="text/javascript">
 
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function voidRecord(id) {
         var recordStatus = "";
@@ -543,7 +604,7 @@ command.Edit();
             }
         });
     }
-    function onDataBoundLineNew(e) {
+    function onDataBoundLines(e) {
 
         var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
         if (isapproved || isSendForApproval) {

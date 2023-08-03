@@ -35,9 +35,9 @@
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
-                              // toolbar.Excel();
-                              //toolbar.Pdf();
+          toolbar.Create();
+          // toolbar.Excel();
+          //toolbar.Pdf();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -58,7 +58,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .ClientDetailTemplateId("template")
       .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
       .Scrollable(h => h.Height(500))
@@ -75,6 +75,8 @@
               model =>
               {
                   model.Id(p => p.ContractManagementID);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
                   model.Field(p => p.OrgBranchName).Editable(false);
                   model.Field(p => p.ContractStatus).Editable(false);
                   model.Field(p => p.IsTransferredToPayment).Editable(false);
@@ -376,12 +378,12 @@
                               toolbar.Create();
                           })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
-                             
+
                           .Scrollable()
                           .Sortable()
                           //.Filterable()
                           .ClientDetailTemplateId("renewaltemplates")
-                          //.Groupable()
+                          //
                           .Events(ev => ev.DetailExpand("detailExpandRenewal"))
                           .Scrollable(h => h.Height(500))
                           .Events(x => x.DataBound("onDataBoundMasterRenewal"))
@@ -408,7 +410,7 @@
                               .Update(update => update.Action("ContractRenewals_Update", "ContractRenewal", new { id = "#=ContractManagementID#" }))
                               .Destroy(destroy => destroy.Action("ContractRenewals_Destroy", "ContractRenewal"))
                           )
-                        
+
                           .ToClientTemplate())
                 </text>
                 );
@@ -487,7 +489,7 @@
                           .Sortable()
                           //.Filterable()
                           .ClientDetailTemplateId("paymenttemplates")
-                          //.Groupable().
+                          //.
                           .Events(ev => ev.DetailExpand("detailExpandPayment"))
                           .Scrollable(h => h.Height(500))
                           .Events(x => x.DataBound("onDataBoundMasterPayment"))
@@ -549,7 +551,7 @@
                           .Sortable()
                           //.Filterable()
                           .ClientDetailTemplateId("terminationtemplates")
-                          //.Groupable().
+                          //.
                           .Events(ev => ev.DetailExpand("detailExpandTermination"))
                           .Scrollable(h => h.Height(500))
                           .Events(x => x.DataBound("onDataBoundMasterTermination"))

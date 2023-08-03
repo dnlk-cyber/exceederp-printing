@@ -16,13 +16,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseFollowUpItems_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchaseFollowUpItems> purchasefollowupitems = db.PurchaseFollowUpItems.Where(x=>x.PurchaseFollowUpID==id);
@@ -70,7 +70,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseFollowUpItems_Update([DataSourceRequest]DataSourceRequest request, PurchaseFollowUpItems purchaseFollowUpItems)
         {

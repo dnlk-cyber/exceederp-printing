@@ -22,7 +22,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, ProcurementConstants.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         public ActionResult PurchaseRequisitionSecondValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchaseRequisitionSecondValidation> purchaserequisitionsecondvalidations = db.PurchaseRequisitionSecondValidations.Where(x=>x.PurchaseRequisitionID==id);
@@ -40,7 +40,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionSecondValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, PurchaseRequisitionSecondValidation purchaseRequisitionSecondValidation)
         {
@@ -95,7 +95,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(new[] { purchaseRequisitionSecondValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionSecondValidations_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionSecondValidation purchaseRequisitionSecondValidation)
         {

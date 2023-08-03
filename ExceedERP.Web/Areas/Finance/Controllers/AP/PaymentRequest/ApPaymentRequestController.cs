@@ -57,28 +57,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
 
             return Json((periodList ?? throw new InvalidOperationException()).Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
-        private void GetStatusType()
-        {
-            var ststus = Enum.GetValues(typeof(RequestStatus))
-                .Cast<RequestStatus>().ToList();
-
-            var ststuses = ststus.Select(s => new { Text = s.ToString(), Value = s.ToString() });
-            ViewData["RequestStatus"] = ststuses;
-        }
+      
 
         [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayablePayment)]
         public ActionResult PaymentRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //var sentRequestIds = _db.RequestesStatus
-            //   .Where(x => x.ReferenceType == "Payment")
-            //   .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
-            //   .Select(x => x.RequestId).ToList();
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
 
             IQueryable<Core.Domain.Finance.AP.PaymentRequest.PaymentRequest> paymentRequests = _db.PaymentRequests
-                .Where(x=>x.IsDepartmentOnlineApproved)//added
-                //.Where(x=> sentRequestIds.Contains(x.PaymentRequestId))
-                .Where(x => mybraches.Contains(x.OrgBranchName));
+                .Where(x=>mybraches.Contains(x.BranchId))
+                .Where(x => x.IsDepartmentOnlineApproved);
+
+            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            {
+                paymentRequests = paymentRequests.Where(x => x.IsBudgetApproved);
+            }
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                paymentRequests = paymentRequests.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
 
             DataSourceResult result = paymentRequests.ToDataSourceResult(request, paymentRequest => new
             {
@@ -86,6 +86,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 EmployeeId = paymentRequest.EmployeeId,
                 OrgStuructureId = paymentRequest.OrgStuructureId,
                 BranchId = paymentRequest.BranchId,
+                BusinessUnitId = paymentRequest.BusinessUnitId,
                 SupplierId = paymentRequest.SupplierId,
                 IsNewSupplier = paymentRequest.IsNewSupplier,
                 Supplier = paymentRequest.Supplier,
@@ -97,6 +98,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                 PONo = paymentRequest.PONo,
                 GRN = paymentRequest.GRN,
+                Type = paymentRequest.Type,
                 Status =paymentRequest.Status,
                 Remark =paymentRequest.Remark,
                 IsVoid =paymentRequest.IsVoid,
@@ -119,6 +121,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 DepartmentSendForApprovalBy = paymentRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = paymentRequest.DepartmentSendForApprovalTime,
 
+
+                IsBudgetApproved = paymentRequest.IsBudgetApproved,
+                BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
+                BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                ForwardedFrom = paymentRequest.ForwardedFrom,
+                ForwardedTo = paymentRequest.ForwardedTo,
+                IsFinalApproval = paymentRequest.IsFinalApproval,
+                CurrentApprovalStep = paymentRequest.CurrentApprovalStep,
+
+                
                 DateCreated =paymentRequest.DateCreated,
                 CreatedBy =paymentRequest.CreatedBy,
                 LastModified =paymentRequest.LastModified,
@@ -135,9 +148,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PaymentRequest_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-            //ModelState.Clear();
-
             #region data
+
+            if (paymentRequest.EmployeeId != 0)
+            {
+                var placemnt = _db.Placements.Where(x => x.EmployeeId == paymentRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    paymentRequest.BranchId = placemnt.BranchId;
+                    paymentRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                    paymentRequest.OrgStuructureId = placemnt.OrgStructureId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
 
             if (!String.IsNullOrWhiteSpace(paymentRequest.SupplierId))
             {
@@ -150,17 +176,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
 
             if (ModelState.IsValid)
             {
-                //var splitDate = paymentRequest.RequestDateAm.Split('/');
-               // DateTime requestDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
-                //var employee = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                //var branch = UserInformationHelper.GetEmployeeBranchId(User.Identity.Name);
-                //var workunit = UserInformationHelper.GetEmployeeDepartmentId(User.Identity.Name);
-
                 var entity = new Core.Domain.Finance.AP.PaymentRequest.PaymentRequest
                 {
                     EmployeeId = paymentRequest.EmployeeId,
                     BranchId = paymentRequest.BranchId,
+                    BusinessUnitId = paymentRequest.BusinessUnitId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -173,6 +193,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
+                    Type = paymentRequest.Type,
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
                     VoidBy = paymentRequest.VoidBy,
@@ -187,6 +208,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     IsOnlineTransferredBy = paymentRequest.IsOnlineTransferredBy,
                     OnlineTransferredTime = paymentRequest.OnlineTransferredTime,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+
+                    IsBudgetApproved = paymentRequest.IsBudgetApproved,
+                    BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
+                    BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                    ForwardedFrom = paymentRequest.ForwardedFrom,
+                    ForwardedTo = paymentRequest.ForwardedTo,
+                    IsFinalApproval = paymentRequest.IsFinalApproval,
+                    CurrentApprovalStep = paymentRequest.CurrentApprovalStep,
+
 
                     IsDepartmentOnlineApproved = paymentRequest.IsDepartmentOnlineApproved,
                     DepartmentOnlineApprovedBy = paymentRequest.DepartmentOnlineApprovedBy,
@@ -221,9 +252,24 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PaymentRequest_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-            //ModelState.Clear();
+
 
             #region data
+
+            if (paymentRequest.EmployeeId != 0)
+            {
+                var placemnt = _db.Placements.Where(x => x.EmployeeId == paymentRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    paymentRequest.BranchId = placemnt.BranchId;
+                    paymentRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                    paymentRequest.OrgStuructureId = placemnt.OrgStructureId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
 
             if (!String.IsNullOrWhiteSpace(paymentRequest.SupplierId))
             {
@@ -236,14 +282,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
 
             if (ModelState.IsValid)
             {
-                //var splitDate = paymentRequest.RequestDateAm.Split('/');
-               // DateTime requestDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
+              
                 var entity = new Core.Domain.Finance.AP.PaymentRequest.PaymentRequest
                 {
                     EmployeeId = paymentRequest.EmployeeId,
                     OrgStuructureId=paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
+                    BusinessUnitId = paymentRequest.BusinessUnitId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -256,6 +301,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
+                    Type = paymentRequest.Type,
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
                     VoidBy = paymentRequest.VoidBy,
@@ -269,6 +315,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     IsOnlineTransferred = paymentRequest.IsOnlineTransferred,
                     IsOnlineTransferredBy = paymentRequest.IsOnlineTransferredBy,
                     OnlineTransferredTime = paymentRequest.OnlineTransferredTime,
+
+                    IsBudgetApproved = paymentRequest.IsBudgetApproved,
+                    BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
+                    BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                    ForwardedFrom = paymentRequest.ForwardedFrom,
+                    ForwardedTo = paymentRequest.ForwardedTo,
+                    IsFinalApproval = paymentRequest.IsFinalApproval,
+                    CurrentApprovalStep = paymentRequest.CurrentApprovalStep,
+
 
                     IsDepartmentOnlineApproved = paymentRequest.IsDepartmentOnlineApproved,
                     DepartmentOnlineApprovedBy = paymentRequest.DepartmentOnlineApprovedBy,
@@ -313,6 +369,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     EmployeeId = paymentRequest.EmployeeId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
+                    BusinessUnitId = paymentRequest.BusinessUnitId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -344,9 +401,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
         {
             var record = _db.PaymentRequests.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.PaymentRequestLines.Count > 0)
-            {
-
-                
+            {               
 
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;

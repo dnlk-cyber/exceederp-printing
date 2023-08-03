@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 AccountDesc = _accountHelper.GetAccountDesc(reconciliationBankServiceChargeDistribution.AccountCode),
                 AdditionalDescription = reconciliationBankServiceChargeDistribution.AdditionalDescription,
                 Debit = reconciliationBankServiceChargeDistribution.Debit,
-                Credit = reconciliationBankServiceChargeDistribution.Credit,
+                Credit = reconciliationBankServiceChargeDistribution.Credit,               
                 OrgBranchName = reconciliationBankServiceChargeDistribution.OrgBranchName,
                 DateCreated = reconciliationBankServiceChargeDistribution.DateCreated,
                 LastModified = reconciliationBankServiceChargeDistribution.LastModified,

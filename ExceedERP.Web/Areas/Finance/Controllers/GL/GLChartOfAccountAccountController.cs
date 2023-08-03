@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -23,7 +24,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
     public class GlChartOfAccountAccountController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
-        
+        private AccountHelper accountHelper = new AccountHelper();
+
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerAdmin)]
         public ActionResult Index()
@@ -68,16 +70,24 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GLChartOfAccountAccounts_Create([DataSourceRequest]DataSourceRequest request, GLChartOfAccountAccount gLChartOfAccountAccount, string hasParent)
         {
-            #region validate length
+            #region validation
+            var rule = _db.GlSegmentSetups.FirstOrDefault(x=>x.SegmentType== DynamicSegmentTypes.NaturalAccount);
+            if (rule != null && rule.SegmentLength != gLChartOfAccountAccount.Values.Length)
+                ModelState.AddModelError("length", $"The account length should be {rule.SegmentLength}");
 
-            int length = AccountHelper.GetSegmentLength(GlSegmentTypes.Account);
-            bool valid = (gLChartOfAccountAccount.Values.Length == length);
+            var exist = _db.GlChartOfAccountSegments
+                .Where(x => x.GLSegmentSetupId == rule.GLSegmentSetupId)
+                .Where(x => x.Values == gLChartOfAccountAccount.Values).ToList();
 
-            if (!valid)
-            {
-                ModelState.AddModelError("", "Segment length should be " + length);
-            }
+            if (exist.Any())
+                ModelState.AddModelError("exist", $"The account value {gLChartOfAccountAccount.Values} already exists.");
+
+            string error = accountHelper.ValidateAccountType(gLChartOfAccountAccount.AccountType, gLChartOfAccountAccount.Values);
+            if (!string.IsNullOrEmpty(error))
+                ModelState.AddModelError("accounttype", $" {error}");
+
             #endregion
+
             if (ModelState.IsValid)
             {
                
@@ -115,16 +125,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GLChartOfAccountAccounts_Update([DataSourceRequest]DataSourceRequest request, GLChartOfAccountAccount gLChartOfAccountAccount)
         {
-            #region validate length
+            #region validation
+            var rule = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.NaturalAccount);
+            if (rule != null && rule.SegmentLength != gLChartOfAccountAccount.Values.Length)
+                ModelState.AddModelError("length", $"The account length should be {rule.SegmentLength}");
 
-            int length = AccountHelper.GetSegmentLength(GlSegmentTypes.Account);
-            bool valid = (gLChartOfAccountAccount.Values.Length == length);
+            var exist = _db.GlChartOfAccountSegments                
+                .Where(x => x.GLSegmentSetupId == rule.GLSegmentSetupId)
+                .Where(x => x.Values == gLChartOfAccountAccount.Values).ToList();
 
-            if (!valid)
-            {
-                ModelState.AddModelError("", "Segment length should be " + length);
-            }
+            if (exist.Any())
+                ModelState.AddModelError("exist", $"The account value {gLChartOfAccountAccount.Values} already exists.");
+
+            string error = accountHelper.ValidateAccountType(gLChartOfAccountAccount.AccountType, gLChartOfAccountAccount.Values);
+            if (!string.IsNullOrEmpty(error))
+                ModelState.AddModelError("accounttype", $" {error}");
             #endregion
+
             if (ModelState.IsValid)
             {
                
@@ -148,6 +165,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GLChartOfAccountAccounts.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                accountHelper.UpdateLedgerAccountType(gLChartOfAccountAccount.Values, gLChartOfAccountAccount.AccountType);
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL chart of account", "Success", User.Identity.Name, $"updated chart of account natural account {entity.Values} {entity.Description}", Modules.Finance);
                 #endregion

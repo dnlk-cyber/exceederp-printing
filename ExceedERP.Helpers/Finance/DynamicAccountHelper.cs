@@ -14,6 +14,17 @@ namespace ExceedERP.Helpers.Finance
     {
         private  readonly ExceedDbContext _db = new ExceedDbContext();
         //done
+        public void UpdateLedgerAccountType(string GLValue, GlAccountTypes type)
+        {
+            var ledgers = _db.GLLedgerPostings.Where(x => x.AccountSegment == GLValue).ToList();
+            foreach(var l in ledgers)
+            {
+                l.AccountType = type;
+                _db.GLLedgerPostings.Attach(l);
+                _db.Entry(l).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
+        }
         public  GlAccountTypes GetAccountType(string accountAcode)
         {
             GlAccountTypes type = GlAccountTypes.Undefined;
@@ -204,30 +215,7 @@ namespace ExceedERP.Helpers.Finance
 
             return index;
         }
-        //not
-        public  int GeAccountSequenceIndex(GlSegmentTypes segment)
-        {
-            int index = 4;//out of range
-
-            using (var context = new ExceedDbContext())
-            {
-                var segmentSequence = context.GlSegmentSequences.FirstOrDefault();
-                if (segmentSequence != null)
-                {
-                    if (segmentSequence.FirstSegment == segment)
-                        index = 0;
-                    else if (segmentSequence.SecondSegment == segment)
-                        index = 1;
-                    else if (segmentSequence.ThirdSegment == segment)
-                        index = 2;
-                    else if (segmentSequence.FourthSegment == segment)
-                        index = 3;
-                }
-            }
-
-            return index;
-        }
-        //same
+       
         public  string GeAccountSegment(string accountCombination, int index)
         {
             string account = "";
@@ -307,17 +295,7 @@ namespace ExceedERP.Helpers.Finance
             }
         }
 
-        public  void SplitSecondLedgerAccountCombination()
-        {
-            var ledgers = _db.GlSecondayLedgers
-                .Where(x => x.SubAccountSegment == null)
-                .ToList();
-            foreach (var ledger in ledgers)
-            {
-                SplitSecondayLedgerAccount(ledger);
-
-            }
-        }
+        
 
         public  void SplitLedgerAccount(GLLedgerPosting ledger)
         {
@@ -402,81 +380,6 @@ namespace ExceedERP.Helpers.Finance
             _db.SaveChanges();
         }
 
-        public  void SplitSecondayLedgerAccount(GlSecondayLedger ledger)
-        {
-            string[] account = ledger.AccountCode.Split('-');
-
-            ledger.AccountSegment = account[GetNaturalAccountSequenceIndex()];
-            ledger.CostCenterSegment = account[GetCostCenterAccountSequenceIndex()];
-            ledger.SubAccountSegment = account[GetSubAccountSequenceIndex()];
-
-            #region dynamic segments
-
-            if (account.Length == 8)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-                ledger.Segment3 = account[2];
-                ledger.Segment4 = account[3];
-                ledger.Segment5 = account[4];
-                ledger.Segment6 = account[5];
-                ledger.Segment7 = account[6];
-                ledger.Segment8 = account[7];
-            }
-            else if (account.Length == 7)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-                ledger.Segment3 = account[2];
-                ledger.Segment4 = account[3];
-                ledger.Segment5 = account[4];
-                ledger.Segment6 = account[5];
-                ledger.Segment7 = account[6];
-            }
-            else if (account.Length == 6)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-                ledger.Segment3 = account[2];
-                ledger.Segment4 = account[3];
-                ledger.Segment5 = account[4];
-                ledger.Segment6 = account[5];
-            }
-            else if (account.Length == 5)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-                ledger.Segment3 = account[2];
-                ledger.Segment4 = account[3];
-                ledger.Segment5 = account[4];
-            }
-            else if (account.Length == 4)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-                ledger.Segment3 = account[2];
-                ledger.Segment4 = account[3];
-            }
-            else if (account.Length == 3)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-                ledger.Segment3 = account[2];
-            }
-            else if (account.Length == 2)
-            {
-                ledger.Segment1 = account[0];
-                ledger.Segment2 = account[1];
-            }
-            else if (account.Length == 1)
-            {
-                ledger.Segment1 = account[0];
-            }
-
-            #endregion
-            _db.Entry(ledger).State = EntityState.Modified;
-            _db.SaveChanges();
-        }
         //done
         public  void SplitJournalAccountCombination()
         {
@@ -487,7 +390,7 @@ namespace ExceedERP.Helpers.Finance
             }
         }
 
-        public  void SplitJournal(int id)
+        public void SplitJournal(int id)
         {
             using (var context = new ExceedDbContext())
             {
@@ -498,13 +401,13 @@ namespace ExceedERP.Helpers.Finance
                 {
                     string[] account = journalDetail.AccountCode.Split('-');
                     journalDetail.AccountSegment = account[GetNaturalAccountSequenceIndex()];
-                    if(GetCostCenterAccountSequenceIndex()!=-1)
+                    if (GetCostCenterAccountSequenceIndex() != -1)
                         journalDetail.CostCenterSegment = account[GetCostCenterAccountSequenceIndex()];
-                    if(GetSubAccountSequenceIndex()!=-1)
+                    if (GetSubAccountSequenceIndex() != -1)
                         journalDetail.SubAccountSegment = account[GetSubAccountSequenceIndex()];
-                    if(GetBizUnitAccountSequenceIndex()!=-1)
+                    if (GetBizUnitAccountSequenceIndex() != -1)
                         journalDetail.BusinessUnit = account[GetBizUnitAccountSequenceIndex()];
-                    if(GetBranchAccountSequenceIndex()!=-1)
+                    if (GetBranchAccountSequenceIndex() != -1)
                         journalDetail.BranchSegment = account[GetBranchAccountSequenceIndex()];
 
                     #region dynamic segments
@@ -571,10 +474,12 @@ namespace ExceedERP.Helpers.Finance
                     }
 
                     #endregion
+
+                    context.Entry(journalDetail).State = EntityState.Modified;
+                    context.SaveChanges();
                 }
 
-                context.Entry(journalDetail).State = EntityState.Modified;
-                context.SaveChanges();
+
             }
         }
 
@@ -782,20 +687,27 @@ namespace ExceedERP.Helpers.Finance
         //done
         public  string ReplaceSegment(string accountAcode,int index,string value)
         {
-            string newAccComb = "";
-            string[] account = accountAcode.Split('-');
-            account[index] = value;
-
-            foreach (var t in account)
+            if (index >= 0)
             {
-                newAccComb = newAccComb + "-" + t;
-            }
+                string newAccComb = "";
+                string[] account = accountAcode.Split('-');
+                account[index] = value;
 
-            if (newAccComb.Length > 0)
-            {
-                newAccComb = newAccComb.Remove(0, 1);
+                foreach (var t in account)
+                {
+                    newAccComb = newAccComb + "-" + t;
+                }
+
+                if (newAccComb.Length > 0)
+                {
+                    newAccComb = newAccComb.Remove(0, 1);
+                }
+                return newAccComb;
             }
-            return newAccComb;
+            else
+            {
+                return accountAcode;
+            }
         }
 
         //new

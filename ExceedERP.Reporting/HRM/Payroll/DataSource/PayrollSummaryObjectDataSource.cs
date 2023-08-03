@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.Payroll.ViewModel;
@@ -40,8 +41,10 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                 }
                 if (payrolldatas != null)
                 {
-                    var costcenters = db.GLChartOfAccountCostCenters.ToList();
-                    foreach (GLChartOfAccountCostCenter costcenter in costcenters)
+                    var costcenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+                    var glChartOfAccountCostCenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costcenterSeg.GLSegmentSetupId);
+                    var costcenters = glChartOfAccountCostCenters.ToList();
+                    foreach (var costcenter in costcenters)
                     {
                         var payrolldataSummary =
                             payrolldatas.Where(x => x.CostCenterAccountCode == costcenter.Values).ToList();
@@ -107,85 +110,85 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                     }
                 }
             }
-            else
-            {
+            //else
+            //{
 
-                var payrolldatas = db.PayrollProcessViewModel.ToList();
-                //var costcenters = db.PayrollCostCenters.ToList();
-                var costcenters = db.GLChartOfAccountCostCenters.ToList();
-                foreach (GLChartOfAccountCostCenter costcenter in costcenters)
-                {
-                    var payrolldataSummary =
-                        payrolldatas.Where(x => x.CostCenterAccountCode == costcenter.Values).ToList();
-                    EmployeeInfo = new PayrollSummaryViewmodel();
-                    EmployeeInfo.AccountCode = costcenter.Values;
-                    EmployeeInfo.AccountDesc = costcenter.Description;
-                    EmployeeInfo.BasicSalary = payrolldataSummary.Sum(x => x.BasicSalary);
-                    EmployeeInfo.TotalAbsent = payrolldataSummary.Sum(x => x.AbsentDeduction);
-                    EmployeeInfo.Overtime = payrolldataSummary.Sum(x => x.TotalOvertime);
-                    EmployeeInfo.TotalTaxableAllowance = payrolldataSummary.Sum(x => x.TaxableAllowance);
-                    EmployeeInfo.TotalNonTaxableAllowance = payrolldataSummary.Sum(x => x.NonTaxableAllowance);
+            //    var payrolldatas = db.PayrollProcessViewModel.ToList();
+            //    //var costcenters = db.PayrollCostCenters.ToList();
+            //    var costcenters = db.GLChartOfAccountCostCenters.ToList();
+            //    foreach (GLChartOfAccountCostCenter costcenter in costcenters)
+            //    {
+            //        var payrolldataSummary =
+            //            payrolldatas.Where(x => x.CostCenterAccountCode == costcenter.Values).ToList();
+            //        EmployeeInfo = new PayrollSummaryViewmodel();
+            //        EmployeeInfo.AccountCode = costcenter.Values;
+            //        EmployeeInfo.AccountDesc = costcenter.Description;
+            //        EmployeeInfo.BasicSalary = payrolldataSummary.Sum(x => x.BasicSalary);
+            //        EmployeeInfo.TotalAbsent = payrolldataSummary.Sum(x => x.AbsentDeduction);
+            //        EmployeeInfo.Overtime = payrolldataSummary.Sum(x => x.TotalOvertime);
+            //        EmployeeInfo.TotalTaxableAllowance = payrolldataSummary.Sum(x => x.TaxableAllowance);
+            //        EmployeeInfo.TotalNonTaxableAllowance = payrolldataSummary.Sum(x => x.NonTaxableAllowance);
 
-                    //EmployeeInfo.TotalTaxablePositionAllowance = payrolldataSummary.Sum(x => x.TaxablePositionAllowance);
-                    //EmployeeInfo.TotalNonTaxablePositionAllowance = payrolldataSummary.Sum(x => x.NonTaxablePositionAllowance);
+            //        //EmployeeInfo.TotalTaxablePositionAllowance = payrolldataSummary.Sum(x => x.TaxablePositionAllowance);
+            //        //EmployeeInfo.TotalNonTaxablePositionAllowance = payrolldataSummary.Sum(x => x.NonTaxablePositionAllowance);
 
-                    //EmployeeInfo.TotalTaxableTopUpAllowance = payrolldataSummary.Sum(x => x.TaxableTopUpAllowance);
-                    //EmployeeInfo.TotalNonTaxableTopUpAllowance = payrolldataSummary.Sum(x => x.NonTaxableTopUpAllowance);
+            //        //EmployeeInfo.TotalTaxableTopUpAllowance = payrolldataSummary.Sum(x => x.TaxableTopUpAllowance);
+            //        //EmployeeInfo.TotalNonTaxableTopUpAllowance = payrolldataSummary.Sum(x => x.NonTaxableTopUpAllowance);
 
-                    //EmployeeInfo.TotalTaxableProfessionalAllowance = payrolldataSummary.Sum(x => x.TaxableProfessionalAllowance);
-                    //EmployeeInfo.TotalNonTaxableProfessionalAllowance = payrolldataSummary.Sum(x => x.NonTaxableProfessionalAllowance);
+            //        //EmployeeInfo.TotalTaxableProfessionalAllowance = payrolldataSummary.Sum(x => x.TaxableProfessionalAllowance);
+            //        //EmployeeInfo.TotalNonTaxableProfessionalAllowance = payrolldataSummary.Sum(x => x.NonTaxableProfessionalAllowance);
 
-                    //EmployeeInfo.TotalTaxableTransportAllowance = payrolldataSummary.Sum(x => x.TaxableTransportAllowance);
-                    //EmployeeInfo.TotalNonTaxableTransportAllowance = payrolldataSummary.Sum(x => x.NonTaxableTransportAllowance);
+            //        //EmployeeInfo.TotalTaxableTransportAllowance = payrolldataSummary.Sum(x => x.TaxableTransportAllowance);
+            //        //EmployeeInfo.TotalNonTaxableTransportAllowance = payrolldataSummary.Sum(x => x.NonTaxableTransportAllowance);
 
-                    //EmployeeInfo.TotalTaxableHouseAllowance = payrolldataSummary.Sum(x => x.TaxableHouseAllowance);
-                    //EmployeeInfo.TotalNonTaxableHouseAllowance = payrolldataSummary.Sum(x => x.NonTaxableHouseAllowance);
-
-
-                    EmployeeInfo.OtherAddition = payrolldataSummary.Sum(x => x.TotalAdditions);
-                    EmployeeInfo.TotalTaxablePay = EmployeeInfo.BasicSalary
-                                                   + EmployeeInfo.Overtime
-                                                   + EmployeeInfo.TotalTaxableAllowance
-
-                                                   //+ EmployeeInfo.TotalTaxablePositionAllowance
-                                                   //+ EmployeeInfo.TotalTaxableTopUpAllowance
-                                                   //+ EmployeeInfo.TotalTaxableProfessionalAllowance
-                                                   //+ EmployeeInfo.TotalTaxableTransportAllowance
-                                                   //+ EmployeeInfo.TotalTaxableHouseAllowance
-                                                   + EmployeeInfo.OtherAddition;
-
-                    EmployeeInfo.TotalNonTaxablePay = EmployeeInfo.TotalNonTaxableAllowance;
-                    //+EmployeeInfo.TotalNonTaxablePositionAllowance
-                    //+ EmployeeInfo.TotalNonTaxableTopUpAllowance
-                    //+ EmployeeInfo.TotalNonTaxableProfessionalAllowance
-                    //+ EmployeeInfo.TotalNonTaxableTransportAllowance
-                    //+ EmployeeInfo.TotalNonTaxableHouseAllowance;
-
-                    EmployeeInfo.IncomeTax = payrolldataSummary.Sum(x => x.IncomeTax);
-                    EmployeeInfo.Pension = payrolldataSummary.Sum(x => x.PensionFromEmployee);
-                    EmployeeInfo.Provident = payrolldataSummary.Sum(x => x.ProvidentFromEmployee);
-                    EmployeeInfo.Loan = payrolldataSummary.Sum(x => x.TotalLoan);
-                    EmployeeInfo.SavingCredit = payrolldataSummary.Sum(x => x.AssocationContribution);
-                    EmployeeInfo.Advance = payrolldataSummary.Sum(x => x.TotalAdvance);
-                    EmployeeInfo.LabourUnion = payrolldataSummary.Sum(x => x.LabourUnionContribution);
-
-                    EmployeeInfo.OtherDeduction = payrolldataSummary.Sum(x => x.TotalDeductions)
-                                                  + payrolldataSummary.Sum(x => x.TotalLongTermDeductions)
-                                                  + payrolldataSummary.Sum(x => x.TotalRegularContribution)
-                                                  + payrolldataSummary.Sum(x => x.TotalFixedContribution)
-                                                  + EmployeeInfo.Loan
-                                                  + EmployeeInfo.SavingCredit
-                                                  + EmployeeInfo.Advance
-                                                  + EmployeeInfo.LabourUnion;
+            //        //EmployeeInfo.TotalTaxableHouseAllowance = payrolldataSummary.Sum(x => x.TaxableHouseAllowance);
+            //        //EmployeeInfo.TotalNonTaxableHouseAllowance = payrolldataSummary.Sum(x => x.NonTaxableHouseAllowance);
 
 
-                    EmployeeInfo.TotalDeduction = EmployeeInfo.OtherDeduction + EmployeeInfo.IncomeTax +
-                                                  EmployeeInfo.Pension + EmployeeInfo.TotalAbsent +
-                                                  EmployeeInfo.Provident;
-                    EmployeeInfo.NetPay = payrolldataSummary.Sum(x => x.NetEarning);
-                    list.Add(EmployeeInfo);
-                }
-            }
+            //        EmployeeInfo.OtherAddition = payrolldataSummary.Sum(x => x.TotalAdditions);
+            //        EmployeeInfo.TotalTaxablePay = EmployeeInfo.BasicSalary
+            //                                       + EmployeeInfo.Overtime
+            //                                       + EmployeeInfo.TotalTaxableAllowance
+
+            //                                       //+ EmployeeInfo.TotalTaxablePositionAllowance
+            //                                       //+ EmployeeInfo.TotalTaxableTopUpAllowance
+            //                                       //+ EmployeeInfo.TotalTaxableProfessionalAllowance
+            //                                       //+ EmployeeInfo.TotalTaxableTransportAllowance
+            //                                       //+ EmployeeInfo.TotalTaxableHouseAllowance
+            //                                       + EmployeeInfo.OtherAddition;
+
+            //        EmployeeInfo.TotalNonTaxablePay = EmployeeInfo.TotalNonTaxableAllowance;
+            //        //+EmployeeInfo.TotalNonTaxablePositionAllowance
+            //        //+ EmployeeInfo.TotalNonTaxableTopUpAllowance
+            //        //+ EmployeeInfo.TotalNonTaxableProfessionalAllowance
+            //        //+ EmployeeInfo.TotalNonTaxableTransportAllowance
+            //        //+ EmployeeInfo.TotalNonTaxableHouseAllowance;
+
+            //        EmployeeInfo.IncomeTax = payrolldataSummary.Sum(x => x.IncomeTax);
+            //        EmployeeInfo.Pension = payrolldataSummary.Sum(x => x.PensionFromEmployee);
+            //        EmployeeInfo.Provident = payrolldataSummary.Sum(x => x.ProvidentFromEmployee);
+            //        EmployeeInfo.Loan = payrolldataSummary.Sum(x => x.TotalLoan);
+            //        EmployeeInfo.SavingCredit = payrolldataSummary.Sum(x => x.AssocationContribution);
+            //        EmployeeInfo.Advance = payrolldataSummary.Sum(x => x.TotalAdvance);
+            //        EmployeeInfo.LabourUnion = payrolldataSummary.Sum(x => x.LabourUnionContribution);
+
+            //        EmployeeInfo.OtherDeduction = payrolldataSummary.Sum(x => x.TotalDeductions)
+            //                                      + payrolldataSummary.Sum(x => x.TotalLongTermDeductions)
+            //                                      + payrolldataSummary.Sum(x => x.TotalRegularContribution)
+            //                                      + payrolldataSummary.Sum(x => x.TotalFixedContribution)
+            //                                      + EmployeeInfo.Loan
+            //                                      + EmployeeInfo.SavingCredit
+            //                                      + EmployeeInfo.Advance
+            //                                      + EmployeeInfo.LabourUnion;
+
+
+            //        EmployeeInfo.TotalDeduction = EmployeeInfo.OtherDeduction + EmployeeInfo.IncomeTax +
+            //                                      EmployeeInfo.Pension + EmployeeInfo.TotalAbsent +
+            //                                      EmployeeInfo.Provident;
+            //        EmployeeInfo.NetPay = payrolldataSummary.Sum(x => x.NetEarning);
+            //        list.Add(EmployeeInfo);
+            //    }
+            //}
 
 
 

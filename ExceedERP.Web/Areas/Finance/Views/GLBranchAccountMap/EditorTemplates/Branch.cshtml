@@ -1,0 +1,137 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.Common.HRM.Branch 
+
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+   
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.TextBoxFor(model => model.Code)
+                @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    
+
+  
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.TextBoxFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br/>
+
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+  
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.AmharicName, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextBoxFor(model => model.AmharicName)
+            @*, htmlAttributes: new { onkeyup = "transcrire()" })*@
+
+                            
+            @Html.ValidationMessageFor(model => model.AmharicName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.BranchTypes, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @(Html.EnumDropDownListFor(m => m.BranchTypes, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+            )
+
+
+            @Html.ValidationMessageFor(model => model.BranchTypes, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+</div>
+ 
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+
+
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Abbreviation, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextBoxFor(model => model.Abbreviation)
+            @Html.ValidationMessageFor(model => model.Abbreviation, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })
+            <br />
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                @(Html.Kendo().CheckBoxFor(model => model.IsActive))
+            </div>
+            @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    @*<div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().DropDownListFor(model => model.LookupId)
+                .DataTextField("Description")
+                                                    .DataValueField("LookupId")
+                                      .BindTo((IEnumerable)ViewData["types"])
+                            .ValuePrimitive(true))
+                @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+
+
+</div>
+</form>

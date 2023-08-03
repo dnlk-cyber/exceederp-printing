@@ -21,7 +21,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
       
         private static int Count = 0;
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult Index(string id)
         {
             return View();
@@ -35,7 +35,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
         }
 
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult SupplierRankUpdate(string idtt, string name)
         {
             ProcurementSupplier procurement = db.ProcurementSuppliers.Find(int.Parse(idtt));
@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser, ProcurementConstants.ProcurementSupplierApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser, ProcurementRoles.ProcurementSupplierApprover)]
         public ActionResult ProcurementSuppliers_Read([DataSourceRequest]DataSourceRequest request, string id)
         {
             IQueryable<ProcurementSupplier> procurementsuppliers = db.ProcurementSuppliers;
@@ -73,6 +73,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 IsForShortList = procurementSupplier.IsForShortList,
                 MinuteNo = procurementSupplier.MinuteNo,
                 Remark = procurementSupplier.Remark,
+                TCode = procurementSupplier.TCode,
                 Rank = procurementSupplier.Rank,
                 OrgBranchName = procurementSupplier.OrgBranchName,
                 DateCreated = procurementSupplier.DateCreated,
@@ -84,7 +85,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProcurementSuppliers_Create([DataSourceRequest]DataSourceRequest request, ProcurementSupplier procurementSupplier)
         {
@@ -128,6 +129,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                     IsForShortList = procurementSupplier.IsForShortList,
                     MinuteNo = procurementSupplier.MinuteNo,
                     Remark = procurementSupplier.Remark,
+                    TCode = procurementSupplier.TCode,
                     Rank = procurementSupplier.Rank,
                     OrgBranchName = procurementSupplier.OrgBranchName,
                     DateCreated = procurementSupplier.DateCreated,
@@ -147,7 +149,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { procurementSupplier }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProcurementSuppliers_Update([DataSourceRequest]DataSourceRequest request, ProcurementSupplier procurementSupplier)
         {
@@ -192,6 +194,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                     IsBlackListed = procurementSupplier.IsBlackListed,
                     IsForShortList = procurementSupplier.IsForShortList,
                     Remark = procurementSupplier.Remark,
+                    TCode = procurementSupplier.TCode,
                     Rank = procurementSupplier.Rank,
                     OrgBranchName = procurementSupplier.OrgBranchName,
                     MinuteNo = procurementSupplier.MinuteNo,
@@ -212,7 +215,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return Json(new[] { procurementSupplier }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProcurementSuppliers_Destroy([DataSourceRequest]DataSourceRequest request, ProcurementSupplier procurementSupplier)
         {
@@ -237,6 +240,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                     IsForShortList = procurementSupplier.IsForShortList,
                     MinuteNo = procurementSupplier.MinuteNo,
                     Remark = procurementSupplier.Remark,
+                    TCode = procurementSupplier.TCode,
                     Rank = procurementSupplier.Rank,
                     OrgBranchName = procurementSupplier.OrgBranchName,
                     DateCreated = procurementSupplier.DateCreated,
@@ -295,7 +299,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
 
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -304,7 +308,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
             return File(fileContents, contentType, fileName);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementSupplierUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementSupplierUser)]
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {

@@ -79,7 +79,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     if (paymentRequestValidation.Status == ApprovalStatuses.Reject)
                     {
                         record.IsSendForApproval = false;
-                        record.Status = "Rejected";
+                        record.Status = "Finance Rejected";
                         _db.Entry(record).State = EntityState.Modified;
                         _db.SaveChanges();
                     }

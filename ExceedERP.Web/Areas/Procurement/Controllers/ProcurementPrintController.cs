@@ -19,6 +19,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return View();
         }
 
+        public ActionResult PurchasePaymentPrint(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+
         public ActionResult ProcurementPlanPrint(int id)
         {
             ViewBag.Id = id;

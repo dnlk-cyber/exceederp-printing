@@ -13,17 +13,18 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
+using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 {
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PaymentRequestController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
-        HRMInputs _inputs = new HRMInputs();
-        public static bool IsForOther { get; set; }
         public ActionResult Index()
         {
 
@@ -56,14 +57,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
             return Json((periodList ?? throw new InvalidOperationException()).Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
-        private void GetStatusType()
-        {
-            var ststus = Enum.GetValues(typeof(RequestStatus))
-                .Cast<RequestStatus>().ToList();
-
-            var ststuses = ststus.Select(s => new { Text = s.ToString(), Value = s.ToString() });
-            ViewData["RequestStatus"] = ststuses;
-        }
+     
         public ActionResult SendForApproval()
         {
             #region validation 
@@ -152,15 +146,31 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         }
         public ActionResult PaymentRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
+            IQueryable<Core.Domain.Finance.AP.PaymentRequest.PaymentRequest> paymentRequests = _db.PaymentRequests;
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
+                 && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
+            {
 
-            IQueryable<PaymentRequest> paymentRequests = _db.PaymentRequests;
-                                               // .Where(x => mybraches.Contains(x.OrgBranchName));
+                paymentRequests = paymentRequests.Where(x => userworkunit.Contains(x.OrgStuructureId)
+                || x.ForwardedTo == User.Identity.Name
+                || x.ForwardedFrom == User.Identity.Name
+                || x.CreatedBy == User.Identity.Name);
+
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
+            {
+                paymentRequests = paymentRequests.Where(x => x.CreatedBy == User.Identity.Name);
+            }
+
+
+
             DataSourceResult result = paymentRequests.ToDataSourceResult(request, paymentRequest => new
             {
                 EmployeeId = paymentRequest.EmployeeId,
                 OrgStuructureId = paymentRequest.OrgStuructureId,
                 BranchId = paymentRequest.BranchId,
+                BusinessUnitId = paymentRequest.BusinessUnitId,
                 PaymentRequestId = paymentRequest.PaymentRequestId,
                 SupplierId = paymentRequest.SupplierId,
                 IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -172,6 +182,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 InvoiceNo = paymentRequest.InvoiceNo,
                 PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                 PONo = paymentRequest.PONo,
+                Type = paymentRequest.Type,
                 GRN = paymentRequest.GRN,
                 Status =paymentRequest.Status,
                 Remark =paymentRequest.Remark,
@@ -179,12 +190,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 VoidBy =paymentRequest.VoidBy,
                 VoidTime =paymentRequest.VoidTime,
 
+                IsBudgetApproved = paymentRequest.IsBudgetApproved,
+                BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
+                BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
                 IsDepartmentOnlineApproved = paymentRequest.IsDepartmentOnlineApproved,
                 DepartmentOnlineApprovedBy = paymentRequest.DepartmentOnlineApprovedBy,
                 DepartmentOnlineApprovedTime = paymentRequest.DepartmentOnlineApprovedTime,
                 IsDepartmentSendForApproval = paymentRequest.IsDepartmentSendForApproval,
                 DepartmentSendForApprovalBy = paymentRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = paymentRequest.DepartmentSendForApprovalTime,
+
+                ForwardedFrom = paymentRequest.ForwardedFrom,
+                ForwardedTo = paymentRequest.ForwardedTo,
+                IsFinalApproval = paymentRequest.IsFinalApproval,
+                CurrentApprovalStep = paymentRequest.CurrentApprovalStep,
 
                 IsOnlineApproved =paymentRequest.IsOnlineApproved,
                 OnlineApprovedBy =paymentRequest.OnlineApprovedBy,
@@ -206,11 +226,26 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             return Json(result);
         }
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PaymentRequest_Create([DataSourceRequest]DataSourceRequest request, PaymentRequest paymentRequest)
+        public ActionResult PaymentRequest_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-           // ModelState.Clear();
 
             #region data
+            paymentRequest.CurrentApprovalStep = 0;
+
+            if (paymentRequest.EmployeeId!=0)
+            {
+                var placemnt = _db.Placements.Where(x => x.EmployeeId == paymentRequest.EmployeeId).Where(x => x.isCurrent==true).FirstOrDefault();
+                if(placemnt!=null)
+                {
+                    paymentRequest.BranchId = placemnt.BranchId;
+                    paymentRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                    paymentRequest.OrgStuructureId = placemnt.OrgStructureId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
 
             if (!String.IsNullOrWhiteSpace(paymentRequest.SupplierId))
             {
@@ -223,17 +258,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
             if (ModelState.IsValid)
             {
-                //var splitDate = paymentRequest.RequestDateAm.Split('/');
-               // DateTime requestDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
-                //var employee = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                //var branch = UserInformationHelper.GetEmployeeBranchId(User.Identity.Name);
-                //var workunit = UserInformationHelper.GetEmployeeDepartmentId(User.Identity.Name);
-
-                var entity = new PaymentRequest
+                var entity = new Core.Domain.Finance.AP.PaymentRequest.PaymentRequest
                 {
                     EmployeeId = paymentRequest.EmployeeId,
                     BranchId = paymentRequest.BranchId,
+                    BusinessUnitId = paymentRequest.BusinessUnitId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -245,6 +275,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     RequestDate = paymentRequest.RequestDate,
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
+                    Type = paymentRequest.Type,
                     GRN = paymentRequest.GRN,
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
@@ -259,6 +290,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     IsOnlineTransferred = paymentRequest.IsOnlineTransferred,
                     IsOnlineTransferredBy = paymentRequest.IsOnlineTransferredBy,
                     OnlineTransferredTime = paymentRequest.OnlineTransferredTime,
+
+                    IsBudgetApproved = paymentRequest.IsBudgetApproved,
+                    BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
+                    BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                    ForwardedFrom = User.Identity.Name,
+                    ForwardedTo = User.Identity.Name,
+                    IsFinalApproval = paymentRequest.IsFinalApproval,
+                    CurrentApprovalStep = paymentRequest.CurrentApprovalStep,
+
+                    IsDepartmentOnlineApproved = paymentRequest.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = paymentRequest.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = paymentRequest.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = paymentRequest.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = paymentRequest.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = paymentRequest.DepartmentSendForApprovalTime,
+
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
 
                     DateCreated = DateTime.Now,
@@ -282,11 +330,26 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PaymentRequest_Update([DataSourceRequest]DataSourceRequest request, PaymentRequest paymentRequest)
+        public ActionResult PaymentRequest_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-            ModelState.Clear();
+           
 
             #region data
+
+            if (paymentRequest.EmployeeId != 0)
+            {
+                var placemnt = _db.Placements.Where(x => x.EmployeeId == paymentRequest.EmployeeId).Where(x => x.isCurrent).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    paymentRequest.BranchId = placemnt.BranchId;
+                    paymentRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                    paymentRequest.OrgStuructureId = placemnt.OrgStructureId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has no current placemnt");
+                }
+            }
 
             if (!String.IsNullOrWhiteSpace(paymentRequest.SupplierId))
             {
@@ -301,11 +364,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 //var splitDate = paymentRequest.RequestDateAm.Split('/');
                // DateTime requestDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
-                var entity = new PaymentRequest
+                var entity = new Core.Domain.Finance.AP.PaymentRequest.PaymentRequest
                 {
                     EmployeeId = paymentRequest.EmployeeId,
                     OrgStuructureId=paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
+                    BusinessUnitId = paymentRequest.BusinessUnitId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -318,10 +382,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                    Remark = paymentRequest.Remark,
-                    IsVoid = paymentRequest.IsVoid,
-                    VoidBy = paymentRequest.VoidBy,
-                    VoidTime = paymentRequest.VoidTime,
+                    Type = paymentRequest.Type,
+
+                    IsBudgetApproved = paymentRequest.IsBudgetApproved,
+                    BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
+                    BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                    ForwardedFrom = paymentRequest.ForwardedFrom,
+                    ForwardedTo = paymentRequest.ForwardedTo,
+                    IsFinalApproval = paymentRequest.IsFinalApproval,
+                    CurrentApprovalStep = paymentRequest.CurrentApprovalStep,
+                   
+
+                    IsDepartmentOnlineApproved = paymentRequest.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = paymentRequest.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = paymentRequest.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = paymentRequest.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = paymentRequest.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = paymentRequest.DepartmentSendForApprovalTime,
+
                     IsOnlineApproved = paymentRequest.IsOnlineApproved,
                     OnlineApprovedBy = paymentRequest.OnlineApprovedBy,
                     OnlineApprovedTime = paymentRequest.OnlineApprovedTime,
@@ -332,6 +411,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     IsOnlineTransferredBy = paymentRequest.IsOnlineTransferredBy,
                     OnlineTransferredTime = paymentRequest.OnlineTransferredTime,
                     OrgBranchName = paymentRequest.OrgBranchName,
+
+                    Remark = paymentRequest.Remark,
+                    IsVoid = paymentRequest.IsVoid,
+                    VoidBy = paymentRequest.VoidBy,
+                    VoidTime = paymentRequest.VoidTime,
+
 
                     DateCreated = paymentRequest.DateCreated,
                     CreatedBy = paymentRequest.CreatedBy,
@@ -353,19 +438,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PaymentRequest_Destroy([DataSourceRequest]DataSourceRequest request, PaymentRequest paymentRequest)
+        public ActionResult PaymentRequest_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-            ModelState.Clear();
+           
             if (ModelState.IsValid)
             {
-                var splitDate = paymentRequest.RequestDateAm.Split('/');
-                DateTime requestDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
-                var entity = new PaymentRequest
+                var entity = new Core.Domain.Finance.AP.PaymentRequest.PaymentRequest
                 {
                     EmployeeId = paymentRequest.EmployeeId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
+                    BusinessUnitId = paymentRequest.BusinessUnitId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -374,14 +457,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     ReasonOfPayment = paymentRequest.ReasonOfPayment,
                     RequestDateAm = paymentRequest.RequestDateAm,
                     InvoiceNo = paymentRequest.InvoiceNo,
-                    RequestDate = requestDate,
+                    RequestDate = paymentRequest.RequestDate,
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
                     Remark = paymentRequest.Remark
                 };
                 #region delete log
-                //UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Payment request of employee code  " + paymentRequest.EmployeeCode);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Payment request ID  " + paymentRequest.PaymentRequestId);
                 #endregion
                 _db.PaymentRequests.Attach(entity);
                 _db.PaymentRequests.Remove(entity);
@@ -391,7 +474,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             return Json(new[] { paymentRequest }.ToDataSourceResult(request, ModelState));
         }
        
-        public JsonResult SendforDepartmentApproval(int id = 0)
+        public JsonResult SendforDepartmentApproval(int id)
         {
             var record = _db.PaymentRequests.Find(id);
             string errMsg = "";
@@ -418,9 +501,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             }
 
             var lines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
-            if (!lines.Any())
+            if (!lines.Any() && record.Type==Core.Domain.Finance.AP.PaymentRequest.PaymentRequestType.Payment)
             {
-                errMsg = "Please add line items.";
+                errMsg = "Please add payment request line items.";
                 var formattedData = new
                 {
                     Message = errMsg,
@@ -428,14 +511,37 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            if (record != null && !record.IsOnlineApproved && !record.IsSendForApproval)
+
+            var fundLines = _db.FundTransferLines.Where(x => x.PaymentRequestId == id);
+            if (!fundLines.Any() && record.Type == Core.Domain.Finance.AP.PaymentRequest.PaymentRequestType.Fund_Transfer)
+            {
+                errMsg = "Please add fund transfer request line items.";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 16);
                 record.IsDepartmentSendForApproval = true;
-                record.DepartmentOnlineApprovedBy = User.Identity.Name;
-                record.DepartmentOnlineApprovedTime = DateTime.Now;
+                record.DepartmentSendForApprovalBy = User.Identity.Name;
+                record.DepartmentSendForApprovalTime = DateTime.Now;
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region approval workflow
+
+                bool isNewRecord = true;
+                var validations = record.PaymentRequestDepartmentValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+                decimal docamount = record.PaymentRequestLines.Where(x => x.PaymentRequestId == id).Sum(x => x.TotalAmount);
+                int docid = record.PaymentRequestId;
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApPaymentRequestSelfCare, isNewRecord,step);
+                #endregion
 
                 var formattedData = new
                 {

@@ -19,13 +19,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult ServiceReceiveValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<ServiceReceiveValidation> serviceReceiveValidations = _db.ServiceReceiveValidations.Where(gi => gi.ServiceReceiveId == id);
@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceiveValidations_Create([DataSourceRequest] DataSourceRequest request, ServiceReceiveValidation serviceReceiveValidation, int id)
         {
@@ -120,7 +120,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         return Json(new[] { serviceReceiveValidation }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover)]
+         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceiveValidations_Update([DataSourceRequest]DataSourceRequest request, ServiceReceiveValidation serviceReceiveValidation)
         {
@@ -141,7 +141,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return Json(new[] { serviceReceiveValidation }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentApprover)]
+         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceReceiveValidations_Destroy([DataSourceRequest]DataSourceRequest request, ServiceReceiveValidation serviceReceiveValidation)
         {

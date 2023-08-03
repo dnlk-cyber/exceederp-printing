@@ -30,6 +30,7 @@ namespace ExceedERP.Reporting.Finance.ViewModel
         public string AccountDescription { get; set; }
         public DateTime? Date { get; set; }
         public string Reference { get; set; }//system
+        public string Description { get; set; }
         public string ReferenceDoc { get; set; }//manual
         public string PaymentReference { get; set; }//receipt or payment reference
         public string InvoiceReferenceDoc { get; set; }//manual
@@ -61,6 +62,7 @@ namespace ExceedERP.Reporting.Finance.ViewModel
         public string AccountDescription { get; set; }
         public DateTime? Date { get; set; }
         public string Reference { get; set; }
+        public string Description { get; set; }
         public string Journal { get; set; }
         [Display(Name = "Transaction Description")]
         public string TransDesc { get; set; }

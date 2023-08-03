@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser, ProcurementConstants.ProcurementUserDepartmentApprover, InventoryConstants.PropertyRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, InventoryConstants.PropertyRequisitionSecondApprover)]
         public ActionResult PurchaseRequisitionSecondValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchaseRequisitionSecondValidation> purchaserequisitionsecondvalidations = db.PurchaseRequisitionSecondValidations.Where(x=>x.PurchaseRequisitionID==id);

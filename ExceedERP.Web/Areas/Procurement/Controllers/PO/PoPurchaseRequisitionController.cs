@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
     public class PoPurchaseRequisitionController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult PoPurchaseRequisitions_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PoPurchaseRequisition> poPurchaseRequisitions = _db.PoPurchaseRequisitions.Where(x=>x.PurchaseOrderID==id);
@@ -44,10 +44,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PoPurchaseRequisitions_Create(int id,[DataSourceRequest]DataSourceRequest request, PoPurchaseRequisition poPurchaseRequisition)
         {
+
+            var exist = _db.PoPurchaseRequisitions
+               .Where(x => x.PurchaseRequisitionAssignmentId == poPurchaseRequisition.PurchaseRequisitionAssignmentId).FirstOrDefault();
+            if (exist != null)
+            {
+                ModelState.AddModelError("exist", $" The assignement is already added in po {exist.PurchaseOrderID}  ");
+            }
+
             var assignment =
                 _db.PurchaseRequisitionAssignments.Find(poPurchaseRequisition.PurchaseRequisitionAssignmentId);
 
@@ -103,13 +111,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { poPurchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PoPurchaseRequisitions_Update([DataSourceRequest]DataSourceRequest request, PoPurchaseRequisition poPurchaseRequisition)
         {
-            //var exist = _db.PoPurchaseRequisitions.Where(x=>x.PoPurchaseRequisitionId!=PoPurchaseRequisition.PoPurchaseRequisitionId).Where(x => x.PurchaseRequisitionID == PoPurchaseRequisition.PurchaseRequisitionID).ToList();
-            //if (exist.Any())
-            //    ModelState.AddModelError("exist", PoPurchaseRequisition.PurchaseRequisitionID + " already exists in the system.");
+            var exist = _db.PoPurchaseRequisitions
+                .Where(x => x.PoPurchaseRequisitionId != poPurchaseRequisition.PoPurchaseRequisitionId)
+              .Where(x => x.PurchaseRequisitionAssignmentId == poPurchaseRequisition.PurchaseRequisitionAssignmentId).FirstOrDefault();
+            if (exist != null)
+            {
+                ModelState.AddModelError("exist", $" The assignement is already added in po {exist.PurchaseOrderID}  ");
+            }
 
             var assignment =
                 _db.PurchaseRequisitionAssignments.Find(poPurchaseRequisition.PurchaseRequisitionAssignmentId);
@@ -164,7 +176,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { poPurchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PoPurchaseRequisitions_Destroy([DataSourceRequest]DataSourceRequest request, PoPurchaseRequisition poPurchaseRequisition)
         {
@@ -193,7 +205,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { poPurchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         private void AddPrItems(int assignmentid, int poid)
         {
             var record = _db.PurchaseRequisitionAssignments.Find(assignmentid);

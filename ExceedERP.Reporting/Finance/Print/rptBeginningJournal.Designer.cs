@@ -28,6 +28,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
             this.textBox5 = new Telerik.Reporting.TextBox();
+            this.SegmentTypes = new Telerik.Reporting.ObjectDataSource();
+            this.SegmentValues = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox6 = new Telerik.Reporting.TextBox();
@@ -38,6 +40,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox8 = new Telerik.Reporting.TextBox();
             this.textBox20 = new Telerik.Reporting.TextBox();
             this.textBox22 = new Telerik.Reporting.TextBox();
+            this.BeginningOds = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox18 = new Telerik.Reporting.TextBox();
             this.pbOrgLogo = new Telerik.Reporting.PictureBox();
@@ -55,9 +58,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox13 = new Telerik.Reporting.TextBox();
             this.textBox19 = new Telerik.Reporting.TextBox();
             this.reportFooterSection1 = new Telerik.Reporting.ReportFooterSection();
-            this.BeginningOds = new Telerik.Reporting.ObjectDataSource();
-            this.SegmentTypes = new Telerik.Reporting.ObjectDataSource();
-            this.SegmentValues = new Telerik.Reporting.ObjectDataSource();
             this.header = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -65,6 +65,8 @@ namespace ExceedERP.Reporting.Finance.Print
             // 
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5583339929580689D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox1.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox1.Style.Color = System.Drawing.Color.White;
             this.textBox1.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox1.StyleName = "Civic.TableHeader";
             this.textBox1.Value = "Account Code";
@@ -73,6 +75,8 @@ namespace ExceedERP.Reporting.Finance.Print
             // 
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.3750009536743164D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox2.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox2.Style.Color = System.Drawing.Color.White;
             this.textBox2.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox2.StyleName = "Civic.TableHeader";
             this.textBox2.Value = "Account Desc";
@@ -81,6 +85,8 @@ namespace ExceedERP.Reporting.Finance.Print
             // 
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0416668653488159D), Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D));
+            this.textBox4.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox4.Style.Color = System.Drawing.Color.White;
             this.textBox4.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox4.StyleName = "Civic.TableHeader";
             this.textBox4.Value = "Debit";
@@ -89,9 +95,25 @@ namespace ExceedERP.Reporting.Finance.Print
             // 
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0249999761581421D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox5.Style.Color = System.Drawing.Color.White;
             this.textBox5.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox5.StyleName = "Civic.TableHeader";
             this.textBox5.Value = "Credit";
+            // 
+            // SegmentTypes
+            // 
+            this.SegmentTypes.DataMember = "GeSegmentTypeList";
+            this.SegmentTypes.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.SegmentTypes.Name = "SegmentTypes";
+            // 
+            // SegmentValues
+            // 
+            this.SegmentValues.DataMember = "GeSegmentValueList";
+            this.SegmentValues.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.SegmentValues.Name = "SegmentValues";
+            this.SegmentValues.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("type", typeof(string), "= Parameters.segmentType.Value")});
             // 
             // detailSection1
             // 
@@ -106,8 +128,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(4.3750004768371582D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0416665077209473D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0250003337860107D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.16666662693023682D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.14166668057441711D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.166666641831398D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.14166669547557831D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox6);
             this.table1.Body.SetCellContent(0, 1, this.textBox7);
             this.table1.Body.SetCellContent(0, 2, this.textBox9);
@@ -219,6 +241,16 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox22.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox22.StyleName = "Civic.TableBody";
             this.textBox22.Value = "= sum(Fields.Credit)";
+            // 
+            // BeginningOds
+            // 
+            this.BeginningOds.DataMember = "JournalLines";
+            this.BeginningOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Print.GlBeginningOds);
+            this.BeginningOds.Name = "BeginningOds";
+            this.BeginningOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentType", typeof(string), "= Parameters.segmentType.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentValue", typeof(string), "= Parameters.segmentValue.Value")});
             // 
             // pageHeaderSection1
             // 
@@ -385,30 +417,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.reportFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.40000000596046448D);
             this.reportFooterSection1.Name = "reportFooterSection1";
             // 
-            // BeginningOds
-            // 
-            this.BeginningOds.DataMember = "JournalLines";
-            this.BeginningOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Print.GlBeginningOds);
-            this.BeginningOds.Name = "BeginningOds";
-            this.BeginningOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("segmentType", typeof(string), "= Parameters.segmentType.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("segmentValue", typeof(string), "= Parameters.segmentValue.Value")});
-            // 
-            // SegmentTypes
-            // 
-            this.SegmentTypes.DataMember = "GeSegmentTypeList";
-            this.SegmentTypes.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
-            this.SegmentTypes.Name = "SegmentTypes";
-            // 
-            // SegmentValues
-            // 
-            this.SegmentValues.DataMember = "GeSegmentValueList";
-            this.SegmentValues.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
-            this.SegmentValues.Name = "SegmentValues";
-            this.SegmentValues.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("type", typeof(string), "= Parameters.segmentType.Value")});
-            // 
             // header
             // 
             this.header.DataMember = "JournalHeader";
@@ -436,7 +444,6 @@ namespace ExceedERP.Reporting.Finance.Print
             reportParameter2.AvailableValues.ValueMember = "= Fields.Name";
             reportParameter2.Name = "segmentType";
             reportParameter2.Text = "Segment Type";
-            reportParameter2.Visible = true;
             reportParameter3.AllowBlank = false;
             reportParameter3.AllowNull = true;
             reportParameter3.AvailableValues.DataSource = this.SegmentValues;
@@ -444,7 +451,6 @@ namespace ExceedERP.Reporting.Finance.Print
             reportParameter3.AvailableValues.ValueMember = "= Fields.Values";
             reportParameter3.Name = "segmentValue";
             reportParameter3.Text = "Sement Value";
-            reportParameter3.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);

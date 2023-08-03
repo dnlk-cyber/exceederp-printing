@@ -40,9 +40,9 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-                .Groupable()
+                
                  .Events(ev => ev.Edit("onMasterEdit"))
-                 .Groupable().Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+                 .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
                 .Scrollable(h => h.Height(500))
                  .Events(x => x.DataBound("onDataBoundMasterNew"))
           .DataSource(dataSource => dataSource
@@ -57,7 +57,7 @@
                   model.Id(p => p.ApPettyCashId);
                   model.Field(p => p.ApPettyCashId).Editable(false);
                   model.Field(p => p.Status).Editable(false);
-                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  
                   model.Field(p => p.CurrentBalance).Editable(false);
                   model.Field(p => p.CreatedBy).Editable(false);
                   model.Field(p => p.DateCreated).Editable(false);

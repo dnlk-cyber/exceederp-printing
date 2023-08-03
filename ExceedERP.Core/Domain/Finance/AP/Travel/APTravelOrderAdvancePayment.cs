@@ -10,6 +10,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public virtual ApTravelOrder TravelOrder { get; set; }
         [Required]
         public TravelPaymentType Type { get; set; }
+        public string ItemName { get; set; }// from AP Setup
         [Display(Name = "Description")]
         public string Description { get; set; }
         [Display(Name = "UoM")]
@@ -21,9 +22,9 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
 
         [Display(Name = "Total")]
         public decimal Total { get; set; }
-        [Required]
+        
         [Display(Name = "Payment Method")]
-        public string PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; }// to top or totally remove
 
     }
 }

@@ -21,13 +21,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult PurchaseOrderValidations_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseOrderValidation> purchaseordervalidations = db.PurchaseOrderValidations.Where(p => p.PurchaseOrderID == id);
@@ -46,7 +46,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderValidations_Create(int id, [DataSourceRequest]DataSourceRequest request, PurchaseOrderValidation purchaseOrderValidation)
         {
@@ -96,6 +96,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 #endregion
             }
 
+            if (purchaseOrderValidation.Status == ApprovalStatuses.Approve)
+            {
+                var paymentSchedule = db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id);
+                if (!paymentSchedule.Any())
+                    ModelState.AddModelError("nopayment", "Please add payment schedule first.");
+            }
+
             if (ModelState.IsValid)
             {
                 if (record != null)
@@ -118,6 +125,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                             NotifModels notif = new NotifModels
                             {
                                 UserId = record.ForwardedFrom,
+                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.PurchaseOrder, record.PurchaseOrderID),
                                 Message =
                                     $"Purchase order document {record.PurchaseOrderID} is approved by User: {record.ForwardedTo} at {DateTime.Now}"
                             };
@@ -141,6 +149,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                             NotifModels notif = new NotifModels
                             {
                                 UserId = record.ForwardedFrom,
+                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.PurchaseOrder, record.PurchaseOrderID),
                                 Message =
                                     $"Purchase order document {record.PurchaseOrderID} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
                             };
@@ -150,10 +159,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                             #endregion
 
                             #region forward to next approver
-
                             decimal docamount = record.PurchaseOrderItem.Sum(x => x.Total);
+                            int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
                             DocApprovalWorkflowHelper.ForwardToApprover(record.PurchaseOrderID, docamount, "",
-                                record.ForwardedTo, ApprovalDocumentType.PurchaseOrder, false);
+                                record.ForwardedTo, ApprovalDocumentType.PurchaseOrder, false, step);
 
                             #endregion
 
@@ -195,7 +204,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { purchaseOrderValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderValidations_Update([DataSourceRequest]DataSourceRequest request, PurchaseOrderValidation purchaseOrderValidation)
         {
@@ -222,7 +231,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return Json(new[] { purchaseOrderValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementConstants.ProcurementTenderApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementTenderApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseOrderValidations_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseOrderValidation purchaseOrderValidation)
         {

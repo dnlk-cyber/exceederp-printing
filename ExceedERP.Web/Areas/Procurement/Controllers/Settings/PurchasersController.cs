@@ -11,7 +11,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Settings
 {
-    [AuthorizeRoles(ProcurementConstants.ProcurementAdmin)]
+    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin)]
     public class PurchasersController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

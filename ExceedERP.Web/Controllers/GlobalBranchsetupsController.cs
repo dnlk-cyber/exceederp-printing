@@ -7,6 +7,7 @@ using ExceedERP.DataAccess.Context;
 using XAPI;
 using System.Linq;
 using PagedList;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -58,7 +59,9 @@ namespace ExceedERP.Web.Controllers
         // GET: GlobalBranchsetups/Create
         public ActionResult Create()
         {
-            ViewBag.AccountCodes = new SelectList(db.GLChartOfAccountLocations, "Values", "Description");
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            ViewBag.AccountCodes = new SelectList(locations, "Values", "Description");
             return View();
         }
 
@@ -77,7 +80,9 @@ namespace ExceedERP.Web.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AccountCodes = new SelectList(db.GLChartOfAccountLocations, "Values", "Description", globalBranchsetup.BranchAccountCode);
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            ViewBag.AccountCodes = new SelectList(locations, "Values", "Description", globalBranchsetup.BranchAccountCode);
             return View(globalBranchsetup);
         }
 
@@ -93,7 +98,9 @@ namespace ExceedERP.Web.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.AccountCodes = new SelectList(db.GLChartOfAccountLocations, "Values", "Description", globalBranchsetup.BranchAccountCode);
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            ViewBag.AccountCodes = new SelectList(locations, "Values", "Description", globalBranchsetup.BranchAccountCode);
             return View(globalBranchsetup);
         }
 
@@ -110,7 +117,10 @@ namespace ExceedERP.Web.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.AccountCodes = new SelectList(db.GLChartOfAccountLocations, "Values", "Description", globalBranchsetup.BranchAccountCode);
+
+            var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
+            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            ViewBag.AccountCodes = new SelectList(locations, "Values", "Description", globalBranchsetup.BranchAccountCode);
             return View(globalBranchsetup);
         }
 

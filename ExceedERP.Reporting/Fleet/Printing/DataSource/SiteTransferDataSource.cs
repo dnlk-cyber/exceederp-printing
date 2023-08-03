@@ -15,6 +15,7 @@ using ExceedERP.ApplicationServices.FleetManagement.FleetResource;
 using System.IO;
 using System.Web;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
+using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Reporting.Fleet.Printing.DataSource
 {
@@ -107,9 +108,9 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                     SiteTransferViewModel.Description = SiteTransfer.Description;
                     SiteTransferViewModel.EquipmentType = SiteTransfer.Fleet.EquipmentType.EquipmentTypeName;
 
-                    if (SiteTransfer.BatteryStatus == Core.Domain.BatteryStatus.New)
+                    if (SiteTransfer.BatteryStatus == BatteryStatus.New)
                         SiteTransferViewModel.AmpereNew = true;
-                    if (SiteTransfer.BatteryStatus == Core.Domain.BatteryStatus.Old)
+                    if (SiteTransfer.BatteryStatus == BatteryStatus.Old)
                         SiteTransferViewModel.AmpereOld = true;
                     if (SiteTransfer.TransferMode == Core.Domain.FleetManagement.TransferMode.Loaded)
                         SiteTransferViewModel.ByAnotherVehicle = true;
@@ -201,9 +202,9 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                 SiteTransferViewModel.Description = SiteTransfer.Description;
 
 
-                if (SiteTransfer.BatteryStatus == Core.Domain.BatteryStatus.New)
+                if (SiteTransfer.BatteryStatus == BatteryStatus.New)
                     SiteTransferViewModel.AmpereNew = true;
-                if (SiteTransfer.BatteryStatus == Core.Domain.BatteryStatus.Old)
+                if (SiteTransfer.BatteryStatus == BatteryStatus.Old)
                     SiteTransferViewModel.AmpereOld = true;
                 if (SiteTransfer.TransferMode == Core.Domain.FleetManagement.TransferMode.Loaded)
                     SiteTransferViewModel.ByAnotherVehicle = true;

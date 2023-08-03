@@ -13,7 +13,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 {
-    [AuthorizeRoles(ProcurementConstants.ProcurementUserDepartmentUser)]
+    [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
     public class TenderMessageReceiverController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();

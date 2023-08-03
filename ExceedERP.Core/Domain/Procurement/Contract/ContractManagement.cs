@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Procurement.Settings;
 
@@ -23,8 +27,7 @@ namespace ExceedERP.Core.Domain.Procurement.Contract
     public class ContractManagement : NewOperations
     {
         public int ContractManagementID { get; set; }
-        [Display(Name = "Branch/Project")]
-        public int BranchId { get; set; }
+       
         [Required]
         [Display(Name = "Supplier Name")]
         public string SupplierName { get; set; }
@@ -60,6 +63,7 @@ namespace ExceedERP.Core.Domain.Procurement.Contract
         public decimal RetentionPercentage { get; set; }
         [Display(Name = "Advance Taken")]
         public decimal Advance { get; set; }
+        [Display(Name = "Procurement Officer")]
         public int ProcurementOfficer { get; set; }
         [DisplayName("Transferred To Payment?")]
         public bool IsTransferredToPayment { get; set; }
@@ -70,7 +74,12 @@ namespace ExceedERP.Core.Domain.Procurement.Contract
         public bool IsPaid { get; set; }
         [DisplayName("Contract Status")]
         public ContractStatus ContractStatus { get; set; }
-        
+        [Display(Name = "Branch/Project")]
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
+        [DisplayName("Purchase Type")]
+        public PurchasePaymentType PurchasePaymentType { get; set; }
+
         public virtual ICollection<ContractManagementItem> ContractManagementItem { get; set; }
         public virtual ICollection<ContractPaymentSchedule> ContractPaymentSchedules { get; set; }
         public virtual ICollection<ContractRenewal> Renewals { get; set; }

@@ -15,7 +15,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 {
-    [AuthorizeRoles(ProcurementConstants.ProcurementUser, ProcurementConstants.ProcurementTenderApprover)]
+    [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementTenderApprover)]
     public class FinancialOfferController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
