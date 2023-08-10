@@ -34,6 +34,7 @@ namespace ExceedERP.Reporting.Finance
             Telerik.Reporting.ReportParameter reportParameter9 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter10 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter11 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter12 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -44,14 +45,6 @@ namespace ExceedERP.Reporting.Finance
             this.textBox3 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
             this.textBox18 = new Telerik.Reporting.TextBox();
-            this.branches = new Telerik.Reporting.ObjectDataSource();
-            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
-            this.periodDS = new Telerik.Reporting.ObjectDataSource();
-            this.natuaralaccountDs = new Telerik.Reporting.ObjectDataSource();
-            this.balancingSegmentDs = new Telerik.Reporting.ObjectDataSource();
-            this.amountType = new Telerik.Reporting.ObjectDataSource();
-            this.SegmentTypes = new Telerik.Reporting.ObjectDataSource();
-            this.SegmentValues = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table2 = new Telerik.Reporting.Table();
             this.textBox30 = new Telerik.Reporting.TextBox();
@@ -65,7 +58,6 @@ namespace ExceedERP.Reporting.Finance
             this.textBox15 = new Telerik.Reporting.TextBox();
             this.textBox13 = new Telerik.Reporting.TextBox();
             this.textBox14 = new Telerik.Reporting.TextBox();
-            this.TrialBalanceOds = new Telerik.Reporting.ObjectDataSource();
             this.shape3 = new Telerik.Reporting.Shape();
             this.textBox23 = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
@@ -78,6 +70,16 @@ namespace ExceedERP.Reporting.Finance
             this.textBox10 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
+            this.TrialBalanceOds = new Telerik.Reporting.ObjectDataSource();
+            this.branches = new Telerik.Reporting.ObjectDataSource();
+            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
+            this.periodDS = new Telerik.Reporting.ObjectDataSource();
+            this.natuaralaccountDs = new Telerik.Reporting.ObjectDataSource();
+            this.balancingSegmentDs = new Telerik.Reporting.ObjectDataSource();
+            this.amountType = new Telerik.Reporting.ObjectDataSource();
+            this.BusinessUnitDs = new Telerik.Reporting.ObjectDataSource();
+            this.SegmentTypes = new Telerik.Reporting.ObjectDataSource();
+            this.SegmentValues = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -85,6 +87,7 @@ namespace ExceedERP.Reporting.Finance
             // 
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.9021110534667969D), Telerik.Reporting.Drawing.Unit.Inch(0.20138898491859436D));
+            this.textBox2.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox2.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox2.StyleName = "Civic.TableHeader";
             this.textBox2.Value = "Account Code";
@@ -93,6 +96,7 @@ namespace ExceedERP.Reporting.Finance
             // 
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.3994054794311523D), Telerik.Reporting.Drawing.Unit.Inch(0.20138898491859436D));
+            this.textBox3.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox3.StyleName = "Civic.TableHeader";
             this.textBox3.Value = "Account Description";
@@ -102,6 +106,7 @@ namespace ExceedERP.Reporting.Finance
             this.textBox4.Format = "{0:N2}";
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8917016983032227D), Telerik.Reporting.Drawing.Unit.Inch(0.20138898491859436D));
+            this.textBox4.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox4.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox4.StyleName = "Civic.TableHeader";
             this.textBox4.Value = "Debit";
@@ -110,59 +115,10 @@ namespace ExceedERP.Reporting.Finance
             // 
             this.textBox18.Name = "textBox18";
             this.textBox18.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5067033767700195D), Telerik.Reporting.Drawing.Unit.Inch(0.20138898491859436D));
+            this.textBox18.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox18.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox18.StyleName = "Civic.TableHeader";
             this.textBox18.Value = "Credit";
-            // 
-            // branches
-            // 
-            this.branches.DataMember = "BranchList";
-            this.branches.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.FinanceSharedDataSource);
-            this.branches.Name = "branches";
-            // 
-            // fiscalYeardDs
-            // 
-            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
-            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
-            this.fiscalYeardDs.Name = "fiscalYeardDs";
-            // 
-            // periodDS
-            // 
-            this.periodDS.DataMember = "GetPeriods";
-            this.periodDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
-            this.periodDS.Name = "periodDS";
-            // 
-            // natuaralaccountDs
-            // 
-            this.natuaralaccountDs.DataMember = "GetAccountList";
-            this.natuaralaccountDs.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
-            this.natuaralaccountDs.Name = "natuaralaccountDs";
-            // 
-            // balancingSegmentDs
-            // 
-            this.balancingSegmentDs.DataMember = "TrialBalanceBalancingSegment";
-            this.balancingSegmentDs.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.FinanceSharedDataSource);
-            this.balancingSegmentDs.Name = "balancingSegmentDs";
-            // 
-            // amountType
-            // 
-            this.amountType.DataMember = "TrialBalanceAmountType";
-            this.amountType.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.FinanceSharedDataSource);
-            this.amountType.Name = "amountType";
-            // 
-            // SegmentTypes
-            // 
-            this.SegmentTypes.DataMember = "GeSegmentTypeList";
-            this.SegmentTypes.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
-            this.SegmentTypes.Name = "SegmentTypes";
-            // 
-            // SegmentValues
-            // 
-            this.SegmentValues.DataMember = "GeSegmentValueList";
-            this.SegmentValues.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
-            this.SegmentValues.Name = "SegmentValues";
-            this.SegmentValues.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("type", typeof(string), "= Parameters.segmentType.Value")});
             // 
             // detailSection1
             // 
@@ -174,9 +130,9 @@ namespace ExceedERP.Reporting.Finance
             // table2
             // 
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(9.6999216079711914D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1041666641831398D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1041666716337204D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999986886978149D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.60416692495346069D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.60416686534881592D)));
             this.table2.Body.SetCellContent(1, 0, this.textBox30);
             this.table2.Body.SetCellContent(0, 0, this.textBox31);
             this.table2.Body.SetCellContent(2, 0, this.table1);
@@ -221,7 +177,7 @@ namespace ExceedERP.Reporting.Finance
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.9021109342575073D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(4.3994054794311523D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.8917014598846436D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5067036151885986D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5067037343978882D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20138897001743317D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20138897001743317D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox5);
@@ -288,7 +244,7 @@ namespace ExceedERP.Reporting.Finance
             this.textBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.8917016983032227D), Telerik.Reporting.Drawing.Unit.Inch(0.20138895511627197D));
             this.textBox7.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox7.StyleName = "Civic.TableBody";
-            this.textBox7.Value = "= Fields.Debit";
+            this.textBox7.Value = "= IIF(Fields.Debit=0,\' \',Fields.Debit)";
             // 
             // textBox8
             // 
@@ -297,7 +253,7 @@ namespace ExceedERP.Reporting.Finance
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5067033767700195D), Telerik.Reporting.Drawing.Unit.Inch(0.20138895511627197D));
             this.textBox8.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox8.StyleName = "Civic.TableBody";
-            this.textBox8.Value = "= Fields.Credit";
+            this.textBox8.Value = "= IIF(Fields.Credit=0,\' \',Fields.Credit)";
             // 
             // textBox12
             // 
@@ -335,21 +291,6 @@ namespace ExceedERP.Reporting.Finance
             this.textBox14.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox14.StyleName = "Civic.TableBody";
             this.textBox14.Value = "Total Sum";
-            // 
-            // TrialBalanceOds
-            // 
-            this.TrialBalanceOds.DataMember = "TrialBalanceReport";
-            this.TrialBalanceOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.GL.TrialBalanceDataSource);
-            this.TrialBalanceOds.Name = "TrialBalanceOds";
-            this.TrialBalanceOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("fromperiod", typeof(string), "= Parameters.fromperiod.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("toperiod", typeof(string), "= Parameters.toperiod.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("balancingSegment", typeof(string), "= Parameters.balancingSegment.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("amounttype", typeof(string), "= Parameters.amounttype.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("account", typeof(string), "= Parameters.account.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("segmentType", typeof(string), "= Parameters.segmentType.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("segmentValue", typeof(string), "= Parameters.segmentValue.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("summarizeByAccount", typeof(bool), "= Parameters.summarizeByAccount.Value")});
             // 
             // shape3
             // 
@@ -474,6 +415,78 @@ namespace ExceedERP.Reporting.Finance
             this.textBox19});
             this.reportHeaderSection1.Name = "reportHeaderSection1";
             // 
+            // TrialBalanceOds
+            // 
+            this.TrialBalanceOds.DataMember = "TrialBalanceReport";
+            this.TrialBalanceOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.GL.TrialBalanceDataSource);
+            this.TrialBalanceOds.Name = "TrialBalanceOds";
+            this.TrialBalanceOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("fromperiod", typeof(string), "= Parameters.fromperiod.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("toperiod", typeof(string), "= Parameters.toperiod.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("balancingSegment", typeof(string), "= Parameters.balancingSegment.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("amounttype", typeof(string), "= Parameters.amounttype.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("account", typeof(string), "= Parameters.account.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentType", typeof(string), "= Parameters.segmentType.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("segmentValue", typeof(string), "= Parameters.segmentValue.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("summarizeByAccount", typeof(bool), "= Parameters.summarizeByAccount.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("businessUnit", typeof(string), "= Parameters.businessUnit.Value")});
+            // 
+            // branches
+            // 
+            this.branches.DataMember = "BranchList";
+            this.branches.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.FinanceSharedDataSource);
+            this.branches.Name = "branches";
+            // 
+            // fiscalYeardDs
+            // 
+            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
+            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
+            this.fiscalYeardDs.Name = "fiscalYeardDs";
+            // 
+            // periodDS
+            // 
+            this.periodDS.DataMember = "GetPeriods";
+            this.periodDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
+            this.periodDS.Name = "periodDS";
+            // 
+            // natuaralaccountDs
+            // 
+            this.natuaralaccountDs.DataMember = "GetAccountList";
+            this.natuaralaccountDs.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.natuaralaccountDs.Name = "natuaralaccountDs";
+            // 
+            // balancingSegmentDs
+            // 
+            this.balancingSegmentDs.DataMember = "TrialBalanceBalancingSegment";
+            this.balancingSegmentDs.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.FinanceSharedDataSource);
+            this.balancingSegmentDs.Name = "balancingSegmentDs";
+            // 
+            // amountType
+            // 
+            this.amountType.DataMember = "TrialBalanceAmountType";
+            this.amountType.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.FinanceSharedDataSource);
+            this.amountType.Name = "amountType";
+            // 
+            // BusinessUnitDs
+            // 
+            this.BusinessUnitDs.DataMember = "GetBizUnitAccountList";
+            this.BusinessUnitDs.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.BusinessUnitDs.Name = "BusinessUnitDs";
+            // 
+            // SegmentTypes
+            // 
+            this.SegmentTypes.DataMember = "GeSegmentTypeList";
+            this.SegmentTypes.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.SegmentTypes.Name = "SegmentTypes";
+            // 
+            // SegmentValues
+            // 
+            this.SegmentValues.DataMember = "GeSegmentValueList";
+            this.SegmentValues.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.SegmentValues.Name = "SegmentValues";
+            this.SegmentValues.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("type", typeof(string), "= Parameters.segmentType.Value")});
+            // 
             // Organization
             // 
             this.Organization.DataMember = "GetOrganization";
@@ -547,27 +560,35 @@ namespace ExceedERP.Reporting.Finance
             reportParameter8.Text = "Amount Type";
             reportParameter9.AllowBlank = false;
             reportParameter9.AllowNull = true;
-            reportParameter9.AvailableValues.DataSource = this.SegmentTypes;
-            reportParameter9.AvailableValues.DisplayMember = "= Fields.Name";
-            reportParameter9.AvailableValues.ValueMember = "= Fields.Name";
-            reportParameter9.Name = "segmentType";
-            reportParameter9.Text = "Segment Type";
+            reportParameter9.AvailableValues.DataSource = this.BusinessUnitDs;
+            reportParameter9.AvailableValues.DisplayMember = "= Fields.Values+\"-\"+ Fields.Description";
+            reportParameter9.AvailableValues.ValueMember = "= Fields.Values";
+            reportParameter9.Name = "businessUnit";
+            reportParameter9.Text = "Business Unit";
             reportParameter9.Visible = true;
             reportParameter10.AllowBlank = false;
             reportParameter10.AllowNull = true;
-            reportParameter10.AvailableValues.DataSource = this.SegmentValues;
-            reportParameter10.AvailableValues.DisplayMember = "= Fields.Values+\"-\"+ Fields.Description";
-            reportParameter10.AvailableValues.ValueMember = "= Fields.Values";
-            reportParameter10.Name = "segmentValue";
-            reportParameter10.Text = "Segment Value";
+            reportParameter10.AvailableValues.DataSource = this.SegmentTypes;
+            reportParameter10.AvailableValues.DisplayMember = "= Fields.Name";
+            reportParameter10.AvailableValues.ValueMember = "= Fields.Name";
+            reportParameter10.Name = "segmentType";
+            reportParameter10.Text = "Segment Type";
             reportParameter10.Visible = true;
             reportParameter11.AllowBlank = false;
             reportParameter11.AllowNull = true;
-            reportParameter11.Name = "summarizeByAccount";
-            reportParameter11.Text = "Summarize By Account";
-            reportParameter11.Type = Telerik.Reporting.ReportParameterType.Boolean;
-            reportParameter11.Value = "= False";
+            reportParameter11.AvailableValues.DataSource = this.SegmentValues;
+            reportParameter11.AvailableValues.DisplayMember = "= Fields.Values+\"-\"+ Fields.Description";
+            reportParameter11.AvailableValues.ValueMember = "= Fields.Values";
+            reportParameter11.Name = "segmentValue";
+            reportParameter11.Text = "Segment Value";
             reportParameter11.Visible = true;
+            reportParameter12.AllowBlank = false;
+            reportParameter12.AllowNull = true;
+            reportParameter12.Name = "summarizeByAccount";
+            reportParameter12.Text = "Summarize By Account";
+            reportParameter12.Type = Telerik.Reporting.ReportParameterType.Boolean;
+            reportParameter12.Value = "= False";
+            reportParameter12.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
@@ -579,6 +600,7 @@ namespace ExceedERP.Reporting.Finance
             this.ReportParameters.Add(reportParameter9);
             this.ReportParameters.Add(reportParameter10);
             this.ReportParameters.Add(reportParameter11);
+            this.ReportParameters.Add(reportParameter12);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -665,5 +687,6 @@ namespace ExceedERP.Reporting.Finance
         private Telerik.Reporting.ReportHeaderSection reportHeaderSection1;
         private Telerik.Reporting.ObjectDataSource SegmentTypes;
         private Telerik.Reporting.ObjectDataSource SegmentValues;
+        private Telerik.Reporting.ObjectDataSource BusinessUnitDs;
     }
 }
