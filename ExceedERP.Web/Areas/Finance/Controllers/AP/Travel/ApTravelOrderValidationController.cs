@@ -20,150 +20,151 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 {
-    public class ApTravelOrderValidationController : Controller
-    {
-        private ExceedDbContext _db = new ExceedDbContext();
-        readonly AccountHelper _accountHelper = new AccountHelper();
-        private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
+	public class ApTravelOrderValidationController : Controller
+	{
+		private ExceedDbContext _db = new ExceedDbContext();
+		readonly AccountHelper _accountHelper = new AccountHelper();
+		private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelOrderApprover, FinanceConstants.AccountPayableTravelOrderApprover)]
-        public ActionResult Index()
-        {
-            return View();
-        }
+		[AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelOrderApprover, FinanceConstants.AccountPayableTravelOrderApprover)]
+		public ActionResult Index()
+		{
+			return View();
+		}
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelOrderApprover, FinanceConstants.AccountPayableTravelOrderApprover)]
-        public ActionResult ApTravelOrderValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
-        {
-            IQueryable<ApTravelOrderValidation> aptravelordervalidations = _db.ApTravelOrderValidations.Where(x=>x.ApTravelOrderId==id);
-            DataSourceResult result = aptravelordervalidations.ToDataSourceResult(request, apTravelOrderValidation => new {
-                ApTravelOrderValidationId = apTravelOrderValidation.ApTravelOrderValidationId,
-                Status = apTravelOrderValidation.Status,
-                Remark = apTravelOrderValidation.Remark,
-                OrgBranchName = apTravelOrderValidation.OrgBranchName,
-                DateCreated = apTravelOrderValidation.DateCreated,
-                LastModified = apTravelOrderValidation.LastModified,
-                CreatedBy = apTravelOrderValidation.CreatedBy,
-                ModifiedBy = apTravelOrderValidation.ModifiedBy
-            });
+		[AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelOrderApprover, FinanceConstants.AccountPayableTravelOrderApprover)]
+		public ActionResult ApTravelOrderValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
+		{
+			IQueryable<ApTravelOrderValidation> aptravelordervalidations = _db.ApTravelOrderValidations.Where(x=>x.ApTravelOrderId==id);
+			DataSourceResult result = aptravelordervalidations.ToDataSourceResult(request, apTravelOrderValidation => new {
+				ApTravelOrderValidationId = apTravelOrderValidation.ApTravelOrderValidationId,
+				Status = apTravelOrderValidation.Status,
+				Remark = apTravelOrderValidation.Remark,
+				OrgBranchName = apTravelOrderValidation.OrgBranchName,
+				DateCreated = apTravelOrderValidation.DateCreated,
+				LastModified = apTravelOrderValidation.LastModified,
+				CreatedBy = apTravelOrderValidation.CreatedBy,
+				ModifiedBy = apTravelOrderValidation.ModifiedBy
+			});
 
-            return Json(result);
-        }
+			return Json(result);
+		}
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableTravelOrderApprover)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApTravelOrderValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ApTravelOrderValidation apTravelOrderValidation)
-        {
-            
-            var record = _db.ApTravelOrders.Find(id);
-            if (record != null && record.IsOnlineApproved)
-                ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
+		[AuthorizeRoles(FinanceConstants.AccountPayableTravelOrderApprover)]
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult ApTravelOrderValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ApTravelOrderValidation apTravelOrderValidation)
+		{
+			
+			var record = _db.ApTravelOrders.Find(id);
+			if (record != null && record.IsOnlineApproved)
+				ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
 
-            if (ModelState.IsValid)
-            {
+			if (ModelState.IsValid)
+			{
 
-                if (record != null)
-                {
-                    if (apTravelOrderValidation.Status == ApprovalStatuses.Approve)
-                    {
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
-                        _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
+				if (record != null)
+				{
+					if (apTravelOrderValidation.Status == ApprovalStatuses.Approve)
+					{
+						record.Status = "Approved";
+						record.IsOnlineApproved = true;
+						record.OnlineApprovedBy = User.Identity.Name;
+						record.OnlineApprovedTime = DateTime.Now;
+						_db.Entry(record).State = EntityState.Modified;
+						_db.SaveChanges();
 
-                    }
+					}
 
-                    if (apTravelOrderValidation.Status == ApprovalStatuses.Reject)
-                    {
-                        record.IsSendForApproval = false;
-                        record.Status = "Finance Rejected";
-                        _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
-                    }
+					if (apTravelOrderValidation.Status == ApprovalStatuses.Reject)
+					{
+						record.IsSendForApproval = false;
+						record.Status = "Finance Rejected";
+						_db.Entry(record).State = EntityState.Modified;
+						_db.SaveChanges();
+					}
 
-                    var entity = new ApTravelOrderValidation
-                    {
-                        ApTravelOrderId = id,
-                        Status = apTravelOrderValidation.Status,
-                        Remark = apTravelOrderValidation.Remark,
-                        OrgBranchName = apTravelOrderValidation.OrgBranchName,
-                        DateCreated = apTravelOrderValidation.DateCreated,
-                        LastModified = apTravelOrderValidation.LastModified,
-                        CreatedBy = apTravelOrderValidation.CreatedBy,
-                        ModifiedBy = apTravelOrderValidation.ModifiedBy
-                    };
+					var entity = new ApTravelOrderValidation
+					{
+						ApTravelOrderId = id,
+						Status = apTravelOrderValidation.Status,
+						Remark = apTravelOrderValidation.Remark,
+						OrgBranchName = apTravelOrderValidation.OrgBranchName,
 
-                    _db.ApTravelOrderValidations.Add(entity);
-                    _db.SaveChanges();
-                    apTravelOrderValidation.ApTravelOrderValidationId = entity.ApTravelOrderValidationId;
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "AP travel order approval", "Success", User.Identity.Name, $"approved travel order {entity.ApTravelOrderId} ", Modules.Finance);
-                    #endregion
-                }
-            }
+						DateCreated = DateTime.Now,
+						CreatedBy = User.Identity.Name,
+						LastModified = null,
+						ModifiedBy = null
+					};
 
-            return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
-        }
+					_db.ApTravelOrderValidations.Add(entity);
+					_db.SaveChanges();
+					apTravelOrderValidation.ApTravelOrderValidationId = entity.ApTravelOrderValidationId;
+					#region operation log
+					UserHelper.OperationLog(Request.UserHostAddress, "AP travel order approval", "Success", User.Identity.Name, $"approved travel order {entity.ApTravelOrderId} ", Modules.Finance);
+					#endregion
+				}
+			}
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableTravelOrderApprover)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApTravelOrderValidations_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrderValidation apTravelOrderValidation)
-        {
-            if (ModelState.IsValid)
-            {
-                var entity = new ApTravelOrderValidation
-                {
-                    ApTravelOrderValidationId = apTravelOrderValidation.ApTravelOrderValidationId,
-                    Status = apTravelOrderValidation.Status,
-                    Remark = apTravelOrderValidation.Remark,
-                    OrgBranchName = apTravelOrderValidation.OrgBranchName,
-                    DateCreated = apTravelOrderValidation.DateCreated,
-                    LastModified = apTravelOrderValidation.LastModified,
-                    CreatedBy = apTravelOrderValidation.CreatedBy,
-                    ModifiedBy = apTravelOrderValidation.ModifiedBy
-                };
+			return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
+		}
 
-                _db.ApTravelOrderValidations.Attach(entity);
-                _db.Entry(entity).State = EntityState.Modified;
-                _db.SaveChanges();
-            }
+		[AuthorizeRoles(FinanceConstants.AccountPayableTravelOrderApprover)]
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult ApTravelOrderValidations_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrderValidation apTravelOrderValidation)
+		{
+			if (ModelState.IsValid)
+			{
+				var entity = new ApTravelOrderValidation
+				{
+					ApTravelOrderValidationId = apTravelOrderValidation.ApTravelOrderValidationId,
+					Status = apTravelOrderValidation.Status,
+					Remark = apTravelOrderValidation.Remark,
+					OrgBranchName = apTravelOrderValidation.OrgBranchName,
+					DateCreated = apTravelOrderValidation.DateCreated,
+					LastModified = apTravelOrderValidation.LastModified,
+					CreatedBy = apTravelOrderValidation.CreatedBy,
+					ModifiedBy = apTravelOrderValidation.ModifiedBy
+				};
 
-            return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
-        }
+				_db.ApTravelOrderValidations.Attach(entity);
+				_db.Entry(entity).State = EntityState.Modified;
+				_db.SaveChanges();
+			}
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableTravelOrderApprover)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApTravelOrderValidations_Destroy([DataSourceRequest]DataSourceRequest request, ApTravelOrderValidation apTravelOrderValidation)
-        {
-            if (ModelState.IsValid)
-            {
-                var entity = new ApTravelOrderValidation
-                {
-                    ApTravelOrderValidationId = apTravelOrderValidation.ApTravelOrderValidationId,
-                    Status = apTravelOrderValidation.Status,
-                    Remark = apTravelOrderValidation.Remark,
-                    OrgBranchName = apTravelOrderValidation.OrgBranchName,
-                    DateCreated = apTravelOrderValidation.DateCreated,
-                    LastModified = apTravelOrderValidation.LastModified,
-                    CreatedBy = apTravelOrderValidation.CreatedBy,
-                    ModifiedBy = apTravelOrderValidation.ModifiedBy
-                };
+			return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
+		}
 
-                _db.ApTravelOrderValidations.Attach(entity);
-                _db.ApTravelOrderValidations.Remove(entity);
-                _db.SaveChanges();
-            }
+		[AuthorizeRoles(FinanceConstants.AccountPayableTravelOrderApprover)]
+		[AcceptVerbs(HttpVerbs.Post)]
+		public ActionResult ApTravelOrderValidations_Destroy([DataSourceRequest]DataSourceRequest request, ApTravelOrderValidation apTravelOrderValidation)
+		{
+			if (ModelState.IsValid)
+			{
+				var entity = new ApTravelOrderValidation
+				{
+					ApTravelOrderValidationId = apTravelOrderValidation.ApTravelOrderValidationId,
+					Status = apTravelOrderValidation.Status,
+					Remark = apTravelOrderValidation.Remark,
+					OrgBranchName = apTravelOrderValidation.OrgBranchName,
+					DateCreated = apTravelOrderValidation.DateCreated,
+					LastModified = apTravelOrderValidation.LastModified,
+					CreatedBy = apTravelOrderValidation.CreatedBy,
+					ModifiedBy = apTravelOrderValidation.ModifiedBy
+				};
 
-            return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
-        }
+				_db.ApTravelOrderValidations.Attach(entity);
+				_db.ApTravelOrderValidations.Remove(entity);
+				_db.SaveChanges();
+			}
 
-       
-        protected override void Dispose(bool disposing)
-        {
-            _db.Dispose();
-            base.Dispose(disposing);
-        }
-    }
+			return Json(new[] { apTravelOrderValidation }.ToDataSourceResult(request, ModelState));
+		}
+
+	   
+		protected override void Dispose(bool disposing)
+		{
+			_db.Dispose();
+			base.Dispose(disposing);
+		}
+	}
 }

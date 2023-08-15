@@ -1118,6 +1118,18 @@
     <Compile Include="Finance\IFRS\rptSOCIByProject.Designer.cs">
       <DependentUpon>rptSOCIByProject.cs</DependentUpon>
     </Compile>
+    <Compile Include="Finance\rptSalesInvoice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\rptSalesInvoice.designer.cs">
+      <DependentUpon>rptSalesInvoice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\rptSaleStatus.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\rptSaleStatus.designer.cs">
+      <DependentUpon>rptSaleStatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Finance\rptTrialBalanceBySubAccount.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1130,6 +1142,74 @@
     <Compile Include="Finance\rptVoidDocList.Designer.cs">
       <DependentUpon>rptVoidDocList.cs</DependentUpon>
     </Compile>
+    <Compile Include="Finance\Sales\DataSource\CommissionByPartnerAndAgentDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\CustomerTransactionHistoryDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\InvoiceRegisterDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\PartnerAndAgentSettlementDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\ProductSoldToCustomerObjectDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\SaleInvoiceObjectDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\SalesOrderCustomerObjectDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\SalesOrderDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\SalesOrderRegisterDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\SaleStatusObjectDataSource.cs" />
+    <Compile Include="Finance\Sales\DataSource\SupplierTransactionHistoryObjectDataSource.cs" />
+    <Compile Include="Finance\Sales\rptCommissionByPartnerAndAgent.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptCommissionByPartnerAndAgent.Designer.cs">
+      <DependentUpon>rptCommissionByPartnerAndAgent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptCustomerTransactionHistory.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptCustomerTransactionHistory.Designer.cs">
+      <DependentUpon>rptCustomerTransactionHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptInvoiceRegister.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptInvoiceRegister.Designer.cs">
+      <DependentUpon>rptInvoiceRegister.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptPartnerAndAgentSettlement.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptPartnerAndAgentSettlement.Designer.cs">
+      <DependentUpon>rptPartnerAndAgentSettlement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptProductSoldToCustomer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptProductSoldToCustomer.designer.cs">
+      <DependentUpon>rptProductSoldToCustomer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptSalesOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptSalesOrder.Designer.cs">
+      <DependentUpon>rptSalesOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptSalesOrderRegister.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptSalesOrderRegister.Designer.cs">
+      <DependentUpon>rptSalesOrderRegister.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\rptSupplierTransactionHistory.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Sales\rptSupplierTransactionHistory.Designer.cs">
+      <DependentUpon>rptSupplierTransactionHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Sales\ViewModel\CommissionByPartnerAndAgentViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\CustomerTransactionHistoryViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\CustomerTransactionLists.cs" />
+    <Compile Include="Finance\Sales\ViewModel\InvoiceRegisterViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\PartnerAndAgentSettlementViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\SalesOrderRegisterViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\SalesOrderViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\SupplierTransactionHistoryViewModel.cs" />
+    <Compile Include="Finance\Sales\ViewModel\SupplierTransactionListsViewModel.cs" />
     <Compile Include="Finance\SubLedger\APJournalEntries.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3612,22 +3692,60 @@
     <Compile Include="Procurements\Award.designer.cs">
       <DependentUpon>Award.cs</DependentUpon>
     </Compile>
+    <Compile Include="Procurements\DataSource\AwardOds.cs" />
     <Compile Include="Procurements\DataSource\BidPurchasingSuppliersOds.cs" />
     <Compile Include="Procurements\DataSource\CancelledSupplierObjectDataSource.cs" />
     <Compile Include="Procurements\DataSource\ContractByCategoryReportObjectDataSource.cs" />
     <Compile Include="Procurements\DataSource\ContractListReportObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\PurchasedItemOds.cs" />
+    <Compile Include="Procurements\DataSource\GuaranteeListReportObjectDataSource.cs" />
     <Compile Include="Procurements\DataSource\GuaranteeTypeOds.cs" />
-    <Compile Include="Procurements\DataSource\AwardOds.cs" />
+    <Compile Include="Procurements\DataSource\HeaderObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\LotOds.cs" />
+    <Compile Include="Procurements\DataSource\LotSummaryOds.cs" />
     <Compile Include="Procurements\DataSource\MonthlyMaterialRequirementObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\MonthlyPurchaseByCategoryAndAmountOds.cs" />
     <Compile Include="Procurements\DataSource\NoOfApprovedRequisitionObjectDataSource.cs" />
     <Compile Include="Procurements\DataSource\NoOfCompletedPurchaseObjectDataSource.cs" />
-    <Compile Include="Procurements\Print\Print\ForeignPurchasePayment.cs" />
-    <Compile Include="Procurements\Print\Print\ProcurementPlanOds.cs" />
-    <Compile Include="Procurements\Print\Print\ProcurementNeedOds.cs" />
-    <Compile Include="Procurements\Print\Print\PurchaseRequistionOds.cs" />
-    <Compile Include="Procurements\DataSource\LotSummaryOds.cs" />
-    <Compile Include="Procurements\Print\Print\InvitationLetterOds.cs" />
+    <Compile Include="Procurements\DataSource\NoOfPurchasedRequisitionObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\ProcurementNeedOds.cs" />
+    <Compile Include="Procurements\DataSource\ProcurementPlanOds.cs" />
+    <Compile Include="Procurements\DataSource\ProformaSummaryOds.cs" />
+    <Compile Include="Procurements\DataSource\PurchasedItemOds.cs" />
+    <Compile Include="Procurements\DataSource\PurchaseFollowingFormOds.cs" />
+    <Compile Include="Procurements\DataSource\PurchaseFollowUpOds.cs" />
+    <Compile Include="Procurements\DataSource\PurchaserDataSource.cs" />
+    <Compile Include="Procurements\DataSource\PurchaseReportOds.cs" />
+    <Compile Include="Procurements\DataSource\PurchaseRequisitionByStatusOds.cs" />
+    <Compile Include="Procurements\DataSource\PurchaseSummaryReportByPurchaseMethodObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\ReportTemplateDS.cs" />
+    <Compile Include="Procurements\DataSource\ResultNotificationLetterObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\SupplierOds.cs" />
+    <Compile Include="Procurements\DataSource\SuppliersObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\TechnicalPassFailObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\TenderCancellationObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\TenderOds.cs" />
+    <Compile Include="Procurements\DataSource\TenderOpeningObjectDataSource.cs" />
+    <Compile Include="Procurements\DataSource\TranscriptWithSupplierObjectDataSource.cs" />
+    <Compile Include="Procurements\Print\DataSource\ForeignPurchasePayment.cs" />
+    <Compile Include="Procurements\Print\DataSource\InvitationLetterOds.cs" />
+    <Compile Include="Procurements\Print\DataSource\ProcurementNeedOds.cs" />
+    <Compile Include="Procurements\Print\DataSource\ProcurementPlanOds.cs" />
+    <Compile Include="Procurements\Print\DataSource\PurchaseOrderOds.cs" />
+    <Compile Include="Procurements\Print\DataSource\PurchasePaymentOds.cs" />
+    <Compile Include="Procurements\Print\DataSource\PurchaseRequistionOds.cs" />
+    <Compile Include="Procurements\Print\DataSource\ServiceRequistionDs.cs" />
+    <Compile Include="Procurements\Print\ForeignPurchasePaymentRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Procurements\Print\ForeignPurchasePaymentRequest.Designer.cs">
+      <DependentUpon>ForeignPurchasePaymentRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Procurements\Print\InvitationLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Procurements\Print\InvitationLetter.Designer.cs">
+      <DependentUpon>InvitationLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Procurements\Print\ProcurementNeedPrint.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3640,42 +3758,17 @@
     <Compile Include="Procurements\Print\ProcurementPlanPrint.Designer.cs">
       <DependentUpon>ProcurementPlanPrint.cs</DependentUpon>
     </Compile>
-    <Compile Include="Procurements\Print\VM\ForeignPurchaseCostVm.cs" />
-    <Compile Include="Procurements\DataSource\PurchaseRequisitionByStatusOds.cs" />
-    <Compile Include="Procurements\DataSource\PurchaserDataSource.cs" />
-    <Compile Include="Procurements\DataSource\GuaranteeListReportObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\HeaderObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\LotOds.cs" />
-    <Compile Include="Procurements\DataSource\MonthlyPurchaseByCategoryAndAmountOds.cs" />
-    <Compile Include="Procurements\DataSource\NoOfPurchasedRequisitionObjectDataSource.cs" />
-    <Compile Include="Procurements\Print\Print\PurchaseOrderOds.cs" />
-    <Compile Include="Procurements\Print\Print\ServiceRequistionDs.cs" />
-    <Compile Include="Procurements\DataSource\ProcurementNeedOds.cs" />
-    <Compile Include="Procurements\DataSource\ProcurementPlanOds.cs" />
-    <Compile Include="Procurements\DataSource\PurchaseFollowingFormOds.cs" />
-    <Compile Include="Procurements\DataSource\PurchaseFollowUpOds.cs" />
-    <Compile Include="Procurements\DataSource\PurchaseReportOds.cs" />
-    <Compile Include="Procurements\DataSource\PurchaseSummaryReportByPurchaseMethodObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\ReportTemplateDS.cs" />
-    <Compile Include="Procurements\DataSource\ResultNotificationLetterObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\SupplierOds.cs" />
-    <Compile Include="Procurements\DataSource\SuppliersObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\TechnicalPassFailObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\TenderCancellationObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\TenderOds.cs" />
-    <Compile Include="Procurements\DataSource\TenderOpeningObjectDataSource.cs" />
-    <Compile Include="Procurements\DataSource\TranscriptWithSupplierObjectDataSource.cs" />
-    <Compile Include="Procurements\Print\ForeignPurchasePaymentRequest.cs">
+    <Compile Include="Procurements\Print\PurchasePaymentPrint.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Procurements\Print\ForeignPurchasePaymentRequest.Designer.cs">
-      <DependentUpon>ForeignPurchasePaymentRequest.cs</DependentUpon>
+    <Compile Include="Procurements\Print\PurchasePaymentPrint.designer.cs">
+      <DependentUpon>PurchasePaymentPrint.cs</DependentUpon>
     </Compile>
-    <Compile Include="Procurements\Print\InvitationLetter.cs">
+    <Compile Include="Procurements\Print\rptPorchaseOrderPrint.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Procurements\Print\InvitationLetter.Designer.cs">
-      <DependentUpon>InvitationLetter.cs</DependentUpon>
+    <Compile Include="Procurements\Print\rptPorchaseOrderPrint.Designer.cs">
+      <DependentUpon>rptPorchaseOrderPrint.cs</DependentUpon>
     </Compile>
     <Compile Include="Procurements\Print\rptPurchaseRequisitionReview.cs">
       <SubType>Component</SubType>
@@ -3689,8 +3782,11 @@
     <Compile Include="Procurements\Print\ServiceRequisition.Designer.cs">
       <DependentUpon>ServiceRequisition.cs</DependentUpon>
     </Compile>
-    <Compile Include="Procurements\Print\VM\ProcurementPlanHeaderVm.cs" />
+    <Compile Include="Procurements\Print\VM\ForeignPurchaseCostVm.cs" />
+    <Compile Include="Procurements\Print\VM\PoHeaderVM.cs" />
     <Compile Include="Procurements\Print\VM\ProcurementNeedHeaderVm.cs" />
+    <Compile Include="Procurements\Print\VM\ProcurementPlanHeaderVm.cs" />
+    <Compile Include="Procurements\Print\VM\PurchasePaymentVM.cs" />
     <Compile Include="Procurements\ProcurementNeed.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3739,6 +3835,12 @@
     <Compile Include="Procurements\rptGuaranteeExtension.designer.cs">
       <DependentUpon>rptGuaranteeExtension.cs</DependentUpon>
     </Compile>
+    <Compile Include="Procurements\rptGuaranteeForfeited.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Procurements\rptGuaranteeForfeited.designer.cs">
+      <DependentUpon>rptGuaranteeForfeited.cs</DependentUpon>
+    </Compile>
     <Compile Include="Procurements\rptGuaranteeListReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3750,12 +3852,6 @@
     </Compile>
     <Compile Include="Procurements\rptGuaranteeRelease.designer.cs">
       <DependentUpon>rptGuaranteeRelease.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Procurements\rptGuaranteeForfeited.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Procurements\rptGuaranteeForfeited.designer.cs">
-      <DependentUpon>rptGuaranteeForfeited.cs</DependentUpon>
     </Compile>
     <Compile Include="Procurements\rptLotSummary.cs">
       <SubType>Component</SubType>
@@ -3798,12 +3894,6 @@
     </Compile>
     <Compile Include="Procurements\rptNoOfRequisition.designer.cs">
       <DependentUpon>rptNoOfRequisition.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Procurements\Print\rptPorchaseOrderPrint.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Procurements\Print\rptPorchaseOrderPrint.Designer.cs">
-      <DependentUpon>rptPorchaseOrderPrint.cs</DependentUpon>
     </Compile>
     <Compile Include="Procurements\rptProformaSummary.cs">
       <SubType>Component</SubType>
@@ -3888,7 +3978,6 @@
     <Compile Include="Procurements\ViewModel\ContractByCategoryReportViewModel.cs" />
     <Compile Include="Procurements\ViewModel\ContractListReportViewModel.cs" />
     <Compile Include="Procurements\ViewModel\GuaranteeListReportViewModel.cs" />
-    <Compile Include="Procurements\Print\VM\PoHeaderVM.cs" />
     <Compile Include="Procurements\ViewModel\MonthlyMaterialRequirementViewModel.cs" />
     <Compile Include="Procurements\ViewModel\MonthlyPurchaseByCategoryAndAmountReportViewModel.cs" />
     <Compile Include="Procurements\ViewModel\NoOfApprovedRequisitionViewModel.cs" />
@@ -4291,7 +4380,6 @@
     <None Include="HRM\CustomExpression\bin\Release\ExceedERP.Reporting.dll.config" />
     <None Include="HRM\HRM\Letters\ExperienceLetter.zip" />
     <None Include="packages.config" />
-    <Compile Include="Procurements\DataSource\ProformaSummaryOds.cs" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -4703,11 +4791,41 @@
     <EmbeddedResource Include="Finance\IFRS\rptSOCIByProject.resx">
       <DependentUpon>rptSOCIByProject.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Finance\rptSalesInvoice.resx">
+      <DependentUpon>rptSalesInvoice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\rptSaleStatus.resx">
+      <DependentUpon>rptSaleStatus.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Finance\rptTrialBalanceBySubAccount.resx">
       <DependentUpon>rptTrialBalanceBySubAccount.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\rptVoidDocList.resx">
       <DependentUpon>rptVoidDocList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptCommissionByPartnerAndAgent.resx">
+      <DependentUpon>rptCommissionByPartnerAndAgent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptCustomerTransactionHistory.resx">
+      <DependentUpon>rptCustomerTransactionHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptInvoiceRegister.resx">
+      <DependentUpon>rptInvoiceRegister.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptPartnerAndAgentSettlement.resx">
+      <DependentUpon>rptPartnerAndAgentSettlement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptProductSoldToCustomer.resx">
+      <DependentUpon>rptProductSoldToCustomer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptSalesOrder.resx">
+      <DependentUpon>rptSalesOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptSalesOrderRegister.resx">
+      <DependentUpon>rptSalesOrderRegister.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Sales\rptSupplierTransactionHistory.resx">
+      <DependentUpon>rptSupplierTransactionHistory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\SubLedger\APJournalEntries.resx">
       <DependentUpon>APJournalEntries.cs</DependentUpon>
@@ -5615,6 +5733,9 @@
     <EmbeddedResource Include="PrintingEstimation\Design\EstimationFormReporting.resx">
       <DependentUpon>EstimationFormReporting.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PrintingEstimation\Design\rptChangeOfOrder.resx">
+      <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Procurements\AmharicAward.resx">
       <DependentUpon>AmharicAward.cs</DependentUpon>
     </EmbeddedResource>
@@ -5635,6 +5756,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\Print\ProcurementPlanPrint.resx">
       <DependentUpon>ProcurementPlanPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Procurements\Print\PurchasePaymentPrint.resx">
+      <DependentUpon>PurchasePaymentPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Procurements\Print\rptPorchaseOrderPrint.resx">
+      <DependentUpon>rptPorchaseOrderPrint.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\Print\rptPurchaseRequisitionReview.resx">
       <DependentUpon>rptPurchaseRequisitionReview.cs</DependentUpon>
@@ -5663,14 +5790,14 @@
     <EmbeddedResource Include="Procurements\rptGuaranteeExtension.resx">
       <DependentUpon>rptGuaranteeExtension.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Procurements\rptGuaranteeForfeited.resx">
+      <DependentUpon>rptGuaranteeForfeited.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Procurements\rptGuaranteeListReport.resx">
       <DependentUpon>rptGuaranteeListReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\rptGuaranteeRelease.resx">
       <DependentUpon>rptGuaranteeRelease.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Procurements\rptGuaranteeForfeited.resx">
-      <DependentUpon>rptGuaranteeForfeited.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\rptLotSummary.resx">
       <DependentUpon>rptLotSummary.cs</DependentUpon>
@@ -5692,9 +5819,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\rptNoOfRequisition.resx">
       <DependentUpon>rptNoOfRequisition.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Procurements\Print\rptPorchaseOrderPrint.resx">
-      <DependentUpon>rptPorchaseOrderPrint.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\rptProformaSummary.resx">
       <DependentUpon>rptProformaSummary.cs</DependentUpon>
@@ -5734,9 +5858,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\TechnicalResult.resx">
       <DependentUpon>TechnicalResult.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PrintingEstimation\Design\rptChangeOfOrder.resx">
-      <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.resx">
       <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>

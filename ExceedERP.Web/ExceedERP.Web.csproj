@@ -887,6 +887,12 @@
     <Compile Include="Areas\Finance\Controllers\AP\PettyCash\ApPettyCashPaymentController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\PettyCash\ApPettyCashUtilizationController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\PettyCash\ApPettyCashValidationController.cs" />
+    <Compile Include="Areas\Finance\Controllers\AP\ProcurementPaymentRequest\PurchasePaymentFinanceValidationController.cs" />
+    <Compile Include="Areas\Finance\Controllers\AP\ProcurementPaymentRequest\PurchasePaymentRequestBudgetValidationController.cs" />
+    <Compile Include="Areas\Finance\Controllers\AP\ProcurementPaymentRequest\PurchasePaymentRequestController.cs" />
+    <Compile Include="Areas\Finance\Controllers\AP\ProcurementPaymentRequest\PurchasePaymentRequestDocumentController.cs" />
+    <Compile Include="Areas\Finance\Controllers\AP\ProcurementPaymentRequest\PurchasePaymentRequestGrnController.cs" />
+    <Compile Include="Areas\Finance\Controllers\AP\ProcurementPaymentRequest\PurchasePaymentRequestValidationController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\Setting\APBusinessTypeController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\Setting\ApCashierSetupController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\Setting\ApSetupReceiptBalanceAccountController.cs" />
@@ -904,7 +910,6 @@
     <Compile Include="Areas\Finance\Controllers\AP\Travel\ApTravelOrderAdvancePaymentController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\Travel\ApTravelOrderController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\Travel\ApTravelOrderDepartureController.cs" />
-    <Compile Include="Areas\Finance\Controllers\AP\Travel\ApTravelOrderDistributionController.cs" />
     <Compile Include="Areas\Finance\Controllers\AP\Travel\ApTravelOrderValidationController.cs" />
     <Compile Include="Areas\Finance\Controllers\AR\Invoice\ARInvoiceController.cs" />
     <Compile Include="Areas\Finance\Controllers\AR\Invoice\ARInvoiceDistributionController.cs" />
@@ -946,7 +951,7 @@
     <Compile Include="Areas\Finance\Controllers\AR\StandardCollection\ARStandardCollectionLinesController.cs" />
     <Compile Include="Areas\Finance\Controllers\AR\StandardCollection\ARStandardCollectionValidationController.cs" />
     <Compile Include="Areas\Finance\Controllers\AR\StandardCollection\ARStandardCollectionViewModelController.cs" />
-    <Compile Include="Areas\Finance\Controllers\BankAccountController.cs" />
+    <Compile Include="Areas\Finance\Controllers\Bank\BankAccountController.cs" />
     <Compile Include="Areas\Finance\Controllers\Bank\ReconciliationBankAccountController.cs" />
     <Compile Include="Areas\Finance\Controllers\Bank\ReconciliationBankServiceChargeController.cs" />
     <Compile Include="Areas\Finance\Controllers\Bank\ReconciliationBankServiceChargeDistributionController.cs" />
@@ -2091,6 +2096,7 @@
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedItemSelfServiceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedSelfServiceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedValidationSelfServiceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\PurchaseRequisitionAttachmentSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ServiceRequisitionItemSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ServiceRequisitionSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ServiceRequisitionSelfCareSecondValidationController.cs" />
@@ -5429,6 +5435,9 @@
     <Content Include="Areas\Finance\Views\FinanceDashboardRange\Index.cshtml" />
     <Content Include="Areas\Finance\Views\FinanceDashboard\EditorTemplates\FinanceDashboradCategory.cshtml" />
     <Content Include="Areas\Finance\Views\FinanceDashboard\Index.cshtml" />
+    <Content Include="Areas\Finance\Views\FinancePaymentRequest\EditorTemplates\RentalPaymentRequestTemplate.cshtml" />
+    <Content Include="Areas\Finance\Views\FinancePaymentRequest\EditorTemplates\RentalPaymentRequestTemplateLine.cshtml" />
+    <Content Include="Areas\Finance\Views\FinancePaymentRequest\Index.cshtml" />
     <Content Include="Areas\Finance\Views\FinancePrint\ApDirectPayment.cshtml" />
     <Content Include="Areas\Finance\Views\FinancePrint\ApInvoice.cshtml" />
     <Content Include="Areas\Finance\Views\FinancePrint\ApMiscPayment.cshtml" />

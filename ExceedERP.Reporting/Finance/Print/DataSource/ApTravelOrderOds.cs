@@ -38,16 +38,20 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.RequestDate = apTravelOrder.RequestDate;
                 headerDs.AdvanceAmount = apTravelOrder.AdvanceAmount;
                 headerDs.Reference = apTravelOrder.Reference;
-
+                //department
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.CreatedBy));
                 headerDs.PreparedDate = apTravelOrder.DateCreated != null ? apTravelOrder.DateCreated : null;
 
+                headerDs.DepartmentSecondApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.DepartmentOnlineApprovedBy));
+                headerDs.DepartmentSecondApprovedDate = apTravelOrder.DepartmentOnlineApprovedTime != null ? apTravelOrder.DepartmentOnlineApprovedTime : null;
+
+                //finace
                 headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.SendForApprovalBy));
                 headerDs.AccountantCheckedDate = apTravelOrder.SendForApprovalTime != null ? apTravelOrder.SendForApprovalTime : null;
 
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.OnlineApprovedBy));
                 headerDs.ApprovedDate = apTravelOrder.OnlineApprovedTime;
-
+                //budget
                 headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.BudgetApprovedBy));
                 headerDs.BudgetApprovedDate = apTravelOrder.BudgetApprovedTime;
 
@@ -63,9 +67,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                         paymentReqValidations.FirstOrDefault(x => x.ApTravelOrderDepartmentValidationId == maxid);
                     if (approver != null)
                     {
-                        headerDs.DepartmentSecondApprovedBy =
-                            EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
-                        headerDs.DepartmentSecondApprovedDate = approver.DateCreated != null ? approver.DateCreated : null;
+                        //headerDs.DepartmentSecondApprovedBy =
+                        //    EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                        //headerDs.DepartmentSecondApprovedDate = approver.DateCreated != null ? approver.DateCreated : null;
 
                         var checker = paymentReqValidations.OrderByDescending(x => x.ApTravelOrderDepartmentValidationId)
                             .FirstOrDefault(x => x.ApTravelOrderDepartmentValidationId < maxid);
@@ -77,14 +81,14 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                                     UserHelper.GetUserEmployeeId(checker.CreatedBy));
                             headerDs.DepartmentApprovedDate = checker.DateCreated != null ? checker.DateCreated : null;
                         }
-                        else
-                        {
-                            headerDs.DepartmentApprovedBy =
-                                EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(apTravelOrder.DepartmentSendForApprovalBy));
-                            headerDs.DepartmentApprovedDate = apTravelOrder.DepartmentSendForApprovalTime != null ? apTravelOrder.DepartmentSendForApprovalTime : null;
+                        //else
+                        //{
+                        //    headerDs.DepartmentApprovedBy =
+                        //        EmployeeHelper.GetEmployeeEnglishName(
+                        //            UserHelper.GetUserEmployeeId(apTravelOrder.DepartmentSendForApprovalBy));
+                        //    headerDs.DepartmentApprovedDate = apTravelOrder.DepartmentSendForApprovalTime != null ? apTravelOrder.DepartmentSendForApprovalTime : null;
 
-                        }
+                        //}
                     }
 
                 }
@@ -137,6 +141,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
             {
                 var entity = new ApTravelAdvanceLineVm
                 {
+
+                    Type=line.Type,
+                    ItemName = _db.ApSetupItems.Find(int.Parse(line.ItemName))?.Name,
                     Description = line.Description,
                     UoM = line.UoM,
                     UnitPrice = line.UnitPrice,
@@ -162,6 +169,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                     To = line.To,
                     Date = line.Date,
                     ArrivalDate = line.ArrivalDate,
+                    Duration = line.Duration,
                     TransportMode = line.TransportMode,
                     Branch=_db.Branch.Find(line.DestinationBranchId)?.Name,
                     Remark = line.Remark

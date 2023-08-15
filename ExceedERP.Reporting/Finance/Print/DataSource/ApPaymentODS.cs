@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Finance.ViewModel.Print;
 using ExceedERP.Reporting.SharedDataSources;
 using System.Collections.Generic;
@@ -40,8 +41,14 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.HasPrepayment = payment.HasPrepayment;
                 headerDs.PrepaymentAmount = payment.PrepaymentAmount;
                 headerDs.Remark = payment.Remark;
-                headerDs.PreparedBy = payment.CreatedBy;
-                headerDs.ApprovedBy = payment.OnlineApprovedBy;
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.CreatedBy));
+                headerDs.PreparedDate = payment.DateCreated != null ? payment.DateCreated : null;
+
+                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.SendForApprovalBy));
+                headerDs.AccountantCheckedDate = payment.SendForApprovalTime != null ? payment.SendForApprovalTime : null;
+
+                headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.OnlineApprovedBy));
+                headerDs.ApprovedDate = payment.OnlineApprovedTime;
             }
 
             if (organization != null)

@@ -20,7 +20,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear,string periodFrom,string periodTo)
+        public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear,string periodFrom,string periodTo, string location, string costcenter, string subaccount)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
             var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
@@ -55,6 +55,49 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                     }
                 }
 
+                #region filter by segment
+
+                if (!String.IsNullOrEmpty(location))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(costcenter))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(subaccount))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                }
+
+               
+                #endregion
 
                 #region continuinng
                 foreach (var con in scoiRules.ContinuingOperations)
@@ -179,7 +222,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public ScoiReportVeiwModel ScoiReport(string fiscalyear,string periodFrom, string periodTo)
+        public ScoiReportVeiwModel ScoiReport(string fiscalyear,string periodFrom, string periodTo, string location, string costcenter, string subaccount)
         {
             ScoiReportVeiwModel scoiReport = new ScoiReportVeiwModel();
 
@@ -250,6 +293,46 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                         prevYearBegBalance = _reportHelper.GetAccountBegBalance(prevfyearObj.GlFiscalYearId, previousPeriodFrom);
                     }
 
+                    #region filter by segment
+                    if (!String.IsNullOrEmpty(location))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(costcenter))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(subaccount))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    }
+
+                  
+                    #endregion
 
                     #region continuing operation
 

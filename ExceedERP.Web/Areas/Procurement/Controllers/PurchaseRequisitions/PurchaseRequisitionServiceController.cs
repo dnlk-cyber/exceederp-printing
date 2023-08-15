@@ -82,7 +82,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             // List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //var xb = System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser);
+            //var xb = System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser);
             var user = userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
             var storekeepers = db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
             int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);

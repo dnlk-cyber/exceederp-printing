@@ -20,7 +20,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear,string periodFrom,string periodTo,string bizUnitCode)
+        public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear,string periodFrom,string periodTo,string bizUnitCode, string location, string costcenter, string subaccount)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
             var notes = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
@@ -31,9 +31,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
             if (notes != null && !String.IsNullOrEmpty(fiscalyear))
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
-                var prevYearBalance = new List<GLLedgerPostingLines>();
+                var prevYearEndBalance = new List<GLLedgerPostingLines>();
                 var prevYearBegBalance = new List<GLLedgerPostingLines>();
-                var currentYearBalance = new List<GLLedgerPostingLines>();
+                var currentYearEndBalance = new List<GLLedgerPostingLines>();
                 var currentYearBegBalance = new List<GLLedgerPostingLines>();
 
 
@@ -44,17 +44,60 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                     int prevyear = _fiscalYearHelper.GetPreviousFYearId(fyearObj.GlFiscalYearId);
                     var prevfyearObj = _db.GLFiscalYears.Find(prevyear);
 
-                    currentYearBalance = _reportHelper.GetAccountEndBalance(fyearObj.GlFiscalYearId, currentPeriodTo);
+                    currentYearEndBalance = _reportHelper.GetAccountEndBalance(fyearObj.GlFiscalYearId, currentPeriodTo);
                     currentYearBegBalance = _reportHelper.GetAccountBegBalance(fyearObj.GlFiscalYearId, currentPeriodFrom);
                     if (prevfyearObj != null)
                     {
                         int previousPeriodTo = String.IsNullOrEmpty(periodTo) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriodTo, prevfyearObj.GlFiscalYearId);
                         int previousPeriodFrom = String.IsNullOrEmpty(periodFrom) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriodFrom, prevfyearObj.GlFiscalYearId);
-                        prevYearBalance = _reportHelper.GetAccountEndBalance(prevfyearObj.GlFiscalYearId, previousPeriodTo);
+                        prevYearEndBalance = _reportHelper.GetAccountEndBalance(prevfyearObj.GlFiscalYearId, previousPeriodTo);
                         prevYearBegBalance = _reportHelper.GetAccountBegBalance(prevfyearObj.GlFiscalYearId, previousPeriodFrom);
                     }
                 }
 
+                #region filter by segment
+
+                if (!String.IsNullOrEmpty(location))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(costcenter))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(subaccount))
+                {
+                    currentYearEndBalance = currentYearEndBalance
+                          .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    prevYearEndBalance = prevYearEndBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+
+                    currentYearBegBalance = currentYearBegBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    prevYearBegBalance = prevYearBegBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                }
+
+
+                #endregion
 
                 #region continuinng
                 foreach (var con in notes.ContinuingOperations)
@@ -82,9 +125,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                             var detail = new NoteDetailViewModel
                             {
                                 AccountDesc = accRange.Description,
-                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(prevYearBalance, r.AccountFrom,r.AccountTo, accRange.Values,bizUnitCode)
+                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(prevYearEndBalance, r.AccountFrom,r.AccountTo, accRange.Values,bizUnitCode)
                                                       -_reportHelper.GetAccountBegBalancesByAccountAndBizUnitWithAllranges(prevYearBegBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode),
-                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(currentYearBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
+                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(currentYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
                                                      - _reportHelper.GetAccountBegBalancesByAccountAndBizUnitWithAllranges(currentYearBegBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
                             };
                             connote.NoteDetailsList.Add(detail);
@@ -121,9 +164,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                             var detail = new NoteDetailViewModel
                             {
                                 AccountDesc = accRange.Description,
-                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(prevYearBalance, r.AccountFrom,r.AccountTo, accRange.Values,bizUnitCode)
+                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(prevYearEndBalance, r.AccountFrom,r.AccountTo, accRange.Values,bizUnitCode)
                                                       - _reportHelper.GetAccountBegBalancesByAccountAndBizUnitWithAllranges(prevYearBegBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode),
-                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(currentYearBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
+                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(currentYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
                                                      - _reportHelper.GetAccountBegBalancesByAccountAndBizUnitWithAllranges(currentYearBegBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
                             };
                             connote.NoteDetailsList.Add(detail);
@@ -160,9 +203,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                             var detail = new NoteDetailViewModel
                             {
                                 AccountDesc = accRange.Description,
-                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(prevYearBalance, r.AccountFrom,r.AccountTo, accRange.Values,bizUnitCode)
+                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(prevYearEndBalance, r.AccountFrom,r.AccountTo, accRange.Values,bizUnitCode)
                                                       - _reportHelper.GetAccountBegBalancesByAccountAndBizUnitWithAllranges(prevYearBegBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode),
-                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(currentYearBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
+                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountAndBizUnitWithAllranges(currentYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
                                                      - _reportHelper.GetAccountBegBalancesByAccountAndBizUnitWithAllranges(currentYearBegBalance, r.AccountFrom, r.AccountTo, accRange.Values,bizUnitCode)
                             };
                             connote.NoteDetailsList.Add(detail);
@@ -179,7 +222,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public ScoiReportVeiwModel ScoiReport(string fiscalyear,string periodFrom, string periodTo, string bizUnitCode)
+        public ScoiReportVeiwModel ScoiReport(string fiscalyear,string periodFrom, string periodTo, string bizUnitCode, string location, string costcenter, string subaccount)
         {
             ScoiReportVeiwModel scoiReport = new ScoiReportVeiwModel();
 
@@ -187,9 +230,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
                 var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
-                var prevYearBalance = new List<GLLedgerPostingLines>();
+                var prevYearEndBalance = new List<GLLedgerPostingLines>();
                 var prevYearBegBalance = new List<GLLedgerPostingLines>();
-                var currentYearBalance = new List<GLLedgerPostingLines>();
+                var currentYearEndBalance = new List<GLLedgerPostingLines>();
                 var currentYearBegBalance = new List<GLLedgerPostingLines>();
 
                 #region continuing operation variables
@@ -240,15 +283,56 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                     int prevyear = _fiscalYearHelper.GetPreviousFYearId(fyearObj.GlFiscalYearId);
                     var prevfyearObj = _db.GLFiscalYears.Find(prevyear);
 
-                    currentYearBalance = _reportHelper.GetAccountEndBalance(fyearObj.GlFiscalYearId, currentPeriodTo);
+                    currentYearEndBalance = _reportHelper.GetAccountEndBalance(fyearObj.GlFiscalYearId, currentPeriodTo);
                     currentYearBegBalance = _reportHelper.GetAccountBegBalance(fyearObj.GlFiscalYearId, currentPeriodFrom);
                     if (prevfyearObj != null)
                     {
                         int previousPeriodTo = String.IsNullOrEmpty(periodTo) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriodTo, prevfyearObj.GlFiscalYearId);
                         int previousPeriodFrom = String.IsNullOrEmpty(periodFrom) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriodFrom, prevfyearObj.GlFiscalYearId);
-                        prevYearBalance = _reportHelper.GetAccountEndBalance(prevfyearObj.GlFiscalYearId, previousPeriodTo);
+                        prevYearEndBalance = _reportHelper.GetAccountEndBalance(prevfyearObj.GlFiscalYearId, previousPeriodTo);
                         prevYearBegBalance = _reportHelper.GetAccountBegBalance(prevfyearObj.GlFiscalYearId, previousPeriodFrom);
                     }
+
+                    #region filter by segment
+                    if (!String.IsNullOrEmpty(location))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(costcenter))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    }
+                    if (!String.IsNullOrEmpty(subaccount))
+                    {
+                        currentYearEndBalance = currentYearEndBalance
+                                      .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                        prevYearEndBalance = prevYearEndBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+
+                        currentYearBegBalance = currentYearBegBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                        prevYearBegBalance = prevYearBegBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    }
+
+
+                    #endregion
 
                     if (String.IsNullOrWhiteSpace(bizUnitCode))
                     {
@@ -286,7 +370,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearrevenueTotal = currentYearrevenueTotal +
-                                                          _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                                          _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                                           - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -296,7 +380,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearrevenueTotal = prevYearrevenueTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                          - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                     #endregion
@@ -338,7 +422,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearexpenseTotal = currentYearexpenseTotal
-                                                          + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                                          + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                                           - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -348,7 +432,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearexpenseTotal = prevYearexpenseTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                     #endregion
@@ -402,7 +486,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearrevenueTotal = currentYearrevenueTotal
-                                                         + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                                         + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                                           - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -412,7 +496,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearrevenueTotal = prevYearrevenueTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                     #endregion
@@ -454,7 +538,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearexpenseTotal = currentYearexpenseTotal
-                                                        + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                                        + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                                         - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -464,7 +548,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearexpenseTotal = prevYearexpenseTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                     #endregion
@@ -517,7 +601,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearrevenueTotal = currentYearrevenueTotal
-                                                          + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                                          + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                                           - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -527,7 +611,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearrevenueTotal = prevYearrevenueTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                     #endregion
@@ -569,7 +653,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearexpenseTotal = currentYearexpenseTotal
-                                                         + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                                         + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                                           - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -579,7 +663,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearexpenseTotal = prevYearexpenseTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo); ;
 
                                     #endregion
@@ -672,7 +756,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYeardiscontinuedTotal = currentYeardiscontinuedTotal
-                                    + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                    + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                     - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -682,7 +766,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYeardiscontinuedTotal = prevYeardiscontinuedTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo); ;
 
                                     #endregion
@@ -747,7 +831,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearOthercomprehensiveTotal = currentYearOthercomprehensiveTotal
-                                            + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo)
+                                            + _reportHelper.GetAccountEndBalancesWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo)
                                             - _reportHelper.GetAccountBegBalancesWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                 #endregion
@@ -757,7 +841,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearOthercomprehensiveTotal = prevYearOthercomprehensiveTotal
-                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo)
+                                        + _reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
                                         - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                                     #endregion
@@ -833,7 +917,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearrevenueTotal = currentYearrevenueTotal +
-                                                          _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                                          _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                                           - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                 #endregion
@@ -843,7 +927,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearrevenueTotal = prevYearrevenueTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                          - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                     #endregion
@@ -885,7 +969,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearexpenseTotal = currentYearexpenseTotal
-                                                          + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                                          + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                                           - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -895,7 +979,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearexpenseTotal = prevYearexpenseTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                     #endregion
@@ -949,7 +1033,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearrevenueTotal = currentYearrevenueTotal
-                                                         + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                                         + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                                           - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -959,7 +1043,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearrevenueTotal = prevYearrevenueTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                     #endregion
@@ -1001,7 +1085,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearexpenseTotal = currentYearexpenseTotal
-                                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -1011,7 +1095,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearexpenseTotal = prevYearexpenseTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                     #endregion
@@ -1064,7 +1148,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearrevenueTotal = currentYearrevenueTotal
-                                                          + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                                          + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                                           - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -1074,7 +1158,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearrevenueTotal = prevYearrevenueTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                     #endregion
@@ -1116,7 +1200,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearexpenseTotal = currentYearexpenseTotal
-                                                         + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                                         + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                                           - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -1126,7 +1210,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearexpenseTotal = prevYearexpenseTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode); ;
 
                                     #endregion
@@ -1219,7 +1303,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYeardiscontinuedTotal = currentYeardiscontinuedTotal
-                                    + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                    + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                     - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -1229,7 +1313,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYeardiscontinuedTotal = prevYeardiscontinuedTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode); ;
 
                                     #endregion
@@ -1294,7 +1378,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                 #region current year
 
                                 currentYearOthercomprehensiveTotal = currentYearOthercomprehensiveTotal
-                                            + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
+                                            + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo, bizUnitCode)
                                             - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo, bizUnitCode);
 
                                 #endregion
@@ -1304,7 +1388,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                                     #region previos year
 
                                     prevYearOthercomprehensiveTotal = prevYearOthercomprehensiveTotal
-                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
+                                        + _reportHelper.GetAccountEndBalancesByBizUnitWithAllranges(currentYearEndBalance, range.AccountFrom, range.AccountTo,bizUnitCode)
                                         - _reportHelper.GetAccountBegBalancesByBizUnitWithAllranges(currentYearBegBalance, range.AccountFrom, range.AccountTo,bizUnitCode);
 
                                     #endregion

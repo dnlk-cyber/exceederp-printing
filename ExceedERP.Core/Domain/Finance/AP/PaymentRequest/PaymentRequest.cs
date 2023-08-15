@@ -53,8 +53,8 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public virtual ICollection<FundTransferLine> FundTransferLines { get; set; }
         public virtual ICollection<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }
         public virtual ICollection<PaymentRequestDepartmentValidation> PaymentRequestDepartmentValidations { get; set; }       
+        public virtual ICollection<PaymentRequestBudgetValidation> PaymentRequestBudgetValidations { get; set; }
         public virtual ICollection<PaymentRequestValidation> PaymentRequestValidations { get; set; }
-       
     }
 
     public class FundTransferLine : TrackUserSettingOperation

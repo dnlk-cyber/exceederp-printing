@@ -1592,6 +1592,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
+            var exisit = _db.PurchaseOrders.Where(x => x.BidAwardedSupplierID == id).FirstOrDefault();
+            if(exisit!=null)
+            {
+                var formattedData = new
+                {
+                    Message = $"The award number {id} is already available in purchase order.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+            }
+
             if (record.BidWinningItems.Count == 0)
             {
                 var formattedData = new
@@ -1604,7 +1616,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             if (record != null && !record.IsTransferredToPo && record.BidWinningItems.Count > 0)
             {
-                decimal contractamount = record.BidWinningItems.Sum(x => x.TPrice);
+                decimal amount = record.BidWinningItems.Sum(x => x.TPrice);
                 var lot = _db.Lots.Find(record.LotID);
                 if (lot != null)
                 {
@@ -1617,6 +1629,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         {
 
                             TenderID = tender.TenderID,
+                            BidAwardedSupplierID=id,
                             ProcurementOfficer = tender.ProcurementOfficer,
                             BranchId = tender.BranchId, 
                             BusinessUnitId = tender.BusinessUnitId,
@@ -1636,7 +1649,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
 
                             Status = "Editing",
-                            Remark = record.Remark,
+                            Remark = tender.TenderReference+"_"+ record.Remark,
 
                             DateCreated = DateTime.Now,
                             CreatedBy = User.Identity.Name
@@ -1659,7 +1672,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
                                 if (tax != null)
                                 {
-                                    var proformaItem = new PurchaseOrderItem
+                                    var poitem = new PurchaseOrderItem
                                     {
                                         PurchaseOrder = purchaseOrder,
                                         CatCode = item.CatCode,
@@ -1683,12 +1696,34 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                                         CreatedBy = User.Identity.Name,
                                         DateCreated = DateTime.Today
                                     };
-                                    _db.PurchaseOrderItems.Add(proformaItem);
+                                    _db.PurchaseOrderItems.Add(poitem);
                                 }
 
                                 _db.SaveChanges();
                                 #endregion
                             }
+
+                        }
+
+                        #endregion
+
+                        #region prs
+
+                        var purchaseRequisitions = _db.LotPurchaseRequisitions.Where(x => x.LotID == lot.LotID).ToList();
+                        foreach (var purchaseRequisition in purchaseRequisitions)
+                        {
+
+                            var poPurchaseRequisition = new PoPurchaseRequisition
+                            {
+                                PurchaseOrder = purchaseOrder,
+                                PurchaseRequisitionAssignmentId = purchaseRequisition.PurchaseRequisitionAssignmentId,
+                                PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
+                                StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                                CreatedBy = User.Identity.Name,
+                                DateCreated = DateTime.Now
+                            };
+                            _db.PoPurchaseRequisitions.Add(poPurchaseRequisition);
+                           _db.SaveChanges();
 
                         }
 

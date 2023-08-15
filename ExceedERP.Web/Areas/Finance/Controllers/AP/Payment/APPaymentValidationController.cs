@@ -57,58 +57,51 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             var record = _db.APPayments.Find(id);
             #region validated record
 
-
+            if (record == null )
+                ModelState.AddModelError("notfound", "Record is not found");
             if (record != null && record.IsOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record");
-            if (record != null && record.IsPrepayment)
+
+            if (record != null && record.PoType== "Purchase Payment")
             {
-                //if (record.PoTypeEnum == PurchaseType.PurchaseOrder)
-                //{
-                //    #region purchase order
-                //    var purchaseOrder = _db.PurchaseOrders.Find(int.Parse(record.PurchaseReference));
-                //    if (purchaseOrder != null && purchaseOrder.IsVoid)
-                //        ModelState.AddModelError("void", "Related purchase order "+purchaseOrder.PurchaseOrderID+" is void,hence can't approve.");
-                //    if (purchaseOrder != null && !purchaseOrder.IsOnlineApproved)
-                //        ModelState.AddModelError("notapproved", "Related purchase order " + purchaseOrder.PurchaseOrderID + " is not approved,hence can't approve.");
-                //    #endregion 
-                //}
+                #region purchase payment request
+                var purchasePayment = _db.PurchasePayments.Find(int.Parse(record.PurchaseReference));
+                if (purchasePayment != null && purchasePayment.IsVoid)
+                    ModelState.AddModelError("void", "The purchase payment request " + purchasePayment.PurchasePaymentId + " is void,hence can't approve payment.");
+                if (purchasePayment != null && !purchasePayment.IsFinanceApproved)
+                    ModelState.AddModelError("notapproved", "The purchase payment request " + purchasePayment.PurchasePaymentId + " is not approved,hence can't approve payment.");
 
-                //else if (record.PoTypeEnum == PurchaseType.TenderAward)
-                //{
-                //    #region award
+                decimal paymentAmount = record.IsPrepayment ? record.PrepaymentAmount : record.PaymentAmount;
+                decimal ? amountdue = purchasePayment?.AmountDue - paymentAmount;
+                if (amountdue < 0)
+                    ModelState.AddModelError("error",
+                        $"You are paying more than purchase payment due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
+                if (amountdue > 0)
+                    ModelState.AddModelError("error",
+                        $"You are paying less than purchase payment due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
+                #endregion
 
-                //    var bidAwardedSupplier = _db.BidAwardedSuppliers.Find(int.Parse(record.PurchaseReference));
-
-                //    if (bidAwardedSupplier != null)
-                //    {
-                //        var lot = _db.Lots.Find(bidAwardedSupplier.LotID);
-                //        if (lot != null)
-                //        {
-                //            var tender = _db.Tenders.Find(lot.TenderID);
-
-                //            if (tender != null)
-                //            {
-                //                if (tender.IsVoid)
-                //                    ModelState.AddModelError("void", "Related tender " +tender.TenderReference+" is void,hence can't approve.");
-                //                if (!tender.IsOnlineApproved)
-                //                    ModelState.AddModelError("notapproved", "Related tender " + tender.TenderReference + "  is not approved,hence can't approve.");
-                //            }
-                //        }
-                //    }
-                //    #endregion 
-                //}
             }
-            #region validated record
+            if (record != null && record.PoType == "Invoice")
+            {
+                #region payable invoice
+                var invoice = _db.APPaybleInvoices.Find(int.Parse(record.PurchaseReference));
+                if (invoice != null && invoice.IsVoid)
+                    ModelState.AddModelError("void", "The invoice number " + invoice.ApPaybleInvoicesId + " is void,hence can't approve payment.");
+                if (invoice != null && !invoice.IsOnlineApproved)
+                    ModelState.AddModelError("notapproved", "The invoice number " + invoice.ApPaybleInvoicesId + " is not approved,hence can't approve payment.");
 
-            if (record != null && record.IsOnlineApproved)
-                ModelState.AddModelError("error", "You cannot manipulate this record,it is already approved");
-            var invoice = _db.APPaybleInvoices.FirstOrDefault(x => x.InvoiceNumber == record.InvoiceNumber);
-            decimal? amountdue = invoice?.AmountDue - record.PaymentAmount;
-            if (amountdue < 0)
-                ModelState.AddModelError("error",
-                    $"You are paying more than invoice due amount by {Math.Abs((decimal) amountdue)} for {record.InvoiceNumber}");
+                decimal paymentAmount = record.IsPrepayment ? record.PrepaymentAmount : record.PaymentAmount;
+                decimal? amountdue = invoice?.AmountDue - paymentAmount;
+                if (amountdue < 0)
+                    ModelState.AddModelError("error",
+                        $"You are paying more than invoice due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
+                if (amountdue > 0)
+                    ModelState.AddModelError("error",
+                        $"You are paying less than invoice due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
 
-            #endregion
+                #endregion
+            }          
 
             #endregion
 
@@ -122,94 +115,45 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     //validate 
                     if (aPPaymentValidation.Status == ApprovalStatuses.Approve)
                     {
-                        
-                        #region update po or award
-                        //if (!String.IsNullOrWhiteSpace(record.PurchaseReference))
-                        //{
-                        //    if(record.PoType == "Purchase Order")
-                        //    {
-                        //     var totalTaken = _db.APPayments
-                        //       .Where(x => x.PurchaseReference == record.PurchaseReference)
-                        //       .Where(x => x.PoType == "Purchase Order")
-                        //       .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                        //       .Select(x => new { x.PrepaymentAmount,x.PaymentAmount })
-                        //       .AsQueryable();
-                        //        if (totalTaken.Any())
-                        //        {
-                        //            decimal totalAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == int.Parse(record.PurchaseReference)).Sum(x => x.Total);                                 
-                        //            decimal totalTakenAmount = totalTaken.Sum(x => x.PrepaymentAmount) + totalTaken.Sum(x => x.PaymentAmount);
-                        //            if (totalTakenAmount >= totalAmount)
-                        //            {
-                        //                var po = _db.PurchaseOrders.Find(int.Parse(record.PurchaseReference));
-                        //                po.IsPaid = true;
-                        //                _db.Entry(po).State = EntityState.Modified;
-                        //            }
-                        //        }
-                        //    }
-                        //    else if (record.PoType == "Tender Award")
-                        //    {
-                        //        var totalTaken = _db.APPayments
-                        //          .Where(x => x.PurchaseReference == record.PurchaseReference)
-                        //          .Where(x => x.PoType == "Tender Award")
-                        //          .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                        //          .Select(x => new { x.PrepaymentAmount, x.PaymentAmount })
-                        //          .AsQueryable();
-                        //        if (totalTaken.Any())
-                        //        {
-                        //            var contract = _db.ContractManagements
-                        //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                        //                .Where(x => x.ProcurementRefNo == int.Parse(record.PurchaseReference)).FirstOrDefault();
-                        //            decimal totalAmount = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).Sum(x => x.Total); 
-                        //            decimal totalTakenAmount = totalTaken.Sum(x => x.PrepaymentAmount) + totalTaken.Sum(x => x.PaymentAmount);
-                        //            if (totalTakenAmount >= totalAmount)
-                        //            {                                       
-                        //                contract.IsPaid = true;
-                        //                _db.Entry(contract).State = EntityState.Modified;
-                        //            }
-                        //        }
-                        //    }
-                        //}
-                        #endregion
-                        if (record.IsPrepayment)
+                        if (record.PoType == "Purchase Payment")
                         {
                             int did = int.Parse(record.PurchaseReference);
-                            var purchasePament = _db.PurchasePayments.FirstOrDefault(x => x.PurchasePaymentId == did);
+                            var purchasePament = _db.PurchasePayments.Find(did);
                             if (purchasePament != null)
                             {
-                                decimal invoiceamountdue = purchasePament.NetPayable - record.PrepaymentAmount;
+                                //decimal invoiceamountdue = purchasePament.NetPayable - record.PrepaymentAmount;
                                 
-                                if (invoiceamountdue <= 0)
-                                {
+                                //if (invoiceamountdue <= 0)
+                                //{
                                     purchasePament.Paid = true;
                                     purchasePament.Status = "Paid";
-                                }
-                                else
-                                {
-                                    ;
-                                }
+                                //}
+                                //else
+                                //{
+                                //    ;
+                                //}
 
                                 _db.Entry(purchasePament).State = EntityState.Modified;
                                 //_db.SaveChanges();
                             }
                         }
-                        else 
+                        else if(record.PoType == "Invoice")
                         {
-                            //update invoice 
                             int did = int.Parse(record.PurchaseReference);
-                            var paybleInvoice = _db.APPaybleInvoices.FirstOrDefault(x => x.ApPaybleInvoicesId ==did);
+                            var paybleInvoice = _db.APPaybleInvoices.Find(did);
                             if (paybleInvoice != null)
                             {
-                                decimal invoiceamountdue = paybleInvoice.AmountDue - record.PaymentAmount;
-                                paybleInvoice.AmountDue = invoiceamountdue >= 0 ? invoiceamountdue : 0;
-                                if (paybleInvoice.AmountDue <= 0)
-                                {
+                                //decimal invoiceamountdue = paybleInvoice.AmountDue - record.PaymentAmount;
+                                //paybleInvoice.AmountDue = invoiceamountdue >= 0 ? invoiceamountdue : 0;
+                                //if (paybleInvoice.AmountDue <= 0)
+                                //{
                                     paybleInvoice.InvoiceStatus = InvoiceStatus.Close;
                                     paybleInvoice.Status = "Paid";
-                                }
-                                else
-                                {
-                                    ;
-                                }
+                                //}
+                                //else
+                                //{
+                                //    ;
+                                //}
 
                                 _db.Entry(paybleInvoice).State = EntityState.Modified;
                                 //_db.SaveChanges();
@@ -252,7 +196,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
                         #endregion
 
-                        //PostToSecondaryLedger(id);
+          
                         record.Status = "Approved";
                         record.IsVoid = false;
                         record.IsOnlineApproved = true;

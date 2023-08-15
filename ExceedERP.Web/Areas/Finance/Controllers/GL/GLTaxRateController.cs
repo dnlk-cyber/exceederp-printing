@@ -20,6 +20,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         public ActionResult Index()
         {
+           
             return View();
         }
 

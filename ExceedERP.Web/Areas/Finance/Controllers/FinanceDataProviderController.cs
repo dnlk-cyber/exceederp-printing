@@ -1678,7 +1678,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             List<SelectorVm> list = new List<SelectorVm>();
 
             var paymentRequests = _db.PurchasePayments
-                                    .Where(x => x.IsBudgetApproved && x.IsVoid == false)
+                                    .Where(x => x.IsFinanceApproved && x.IsVoid == false)
                                     .Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
                                     .Where(x => x.PurchasePaymentType == PurchasePaymentType.Credit)
                                     .Select(x => new
@@ -1723,7 +1723,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             if (sourceType == "Purchase Payment")
             {
                 var paymentRequests = _db.PurchasePayments
-                                        .Where(x => x.IsBudgetApproved && x.IsVoid == false)
+                                        .Where(x => x.IsFinanceApproved && x.IsVoid == false)
                                         .Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
                                         .Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
                                         .Select(x => new
@@ -1799,7 +1799,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             List<SelectorVm> list = new List<SelectorVm>();
 
             var paymentRequests = _db.PurchasePayments
-                                    .Where(x => x.IsBudgetApproved && x.IsVoid == false)
+                                    .Where(x => x.IsFinanceApproved && x.IsVoid == false)
                                     .Where(x => x.Paid == false && x.PaymentType == PaymentType.Advance)
                                     .Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
                                     .Select(x => new

@@ -22,7 +22,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
         //private readonly ClosingHelper _closingHelper = new ClosingHelper();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<NoteVeiwModel> SofpReportNotes(string fiscalyear, string period, string bizUnitCode)
+        public List<NoteVeiwModel> SofpReportNotes(string fiscalyear, string period, string bizUnitCode, string location, string costcenter, string subaccount)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
             var notes = _db.IfrsStatementOfFinancialPositions.FirstOrDefault();
@@ -74,6 +74,36 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                 //        prevYearBegBalance = _reportHelper.GetAccountBegBalance(prevfyearObj.GlFiscalYearId, previousPeriodFrom);
                 //    }
                 //}
+
+                #region filter by segment
+                if (!String.IsNullOrEmpty(location))
+                {
+
+                    prevYearBalance = prevYearBalance
+                   .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    currnetYearBalance = currnetYearBalance
+                        .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(costcenter))
+                {
+
+                    prevYearBalance = prevYearBalance
+                   .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    currnetYearBalance = currnetYearBalance
+                        .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(subaccount))
+                {
+
+                    prevYearBalance = prevYearBalance
+                   .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    currnetYearBalance = currnetYearBalance
+                        .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                }
+
+                #endregion
 
                 #region asset
                 foreach (var con in notes.Asstets)
@@ -160,7 +190,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public SofpReportVeiwModel SofpReport(string fiscalyear, string period, string bizUnitCode)
+        public SofpReportVeiwModel SofpReport(string fiscalyear, string period, string bizUnitCode, string location, string costcenter, string subaccount)
         {
             SofpReportVeiwModel sofpReport = new SofpReportVeiwModel();
 
@@ -222,6 +252,37 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
                         previousPeriod = String.IsNullOrEmpty(period) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriod, prevfyearObj.GlFiscalYearId);
                         prevYearBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId, previousPeriod);
                     }
+
+                    #region filter by segment
+                    if (!String.IsNullOrEmpty(location))
+                    {
+
+                        prevYearBalance = prevYearBalance
+                       .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                        currnetYearBalance = currnetYearBalance
+                            .Where(x => x.GLLedgerPosting.BranchSegment == location).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(costcenter))
+                    {
+
+                        prevYearBalance = prevYearBalance
+                       .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                        currnetYearBalance = currnetYearBalance
+                            .Where(x => x.GLLedgerPosting.CostCenterSegment == costcenter).ToList();
+                    }
+
+                    if (!String.IsNullOrEmpty(subaccount))
+                    {
+
+                        prevYearBalance = prevYearBalance
+                       .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                        currnetYearBalance = currnetYearBalance
+                            .Where(x => x.GLLedgerPosting.SubAccountSegment == subaccount).ToList();
+                    }
+
+                    #endregion
+
                     #region asset
 
                     decimal currentYearNonCurrentAssetTotal = 0;

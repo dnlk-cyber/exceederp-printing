@@ -90,6 +90,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 PaymentType = purchasePayment.PaymentType,
                 PurchasePaymentType = purchasePayment.PurchasePaymentType,
                 PoOrContractNumber = purchasePayment.PoOrContractNumber,
+                TenderRef = purchasePayment.TenderRef,
+                ProformaRef = purchasePayment.ProformaRef,
                 NextApprover = purchasePayment.NextApprover,
 
                 ForwardedFrom = purchasePayment.ForwardedFrom,
@@ -159,6 +161,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 int poid = int.Parse(purchasePayment.PoOrContractNumber);
                 var po = _db.PurchaseOrders.Find(poid);
                 purchasePayment.PurchasePaymentType = po.PurchasePaymentType;
+                purchasePayment.ProformaRef = po.ProformaPurchaseID.ToString();
+                purchasePayment.TenderRef = po.BidAwardedSupplierID.ToString();
             }
             else if (purchasePayment.Type == "Tender Award")
             {
@@ -194,6 +198,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     PaymentType = purchasePayment.PaymentType,
                     PurchasePaymentType = purchasePayment.PurchasePaymentType,
                     PoOrContractNumber = purchasePayment.PoOrContractNumber,
+                    TenderRef = purchasePayment.TenderRef,
+                    ProformaRef = purchasePayment.ProformaRef,
                     NextApprover = purchasePayment.NextApprover,
 
                     ForwardedFrom = User.Identity.Name,
@@ -278,6 +284,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 int poid = int.Parse(purchasePayment.PoOrContractNumber);
                 var po = _db.PurchaseOrders.Find(poid);
                 purchasePayment.PurchasePaymentType = po.PurchasePaymentType;
+                purchasePayment.ProformaRef = po.ProformaPurchaseID.ToString();
+                purchasePayment.TenderRef = po.BidAwardedSupplierID.ToString();
             }
             else if (purchasePayment.Type == "Tender Award")
             {
@@ -314,6 +322,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     PaymentType = purchasePayment.PaymentType,
                     PurchasePaymentType = purchasePayment.PurchasePaymentType,
                     PoOrContractNumber = purchasePayment.PoOrContractNumber,
+                    TenderRef = purchasePayment.TenderRef,
+                    ProformaRef = purchasePayment.ProformaRef,
                     NextApprover = purchasePayment.NextApprover,
 
                     ForwardedFrom = purchasePayment.ForwardedFrom,

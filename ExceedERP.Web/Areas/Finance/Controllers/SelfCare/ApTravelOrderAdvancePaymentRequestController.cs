@@ -153,6 +153,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 _db.ApTravelOrderAdvancePayments.Attach(entity);
                 _db.ApTravelOrderAdvancePayments.Remove(entity);
                 _db.SaveChanges();
+                UpdatetravelOrderBalance(apTravelOrderAdvancePayment.ApTravelOrderId);
                 _distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
             }
 

@@ -99,10 +99,7 @@
                                                                     <br />
                                                                     # } #
     
-                                                                   # if (IsOnlineApproved && !IsOnlineTransferred )
-                                                                    {#
-                                                                    <a onclick='return transferToGl("#=ApTravelOrderId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
-                                                                    # } #
+                                                                  
 
                                                                     <div>
                                                                         <hr>
@@ -187,19 +184,29 @@
                                                                             </dd>
 
                                                                             <dt>
+                                                                                Checked On
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy') #
+                                                                            </dd>
+                                                                            <dt>
+                                                                                Checked By
+                                                                            </dt>
+                                                                            <dd>
+                                                                                #=SendForApprovalBy #
+                                                                            </dd>
+
+                                                                            <dt>
                                                                                 Finance Approved On
                                                                             </dt>
                                                                             <dd>
                                                                                 #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-
-
                                                                             </dd>
                                                                             <dt>
                                                                                 Approved By
                                                                             </dt>
                                                                             <dd>
                                                                                 #=OnlineApprovedBy #
-
                                                                             </dd>
                                                                         </dl>
                                                                     </div>
@@ -346,58 +353,6 @@ items.Add().Text("Departure").Content(
 
 </text>
 );
-
-items.Add().Text("Distribution").Content(
-@<text>
-@(Html.Kendo().Grid<ApTravelOrderDistribution>()
-                    .Name("ApTravelOrderDistribution#=ApTravelOrderId#")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(180);
-                        columns.Bound(c => c.AccountDesc).Width(200);
-                        columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                        columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                        columns.Command(command =>
-                        {
-                            command.Edit();
-                            command.Destroy();
-                        }).Width(380).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
-                    })
-
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create();
-          })
-
-                    .Editable(editable => editable.Mode(GridEditMode.InLine))
-                    .Pageable()
-                    .Scrollable()
-                    .Events(ev => ev.DataBound("onDataBoundDistributionNew"))
-                    .DataSource(dataSource => dataSource
-
-                        .Ajax()
-                         .Aggregates(aggregates =>
-                         {
-                             aggregates.Add(p => p.Debit).Sum();
-                             aggregates.Add(p => p.Credit).Sum();
-                         })
-                        .Model(model =>
-                        {
-                            model.Id(p => p.ApTravelOrderDistributionId);
-                            model.Field(p => p.AccountDesc).Editable(false);
-
-                        })
-                        .Read(read => read.Action("ApTravelOrderDistributions_Read", "ApTravelOrderDistribution", new { id = "#=ApTravelOrderId#" }))
-                        .Create(create => create.Action("ApTravelOrderDistributions_Create", "ApTravelOrderDistribution", new { id = "#=ApTravelOrderId#" }))
-                        .Update(update => update.Action("ApTravelOrderDistributions_Update", "ApTravelOrderDistribution"))
-                        .Destroy(destroy => destroy.Action("ApTravelOrderDistributions_Destroy", "ApTravelOrderDistribution"))
-                    ).ToClientTemplate()
-
-
-)
-
-
-</text>);
 
            items.Add().Text("Validation").Content(
 @<text>

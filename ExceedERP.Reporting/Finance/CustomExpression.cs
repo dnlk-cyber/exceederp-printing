@@ -133,7 +133,7 @@ namespace ExceedERP.Reporting.Finance
         public static string GetNumberInWords(decimal number)
         {
             string newNumber = number.ToString();
-            newNumber = XAPI.NumberExtensions.toWords((int)number);
+            newNumber = XAPI.NumberExtensions.toWords((double)number);
             return newNumber;
         }
         public static string GetPaddedLeftVoucher(string voucherid)

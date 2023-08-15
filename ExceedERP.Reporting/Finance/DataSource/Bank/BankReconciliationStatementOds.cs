@@ -88,7 +88,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
         [DataObjectMethod(DataObjectMethodType.Select)]
         public BankReconciliationStatementVm GetReconciliationStatement(int id)
         {
-            BankReconciliationStatementVm bankReconciliationStatementVms = new BankReconciliationStatementVm();
+            var bankReconciliationStatementVms = new BankReconciliationStatementVm();
 
             var reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
 
@@ -110,8 +110,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                 var bookData = _db.ReconcilationBookAccounts
                     //.Where(x => x.AccountCode == bankaccountobj.AccountCode) //old
                     .Where(x => x.AccountSegment == account && x.SubAccountSegment == subaccount)
-                    .Where(x => x.Reconciled == false)
-                    //.Where(x => x.RecordType != RecordType.Exception)
+                    .Where(x => x.Reconciled == false || x.Reconciled && x.ReconciledDate >= dt22)//from || new code
+                                                                                                 //.Where(x => x.RecordType != RecordType.Exception)
                     .Where(x => x.RecordType != RecordType.Beginning)
                     // .Where(x => x.Date >= dt1)
                     .Where(x => x.Date < dt22).ToList();
@@ -121,7 +121,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
 
                 var bankData = _db.ReconcilationBankAccounts
                     .Where(x => x.BankAccount == bankaccountobj.AccountNumber)
-                    .Where(x => x.Reconciled == false || x.Reconciled && x.ReconciledDate > dt22)//from || new code
+                    .Where(x => x.Reconciled == false || x.Reconciled && x.ReconciledDate >= dt22)//from || new code
                     // .Where(x => x.Date >= dt1)
                     .Where(x => x.Date < dt22).ToList();//< less than cuz it is +1 above
 

@@ -86,7 +86,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         if (record.IsFinalApproval)
                         {
-                            record.Status = "Approved";
+                            record.Status = "Department Approved";
                             record.IsDepartmentOnlineApproved = true;
                             record.DepartmentOnlineApprovedBy = User.Identity.Name;
                             record.DepartmentOnlineApprovedTime = DateTime.Now;
@@ -111,8 +111,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             record.Status = "Partially Approved";
                             record.IsDepartmentOnlineApproved = false;
                             record.IsVoid = false;
-                            record.OnlineApprovedBy = User.Identity.Name;
-                            record.OnlineApprovedTime = DateTime.Now;
+                            record.DepartmentOnlineApprovedBy = User.Identity.Name;
+                            record.DepartmentOnlineApprovedTime = DateTime.Now;
                             _db.Entry(record).State = EntityState.Modified;
                             _db.SaveChanges();
 
@@ -133,8 +133,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             #region forward to next approver
 
                             decimal docamount = record.AdvanceAmount;
+                            int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
                             DocApprovalWorkflowHelper.ForwardToApprover(record.ApTravelOrderId, docamount, "",
-                                record.ForwardedTo, ApprovalDocumentType.ApTravelOrderSelfCare, false, (int)record.CurrentApprovalStep);
+                                record.ForwardedTo, ApprovalDocumentType.ApTravelOrderSelfCare, false, step);
 
                             #endregion
                         }

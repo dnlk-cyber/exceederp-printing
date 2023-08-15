@@ -1204,80 +1204,84 @@
 
 <script id="awardDetail" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_#=BidAwardedSupplierID#").SelectedIndex(0).Items(itemn =>
-        {
-            itemn.Add().Text("Detail").Content(@<text>
-               
-                <a onclick='return sendAwardToPo("#=BidAwardedSupplierID#")' href=' \#' title="Transfer to PO"><i class="fa fa-share-square fa-2x"></i></a>
+                                {
+                                    itemn.Add().Text("Detail").Content(@<text>
+                                        # if (!IsTransferredToPo)
+                                        {#
+                                        <a onclick='return sendAwardToPo("#=BidAwardedSupplierID#")' href=' \#' title="Transfer to PO"><i class="fa fa-share-square fa-2x"></i></a>
 
 
-            </text>);
-                    itemn.Add().Text("Award Items").Content(
+                                        # } #
 
-        @<text>
 
-            @(Html.Kendo().Grid<BidAwardedSupplierItem>()
-                                                                                                          .Name("BidAwardedSupplierItem#=BidAwardedSupplierID#")
-                                                                                                          .Columns(columns =>
-                                                                                                          {
-                                                                                                                      columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotResultItemSelector").Width(180);
-                                                                                                                      columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(180);
-                                                                                                                      columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemProformaSelector").Width(180);
-                                                                                                                      columns.Bound(c => c.Name).Width(90);
-                                                                                                                      columns.Bound(c => c.ModelNo).Width(90);
-                                                                                                                      columns.Bound(c => c.UoM).Width(90);
-                                                                                                                      columns.Bound(c => c.Quanity).Width(90);
-                                                                                                                      columns.Bound(c => c.UPrice).Width(90);
-                                                                                                                      columns.Bound(c => c.Discount).Width(90);
-                                                                                                                      columns.Bound(c => c.FinalUPrice).Width(90);
-                                                                                                                      columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Width(100);//.Title("Tax Name").EditorTemplateName("TaxSelector").Width(180);
-                                                                                                          columns.Bound(c => c.TaxAmount).Width(90);
-                                                                                                                      columns.Bound(c => c.TPrice).Width(90);
-                                                                                                                      columns.Command(command =>
+                                    </text>);
+                                            itemn.Add().Text("Award Items").Content(
+
+    @<text>
+
+        @(Html.Kendo().Grid<BidAwardedSupplierItem>()
+                                                                                                                              .Name("BidAwardedSupplierItem#=BidAwardedSupplierID#")
+                                                                                                                              .Columns(columns =>
+                                                                                                                              {
+                                                                                                                                          columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotResultItemSelector").Width(180);
+                                                                                                                                          columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(180);
+                                                                                                                                          columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemProformaSelector").Width(180);
+                                                                                                                                          columns.Bound(c => c.Name).Width(90);
+                                                                                                                                          columns.Bound(c => c.ModelNo).Width(90);
+                                                                                                                                          columns.Bound(c => c.UoM).Width(90);
+                                                                                                                                          columns.Bound(c => c.Quanity).Width(90);
+                                                                                                                                          columns.Bound(c => c.UPrice).Width(90);
+                                                                                                                                          columns.Bound(c => c.Discount).Width(90);
+                                                                                                                                          columns.Bound(c => c.FinalUPrice).Width(90);
+                                                                                                                                          columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Width(100);//.Title("Tax Name").EditorTemplateName("TaxSelector").Width(180);
+                                                                                                                              columns.Bound(c => c.TaxAmount).Width(90);
+                                                                                                                                          columns.Bound(c => c.TPrice).Width(90);
+                                                                                                                                          columns.Command(command =>
 {
-                      command.Edit();
-                      command.Destroy();
-                  });
-                                                                                                                  })
-                                                                                                          .ToolBar(toolbar =>
-                                                                                                          {
-                                                                                                                      toolbar.Create();
-                                                                                                                  })
-                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                          .Scrollable()
-                                                                                                          .Filterable()
-                                                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
-                                                                                                          .DataSource(dataSource => dataSource
-                                                                                                              .Ajax()
-                                                                                                              .Events(ev => ev
-                                                                                                                  .Error("error_handler(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")")
-                                                                                                                  .RequestStart("onRequestStart(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")")
-                                                                                                                  .RequestEnd("onRequestEnd(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")"))
-                                                                                                              .Model(model =>
-                                                                                                              {
-                                                                                                                          model.Id(p => p.BidAwardedSupplierItemId);
-                                                                                                                          model.Field(p => p.ItemType).Editable(false);
-                                                                                                                          model.Field(p => p.UoM).Editable(false);
-                                                                                                                          model.Field(p => p.CatCode).Editable(false);
-                                                                                                                          model.Field(p => p.ItmCode).Editable(false);
-                                                                                                                          model.Field(p => p.Name).Editable(false);
-                                                                                                                          model.Field(p => p.ModelNo).Editable(false);
-                                                                                                                          model.Field(p => p.Quanity).Editable(false);
-                                                                                                                          model.Field(p => p.GLTaxRateID).Editable(false);
-                                                                                                                          model.Field(p => p.TaxAmount).Editable(false);
-                                                                                                                          model.Field(p => p.UPrice).Editable(false);
-                                                                                                                          model.Field(p => p.TPrice).Editable(false);
-                                                                                                                      })
-                                                                                                              .Read(read => read.Action("BidAwardedSupplierItems_Read", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
-                                                                                                              .Create(create => create.Action("BidAwardedSupplierItems_Create", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
-                                                                                                              .Update(update => update.Action("BidAwardedSupplierItems_Update", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
-                                                                                                              .Destroy(destroy => destroy.Action("BidAwardedSupplierItems_Destroy", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
-                                                                                                          ).ToClientTemplate())
+                    command.Edit();
+                    command.Destroy();
+                });
+                                                                                                                                      })
+                                                                                                                              .ToolBar(toolbar =>
+                                                                                                                              {
+                                                                                                                                          toolbar.Create();
+                                                                                                                                      })
+                                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                              .Scrollable()
+                                                                                                                              .Filterable()
+                                                                                                                              .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                                  .Ajax()
+                                                                                                                                  .Events(ev => ev
+                                                                                                                                      .Error("error_handler(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")")
+                                                                                                                                      .RequestStart("onRequestStart(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")")
+                                                                                                                                      .RequestEnd("onRequestEnd(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")"))
+                                                                                                                                  .Model(model =>
+                                                                                                                                  {
+                                                                                                                                              model.Id(p => p.BidAwardedSupplierItemId);
+                                                                                                                                              model.Field(p => p.ItemType).Editable(false);
+                                                                                                                                              model.Field(p => p.UoM).Editable(false);
+                                                                                                                                              model.Field(p => p.CatCode).Editable(false);
+                                                                                                                                              model.Field(p => p.ItmCode).Editable(false);
+                                                                                                                                              model.Field(p => p.Name).Editable(false);
+                                                                                                                                              model.Field(p => p.ModelNo).Editable(false);
+                                                                                                                                              model.Field(p => p.Quanity).Editable(false);
+                                                                                                                                              model.Field(p => p.GLTaxRateID).Editable(false);
+                                                                                                                                              model.Field(p => p.TaxAmount).Editable(false);
+                                                                                                                                              model.Field(p => p.UPrice).Editable(false);
+                                                                                                                                              model.Field(p => p.TPrice).Editable(false);
+                                                                                                                                          })
+                                                                                                                                  .Read(read => read.Action("BidAwardedSupplierItems_Read", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                                                                                                                                  .Create(create => create.Action("BidAwardedSupplierItems_Create", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                                                                                                                                  .Update(update => update.Action("BidAwardedSupplierItems_Update", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                                                                                                                                  .Destroy(destroy => destroy.Action("BidAwardedSupplierItems_Destroy", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                                                                                                                              ).ToClientTemplate())
 
 
-        </text>);
+    </text>);
 
 
-}).ToClientTemplate())
+                                }).ToClientTemplate())
 </script>
 
 <script id="grntemplates" type="text/kendo-tmpl">

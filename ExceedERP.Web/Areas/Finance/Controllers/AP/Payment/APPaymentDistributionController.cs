@@ -53,25 +53,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APPaymentDistributions_Create(int id, [DataSourceRequest]DataSourceRequest request, ApPaymentDistribution aPPaymentDistribution)
         {
-            bool isvalid = true;
+            #region validated record
+
+            ApPayment parent =
+                _db.APPayments.FirstOrDefault(
+                    x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
+            if (parent != null && parent.IsOnlineApproved)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already approved");
+
+
+            #endregion
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApPayment parent =
-                    _db.APPayments.FirstOrDefault(
-                        x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
+               
                     var entity = new ApPaymentDistribution
                     {
                         ApPaymentId = id,
@@ -93,7 +87,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "AP payment distribution", "Success", User.Identity.Name, $"created AP payment distribution {entity.AccountCode} under record {entity.ApPaymentId} ", Modules.Finance);
                     #endregion
-                }
+                
             }
             return Json(new[] { aPPaymentDistribution }.ToDataSourceResult(request, ModelState));
         }
@@ -102,26 +96,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APPaymentDistributions_Update(int id, [DataSourceRequest]DataSourceRequest request, ApPaymentDistribution aPPaymentDistribution)
         {
-              bool isvalid = true;
+            #region validated record
+
+            ApPayment parent =
+                _db.APPayments.FirstOrDefault(
+                    x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
+            if (parent != null && parent.IsOnlineApproved)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already approved");
+          
+
+            #endregion
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApPayment parent =
-                    _db.APPayments.FirstOrDefault(
-                        x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
-                    var entity = new ApPaymentDistribution
+                var entity = new ApPaymentDistribution
                     {
                         ApPaymentId = id,
                         ApPaymentDistributionId = aPPaymentDistribution.ApPaymentDistributionId,
@@ -143,7 +130,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "AP payment distribution", "Success", User.Identity.Name, $"updated AP payment distribution {entity.AccountCode} under record {entity.ApPaymentId} ", Modules.Finance);
                     #endregion
-                }
+                
             }
 
             return Json(new[] { aPPaymentDistribution }.ToDataSourceResult(request, ModelState));
@@ -153,25 +140,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APPaymentDistributions_Destroy([DataSourceRequest]DataSourceRequest request, ApPaymentDistribution aPPaymentDistribution)
         {
-             bool isvalid = true;
+            #region validated record
+
+            ApPayment parent =
+                _db.APPayments.FirstOrDefault(
+                    x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
+            if (parent != null && parent.IsOnlineApproved)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already approved");
+
+
+            #endregion
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApPayment parent =
-                    _db.APPayments.FirstOrDefault(
-                        x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
+              
                     var entity = new ApPaymentDistribution
                     {
                         ApPaymentDistributionId = aPPaymentDistribution.ApPaymentDistributionId,
@@ -189,7 +170,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     _db.APPaymentDistributions.Attach(entity);
                     _db.APPaymentDistributions.Remove(entity);
                     _db.SaveChanges();
-                }
+                
             }
 
             return Json(new[] { aPPaymentDistribution }.ToDataSourceResult(request, ModelState));

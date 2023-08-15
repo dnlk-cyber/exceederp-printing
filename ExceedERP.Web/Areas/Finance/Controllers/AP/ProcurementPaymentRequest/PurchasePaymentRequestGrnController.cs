@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Budget;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
+using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -26,9 +28,86 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
             return View();
         }
 
+        private void LoadGrns(int id)
+        {
+            var purchasePayment = _db.PurchasePayments.Find(id);
+            if (purchasePayment != null)
+            {
+                var po = _db.PurchaseOrders.Find(int.Parse(purchasePayment.PoOrContractNumber));
+                var receiveType = _db.ReceiveTypes.Where(x => x.Type == GoodReceiveType.PurchaseOrder).FirstOrDefault();
+                if(receiveType!=null && po !=null)
+                {
+                    #region stock grn
+                    var stockGrns = _db.GoodReceives
+                        .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId && x.ReceiveRef == po.PurchaseOrderID.ToString())
+                        .Where(x=>x.IsOnlineApproved && x.IsVoid==false)
+                        .ToList();
+                    foreach(var g in stockGrns)
+                    {
+                        var exisit = _db.PurchasePaymentGrns
+                            .Where(x => x.PurchasePaymentId == id)
+                             .Where(x => x.ItemType == PurchaseItemType.Stock)
+                            .Where(x => x.GrnNo == g.GoodReceiveId).FirstOrDefault();
+
+                        if(exisit==null)
+                        {
+                            var entity = new PurchasePaymentGrn
+                            {
+                                PurchasePaymentId = id,
+                                ItemType = PurchaseItemType.Stock,
+                                GrnNo =g.GoodReceiveId,
+                                OrgBranchName = "NA",
+                                DateCreated = DateTime.Now,
+                                CreatedBy = "System",
+                            };
+
+                            _db.PurchasePaymentGrns.Add(entity);
+                            _db.SaveChanges();
+
+                        }
+
+                    }
+                    #endregion
+                    #region fixed asset grn
+                    var fixedGrns = _db.FixedAssetReceives
+                        .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId && x.ReceiveRef == po.PurchaseOrderID.ToString())
+                        .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                        .ToList();
+                    foreach (var g in fixedGrns)
+                    {
+                        var exisit = _db.PurchasePaymentGrns
+                            .Where(x => x.PurchasePaymentId == id)
+                             .Where(x => x.ItemType == PurchaseItemType.FixedAsset)
+                            .Where(x => x.GrnNo == g.FixedAssetReceiveId).FirstOrDefault();
+
+                        if (exisit == null)
+                        {
+                            var entity = new PurchasePaymentGrn
+                            {
+                                PurchasePaymentId = id,
+                                ItemType = PurchaseItemType.FixedAsset,
+                                GrnNo = g.FixedAssetReceiveId,
+                                OrgBranchName = "NA",
+                                DateCreated = DateTime.Now,
+                                CreatedBy = "System",
+                            };
+
+                            _db.PurchasePaymentGrns.Add(entity);
+                            _db.SaveChanges();
+
+                        }
+
+                    }
+                    #endregion
+                }
+            }
+        }
+
        [AuthorizeRoles(FinanceConstants.AccountPayablePayment , FinanceConstants.AccountPayableApprover)]
         public ActionResult PurchasePaymentGrns_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
+            LoadGrns(id);
+
             IQueryable<PurchasePaymentGrn> PurchasePaymentGrns = _db.PurchasePaymentGrns.Where(x => x.PurchasePaymentId == id);
             DataSourceResult result = PurchasePaymentGrns.ToDataSourceResult(request, PurchasePaymentGrn => new
             {

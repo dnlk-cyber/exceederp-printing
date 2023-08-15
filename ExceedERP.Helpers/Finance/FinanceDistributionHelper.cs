@@ -901,196 +901,196 @@ namespace ExceedERP.Helpers.Finance
 
             if (record != null)
             {
-                //#region clear existing distribution
-                //var records = _db.APPaybleInvoiceDistributions.Where(x => x.ApPaybleInvoicesId == id).ToList();
-                //_db.APPaybleInvoiceDistributions.RemoveRange(records);
-                //_db.SaveChanges();
-                //#endregion                                
-                //ApPaybleInvoiceDistribution defaultDistribution;
-                //if (record.Type == ApInvoiceTransactionType.Invoice)
-                //{
-                //    int purchasePaymentId = int.Parse(record.SourceId);
-                //    var grn = _db.PurchasePaymentGrns.Where(x => x.PurchasePaymentId == purchasePaymentId).FirstOrDefault();
-                //    if (grn != null)
-                //    {
-                //        switch (grn.ItemType)
-                //        {
-                //            case PurchaseItemType.Stock:
-                //                var grnRecord = _db.GoodReceives.Find(grn.GrnNo);
-                //                var grnItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == grn.GrnNo).ToList();
-                //                #region debit stock
-                //                foreach (var i in grnItems)
-                //                {
-                //                    if (i.SubTotal != 0)
-                //                    {
-                //                        var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == i.ItemCode);
-                //                        if (item != null)
-                //                        {
-                //                            string acc = item.ItemCategory.AccountCode;
-                //                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
-                //                            {
-                //                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
-                //                                if (subcategory != null)
-                //                                    acc = subcategory.AccountCode;
-                //                            }
-                //                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                //                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(grnRecord.BranchId);
-                //                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+                #region clear existing distribution
+                var records = _db.APPaybleInvoiceDistributions.Where(x => x.ApPaybleInvoicesId == id).ToList();
+                _db.APPaybleInvoiceDistributions.RemoveRange(records);
+                _db.SaveChanges();
+                #endregion                                
+                ApPaybleInvoiceDistribution defaultDistribution;
+                if (record.Type == ApInvoiceTransactionType.Invoice)
+                {
+                    int purchasePaymentId = int.Parse(record.SourceId);
+                    var grn = _db.PurchasePaymentGrns.Where(x => x.PurchasePaymentId == purchasePaymentId).FirstOrDefault();
+                    if (grn != null)
+                    {
+                        switch (grn.ItemType)
+                        {
+                            case PurchaseItemType.Stock:
+                                var grnRecord = _db.GoodReceives.Find(grn.GrnNo);
+                                var grnItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == grn.GrnNo).ToList();
+                                #region debit stock
+                                foreach (var i in grnItems)
+                                {
+                                    if (i.SubTotal != 0)
+                                    {
+                                        var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == i.ItemCode);
+                                        if (item != null)
+                                        {
+                                            string acc = item.ItemCategory.AccountCode;
+                                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
+                                            {
+                                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                                if (subcategory != null)
+                                                    acc = subcategory.AccountCode;
+                                            }
+                                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(grnRecord.BranchId);
+                                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
-                //                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
-                //                            if (receiveDistribution != null)
-                //                            {
-                //                                receiveDistribution.Debit += i.SubTotal;
-                //                                receiveDistribution.Credit = 0;
-                //                            }
-                //                            else
-                //                            {
-                //                                defaultDistribution = new ApPaybleInvoiceDistribution()
-                //                                {
-                //                                    AccountCode = newacc,
-                //                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                //                                    Debit = i.SubTotal,
-                //                                    Credit = 0,
-                //                                    ApPaybleInvoicesId = record.ApPaybleInvoicesId
-                //                                };
-                //                                distributions.Add(defaultDistribution);
-                //                            }
+                                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                            if (receiveDistribution != null)
+                                            {
+                                                receiveDistribution.Debit += i.SubTotal;
+                                                receiveDistribution.Credit = 0;
+                                            }
+                                            else
+                                            {
+                                                defaultDistribution = new ApPaybleInvoiceDistribution()
+                                                {
+                                                    AccountCode = newacc,
+                                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                                    Debit = i.SubTotal,
+                                                    Credit = 0,
+                                                    ApPaybleInvoicesId = record.ApPaybleInvoicesId
+                                                };
+                                                distributions.Add(defaultDistribution);
+                                            }
 
-                //                        }
+                                        }
 
-                //                    }
-                //                }
-                //                #endregion
-                //                #region debit tax
-                //                foreach (var i in grnItems)
-                //                {
-                //                    if (i.TaxAmount != 0)
-                //                    {
-                //                        var tax = _db.GLTaxRates.Find(i.GLTaxRateID);
-                //                        if (tax != null)
-                //                        {
-                //                            string acc = tax.ApAccountCode;
+                                    }
+                                }
+                                #endregion
+                                #region debit tax
+                                foreach (var i in grnItems)
+                                {
+                                    if (i.TaxAmount != 0)
+                                    {
+                                        var tax = _db.GLTaxRates.Find(i.GLTaxRateID);
+                                        if (tax != null)
+                                        {
+                                            string acc = tax.ApAccountCode;
 
-                //                            //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
-                //                            //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
-                //                            //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                                            //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
+                                            //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
+                                            //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
 
-                //                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
-                //                            if (receiveDistribution != null)
-                //                            {
-                //                                receiveDistribution.Debit += i.TaxAmount;
-                //                                receiveDistribution.Credit = 0;
-                //                            }
-                //                            else
-                //                            {
+                                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
+                                            if (receiveDistribution != null)
+                                            {
+                                                receiveDistribution.Debit += i.TaxAmount;
+                                                receiveDistribution.Credit = 0;
+                                            }
+                                            else
+                                            {
 
-                //                                defaultDistribution = new ApPaybleInvoiceDistribution()
-                //                                {
-                //                                    AccountCode = acc,
-                //                                    AccountDesc = _dynamicAccount.GetAccountDesc(acc),
-                //                                    Debit = i.TaxAmount,
-                //                                    Credit = 0,
-                //                                    ApPaybleInvoicesId = record.ApPaybleInvoicesId
-                //                                };
-                //                                distributions.Add(defaultDistribution);
-                //                            }
+                                                defaultDistribution = new ApPaybleInvoiceDistribution()
+                                                {
+                                                    AccountCode = acc,
+                                                    AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                                                    Debit = i.TaxAmount,
+                                                    Credit = 0,
+                                                    ApPaybleInvoicesId = record.ApPaybleInvoicesId
+                                                };
+                                                distributions.Add(defaultDistribution);
+                                            }
 
 
-                //                        }
+                                        }
 
-                //                    }
-                //                }
-                //                #endregion
-                //                break;
-                //            case PurchaseItemType.FixedAsset:
-                //                break;
-                //            case PurchaseItemType.Service:
-                //                break;
-                //        }
-                //    }
-                //    #region credit net payable to supplier
-                //    var supplierAccount = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == record.SupplierId);
-                //    if (supplierAccount != null && record.NetPayable > 0)
-                //    {
-                //        string acc = supplierAccount.AccountCode;
-                //        var payableDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
-                //        if (payableDistribution != null)
-                //        {
-                //            payableDistribution.Debit =0;
-                //            payableDistribution.Credit += record.NetPayable;
-                //        }
-                //        else
-                //        {
-                //            defaultDistribution = new ApPaybleInvoiceDistribution()
-                //            {
-                //                AccountCode = acc,
-                //                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
-                //                Debit = 0,
-                //                Credit = record.NetPayable,
-                //                ApPaybleInvoicesId = record.ApPaybleInvoicesId
-                //            };
-                //            distributions.Add(defaultDistribution);
-                //        }                        
-                //    }
+                                    }
+                                }
+                                #endregion
+                                break;
+                            case PurchaseItemType.FixedAsset:
+                                break;
+                            case PurchaseItemType.Service:
+                                break;
+                        }
+                    }
+                    #region credit net payable to supplier
+                    var supplierAccount = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == record.SupplierId);
+                    if (supplierAccount != null && record.NetPayable > 0)
+                    {
+                        string acc = supplierAccount.AccountCode;
+                        var payableDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
+                        if (payableDistribution != null)
+                        {
+                            payableDistribution.Debit =0;
+                            payableDistribution.Credit += record.NetPayable;
+                        }
+                        else
+                        {
+                            defaultDistribution = new ApPaybleInvoiceDistribution()
+                            {
+                                AccountCode = acc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                                Debit = 0,
+                                Credit = record.NetPayable,
+                                ApPaybleInvoicesId = record.ApPaybleInvoicesId
+                            };
+                            distributions.Add(defaultDistribution);
+                        }                        
+                    }
 
-                //    #endregion
-                //    #region credit withhelding 2
-                //    var withholding = _db.GLTaxRates.Where(x => x.TaxName == record.WithholdingType).FirstOrDefault();
-                //    if (withholding != null && record.WithholdingAmount > 0)
-                //    {
-                //        string acc = withholding.ApAccountCode;
-                //        var withholdDistribution = distributions.FirstOrDefault(x => x.AccountCode ==acc);
-                //        if (withholdDistribution != null)
-                //        {
-                //            withholdDistribution.Debit = 0;
-                //            withholdDistribution.Credit += record.WithholdingAmount;
-                //        }
-                //        else
-                //        {
-                //            defaultDistribution = new ApPaybleInvoiceDistribution()
-                //            {
-                //                AccountCode = acc,
-                //                AccountDesc = _accountHelper.GetAccountDesc(acc),
-                //                Debit = 0,
-                //                Credit = record.WithholdingAmount,
-                //                ApPaybleInvoicesId = record.ApPaybleInvoicesId
-                //            };
-                //            distributions.Add(defaultDistribution);
-                //        }
-                //    }
+                    #endregion
+                    #region credit withhelding 2
+                    var withholding = _db.GLTaxRates.Where(x => x.TaxName == record.WithholdingType).FirstOrDefault();
+                    if (withholding != null && record.WithholdingAmount > 0)
+                    {
+                        string acc = withholding.ApAccountCode;
+                        var withholdDistribution = distributions.FirstOrDefault(x => x.AccountCode ==acc);
+                        if (withholdDistribution != null)
+                        {
+                            withholdDistribution.Debit = 0;
+                            withholdDistribution.Credit += record.WithholdingAmount;
+                        }
+                        else
+                        {
+                            defaultDistribution = new ApPaybleInvoiceDistribution()
+                            {
+                                AccountCode = acc,
+                                AccountDesc = _accountHelper.GetAccountDesc(acc),
+                                Debit = 0,
+                                Credit = record.WithholdingAmount,
+                                ApPaybleInvoicesId = record.ApPaybleInvoicesId
+                            };
+                            distributions.Add(defaultDistribution);
+                        }
+                    }
 
-                //    #endregion
-                //    #region credit vat withholding
-                //    var withhodingtaxaccount = _db.GLVatWithholdings.FirstOrDefault();
-                //    if (withhodingtaxaccount != null && record.WithholdTaxAmount > 0)
-                //    {
-                //        string acc = withhodingtaxaccount.WithholdingAccountCode;
-                //        var withholdDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
-                //        if (withholdDistribution != null)
-                //        {
-                //            withholdDistribution.Debit = 0;
-                //            withholdDistribution.Credit += record.WithholdTaxAmount;
-                //        }
-                //        else
-                //        {
-                //            defaultDistribution = new ApPaybleInvoiceDistribution()
-                //            {
-                //                AccountCode = acc,
-                //                AccountDesc = _accountHelper.GetAccountDesc(acc),
-                //                Debit = 0,
-                //                Credit = record.WithholdTaxAmount,
-                //                ApPaybleInvoicesId = record.ApPaybleInvoicesId
-                //            };
-                //            distributions.Add(defaultDistribution);
-                //        }
-                //    }
+                    #endregion
+                    #region credit vat withholding
+                    var withhodingtaxaccount = _db.GLVatWithholdings.FirstOrDefault();
+                    if (withhodingtaxaccount != null && record.WithholdTaxAmount > 0)
+                    {
+                        string acc = withhodingtaxaccount.WithholdingAccountCode;
+                        var withholdDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
+                        if (withholdDistribution != null)
+                        {
+                            withholdDistribution.Debit = 0;
+                            withholdDistribution.Credit += record.WithholdTaxAmount;
+                        }
+                        else
+                        {
+                            defaultDistribution = new ApPaybleInvoiceDistribution()
+                            {
+                                AccountCode = acc,
+                                AccountDesc = _accountHelper.GetAccountDesc(acc),
+                                Debit = 0,
+                                Credit = record.WithholdTaxAmount,
+                                ApPaybleInvoicesId = record.ApPaybleInvoicesId
+                            };
+                            distributions.Add(defaultDistribution);
+                        }
+                    }
 
-                //    #endregion
-                //}
-                //if (record.Type == ApInvoiceTransactionType.Prepayment)
-                //{
-                //    // that will be in prepayment
-                //}
+                    #endregion
+                }
+                if (record.Type == ApInvoiceTransactionType.Prepayment)
+                {
+                    // that will be in prepayment
+                }
 
             }
 
@@ -2153,105 +2153,105 @@ namespace ExceedERP.Helpers.Finance
                 ApPaymentDistribution defaultDistribution;
                 if (record.PoType == "Purchase Payment")
                 {
-                    //int purchasePaymentId = int.Parse(record.PurchaseReference);
-                    //var grn = _db.PurchasePaymentGrns.Where(x => x.PurchasePaymentId == purchasePaymentId).FirstOrDefault();
-                    //if (grn != null)
-                    //{
-                    //    switch (grn.ItemType)
-                    //    {
-                    //        case PurchaseItemType.Stock:
-                    //            var grnRecord = _db.GoodReceives.Find(grn.GrnNo);
-                    //            var grnItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == grn.GrnNo).ToList();
-                    //            #region debit stock
-                    //            foreach (var i in grnItems)
-                    //            {
-                    //                if (i.SubTotal != 0)
-                    //                {
-                    //                    var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == i.ItemCode);
-                    //                    if (item != null)
-                    //                    {
-                    //                        string acc = item.ItemCategory.AccountCode;
-                    //                        if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
-                    //                        {
-                    //                            var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
-                    //                            if (subcategory != null)
-                    //                                acc = subcategory.AccountCode;
-                    //                        }
-                    //                        int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    //                        string locationAccountSeG = HrHelper.GetBranchLocationAccount(grnRecord.BranchId);
-                    //                        string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+                    int purchasePaymentId = int.Parse(record.PurchaseReference);
+                    var grn = _db.PurchasePaymentGrns.Where(x => x.PurchasePaymentId == purchasePaymentId).FirstOrDefault();
+                    if (grn != null)
+                    {
+                        switch (grn.ItemType)
+                        {
+                            case PurchaseItemType.Stock:
+                                var grnRecord = _db.GoodReceives.Find(grn.GrnNo);
+                                var grnItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == grn.GrnNo).ToList();
+                                #region debit stock
+                                foreach (var i in grnItems)
+                                {
+                                    if (i.SubTotal != 0)
+                                    {
+                                        var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == i.ItemCode);
+                                        if (item != null)
+                                        {
+                                            string acc = item.ItemCategory.AccountCode;
+                                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
+                                            {
+                                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                                if (subcategory != null)
+                                                    acc = subcategory.AccountCode;
+                                            }
+                                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(grnRecord.BranchId);
+                                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
-                    //                        var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
-                    //                        if (receiveDistribution != null)
-                    //                        {
-                    //                            receiveDistribution.Debit += i.SubTotal;
-                    //                            receiveDistribution.Credit = 0;
-                    //                        }
-                    //                        else
-                    //                        {
-                    //                            defaultDistribution = new ApPaymentDistribution()
-                    //                            {
-                    //                                AccountCode = newacc,
-                    //                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                    //                                Debit = i.SubTotal,
-                    //                                Credit = 0,
-                    //                                ApPaymentId = record.ApPaymentId
-                    //                            };
-                    //                            distributions.Add(defaultDistribution);
-                    //                        }
+                                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                            if (receiveDistribution != null)
+                                            {
+                                                receiveDistribution.Debit += i.SubTotal;
+                                                receiveDistribution.Credit = 0;
+                                            }
+                                            else
+                                            {
+                                                defaultDistribution = new ApPaymentDistribution()
+                                                {
+                                                    AccountCode = newacc,
+                                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                                    Debit = i.SubTotal,
+                                                    Credit = 0,
+                                                    ApPaymentId = record.ApPaymentId
+                                                };
+                                                distributions.Add(defaultDistribution);
+                                            }
 
-                    //                    }
+                                        }
 
-                    //                }
-                    //            }
-                    //            #endregion
-                    //            #region debit tax
-                    //            foreach (var i in grnItems)
-                    //            {
-                    //                if (i.TaxAmount != 0)
-                    //                {
-                    //                    var tax = _db.GLTaxRates.Find(i.GLTaxRateID);
-                    //                    if (tax != null)
-                    //                    {
-                    //                        string acc = tax.ApAccountCode;
+                                    }
+                                }
+                                #endregion
+                                #region debit tax
+                                foreach (var i in grnItems)
+                                {
+                                    if (i.TaxAmount != 0)
+                                    {
+                                        var tax = _db.GLTaxRates.Find(i.GLTaxRateID);
+                                        if (tax != null)
+                                        {
+                                            string acc = tax.ApAccountCode;
 
-                    //                        //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
-                    //                        //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
-                    //                        //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                                            //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
+                                            //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
+                                            //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
 
-                    //                        var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
-                    //                        if (receiveDistribution != null)
-                    //                        {
-                    //                            receiveDistribution.Debit += i.TaxAmount;
-                    //                            receiveDistribution.Credit = 0;
-                    //                        }
-                    //                        else
-                    //                        {
+                                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
+                                            if (receiveDistribution != null)
+                                            {
+                                                receiveDistribution.Debit += i.TaxAmount;
+                                                receiveDistribution.Credit = 0;
+                                            }
+                                            else
+                                            {
 
-                    //                            defaultDistribution = new ApPaymentDistribution()
-                    //                            {
-                    //                                AccountCode = acc,
-                    //                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
-                    //                                Debit = i.TaxAmount,
-                    //                                Credit = 0,
-                    //                                ApPaymentId = record.ApPaymentId
-                    //                            };
-                    //                            distributions.Add(defaultDistribution);
-                    //                        }
+                                                defaultDistribution = new ApPaymentDistribution()
+                                                {
+                                                    AccountCode = acc,
+                                                    AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                                                    Debit = i.TaxAmount,
+                                                    Credit = 0,
+                                                    ApPaymentId = record.ApPaymentId
+                                                };
+                                                distributions.Add(defaultDistribution);
+                                            }
 
 
-                    //                    }
+                                        }
 
-                    //                }
-                    //            }
-                    //            #endregion
-                    //            break;
-                    //        case PurchaseItemType.FixedAsset:
-                    //            break;
-                    //        case PurchaseItemType.Service:
-                    //            break;
-                    //    }
-                    //}
+                                    }
+                                }
+                                #endregion
+                                break;
+                            case PurchaseItemType.FixedAsset:
+                                break;
+                            case PurchaseItemType.Service:
+                                break;
+                        }
+                    }
                 }
                 else if (record.PoType == "Invoice")
                 {
@@ -2617,83 +2617,83 @@ namespace ExceedERP.Helpers.Finance
        
         public  void UpdateApTravelOrderDistribution(int id)
         {
-            _accountHelper = new AccountHelper();
-            var record = _db.ApTravelOrders.Find(id);
+            //_accountHelper = new AccountHelper();
+            //var record = _db.ApTravelOrders.Find(id);
 
-            if (record != null)
-            {
-                #region clear existing distribution
-                var records = _db.ApTravelOrderDistributions.Where(x => x.ApTravelOrderId == id).ToList();
-                _db.ApTravelOrderDistributions.RemoveRange(records);
-                _db.SaveChanges();
-                #endregion
-                #region debit advance payment
-                //get employee advance account
+            //if (record != null)
+            //{
+            //    #region clear existing distribution
+            //    var records = _db.ApTravelOrderDistributions.Where(x => x.ApTravelOrderId == id).ToList();
+            //    _db.ApTravelOrderDistributions.RemoveRange(records);
+            //    _db.SaveChanges();
+            //    #endregion
+            //    #region debit advance payment
+            //    //get employee advance account
 
-                #region get prepayment account
-                var prepayment = _db.ApSetupReceiptBalanceAccounts.FirstOrDefault(x => x.Type == AdvanceType.Employee);
-                #endregion
-                if (record.AdvanceAmount > 0)
-                {
-                    #region get prepayment account of employee
-                    var employeeSubAccount = _db.EmployeeSubAccounts.FirstOrDefault(x => x.EmployeeId == record.EmployeeId);
-                    #endregion
-                    if (prepayment != null && employeeSubAccount!=null)
-                    {
-                        AccountHelper accountHelper = new AccountHelper();
-                        string acc = prepayment.PrepaymentAccountCode;
-                        string[] account = acc.Split('-');
-                        string acccountSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
-                        string locationSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Location)];
-                        string costCenterSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-                        string subAccountSeG = employeeSubAccount.SubAccountCode;
-                        string newacc = accountHelper.RearrangeAccountSequence(acccountSeG, locationSeG,costCenterSeG, subAccountSeG);
+            //    #region get prepayment account
+            //    var prepayment = _db.ApSetupReceiptBalanceAccounts.FirstOrDefault(x => x.Type == AdvanceType.Employee);
+            //    #endregion
+            //    if (record.AdvanceAmount > 0)
+            //    {
+            //        #region get prepayment account of employee
+            //        var employeeSubAccount = _db.EmployeeSubAccounts.FirstOrDefault(x => x.EmployeeId == record.EmployeeId);
+            //        #endregion
+            //        if (prepayment != null && employeeSubAccount!=null)
+            //        {
+            //            AccountHelper accountHelper = new AccountHelper();
+            //            string acc = prepayment.PrepaymentAccountCode;
+            //            string[] account = acc.Split('-');
+            //            string acccountSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
+            //            string locationSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Location)];
+            //            string costCenterSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
+            //            string subAccountSeG = employeeSubAccount.SubAccountCode;
+            //            string newacc = accountHelper.RearrangeAccountSequence(acccountSeG, locationSeG,costCenterSeG, subAccountSeG);
 
 
-                        ApTravelOrderDistribution defaultDistribution = new ApTravelOrderDistribution
-                        {
-                            AccountCode = newacc,
-                            AccountDesc = accountHelper.GetAccountDesc(newacc),
-                            Debit = record.AdvanceAmount,
-                            Credit = 0,
-                            ApTravelOrderId = record.ApTravelOrderId
-                        };
+            //            ApTravelOrderDistribution defaultDistribution = new ApTravelOrderDistribution
+            //            {
+            //                AccountCode = newacc,
+            //                AccountDesc = accountHelper.GetAccountDesc(newacc),
+            //                Debit = record.AdvanceAmount,
+            //                Credit = 0,
+            //                ApTravelOrderId = record.ApTravelOrderId
+            //            };
 
-                        _db.ApTravelOrderDistributions.Add(defaultDistribution);
-                        _db.SaveChanges();
-                    }
-                }
+            //            _db.ApTravelOrderDistributions.Add(defaultDistribution);
+            //            _db.SaveChanges();
+            //        }
+            //    }
 
-                #endregion
-                #region credit bank/cash
+            //    #endregion
+            //    #region credit bank/cash
 
-                if (record.AdvanceAmount > 0)
-                {
-                    var advance =
-                        _db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == record.ApTravelOrderId);
-                    if (advance.Any())
-                    {
-                        var paymentMethod =
-                            _db.PaymentMethods.FirstOrDefault(x => x.Method == advance.FirstOrDefault().PaymentMethod);
-                        ApTravelOrderDistribution defaultDistribution = new ApTravelOrderDistribution();
-                        if (paymentMethod != null)
-                        {
-                            defaultDistribution.AccountCode = paymentMethod.ApAccountCode;
-                            defaultDistribution.AccountDesc = _accountHelper.GetAccountDesc(paymentMethod.ApAccountCode);
-                            defaultDistribution.Debit = 0;
-                            defaultDistribution.Credit = record.AdvanceAmount;
-                            defaultDistribution.ApTravelOrderId = record.ApTravelOrderId;
-                            _db.ApTravelOrderDistributions.Add(defaultDistribution);
-                            _db.SaveChanges();
-                        }
-                    }
+            //    if (record.AdvanceAmount > 0)
+            //    {
+            //        var advance =
+            //            _db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == record.ApTravelOrderId);
+            //        if (advance.Any())
+            //        {
+            //            var paymentMethod =
+            //                _db.PaymentMethods.FirstOrDefault(x => x.Method == advance.FirstOrDefault().PaymentMethod);
+            //            ApTravelOrderDistribution defaultDistribution = new ApTravelOrderDistribution();
+            //            if (paymentMethod != null)
+            //            {
+            //                defaultDistribution.AccountCode = paymentMethod.ApAccountCode;
+            //                defaultDistribution.AccountDesc = _accountHelper.GetAccountDesc(paymentMethod.ApAccountCode);
+            //                defaultDistribution.Debit = 0;
+            //                defaultDistribution.Credit = record.AdvanceAmount;
+            //                defaultDistribution.ApTravelOrderId = record.ApTravelOrderId;
+            //                _db.ApTravelOrderDistributions.Add(defaultDistribution);
+            //                _db.SaveChanges();
+            //            }
+            //        }
 
-                }
+            //    }
 
-                #endregion
+            //    #endregion
 
                 
-            }
+            //}
 
         }
         public  void UpdateApTravelOrdeExpenseClaimDistribution(int id)

@@ -20,6 +20,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
 
         public ActionResult Index()
         {
+            ViewBag.Count = _db.GLTaxRates.Count();
             return View();
         }
 

@@ -156,11 +156,11 @@
                                                   .DataSource(dataSource =>
                                                   {
                                                       dataSource.Read(read => read.Action("GetApTax", "FinanceDataProvider", new { area = "Finance" }))
-                                                          .ServerFiltering(true);
+                                                          .ServerFiltering(false);
                                                   })
 
                     )
-                    @Html.ValidationMessageFor(model => model.InvoiceNumber, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.GLTaxRateID, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>

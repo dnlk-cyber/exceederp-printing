@@ -2,9 +2,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.AR;
-using ExceedERP.Core.Domain.Finance.AR.SalesOrder;
 using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
@@ -50,6 +47,21 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string TaxName { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
+        public string Remark { get; set; }
+    }
+
+    public class FundTransferLineVm
+    {        
+        public string BranchName { get; set; }
+        public decimal Material { get; set; }
+        public decimal FuelAndLubricant { get; set; }
+        public decimal ManPower { get; set; }
+        public decimal Machinery { get; set; }
+        public decimal CompensationAndSeverance { get; set; }
+        public decimal FoodAndPerDiem { get; set; }
+        public decimal TotalCost { get; set; }
+        public decimal TotalApproved { get; set; }
+        public decimal TotalPermited { get; set; }
         public string Remark { get; set; }
     }
 }

@@ -24,7 +24,11 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
 
         //
         public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public string AccountantCheckedBy { get; set; }
+        public DateTime? AccountantCheckedDate { get; set; }
         public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
     }
 
 

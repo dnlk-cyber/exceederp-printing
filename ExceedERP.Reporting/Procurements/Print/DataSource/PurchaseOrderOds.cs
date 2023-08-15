@@ -34,7 +34,18 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                 headerDs.DeliveryPeriod = purchaseOrder.DeliveryDate;
                 headerDs.Proforma = purchaseOrder.ProformaPurchaseID.ToString();
 
-               
+                var items= _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
+                if (items.Any())
+                    headerDs.Total = items.Sum(x=>x.Total);
+
+                if(!string.IsNullOrEmpty(purchaseOrder.SupplierId))
+                {
+                    var supplier = _db.ProcurementSuppliers.Where(x => x.SupplierId == purchaseOrder.SupplierId).FirstOrDefault();
+                    headerDs.SupplierAddress = supplier?.Address;
+                    headerDs.SupplierFax = supplier?.Fax;
+                    headerDs.SupplierEmail = supplier?.Email;
+                    headerDs.SupplierTel = supplier?.Telephone;
+                }
 
                 if (purchaseOrder.IsManual)
                 {
@@ -42,7 +53,8 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
 
                     headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(purchaseOrder.CreatedBy));
                     if (purchaseOrder.DateCreated != null)
-                        headerDs.CreateDate =purchaseOrder.DateCreated!=null? purchaseOrder.DateCreated.ToString():"";
+                        headerDs.CreateDate =purchaseOrder.DateCreated!=null? purchaseOrder.DateCreated:null;
+                    headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(purchaseOrder.CreatedBy);
 
                     var purchaseOrderValidations = _db.PurchaseOrderValidations
                         .Where(x => x.PurchaseOrderID == purchaseOrder.PurchaseOrderID).ToList();
@@ -56,7 +68,8 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                         {
                             headerDs.Approver =
                                 EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
-                            headerDs.ApprovedDate =approver.DateCreated!=null? approver.DateCreated.ToString():"";
+                            headerDs.ApprovedDate =approver.DateCreated!=null? approver.DateCreated:null;
+                            headerDs.ApproverSignature = SignatureHelper.GetUserSignature(approver.CreatedBy);
 
                             var checker = purchaseOrderValidations.OrderByDescending(x => x.PurchaseOrderValidationID)
                                 .FirstOrDefault(x => x.PurchaseOrderValidationID < maxid);
@@ -66,15 +79,16 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                                 headerDs.Checker =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(checker.CreatedBy));
-                                headerDs.CheckedDate =checker.DateCreated!=null? checker.DateCreated.ToString():"";
+                                headerDs.CheckedDate =checker.DateCreated!=null? checker.DateCreated:null;
+                                headerDs.CheckerSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
                             }
                             else
                             {
                                 headerDs.Checker =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(purchaseOrder.SendForApprovalBy));
-                                headerDs.CheckedDate = purchaseOrder.SendForApprovalTime!=null? purchaseOrder.SendForApprovalTime.ToString():"";
-
+                                headerDs.CheckedDate = purchaseOrder.SendForApprovalTime!=null? purchaseOrder.SendForApprovalTime:null;
+                                headerDs.CheckerSignature = SignatureHelper.GetUserSignature(purchaseOrder.SendForApprovalBy);
                             }
                         }
 
@@ -93,44 +107,85 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                         headerDs.CreatedBy =
                             EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CreatedBy));
                         if (purchaseOrder.DateCreated != null)
-                            headerDs.CreateDate = proforma.DateCreated!=null? proforma.DateCreated.ToString():"";
+                            headerDs.CreateDate = proforma.DateCreated!=null? proforma.DateCreated:null;
+                        headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(proforma.CreatedBy);
+
                     }
 
-                    var purchaseValidations = _db.PurchaseValidations
-                        .Where(x => x.ProformaPurchaseID == purchaseOrder.ProformaPurchaseID).ToList();
+                    var purchaseOrderValidations = _db.PurchaseOrderValidations
+                       .Where(x => x.PurchaseOrderID == purchaseOrder.PurchaseOrderID).ToList();
 
-                    if (purchaseValidations.Any())
+                    if (purchaseOrderValidations.Any())
                     {
-                        int maxid = purchaseValidations.Max(x => x.PurchaseValidationID);
+                        int maxid = purchaseOrderValidations.Max(x => x.PurchaseOrderValidationID);
                         var approver =
-                            purchaseValidations.FirstOrDefault(x => x.PurchaseValidationID == maxid);
+                            purchaseOrderValidations.FirstOrDefault(x => x.PurchaseOrderValidationID == maxid);
                         if (approver != null)
                         {
                             headerDs.Approver =
                                 EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
-                            headerDs.ApprovedDate = approver.DateCreated!=null? approver.DateCreated.ToString():"";
+                            headerDs.ApprovedDate = approver.DateCreated != null ? approver.DateCreated : null;
+                            headerDs.ApproverSignature = SignatureHelper.GetUserSignature(approver.CreatedBy);
 
-                            var checker = purchaseValidations.OrderByDescending(x => x.PurchaseValidationID)
-                                .FirstOrDefault(x => x.PurchaseValidationID < maxid);
+                            var checker = purchaseOrderValidations.OrderByDescending(x => x.PurchaseOrderValidationID)
+                                .FirstOrDefault(x => x.PurchaseOrderValidationID < maxid);
 
                             if (checker != null)
                             {
                                 headerDs.Checker =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(checker.CreatedBy));
-                                headerDs.CheckedDate = checker.DateCreated!=null ? checker.DateCreated.ToString():"";
+                                headerDs.CheckedDate = checker.DateCreated != null ? checker.DateCreated : null;
+                                headerDs.CheckerSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
                             }
                             else
                             {
                                 headerDs.Checker =
                                     EmployeeHelper.GetEmployeeEnglishName(
-                                        UserHelper.GetUserEmployeeId(proforma?.SendForApprovalBy));
-                                headerDs.CheckedDate = proforma?.SendForApprovalTime!=null? proforma.SendForApprovalTime.ToString():"";
+                                        UserHelper.GetUserEmployeeId(purchaseOrder.SendForApprovalBy));
+                                headerDs.CheckedDate = purchaseOrder.SendForApprovalTime != null ? purchaseOrder.SendForApprovalTime : null;
+                                headerDs.CheckerSignature = SignatureHelper.GetUserSignature(purchaseOrder.SendForApprovalBy);
 
                             }
                         }
 
                     }
+
+                    //var purchaseValidations = _db.PurchaseValidations
+                    //    .Where(x => x.ProformaPurchaseID == purchaseOrder.ProformaPurchaseID).ToList();
+
+                    //if (purchaseValidations.Any())
+                    //{
+                    //    int maxid = purchaseValidations.Max(x => x.PurchaseValidationID);
+                    //    var approver =
+                    //        purchaseValidations.FirstOrDefault(x => x.PurchaseValidationID == maxid);
+                    //    if (approver != null)
+                    //    {
+                    //        headerDs.Approver =
+                    //            EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                    //        headerDs.ApprovedDate = approver.DateCreated!=null? approver.DateCreated.ToString():"";
+
+                    //        var checker = purchaseValidations.OrderByDescending(x => x.PurchaseValidationID)
+                    //            .FirstOrDefault(x => x.PurchaseValidationID < maxid);
+
+                    //        if (checker != null)
+                    //        {
+                    //            headerDs.Checker =
+                    //                EmployeeHelper.GetEmployeeEnglishName(
+                    //                    UserHelper.GetUserEmployeeId(checker.CreatedBy));
+                    //            headerDs.CheckedDate = checker.DateCreated!=null ? checker.DateCreated.ToString():"";
+                    //        }
+                    //        else
+                    //        {
+                    //            headerDs.Checker =
+                    //                EmployeeHelper.GetEmployeeEnglishName(
+                    //                    UserHelper.GetUserEmployeeId(proforma?.SendForApprovalBy));
+                    //            headerDs.CheckedDate = proforma?.SendForApprovalTime!=null? proforma.SendForApprovalTime.ToString():"";
+
+                    //        }
+                    //    }
+
+                    //}
 
                     #endregion
                 }
@@ -191,6 +246,12 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         {
             List<PoPurchaseRequisition> prList = _db.PoPurchaseRequisitions.Where(x => x.PurchaseOrderID == id).ToList();
             return prList;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<PoPaymentSchedule> PaymentSchedule(int id)
+        {
+            List<PoPaymentSchedule> payments = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
+            return payments;
         }
     }
 }

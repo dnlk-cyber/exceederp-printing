@@ -400,7 +400,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
         public JsonResult SendForApproval(int id)
         {
             var record = _db.PaymentRequests.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.PaymentRequestLines.Count > 0)
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved)
             {               
 
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);

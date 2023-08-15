@@ -389,6 +389,9 @@
     <Compile Include="Domain\Finance\AP\DirectPayment\APDirectPaymentDistribution.cs" />
     <Compile Include="Domain\Finance\AP\DirectPayment\ApDirectPaymentValidation.cs" />
     <Compile Include="Domain\Finance\AP\Disbursement\APTPayment.cs" />
+    <Compile Include="Domain\Finance\AP\FundTransfer\FundTransfer.cs" />
+    <Compile Include="Domain\Finance\AP\FundTransfer\FundTransferLine.cs" />
+    <Compile Include="Domain\Finance\AP\FundTransfer\FundTransferValidation.cs" />
     <Compile Include="Domain\Finance\AP\Invoice\APPaybleInvoiceDistribution.cs" />
     <Compile Include="Domain\Finance\AP\Invoice\APPaybleInvoices.cs" />
     <Compile Include="Domain\Finance\AP\Invoice\APPaybleInvoicesLines.cs" />
@@ -1101,6 +1104,7 @@
     <Compile Include="Domain\Procurement\Proforma\ProformaItem.cs" />
     <Compile Include="Domain\Procurement\Proforma\ProformaPurchase.cs" />
     <Compile Include="Domain\Procurement\Proforma\ProformaPurchaseRequisition.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformaTeam.cs" />
     <Compile Include="Domain\Procurement\Proforma\ProformPassFail.cs" />
     <Compile Include="Domain\Procurement\Proforma\ProformTechnical.cs" />
     <Compile Include="Domain\Procurement\Proforma\PurchaseValidation.cs" />

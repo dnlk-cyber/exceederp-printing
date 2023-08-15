@@ -104,6 +104,7 @@
 
                             <hr>
                             <dl class="dl-horizontal">
+
                                 <dt>
                                     No.
                                 </dt>
@@ -112,7 +113,7 @@
                                 </dd>
 
                                 <dt>
-                                    Request Date
+                                    Date
                                 </dt>
                                 <dd>
 
@@ -149,6 +150,53 @@
                                 </dt>
                                 <dd>
                                     #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                                <dt>
+                                    Department Approved On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Approved By
+                                </dt>
+                                <dd>
+                                    #=DepartmentOnlineApprovedBy #
+
+                                </dd>
+
+                                <dt>
+                                    Budget Approved On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Approved By
+                                </dt>
+                                <dd>
+                                    #=BudgetApprovedBy #
+
+                                </dd>
+
+                                <dt>
+                                    Finance Approved On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Approved By
+                                </dt>
+                                <dd>
+                                    #=OnlineApprovedBy #
+
                                 </dd>
                             </dl>
                             # if (!IsDepartmentOnlineApproved)

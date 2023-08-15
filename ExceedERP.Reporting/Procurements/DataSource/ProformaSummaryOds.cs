@@ -28,7 +28,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             {
                 var proformaSummary = new ProformaAndLotSummaryViewModel
                 {
-                    Description =supplierItem.ItemType==PurchaseItemType.FixedAsset? supplierItem.ItemName+"-"+supplierItem.Name + "-" + supplierItem.ModelNo : supplierItem.ItemName,
+                    Description =supplierItem.ItemType==PurchaseItemType.FixedAsset? supplierItem.ItemName+"-"+supplierItem.Name + "-" + supplierItem.ModelNo : supplierItem.ItemName + "-" + supplierItem.ItemSpecification,
                     SupplierName = supplierItem.ParticipatingSupplier.SupplierName,
                     Quantity = supplierItem.Quantity,
                     Unit = supplierItem.UoM,
@@ -68,7 +68,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     WinningSupplierDetailVM winnervm =
                         new WinningSupplierDetailVM
                         {
-                            Description = winnerSupplier.ItemType == PurchaseItemType.FixedAsset ? winnerSupplier.ItemName + "-" + winnerSupplier.Name + "-" + winnerSupplier.ModelNo : winnerSupplier.ItemName,
+                            Description = winnerSupplier.ItemType == PurchaseItemType.FixedAsset ? winnerSupplier.ItemName + "-" + winnerSupplier.Name + "-" + winnerSupplier.ModelNo : winnerSupplier.ItemName + "-" + winnerSupplier.ItemSpecification,
                             Unit = winnerSupplier.UoM,
                             Quantity = winnerSupplier.Quanity,
                             UnitPrice = winnerSupplier.UPrice,

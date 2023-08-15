@@ -117,6 +117,7 @@
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\NumberToWordConverter.cs" />
     <Compile Include="Common\Security.cs" />
+    <Compile Include="Common\SignatureHelper.cs" />
     <Compile Include="Common\WaterMarkHelper.cs" />
     <Compile Include="Construction\BillingHelper.cs" />
     <Compile Include="Construction\ConsSettingHelper.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="CRM\CRMDistributionHelper.cs" />
     <Compile Include="CRM\CRMDynamicDistributionHelper.cs" />
     <Compile Include="CRM\CRMGenericHelper.cs" />
-    <Compile Include="CRM\CRMMaintenanceIntegrationHelper.cs" />
     <Compile Include="CRM\CRMPaymentDistibutionHelper.cs" />
     <Compile Include="CRM\CRMPOSHelper.cs" />
     <Compile Include="CRM\CRMSalesHelper.cs" />

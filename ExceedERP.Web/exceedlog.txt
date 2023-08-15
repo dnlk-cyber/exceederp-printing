@@ -238634,3 +238634,39 @@
 2023-08-10 09:29:27.8252|WARN|Hangfire.AutomaticRetryAttribute|Failed to process the job '270128': an exception occurred. Retry attempt 5 of 10 will be performed in 00:04:36.
 2023-08-10 09:29:42.3288|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server lenovo:380:2a1d4f38 heartbeat successfully sent
 2023-08-10 09:30:12.3371|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server lenovo:380:2a1d4f38 heartbeat successfully sent
+2023-08-10 09:30:42.3545|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server lenovo:380:2a1d4f38 heartbeat successfully sent
+2023-08-10 09:31:12.3589|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server lenovo:380:2a1d4f38 heartbeat successfully sent
+2023-08-10 09:31:42.3624|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server lenovo:380:2a1d4f38 heartbeat successfully sent
+2023-08-10 09:32:02.5730|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:380:2a1d4f38 caught stopping signal...
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3922bde8 stopped in 1.3869 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:834a99f1 stopped in 2.0318 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:0a23dce5 stopped in 2.3938 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:32e5412d stopped in 1.6496 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:576ca25e stopped in 2.314 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1f20d6d4 stopped in 2.4403 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b6fab6e7 stopped in 5.2256 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7b604931 stopped in 6.4332 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:6251dbe5 stopped in 7.3516 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:08b6db8f stopped in 7.9158 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b64a2021 stopped in 8.974 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d4803210 stopped in 7.7378 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:37297d05 stopped in 9.984 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:87189571 stopped in 8.3002 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:c78b053f stopped in 3.0982 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:882d7812 stopped in 4.3503 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:98e440c1 stopped in 7.8101 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5cee1fda stopped in 8.1924 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4d0b84b1 stopped in 8.5402 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:afe0ebce stopped in 2.5568 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a049eb62 stopped in 4.6055 ms
+2023-08-10 09:32:02.5810|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:380:2a1d4f38 caught stopped signal...
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a14bd356 stopped in 5.9482 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d0b5979d stopped in 9.0947 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:631b9c67 stopped in 2.1548 ms
+2023-08-10 09:32:02.5810|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:44c92f77 stopped in 9.7866 ms
+2023-08-10 09:32:02.5730|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a521a408 stopped in 3.9366 ms
+2023-08-10 09:32:02.6150|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:380:2a1d4f38 All dispatchers stopped
+2023-08-10 09:32:02.6150|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:962692bc stopped in 43.7909 ms
+2023-08-10 09:32:02.6280|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:380:2a1d4f38 successfully reported itself as stopped in 6.2021 ms
+2023-08-10 09:32:02.6640|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:380:2a1d4f38 has been stopped in total 89.0711 ms
+2023-08-10 09:32:02.6640|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:b061e47f stopped in 92.1418 ms

@@ -56,6 +56,7 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         [Required]
         [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; }
+        public string ItemName { get; internal set; }
     }
 
     public class ApTravelDepartureLineVm
@@ -75,5 +76,6 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string TransportMode { get; set; }
         public string Branch { get; set; }
         public string Remark { get; set; }
+        public decimal Duration { get; internal set; }
     }
 }

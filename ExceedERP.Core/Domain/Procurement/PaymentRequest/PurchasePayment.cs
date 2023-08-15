@@ -47,7 +47,9 @@ namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
         [Display(Name = "Source Type")]
         public string Type { get; set; }
         [Display(Name = "Source")]
-        public string PoOrContractNumber { get; set; }
+        public string PoOrContractNumber { get; set; }        
+        public string TenderRef { get; set; }
+        public string ProformaRef { get; set; }
         [Display(Name = "Purchaser")]
         public int ? ProcurementOfficer { get; set; }
         [Display(Name = "Analyzer")]
@@ -58,12 +60,20 @@ namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        //finance controll
+        public bool IsFinanceSendForApproval { get; set; }
+        public string FinanceSendForApprovalBy { get; set; }
+        public DateTime? FinanceSendForApprovalTime { get; set; }
+        public bool IsFinanceApproved { get; set; }
+        public string FinanceApprovedBy { get; set; }
+        public DateTime? FinanceApprovedTime { get; set; }
         [DisplayName("Purchase Type")]
         public PurchasePaymentType PurchasePaymentType { get; set; }
         public virtual ICollection<PurchasePaymentAttachment> PurchasetPaymentAttachements { get; set; }
         public virtual ICollection<PurchasePaymentGrn> PurchasetPaymentGrns { get; set; }
         public virtual ICollection<PurchasePaymentValidation> PurchasetPaymentValidations { get; set; }
         public virtual ICollection<PurchasePaymentBudgetValidation> PurchasePaymentBudgetValidations { get; set; }
+        public virtual ICollection<PurchasePaymentFinanceValidation> PurchasePaymentFinanceValidations { get; set; }
     }
 
     public class PurchasePaymentBudgetValidation: VoucherValidation
@@ -71,5 +81,12 @@ namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
         public int PurchasePaymentBudgetValidationId { get; set; }
         public int PurchasePaymentId { get; set; }
         public virtual PurchasePayment PurchasePayment { get; set; }       
+    }
+
+    public class PurchasePaymentFinanceValidation : VoucherValidation
+    {
+        public int PurchasePaymentFinanceValidationId { get; set; }
+        public int PurchasePaymentId { get; set; }
+        public virtual PurchasePayment PurchasePayment { get; set; }
     }
 }

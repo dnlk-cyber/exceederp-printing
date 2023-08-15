@@ -33,11 +33,14 @@ namespace ExceedERP.Reporting.Finance.IFRS
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
+            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
+            this.periodDS = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.crosstab1 = new Telerik.Reporting.Crosstab();
             this.textBox6 = new Telerik.Reporting.TextBox();
             this.textBox7 = new Telerik.Reporting.TextBox();
             this.textBox5 = new Telerik.Reporting.TextBox();
+            this.socibyallprojectOds = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox36 = new Telerik.Reporting.TextBox();
             this.txtOrgName = new Telerik.Reporting.TextBox();
@@ -53,9 +56,6 @@ namespace ExceedERP.Reporting.Finance.IFRS
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
-            this.socibyallprojectOds = new Telerik.Reporting.ObjectDataSource();
-            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
-            this.periodDS = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -91,6 +91,18 @@ namespace ExceedERP.Reporting.Finance.IFRS
             this.textBox3.Style.Padding.Left = Telerik.Reporting.Drawing.Unit.Inch(0D);
             this.textBox3.StyleName = "Civic.SubTotal";
             this.textBox3.Value = "= Fields.CategoryDescription";
+            // 
+            // fiscalYeardDs
+            // 
+            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
+            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
+            this.fiscalYeardDs.Name = "fiscalYeardDs";
+            // 
+            // periodDS
+            // 
+            this.periodDS.DataMember = "GetPeriods";
+            this.periodDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
+            this.periodDS.Name = "periodDS";
             // 
             // detailSection1
             // 
@@ -165,6 +177,16 @@ namespace ExceedERP.Reporting.Finance.IFRS
             this.textBox5.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox5.StyleName = "Civic.TableHeader";
             this.textBox5.Value = "Description";
+            // 
+            // socibyallprojectOds
+            // 
+            this.socibyallprojectOds.DataMember = "ScoiByProjectReport";
+            this.socibyallprojectOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.IFRS.SociAllProjectOds);
+            this.socibyallprojectOds.Name = "socibyallprojectOds";
+            this.socibyallprojectOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("fiscalyear", typeof(string), "= Parameters.fiscalyear.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("periodFrom", typeof(string), "= Parameters.periodFrom.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("periodTo", typeof(string), "= Parameters.periodTo.Value")});
             // 
             // pageHeaderSection1
             // 
@@ -323,28 +345,6 @@ namespace ExceedERP.Reporting.Finance.IFRS
             this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox11});
             this.pageFooterSection1.Name = "pageFooterSection1";
-            // 
-            // socibyallprojectOds
-            // 
-            this.socibyallprojectOds.DataMember = "ScoiByProjectReport";
-            this.socibyallprojectOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.IFRS.SociAllProjectOds);
-            this.socibyallprojectOds.Name = "socibyallprojectOds";
-            this.socibyallprojectOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("fiscalyear", typeof(string), "= Parameters.fiscalyear.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("periodFrom", typeof(string), "= Parameters.periodFrom.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("periodTo", typeof(string), "= Parameters.periodTo.Value")});
-            // 
-            // fiscalYeardDs
-            // 
-            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
-            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
-            this.fiscalYeardDs.Name = "fiscalYeardDs";
-            // 
-            // periodDS
-            // 
-            this.periodDS.DataMember = "GetPeriods";
-            this.periodDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
-            this.periodDS.Name = "periodDS";
             // 
             // Organization
             // 

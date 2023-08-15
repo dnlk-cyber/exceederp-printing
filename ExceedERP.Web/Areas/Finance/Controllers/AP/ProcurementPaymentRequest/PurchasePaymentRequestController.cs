@@ -17,6 +17,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.Core.Domain.Budget;
+using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
 {
@@ -58,7 +59,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
         [AuthorizeRoles(FinanceConstants.AccountPayablePayment, FinanceConstants.AccountPayableApprover)]
         public ActionResult PurchasePayments_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<PurchasePayment> PurchasePayments = _db.PurchasePayments.Where(x => x.IsBudgetApproved);
+            IQueryable<PurchasePayment> PurchasePayments = _db.PurchasePayments;
+            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            {
+                PurchasePayments = PurchasePayments.Where(x => x.IsBudgetApproved);
+            }
             DataSourceResult result = PurchasePayments.ToDataSourceResult(request, purchasePayment => new {
                
                 PurchasePaymentId = purchasePayment.PurchasePaymentId,
@@ -75,12 +80,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                 NetPayable = purchasePayment.NetPayable,
                 Remark = purchasePayment.Remark,
                 Status = purchasePayment.Status,
+
                 IsOnlineApproved = purchasePayment.IsOnlineApproved,
                 OnlineApprovedBy = purchasePayment.OnlineApprovedBy,
                 OnlineApprovedTime = purchasePayment.OnlineApprovedTime,
+
                 IsSendForApproval = purchasePayment.IsSendForApproval,
                 SendForApprovalBy = purchasePayment.SendForApprovalBy,
                 SendForApprovalTime = purchasePayment.SendForApprovalTime,
+
                 IsVoid = purchasePayment.IsVoid,
                 VoidBy = purchasePayment.VoidBy,
                 VoidTime = purchasePayment.VoidTime,
@@ -89,6 +97,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                 PaymentType = purchasePayment.PaymentType,
                 PurchasePaymentType = purchasePayment.PurchasePaymentType,
                 PoOrContractNumber = purchasePayment.PoOrContractNumber,
+                TenderRef = purchasePayment.TenderRef,
+                ProformaRef = purchasePayment.ProformaRef,
                 NextApprover = purchasePayment.NextApprover,
 
                 PurposeOfPayment = purchasePayment.PurposeOfPayment,
@@ -102,6 +112,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                 IsBudgetApproved = purchasePayment.IsBudgetApproved,
                 BudgetApprovedBy = purchasePayment.BudgetApprovedBy,
                 BudgetApprovedTime = purchasePayment.BudgetApprovedTime,
+
+                IsFinanceSendForApproval = purchasePayment.IsFinanceSendForApproval,
+                FinanceSendForApprovalBy = purchasePayment.FinanceSendForApprovalBy,
+                FinanceSendForApprovalTime = purchasePayment.FinanceSendForApprovalTime,
+
+                IsFinanceApproved = purchasePayment.IsFinanceApproved,
+                FinanceApprovedBy = purchasePayment.FinanceApprovedBy,
+                FinanceApprovedTime = purchasePayment.FinanceApprovedTime,
 
                 OrgBranchName = purchasePayment.OrgBranchName,
                 DateCreated = purchasePayment.DateCreated,
@@ -163,6 +181,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                     Type = purchasePayment.Type,
                     PaymentType = purchasePayment.PaymentType,
                     PoOrContractNumber = purchasePayment.PoOrContractNumber,
+                    TenderRef = purchasePayment.TenderRef,
+                    ProformaRef = purchasePayment.ProformaRef,
                     NextApprover = purchasePayment.NextApprover,
                     PurposeOfPayment = purchasePayment.PurposeOfPayment,
                     ProcurementOfficer = purchasePayment.ProcurementOfficer,
@@ -173,6 +193,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                     IsBudgetApproved = purchasePayment.IsBudgetApproved,
                     BudgetApprovedBy = purchasePayment.BudgetApprovedBy,
                     BudgetApprovedTime = purchasePayment.BudgetApprovedTime,
+
+                    IsFinanceSendForApproval = purchasePayment.IsFinanceSendForApproval,
+                    FinanceSendForApprovalBy = purchasePayment.FinanceSendForApprovalBy,
+                    FinanceSendForApprovalTime = purchasePayment.FinanceSendForApprovalTime,
+
+                    IsFinanceApproved = purchasePayment.IsFinanceApproved,
+                    FinanceApprovedBy = purchasePayment.FinanceApprovedBy,
+                    FinanceApprovedTime = purchasePayment.FinanceApprovedTime,
 
                     OrgBranchName = purchasePayment.OrgBranchName,
                     DateCreated = DateTime.Now,
@@ -244,6 +272,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                     Type = purchasePayment.Type,
                     PaymentType = purchasePayment.PaymentType,
                     PoOrContractNumber = purchasePayment.PoOrContractNumber,
+                    TenderRef = purchasePayment.TenderRef,
+                    ProformaRef = purchasePayment.ProformaRef,
                     NextApprover = purchasePayment.NextApprover,
                     PurposeOfPayment = purchasePayment.PurposeOfPayment,
                     ProcurementOfficer = purchasePayment.ProcurementOfficer,
@@ -254,6 +284,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                     IsBudgetApproved = purchasePayment.IsBudgetApproved,
                     BudgetApprovedBy = purchasePayment.BudgetApprovedBy,
                     BudgetApprovedTime = purchasePayment.BudgetApprovedTime,
+
+                    IsFinanceSendForApproval = purchasePayment.IsFinanceSendForApproval,
+                    FinanceSendForApprovalBy = purchasePayment.FinanceSendForApprovalBy,
+                    FinanceSendForApprovalTime = purchasePayment.FinanceSendForApprovalTime,
+
+                    IsFinanceApproved = purchasePayment.IsFinanceApproved,
+                    FinanceApprovedBy = purchasePayment.FinanceApprovedBy,
+                    FinanceApprovedTime = purchasePayment.FinanceApprovedTime,
 
                     OrgBranchName = purchasePayment.OrgBranchName,
                     DateCreated = purchasePayment.DateCreated,
@@ -328,7 +366,59 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
         }
 
 
+        [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
+        public JsonResult SendForFinanceApproval(int id)
+        {
+            var record = _db.PurchasePayments.Find(id);          
 
+            if (record != null && !record.IsFinanceSendForApproval && !record.IsFinanceApproved)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 18);
+                record.IsFinanceSendForApproval = true;
+                record.FinanceSendForApprovalBy = User.Identity.Name;
+                record.FinanceSendForApprovalTime = DateTime.Now;
+                _db.PurchasePayments.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+              
+                var formattedData = new
+                {
+                    Message = "Successfully Sent.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            else if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            else if (record.IsFinanceSendForApproval)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already sent for approval you cannot send again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            else if (record.IsFinanceApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already approved.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
 
         private void GetGrnList(int Purchaseid,int paymentid)
         {

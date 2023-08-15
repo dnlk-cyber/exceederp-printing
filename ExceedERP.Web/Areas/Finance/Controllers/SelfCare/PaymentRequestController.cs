@@ -18,6 +18,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 {
@@ -58,92 +59,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             return Json((periodList ?? throw new InvalidOperationException()).Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
      
-        public ActionResult SendForApproval()
-        {
-            #region validation 
 
-            var requestItems = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == HRMInputs.RequestId).ToList();
-            if (!requestItems.Any())
-            {
-                ModelState.AddModelError("noitem", "Please add at least one line item under your request.");
-                return null;
-            }
-
-            var status =_db.RequestesStatus.Where(x => x.RequestId == HRMInputs.RequestId && x.ReferenceType == HRMInputs.ReferenceType).ToList();
-            if (status.Any())
-            {
-                foreach (var s in status)
-                {
-                    var messages = "";
-                    if (s.Status == RequestStatus.APPROVE)
-                    {
-                        messages = "The Request is already approved!!";
-                        ModelState.AddModelError("xx", messages);
-                        return null;
-                    }
-                    if (s.Status == RequestStatus.WAITING_FOR_APPROVAL)
-                    {
-                        messages = "The Request is already send for approval!!";
-                        return null;
-                    }
-
-                }
-            }
-
-                #endregion
-
-            _db = new ExceedDbContext();
-            var requestesStatus = _db.RequestesStatus.FirstOrDefault(x => x.RequestId == HRMInputs.RequestId &&
-                    x.ReferenceType == HRMInputs.ReferenceType && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
-            _db = new ExceedDbContext();
-            if (requestesStatus == null)
-            {
-                var entityy = new RequestesStatus
-                {
-                    RequestId = HRMInputs.RequestId,
-                    ReferenceType = HRMInputs.ReferenceType,
-                    Status = RequestStatus.WAITING_FOR_APPROVAL,
-                    Date = DateTime.Now,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                };
-
-                _db.RequestesStatus.Add(entityy);
-                _db.SaveChanges();
-            }
-            else
-            {
-                var entity = new RequestesStatus
-                {
-                    RequestStatusId = requestesStatus.RequestStatusId,
-                    RequestId = requestesStatus.RequestId,
-                    ReferenceType = requestesStatus.ReferenceType,
-                    Status = requestesStatus.Status,
-                    Date = requestesStatus.Date,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(requestesStatus.Date.Day, requestesStatus.Date.Month, requestesStatus.Date.Year),
-                    Remark = requestesStatus.Remark
-                };
-
-                _db.RequestesStatus.Attach(entity);
-                _db.RequestesStatus.Remove(entity);
-                _db.SaveChanges();
-                _db = new ExceedDbContext();
-
-                var entityy = new RequestesStatus
-                {
-                    RequestId = HRMInputs.RequestId,
-                    ReferenceType = HRMInputs.ReferenceType,
-                    Status = RequestStatus.WAITING_FOR_APPROVAL,
-                    Date = DateTime.Now,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                };
-
-                _db.RequestesStatus.Add(entityy);
-                _db.SaveChanges();
-            }
-
-          
-            return RedirectToAction("Index");
-        }
         public ActionResult PaymentRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
@@ -232,20 +148,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             #region data
             paymentRequest.CurrentApprovalStep = 0;
 
+            if (paymentRequest.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
             if (paymentRequest.EmployeeId!=0)
             {
                 var placemnt = _db.Placements.Where(x => x.EmployeeId == paymentRequest.EmployeeId).Where(x => x.isCurrent==true).FirstOrDefault();
                 if(placemnt!=null)
                 {
-                    paymentRequest.BranchId = placemnt.BranchId;
-                    paymentRequest.BusinessUnitId = placemnt.BusinessUnitId;
-                    paymentRequest.OrgStuructureId = placemnt.OrgStructureId;
+                    //paymentRequest.BranchId = placemnt.BranchId;
+                    //paymentRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                    //paymentRequest.OrgStuructureId = placemnt.OrgStructureId;
                 }
                 else
                 {
                     ModelState.AddModelError("placement", "Employee has not current placemnt");
                 }
             }
+            
 
             if (!String.IsNullOrWhiteSpace(paymentRequest.SupplierId))
             {
@@ -253,6 +174,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == paymentRequest.SupplierId);
                 if (supplier != null) paymentRequest.Supplier = supplier.Name;
             }
+
+            paymentRequest.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            paymentRequest.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            paymentRequest.OrgStuructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
 
             #endregion
 
@@ -332,9 +257,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PaymentRequest_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-           
+
 
             #region data
+            if (paymentRequest.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
 
             if (paymentRequest.EmployeeId != 0)
             {
@@ -537,7 +466,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 var validations = record.PaymentRequestDepartmentValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
                 if (validations.Any())
                     isNewRecord = false;
-                decimal docamount = record.PaymentRequestLines.Where(x => x.PaymentRequestId == id).Sum(x => x.TotalAmount);
+
+                decimal docamount = 0;
+                if (record.Type == PaymentRequestType.Payment)
+                {
+                    var requestlines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
+                    docamount = requestlines.Any() ? requestlines.Sum(x => x.TotalAmount) : 0;
+                }
+                if (record.Type == PaymentRequestType.Fund_Transfer)
+                {
+                    var fundlines = _db.FundTransferLines.Where(x => x.PaymentRequestId == id);
+                    docamount = fundlines.Any() ? fundlines.Sum(x => x.TotalCost) : 0;
+                }
                 int docid = record.PaymentRequestId;
                 int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
                 DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApPaymentRequestSelfCare, isNewRecord,step);

@@ -6,7 +6,7 @@
       .Columns(columns =>
       {
           columns.Bound(p => p.PurchaseOrderID).Title("PO No.").Width(90);
-          //columns.Bound(p => p.PurchaseRequisitionID).Title("Purchase Req.").Width(100);
+          columns.Bound(p => p.TenderID).Title("Tender No.").Width(100);
           columns.ForeignKey(p => p.ProformaPurchaseID, (IEnumerable)ViewData["proformaPurchases"], "ProformaPurchaseID", "Remark").Title("Proforma No.").EditorTemplateName("ProformaSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
           columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(120).EditorTemplateName("EmployeeSelector");
           columns.Bound(c => c.SupplierId).Width(100).EditorTemplateName("SupplierSelector");
@@ -80,6 +80,8 @@
                   model.Field(p => p.ProformaPurchaseID).Editable(false);
                   model.Field(p => p.IsTransferredToPayment).Editable(false);
                   model.Field(p => p.IsPaid).Editable(false);
+                  model.Field(p => p.BidAwardedSupplierID).Editable(false);
+                  model.Field(p => p.TenderID).Editable(false);
                   model.Field(p => p.BranchId).Editable(false);
                   model.Field(p => p.BusinessUnitId).Editable(false);
                   model.Field(p => p.IsFullfilled).Editable(false);

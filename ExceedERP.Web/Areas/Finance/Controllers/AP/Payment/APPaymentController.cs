@@ -290,6 +290,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     apPayment.WithholdTaxAmount = apPayment.TaxAmount;
                 }
             }
+            else
+            {
+                apPayment.WithholdTaxAmount = 0;
+            }
 
             apPayment.NetAmount = apPayment.PaymentAmount
                                   + apPayment.TaxAmount
@@ -466,6 +470,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     apPayment.WithholdTaxAmount = apPayment.TaxAmount;
                 }
+            }
+            else
+            {
+                apPayment.WithholdTaxAmount = 0;
             }
 
             apPayment.NetAmount = apPayment.PaymentAmount

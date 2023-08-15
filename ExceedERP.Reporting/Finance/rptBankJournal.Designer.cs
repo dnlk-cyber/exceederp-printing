@@ -11,7 +11,6 @@ namespace ExceedERP.Reporting.Finance
         /// </summary>
         private void InitializeComponent()
         {
-            Telerik.Reporting.SortingAction sortingAction1 = new Telerik.Reporting.SortingAction();
             Telerik.Reporting.TableGroup tableGroup1 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup2 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup3 = new Telerik.Reporting.TableGroup();
@@ -25,6 +24,7 @@ namespace ExceedERP.Reporting.Finance
             Telerik.Reporting.TableGroup tableGroup11 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup12 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup13 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.SortingAction sortingAction1 = new Telerik.Reporting.SortingAction();
             Telerik.Reporting.SortingAction sortingAction2 = new Telerik.Reporting.SortingAction();
             Telerik.Reporting.SortingAction sortingAction3 = new Telerik.Reporting.SortingAction();
             Telerik.Reporting.ReportParameter reportParameter1 = new Telerik.Reporting.ReportParameter();
@@ -38,7 +38,6 @@ namespace ExceedERP.Reporting.Finance
             Telerik.Reporting.Drawing.DescendantSelector descendantSelector1 = new Telerik.Reporting.Drawing.DescendantSelector();
             Telerik.Reporting.Drawing.StyleRule styleRule4 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.DescendantSelector descendantSelector2 = new Telerik.Reporting.Drawing.DescendantSelector();
-            this.textBox1 = new Telerik.Reporting.TextBox();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox12 = new Telerik.Reporting.TextBox();
@@ -54,6 +53,10 @@ namespace ExceedERP.Reporting.Finance
             this.textBox32 = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
             this.textBox26 = new Telerik.Reporting.TextBox();
+            this.textBox45 = new Telerik.Reporting.TextBox();
+            this.textBox43 = new Telerik.Reporting.TextBox();
+            this.textBox27 = new Telerik.Reporting.TextBox();
+            this.textBox1 = new Telerik.Reporting.TextBox();
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox19 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
@@ -63,6 +66,11 @@ namespace ExceedERP.Reporting.Finance
             this.textBox7 = new Telerik.Reporting.TextBox();
             this.textBox8 = new Telerik.Reporting.TextBox();
             this.textBox10 = new Telerik.Reporting.TextBox();
+            this.rptBankJournalods = new Telerik.Reporting.ObjectDataSource();
+            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
+            this.periodDS = new Telerik.Reporting.ObjectDataSource();
+            this.bankAccountOds = new Telerik.Reporting.ObjectDataSource();
+            this.reconciliationStatus = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox25 = new Telerik.Reporting.TextBox();
@@ -80,44 +88,24 @@ namespace ExceedERP.Reporting.Finance
             this.shape3 = new Telerik.Reporting.Shape();
             this.textBox22 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
-            this.textBox27 = new Telerik.Reporting.TextBox();
-            this.textBox43 = new Telerik.Reporting.TextBox();
-            this.textBox45 = new Telerik.Reporting.TextBox();
-            this.rptBankJournalods = new Telerik.Reporting.ObjectDataSource();
-            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
-            this.periodDS = new Telerik.Reporting.ObjectDataSource();
-            this.bankAccountOds = new Telerik.Reporting.ObjectDataSource();
-            this.reconciliationStatus = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
-            // 
-            // textBox1
-            // 
-            sortingAction1.SortingExpression = "= Fields.Date";
-            sortingAction1.Targets.AddRange(new Telerik.Reporting.IActionTarget[] {
-            this.table1});
-            this.textBox1.Action = sortingAction1;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.68095284700393677D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
-            this.textBox1.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox1.StyleName = "Civic.TableHeader";
-            this.textBox1.Value = "Date";
             // 
             // table1
             // 
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.680952787399292D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.74642914533615112D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.89880979061126709D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.89880985021591187D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.80000048875808716D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.66309595108032227D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.663096010684967D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1645839214324951D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.72261965274810791D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.80000048875808716D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.80000048875808716D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.90342265367507935D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox11);
             this.table1.Body.SetCellContent(0, 1, this.textBox12);
             this.table1.Body.SetCellContent(0, 3, this.textBox13);
@@ -183,6 +171,9 @@ namespace ExceedERP.Reporting.Finance
             this.textBox31,
             this.textBox32,
             this.textBox27,
+            this.textBox43,
+            this.textBox45,
+            this.textBox1,
             this.textBox2,
             this.textBox19,
             this.textBox3,
@@ -190,11 +181,8 @@ namespace ExceedERP.Reporting.Finance
             this.textBox5,
             this.textBox6,
             this.textBox7,
-            this.textBox43,
             this.textBox8,
-            this.textBox10,
-            this.textBox1,
-            this.textBox45});
+            this.textBox10});
             this.table1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
             this.table1.Name = "table1";
             tableGroup11.Groupings.Add(new Telerik.Reporting.Grouping(null));
@@ -329,6 +317,45 @@ namespace ExceedERP.Reporting.Finance
             this.textBox26.StyleName = "Civic.TableBody";
             this.textBox26.Value = "=Fields.ReferenceDoc";
             // 
+            // textBox45
+            // 
+            this.textBox45.Name = "textBox45";
+            this.textBox45.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90342265367507935D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox45.Style.Font.Bold = true;
+            this.textBox45.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox45.StyleName = "Civic.TableBody";
+            // 
+            // textBox43
+            // 
+            this.textBox43.Format = "{0:N2}";
+            this.textBox43.Name = "textBox43";
+            this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6000009775161743D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox43.Style.Font.Bold = true;
+            this.textBox43.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox43.StyleName = "Civic.TableBody";
+            this.textBox43.Value = "=sum(Fields.Debit)-sum(Fields.Credit)";
+            // 
+            // textBox27
+            // 
+            this.textBox27.Name = "textBox27";
+            this.textBox27.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.6764917373657227D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox27.Style.Font.Bold = true;
+            this.textBox27.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox27.StyleName = "Civic.TableBody";
+            this.textBox27.Value = "Difference";
+            // 
+            // textBox1
+            // 
+            sortingAction1.SortingExpression = "= Fields.Date";
+            sortingAction1.Targets.AddRange(new Telerik.Reporting.IActionTarget[] {
+            this.table1});
+            this.textBox1.Action = sortingAction1;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.68095284700393677D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
+            this.textBox1.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox1.StyleName = "Civic.TableHeader";
+            this.textBox1.Value = "Date";
+            // 
             // textBox2
             // 
             this.textBox2.Name = "textBox2";
@@ -408,6 +435,41 @@ namespace ExceedERP.Reporting.Finance
             this.textBox10.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox10.StyleName = "Civic.TableHeader";
             this.textBox10.Value = "Reconciliation Status";
+            // 
+            // rptBankJournalods
+            // 
+            this.rptBankJournalods.DataMember = "GetBankJournal";
+            this.rptBankJournalods.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Bank.BankJournalOds);
+            this.rptBankJournalods.Name = "rptBankJournalods";
+            this.rptBankJournalods.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("fromperiod", typeof(string), "= Parameters.fromperiod.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("toperiod", typeof(string), "= Parameters.toperiod.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("bankaccount", typeof(string), "= Parameters.bankaccount.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.status.Value")});
+            // 
+            // fiscalYeardDs
+            // 
+            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
+            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
+            this.fiscalYeardDs.Name = "fiscalYeardDs";
+            // 
+            // periodDS
+            // 
+            this.periodDS.DataMember = "GetPeriods";
+            this.periodDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
+            this.periodDS.Name = "periodDS";
+            // 
+            // bankAccountOds
+            // 
+            this.bankAccountOds.DataMember = "GetBankAccountList";
+            this.bankAccountOds.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Bank.BankOds);
+            this.bankAccountOds.Name = "bankAccountOds";
+            // 
+            // reconciliationStatus
+            // 
+            this.reconciliationStatus.DataMember = "BankReconciliationStatus";
+            this.reconciliationStatus.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
+            this.reconciliationStatus.Name = "reconciliationStatus";
             // 
             // detailSection1
             // 
@@ -593,72 +655,10 @@ namespace ExceedERP.Reporting.Finance
             this.textBox22});
             this.pageFooterSection1.Name = "pageFooterSection1";
             // 
-            // textBox27
-            // 
-            this.textBox27.Name = "textBox27";
-            this.textBox27.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.6764917373657227D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox27.Style.Font.Bold = true;
-            this.textBox27.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox27.StyleName = "Civic.TableBody";
-            this.textBox27.Value = "Difference";
-            // 
-            // textBox43
-            // 
-            this.textBox43.Format = "{0:N2}";
-            this.textBox43.Name = "textBox43";
-            this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6000009775161743D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox43.Style.Font.Bold = true;
-            this.textBox43.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox43.StyleName = "Civic.TableBody";
-            this.textBox43.Value = "=sum(Fields.Debit)-sum(Fields.Credit)";
-            // 
-            // textBox45
-            // 
-            this.textBox45.Name = "textBox45";
-            this.textBox45.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90342265367507935D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox45.Style.Font.Bold = true;
-            this.textBox45.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox45.StyleName = "Civic.TableBody";
-            // 
-            // rptBankJournalods
-            // 
-            this.rptBankJournalods.DataMember = "GetBankJournal";
-            this.rptBankJournalods.DataSource = typeof(BankJournalOds);
-            this.rptBankJournalods.Name = "rptBankJournalods";
-            this.rptBankJournalods.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("fromperiod", typeof(string), "= Parameters.fromperiod.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("toperiod", typeof(string), "= Parameters.fromperiod.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("bankaccount", typeof(string), "= Parameters.bankaccount.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.status.Value")});
-            // 
-            // fiscalYeardDs
-            // 
-            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
-            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
-            this.fiscalYeardDs.Name = "fiscalYeardDs";
-            // 
-            // periodDS
-            // 
-            this.periodDS.DataMember = "GetPeriods";
-            this.periodDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
-            this.periodDS.Name = "periodDS";
-            // 
-            // bankAccountOds
-            // 
-            this.bankAccountOds.DataMember = "GetBankAccountList";
-            this.bankAccountOds.DataSource = typeof(BankOds);
-            this.bankAccountOds.Name = "bankAccountOds";
-            // 
-            // reconciliationStatus
-            // 
-            this.reconciliationStatus.DataMember = "BankReconciliationStatus";
-            this.reconciliationStatus.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.CommonOds);
-            this.reconciliationStatus.Name = "reconciliationStatus";
-            // 
             // Organization
             // 
             this.Organization.DataMember = "GetBankJournalHeader";
-            this.Organization.DataSource = typeof(BankJournalOds);
+            this.Organization.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Bank.BankJournalOds);
             this.Organization.Name = "Organization";
             this.Organization.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("fromperiod", typeof(string), "= Parameters.fromperiod.Value"),

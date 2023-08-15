@@ -4,6 +4,7 @@
       .Name("grid")
       .Columns(columns =>
       {
+          columns.Bound(c => c.GLVatWithholdingID).Title("ID").Width(30);
           columns.Bound(c => c.WithholdingAccountCode).EditorTemplateName("AccountCode").Width(100);
           columns.Bound(c => c.WithholdPercent).Width(90);
 
@@ -14,9 +15,12 @@
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
-                             // toolbar.Excel();
-                              // toolbar.Pdf();
+          if (@ViewBag.Count == 0)
+          {
+              toolbar.Create();
+          }
+          // toolbar.Excel();
+          // toolbar.Pdf();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -30,13 +34,14 @@
       .Scrollable()
       .Sortable()
       .Filterable()
-     
+
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(
               model =>
               {
                   model.Id(p => p.GLVatWithholdingID);
+                  model.Field(p => p.GLVatWithholdingID).Editable(false);
                   model.Field(p => p.Branch).Editable(false);
                   model.Field(p => p.CreatedBy).Editable(false);
                   model.Field(p => p.ModifiedBy).Editable(false);

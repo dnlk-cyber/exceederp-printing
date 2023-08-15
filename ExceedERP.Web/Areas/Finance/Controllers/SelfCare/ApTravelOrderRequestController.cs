@@ -27,8 +27,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
     {
 
         private ExceedDbContext _db = new ExceedDbContext();
-        public static int EmployeeId { get; set; }
-        public static bool IsForOther { get; set; }
         public ActionResult Index()
         {
             PopulateViewData();
@@ -146,17 +144,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         public ActionResult ApTravelOrderRequest_Create([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
             #region data 
-            var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
-            if (placement != null)
+            if (apTravelOrder.EmployeeId == 0)
             {
-                apTravelOrder.OrgStructureId = placement.OrgStructureId;
-                apTravelOrder.BranchId = placement.BranchId;
-                apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+                ModelState.AddModelError("requester", "Please select requestor");
             }
-            else
+            if (apTravelOrder.EmployeeId != 0)
             {
-                ModelState.AddModelError("placement", "Employee has not current placemnt");
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    //apTravelOrder.OrgStructureId = placement.OrgStructureId;
+                    //apTravelOrder.BranchId = placement.BranchId;
+                    //apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
             }
+
+            apTravelOrder.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            apTravelOrder.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            apTravelOrder.OrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
             #endregion
 
             if (ModelState.IsValid)
@@ -165,7 +174,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
               
                 var entity = new ApTravelOrder
                 {
-                    EmployeeId = EmployeeId,
+                    EmployeeId = apTravelOrder.EmployeeId,
                     BranchId = apTravelOrder.BranchId,
                     BusinessUnitId = apTravelOrder.BusinessUnitId,
                     OrgStructureId = apTravelOrder.OrgStructureId,
@@ -227,16 +236,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         public ActionResult ApTravelOrderRequest_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
         {
             #region data 
-            var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
-            if (placement != null)
+            if (apTravelOrder.EmployeeId == 0)
             {
-                apTravelOrder.OrgStructureId = placement.OrgStructureId;
-                apTravelOrder.BranchId = placement.BranchId;
-                apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+                ModelState.AddModelError("requester", "Please select requestor");
             }
-            else
+            if (apTravelOrder.EmployeeId != 0)
             {
-                ModelState.AddModelError("placement", "Employee has not current placemnt");
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    apTravelOrder.OrgStructureId = placement.OrgStructureId;
+                    apTravelOrder.BranchId = placement.BranchId;
+                    apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
             }
             #endregion
 
@@ -405,8 +421,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     isNewRecord = false;
                 decimal docamount = record.AdvanceAmount;
                 int docid = record.ApTravelOrderId;
-
-                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApTravelOrderSelfCare, isNewRecord);
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApTravelOrderSelfCare, isNewRecord,step);
                 #endregion
 
                 var formattedData = new

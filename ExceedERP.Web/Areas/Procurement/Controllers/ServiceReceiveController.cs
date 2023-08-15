@@ -437,7 +437,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return null;
         }
 
-       // [AuthorizeRoles(ProcurementRoles.PropertyVoid)]
+       // [AuthorizeRoles(ProcurementConstants.PropertyVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.ServiceReceives.Find(id);

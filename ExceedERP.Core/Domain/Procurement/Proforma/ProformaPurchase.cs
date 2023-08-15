@@ -60,6 +60,7 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public virtual ICollection<ProformaEvaluationResult> ProformaEvaluationResult { get; set; }
         public virtual ICollection<PurchaseValidation> PurchaseValidation { get; set; }
         public virtual ICollection<ProformaUploadDbModel> ProformaUploadDbModel { get; set; }
+        public virtual ICollection<ProformaTeam> ProformaTeams { get; set; }
     }
     public class ProformaUploadDbModel
     {
