@@ -11,11 +11,11 @@
           {
               columns.ForeignKey(c => c.BusinessUnit, (IEnumerable)ViewData["businesUnits"], "BusinessUnitId", "Name").Width(110).EditorTemplateName("BusinessUnitSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           }
-          columns.ForeignKey(p => p.OpertatingUnit, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(100).EditorTemplateName("AllBranchSelector");
+          columns.ForeignKey(p => p.OpertatingUnit, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(100).EditorTemplateName("AllBranchSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Organization).Width(100);
           columns.Bound(c => c.Position).Width(100);
-          columns.ForeignKey(p => p.Job, (IEnumerable)ViewData["JobTitles"], "LookupId", "Description").Width(220).EditorTemplateName("DocumentJobTitles");
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("AllEmployeeSelector").Width(150);
+          columns.ForeignKey(p => p.Job, (IEnumerable)ViewData["JobTitles"], "LookupId", "Description").Width(220).EditorTemplateName("DocumentJobTitles").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("AllEmployeeSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {

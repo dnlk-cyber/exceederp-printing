@@ -37,6 +37,7 @@ namespace ExceedERP.Core.Domain.Common.DocumentApproval
         PurchasePaymentRequest,
         ApTravelOrderSelfCare,
         ApTravelExpenseClaimSelfCare,
+        RentalPaymentRequest
     }
     public enum ApprovalWorkflow
     {

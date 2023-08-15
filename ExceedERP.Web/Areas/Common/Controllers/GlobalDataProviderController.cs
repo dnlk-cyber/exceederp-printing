@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
@@ -30,6 +34,19 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 })
                 , JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetUserFullName(string id)
+        {
+            ApplicationDbContext appdb = new ApplicationDbContext();
+            var user = appdb.Users.Where(u => u.UserName == id).FirstOrDefault();
+            
+            var formattedData = new
+            {
+                Name = user != null? user.FirstName+"-"+user.MiddleName+"-" +user.LastName : "Name not found",
+                Status = user != null ? "OK" : "NOT_OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetUsers()
         {
             ApplicationDbContext appdb = new ApplicationDbContext();
@@ -41,8 +58,11 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 }),
                 JsonRequestBehavior.AllowGet);
         }
-      
 
+        public ActionResult GetServiceRequisitionSecondApproverSelector()
+        {
+            return View();
+        }
         public JsonResult GetServiceRequisitionSecondApprovers()
         {
             List<UserVM> list = UserInformationHelper.GetUsersInRole("Service_Requisition_Second_Approver");
@@ -63,25 +83,164 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             }), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetDocumentApprovalGroup(string operatingUnit,string text)
+        public JsonResult GetDocumentApprovalGroup(string id,string text)
         {
-            var list = db.ApprovalGroups.ToList();
-            if (!string.IsNullOrEmpty(operatingUnit))
-                list = list.Where(x => x.OpertatingUnit.ToString() == operatingUnit).ToList();
+            var list = db.ApprovalGroups.AsQueryable();
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                int did = int.Parse(id);
+                var record = db.AssignApprovalGroups.Find(did);
+
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    if (record.BusinessUnit != null && record.BusinessUnit != 0)
+                    {
+                        list = list
+                        .Where(x => x.BusinessUnit == record.BusinessUnit)
+                        .AsQueryable();
+                    }
+                    else
+                    {
+                        list = list
+                       .Where(x => x.BusinessUnit == null ||x.BusinessUnit==0)
+                       .AsQueryable();
+                    }
+                }
+                //branch
+                if (record.OpertatingUnit != null && record.OpertatingUnit != 0)
+                {
+                    list = list
+                    .Where(x => x.OpertatingUnit == record.OpertatingUnit)
+                    .AsQueryable();
+                }
+                else
+                {
+                    list = list
+                   .Where(x => x.OpertatingUnit == null || x.OpertatingUnit == 0)
+                   .AsQueryable();
+                }
+            }
 
             if (!string.IsNullOrEmpty(text))
-                list = list.Where(x => x.Name.Contains(text) ||x.Description.Contains(text)).ToList();
+                list = list.Where(x => x.Name.Contains(text) || x.Description.Contains(text)).AsQueryable();
 
             return Json(list.Select(p => new
             {
                 Code = p.ApprovalGroupId,
-                Name = p.Description+"_" + db.Branch.Find(p.OpertatingUnit)?.Name
+                Name = p.Name + "_" +p.Description
             }), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetProcurementPurchasersSelector()
         {
             return View();
+        }
+
+        public ActionResult GetNextApprover(string id, string t)
+        {
+            ViewBag.id = id;
+            ViewBag.type = t;
+            return View();
+        }
+
+        public JsonResult GetNextApproverList(int id,string type)
+        {
+            List<UserVM> list = new List<UserVM>();
+
+            switch(type)
+            {
+                case "PO":
+                    list = UserInformationHelper.GetUsersInRole(ProcurementRoles.ProcurementTenderApprover);
+                    break;
+                case "PaymentRequestSelfCare":
+                    list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
+                    break;
+                case "PurchasePayment":
+                    list = UserInformationHelper.GetUsersInRole(ProcurementRoles.ProcurementPaymentApprover);
+                    break;
+                case "TravelOrderSelfCare":
+                    list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
+                    break;
+                case "TravelExpenseClaimSelfCare":
+                    list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
+                    break;
+                default:
+                    break;
+            }
+          
+           
+            return Json(list.Select(p => new
+            {
+                UserName = p.UserName,
+                FullName = p.UserName+"- ("+p.FullName +")"
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult UpdateNextApprover(int id, string type,string user)
+        {
+            int empid = UserInformationHelper.GetUserEmployeeId(user);
+            int branchId = DocApprovalHelper.GetEmployeeBranch(empid);
+            decimal docamount = 0;
+            switch (type)
+            {
+                case "PO":                   
+                    var po = db.PurchaseOrders.Find(id);
+                    var polines = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id);
+                    docamount = polines.Any()? polines.Sum(x => x.Total):0;
+                    po.ForwardedTo = user;
+                    po.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user,ApprovalDocumentType.PurchaseOrder,docamount, branchId);
+                    db.PurchaseOrders.Attach(po);
+                    db.Entry(po).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                case "PaymentRequestSelfCare":
+                    var paymentRequest = db.PaymentRequests.Find(id);
+                    var prlines = db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
+                    docamount = prlines.Any() ? prlines.Sum(x => x.TotalAmount):0;
+                    paymentRequest.ForwardedTo = user;
+                    paymentRequest.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.PurchaseOrder, docamount, branchId);
+                    db.PaymentRequests.Attach(paymentRequest);
+                    db.Entry(paymentRequest).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                case "PurchasePayment":
+                    var purchasePayment = db.PurchasePayments.Find(id);
+                    docamount = purchasePayment.NetPayable;
+                    purchasePayment.ForwardedTo = user;
+                    purchasePayment.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.PurchasePaymentRequest, docamount, branchId);
+                    db.PurchasePayments.Attach(purchasePayment);
+                    db.Entry(purchasePayment).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                case "TravelOrderSelfCare":
+                    var travelorder = db.ApTravelOrders.Find(id);
+                    docamount = travelorder.AdvanceAmount;
+                    travelorder.ForwardedTo = user;
+                    travelorder.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApTravelOrderSelfCare, docamount, branchId);
+                    db.ApTravelOrders.Attach(travelorder);
+                    db.Entry(travelorder).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                case "TravelExpenseClaimSelfCare":
+                    var claim = db.ApTravelExpenseClaims.Find(id);
+                    var exclines = db.ApTravelExpensePayments.Where(x => x.ApTravelExpenseClaimId == id);
+                    docamount = exclines.Any() ? exclines.Sum(x => x.Amount) : 0;
+                    claim.ForwardedTo = user;
+                    claim.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApTravelExpenseClaimSelfCare, docamount, branchId);
+                    db.ApTravelExpenseClaims.Attach(claim);
+                    db.Entry(claim).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                default:
+                    break;
+            }
+            
+            var formattedData = new
+            {
+                Message = "Update successfully",
+                Status ="OK" 
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetProcurementCheckers()
@@ -141,10 +300,7 @@ namespace ExceedERP.Web.Areas.Common.Controllers
 
        
 
-        public ActionResult GetServiceRequisitionSecondApproverSelector()
-        {
-            return View();
-        }
+        
         public JsonResult GetCountry()
         {
             var countries = db.GLCountryTypes.AsQueryable();
@@ -316,6 +472,43 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             {
                 Name = x.Name,
                 Code = x.BranchId
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAllEmployees(string text)
+        {
+            List<EmployeeVm> list = new List<EmployeeVm>();
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                var employees = db.Person_Employee
+                    .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+                    )
+                    .Select(x => new EmployeeVm
+                    {
+                        EmployeeId = x.EmployeeId,
+                        EmployeeCode = x.EmployeeCode,
+                        FirstName = x.FirstName,
+                        MiddleName = x.MiddleName,
+                        LastName = x.LastName,
+                        FirstNameEnglish = x.FirstNameEnglish,
+                        MiddleNameEnglish = x.MiddleNameEnglish,
+                        LastNameEnglish = x.LastNameEnglish
+                    }).ToList();
+
+                list = employees;
+            }
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
             }), JsonRequestBehavior.AllowGet);
         }
 

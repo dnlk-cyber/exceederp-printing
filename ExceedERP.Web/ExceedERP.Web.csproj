@@ -5969,6 +5969,7 @@
     <Content Include="Areas\Procurement\Views\web.config" />
     <Content Include="Areas\Procurement\Views\WinningSupplier\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Common\Views\GlobalDataProvider\GetNextApprover.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
