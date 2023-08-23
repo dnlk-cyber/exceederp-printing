@@ -38,6 +38,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         //new
         private HRMInputs inputs = new HRMInputs();
 
+        public JsonResult GetAllEmployeesForSelfCare(string text)
+        {
+            List<EmployeeVm> list = new List<EmployeeVm>();
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                var employees = db.Person_Employee
+                    .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+                    )
+                    .Select(x => new EmployeeVm
+                    {
+                        EmployeeId = x.EmployeeId,
+                        EmployeeCode = x.EmployeeCode,
+                        FirstName = x.FirstName,
+                        MiddleName = x.MiddleName,
+                        LastName = x.LastName,
+                        FirstNameEnglish = x.FirstNameEnglish,
+                        MiddleNameEnglish = x.MiddleNameEnglish,
+                        LastNameEnglish = x.LastNameEnglish
+                    }).ToList();
+
+                list = employees;
+            }
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetEmployeeTypes()
         {
             var data = db.EmployeeTypes.ToList();
