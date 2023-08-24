@@ -278,14 +278,8 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                     .ToList();
                 if (personEmployee.Any())
                 {
-                    list = new List<PaySlip> { };
-                    //foreach (var e in personEmployee)
-                    //{
-                    //    EmployeeInfo = new PaySlip();
-                    //    var idd = e
-                    //        .EmployeeId;
+                    list = new List<PaySlip> { };               
                     var company = db.Companies.FirstOrDefault(c => c.Category == "0");
-                    //    bool isbasicAddes = false;
                     List<PayrollProcessViewModel> payrolldatas = new List<PayrollProcessViewModel>();
 
 
@@ -309,7 +303,7 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                     if (payrolldatas != null)
                     {
 
-                        if (workUnit != null)
+                        if (!String.IsNullOrEmpty(workUnit))
                         {
                             var employeesInWorkUnit =
                                 db.Placements.Where(x=>x.isCurrent)
@@ -318,7 +312,7 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                                 payrolldatas.Where(x => employeesInWorkUnit.Contains(x.EmployeeId)).ToList();
                         }
 
-                        if (jobtitle != null)
+                        if (!String.IsNullOrEmpty(jobtitle))
                         {
                             var employeesWithJobtitle =
                                 db.Placements.Where(x => x.isCurrent)
@@ -326,18 +320,13 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                             payrolldatas =
                                 payrolldatas.Where(x => employeesWithJobtitle.Contains(x.EmployeeId)).ToList();
                         }
-                        //if (workUnit != null)
-                        //{
-                        //    var costcenters =
-                        //        db.BranchCostCenter.FirstOrDefault(x => x.OrgStructureId.ToString() == workUnit);
-                        //    if (costcenters != null)
-                        //    {
 
+                        if (!String.IsNullOrEmpty(costCenter))
+                        {
+                              payrolldatas =
+                                payrolldatas.Where(x => x.CostCenterAccountCode==costCenter).ToList();
+                        }
 
-                        //        payrolldatas =
-                        //            payrolldatas.Where(x => x.CostCenterAccountCode == costcenters.Values).ToList();
-                        //    }
-                        //}
                         if (payrolldatas.Any())
                         {
                             EmployeeInfo.PayrollProcessAllowances = new List<PayrollProcessAllowances>();
@@ -540,7 +529,7 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
 
                             }
                         }
-                        // }
+                       
 
                     }
                 }

@@ -724,6 +724,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             reportParameter3.AvailableValues.ValueMember = "= Fields.Item";
             reportParameter3.Name = "costCenter";
             reportParameter3.Text = "Cost Center";
+            reportParameter3.Visible = true;
             reportParameter4.AllowNull = true;
             reportParameter4.AutoRefresh = true;
             reportParameter4.AvailableValues.DataSource = this.empStatusObjectDataSource;
