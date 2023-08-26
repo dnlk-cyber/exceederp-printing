@@ -37,6 +37,9 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         [Required]
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         public virtual ICollection<ApTravelExpenseExpense> Expenses { get; set; }
         public virtual ICollection<ApTravelExpensePayment> Payments { get; set; }
         public virtual ICollection<ApTravelExpenseRefund> Refunds { get; set; }

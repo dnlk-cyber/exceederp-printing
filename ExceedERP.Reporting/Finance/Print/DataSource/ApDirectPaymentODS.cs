@@ -41,12 +41,15 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
 
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.CreatedBy));
                 headerDs.PreparedDate = payment.DateCreated != null ? payment.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(payment.CreatedBy);
 
                 headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.SendForApprovalBy));
                 headerDs.AccountantCheckedDate = payment.SendForApprovalTime != null ? payment.SendForApprovalTime : null;
+                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(payment.SendForApprovalBy);
 
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.OnlineApprovedBy));
                 headerDs.ApprovedDate = payment.OnlineApprovedTime;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(payment.OnlineApprovedBy);
 
 
             }

@@ -20,6 +20,7 @@ namespace ExceedERP.Reporting.Procurements.ViewModel
 
         //for Proforma
         public string WinnerSupplier { get; set; }
+        public string ProformaNote { get; set; }
         public int ProformaId { get; set; }
         //for tender
         public string TenderRefNo { get; set; }

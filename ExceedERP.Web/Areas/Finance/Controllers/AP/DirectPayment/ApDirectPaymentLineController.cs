@@ -74,8 +74,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             #endregion
             #region withheld tax
 
-            apDirectPaymentLine.WithholdTaxAmount = apDirectPaymentLine.WithholdTax ? apDirectPaymentLine.TaxAmount : 0;
-
+            if (apDirectPaymentLine.WithholdTax)
+            {
+                //get the percentage
+                var varwitholding = _db.GLVatWithholdings.FirstOrDefault();
+                if (varwitholding != null)
+                {
+                    apDirectPaymentLine.WithholdTaxAmount = apDirectPaymentLine.TaxAmount * (varwitholding.WithholdPercent / 100);
+                }
+                else
+                {
+                    apDirectPaymentLine.WithholdTaxAmount = apDirectPaymentLine.TaxAmount;
+                }
+            }
+            else
+            {
+                apDirectPaymentLine.WithholdTaxAmount = 0;
+            }
             #endregion
             #region net
             apDirectPaymentLine.NetPayable = apDirectPaymentLine.Amount
@@ -147,13 +162,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             if (apDirectPaymentLine.WithholdTax)
             {
-                apDirectPaymentLine.WithholdTaxAmount = apDirectPaymentLine.TaxAmount;
+                //get the percentage
+                var varwitholding = _db.GLVatWithholdings.FirstOrDefault();
+                if (varwitholding != null)
+                {
+                    apDirectPaymentLine.WithholdTaxAmount = apDirectPaymentLine.TaxAmount * (varwitholding.WithholdPercent / 100);
+                }
+                else
+                {
+                    apDirectPaymentLine.WithholdTaxAmount = apDirectPaymentLine.TaxAmount;
+                }
             }
             else
             {
                 apDirectPaymentLine.WithholdTaxAmount = 0;
             }
-
             #endregion
             #region net
             apDirectPaymentLine.NetPayable = apDirectPaymentLine.Amount

@@ -48,7 +48,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox48 = new Telerik.Reporting.TextBox();
             this.textBox49 = new Telerik.Reporting.TextBox();
             this.textBox50 = new Telerik.Reporting.TextBox();
-            this.lines = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox24 = new Telerik.Reporting.TextBox();
             this.shape3 = new Telerik.Reporting.Shape();
@@ -69,7 +68,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox19 = new Telerik.Reporting.TextBox();
             this.textBox13 = new Telerik.Reporting.TextBox();
             this.textBox38 = new Telerik.Reporting.TextBox();
-            this.textBox10 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.textBox37 = new Telerik.Reporting.TextBox();
             this.textBox36 = new Telerik.Reporting.TextBox();
@@ -83,6 +81,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox25 = new Telerik.Reporting.TextBox();
             this.textBox22 = new Telerik.Reporting.TextBox();
             this.textBox20 = new Telerik.Reporting.TextBox();
+            this.lines = new Telerik.Reporting.ObjectDataSource();
             this.header = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -334,14 +333,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox50.StyleName = "Civic.TableBody";
             this.textBox50.Value = "= sum(Fields.NetReceipt)";
             // 
-            // lines
-            // 
-            this.lines.DataMember = "ArMiscCollectionDistribution";
-            this.lines.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Print.ArMiscCollectionOds);
-            this.lines.Name = "lines";
-            this.lines.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value")});
-            // 
             // pageHeaderSection1
             // 
             this.pageHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(2.2999999523162842D);
@@ -544,19 +535,10 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox38.Style.Font.Underline = true;
             this.textBox38.Value = "=Fields.ReceiptAmount";
             // 
-            // textBox10
-            // 
-            this.textBox10.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.333528995513916D), Telerik.Reporting.Drawing.Unit.Inch(0.7000001072883606D));
-            this.textBox10.Name = "ReportPageNumberTextBox";
-            this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5748031139373779D), Telerik.Reporting.Drawing.Unit.Inch(0.39370077848434448D));
-            this.textBox10.Style.Font.Name = "Segoe UI";
-            this.textBox10.Value = "Page: {PageNumber}";
-            // 
             // pageFooterSection1
             // 
             this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1.1020832061767578D);
             this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.textBox10,
             this.textBox37,
             this.textBox36,
             this.textBox35,
@@ -673,6 +655,14 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox20.Style.Font.Bold = true;
             this.textBox20.Value = "Checked by:";
             // 
+            // lines
+            // 
+            this.lines.DataMember = "ArMiscCollectionDistribution";
+            this.lines.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Print.ArMiscCollectionOds);
+            this.lines.Name = "lines";
+            this.lines.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value")});
+            // 
             // header
             // 
             this.header.DataMember = "MiscCollectionHeader";
@@ -754,7 +744,6 @@ namespace ExceedERP.Reporting.Finance.Print
         private Telerik.Reporting.TextBox textBox4;
         private Telerik.Reporting.ObjectDataSource lines;
         private Telerik.Reporting.PageHeaderSection pageHeaderSection1;
-        private Telerik.Reporting.TextBox textBox10;
         private Telerik.Reporting.PageFooterSection pageFooterSection1;
         private Telerik.Reporting.ObjectDataSource header;
         private Telerik.Reporting.TextBox textBox24;

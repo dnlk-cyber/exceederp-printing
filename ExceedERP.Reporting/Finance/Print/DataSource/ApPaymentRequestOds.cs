@@ -45,19 +45,23 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 //department
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.CreatedBy));
                 headerDs.PreparedDate = paymentRequest.DateCreated != null ? paymentRequest.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(paymentRequest.CreatedBy);
 
                 headerDs.DepartmentSecondApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.DepartmentOnlineApprovedBy));
                 headerDs.DepartmentSecondApprovedDate = paymentRequest.DepartmentOnlineApprovedTime != null ? paymentRequest.DepartmentOnlineApprovedTime : null;
-
+                headerDs.DepartmentSecondApproverSignature = SignatureHelper.GetUserSignature(paymentRequest.DepartmentOnlineApprovedBy);
                 //finance
                 headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.SendForApprovalBy));
                 headerDs.AccountantCheckedDate =paymentRequest.SendForApprovalTime!=null? paymentRequest.SendForApprovalTime:null;
-                
+                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(paymentRequest.SendForApprovalBy);
+
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.OnlineApprovedBy));
                 headerDs.ApprovedDate = paymentRequest.OnlineApprovedTime;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(paymentRequest.OnlineApprovedBy);
                 //budget
                 headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.BudgetApprovedBy));
                 headerDs.BudgetApprovedDate = paymentRequest.BudgetApprovedTime;
+                headerDs.BudgetSignature = SignatureHelper.GetUserSignature(paymentRequest.BudgetApprovedBy);
 
                 #region prepared checker approver               
 
@@ -84,6 +88,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(checker.CreatedBy));
                             headerDs.DepartmentApprovedDate = checker.DateCreated != null ? checker.DateCreated : null;
+                            headerDs.DepartmentApproverSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
                         }
                         //else
                         //{
@@ -149,7 +154,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
             {
                 var entity = new ApPaymentRequestLineVm
                 {
-                    ItemName =  _db.ApSetupItems.Find(int.Parse(line.ItemName))?.Name,
+                    ItemName  = !String.IsNullOrEmpty(line.ItemName) ? _db.ApSetupItems.Find(int.Parse(line.ItemName))?.Name : "NA",
                     Description = line.Description,
                     Amount = line.Amount,
                     TaxName = _db.GLTaxRates.Find(line.GLTaxRateID)?.TaxName,

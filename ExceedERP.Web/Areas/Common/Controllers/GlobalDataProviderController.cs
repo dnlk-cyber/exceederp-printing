@@ -165,6 +165,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 case "TravelExpenseClaimSelfCare":
                     list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
                     break;
+                case "FundTransferSelfCare":
+                    list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
+                    break;
                 default:
                     break;
             }
@@ -229,6 +232,16 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     claim.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApTravelExpenseClaimSelfCare, docamount, branchId);
                     db.ApTravelExpenseClaims.Attach(claim);
                     db.Entry(claim).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                case "FundTransferSelfCare":
+                    var fund = db.FundTransfers.Find(id);
+                    var fundLines = db.FundTransferDetails.Where(x => x.FundTransferId == id);
+                    docamount = fundLines.Any() ? fundLines.Sum(x => x.Approved) : 0;
+                    fund.ForwardedTo = user;
+                    fund.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApFundTransferSelfCare, docamount, branchId);
+                    db.FundTransfers.Attach(fund);
+                    db.Entry(fund).State = EntityState.Modified;
                     db.SaveChanges();
                     break;
                 default:

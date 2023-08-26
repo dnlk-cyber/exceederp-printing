@@ -23,6 +23,7 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public int ProformaTeamMemberId { get; set; }
         public int ProformaTeamId { get; set; }
         public virtual ProformaTeam ProformaTeam { get; set; }
+        [Display(Name = "Employee")]
         public int EmployeeId { get; set; }
         public string SignedBy { get; set; }
         public DateTime? SginTime { get; set; }

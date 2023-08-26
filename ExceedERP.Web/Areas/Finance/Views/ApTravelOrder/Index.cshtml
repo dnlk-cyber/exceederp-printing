@@ -12,8 +12,9 @@
                   columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
                   columns.Bound(c => c.PurposeOfTravel).Width(150);
                   columns.Bound(c => c.RequestDate).Width(130);
+                  columns.Bound(c => c.TotalDuration).Width(130);
                   columns.Bound(c => c.AdvanceAmount).Width(120);
-
+                  columns.Bound(c => c.TransportReference).Width(150);
                   columns.Bound(c => c.Reference).Width(150);
                   columns.Bound(c => c.Status).Width(90);
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -46,8 +47,8 @@
                          .Events(ev => ev.Edit("onMasterEdit"))
 
                         .Scrollable(h => h.Height(500))
-                         .Events(ev => ev.DetailExpand("detailExpand"))      
-      .Events(x => x.DataBound("onDataBoundMaster"))
+                         .Events(ev => ev.DetailExpand("detailExpand"))
+                      .Events(x => x.DataBound("onDataBoundMaster"))
                   .DataSource(dataSource => dataSource
                       .Ajax()
                         .Sort(sort => sort.Add("ApTravelOrderId").Descending())
@@ -61,10 +62,13 @@
 
                           model.Field(p => p.ApTravelOrderId).Editable(false);
                           model.Field(p => p.AdvanceAmount).Editable(false);
+                          model.Field(p => p.TotalDuration).Editable(false);
                           model.Field(p => p.Status).Editable(false);
                           model.Field(p => p.OrgStructureId).Editable(false);
                           model.Field(p => p.BranchId).Editable(false);
                           model.Field(p => p.BusinessUnitId).Editable(false);
+                          model.Field(p => p.CreatedAtBranchId).Editable(false);
+                          model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
                           model.Field(p => p.IsForOther).Editable(false);
                           model.Field(p => p.CreatedBy).Editable(false);
                           model.Field(p => p.DateCreated).Editable(false);
@@ -239,7 +243,7 @@ items.Add().Text("Advance Payment").Content(
     columns.Bound(c => c.UnitPrice).Width(60);
     columns.Bound(c => c.Quantity).Width(60);
     columns.Bound(c => c.Total).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-    columns.Bound(c => c.PaymentMethod).Width(130).EditorTemplateName("PaymentMethodSelectorAP");
+    //columns.Bound(c => c.PaymentMethod).Width(130).EditorTemplateName("PaymentMethodSelectorAP");
 
     columns.Command(command =>
     {
@@ -465,27 +469,7 @@ command.Edit();
     }
 
 
-    function transferToGl(id) {
-        var desc = prompt("Please enter transaction description:");
-        if (desc != null) {
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("TransferDistribution", "ApTravelOrder", new { area = "Finance" })',
-                data: {
-                    id: id,
-                    description: desc
-                },
-                success: function (result) {
-                    // toastr.warnning(result.Message);
-                    alert(result.Message);
-                    location.reload(true);
-                }, //end succ
-                error: function (result) {
-                    alert(result);
-                }
-            });
-        }
-    }
+  
 
 
 

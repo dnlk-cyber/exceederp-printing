@@ -124,11 +124,11 @@
                                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                                     # } #
 
-                                    # if (IsOnlineApproved && !IsTransferredToPayment )
+                                    @*# if (IsOnlineApproved && !IsTransferredToPayment )
                                     {#
                                     <a onclick='return transferToPayment("#=PurchaseOrderID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
                                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                    # } #
+                                    # } #*@
 
                                     # if (IsOnlineApproved && !IsTransferredToFollowUp &&!IsVoid )
                                     {#
@@ -673,10 +673,10 @@
     function isNewSupplier(obj) {
 
         if ($(obj).is(":checked")) {
-            $("#supplierNameDiv").show();
+           // $("#supplierNameDiv").show();
 
         } else {
-            $("#supplierNameDiv").hide();
+           // $("#supplierNameDiv").hide();
         }
 
     }

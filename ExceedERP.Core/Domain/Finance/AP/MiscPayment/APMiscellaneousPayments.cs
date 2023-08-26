@@ -48,6 +48,14 @@ namespace ExceedERP.Core.Domain.Finance.AP
         public decimal TaxAmount { get; set; }
         [Display(Name = "Total Amount")]
         public decimal TotalAmount { get; set; }
+        [Display(Name = "Withholding Amount")]
+        public decimal WithholdingAmount { get; set; }
+        [Display(Name = "Withhold Tax (VAT)")]
+        public decimal WithholdTaxAmount { get; set; }
+        [Display(Name = "Net Payable")]
+        public decimal NetPayable { get; set; }
+        [Display(Name = "Deduction")]
+        public decimal DeductAmount { get; set; }
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
         public virtual ICollection<ApMiscellaneousPaymentLine> ApMiscellaneousPaymentLines { get; set; }

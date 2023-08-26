@@ -54,7 +54,7 @@
           .Refresh(true)
           .PageSizes(true)
           .ButtonCount(5))
-      .Events(ev => ev.DetailExpand("detailExpand"))     
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Events(x => x.DataBound("onDataBoundMaster"))
        .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
@@ -74,7 +74,8 @@
               model.Field(p => p.BranchId).Editable(false);
               model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.Paid).Editable(false);
-
+              model.Field(p => p.CreatedAtBranchId).Editable(false);
+              model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
 
               model.Field(p => p.BudgetApprovedBy).Editable(false);
               model.Field(p => p.IsBudgetApproved).Editable(false);
@@ -318,83 +319,7 @@
             </text>
    );
 
-                          items.Add().Text("Fund Transfer").Content(
-@<text>
-
-    @(Html.Kendo().Grid<FundTransferLine>()
-                                                                .Name("FundTransferLine_#=PaymentRequestId#")
-                                                                          .Columns(columns =>
-                                                                          {
-
-                                                                                      columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(120);
-                                                                                      columns.Bound(c => c.Material).Width(60);
-                                                                                      columns.Bound(c => c.FuelAndLubricant).Width(60);
-                                                                                      columns.Bound(c => c.ManPower).Width(60);
-                                                                                      columns.Bound(c => c.FoodAndPerDiem).Width(80);
-                                                                                      columns.Bound(c => c.TotalCost).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                      columns.Bound(c => c.TotalApproved).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                      columns.Bound(c => c.TotalPermited).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                                                                                      columns.Bound(c => c.Remark).Width(50);
-                                                                                      columns.Command(command =>
-                                                  {
-
-                                                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-
-                                                                          command.Destroy().Text(Resources.ActionButton_Cancel);
-
-                                                                      }).Width(500);
-                                                                                  })
-                                                                          .ToolBar(toolbar =>
-                                                                          {
-
-                                                                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-                                                                                  })
-                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("ExitInterview").Window(window => { window.Title(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview); window.Scrollable(false); }))
-                                                                          .Selectable(selectable =>
-                                                                          {
-                                                                                      selectable.Mode(GridSelectionMode.Single);
-                                                                                      selectable.Type(GridSelectionType.Row);
-                                                                                  })
-                                                                          .Scrollable()
-                                                                           .Pageable(pageable => pageable
-                  .Input(true)
-                  .Numeric(false)
-                  .Refresh(true)
-                  .PageSizes(true)
-                  .ButtonCount(5))
-                                                                          .Events(x => x.DataBound("onDataBoundLines"))
-                                                                          .DataSource(dataSource => dataSource
-                                                                              .Ajax()
-                                                                               .Aggregates(aggregates =>
-                                                                               {
-                                                                                           aggregates.Add(p => p.TotalCost).Sum();
-                                                                                           aggregates.Add(p => p.TotalApproved).Sum();
-                                                                                           aggregates.Add(p => p.TotalPermited).Sum();
-                                                                                       })
-                                                                              .Model(
-                                                                                  model =>
-                                                                                  {
-                                                                                              model.Id(p => p.FundTransferLineId);
-                                                                                              model.Field(p => p.TotalCost).Editable(false);
-                                                                                          })
-                                                                                       .Events(events =>
-                                                                                       {
-                                                                                                   events.Error("error_handler(\"FundTransferLine_#=PaymentRequestId#\")");
-                                                                                                   events.RequestStart("onRequestStart(\"FundTransferLine_#=PaymentRequestId#\")");
-                                                                                                   events.RequestEnd("onRequestEnd(\"FundTransferLine_#=PaymentRequestId#\")");
-                                                                                               })
-
-
-                                                                                      .Read(read => read.Action("FundTransferLine_Read", "ApFundTransferLine", new { id = "#=PaymentRequestId#" }))
-                                                                                      .Create(create => create.Action("FundTransferLine_Create", "ApFundTransferLine", new { id = "#=PaymentRequestId#" }))
-                                                                              .Update(update => update.Action("FundTransferLine_Update", "ApFundTransferLine"))
-                                                                              .Destroy(destroy => destroy.Action("FundTransferLine_Destroy", "ApFundTransferLine"))
-                                                                          ).ToClientTemplate()
-    )
-
-</text>
-                );
+                        
 
                               items.Add().Text("Attachment").Content(@<text>
 

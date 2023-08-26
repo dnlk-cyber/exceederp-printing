@@ -73,9 +73,9 @@
                   model.Field(p => p.PurchaseOrderID).Editable(false);
                   model.Field(p => p.PurchaseRequisitionID).Editable(false);
                   model.Field(p => p.CurrentApprovalStep).Editable(false);
-                  model.Field(p => p.SupplierName).Editable(false);
-                  model.Field(p => p.SupplierId).Editable(false);
-                  model.Field(p => p.IsNewSupplier).Editable(false);
+                 // model.Field(p => p.SupplierName).Editable(false);
+                 // model.Field(p => p.SupplierId).Editable(false);
+                  //model.Field(p => p.IsNewSupplier).Editable(false);
                   model.Field(p => p.ProcurementMethod).Editable(false);
                   model.Field(p => p.ProformaPurchaseID).Editable(false);
                   model.Field(p => p.IsTransferredToPayment).Editable(false);
@@ -117,11 +117,11 @@
                                                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                                                 # } #
 
-                                                # if (IsOnlineApproved && !IsTransferredToPayment &&!IsVoid)
+                                                @*# if (IsOnlineApproved && !IsTransferredToPayment &&!IsVoid)
                                                 {#
                                                 <a onclick='return transferToPayment("#=PurchaseOrderID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
                                                 
-                                                # } #
+                                                # } #*@
 
                                                 # if (IsOnlineApproved && !IsTransferredToFollowUp &&!IsVoid )
                                                 {#
@@ -720,10 +720,10 @@
     function isNewSupplier(obj) {
         
         if ($(obj).is(":checked")) {
-            $("#supplierNameDiv").show();
+           // $("#supplierNameDiv").show();
 
         } else {
-            $("#supplierNameDiv").hide();
+            //$("#supplierNameDiv").hide();
         }
 
     }

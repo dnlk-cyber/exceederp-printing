@@ -26,13 +26,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
         readonly AccountHelper _accountHelper = new AccountHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelExpenseClaimApprover, FinanceConstants.AccountPayableTravelExpenseClaim)]
+        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelExpenseClaim, FinanceConstants.AccountPayableTravelExpenseClaimApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelExpenseClaimApprover, FinanceConstants.AccountPayableTravelExpenseClaim)]
+        [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableTravelExpenseClaim, FinanceConstants.AccountPayableTravelExpenseClaimApprover)]
         public ActionResult ApTravelExpenseValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ApTravelExpenseValidation> aptravelexpensevalidations = _db.ApTravelExpenseValidations.Where(x => x.ApTravelExpenseClaimId == id); ;

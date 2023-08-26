@@ -89,10 +89,12 @@
                     model =>
                     {
                         model.Id(p => p.ApPaymentId);
-                        
+
                         model.Field(p => p.RemainingBalance).Editable(false);
                         model.Field(p => p.BranchId).Editable(false);
                         model.Field(p => p.BusinessUnitId).Editable(false);
+                        model.Field(p => p.CreatedAtBranchId).Editable(false);
+                        model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
 
 
                         model.Field(p => p.VoidTime).Editable(false);

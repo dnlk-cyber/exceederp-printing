@@ -35,6 +35,8 @@
         public const string AccountPayableTravelOrder = "Account_Payable_TravelOrder";
         public const string AccountPayableTravelExpenseClaimApprover = "Account_Payable_TravelExpenseClaim_Approver";
         public const string AccountPayableTravelExpenseClaim = "Account_Payable_TravelExpenseClaim";
+        public const string AccountPayableFundTransferApprover = "Account_Payable_FundTransfer_Approver";
+        public const string AccountPayableFundTransfer = "Account_Payable_FundTransfer";
 
         public const string DisbursementTBPayment = "Disbursement_TBPayment";
 

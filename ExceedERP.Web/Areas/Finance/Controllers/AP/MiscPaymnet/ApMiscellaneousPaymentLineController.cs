@@ -249,6 +249,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 payment.LineAmount = Math.Round(lines.Sum(x => x.Amount), 2);
                 payment.TaxAmount = Math.Round(lines.Sum(x => x.TaxAmount), 2);
                 payment.TotalAmount = Math.Round(lines.Sum(x => x.TotalAmount), 2);
+                payment.NetPayable = Math.Round(lines.Sum(x => x.NetPayable), 2);
+                payment.DeductAmount = Math.Round(lines.Sum(x => x.DeductAmount), 2);
+                payment.WithholdingAmount = Math.Round(lines.Sum(x => x.WithholdingAmount), 2);
+                payment.WithholdTaxAmount = Math.Round(lines.Sum(x => x.WithholdTaxAmount), 2);
 
                 _db.Entry(payment).State = EntityState.Modified;
                 _db.SaveChanges();

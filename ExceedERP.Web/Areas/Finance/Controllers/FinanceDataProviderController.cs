@@ -368,6 +368,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetAllBankAccounts()
+        {
+            var bankAccounts = _db.BankAccounts.AsQueryable();
+            return Json(bankAccounts.Select(c => new
+            {
+                Code = c.BankAccountId,
+                Name = c.AccountNumber +"-"+c.AccountName
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetSegmentTypes()
         {
             var glSegmentSetups = _db.GlSegmentSetups
@@ -591,6 +602,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             }
 
             #endregion
+            #region fund transfer
+
+            var fundTransfers = _db.FundTransfers
+                .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
+            foreach (var c in fundTransfers)
+            {
+                string employeeName = EmployeeHelper.GetEmployeeEnglishName(c.EmployeeId);
+                var record = new SelectorVm
+                {
+                    Code = "FUND-TRANSFER_" + c.FundTransferId.ToString(),
+                    Name = "FUND-TRANSFER_" + employeeName + "_" + c.ReasonOfTransfer + "_" + c.FundTransferId
+                };
+                list.Add(record);
+            }
+
+            #endregion
 
             return Json(list.Select(c => new
                 {
@@ -635,33 +662,33 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
             else if (type == "Tender Award")
             {                
+                //not needed, onlly though PO
+                //var contracts = _db.ContractManagements
+                //                      .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                //                      .Where(x => x.IsPaid == false)
+                //                      .Select(x => new
+                //                      {
+                //                          x.ContractManagementID,
+                //                          x.SupplierName,
+                //                          x.SupplierId
+                //                      })
 
-                var contracts = _db.ContractManagements
-                                      .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                                      .Where(x => x.IsPaid == false)
-                                      .Select(x => new
-                                      {
-                                          x.ContractManagementID,
-                                          x.SupplierName,
-                                          x.SupplierId
-                                      })
+                //                      .AsQueryable();
 
-                                      .AsQueryable();
-
-                if (!String.IsNullOrWhiteSpace(text))
-                    contracts = contracts.Where(x => x.ContractManagementID.ToString().Contains(text)).AsQueryable();
+                //if (!String.IsNullOrWhiteSpace(text))
+                //    contracts = contracts.Where(x => x.ContractManagementID.ToString().Contains(text)).AsQueryable();
 
 
-                foreach (var co in contracts)
-                {
-                    var record = new SelectorVm
-                    {
-                        Name = "CO_" + co.ContractManagementID + "_" + co.SupplierName,
-                        Code = co.ContractManagementID.ToString()
-                    };
+                //foreach (var co in contracts)
+                //{
+                //    var record = new SelectorVm
+                //    {
+                //        Name = "CO_" + co.ContractManagementID + "_" + co.SupplierName,
+                //        Code = co.ContractManagementID.ToString()
+                //    };
 
-                    list.Add(record);
-                }
+                //    list.Add(record);
+                //}
             }
             //if (!String.IsNullOrWhiteSpace(text))
             //    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text

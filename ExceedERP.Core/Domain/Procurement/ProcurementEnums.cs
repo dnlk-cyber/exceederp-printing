@@ -96,7 +96,8 @@ namespace ExceedERP.Core.Domain.Procurement.Settings
     public enum PaymentType
     {
         Advance,
-        Payment
+        Payment,
+        Credit
     }
 
     public enum PurchaseStatus

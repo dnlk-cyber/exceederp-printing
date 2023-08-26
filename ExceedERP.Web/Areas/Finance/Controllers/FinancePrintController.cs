@@ -10,6 +10,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             return View();
         }
 
+        public ActionResult ApFundTransfer(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+
         public ActionResult ApTravelOrder(int id)
         {
             ViewBag.Id = id;

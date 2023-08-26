@@ -3210,6 +3210,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Lot> Lots { get; set; }
         public DbSet<BidAwardedSupplier> BidAwardedSuppliers { get; set; }
         public DbSet<BidPParticipatingSuppliers> BidPParticipatingSupplierses { get; set; }
+        public DbSet<BidParticipatingSupplierItem> BidParticipatingSupplierItems { get; set; }
         public DbSet<BidPurchasingSuppliers> BidPurchasingSupplierses { get; set; }
         public DbSet<TenderEvaluationResult> TenderEvaluationResults { get; set; }
         public DbSet<TenderEvaluationItemResult> TenderEvaluationItemResults { get; set; }

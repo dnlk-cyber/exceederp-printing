@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Reporting.SharedDataSources;
 using System;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System.Drawing;
 
 namespace ExceedERP.Reporting.Finance.ViewModel.Print
 {
@@ -25,10 +26,13 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         //
         public string PreparedBy { get; set; }
         public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
         public string AccountantCheckedBy { get; set; }
         public DateTime? AccountantCheckedDate { get; set; }
+        public Image AccountantCheckerSignature { get; set; }
         public string ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
     }
 
 

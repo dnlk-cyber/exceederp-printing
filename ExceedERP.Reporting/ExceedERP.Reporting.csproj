@@ -879,6 +879,7 @@
       <DependentUpon>AuditTrails.cs</DependentUpon>
     </Compile>
     <Compile Include="Finance\Print\DataSource\ApDirectPaymentODS.cs" />
+    <Compile Include="Finance\Print\DataSource\ApFundTransferOds.cs" />
     <Compile Include="Finance\Print\DataSource\ApInvoiceODS.cs" />
     <Compile Include="Finance\Print\DataSource\ApMiscPaymentODS.cs" />
     <Compile Include="Finance\Print\DataSource\ApPaymentODS.cs" />
@@ -959,6 +960,12 @@
     </Compile>
     <Compile Include="Finance\Print\rptBeginningJournal.Designer.cs">
       <DependentUpon>rptBeginningJournal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Print\rptFundTransferRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Print\rptFundTransferRequest.Designer.cs">
+      <DependentUpon>rptFundTransferRequest.cs</DependentUpon>
     </Compile>
     <Compile Include="Finance\Print\rptJournalVoucher.cs">
       <SubType>Component</SubType>
@@ -1278,6 +1285,7 @@
     <Compile Include="Finance\ViewModel\GAAP\BalanceSheet.cs" />
     <Compile Include="Finance\ViewModel\GAAP\GaapNoteVeiwModel.cs" />
     <Compile Include="Finance\ViewModel\ManualVoidDocVm.cs" />
+    <Compile Include="Finance\ViewModel\Print\ApFundTransferVm.cs" />
     <Compile Include="Finance\ViewModel\Print\ApTravelExpenseClaimVm.cs" />
     <Compile Include="Finance\ViewModel\Print\ApTravelOrderVm.cs" />
     <Compile Include="Finance\ViewModel\Print\ApPettyCashVm.cs" />
@@ -4739,6 +4747,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\Print\rptBeginningJournal.resx">
       <DependentUpon>rptBeginningJournal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Print\rptFundTransferRequest.resx">
+      <DependentUpon>rptFundTransferRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\Print\rptJournalVoucher.resx">
       <DependentUpon>rptJournalVoucher.cs</DependentUpon>

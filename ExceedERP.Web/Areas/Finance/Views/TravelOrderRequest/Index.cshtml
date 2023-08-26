@@ -1,0 +1,533 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AP.Travel
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Travel Order Request (Self Care)</legend>
+@(Html.Kendo().Grid<ApTravelOrder>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ApTravelOrderId).ClientTemplate("#=appendZeros(ApTravelOrderId)#").Width(100).Title("ID");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.Bound(c => c.PurposeOfTravel).Width(150);
+          columns.Bound(c => c.RequestDate).Width(130);
+          columns.Bound(c => c.TotalDuration).Width(130);
+          columns.Bound(c => c.AdvanceAmount).Width(120);
+          columns.Bound(c => c.TransportReference).Width(150);
+          columns.Bound(c => c.Reference).Width(150);
+          columns.Bound(c => c.Status).Width(90);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(190);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+
+     .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("ExpenseClaim"))//.Window(window => { window.Title(Resources.NavigatorTermination_TerminationRequest); window.Scrollable(false); }))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+       .Events(ev => ev.DetailExpand("detailExpandMasterDepartment"))
+      .Events(x => x.DataBound("onDataBoundMasterDepartment"))
+      .Scrollable(h => h.Height(500))
+
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+
+          .Ajax()
+          .Sort(sort => sort.Add("ApTravelOrderId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.ApTravelOrderId);
+
+              model.Field(p => p.ApTravelOrderId).Editable(false);
+              model.Field(p => p.TotalDuration).Editable(false);
+              model.Field(p => p.AdvanceAmount).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
+              model.Field(p => p.CreatedAtBranchId).Editable(false);
+              model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.IsForOther).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+                  .Read(read => read.Action("TravelOrderRequest_Read", "TravelOrderRequest"))
+                  .Create(create => create.Action("TravelOrderRequest_Create", "TravelOrderRequest"))
+                  .Update(update => update.Action("TravelOrderRequest_Update", "TravelOrderRequest"))
+                  .Destroy(destroy => destroy.Action("TravelOrderRequest_Destroy", "TravelOrderRequest"))
+
+                  ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                          .Name("tabstrip_#=ApTravelOrderId#")
+                                  .SelectedIndex(0)
+                                  .Items(items =>
+                                          {
+
+                                              items.Add().Text("Detail").Content(
+                        @<text>
+                            <p><b>Record Status :#= Status #</b></p>
+                            <a href='@Url.Action("ApTravelOrder", "FinancePrint")/#=ApTravelOrderId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                            # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                            {#
+                            <a onclick='return sendForApproval("#=ApTravelOrderId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            # } #
+
+                            <hr>
+                            <dl class="dl-horizontal">
+
+                                <dt>
+                                    No.
+                                </dt>
+                                <dd>
+                                    #= ApTravelOrderId #
+                                </dd>
+
+                                <dt>
+                                    Date
+                                </dt>
+                                <dd>
+
+                                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Status
+                                </dt>
+                                <dd>
+                                    #= Status #
+                                </dd>
+                                <dt>
+                                    CreatedOn
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    CreatedBy
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                                <dt>
+                                    Department Approved On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Approved By
+                                </dt>
+                                <dd>
+                                    #=DepartmentOnlineApprovedBy #
+
+                                </dd>
+
+                                <dt>
+                                    Budget Approved On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Approved By
+                                </dt>
+                                <dd>
+                                    #=BudgetApprovedBy #
+
+                                </dd>
+
+                                <dt>
+                                    Finance Approved On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Approved By
+                                </dt>
+                                <dd>
+                                    #=OnlineApprovedBy #
+
+                                </dd>
+                            </dl>
+                            # if (!IsDepartmentOnlineApproved)
+                            {#
+                            <dl class="h6">
+                                <dt>
+                                    Next Approver
+                                </dt>
+                                <dd>
+                                    #= ForwardedTo # <snap id="user_name_display"></snap>
+                                    <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                    <a onclick='SelectNextApprover(this,"#=ApTravelOrderId#","TravelOrderSelfCare")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                    <snap id="new_user_name_display"></snap>
+                                </dd>
+                            </dl>
+                            # } #
+                            <hr>
+
+
+
+                        </text>);
+
+                                              items.Add().Text("Advance Payment").Content(
+        @<text>
+
+            @(Html.Kendo().Grid<ApTravelOrderAdvancePayment>()
+                                    .Name("TravelOrderAdvancePayment#=ApTravelOrderId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.Type).Width(70).EditorTemplateName("TravelOrderPaymentType");
+                                        columns.ForeignKey(c => c.ItemName, (IEnumerable)ViewData["Items"], "ApSetupItemId", "Name").EditorTemplateName("ItemName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                        columns.Bound(c => c.Description).Width(90);
+                                        columns.Bound(c => c.UoM).Width(50);
+                                        columns.Bound(c => c.UnitPrice).Width(60);
+                                        columns.Bound(c => c.Quantity).Width(60);
+                                        columns.Bound(c => c.Total).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                       // columns.Bound(c => c.PaymentMethod).Width(130).EditorTemplateName("PaymentMethodSelectorAP");
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit();
+                                            command.Destroy();
+                                        }).Width(280);
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create();
+
+                                    })
+
+                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable()
+                                    .Selectable()
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(aggregates =>
+                                    {
+                                        aggregates.Add(p => p.Total).Sum();
+                                    })
+                                    .Events(ev => ev
+                                    .Error("error_handler(\"TravelOrderAdvancePayment#=ApTravelOrderId#\")")
+                                    .RequestStart("onRequestStart(\"TravelOrderAdvancePayment#=ApTravelOrderId#\")")
+                                    .RequestEnd("onRequestEnd(\"TravelOrderAdvancePayment#=ApTravelOrderId#\")"))
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ApTravelOrderAdvancePaymentId);
+                                        model.Field(p => p.ApTravelOrderAdvancePaymentId).Editable(false);
+                                        model.Field(p => p.Total).Editable(false);
+
+                                        model.Field(p => p.CreatedBy).Editable(false);
+                                        model.Field(p => p.DateCreated).Editable(false);
+                                        model.Field(p => p.ModifiedBy).Editable(false);
+                                        model.Field(p => p.LastModified).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("TravelOrderAdvancePayments_Read", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
+                                    .Create(create => create.Action("TravelOrderAdvancePayments_Create", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
+                                    .Update(update => update.Action("TravelOrderAdvancePayments_Update", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
+                                    .Destroy(destroy => destroy.Action("TravelOrderAdvancePayments_Destroy", "TravelOrderAdvancePaymentRequest"))
+                                    ).ToClientTemplate()
+            )
+
+        </text>
+                                );
+                                              items.Add().Text("Departure").Content(
+        @<text>
+
+            @(Html.Kendo().Grid<ApTravelOrderDeparture>()
+                                .Name("TravelOrderDeparture#=ApTravelOrderId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.Date).Width(130);
+                                    columns.Bound(c => c.ArrivalDate).Width(130);
+                                    columns.Bound(c => c.Duration).Width(80);
+                                    //columns.Bound(c => c.Time).Width(120).Format("{0:HH:mm}").EditorTemplateName("Time");
+                                    columns.Bound(c => c.Type).Width(120).EditorTemplateName("TravelOrderDepartureTypeSelector");
+                                    columns.Bound(c => c.From).Width(110);
+                                    columns.Bound(c => c.To).Width(110);
+                                    columns.Bound(c => c.TransportMode).Width(130);
+                                    columns.ForeignKey(p => p.DestinationBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
+                                    columns.Bound(c => c.Remark).Width(150);
+
+                                    columns.Bound(c => c.CreatedBy).Hidden();
+                                    columns.Bound(c => c.DateCreated).Hidden();
+                                    columns.Bound(c => c.ModifiedBy).Hidden();
+                                    columns.Bound(c => c.LastModified).Hidden();
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit();
+                                        command.Destroy();
+                                    }).Width(180);
+                                })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create();
+                                    })
+
+                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable()
+                                    .Selectable()
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                            .Events(ev => ev
+                                                .Error("error_handler(\"TravelOrderDeparture#=ApTravelOrderId#\")")
+                                                .RequestStart("onRequestStart(\"TravelOrderDeparture#=ApTravelOrderId#\")")
+                                                        .RequestEnd("onRequestEnd(\"TravelOrderDeparture#=ApTravelOrderId#\")"))
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.ApTravelOrderDepartureId);
+                                            model.Field(p => p.ApTravelOrderDepartureId).Editable(false);
+                                            model.Field(p => p.Duration).Editable(false);
+
+                                            model.Field(p => p.CreatedBy).Editable(false);
+                                            model.Field(p => p.DateCreated).Editable(false);
+                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                            model.Field(p => p.LastModified).Editable(false);
+
+                                        })
+                                                        .Read(read => read.Action("TravelOrderDepartures_Read", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
+                                                        .Create(create => create.Action("TravelOrderDepartures_Create", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
+                                                        .Update(update => update.Action("TravelOrderDepartures_Update", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
+                                                        .Destroy(destroy => destroy.Action("TravelOrderDepartures_Destroy", "TravelOrderDepartureRequest"))
+                                                    ).ToClientTemplate()
+            )
+
+        </text>
+           );
+
+                                      items.Add().Text("Validation").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ApTravelOrderDepartmentValidation>()
+                .Name("TravelOrderDepartmentValidationController#=ApTravelOrderId#")
+                .Columns(columns =>
+                {
+                            columns.Bound(c => c.ApTravelOrderDepartmentValidationId).Hidden(true);
+                            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                            columns.Bound(c => c.Remark).Width(200);
+                            columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                            columns.Bound(c => c.LastModified).Hidden(true);
+                            columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                            columns.Bound(c => c.ModifiedBy).Hidden(true);
+                            columns.Command(command =>
+{
+command.Edit();
+
+});
+
+                        })
+                .ToolBar(toolbar =>
+                {
+                            toolbar.Create();
+                        })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Events(x => x.DataBound("onDataBoundValidationDepartment"))
+                .Sortable(sortable =>
+                {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                .Filterable()
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(ev => ev
+                        .Error("error_handler(\"TravelOrderDepartmentValidationController#=ApTravelOrderId#\")")
+                        .RequestStart("onRequestStart(\"TravelOrderDepartmentValidationController#=ApTravelOrderId#\")")
+                        .RequestEnd("onRequestEnd(\"TravelOrderDepartmentValidationController#=ApTravelOrderId#\")"))
+                    .Model(
+                        model =>
+                        {
+                                    model.Id(p => p.ApTravelOrderDepartmentValidationId);
+                                    model.Field(p => p.OrgBranchName).Editable(false);
+                                    model.Field(p => p.CreatedBy).Editable(false);
+                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                    model.Field(p => p.LastModified).Editable(false);
+                                    model.Field(p => p.DateCreated).Editable(false);
+                                })
+
+                    .Read(read => read.Action("TravelOrderDepartmentValidations_Read", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                    .Create(create => create.Action("TravelOrderDepartmentValidations_Create", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                    .Update(update => update.Action("TravelOrderDepartmentValidations_Update", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                )
+                .ToClientTemplate())
+
+                </text>);
+
+
+                  }).ToClientTemplate())
+</script>
+
+
+<script>
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+
+    function detailExpandMasterDepartment(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        // codeid = masterDataItem.PurchaseOrderID;
+        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+    }
+    function onDataBoundMasterDepartment(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsDepartmentOnlineApproved || gridData[i].IsDepartmentSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            if (dataItem.IsBudgetApproved) {
+                row.css("background-color", "gold");
+            }
+
+            if (dataItem.Paid) {
+                row.css("background-color", "honeydew");
+            }
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineDepartment(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isDeptapproved || isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationDepartment(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isDeptapproved || !isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+
+     function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforDepartmentApproval", "TravelOrderRequest", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>

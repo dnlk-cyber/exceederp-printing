@@ -68,7 +68,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 var purchasePayment = _db.PurchasePayments.Find(int.Parse(record.PurchaseReference));
                 if (purchasePayment != null && purchasePayment.IsVoid)
                     ModelState.AddModelError("void", "The purchase payment request " + purchasePayment.PurchasePaymentId + " is void,hence can't approve payment.");
-                if (purchasePayment != null && !purchasePayment.IsFinanceApproved)
+                if (purchasePayment != null && aPPaymentValidation.Status == ApprovalStatuses.Approve && !purchasePayment.IsFinanceApproved)
                     ModelState.AddModelError("notapproved", "The purchase payment request " + purchasePayment.PurchasePaymentId + " is not approved,hence can't approve payment.");
 
                 decimal paymentAmount = record.IsPrepayment ? record.PrepaymentAmount : record.PaymentAmount;

@@ -77,6 +77,9 @@ namespace ExceedERP.Core.Domain.Finance.AP
         public decimal NetAmount { get; set; }
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         [Display(Name = "For Branch or Project")]
         public int? ForBranchId { get; set; }
         [NotMapped]

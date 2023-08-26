@@ -24,6 +24,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         [Required]
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
+        [Required]
         [Display(Name = "Purpose of Travel")]
         public String PurposeOfTravel { get; set; }
         [Display(Name = "Request Date")]
@@ -32,7 +33,9 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public DateTime RequestDate { get; set; }
         [Display(Name = "Advance Amount")]//from line ,read
         public decimal AdvanceAmount { get; set; }
-       
+        [Display(Name = "Total Duration")]//from line departure and return ,read
+        public decimal TotalDuration { get; set; }
+
         [Display(Name = "Reference")]
         public string Reference { get; set; }
 
@@ -47,6 +50,9 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         [Required]
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         public virtual ICollection<ApTravelOrderAdvancePayment> ApTravelOrderAdvancePayments { get; set; }
         public virtual ICollection<ApTravelOrderDeparture> ApTravelOrderDepartures { get; set; }
         public virtual ICollection<ApTravelOrderValidation> ApTravelOrderValidations { get; set; }

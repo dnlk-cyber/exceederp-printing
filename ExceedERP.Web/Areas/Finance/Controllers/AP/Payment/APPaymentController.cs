@@ -144,6 +144,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 ApPaymentId = apPayment.ApPaymentId,
                 BranchId = apPayment.BranchId,
                 BusinessUnitId = apPayment.BusinessUnitId,
+                CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                 IsPrepayment = apPayment.IsPrepayment,
                 SupplierName = apPayment.SupplierName,
                 SupplierId = apPayment.SupplierId,
@@ -262,6 +264,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     }
                 }
             }
+
+            apPayment.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            apPayment.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
             #endregion
             #region net
             //apPayment.NetAmount = apPayment.PaymentAmount;
@@ -309,6 +314,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     BranchId = apPayment.BranchId,
                     BusinessUnitId = apPayment.BusinessUnitId,
+                    CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                     IsPrepayment = apPayment.IsPrepayment,
                     SupplierName = apPayment.SupplierName,
                     SupplierId = apPayment.SupplierId,
@@ -515,6 +522,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ApPaymentId = apPayment.ApPaymentId,
                         BranchId = apPayment.BranchId,
                         BusinessUnitId = apPayment.BusinessUnitId,
+                        CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                         IsPrepayment = apPayment.IsPrepayment,
                         SupplierName = apPayment.SupplierName,
                         SupplierId = apPayment.SupplierId,
@@ -621,6 +630,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ApPaymentId = apPayment.ApPaymentId,
                         BranchId = apPayment.BranchId,
                         BusinessUnitId = apPayment.BusinessUnitId,
+                        CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                         IsPrepayment = apPayment.IsPrepayment,
                         SupplierName = apPayment.SupplierName,
                         SupplierId = apPayment.SupplierId,

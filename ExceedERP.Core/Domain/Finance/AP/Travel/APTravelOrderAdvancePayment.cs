@@ -22,7 +22,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
 
         [Display(Name = "Total")]
         public decimal Total { get; set; }
-        
+
         [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; }// to top or totally remove
 

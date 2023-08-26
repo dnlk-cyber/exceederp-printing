@@ -827,6 +827,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             {
                 if (proformaPurchase.EvaluateTotalFinance)
                 {
+                    List<ProformaEvaluationResult> canProvideAllItems = new List<ProformaEvaluationResult>();
+                    var proformaItems = _db.ProformaItems.Where(x=>x.ProformaPurchaseID==proformaid).ToList();
                     #region evaluate by total financial result
                     var awards = _db.WinningSuppliers.Where(x => x.ProformaPurchaseID == proformaid).ToList();
                     var winnerCanProvide = awards.Where(x => x.AwardGiven).ToList();
@@ -838,11 +840,37 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     var proformaEvaluationResults = _db.ProformaEvaluationResults
                         .Where(x => x.Pass != PassFailStatus.Fail)
                         .Where(x => x.ProformaPurchaseID == proformaid).ToList();
+
                     if (winnerCantProvide.Any())
                         proformaEvaluationResults = proformaEvaluationResults
                             .Where(x => winnerCantProvide.Contains(x.SupplierName) == false).ToList();
 
-                    var topResult = proformaEvaluationResults.OrderByDescending(x => x.Total).FirstOrDefault();
+                    #region remove suppliers that don't provide all items
+                    foreach(var s in proformaEvaluationResults)
+                    {
+                        bool canProvide = true;
+                        var supplierItems = _db.ProformaEvaluationItemResults.Where(x =>
+                          x.ProformaEvaluationResultID == s.ProformaEvaluationResultID).ToList();
+
+                        foreach (var i in proformaItems)
+                        {
+                            var exist = supplierItems.Where(x => x.ItemName == i.ItemName).FirstOrDefault();
+                            if(exist!=null)
+                            {
+                                canProvide = false;
+                                break;
+                            }
+                        }
+
+                        if (canProvide)
+                            canProvideAllItems.Add(s);
+
+                    }
+                    #endregion
+
+                    var topResult = //proformaEvaluationResults //removed
+                            canProvideAllItems //added
+                            .OrderByDescending(x => x.Total).FirstOrDefault();
 
                     if (topResult != null)
                     {

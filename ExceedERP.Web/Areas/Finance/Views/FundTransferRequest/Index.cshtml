@@ -1,0 +1,772 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AP.FundTransfer
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fund Transfer Reqeust  (Self Care)</legend>
+@(Html.Kendo().Grid<FundTransfer>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FundTransferId).Title("#").Width(100).ClientTemplate("#=appendZeros(FundTransferId)#");
+              columns.Bound(c => c.RequestDate).Width(120);
+              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.ReasonOfTransfer).Width(130);
+              if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+              {
+                  columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+              }
+              columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
+              columns.ForeignKey(c => c.BankAccountId, (IEnumerable)ViewData["BankAccounts"], "Code", "Name").EditorTemplateName("AllBankAccountSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+
+              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(100);
+              columns.ForeignKey(c => c.OrgStuructureId, (IEnumerable)ViewData["OrgStructure"], "OrgStructureId", "Name").Width(180);
+
+              columns.Bound(c => c.Remark).Width(150);
+              columns.Bound(c => c.Status).Width(150);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(190);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+                                                                   //.Events(events => events.DetailExpand("onDetailExpandUser"))
+          .Scrollable(h => h.Height(500))
+
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          //.Events(e =>
+          //{
+          //    e.Save("GetDate");
+          //    e.Edit("GetDate");
+          //})
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+          .Events(ev => ev.DetailExpand("detailExpandMasterDepartment"))
+          .Events(x => x.DataBound("onDataBoundMasterDepartment"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort => sort.Add("FundTransferId").Descending())
+               .Model(
+              model =>
+              {
+                  model.Id(p => p.FundTransferId);
+                  model.Field(p => p.FundTransferId).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
+                  model.Field(p => p.OrgStuructureId).Editable(false);
+                  model.Field(p => p.Paid).Editable(false);
+
+                  model.Field(p => p.CreatedAtBranchId).Editable(false);
+                  model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+                  model.Field(p => p.BudgetApprovedBy).Editable(false);
+                  model.Field(p => p.IsBudgetApproved).Editable(false);
+                  model.Field(p => p.BudgetApprovedTime).Editable(false);
+
+                  model.Field(p => p.CurrentApprovalStep).Editable(false);
+
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+
+              })
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"grid\")");
+                  events.RequestStart("onRequestStart(\"grid\")");
+                  events.RequestEnd("onRequestEnd(\"grid\")");
+              })
+
+
+              .Read(read => read.Action("FundTransfer_Read", "FundTransferRequest"))
+              .Create(create => create.Action("FundTransfer_Create", "FundTransferRequest"))
+              .Update(update => update.Action("FundTransfer_Update", "FundTransferRequest"))
+              .Destroy(destroy => destroy.Action("FundTransfer_Destroy", "FundTransferRequest"))
+          ).ClientDetailTemplateId("template"))
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                           .Name("tabstrip_#=FundTransferId#")
+                                                                                          .SelectedIndex(0)
+                                                                                          .Items(items =>
+                                                                                          {
+
+                                                                                              items.Add().Text("Detail").Content(
+                                                                                                            @<text>
+                                                                                                                <p><b>Record Status :#= Status #</b></p>
+                                                                                                                <a href='@Url.Action("ApFundTransfer", "FinancePrint")/#=FundTransferId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                                                                                                # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                                                                                                                {#
+                                                                                                                <a onclick='return sendForApproval("#=FundTransferId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                                                <br />
+                                                                                                                # } #
+
+                                                                                                                <hr>
+                                                                                                                <dl class="dl-horizontal">
+                                                                                                                    <dt>
+                                                                                                                        PR No.
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #= FundTransferId #
+                                                                                                                    </dd>
+
+                                                                                                                    <dt>
+                                                                                                                        Request Date
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+
+                                                                                                                        #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Status
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #= Status #
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        CreatedOn
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        CreatedBy
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #= CreatedBy #
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Modified By
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #= ModifiedBy #
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Modified Date
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Department Approved On
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Approved By
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=DepartmentOnlineApprovedBy #
+
+                                                                                                                    </dd>
+
+                                                                                                                    <dt>
+                                                                                                                        Budget Approved On
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Approved By
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=BudgetApprovedBy #
+
+                                                                                                                    </dd>
+
+                                                                                                                    <dt>
+                                                                                                                        Checked On
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy') #
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Checked By
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=SendForApprovalBy #
+                                                                                                                    </dd>
+
+                                                                                                                    <dt>
+                                                                                                                        Finance Approved On
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                                                                    </dd>
+                                                                                                                    <dt>
+                                                                                                                        Approved By
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #=OnlineApprovedBy #
+
+                                                                                                                    </dd>
+                                                                                                                </dl>
+                                                                                                                # if (!IsDepartmentOnlineApproved)
+                                                                                                                {#
+                                                                                                                <dl class="h6">
+                                                                                                                    <dt>
+                                                                                                                        Next Approver
+                                                                                                                    </dt>
+                                                                                                                    <dd>
+                                                                                                                        #= ForwardedTo # <snap id="user_name_display"></snap>
+                                                                                                                        <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                                                                                                        <a onclick='SelectNextApprover(this,"#=FundTransferId#","FundTransferSelfCare")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                                                                                                        <snap id="new_user_name_display"></snap>
+                                                                                                                    </dd>
+                                                                                                                </dl>
+                                                                                                                # } #
+                                                                                                                <hr>
+
+
+
+                                                                                                            </text>);
+
+
+
+                                                                                                      items.Add().Text("Request Line").Content(
+    @<text>
+
+        @(Html.Kendo().Grid<FundTransferDetail>()
+                                                                                          .Name("FundTransferDetail_#=FundTransferId#")
+                                                                              .Columns(columns =>
+                                                                              {
+
+
+                                                                                          columns.Bound(c => c.Description).Width(150);
+                                                                                          columns.Bound(c => c.Requested).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                                          columns.Bound(c => c.Approved).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                                          columns.Bound(c => c.Remark).Width(100);
+                                                                                          columns.Command(command =>
+                                                                              {
+
+                                                                                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                                                                                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                                                                                  }).Width(400);
+                                                                                      })
+                                                                              .ToolBar(toolbar =>
+                                                                              {
+
+                                                                                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                                                                                      })
+                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                              .Selectable(selectable =>
+                                                                               {
+                                                                                           selectable.Mode(GridSelectionMode.Single);
+                                                                                           selectable.Type(GridSelectionType.Row);
+                                                                                       })
+                                                                              .Scrollable()
+                                                                               .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                                                                              .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                              .DataSource(dataSource => dataSource
+                                                                                  .Ajax()
+                                                                                   .Aggregates(aggregates =>
+                                                                                   {
+                                                                                               aggregates.Add(p => p.Requested).Sum();
+                                                                                               aggregates.Add(p => p.Approved).Sum();
+                                                                                           })
+                                                                                  .Model(
+                                                                                      model =>
+                                                                                      {
+                                                                                                  model.Id(p => p.FundTransferDetailId);
+                                                                                              })
+                                                                                           .Events(events =>
+                                                                                           {
+                                                                                                       events.Error("error_handler(\"FundTransferDetail_#=FundTransferId#\")");
+                                                                                                       events.RequestStart("onRequestStart(\"FundTransferDetail_#=FundTransferId#\")");
+                                                                                                       events.RequestEnd("onRequestEnd(\"FundTransferDetail_#=FundTransferId#\")");
+                                                                                                   })
+
+                                                                                  .Model(model => model.Id(p => p.FundTransferDetailId))
+                                                                                          .Read(read => read.Action("FundTransferDetail_Read", "FundTransferDetail", new { id = "#=FundTransferId#" }))
+                                                                                          .Create(create => create.Action("FundTransferDetail_Create", "FundTransferDetail", new { id = "#=FundTransferId#" }))
+                                                                                  .Update(update => update.Action("FundTransferDetail_Update", "FundTransferDetail"))
+                                                                                  .Destroy(destroy => destroy.Action("FundTransferDetail_Destroy", "FundTransferDetail"))
+                                                                              ).ToClientTemplate()
+        )
+
+    </text>
+);
+
+
+                                                                                              items.Add().Text("Attachment").Content(@<text>
+
+                                                                                                @FileUpload()
+
+                                                                                            </text>);
+                                                                                                    items.Add().Text("Validation").Content(
+    @<text>
+        @(Html.Kendo().Grid<FundTransferDepartmentValidation>()
+                                                                                                      .Name("FundTransferDepartmentValidation#=FundTransferId#")
+                                                                                                      .Columns(columns =>
+                                                                                                      {
+                                                                                                                  columns.Bound(c => c.FundTransferDepartmentValidationId).Hidden(true);
+                                                                                                                  columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                                                                  columns.Bound(c => c.Remark).Width(200);
+                                                                                                                  columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                                                  columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                                                  columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                                                                  columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                                                  columns.Command(command =>
+{
+                    command.Edit();
+
+                });
+
+                                                                                                              })
+                                                                                                      .ToolBar(toolbar =>
+                                                                                                      {
+                                                                                                                  toolbar.Create();
+                                                                                                              })
+                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                      .Events(x => x.DataBound("onDataBoundValidationDepartment"))
+                                                                                                      .Sortable(sortable =>
+                                                                                                      {
+                                                                                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                              })
+                                                                                                      .Filterable()
+                                                                                                      .Scrollable()
+                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                          .Ajax()
+                                                                                                          .Events(ev => ev
+                                                                                                              .Error("error_handler(\"FundTransferDepartmentValidation#=FundTransferId#\")")
+                                                                                                              .RequestStart("onRequestStart(\"FundTransferDepartmentValidation#=FundTransferId#\")")
+                                                                                                              .RequestEnd("onRequestEnd(\"FundTransferDepartmentValidation#=FundTransferId#\")"))
+                                                                                                          .Model(
+                                                                                                              model =>
+                                                                                                              {
+                                                                                                                          model.Id(p => p.FundTransferDepartmentValidationId);
+                                                                                                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                          model.Field(p => p.LastModified).Editable(false);
+                                                                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                      })
+
+                                                                                                          .Read(read => read.Action("FundTransferDepartmentValidations_Read", "FundTransferRequestDepartmentValidation", new { id = "#=FundTransferId#" }))
+                                                                                                          .Create(create => create.Action("FundTransferDepartmentValidations_Create", "FundTransferRequestDepartmentValidation", new { id = "#=FundTransferId#" }))
+                                                                                                          .Update(update => update.Action("FundTransferDepartmentValidations_Update", "FundTransferRequestDepartmentValidation", new { id = "#=FundTransferId#" }))
+                                                                                                      )
+                                                                                                      .ToClientTemplate())
+
+    </text>);
+
+
+
+                                                                                          }).ToClientTemplate())
+
+
+    @helper FileUpload()
+    {
+        <text>
+            @(Html.Kendo().Grid<FundTransferAttachment>
+                                                ()
+                                                .Name("FundTransferAttachment#=FundTransferId#")
+                                                .Columns(columns =>
+                                                    {
+                                                        columns.Bound(x => x.FundTransferAttachmentId).Hidden(true);
+                                                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/FundTransferAttachment/FileDwonload?id=\\#=FundTransferAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+
+                                                        columns.Command(command =>
+                                                            {
+                                                                command.Edit();
+                                                                command.Destroy();
+                                                            }).Width(580);
+                                                    })
+                                                .ToolBar(t => t.Template(
+                                                    @<text>
+                                                        @(Html.Kendo().Upload()
+                                                                                                                                            .Name("attachments")
+                                                                                                                                            .Async(a => a.Save("FundTransferAttachment_Create", "FundTransferRequestAttachment", new { id = "#=FundTransferId #" }))
+                                                                                                                                            .Events(e => e.Complete("onUploadSuccess"))
+                                                                                                                                            .ShowFileList(false)
+                                                                                                                                            .ToClientTemplate()
+                                                        )
+                                                    </text>
+                                                                                                                                                                                                    ))
+                                                                                                                                                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                        .HtmlAttributes(new { style = "height: 350px;" })
+                                                                                                                                                        .Sortable(sortable =>
+                                                                                                                                                        {
+                                                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                        })
+                                                                                                                                                                                                    .Scrollable()
+                                                                                                                                                                                                 .Pageable(pageable => pageable
+                                              .Input(true)
+                                              .Numeric(false)
+                                              .Refresh(true)
+                                              .PageSizes(true)
+                                              .ButtonCount(5))
+                                                                                                                                                        .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                                                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                                                                                                        .Ajax()
+                                                                                                                                                                                                        .Events(ev => ev
+                                                                                                                                                                                                            .Error("error_handler(\"FundTransferAttachment#=FundTransferId#\")")
+                                                                                                                                                                                                            .RequestStart("onRequestStart(\"FundTransferAttachment#=FundTransferId#\")")
+                                                                                                                                                                                                            .RequestEnd("onRequestEnd(\"FundTransferAttachment#=FundTransferId#\")"))
+                                                                                                                                                                                                            .Model(model => model.Id(p => p.FundTransferAttachmentId))
+                                                                                                                                                                                                        .Read(read => read.Action("FundTransferAttachment_Read", "FundTransferRequestAttachment", new { id = "#=FundTransferId #" }))
+                                                                                                                                                                                                        .Create(create => create.Action("FundTransferAttachment_Create", "FundTransferRequestAttachment", new { id = "#=FundTransferId #" }))
+                                                                                                                                                                                                        .Update(update => update.Action("FundTransferAttachment_Update", "FundTransferRequestAttachment"))
+                                                                                                                                                                                                        .Destroy(destroy => destroy.Action("FundTransferAttachment_Destroy", "FundTransferRequestAttachment"))
+                                                                                                                                                                                            ).ToClientTemplate())
+        </text>
+    }
+</script>
+
+
+<script>
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+
+    function detailExpandMasterDepartment(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.FundTransferId;
+        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+    }
+    function onDataBoundMasterDepartment(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsDepartmentOnlineApproved || gridData[i].IsDepartmentSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            if (dataItem.IsBudgetApproved) {
+                row.css("background-color", "gold");
+            }
+
+            if (dataItem.Paid) {
+                row.css("background-color", "honeydew");
+            }
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineDepartment(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isDeptapproved || isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationDepartment(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isDeptapproved || !isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+</script>
+<script>
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforDepartmentApproval", "FundTransferRequest", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "LeaveRequest")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+<script>
+    function GetBalance() {
+
+        $("#LeaveBalance").val(0);
+        var employee = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employee.value();
+        var periods = $("#GlFiscalYearId").data("kendoDropDownList");
+        var period = periods.value();
+
+        if (empId.length !== 0 && period.length !== 0)
+        {
+
+            $.ajax({
+                url: '@Url.Action("GetAmount", "LeaveRequest")',
+
+                data: { period: period, empId: empId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveBalance").val(s[0]);
+                    $("#LeaveBalance").trigger("change");
+                }
+
+            });
+        }
+        else
+        {
+
+            $.ajax({
+                url: '@Url.Action("GetCurrentEmpBalance", "LeaveRequest")',
+
+                data: { period: period },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveBalance").val(s[0]);
+                    $("#LeaveBalance").trigger("change");
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#LeaveRequestgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.LeaveRequestId;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "LeaveRequestStatus")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+    function SetEmployee(e) {
+        var x = e.checked;
+        var dropDown = $("#EmployeeId").data("kendoDropDownList");
+        if (x == true) {
+            $("#LeaveBalance").val(0);
+            $("#LeaveBalance").trigger("change");
+            dropDown.enable(true);
+
+
+        }
+        else {
+            dropDown.value(0);
+            dropDown.enable(false);
+        }
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("SetEmployee", "LeaveRequest")',
+            data: { x: x },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (x==true && r == "0")
+                {
+                    e.checked = false;
+                    dropDown.value(0);
+                    dropDown.enable(false);
+                    alert("You can not request for other employee!!.\nThere is no employee under your postion.");
+                }
+              //  $("#EmployeeId").data('kendoComboBox').dataSource.read();
+                //$("#EmployeeId").data('kendoComboBox').refresh();
+            }
+
+        });
+
+
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+    function IsforOthers() {
+        return {
+            IsForOther: $("#IsForOther").val()
+        };
+    }
+
+    function onUploadSuccess(e) {
+        var gridname = "#FundTransferAttachment" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
+</script>

@@ -84,6 +84,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,              
                 BranchId = apTravelExpenseClaim.BranchId,
                 BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
+                CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
                 OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                 PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                 ClaimDate = apTravelExpenseClaim.ClaimDate,
@@ -139,10 +141,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             {
                 var entity = new ApTravelExpenseClaim
                 {
-                    ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
-                    
+                    ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,                    
                     BranchId = apTravelExpenseClaim.BranchId,
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
+                    CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate.Date,
@@ -201,10 +204,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 var entity = new ApTravelExpenseClaim
                 {
                     ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
-                    ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,
-                   
+                    ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,                   
                     BranchId = apTravelExpenseClaim.BranchId,
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
+                    CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate,
@@ -263,11 +267,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 var entity = new ApTravelExpenseClaim
                 {
                     ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
-                    ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,
-                    
+                    ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,                    
                     BranchId = apTravelExpenseClaim.BranchId,
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
+                    CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate,
                    

@@ -31,7 +31,11 @@
               columns.Bound(c => c.Po).Width(150);
               columns.Bound(c => c.LineAmount).Format("{0:n2}").Width(140);
               columns.Bound(c => c.TaxAmount).Format("{0:n2}").Width(140);
+              columns.Bound(c => c.WithholdingAmount).Format("{0:n2}").Width(140);
+              columns.Bound(c => c.WithholdTaxAmount).Format("{0:n2}").Width(140);              
               columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(140);
+              columns.Bound(c => c.DeductAmount).Format("{0:n2}").Width(140);
+              columns.Bound(c => c.NetPayable).Format("{0:n2}").Width(140);
               columns.Bound(c => c.Remark).Width(120);
               columns.Bound(c => c.Status).Width(130);
               columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -100,6 +104,10 @@
                             model.Field(p => p.ApMiscellaneousPaymentId).Editable(false);
                             model.Field(p => p.LineAmount).Editable(false);
                             model.Field(p => p.TaxAmount).Editable(false);
+                            model.Field(p => p.WithholdTaxAmount).Editable(false);
+                            model.Field(p => p.WithholdingAmount).Editable(false);
+                            model.Field(p => p.DeductAmount).Editable(false);
+                            model.Field(p => p.NetPayable).Editable(false);
                             model.Field(p => p.TotalAmount).Editable(false);
                             model.Field(p => p.BranchId).Editable(false);
                             model.Field(p => p.BusinessUnitId).Editable(false);

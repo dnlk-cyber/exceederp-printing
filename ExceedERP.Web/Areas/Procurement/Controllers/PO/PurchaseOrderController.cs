@@ -948,16 +948,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     .Select(x => x.ReceiveTypeId).ToList();
                 #region validate payment
 
-                var payment = _db.APPayments
+                var payment = _db.PurchasePayments
                     .Where(x => x.IsVoid == false)
-                    .Where(x => x.PoTypeEnum == PurchaseType.PurchaseOrder)
-                    .FirstOrDefault(x => x.PurchaseReference == record.PurchaseOrderID.ToString());
+                    .Where(x => x.Type == "Purchase Order")
+                    .FirstOrDefault(x => x.PoOrContractNumber == record.PurchaseOrderID.ToString());
 
                 if (payment != null)
                 {
                     var formattedData2 = new
                     {
-                        Message = $"This purchase order can not be void since it is referred in payment {payment.ApPaymentId}.",
+                        Message = $"This purchase order can not be void since it is referred in payment {payment.PurchasePaymentId}.",
                         Status = "NOT_OK"
                     };
                     return Json(formattedData2, JsonRequestBehavior.AllowGet);

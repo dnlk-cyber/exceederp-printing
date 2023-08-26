@@ -23,6 +23,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         [Display(Name = "Supplier Name")]
         public string Supplier { get; set; }
         public int? Purchaser { get; set; }
+        [Required]
         public string ReasonOfPayment { get; set; }
         [Display(Name = "Request Date")]
         [DataType(DataType.Date)]
@@ -49,6 +50,9 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         public virtual ICollection<PaymentRequestLine> PaymentRequestLines { get; set; }
         public virtual ICollection<FundTransferLine> FundTransferLines { get; set; }
         public virtual ICollection<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }

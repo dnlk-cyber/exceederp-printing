@@ -144,6 +144,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 ApPaymentId = apPayment.ApPaymentId,
                 BranchId = apPayment.BranchId,
                 BusinessUnitId = apPayment.BusinessUnitId,
+                CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                 IsPrepayment = apPayment.IsPrepayment,
                 SupplierName = apPayment.SupplierName,
                 SupplierId = apPayment.SupplierId,
@@ -245,8 +247,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     apPayment.EmployeeId = payreq.ProcurementOfficer;
                 }
             }
-            
-            
+
+
 
             //if (!String.IsNullOrWhiteSpace(apPayment.PoType)&& !String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
             //{
@@ -332,7 +334,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             //            }
 
             //            #endregion
-                        
+
             //        }
             //    }
             //}
@@ -340,6 +342,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             //{
             //    ModelState.AddModelError("notselected", "Please select purchase source and purchase reference");
             //}
+
+            apPayment.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            apPayment.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
             #endregion
             #region net
             var tax = _db.GLTaxRates.Find(apPayment.GLTaxRateID);
@@ -388,6 +393,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     IsPrepayment = true,
                     BranchId = apPayment.BranchId,
                     BusinessUnitId = apPayment.BusinessUnitId,
+                    CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                     SupplierName = apPayment.SupplierName,
                     SupplierId = apPayment.SupplierId,
                     InvoiceNumber = apPayment.InvoiceNumber,
@@ -670,6 +677,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ApPaymentId = apPayment.ApPaymentId,
                         BranchId = apPayment.BranchId,
                         BusinessUnitId = apPayment.BusinessUnitId,
+                        CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                         IsPrepayment = apPayment.IsPrepayment,
                         SupplierName = apPayment.SupplierName,
                         SupplierId = apPayment.SupplierId,
@@ -777,6 +786,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ApPaymentId = apPayment.ApPaymentId,
                         BranchId = apPayment.BranchId,
                         BusinessUnitId = apPayment.BusinessUnitId,
+                        CreatedAtBranchId = apPayment.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = apPayment.CreatedAtBusinessUnitId,
                         IsPrepayment = apPayment.IsPrepayment,
                         SupplierName = apPayment.SupplierName,
                         SupplierId = apPayment.SupplierId,

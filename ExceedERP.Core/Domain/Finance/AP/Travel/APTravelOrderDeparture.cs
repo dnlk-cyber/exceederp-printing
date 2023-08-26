@@ -7,7 +7,9 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
     public enum DepartureType
     {
         Departure,
-        Return
+        Return,
+        [Display(Name ="On Site")]
+        OnSite
     }
     public enum ModeOfTransport
     {

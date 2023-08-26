@@ -39,6 +39,9 @@ namespace ExceedERP.Core.Domain.Finance.AP
         public bool IsDirectPayment { get; set; }
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         public virtual ICollection<ApDirectPaymentLine> ApDirectPaymentLines { get; set; }
         public virtual ICollection<ApDirectPaymentDistribution> ApDirectPaymentDistribution { get; set; }
         public virtual ICollection<ApDirectPaymentValidation> ApDirectPaymentValidation { get; set; }

@@ -73,12 +73,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				ApTravelOrderId = apTravelOrder.ApTravelOrderId,               
 				BranchId = apTravelOrder.BranchId,
 				BusinessUnitId = apTravelOrder.BusinessUnitId,
-				OrgStructureId = apTravelOrder.OrgStructureId,
+                CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                OrgStructureId = apTravelOrder.OrgStructureId,
 				PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 				RequestDate = apTravelOrder.RequestDate,
 				AdvanceAmount = apTravelOrder.AdvanceAmount,
+                TotalDuration = apTravelOrder.TotalDuration,
 
-				TransportReference = apTravelOrder.TransportReference,
+                TransportReference = apTravelOrder.TransportReference,
 				Reference = apTravelOrder.Reference,
 				EmployeeId = apTravelOrder.EmployeeId,
 				IsForOther = apTravelOrder.IsForOther,
@@ -142,12 +145,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					
 					BranchId = apTravelOrder.BranchId,
 					BusinessUnitId = apTravelOrder.BusinessUnitId,
-					OrgStructureId = apTravelOrder.OrgStructureId,
+                    CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                    OrgStructureId = apTravelOrder.OrgStructureId,
 					PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 					RequestDate = apTravelOrder.RequestDate.Date,
 					AdvanceAmount = apTravelOrder.AdvanceAmount,
+                    TotalDuration = apTravelOrder.TotalDuration,
 
-					TransportReference = apTravelOrder.TransportReference,
+                    TransportReference = apTravelOrder.TransportReference,
 					Reference = apTravelOrder.Reference,
 					IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
 					IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
@@ -204,16 +210,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 			{
 				var entity = new ApTravelOrder
 				{
-					ApTravelOrderId = apTravelOrder.ApTravelOrderId,
-				   
+					ApTravelOrderId = apTravelOrder.ApTravelOrderId,				   
 					BranchId = apTravelOrder.BranchId,
 					BusinessUnitId = apTravelOrder.BusinessUnitId,
-					OrgStructureId = apTravelOrder.OrgStructureId,
+                    CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                    OrgStructureId = apTravelOrder.OrgStructureId,
 					PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 					RequestDate = apTravelOrder.RequestDate,
 					AdvanceAmount = apTravelOrder.AdvanceAmount,
+                    TotalDuration = apTravelOrder.TotalDuration,
 
-					TransportReference = apTravelOrder.TransportReference,
+                    TransportReference = apTravelOrder.TransportReference,
 					Reference = apTravelOrder.Reference,
 					EmployeeId = apTravelOrder.EmployeeId,
 					IsForOther = apTravelOrder.IsForOther,
@@ -267,17 +275,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 			{
 				var entity = new ApTravelOrder
 				{
-					ApTravelOrderId = apTravelOrder.ApTravelOrderId,
-				   
+					ApTravelOrderId = apTravelOrder.ApTravelOrderId,				   
 					BranchId = apTravelOrder.BranchId,
 					BusinessUnitId = apTravelOrder.BusinessUnitId,
-					OrgStructureId = apTravelOrder.OrgStructureId,
+                    CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                    OrgStructureId = apTravelOrder.OrgStructureId,
 					PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 					RequestDate = apTravelOrder.RequestDate,
 					AdvanceAmount = apTravelOrder.AdvanceAmount,
-					
+                    TotalDuration = apTravelOrder.TotalDuration,
 
-					Reference = apTravelOrder.Reference,
+
+                    Reference = apTravelOrder.Reference,
 					IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
 					IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
 					OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
@@ -383,280 +393,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 			return null;
 		}
 
-		public JsonResult TransferDistribution(string id, string description)
-		{
-			int myid = int.Parse(id);
-			var record = _db.ApTravelOrders.Find(myid);
-			if (record != null && !record.IsOnlineApproved)
-			{
-				var formattedData = new
-				{
-					Message = "The record is not approved.",
-					Status = "NOT_OK"
-				};
-				return Json(formattedData, JsonRequestBehavior.AllowGet);
-			}
-
-			if (record != null && !record.IsOnlineTransferred)
-			{
-				#region check if already transffered 
-				var exist = _db.GLRecordJournals
-					.Where(x => x.Source == JournalSources.AP_TravelOrder.ToString())
-					.Where(x => x.SourceId == record.ApTravelOrderId.ToString())
-					.FirstOrDefault();
-				if (exist != null)
-				{
-					var formattedData = new
-					{
-						Message = "The record is already transffered, it can't be retransferred.",
-						Status = "NOT_OK"
-					};
-					return Json(formattedData, JsonRequestBehavior.AllowGet);
-				}
-
-				#endregion
-				#region check segment length validation
-				AccountHelper accountHelper = new AccountHelper();
-				foreach (var dist in record.ApTravelOrderDistributions)
-				{
-					string message = accountHelper.ValidateSegmentCombinationLength(dist.AccountCode);
-					if (!String.IsNullOrEmpty(message))
-					{
-						var formattedData = new
-						{
-							Message = message,
-							Status = "NOT_OK"
-						};
-						return Json(formattedData, JsonRequestBehavior.AllowGet);
-					}
-
-					#region debit credit validation
-					if (dist.Debit != 0 && dist.Credit != 0)
-					{
-						message = $"{dist.AccountCode} Account has both debit and credit value.";
-						var formattedData = new
-						{
-							Message = message,
-							Status = "NOT_OK"
-						};
-						return Json(formattedData, JsonRequestBehavior.AllowGet);
-					}
-
-					if (dist.Debit == 0 && dist.Credit == 0)
-					{
-						message = $"{dist.AccountCode} Both debit and credit can't have zero value at the same time.";
-						var formattedData = new
-						{
-							Message = message,
-							Status = "NOT_OK"
-						};
-						return Json(formattedData, JsonRequestBehavior.AllowGet);
-					}
-
-					if (dist.Debit > 0 && dist.Credit > 0)
-					{
-						message = $"{dist.AccountCode} Both debit and credit can't have non zero value at the same time.";
-						var formattedData = new
-						{
-							Message = message,
-							Status = "NOT_OK"
-						};
-						return Json(formattedData, JsonRequestBehavior.AllowGet);
-					}
-
-					if (dist.Debit < 0 || dist.Credit < 0)
-					{
-						message = $"{dist.AccountCode} Negative values are not allowed.";
-						var formattedData = new
-						{
-							Message = message,
-							Status = "NOT_OK"
-						};
-						return Json(formattedData, JsonRequestBehavior.AllowGet);
-					}
-					#endregion
-
-				}
-
-
-				#endregion
-				#region check if debit and credit are equal
-				decimal debit = 0;
-				decimal credit = 0;
-				var distribution = record.ApTravelOrderDistributions.ToList();
-				if (distribution.Any())
-				{
-					debit = distribution.Sum(x => x.Debit);
-					credit = distribution.Sum(x => x.Credit);
-				}
-				if (debit != credit)
-				{
-					var formattedData = new
-					{
-						Message = "Total debit and total credit is not balanced.",
-						Status = "NOT_OK"
-					};
-					return Json(formattedData, JsonRequestBehavior.AllowGet);
-				}
-				if (debit == 0)
-				{
-					var formattedData = new
-					{
-						Message = "Total debit and total credit is zero.",
-						Status = "NOT_OK"
-					};
-					return Json(formattedData, JsonRequestBehavior.AllowGet);
-				}
-				#endregion
-
-				#region send to GL
-
-				string glyear = "";
-				string glperiod = "";
-				#region get period
-				var period = _db.GLPeriods.Where(x => x.DateFrom <= record.RequestDate.Date)
-					.Where(x => x.DateTo >= record.RequestDate.Date).ToList();
-				if (period.Any())
-				{
-
-					if (period.Count() == 1)
-					{
-						var myPeriod = period.FirstOrDefault();
-						if (myPeriod != null)
-						{
-							glperiod = myPeriod.Name;
-							glyear = myPeriod.GlFiscalYear.Name.ToString();
-							if (myPeriod.Status == FiscalYearStatus.Close)
-							{
-								var formattedData = new
-								{
-									Message = "The period " + glperiod +
-											  " is closed,the record cannot be transfered to closed period.",
-									Status = "NOT_OK"
-								};
-								return Json(formattedData, JsonRequestBehavior.AllowGet);
-							}
-						}
-						else
-						{
-							var formattedData = new
-							{
-								Message = "Period not found.",
-								Status = "NOT_OK"
-							};
-							return Json(formattedData, JsonRequestBehavior.AllowGet);
-						}
-					}
-
-					else
-					{
-						var formattedData = new
-						{
-							Message = "There are multiple periods defined that contain the Invoice date.",
-							Status = "NOT_OK"
-						};
-						return Json(formattedData, JsonRequestBehavior.AllowGet);
-					}
-
-				}
-				else
-				{
-					var formattedData = new
-					{
-						Message = "There are no periods defined that contain the Travel date.",
-						Status = "NOT_OK"
-					};
-					return Json(formattedData, JsonRequestBehavior.AllowGet);
-				}
-
-				#endregion
-			   
-				if (record.ApTravelOrderDistributions.Any())
-				{
-					GlRecordJournal journal = new GlRecordJournal
-					{
-						DateCreated = DateTime.Now,
-						CreatedBy = User.Identity.Name,
-						JournalName = "AP Travel Order",
-						Description = !String.IsNullOrEmpty(description) ? description : "AP Travel Order",
-						FiscalYear = glyear,
-						PeriodName = glperiod,
-						CategoryName = "AP Travel Order",
-						SourcesName = "AP",
-						JournalNumber = "APTRAVORD." + record.ApTravelOrderId.ToString(),
-						SourceId = record.ApTravelOrderId.ToString(),
-						Source = JournalSources.AP_TravelOrder.ToString(),
-						EffectiveDate = record.RequestDate.Date,
-						OrgBranchName = record.OrgBranchName,
-						Status = "Approved",
-						BranchId=record.BranchId,
-						IsOnlineApproved = true,
-						OnlineApprovedBy = User.Identity.Name,
-						OnlineApprovedTime = DateTime.Now
-					};
-					_db.GLRecordJournals.Add(journal);
-					_db.SaveChanges();
-					foreach (var i in record.ApTravelOrderDistributions)
-					{
-						#region debit and credit
-
-						var journalDetail = new GLRecordJournalDetail
-						{
-							DateCreated = DateTime.Now,
-							CreatedBy = User.Identity.Name,
-							GLRecordJournal = journal,
-							AccountCode = i.AccountCode,
-							AccountDesc = i.AccountDesc,
-							Debit = i.Debit,
-							Credit = i.Credit,
-							AdditionalDescription = i.AdditionalDescription,
-						};
-						_db.GLRecordJournalDetails.Add(journalDetail);
-						_db.SaveChanges();
-						#endregion
-					}
-
-					#region update record
-
-					record.IsOnlineTransferred = true;
-					_db.Entry(record).State = EntityState.Modified;
-					_db.SaveChanges();
-
-					#endregion
-
-					#region split journal
-					var journaldetails = _db.GLRecordJournalDetails
-						.Where(x => x.GlRecordJournalId == journal.GlRecordJournalId).ToList();
-					foreach (var detail in journaldetails)
-					{
-						AccountHelper helper = new AccountHelper();
-						helper.SplitJournal(detail.GlRecordJournalDetailId);
-					}
-					#endregion
-
-					var formattedData = new
-					{
-						Message = "Successfully transfered.",
-						Status = "OK"
-					};
-					return Json(formattedData, JsonRequestBehavior.AllowGet);
-
-				}
-				#endregion
-
-			}
-			else
-			{
-				var formattedData = new
-				{
-					Message = "You cannot transfer this transaction, it is already transfered.",
-					Status = "NOT_OK"
-				};
-				return Json(formattedData, JsonRequestBehavior.AllowGet);
-			}
-
-			return null;
-		}
+		
 		[AuthorizeRoles(FinanceConstants.AccountPayableVoid)]
 		public JsonResult Void(int id)
 		{

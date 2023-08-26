@@ -48,6 +48,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public ActionResult LotPurchaseRequisitions_Create(int id,[DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
         {
             var exist = _db.LotPurchaseRequisitions
+                .Where(x=>x.LotID==id) //added
                 .Where(x => x.PurchaseRequisitionAssignmentId == lotPurchaseRequisition.PurchaseRequisitionAssignmentId).FirstOrDefault();
             if (exist!=null)
             {
@@ -114,6 +115,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         {
 
             var exist = _db.LotPurchaseRequisitions
+                 .Where(x => x.LotID == lotPurchaseRequisition.LotID) //added
                 .Where(x => x.LotPurchaseRequisitionId != lotPurchaseRequisition.LotPurchaseRequisitionId)
                 .Where(x => x.PurchaseRequisitionAssignmentId == lotPurchaseRequisition.PurchaseRequisitionAssignmentId).FirstOrDefault();
             if (exist != null)

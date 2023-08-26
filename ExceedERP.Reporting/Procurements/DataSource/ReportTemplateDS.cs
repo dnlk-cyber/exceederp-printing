@@ -324,8 +324,15 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
             if (id != null)
             {
-                var winnerSupplier = _db.WinningSuppliers.FirstOrDefault(x => x.ProformaPurchaseID.ToString() == id);
-                var proformaPurchase = _db.ProformaPurchases.FirstOrDefault(x => x.ProformaPurchaseID.ToString() == id);
+                int did = int.Parse(id);
+                var winnerSupplier = _db.WinningSuppliers.FirstOrDefault(x => x.ProformaPurchaseID == did);
+                var proformaPurchase = _db.ProformaPurchases.FirstOrDefault(x => x.ProformaPurchaseID == did);
+                var team = _db.ProformaTeams.FirstOrDefault(x => x.ProformaPurchaseID == did);
+                if (team != null)
+                {
+                    var teamdecision = _db.ProformaTeamDecisions.FirstOrDefault(x => x.ProformaTeamId == team.ProformaTeamId);
+                    template.ProformaNote = teamdecision?. Description;
+                }
                 if (proformaPurchase != null)
                 {
                     template.ProformaId = proformaPurchase.ProformaPurchaseID;

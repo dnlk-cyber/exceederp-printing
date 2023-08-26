@@ -11,6 +11,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
    public class FundTransfer: DepartmentNewOperations
     {
         public int FundTransferId { get; set; }
+        [Required]
         public string ReasonOfTransfer { get; set; }
         [Display(Name = "Request Date")]
         [DataType(DataType.Date)]
@@ -28,15 +29,17 @@ namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
         [Display(Name = "Employee")]
         public int EmployeeId { get; set; }
         [Display(Name = "Department")]
-        public int OrgStuructureId { get; set; }
-        public int RequestorBranchId { get; set; }
-        public int RequestorBusinessUnitId { get; set; }
+        public int OrgStuructureId { get; set; }      
+        [Display(Name = "To Bank Account")]
         public int BankAccountId { get; set; }
         public bool Paid { get; set; }
         //budget controll
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         public virtual ICollection<FundTransferDetail> FundTransferDetails { get; set; }
         public virtual ICollection<FundTransferAttachment> FundTransferAttachments { get; set; }
         public virtual ICollection<FundTransferDepartmentValidation> FundTransferDepartmentValidations { get; set; }

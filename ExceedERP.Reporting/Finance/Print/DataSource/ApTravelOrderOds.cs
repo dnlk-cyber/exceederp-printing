@@ -41,19 +41,23 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 //department
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.CreatedBy));
                 headerDs.PreparedDate = apTravelOrder.DateCreated != null ? apTravelOrder.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(apTravelOrder.CreatedBy);
 
                 headerDs.DepartmentSecondApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.DepartmentOnlineApprovedBy));
                 headerDs.DepartmentSecondApprovedDate = apTravelOrder.DepartmentOnlineApprovedTime != null ? apTravelOrder.DepartmentOnlineApprovedTime : null;
-
+                headerDs.DepartmentSecondApproverSignature = SignatureHelper.GetUserSignature(apTravelOrder.DepartmentOnlineApprovedBy);
                 //finace
                 headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.SendForApprovalBy));
                 headerDs.AccountantCheckedDate = apTravelOrder.SendForApprovalTime != null ? apTravelOrder.SendForApprovalTime : null;
+                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(apTravelOrder.SendForApprovalBy);
 
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.OnlineApprovedBy));
                 headerDs.ApprovedDate = apTravelOrder.OnlineApprovedTime;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(apTravelOrder.OnlineApprovedBy);
                 //budget
                 headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.BudgetApprovedBy));
                 headerDs.BudgetApprovedDate = apTravelOrder.BudgetApprovedTime;
+                headerDs.BudgetSignature = SignatureHelper.GetUserSignature(apTravelOrder.BudgetApprovedBy);
 
                 #region prepared checker approver               
 
@@ -80,6 +84,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(checker.CreatedBy));
                             headerDs.DepartmentApprovedDate = checker.DateCreated != null ? checker.DateCreated : null;
+                            headerDs.DepartmentApproverSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
                         }
                         //else
                         //{
@@ -143,7 +148,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 {
 
                     Type=line.Type,
-                    ItemName = _db.ApSetupItems.Find(int.Parse(line.ItemName))?.Name,
+                    ItemName =!String.IsNullOrEmpty(line.ItemName)? _db.ApSetupItems.Find(int.Parse(line.ItemName))?.Name :"NA",
                     Description = line.Description,
                     UoM = line.UoM,
                     UnitPrice = line.UnitPrice,

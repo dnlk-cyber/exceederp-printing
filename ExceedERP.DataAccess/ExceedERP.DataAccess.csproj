@@ -342,6 +342,10 @@
     <Compile Include="Migrations\202308150513004_financeprocupgrade.Designer.cs">
       <DependentUpon>202308150513004_financeprocupgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202308261138122_financeprocsecupg.cs" />
+    <Compile Include="Migrations\202308261138122_financeprocsecupg.Designer.cs">
+      <DependentUpon>202308261138122_financeprocsecupg.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -555,6 +559,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202308150513004_financeprocupgrade.resx">
       <DependentUpon>202308150513004_financeprocupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202308261138122_financeprocsecupg.resx">
+      <DependentUpon>202308261138122_financeprocsecupg.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
