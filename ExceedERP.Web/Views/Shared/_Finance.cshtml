@@ -349,23 +349,7 @@
                             @Html.ActionLink("Miscellaneous Collections", "Index", "ArMiscelaneousCollection", new { area = "Finance" }, null)<b class="arrow"></b>
                         </li>
                     }
-                    @if (User.IsInRole(ConstructionRoles.PaymentCollectionUser)
-                          || User.IsInRole(ConstructionRoles.PaymentCollectionApprover)
-                          )
-                    {
-                        <li class="">
-                            <a href="#" class="dropdown-toggle">
-                                <i class="menu-icon fa fa-caret-right"></i>
-                                Construction
-                                <b class="arrow fa fa-angle-down"></b>
-                            </a>
-                            <b class="arrow"></b>
-                            <ul class="submenu">
-                                <li id="CONS-FINANCE-INTGR-08" class="actionlinlk">@Html.ActionLink("Payment Certificates", "ProjectPaymentCertificate", "ConsFinanceIntgr", new { area = "Construction" }, null)<b class="arrow"></b></li>
-                                <li id="CONS-FINANCE-INTGR-09" class="actionlinlk">@Html.ActionLink("Standard Collection", "Index", "StandardCollection", new { area = "Construction" }, null)<b class="arrow"></b></li>
-                            </ul>
-                        </li>
-                    }
+                   
                     @if (HttpContext.Current.User.IsInRole("Account_Receivable_Admin"))
                     {
 
@@ -544,24 +528,7 @@
                     {
                         <li id="link1282to" class="actionlinlk">@Html.ActionLink("Travel Expense Claim", "Index", "ApTravelExpenseClaim", new { area = "Finance" }, null)<b class="arrow"></b></li>
                     }
-                    @if (User.IsInRole(ConstructionRoles.SubContractPaymentRequestApprover)
-                           || User.IsInRole(ConstructionRoles.SubContractPaymentRequestChecker)
-                         )
-                    {
-                        <li class="">
-                            <a href="#" class="dropdown-toggle">
-                                <i class="menu-icon fa fa-caret-right"></i>
-                                Construction
-                                <b class="arrow fa fa-angle-down"></b>
-                            </a>
-                            <b class="arrow"></b>
-                            <ul class="submenu">
-                                <li id="CONS-FINANCE-INTGR-04" class="actionlinlk">@Html.ActionLink("Sub Contractor Payment Certificates", "SbCotrPaymentCertificates", "ConsFinanceIntgr", new { area = "Construction" }, null)<b class="arrow"></b></li>
-                                <li id="CONS-FINANCE-INTGR-05" class="actionlinlk">@Html.ActionLink("Sub Contractor Payments", "SbContrPayments", "ConsFinanceIntgr", new { area = "Construction" }, null)<b class="arrow"></b></li>
-                            </ul>
-                        </li>
-
-                    }
+                   
                     @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin"))
                     {
                         <li class="">
