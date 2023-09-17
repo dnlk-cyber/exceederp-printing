@@ -21,6 +21,7 @@
         public decimal Pension { get; set; }
         public decimal Provident { get; set; }
         public decimal ProvidentPension { get; set; }
+        public decimal ProvidentPensionComp { get; set; }
         public decimal Loan { get; set; }
         public decimal SavingCredit { get; set; }
         public decimal Advance { get; set; }

@@ -125,6 +125,8 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                         EmployeeInfo.Provident = payrolldata.ProvidentFromEmployee;
                         EmployeeInfo.ProvidentPension = payrolldata.PensionFromEmployee +
                                                         payrolldata.ProvidentFromEmployee;
+                        EmployeeInfo.ProvidentPensionComp = payrolldata.PensionFromCompany +
+                                                        payrolldata.ProvidentFromCompany;
                         EmployeeInfo.Loan = payrolldata.TotalLoan;
                         var deductions =
                             db.PayrollProcessDeductions.Where(
