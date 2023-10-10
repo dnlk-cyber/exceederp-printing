@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -141,7 +144,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     {
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
-                        BranchId = UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                         EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         RequestDate = DateTime.Today,
                         StoreCode = storeRequisition.StoreCode,
@@ -170,6 +173,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     _db.FixedAssetRequisitions.Add(entity);
                     _db.SaveChanges();
                     storeRequisition.FixedAssetRequisitionId = entity.FixedAssetRequisitionId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisition", "Success", User.Identity.Name, $"created FixedAssetRequisition {entity.FixedAssetRequisitionId} Tag {entity.EmployeeId}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -238,6 +244,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     _db.FixedAssetRequisitions.Attach(entity);
                     _db.Entry(entity).State = EntityState.Modified;
                     _db.SaveChanges();
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisition", "Success", User.Identity.Name, $"updated FixedAssetRequisition {entity.FixedAssetRequisitionId} Tag {entity.EmployeeId}", Modules.FixedAsset);
+                    #endregion
                 }
 
             }
@@ -282,6 +291,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitions.Attach(entity);
                 _db.FixedAssetRequisitions.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetRequisition {storeRequisition.FixedAssetRequisitionId} Tag {storeRequisition.EmployeeId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisition }.ToDataSourceResult(request, ModelState));
@@ -296,7 +308,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             if (record != null && !record.IsSecondSendForApproval && !record.IsSecondOnlineApproved && record.FixedAssetRequisitionItem.Count > 0)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
-                record.IsSendForApproval = true;
+                //record.IsSendForApproval = true;
+                record.IsSecondSendForApproval = true; //changed
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
                 _db.FixedAssetRequisitions.Attach(record);

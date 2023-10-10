@@ -228,6 +228,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
+                case "APPLY_ELECTRONIC_SIGNATURE":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
+                case "APPLY_BRANCH_SUBACCOUNT_FOR_STORE_TRANSACTION":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
 
             }
 

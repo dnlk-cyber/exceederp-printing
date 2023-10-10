@@ -2,11 +2,14 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -79,6 +82,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 DisposalType = assetDisposal.DisposalType,
                 Description = assetDisposal.Description,
                 OrgBranchName = assetDisposal.OrgBranchName,
+                IsExternalCustomer = assetDisposal.IsExternalCustomer,
+                ExternalCustomer = assetDisposal.ExternalCustomer,
 
                 Status = assetDisposal.Status,
                 Remark = assetDisposal.Remark,
@@ -117,6 +122,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     DisposalType = assetDisposal.DisposalType,
                     Description = assetDisposal.Description,
                     OrgBranchName = assetDisposal.OrgBranchName,
+                    IsExternalCustomer = assetDisposal.IsExternalCustomer,
+                    ExternalCustomer = assetDisposal.ExternalCustomer,
 
                     Status = assetDisposal.Status,
                     Remark = assetDisposal.Remark,
@@ -132,15 +139,19 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     IsOnlineTransferred = assetDisposal.IsOnlineTransferred,
                     IsOnlineTransferredBy = assetDisposal.IsOnlineTransferredBy,
                     OnlineTransferredTime = assetDisposal.OnlineTransferredTime,
-                    DateCreated = assetDisposal.DateCreated,
+                    DateCreated = DateTime.Now,
                     LastModified = assetDisposal.LastModified,
-                    CreatedBy = assetDisposal.CreatedBy,
+                    CreatedBy = User.Identity.Name,
                     ModifiedBy = assetDisposal.ModifiedBy
                 };
 
                 db.AssetDisposals.Add(entity);
                 db.SaveChanges();
                 assetDisposal.AssetDisposalId = entity.AssetDisposalId;
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Disposal", "Success", User.Identity.Name, $"created asset Disposal {entity.AssetDisposalId} Tag {entity.CustomerId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetDisposal }.ToDataSourceResult(request, ModelState));
@@ -160,6 +171,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     DisposalType = assetDisposal.DisposalType,
                     Description = assetDisposal.Description,
                     OrgBranchName = assetDisposal.OrgBranchName,
+                    IsExternalCustomer = assetDisposal.IsExternalCustomer,
+                    ExternalCustomer = assetDisposal.ExternalCustomer,
 
                     Status = assetDisposal.Status,
                     Remark = assetDisposal.Remark,
@@ -176,14 +189,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     IsOnlineTransferredBy = assetDisposal.IsOnlineTransferredBy,
                     OnlineTransferredTime = assetDisposal.OnlineTransferredTime,
                     DateCreated = assetDisposal.DateCreated,
-                    LastModified = assetDisposal.LastModified,
+                    LastModified = DateTime.Now,
                     CreatedBy = assetDisposal.CreatedBy,
-                    ModifiedBy = assetDisposal.ModifiedBy
+                    ModifiedBy = User.Identity.Name
                 };
 
                 db.AssetDisposals.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Disposal", "Success", User.Identity.Name, $"updated asset Disposal {entity.AssetDisposalId} Tag {entity.CustomerId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetDisposal }.ToDataSourceResult(request, ModelState));
@@ -203,6 +220,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     DisposalType = assetDisposal.DisposalType,
                     Description = assetDisposal.Description,
                     OrgBranchName = assetDisposal.OrgBranchName,
+                    IsExternalCustomer = assetDisposal.IsExternalCustomer,
+                    ExternalCustomer = assetDisposal.ExternalCustomer,
 
                     Status = assetDisposal.Status,
                     Remark = assetDisposal.Remark,
@@ -227,6 +246,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.AssetDisposals.Attach(entity);
                 db.AssetDisposals.Remove(entity);
                 db.SaveChanges();
+
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset Disposal {assetDisposal.AssetDisposalId } and Tag {assetDisposal.CustomerId}");
+                #endregion
             }
 
             return Json(new[] { assetDisposal }.ToDataSourceResult(request, ModelState));

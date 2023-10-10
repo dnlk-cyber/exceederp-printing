@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Procurements.ViewModel;
@@ -16,16 +17,16 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PurchaseSummaryReportByPurchaseMethodViewModel> GetPurchasesByDept(DateTime from,DateTime to, string purchaser)
+        public List<PurchaseSummaryReportByPurchaseMethodViewModel> GetPurchasesByDept(DateTime from,DateTime to, string purchaser, string businessUnitId)
         {
             List<PurchaseSummaryReportByPurchaseMethodViewModel> list = new List<PurchaseSummaryReportByPurchaseMethodViewModel>();
             //var proformaRequisitions = db.ProformaPurchaseRequisitions.ToList();
          
             //var purchaseRequisitions = db.PurchaseRequisitions.ToList();
 
-            var tenders = db.Tenders.ToList();
-            var purchaseOrders = db.PurchaseOrders.Where(x=>x.IsManual==true).ToList();
-            var proformaPurchase = db.ProformaPurchases.ToList();
+            var tenders = db.Tenders.AsQueryable();
+            var purchaseOrders = db.PurchaseOrders.Where(x=>x.IsManual==true).AsQueryable();
+            var proformaPurchase = db.ProformaPurchases.AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(purchaser))
             {
@@ -36,9 +37,17 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                 //purchaseRequisitions = purchaseRequisitions.Where(x => prassignments.Contains(x.PurchaseRequisitionID)).ToList();
 
-                tenders = tenders.Where(x => x.ProcurementOfficer.ToString()==purchaser).ToList();
-                proformaPurchase = proformaPurchase.Where(x => x.ProcurementOfficer.ToString() == purchaser).ToList();
-                purchaseOrders = purchaseOrders.Where(x => x.ProcurementOfficer.ToString() == purchaser).ToList();
+                tenders = tenders.Where(x => x.ProcurementOfficer.ToString()==purchaser).AsQueryable();
+                proformaPurchase = proformaPurchase.Where(x => x.ProcurementOfficer.ToString() == purchaser).AsQueryable();
+                purchaseOrders = purchaseOrders.Where(x => x.ProcurementOfficer.ToString() == purchaser).AsQueryable();
+            }
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                tenders = tenders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+                proformaPurchase = proformaPurchase.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+                purchaseOrders = purchaseOrders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
             }
 
             var purchaseSupport = new PurchaseSummaryReportByPurchaseMethodViewModel();

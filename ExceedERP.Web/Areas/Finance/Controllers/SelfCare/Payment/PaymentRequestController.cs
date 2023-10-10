@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 InvoiceNo = paymentRequest.InvoiceNo,
                 PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                 PONo = paymentRequest.PONo,
-                Type = paymentRequest.Type,
+                
                 GRN = paymentRequest.GRN,
                 Status =paymentRequest.Status,
                 Remark =paymentRequest.Remark,
@@ -111,6 +111,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 IsBudgetApproved = paymentRequest.IsBudgetApproved,
                 BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
                 BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                IsAuthorized = paymentRequest.IsAuthorized,
+                AuthorizedBy = paymentRequest.AuthorizedBy,
+                AuthorizedTime = paymentRequest.AuthorizedTime,
 
                 IsDepartmentOnlineApproved = paymentRequest.IsDepartmentOnlineApproved,
                 DepartmentOnlineApprovedBy = paymentRequest.DepartmentOnlineApprovedBy,
@@ -203,7 +207,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     RequestDate = paymentRequest.RequestDate,
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
-                    Type = paymentRequest.Type,
+                    
                     GRN = paymentRequest.GRN,
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
@@ -314,7 +318,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                    Type = paymentRequest.Type,
+                   
 
                     IsBudgetApproved = paymentRequest.IsBudgetApproved,
                     BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
@@ -435,7 +439,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             }
 
             var lines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
-            if (!lines.Any() && record.Type==Core.Domain.Finance.AP.PaymentRequest.PaymentRequestType.Payment)
+            if (!lines.Any() )
             {
                 errMsg = "Please add payment request line items.";
                 var formattedData = new
@@ -446,17 +450,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            var fundLines = _db.FundTransferLines.Where(x => x.PaymentRequestId == id);
-            if (!fundLines.Any() && record.Type == Core.Domain.Finance.AP.PaymentRequest.PaymentRequestType.Fund_Transfer)
-            {
-                errMsg = "Please add fund transfer request line items.";
-                var formattedData = new
-                {
-                    Message = errMsg,
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
             if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 16);
@@ -473,16 +466,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     isNewRecord = false;
 
                 decimal docamount = 0;
-                if (record.Type == PaymentRequestType.Payment)
-                {
-                    var requestlines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
-                    docamount = requestlines.Any() ? requestlines.Sum(x => x.TotalAmount) : 0;
-                }
-                if (record.Type == PaymentRequestType.Fund_Transfer)
-                {
-                    var fundlines = _db.FundTransferLines.Where(x => x.PaymentRequestId == id);
-                    docamount = fundlines.Any() ? fundlines.Sum(x => x.TotalCost) : 0;
-                }
+                var requestlines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
+                docamount = requestlines.Any() ? requestlines.Sum(x => x.TotalAmount) : 0;
+
                 int docid = record.PaymentRequestId;
                 int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
                 DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApPaymentRequestSelfCare, isNewRecord,step);

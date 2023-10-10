@@ -17,15 +17,22 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ContractListReportViewModel> GetPurchases(DateTime from,DateTime to)
+        public List<ContractListReportViewModel> GetPurchases(DateTime from,DateTime to, string businessUnitId)
         {
             List<ContractListReportViewModel> contractList = new List<ContractListReportViewModel>();
           
                 var contracts = db.ContractManagements.Where(x => x.SigningDate >=from && x.SigningDate <= to).ToList();
 
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                contracts = contracts.Where(x => x.BusinessUnitId == bdid).ToList();
+            }
 
             foreach (var con in contracts)
             {
+                
+
                 var award = db.BidAwardedSuppliers.Find(con.ProcurementRefNo);
                 var tender = db.Tenders.Find(award?.Lot.TenderID);
 

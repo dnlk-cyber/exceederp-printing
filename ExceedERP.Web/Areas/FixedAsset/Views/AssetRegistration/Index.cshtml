@@ -1,6 +1,7 @@
-﻿@using System.Collections
+@using System.Collections
 @using ExceedERP.Core.Domain.FixedAsset.Depreciation
 @using ExceedERP.Core.Domain.FixedAsset.Registrations
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -9,10 +10,11 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["fixedAssetCategories"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(130);
-          columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["fixedAssetSubCategories"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(130);
+          columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["fixedAssetCategories"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["fixedAssetSubCategories"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+          //columns.ForeignKey(p => p.FixedAssetNameID, (IEnumerable)ViewData["fixedAssetSubCategoryNames"], "FixedAssetSubCategoryNameId", "Name").Title("Asset Name").EditorTemplateName("FixedAssetSubCategorySelector").Width(130);
           columns.Bound(c => c.Name).Title("Name").Width(150);
-          columns.ForeignKey(p => p.FixedAssetConditionId, (IEnumerable)ViewData["conditions"], "FixedAssetConditionId", "Name").Title("Condition").Width(80);
+          columns.ForeignKey(p => p.FixedAssetConditionId, (IEnumerable)ViewData["conditions"], "FixedAssetConditionId", "Name").Title("Condition").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.GRN).Width(90);
           columns.Bound(c => c.GRNDate).Width(90);
           columns.Bound(c => c.Tag).Width(90);
@@ -35,10 +37,11 @@
               );
           columns.Bound(c => c.GroupCode).Width(95);
           columns.Bound(c => c.Quanity).Width(95);
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(120);
-          columns.ForeignKey(p => p.EmployeeId, (IEnumerable) ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(190);
-          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160);
+          columns.Bound(p => p.PurchasePrice).Width(90);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable) ViewData["personEmployees"], "Code", "Name").Title("Employee").Filterable(f => f.Multi(true).Search(true)).Width(190);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Remark).Width(70);
           columns.Bound(c => c.Status).Width(80);
           columns.Command(command =>
@@ -63,7 +66,7 @@
                                    </div>
 
                                    <div class="">
-                                       <label><i>Search Asset:</i></label>
+                                       @*<label><i>Search Asset:</i></label>*@
                                        @(Html.Kendo().DropDownList()
                                              .ValuePrimitive(true)
                                              .OptionLabel("Select Category...")
@@ -71,7 +74,7 @@
                                              .DataTextField("Name")
                                              .DataValueField("FixedAssetCategoryID")
                                              .Filter("contains")
-                                             .HtmlAttributes(new { style = "width: 250px;" })
+                                             .HtmlAttributes(new { style = "width: 150px;" })
                                              .DataSource(dataSource =>
                                              {
                                                  dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
@@ -85,7 +88,7 @@
                                              .DataTextField("Name")
                                              .DataValueField("FixedAssetSubCategoryID")
                                              .Filter("contains")
-                                             .HtmlAttributes(new { style = "width: 250px;" })
+                                             .HtmlAttributes(new { style = "width: 150px;" })
                                              .DataSource(dataSource =>
                                              {
                                                  dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
@@ -118,7 +121,10 @@
           .Filterable(true)
           .AllPages(true)
       )
-      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Registration").Window(w => w.Title("Asset Registration")))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+      .TemplateName("Registration")
+      .Window(w => w.Title("Asset Registration")
+      .Events(ev=>ev.Open("onOpenPopUp"))))
 
 
       .Pageable(pageable => pageable
@@ -139,7 +145,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .ClientDetailTemplateId("template")
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -164,6 +170,7 @@
           .Destroy(destroy => destroy.Action("Registrations_Destroy", "AssetRegistration"))
       ))
 
+@* Tabstrip start *@
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
             .Name("tabStrip_#=AssetRegistrationId#")
@@ -171,6 +178,7 @@
             .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
             .Items(items =>
             {
+//Asset Detail
                 items.Add().Text("Asset Detail").Content(@<text>     
                     <table class="table table-borderless"  cellpadding="0">
                         <tbody>
@@ -264,6 +272,7 @@
                 </text>
                 );
 
+//Depreciation
                items.Add().Text("Depreciation").Content(@<text>
 
                     @(Html.Kendo().Grid<DepreciationViewModel>()
@@ -310,7 +319,7 @@
                           .ToClientTemplate())
                 </text>
                 );
-
+//Revaluation
                 items.Add().Text("Revaluation").Content(@<text>
 
                     @(Html.Kendo().Grid<FixedAssetRevaluation>()
@@ -369,6 +378,7 @@
                 </text>
                 );
 
+//Appreciation
             items.Add().Text("Appreciation").Content(@<text>
 
     @(Html.Kendo().Grid<Appreciation>()
@@ -461,6 +471,7 @@
                 </text>
                 );*@
 
+//Sales
                 items.Add().Text("Sales").Content(@<text>
 
                     @(Html.Kendo().Grid<Sales>()
@@ -517,7 +528,7 @@
                           .ToClientTemplate())
                 </text>
                 );
-
+//Movement
                 items.Add().Text("Movement").Content(@<text>
 
                     @(Html.Kendo().Grid<LocationTracking>()
@@ -588,6 +599,9 @@
                .ToClientTemplate()
 )
 </script>
+
+@* End of tabstrips *@
+
 
 <script>
 
@@ -728,7 +742,13 @@
         });
     });
     
+    function filterSubCategoryNames() {
 
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryID").data("kendoDropDownList").value(),
+            text: $("#FixedAssetNameID").data("kendoDropDownList").filterInput.val()
+        };
+    }
 
     function SelectItemCode() {
 
@@ -743,6 +763,11 @@
         $("#Name").val(aCode).trigger("change");
     }
 
+    function onOpenPopUp() {
+        //$("#FixedAssetConditionId").data("kendoDropDownList").value(4);
+
+
+    }
 
 </script>
 

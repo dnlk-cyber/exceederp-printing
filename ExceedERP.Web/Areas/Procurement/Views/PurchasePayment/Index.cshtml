@@ -26,12 +26,14 @@
                                   columns.Bound(c => c.PurposeOfPayment).Width(130);
                                   columns.Bound(c => c.PurchasePaymentType).Width(130);
                                   columns.Bound(p => p.PaymentAmount).Width(130);
-                                  //columns.Bound(p => p.PenalityAmount).Width(130);
-                                  //columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
+                                  columns.Bound(p => p.PenalityAmount).Width(130);
+                                  columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
+                                  columns.Bound(p => p.ServiceCharge).Width(130);
+                                  columns.Bound(p => p.OtherPayment).Width(130);
                                   columns.Bound(p => p.NetPayable).Width(130);
                                   columns.Bound(p => p.AmountDue).Width(130);
                                   columns.Bound(c => c.Paid).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' #= Paid ? checked='checked' :'' # />");
-                                  columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);                                 
+                                  columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
                                   columns.Bound(p => p.Remark).Width(150);
                                   columns.Bound(p => p.Status).Width(150);
                                   columns.Command(command =>
@@ -641,6 +643,32 @@
             var amount = $("#PaymentAmount").val();          
             $("#NetPayable").val(amount).trigger("change");
         }
+
+    }
+    //not used
+    function serviceChargeChange(servicechargeObj) {      
+
+        var serviceChargePercent = servicechargeObj.value;
+        var type = $("#Type").data("kendoDropDownList").value();
+        var paymenttype = $("#PaymentType").data("kendoDropDownList").value();
+        var id = $("#PoOrContractNumber").data("kendoDropDownList").value();
+
+        $.ajax({
+            url: '/Procurement/ProcurementDataProvider/GetPoDataWithServiceCharge',
+            type: 'GET',
+            data: { id: id, type: type, paymenttype: paymenttype, serviceCharge: serviceChargePercent },
+            success: function (result) {
+                $("#PaymentAmount").val(result.PaymentAmount).trigger("change");              
+                $("#NetPayable").val(result.PaymentAmount).trigger("change");
+                $("#SupplierId").val(result.SupplierId).trigger("change");
+                $("#SupplierName").val(result.SupplierName).trigger("change");
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+//end
 
     }
 

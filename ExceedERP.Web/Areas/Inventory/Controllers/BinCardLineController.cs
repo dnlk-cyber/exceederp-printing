@@ -59,7 +59,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 BalanceQTY = binCardLine.BalanceQTY,
                 BalanceUPrice = binCardLine.BalanceUPrice,
                 BalanceTPrice = binCardLine.BalanceTPrice,
-
+                
                 GlFiscalYearId = binCardLine.GlFiscalYearId,
                 GLPeriodId = binCardLine.GLPeriodId,
                 TimeStamp = binCardLine.TimeStamp,
@@ -70,6 +70,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 StoreCode = binCardLine.StoreCode,
                 TransactionType = binCardLine.TransactionType,
                 StatusType = binCardLine.StatusType,
+                TransactionOrder = binCardLine.TransactionOrder,
             });
 
             return Json(result);
@@ -108,7 +109,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     IssuedTPrice = binCardLine.IssuedTPrice,
                     BalanceQTY = binCardLine.BalanceQTY,
                     BalanceUPrice = binCardLine.BalanceUPrice,
-                    BalanceTPrice = binCardLine.BalanceTPrice
+                    BalanceTPrice = binCardLine.BalanceTPrice,
+                    TransactionOrder = binCardLine.TransactionOrder,
                 };
 
                 //db.BinCardLines.Add(entity);
@@ -166,6 +168,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     StoreCode = binCardLine.StoreCode,
                     TransactionType = binCardLine.TransactionType,
                     StatusType = binCardLine.StatusType,
+                    TransactionOrder = binCardLine.TransactionOrder,
                 };
 
                 db.BinCardLines.Attach(entity);
@@ -200,7 +203,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     IssuedTPrice = binCardLine.IssuedTPrice,
                     BalanceQTY = binCardLine.BalanceQTY,
                     BalanceUPrice = binCardLine.BalanceUPrice,
-                    BalanceTPrice = binCardLine.BalanceTPrice
+                    BalanceTPrice = binCardLine.BalanceTPrice,
+                    TransactionOrder = binCardLine.TransactionOrder,
                 };
 
                 //db.BinCardLines.Attach(entity);

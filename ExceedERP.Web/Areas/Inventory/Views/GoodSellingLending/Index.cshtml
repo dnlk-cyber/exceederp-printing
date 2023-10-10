@@ -35,7 +35,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+      
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -44,7 +44,7 @@
           .ButtonCount(5))
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SaleDonateOrLend").Window(w => w.Title("Good Sales or Donate")))
       .Scrollable(h => h.Height(500))
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
           .Ajax()

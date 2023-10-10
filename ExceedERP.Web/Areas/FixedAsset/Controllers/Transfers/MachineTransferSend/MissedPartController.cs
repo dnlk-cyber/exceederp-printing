@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -56,6 +58,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 db.MissedParts.Add(entity);
                 db.SaveChanges();
                 missedPart.MissedPartId = entity.MissedPartId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "MissedPart", "Success", User.Identity.Name, $"created MissedPart  {entity.MissedPartId} MachineryAndVehicleTransferId {entity.MachineryAndVehicleTransferId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { missedPart }.ToDataSourceResult(request, ModelState));
@@ -81,6 +86,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 db.MissedParts.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "MissedPart", "Success", User.Identity.Name, $"update MissedPart  {entity.MissedPartId} MachineryAndVehicleTransferId {entity.MachineryAndVehicleTransferId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { missedPart }.ToDataSourceResult(request, ModelState));
@@ -106,6 +114,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 db.MissedParts.Attach(entity);
                 db.MissedParts.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete MissedPart  {missedPart.MissedPartId} MachineryAndVehicleTransferId {missedPart.MachineryAndVehicleTransferId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { missedPart }.ToDataSourceResult(request, ModelState));

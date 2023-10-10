@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -80,6 +83,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 AssetTransferReceiveId = assetTransferReceive.AssetTransferReceiveId,
                 ReceiveDate = assetTransferReceive.ReceiveDate,
 
+                AssetTransferConfirm = assetTransferReceive.AssetTransferConfirm,//added
+
                 Status = assetTransferReceive.Status,
                 Remark = assetTransferReceive.Remark,
                 IsVoid = assetTransferReceive.IsVoid,
@@ -114,7 +119,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
 
             #endregion
 
-
+         
             if (ModelState.IsValid)
             {
                 var entity = new Core.Domain.FixedAsset.Transfers.AssetTransferReceive
@@ -125,6 +130,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
                     Remark = assetTransferReceive.Remark,
 
+                    AssetTransferConfirm = assetTransferReceive.AssetTransferConfirm,//added
 
                     IsVoid = assetTransferReceive.IsVoid,
                     VoidBy = assetTransferReceive.VoidBy,
@@ -146,6 +152,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 _db.SaveChanges();
                 assetTransferReceive.AssetTransferReceiveId = entity.AssetTransferReceiveId;
                 GeTransferSendItems(entity);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferReceive", "Success", User.Identity.Name, $"created AssetTransferReceive {entity.AssetTransferReceiveId} OrgBranchName {entity.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferReceive }.ToDataSourceResult(request, ModelState));
@@ -172,6 +181,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                     Status = assetTransferReceive.Status,
                     Remark = assetTransferReceive.Remark,
 
+                    AssetTransferConfirm = assetTransferReceive.AssetTransferConfirm,//added
 
                     IsVoid = assetTransferReceive.IsVoid,
                     VoidBy = assetTransferReceive.VoidBy,
@@ -192,6 +202,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 _db.AssetTransferReceives.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferReceive", "Success", User.Identity.Name, $"updated AssetTransferReceive {entity.AssetTransferReceiveId} OrgBranchName {entity.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferReceive }.ToDataSourceResult(request, ModelState));
@@ -229,6 +242,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 _db.AssetTransferReceives.Attach(entity);
                 _db.AssetTransferReceives.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete AssetTransferReceive {assetTransferReceive.AssetTransferReceiveId} OrgBranchName {assetTransferReceive.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferReceive }.ToDataSourceResult(request, ModelState));

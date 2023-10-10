@@ -30,8 +30,8 @@
                   command =>
                   {
                       command.Edit();
-                      command.Destroy();
-                      command.Custom("Change").Click("Enable");
+                      //command.Destroy();
+                      command.Custom("Enable or Disable").Click("Enable");
                   }).Width(280);
           })
           .ToolBar(toolbar =>
@@ -199,7 +199,8 @@
     function filterSubcategories() {
 
         return {
-            catcode: $("#ItemCategoryCode").data("kendoDropDownList").value()
+            catcode: $("#ItemCategoryCode").data("kendoDropDownList").value(),
+            text: $("#SubCategoryCode").data("kendoDropDownList").filterInput.val()
         };
     }
 </script>

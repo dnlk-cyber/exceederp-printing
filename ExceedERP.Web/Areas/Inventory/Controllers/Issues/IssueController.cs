@@ -106,6 +106,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 IssueID = issue.IssueID,
                 OrgStructureId = issue.OrgStructureId,
                 BranchId = issue.BranchId,
+                BusinessUnitId = issue.BusinessUnitId,
                 EmployeeId = issue.EmployeeId,
                 RecipientId = issue.RecipientId,
                 ForBranchId = issue.ForBranchId,
@@ -155,10 +156,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 issue.StoreCode = storeRequisition.StoreCode;
                 issue.OrgStructureId = storeRequisition.OrgStructureId;
                 issue.BranchId = storeRequisition.BranchId;
+                issue.BusinessUnitId = storeRequisition.BusinessUnitId;
                 issue.ForBranchId = storeRequisition.IsForOther ? (int)storeRequisition.ForBranchId : storeRequisition.BranchId;
-                issue.EmployeeId = storeRequisition.EmployeeId;
+                issue.EmployeeId = (int)storeRequisition.EmployeeId;
                 if (issue.RecipientId == 0)
-                    issue.RecipientId = storeRequisition.EmployeeId;
+                    issue.RecipientId = (int)storeRequisition.EmployeeId;
             }
 
             if (!String.IsNullOrEmpty(issue.Reference))
@@ -214,6 +216,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     RecipientId = issue.RecipientId,
                     OrgStructureId = issue.OrgStructureId,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(issue.StoreCode),
+                    BusinessUnitId=issue.BusinessUnitId,
                     ForBranchId = issue.ForBranchId,
                     StoreCode = issue.StoreCode,
                     StoreRequisitionID = issue.StoreRequisitionID,
@@ -267,10 +270,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 issue.StoreCode = storeRequisition.StoreCode;
                 issue.OrgStructureId = storeRequisition.OrgStructureId;
                 issue.BranchId = storeRequisition.BranchId;
+                issue.BusinessUnitId = storeRequisition.BusinessUnitId;
                 issue.ForBranchId = storeRequisition.IsForOther ? (int)storeRequisition.ForBranchId : storeRequisition.BranchId;
-                issue.EmployeeId = storeRequisition.EmployeeId;
+                issue.EmployeeId = (int)storeRequisition.EmployeeId;
                 if (issue.RecipientId == 0)
-                    issue.RecipientId = storeRequisition.EmployeeId;
+                    issue.RecipientId = (int)storeRequisition.EmployeeId;
             }
 
             if (!String.IsNullOrEmpty(issue.Reference))
@@ -327,6 +331,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     RecipientId = issue.RecipientId,
                     OrgStructureId = issue.OrgStructureId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     ForBranchId = issue.ForBranchId,
                     StoreCode = issue.StoreCode,
                     StoreRequisitionID = issue.StoreRequisitionID,
@@ -378,6 +383,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     ForBranchId = issue.ForBranchId,
                     IssueID = issue.IssueID,
                     StoreCode = issue.StoreCode,
@@ -505,7 +511,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         public JsonResult SendForApproval(int id)
         {
             var record = _db.Issues.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.IssueItems.Count > 0)
+            var items = _db.IssueItems.Where(x => x.IssueID == id).ToList();
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -536,7 +543,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            else if (record.IssueItems.Count == 0)
+            else if (!items.Any())
             {
                 var formattedData = new
                 {
@@ -619,6 +626,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                             GLPeriodId = record.GLPeriodId,
                             TransactionType = BinCardTransactionTypes.Issue,
                             StatusType = BinCardTransactionStatus.Void,
+                            TransactionOrder = BinCardTransactionOrder.VoidIssue
                         };
                         _db.BinCardLines.Add(binCardLine);
                        // _db.SaveChanges();

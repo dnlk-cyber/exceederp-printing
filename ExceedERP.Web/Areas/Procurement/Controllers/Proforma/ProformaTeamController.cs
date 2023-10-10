@@ -31,6 +31,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             IQueryable<ProformaTeam> proformaTeam = _db.ProformaTeams.Where(p => p.ProformaPurchaseID == id);
             DataSourceResult result = proformaTeam.ToDataSourceResult(request, winningSupplier => new {
                 ProformaTeamId = winningSupplier.ProformaTeamId,
+                ProformaPurchaseID = winningSupplier.ProformaPurchaseID,
                 Description = winningSupplier.Description,
                 OrgBranchName = winningSupplier.OrgBranchName,
                 DateCreated = winningSupplier.DateCreated,

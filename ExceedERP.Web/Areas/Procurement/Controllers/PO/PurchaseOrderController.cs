@@ -203,8 +203,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             if (purchaseOrder.OrderDate > purchaseOrder.DeliveryDate)
                 ModelState.AddModelError("orderdate", "Order Date shoul be before delivery date.");
 
-            if (purchaseOrder.ProformaPurchaseID == 0 || purchaseOrder.ProformaPurchaseID == null)
-                ModelState.AddModelError("choose", "Please select proforma number.");
+            if (purchaseOrder.ProformaPurchaseID == 0
+               && purchaseOrder.ProformaPurchaseID == null
+               && purchaseOrder.BidAwardedSupplierID == 0
+               && purchaseOrder.BidAwardedSupplierID == null)
+                ModelState.AddModelError("choose", "Please select Proforma or Tender Award number.");
 
             if (!purchaseOrder.IsNewSupplier)
             {
@@ -302,8 +305,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             if (purchaseOrder.OrderDate > purchaseOrder.DeliveryDate)
                 ModelState.AddModelError("orderdate", "Order Date shoul be before delivery date.");
 
-            if (purchaseOrder.ProformaPurchaseID == 0 || purchaseOrder.ProformaPurchaseID == null)
-                ModelState.AddModelError("choose", "Please select proforma number.");
+            if (purchaseOrder.ProformaPurchaseID == 0 
+                && purchaseOrder.ProformaPurchaseID == null 
+                && purchaseOrder.BidAwardedSupplierID == 0 
+                && purchaseOrder.BidAwardedSupplierID == null)
+                ModelState.AddModelError("choose", "Please select Proforma or Tender Award number.");
 
             if (!purchaseOrder.IsNewSupplier)
             {
@@ -344,9 +350,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         ProcurementMethod = purchaseOrder.ProcurementMethod,
                         PurchaseRequisitionID = purchaseOrder.PurchaseRequisitionID,
                         ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
-                    TenderID = purchaseOrder.TenderID,
-                    BidAwardedSupplierID = purchaseOrder.BidAwardedSupplierID,
-                    PurchasePaymentType = purchaseOrder.PurchasePaymentType,
+                        TenderID = purchaseOrder.TenderID,
+                        BidAwardedSupplierID = purchaseOrder.BidAwardedSupplierID,
+                        PurchasePaymentType = purchaseOrder.PurchasePaymentType,
                         OrderDate = purchaseOrder.OrderDate,
                         DeliveryDate = purchaseOrder.DeliveryDate,
                         DeliveryPlace = purchaseOrder.DeliveryPlace,
@@ -366,7 +372,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         CurrentApprovalStep = purchaseOrder.CurrentApprovalStep,
 
 
-                    IsOnlineApproved = purchaseOrder.IsOnlineApproved,
+                        IsOnlineApproved = purchaseOrder.IsOnlineApproved,
                         OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
                         OnlineApprovedTime = purchaseOrder.OnlineApprovedTime,
                         IsVoid = purchaseOrder.IsVoid,
@@ -466,6 +472,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         return Json(formattedData3, JsonRequestBehavior.AllowGet);
                     }
                 }
+                #endregion
+                #region validate payment schedule
+                var paymentSchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id);
+                if (!paymentSchedule.Any())
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "Please add payment schedule first.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+                   
                 #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;

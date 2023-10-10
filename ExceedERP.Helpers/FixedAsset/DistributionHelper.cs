@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using ExceedERP.Core.Domain.Finance.AR;
-using ExceedERP.Core.Domain.Finance.GL;
+//using ExceedERP.Core.Domain.Finance.AR;
+//using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Helpers.HR;
-using ExceedERP.Helpers.Inventory;
+//using ExceedERP.Helpers.HR;
+//using ExceedERP.Helpers.Inventory;
 
 namespace ExceedERP.Helpers.FixedAsset
 {

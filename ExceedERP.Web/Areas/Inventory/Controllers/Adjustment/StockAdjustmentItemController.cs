@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -23,13 +24,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return View();
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult StockAdjustmentItemss_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<StockAdjustmentItems> stockadjustmentItemss = db.StockAdjustmentItemss.Where(adj => adj.StockAdjustmentID == id);
             DataSourceResult result = stockadjustmentItemss.ToDataSourceResult(request, stockAdjustmentItems => new {
                 StockAdjustmentItemsID = stockAdjustmentItems.StockAdjustmentItemsID,
                 StockAdjustmentID = stockAdjustmentItems.StockAdjustmentID,
+                ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
                 ItemCode = stockAdjustmentItems.ItemCode,
                 BinCardBalance = stockAdjustmentItems.BinCardBalance,
                 StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
@@ -48,7 +50,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             {
             var stockAdjustment = db.StockAdjustments.Find(id);
 
-            var exist = db.StockAdjustmentItemss.Where(x => x.StockAdjustmentID == stockAdjustmentItems.StockAdjustmentID)
+            var exist = db.StockAdjustmentItemss
+              .Where(x => x.StockAdjustmentID == stockAdjustmentItems.StockAdjustmentID)
              .Where(x => x.ItemCode == stockAdjustmentItems.ItemCode)
              .AsQueryable();
             if (exist.Any())
@@ -65,6 +68,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                     var entity = new StockAdjustmentItems
                     {
                         StockAdjustmentID = id,
+                        ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
                         ItemCode = stockAdjustmentItems.ItemCode,
                         BinCardBalance = item.Balance,
                         StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
@@ -111,6 +115,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                     {
                         StockAdjustmentItemsID = stockAdjustmentItems.StockAdjustmentItemsID,
                         StockAdjustmentID = stockAdjustmentItems.StockAdjustmentID,
+                        ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
                         ItemCode = stockAdjustmentItems.ItemCode,
                         BinCardBalance = item.Balance,
                         StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,
@@ -143,6 +148,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                 var entity = new StockAdjustmentItems
                 {
                     StockAdjustmentItemsID = stockAdjustmentItems.StockAdjustmentItemsID,
+                    ItemCategoryCode = stockAdjustmentItems.ItemCategoryCode,
                     ItemCode = stockAdjustmentItems.ItemCode,
                     BinCardBalance = stockAdjustmentItems.BinCardBalance,
                     StockAdjustmentType = stockAdjustmentItems.StockAdjustmentType,

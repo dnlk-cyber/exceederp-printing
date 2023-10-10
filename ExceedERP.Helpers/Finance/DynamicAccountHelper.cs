@@ -687,7 +687,7 @@ namespace ExceedERP.Helpers.Finance
         //done
         public  string ReplaceSegment(string accountAcode,int index,string value)
         {
-            if (index >= 0)
+            if (index >= 0 && !string.IsNullOrEmpty(value))
             {
                 string newAccComb = "";
                 string[] account = accountAcode.Split('-');

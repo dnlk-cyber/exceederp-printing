@@ -1,6 +1,12 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 
 namespace ExceedERP.Helpers.Inventory
 {
@@ -11,7 +17,7 @@ namespace ExceedERP.Helpers.Inventory
         public static void CloseStoreRequisition()
         {
             ExceedDbContext db = new ExceedDbContext();
-            var storeRequisitions = db.StoreRequisitions.Where(x => x.IsFullfilled == false).ToList();
+            var storeRequisitions = db.StoreRequisitions.Where(x => x.IsFullfilled == false).AsNoTracking().ToList();
             foreach (var req in storeRequisitions)
             {
                 db = new ExceedDbContext();
@@ -81,7 +87,7 @@ namespace ExceedERP.Helpers.Inventory
             var itemTransfers = db.ItemTransfers.Where(x => x.IsFullfilled == false).ToList();
             foreach (var transfer in itemTransfers)
             {
-                db = new ExceedDbContext();
+                //db = new ExceedDbContext();
                 bool isfullfilled = IsTsFullFilled(transfer.StoreRequisitionID);
                 if (isfullfilled)
                 {

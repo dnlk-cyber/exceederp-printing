@@ -14,29 +14,39 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
       Burning
     }
 
-   public class Disposal : Operations
-   {
-       public int DisposalId { get; set; }
-       [Required]
-       public int AssetRegistrationId { get; set; }
-       [Display(Name = "Fixed Asset")]
-       public virtual AssetRegistration AssetRegistration { get; set; }
-       [Required]
-       public string Description { get; set; }
-   }
+   //public class Disposal : Operations
+   //{
+   //    public int DisposalId { get; set; }
+   //    [Required]
+   //    public int AssetRegistrationId { get; set; }
+   //    [Display(Name = "Fixed Asset")]
+   //    public virtual AssetRegistration AssetRegistration { get; set; }
+   //    [Required]
+   //    public string Description { get; set; }
+   //}
 
    public class AssetDisposal : Operations
     {
         public int AssetDisposalId { get; set; }
-        [Required]
+
+        //[Required]
         [Display(Name = "Customer")]
         public string CustomerId { get; set; }
+
         [Display(Name = "Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
+
         [Display(Name = "Disposal Type")]
         public DisposalType DisposalType { get; set; }
+
+        [Display(Name = "Is External Customer?")]
+        public bool IsExternalCustomer { get; set; }
+
+        [Display(Name ="External Customer")]
+        public string ExternalCustomer { get; set; }
+
         [Required]
         public string Description { get; set; }
         public virtual ICollection<DisposalItem> DisposalItems { get; set; }
@@ -48,25 +58,32 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         public int DisposalItemId { get; set; }
         public int AssetDisposalId { get; set; }
         public virtual AssetDisposal AssetDisposal { get; set; }
-        [Required]
-        [DisplayName("Category")]
+       
+        [Required, DisplayName("Category")]
         public int FixedAssetCategoryID { get; set; }
+
         public virtual FixedAssetCategory FixedAssetCategory { get; set; }
-        [Required]
-        [DisplayName("Sub Category")]
+        
+        [Required, DisplayName("Sub Category")]
         public int FixedAssetSubCategoryID { get; set; }
+
         public virtual FixedAssetSubCategory FixedAssetSubCategory { get; set; }
-        [Required]
-        [DisplayName("Asset")]
+        
+        [Required, DisplayName("Asset")]
         public int AssetRegistrationId { get; set; }
+
         [Display(Name = "Book Value")]
         public decimal BookValue { get; set; }
+
         [Display(Name = "Sales Price")]
         public decimal SalesPrice { get; set; }
+
         [DisplayName("Tax Type")]
         public int GlTaxRateId { get; set; }
+
         [Display(Name = "Tax Amount")]
         public decimal TaxAmount { get; set; }
+
         [Display(Name = "Total")]
         public decimal Total { get; set; }
     }

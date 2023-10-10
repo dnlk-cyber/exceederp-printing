@@ -1,16 +1,16 @@
 ﻿@using System.Collections
 @(Html.Kendo().DropDownListFor(m => m)
-                  .ValuePrimitive(true)
-                  .OptionLabel("Select Asset...")
-                      .DataTextField("Name")
-                                  .DataValueField("AssetRegistrationId")
-                              .Filter("contains")
-                               .DataSource(dataSource =>
-                              {
-                                  dataSource.Read(read => read.Action("GetFixedAssetForTransfer", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterAssetsForTransfer"))
-                                            .ServerFiltering(true);
-                              })
-                                          .CascadeFrom("FixedAssetSubCategoryId")
+    .ValuePrimitive(true)
+    .OptionLabel("Select Asset...")
+    .DataTextField("Name")
+    .DataValueField("AssetRegistrationId")
+    .Filter("contains")
+    .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetFixedAssetForTransferNew", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterAssetsForTransfer"))
+          .ServerFiltering(true);
+      })
+    .CascadeFrom("FixedAssetSubCategoryId")
                                    
 )
 @Html.ValidationMessageFor(m => m)

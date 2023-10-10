@@ -26,7 +26,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
         }
         private void PopulateStoreAndEmployee()
         {
-            var store = db.InventoryStores.AsQueryable();
+            var store = db.InventoryStores.Select(i => new {
+                Name = i.StoreCode+"-"+i.Name,
+                StoreCode = i.StoreCode
+            }).AsQueryable();
             ViewData["storesInCompany"] = store;
 
             var employee = db.Person_Employee;
@@ -37,7 +40,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
 
             var users = appdb.Users.AsQueryable();
             var selectedUser = users.Select(i => new {
-                Name = i.UserName,
+                Name = i.UserName + "_" + i.FirstName + " " + i.MiddleName + " " + i.LastName,
                 Code = i.Id
             })
                 .AsQueryable();

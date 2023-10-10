@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -160,6 +162,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                         db.FixedAssetReceiveItems.Add(entity);
                         db.SaveChanges();
                         fixedAssetReceiveItem.FixedAssetReceiveItemID = entity.FixedAssetReceiveItemID;
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"created FixedAssetReceiveItem  {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
+                        #endregion
+
                         #endregion
                     }
                     else
@@ -220,6 +226,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                             db.FixedAssetReceiveItems.Add(entity);
                             db.SaveChanges();
                             fixedAssetReceiveItem.FixedAssetReceiveItemID = entity.FixedAssetReceiveItemID;
+                            #region operation log
+                            UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"created FixedAssetReceiveItem  {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
+                            #endregion
                         }
                         #endregion
 
@@ -311,7 +320,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 var record = db.FixedAssetReceives.Find(id);
                 if (record != null)
                     _distributionHelper.UpdateGoodReceiveDistribution(record);
-
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"update FixedAssetReceiveItem  {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveItem }.ToDataSourceResult(request, ModelState));
@@ -375,6 +386,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 var record = db.FixedAssetReceives.Find(fixedAssetReceiveItem.FixedAssetReceiveId);
                 if (record != null)
                     _distributionHelper.UpdateGoodReceiveDistribution(record);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetReceiveItem  {fixedAssetReceiveItem.FixedAssetReceiveItemID} Tag {fixedAssetReceiveItem.TagNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveItem }.ToDataSourceResult(request, ModelState));

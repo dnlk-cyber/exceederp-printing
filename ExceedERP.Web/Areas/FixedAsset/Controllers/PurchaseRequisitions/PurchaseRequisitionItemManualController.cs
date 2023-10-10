@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
@@ -48,6 +49,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 Name = purchaseRequisitionItem.Name,
                 UoM = purchaseRequisitionItem.UoM,
                 ItemType = purchaseRequisitionItem.ItemType,
+                BudgetCode = purchaseRequisitionItem.BudgetCode,
             });
 
             return Json(result);
@@ -58,6 +60,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem, int id)
         {
+            //added validation for quantity fields
+            if(purchaseRequisitionItem.RequestedQuantity == 0) ModelState.AddModelError(string.Empty, "Request quantity can not be zero, please provide a positive integer number other than zero!");
+            if(purchaseRequisitionItem.RequestedQuantity < 0) ModelState.AddModelError(string.Empty, "You can't request negative number, please provide a positive integer number!");
+
             purchaseRequisitionItem.Quantity = purchaseRequisitionItem.RequestedQuantity;
             #region data 
 
@@ -97,6 +103,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = PurchaseItemType.FixedAsset,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name
                 };
@@ -104,6 +111,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 db.PurchaseRequisitionItems.Add(entity);
                 db.SaveChanges();
                 purchaseRequisitionItem.PurchaseRequisitionItemID = entity.PurchaseRequisitionItemID;
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionItem", "Success", User.Identity.Name, $"created PurchaseRequisitionItem  {entity.PurchaseRequisitionItemID} Tag {entity.ItmCode}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -156,6 +168,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
                 };
@@ -163,6 +176,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 db.PurchaseRequisitionItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionItem", "Success", User.Identity.Name, $"updated PurchaseRequisitionItem  {entity.PurchaseRequisitionItemID} Tag {entity.ItmCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -189,6 +205,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     ItemSpecification = purchaseRequisitionItem.ItemSpecification,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                 };
 
                 db.PurchaseRequisitionItems.Attach(entity);
@@ -196,6 +213,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 db.SaveChanges();
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted purchase requisition item " + purchaseRequisitionItem.PurchaseRequisitionID + " " + purchaseRequisitionItem.ItemName);
+                #endregion
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete PurchaseRequisitionItem  {purchaseRequisitionItem.PurchaseRequisitionItemID} Tag {purchaseRequisitionItem.ItmCode}", Modules.FixedAsset);
                 #endregion
             }
 

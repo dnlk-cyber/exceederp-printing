@@ -57,9 +57,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             ApDirectPayment record = _db.ApDirectPayments.Find(id);
 
             if (record != null && record.IsOnlineApproved)
-            {
-               ModelState.AddModelError("approved","You cannot manipulate this record,it is already approved");
-            }
+                ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
+
+            var lines = _db.ApDirectPaymentLines.Where(x => x.ApDirectPaymentId == id);
+            if (!lines.Any())
+                ModelState.AddModelError("line", "Please add lines first");
             #endregion
             if (ModelState.IsValid)
             {

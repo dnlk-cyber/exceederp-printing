@@ -97,6 +97,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 StoreRequisitionID = issueFuel.StoreRequisitionID,
                 OrgStructureId = issueFuel.OrgStructureId,
                 BranchId = issueFuel.BranchId,
+                BusinessUnitId = issueFuel.BusinessUnitId,
                 EmployeeId = issueFuel.EmployeeId,
                 RecipientId = issueFuel.RecipientId,
                 ForBranchId = issueFuel.ForBranchId,
@@ -164,11 +165,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 issueFuel.StoreCode = storeRequisition.StoreCode;
                 issueFuel.OrgStructureId = storeRequisition.OrgStructureId;
                 issueFuel.BranchId = storeRequisition.BranchId;
+                issueFuel.BusinessUnitId = storeRequisition.BusinessUnitId;
                 issueFuel.ForBranchId = storeRequisition.IsForOther ? (int)storeRequisition.ForBranchId : storeRequisition.BranchId;
                 issueFuel.PlateNo = storeRequisition.PlateNo;
-                issueFuel.EmployeeId = storeRequisition.EmployeeId;
+                issueFuel.EmployeeId = (int)storeRequisition.EmployeeId;
                 if (issueFuel.RecipientId == 0)
-                    issueFuel.RecipientId = storeRequisition.EmployeeId;
+                    issueFuel.RecipientId = (int)storeRequisition.EmployeeId;
             }
 
             if (!String.IsNullOrEmpty(issueFuel.Reference))
@@ -227,6 +229,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     OrgStructureId = issueFuel.OrgStructureId,
                     EmployeeId = issueFuel.EmployeeId,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(issueFuel.StoreCode),
+                    BusinessUnitId = issueFuel.BusinessUnitId,
                     ForBranchId = issueFuel.ForBranchId,
                     HasReading = issueFuel.HasReading,
                     ReadingKM = issueFuel.ReadingKM,
@@ -289,11 +292,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 issueFuel.StoreCode = storeRequisition.StoreCode;
                 issueFuel.OrgStructureId = storeRequisition.OrgStructureId;
                 issueFuel.BranchId = storeRequisition.BranchId;
+                issueFuel.BusinessUnitId = storeRequisition.BusinessUnitId;
                 issueFuel.ForBranchId = storeRequisition.IsForOther ? (int)storeRequisition.ForBranchId : storeRequisition.BranchId;
                 issueFuel.PlateNo = storeRequisition.PlateNo;
-                issueFuel.EmployeeId = storeRequisition.EmployeeId;
+                issueFuel.EmployeeId = (int)storeRequisition.EmployeeId;
                 if (issueFuel.RecipientId == 0)
-                    issueFuel.RecipientId = storeRequisition.EmployeeId;
+                    issueFuel.RecipientId = (int)storeRequisition.EmployeeId;
             }
 
             if (!String.IsNullOrEmpty(issueFuel.Reference))
@@ -349,6 +353,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     EmployeeId = issueFuel.EmployeeId,
                     RecipientId = issueFuel.RecipientId,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(issueFuel.StoreCode),
+                    BusinessUnitId = issueFuel.BusinessUnitId,
                     ForBranchId = issueFuel.ForBranchId,
                     HasReading = issueFuel.HasReading,
                     ReadingKM = issueFuel.ReadingKM,
@@ -403,6 +408,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     StoreRequisitionID = issueFuel.StoreRequisitionID,
                     OrgStructureId = issueFuel.OrgStructureId,
                     BranchId = issueFuel.BranchId,
+                    BusinessUnitId = issueFuel.BusinessUnitId,
                     EmployeeId = issueFuel.EmployeeId,
                     RecipientId = issueFuel.RecipientId,
                     ForBranchId = issueFuel.ForBranchId,
@@ -593,7 +599,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         public JsonResult SendForApproval(int id)
         {
             var record = _db.Issues.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.IssueItems.Count > 0)
+            var items = _db.IssueItems.Where(x => x.IssueID == id).ToList();
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -623,7 +630,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            else if (record.IssueItems.Count == 0)
+            else if (!items.Any())
             {
                 var formattedData = new
                 {
@@ -721,6 +728,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                     GLPeriodId = record.GLPeriodId,
                                     TransactionType = BinCardTransactionTypes.Issue,
                                     StatusType = BinCardTransactionStatus.Void,
+                                    TransactionOrder = BinCardTransactionOrder.VoidIssue
                                 };
                                 _db.BinCardLines.Add(binCardLine);
                                 //_db.SaveChanges();

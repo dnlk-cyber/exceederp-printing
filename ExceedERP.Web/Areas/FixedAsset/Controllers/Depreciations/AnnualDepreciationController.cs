@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.FixedAsset;
@@ -148,6 +149,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 
             if (!String.IsNullOrEmpty(fiscalyearid) && !String.IsNullOrEmpty(branchid))
             {
+                decimal minimumAssetValue = FixedAssetConfigurationHelper.GetAssetMinimumLevel();
                 int yearidd = int.Parse(fiscalyearid);
                 int branchidd = int.Parse(branchid);
 
@@ -165,12 +167,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                     DateTime dateFrom = glyear.DateFrom.Date;
                     var rules = _db.DepretiationRules.ToList(); //for sistribution
                     var groups = _db.FixedAssetGroups.AsNoTracking().ToList();
+                   
 
                     if (fixedgroupid != 0)
                         groups = groups.Where(x => x.FixedAssetGroupID == fixedgroupid).ToList();
 
                     var activeAssets = _db.AssetRegistrations
-                        .Where(x => x.Status == RegistrationStatus.Active || x.Status == RegistrationStatus.Revalued)
+                        .Where(x => x.Status == RegistrationStatus.Active || x.Status == RegistrationStatus.Revalued)        
+                        .Where(x=>x.PurchasePrice>=minimumAssetValue)
                         .AsQueryable();
 
                     if (fixedgroupid != 0)
@@ -199,8 +203,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                         _db.SaveChanges();
                     }
                     List<AnnualDepreciationItem> depreList = new List<AnnualDepreciationItem>();
-
-                    foreach (var asset in activeAssets)
+                    var activeList = activeAssets.ToList();
+                    foreach (var asset in activeList)
                     {
                         #region skip if deprecation is done for this item and year
 

@@ -23,5 +23,6 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel
         public string Datecreated { get; set; }
         public string ODOMeter { get; set; }
         public string PlateNo { get; set; }
+        public string ExternalDriver { get; set; }
     }
 }

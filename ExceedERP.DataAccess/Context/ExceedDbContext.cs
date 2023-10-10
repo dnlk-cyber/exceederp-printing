@@ -229,7 +229,7 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Entity<BinCardLine>().Property(e => e.BalanceTPrice).HasPrecision(18, 4);
 
-            modelBuilder.Entity<BinCardLine>().Property(e => e.BalanceQTY).HasPrecision(18, 4);          
+            modelBuilder.Entity<BinCardLine>().Property(e => e.BalanceQTY).HasPrecision(18, 4);
 
 
 
@@ -255,6 +255,11 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
             #region finance
+            //modelBuilder.Entity<GLLedgerPosting>().HasIndex(g => g.AccountCode).IsUnique();
+            //modelBuilder.Entity<GLLedgerPosting>().Property(e => e.AccountCode).HasMaxLength(50);
+            //modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.JournalNumber).HasMaxLength(50);
+            //modelBuilder.Entity<GLLedgerPostingLines>().HasIndex(u => new { u.GLLedgerPostingID, u.JournalNumber }).IsUnique(true);
+
             modelBuilder.Entity<GLTaxRate>().Property(e => e.CalculatedRate).HasPrecision(18, 4);
             modelBuilder.Entity<GLTaxRate>().Property(e => e.Rate).HasPrecision(18, 4);
 
@@ -2879,7 +2884,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MissedPartReceive> MissedPartReceives { get; set; }
         public DbSet<AccessoryReceive> AccessoryReceives { get; set; }
         public DbSet<MachineryAndVehicleTransferReceiveValidation> MachineryAndVehicleTransferReceiveValidations { get; set; }
-        #endregion 
+        #endregion
         public DbSet<TagCodeSetting> TagCodeSettings { get; set; }
         public DbSet<FixedAssetPeriod> FixedAssetPeriods { get; set; }
         public DbSet<FixedAssetRequisition> FixedAssetRequisitions { get; set; }
@@ -2904,10 +2909,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FixedAssetReturn> FixedAssetReturns { get; set; }
         public DbSet<FixedAssetReturnItem> FixedAssetReturnItems { get; set; }
         public DbSet<FixedAssetReturnValidation> FixedAssetReturnValidations { get; set; }
-       // public DbSet<FixedAssetReturnDistribution> FixedAssetReturnDistributions { get; set; }
+        // public DbSet<FixedAssetReturnDistribution> FixedAssetReturnDistributions { get; set; }
 
-       // public DbSet<DepreciationPeriod> DepreciationPeriods { get; set; }
-       // public DbSet<DeprciationReverse> DeprciationReverses { get; set; }
+        // public DbSet<DepreciationPeriod> DepreciationPeriods { get; set; }
+        // public DbSet<DeprciationReverse> DeprciationReverses { get; set; }
         public DbSet<FixedAssetSubCategory> FixedAssetSubCategories { get; set; }
         public DbSet<FixedAssetSubCategoryName> FixedAssetSubCategoryNames { get; set; }
         public DbSet<FixedAssetCategory> FixedAssetCategories { get; set; }
@@ -2923,7 +2928,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<UserCardItems> UserCardItems { get; set; }
 
-        
+
         public DbSet<DepreciationForCost> DepreciationForCosts { get; set; }
         public DbSet<DepreciationForCostDistribution> DepreciationForCostDistributions { get; set; }
         public DbSet<AssetRegistration> AssetRegistrations { get; set; }
@@ -2932,7 +2937,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<FixedAssetRevaluation> FixedAssetRevaluations { get; set; }
 
-        public DbSet<Disposal> Disposals { get; set; }
+        // public DbSet<Disposal> Disposals { get; set; }
 
         public DbSet<AssetDisposal> AssetDisposals { get; set; }
         public DbSet<DisposalItem> DisposalItems { get; set; }
@@ -2946,7 +2951,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region  Inventory
-       
+
         public DbSet<BranchItemAssignment> BranchItemAssignments { get; set; }
         public DbSet<FuelItemSetting> FuelItemSettings { get; set; }
         public DbSet<AveragePriceSetting> AveragePriceSettings { get; set; }
@@ -2997,7 +3002,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PurchaseRequisitionReassignmentItem> PurchaseRequisitionReassignmentItems { get; set; }
         public DbSet<PurchaseRequisitionUserDepartmentValidation> PurchaseRequisitionUserDepartmentValidations { get; set; }
         public DbSet<PurchaseRequisitionPurchaseDepartmentValidation> PurchaseRequisitionPurchaseDepartmentValidations { get; set; }
-       // public DbSet<PurchaseRequisitionDistribution> PurchaseRequisitionDistributions { get; set; }
+        // public DbSet<PurchaseRequisitionDistribution> PurchaseRequisitionDistributions { get; set; }
         public DbSet<PurchaseRequisitionAttachment> PurchaseRequisitionAttachments { get; set; }
         public DbSet<PurchaseReturn> PurchaseReturns { get; set; }
         public DbSet<PurchaseReturnItems> PurchaseReturnItemss { get; set; }
@@ -3012,11 +3017,12 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ProjectStores> ProjectStores { get; set; }
         public DbSet<StoreKeeperAssignment> StoreKeeperAssignments { get; set; }
         public DbSet<StoreItemAssignment> StoreItemAssignments { get; set; }
-        public DbSet<BinCardLine> BinCardLines { get; set; }       
+        public DbSet<BinCardLine> BinCardLines { get; set; }
         public DbSet<StoreRequisition> StoreRequisitions { get; set; }
         public DbSet<StoreRequisitionItem> StoreRequisitionItems { get; set; }
         public DbSet<StoreRequisitionValidation> StoreRequisitionValidations { get; set; }
         public DbSet<StoreRequisitionPropertyValidation> StoreRequisitionPropertyValidations { get; set; }
+        public DbSet<StoreRequisitionAttachment> StoreRequisitionAttachments { get; set; }
         public DbSet<StoreReturn> StoreReturns { get; set; }
         public DbSet<StoreReturnItems> StoreReturnItemss { get; set; }
         public DbSet<StoreReturnValidation> StoreReturnValidations { get; set; }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
@@ -129,9 +130,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayablePayment)]
         public ActionResult APPayments_Read([DataSourceRequest]DataSourceRequest request, bool isNotTransffered)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<ApPayment> appayments = _db.APPayments.Where(x=>x.IsPrepayment)
-                .Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<ApPayment> appayments = _db.APPayments.Where(x => x.IsPrepayment)
+                .Where(x => mybraches.Contains(x.CreatedAtBranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                appayments = appayments.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+            }
 
             if (isNotTransffered)
             {
@@ -238,110 +246,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             //apPayment.RemainingBalance = apPayment.InvoiceAmount - apPayment.PaymentAmount;
             #endregion
             #region data
-            if(apPayment.CollectedByPurchaser)
+            if (!String.IsNullOrEmpty(apPayment.PurchaseReference))
             {
-                if (!String.IsNullOrEmpty(apPayment.PurchaseReference))
-                {
-                    int did = int.Parse(apPayment.PurchaseReference);
-                    var payreq= _db.PurchasePayments.Find(did);
-                    apPayment.EmployeeId = payreq.ProcurementOfficer;
-                }
-            }
-
-
-
-            //if (!String.IsNullOrWhiteSpace(apPayment.PoType)&& !String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
-            //{
-            //    if (apPayment.PoType == "Purchase Order")
-            //    {
-            //        apPayment.PoTypeEnum = PurchaseType.PurchaseOrder;
-            //        var po = _db.PurchaseOrders.Find(int.Parse(apPayment.PurchaseReference));
-            //        if (po != null)
-            //        {
-            //            apPayment.SupplierId = po.SupplierId;
-            //            apPayment.SupplierName = po.SupplierName;
-            //            apPayment.EmployeeId = po.ProcurementOfficer;
-
-            //            #region over payment validation
-            //            var advanceTaken = _db.APPayments
-            //                .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
-            //                .Where(x => x.PoType == "Purchase Order")
-            //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-            //                .Select(x => new { x.PrepaymentAmount })
-            //                .AsQueryable();
-            //            if (advanceTaken.Any())
-            //            {
-            //                decimal totalAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)                              
-            //                    .Sum(x => x.Total);
-            //                decimal advanceAllowedPerent = _db.PoPaymentSchedules
-            //                    .Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-            //                    .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
-
-            //                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount)+ apPayment.PrepaymentAmount;
-            //                decimal advancePossibleAmount = (totalAmount* advanceAllowedPerent)/100;
-            //                if (advanceTakenAmount >= advancePossibleAmount)
-            //                    ModelState.AddModelError("over","Overpaying the supplier is not possible");
-            //            }
-            //            #endregion
-            //        }
-            //    }
-
-            //    if (apPayment.PoType == "Tender Award")
-            //    {
-            //        apPayment.PoTypeEnum = PurchaseType.TenderAward;
-            //        var bidAwardedSupplier = _db.BidAwardedSuppliers.Find(int.Parse(apPayment.PurchaseReference));
-            //        if (bidAwardedSupplier != null)
-            //        {
-            //            apPayment.SupplierId = bidAwardedSupplier.SupplierId;
-            //            apPayment.SupplierName = bidAwardedSupplier.SupplierName;
-
-            //            var lot = _db.Lots.Find(bidAwardedSupplier.LotID);
-            //            if (lot != null)
-            //            {
-            //                var tender = _db.Tenders.Find(lot.TenderID);
-            //                if (tender != null) apPayment.EmployeeId = tender.ProcurementOfficer;
-            //            }
-
-            //            #region check over advance taken
-
-            //            var contract = _db.ContractManagements
-            //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-            //                .Where(x => x.ProcurementRefNo == int.Parse(apPayment.PurchaseReference)).FirstOrDefault();
-
-            //            if (contract != null)
-            //            {
-            //                var advanceTaken = _db.APPayments
-            //                    .Where(x => x.PurchaseReference == contract.ProcurementRefNo.ToString())
-            //                    .Where(x => x.PoType == "Tender Award")
-            //                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-            //                    .ToList();
-            //                if (advanceTaken.Any())
-            //                {
-            //                    decimal totalAmount = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).Sum(x=>x.Total);
-            //                    decimal advanceAllowedPerent = _db.ContractPaymentSchedules
-            //                        .Where(x => x.ContractManagementID == contract.ContractManagementID)
-            //                        .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
-
-            //                    decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount) + apPayment.PrepaymentAmount;
-            //                    decimal advancePossibleAmount = (totalAmount * advanceAllowedPerent) / 100;
-            //                    if (advanceTakenAmount >= advancePossibleAmount)
-            //                        ModelState.AddModelError("over", "Overpaying the supplier is not possible");
-            //                }
-            //            }
-            //            else
-            //            {
-            //                ModelState.AddModelError("nocontract", "The award is not available in contract management.");
-            //            }
-
-            //            #endregion
-
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    ModelState.AddModelError("notselected", "Please select purchase source and purchase reference");
-            //}
+                int did = int.Parse(apPayment.PurchaseReference);
+                var paymentRequest = _db.PurchasePayments.Find(did);
+                apPayment.EmployeeId = paymentRequest.ProcurementOfficer;
+                apPayment.SupplierId = paymentRequest.SupplierId;
+                apPayment.SupplierName = paymentRequest.SupplierName;
+                apPayment.BranchId = paymentRequest.BranchId;
+                apPayment.BusinessUnitId = paymentRequest.BusinessUnitId;
+                apPayment.ForBranchId = paymentRequest.ForBranchId;
+            }           
 
             apPayment.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             apPayment.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -507,106 +422,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             #endregion
             #region data
 
-            if (apPayment.CollectedByPurchaser)
+            if (!String.IsNullOrEmpty(apPayment.PurchaseReference))
             {
-                if (!String.IsNullOrEmpty(apPayment.PurchaseReference))
-                {
-                    int did = int.Parse(apPayment.PurchaseReference);
-                    var payreq = _db.PurchasePayments.Find(did);
-                    apPayment.EmployeeId = payreq.ProcurementOfficer;
-                }
+                int did = int.Parse(apPayment.PurchaseReference);
+                var paymentRequest = _db.PurchasePayments.Find(did);
+                apPayment.EmployeeId = paymentRequest.ProcurementOfficer;
+                apPayment.SupplierId = paymentRequest.SupplierId;
+                apPayment.SupplierName = paymentRequest.SupplierName;
+                apPayment.BranchId = paymentRequest.BranchId;
+                apPayment.BusinessUnitId = paymentRequest.BusinessUnitId;
+                apPayment.ForBranchId = paymentRequest.ForBranchId;
             }
 
-            //if (!String.IsNullOrWhiteSpace(apPayment.PoType) && !String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
-            //{
-            //    if (apPayment.PoType == "Purchase Order")
-            //    {
-            //        apPayment.PoTypeEnum = PurchaseType.PurchaseOrder;
-            //        var po = _db.PurchaseOrders.Find(int.Parse(apPayment.PurchaseReference));
-            //        if (po != null)
-            //        {
-            //            apPayment.SupplierId = po.SupplierId;
-            //            apPayment.SupplierName = po.SupplierName;
-            //            apPayment.EmployeeId = po.ProcurementOfficer;
-
-            //            #region over payment validation
-            //            var advanceTaken = _db.APPayments
-            //                .Where(x => x.PurchaseReference == po.PurchaseOrderID.ToString())
-            //                .Where(x => x.PoType == "Purchase Order")
-            //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-            //                .Select(x => new { x.PrepaymentAmount })
-            //                .AsQueryable();
-            //            if (advanceTaken.Any())
-            //            {
-            //                decimal totalAmount = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-            //                    .Sum(x => x.Total);
-            //                decimal advanceAllowedPerent = _db.PoPaymentSchedules
-            //                    .Where(x => x.PurchaseOrderID == po.PurchaseOrderID)
-            //                    .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
-
-            //                decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount) + apPayment.PrepaymentAmount;
-            //                decimal advancePossibleAmount = (totalAmount * advanceAllowedPerent) / 100;
-            //                if (advanceTakenAmount >= advancePossibleAmount)
-            //                    ModelState.AddModelError("over", "Overpaying the supplier is not possible");
-            //            }
-            //            #endregion
-            //        }
-            //    }
-
-            //    if (apPayment.PoType == "Tender Award")
-            //    {
-            //        apPayment.PoTypeEnum = PurchaseType.TenderAward;
-            //        var bidAwardedSupplier = _db.BidAwardedSuppliers.Find(int.Parse(apPayment.PurchaseReference));
-            //        if (bidAwardedSupplier != null)
-            //        {
-            //            apPayment.SupplierId = bidAwardedSupplier.SupplierId;
-            //            apPayment.SupplierName = bidAwardedSupplier.SupplierName;
-
-            //            var lot = _db.Lots.Find(bidAwardedSupplier.LotID);
-            //            if (lot != null)
-            //            {
-            //                var tender = _db.Tenders.Find(lot.TenderID);
-            //                if (tender != null) apPayment.EmployeeId = tender.ProcurementOfficer;
-            //            }
-            //            #region check over advance taken
-
-            //            var contract = _db.ContractManagements
-            //                .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-            //                .Where(x => x.ProcurementRefNo == int.Parse(apPayment.PurchaseReference)).FirstOrDefault();
-
-            //            if (contract != null)
-            //            {
-            //                var advanceTaken = _db.APPayments
-            //                    .Where(x => x.PurchaseReference == contract.ProcurementRefNo.ToString())
-            //                    .Where(x => x.PoType == "Tender Award")
-            //                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-            //                    .ToList();
-            //                if (advanceTaken.Any())
-            //                {
-            //                    decimal totalAmount = _db.ContractManagementItems.Where(x => x.ContractManagementID == contract.ContractManagementID).Sum(x => x.Total);
-            //                    decimal advanceAllowedPerent = _db.ContractPaymentSchedules
-            //                        .Where(x => x.ContractManagementID == contract.ContractManagementID)
-            //                        .Where(x => x.PaymentType == PaymentType.Advance).Sum(x => x.Percentage);
-
-            //                    decimal advanceTakenAmount = advanceTaken.Sum(x => x.PrepaymentAmount) + apPayment.PrepaymentAmount;
-            //                    decimal advancePossibleAmount = (totalAmount * advanceAllowedPerent) / 100;
-            //                    if (advanceTakenAmount >= advancePossibleAmount)
-            //                        ModelState.AddModelError("over", "Overpaying the supplier is not possible");
-            //                }
-            //            }
-            //            else
-            //            {
-            //                ModelState.AddModelError("nocontract", "The award is not available in contract management.");
-            //            }
-
-            //            #endregion
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    ModelState.AddModelError("notselected", "Please select purchase source and purchase reference");
-            //}
+            
             #endregion
             #region net
             var tax = _db.GLTaxRates.Find(apPayment.GLTaxRateID);
@@ -1211,12 +1039,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         EffectiveDate = record.PaymentDate.Date,
                         OrgBranchName = record.OrgBranchName,
                         Status = "Approved",
+                        BranchId = record.CreatedAtBranchId,
+                        BusinessUnitId = record.CreatedAtBusinessUnitId,
                         Remark = record.Remark,
                         PaymentReference = record.PaymentReference,
                         ReferenceDoc = "",
                         InvoiceReferenceDoc = record.InvoiceNumber,
-                        BranchId = record.BranchId,
-                        BusinessUnitId=record.BusinessUnitId,
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now

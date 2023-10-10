@@ -46,6 +46,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 Name = purchaseRequisitionItem.Name,
                 UoM = purchaseRequisitionItem.UoM,
                 ItemType = purchaseRequisitionItem.ItemType,
+                BudgetCode = purchaseRequisitionItem.BudgetCode,
             });
 
             return Json(result);
@@ -57,6 +58,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
         public ActionResult PurchaseRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem , int id )
         {
             purchaseRequisitionItem.Quantity = purchaseRequisitionItem.RequestedQuantity;
+
+            if (purchaseRequisitionItem.Quantity > purchaseRequisitionItem.RequestedQuantity)
+                ModelState.AddModelError("qty", "Final quantity can not be more than requested quanity");
+
+            if (purchaseRequisitionItem.Quantity <= 0 || purchaseRequisitionItem.RequestedQuantity <= 0)
+                ModelState.AddModelError("qty", "Quantity should be above zero");
+
+            var item = db.InventoryItems.Where(x => x.ItemCode == purchaseRequisitionItem.ItmCode).FirstOrDefault();
+            if (item != null)
+            {
+                purchaseRequisitionItem.ItemName = item.Name;
+                purchaseRequisitionItem.UoM = item.UoMName;
+            }
 
             if (ModelState.IsValid)
             {
@@ -78,6 +92,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = PurchaseItemType.Stock,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name
                 };
@@ -101,6 +116,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             if (purchaseRequisitionItem.Quantity > purchaseRequisitionItem.RequestedQuantity)
                 ModelState.AddModelError("qty", "Final quantity can not be more than requested quanity");
 
+            if (purchaseRequisitionItem.Quantity <= 0 || purchaseRequisitionItem.RequestedQuantity <= 0)
+                ModelState.AddModelError("qty", "Quantity should be above zero");
+
+            var item = db.InventoryItems.Where(x => x.ItemCode == purchaseRequisitionItem.ItmCode).FirstOrDefault();
+            if (item != null)
+            {
+                purchaseRequisitionItem.ItemName = item.Name;
+                purchaseRequisitionItem.UoM = item.UoMName;
+            }
             if (ModelState.IsValid)
             {
                 var entity = new PurchaseRequisitionItem
@@ -122,6 +146,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     Name = purchaseRequisitionItem.Name,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
                 };
@@ -160,6 +185,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     ItemSpecification = purchaseRequisitionItem.ItemSpecification,
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
+                    BudgetCode = purchaseRequisitionItem.BudgetCode,
                 };
 
                 db.PurchaseRequisitionItems.Attach(entity);

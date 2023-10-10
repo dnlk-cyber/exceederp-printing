@@ -181,7 +181,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (ModelState.IsValid)
             {
                 #region ger parent record status
-                ApPaybleInvoices record = _db.APPaybleInvoices.Find(id);
+                var record = _db.ApTravelOrders.Find(id);
 
                 if (record != null && record.IsOnlineApproved)
                 {

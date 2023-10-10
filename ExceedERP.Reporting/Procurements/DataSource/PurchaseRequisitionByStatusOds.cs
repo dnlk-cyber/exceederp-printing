@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Reporting.FixedAsset.Print.DataSource;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.Procurements.ViewModel;
 
@@ -14,7 +15,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<NoOfPurchasedRequisitionViewModel> PurchaseRequisitionByStatus(DateTime from, DateTime to, string branchid, string purchaser, string status)
+        public List<NoOfPurchasedRequisitionViewModel> PurchaseRequisitionByStatus(DateTime from, DateTime to, string branchid, string purchaser, string status, string businessUnitId)
         {
             List<NoOfPurchasedRequisitionViewModel> list = new List<NoOfPurchasedRequisitionViewModel>();
             var branch = db.Branch.ToList();
@@ -41,6 +42,14 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 tenders = tenders.Where(x => x.BranchId == did).AsQueryable();
                 proformaPurchases = proformaPurchases.Where(x => x.BranchId == did).AsQueryable();
                 purchaseOrders = purchaseOrders.Where(x => x.BranchId == did).AsQueryable();
+            }
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                tenders = tenders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+                proformaPurchases = proformaPurchases.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+                purchaseOrders = purchaseOrders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
             }
 
             if (!String.IsNullOrWhiteSpace(purchaser))

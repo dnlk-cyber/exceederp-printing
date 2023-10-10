@@ -22,6 +22,10 @@ namespace ExceedERP.Core.Domain.Inventory
         public virtual GoodReceive GoodReceive { get; set; }
         [Display(Name = "Period")]
         public int GLPeriodId { get; set; }
+        [DisplayName("Branch or Project")]
+        public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<PurchaseReturnItems> PurchaseReturnItems { get; set; }
         public virtual ICollection<PurchaseReturnValidation> PurchaseReturnValidation { get; set; }
         public virtual ICollection<PurchaseReturnDistribution> PurchaseReturnDistribution { get; set; }

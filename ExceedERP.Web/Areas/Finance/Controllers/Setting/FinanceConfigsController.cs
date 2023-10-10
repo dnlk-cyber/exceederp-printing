@@ -208,6 +208,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
+                case "ENABLE_PAYMENT_REQUEST_AUTHORIZATION":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
                 case "DISABLE_GRN_DISTRIBUTION":
                     attributes =
                           Enum.GetValues(typeof(BooleanTypeAttributes))

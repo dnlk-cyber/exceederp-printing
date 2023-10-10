@@ -25,5 +25,9 @@ namespace ExceedERP.Core.Domain.Inventory
         SendForPayment = 14,
         Posted=15,
         SendForDepartmentApproval = 16,
+        BudgetApproved=17,
+        FinanceApproved = 18,
+        OpenForRevision=19,
+        WaitingRevisionApproval=20
     }
 }

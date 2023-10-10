@@ -83,6 +83,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     glPeriod.Status = FiscalYearStatus.Close;
                     _db.InventoryPeriods.Attach(glPeriod);
                     _db.Entry(glPeriod).State = EntityState.Modified;
+                   // _db.SaveChanges();
+
+                    #region apply to all stores
+                    var storePeriods=_db.InventoryStorePeriodStatuses
+                    .Where(x => x.InventoryPeriodId == glPeriod.InventoryPeriodId).ToList();
+                    foreach ( var storePeriod in storePeriods )
+                    {
+                        storePeriod.Status = FiscalYearStatus.Close;
+                        _db.InventoryPeriods.Attach(glPeriod);
+                        _db.Entry(glPeriod).State = EntityState.Modified;
+                        
+                    }
+                    #endregion
+
                     _db.SaveChanges();
 
                     #region  log
@@ -107,6 +121,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     glPeriod.Status = FiscalYearStatus.Open;
                     _db.InventoryPeriods.Attach(glPeriod);
                     _db.Entry(glPeriod).State = EntityState.Modified;
+                    //_db.SaveChanges();
+
+                    #region apply to all stores
+                    var storePeriods = _db.InventoryStorePeriodStatuses
+                    .Where(x => x.InventoryPeriodId == glPeriod.InventoryPeriodId).ToList();
+                    foreach (var storePeriod in storePeriods)
+                    {
+                        storePeriod.Status = FiscalYearStatus.Open;
+                        _db.InventoryPeriods.Attach(glPeriod);
+                        _db.Entry(glPeriod).State = EntityState.Modified;
+
+                    }
+                    #endregion
+
                     _db.SaveChanges();
 
                     #region  log

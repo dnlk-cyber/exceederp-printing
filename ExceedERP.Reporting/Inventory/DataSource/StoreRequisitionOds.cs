@@ -82,6 +82,8 @@ namespace ExceedERP.Reporting.Inventory.DataSource
                             Reference = requisitionItem.StoreRequisition.Reference,
                             RequisitionDate = requisitionItem.StoreRequisition.RequestDate,
                             InventoryItem = requisitionItem.InventoryItem.Name,
+                            PartNo=requisitionItem.PartNo,
+                            ModelNo = requisitionItem.ModelNo,
                             RequestedQuantity = requisitionItem.RequestedQuantity,
                             ApprovedQuantity = requisitionItem.ApprovedQuantity,
                             RequestingDepartment = InventoryPrintHelper.WorkUnitName(requisitionItem.StoreRequisition.OrgStructureId),

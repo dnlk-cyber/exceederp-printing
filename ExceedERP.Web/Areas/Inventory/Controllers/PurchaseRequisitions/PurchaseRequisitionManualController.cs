@@ -36,7 +36,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             var selecteditems = items.Select(
                 i => new
                 {
-                    Name = i.ItmCode + "-" + i.ItemName,
+                    Name = i.ItmCode + "-" + i.ItemName+ "-" + i.PartNo,
                     ItmCode = i.ItmCode
                 }).AsQueryable();
 
@@ -83,7 +83,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //var xb = System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser);
+            //var xb = System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser);
             var user = userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
             var storekeepers = db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
             int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
@@ -131,6 +131,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                 StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                 BranchId = purchaseRequisition.BranchId,
+                BusinessUnitId = purchaseRequisition.BusinessUnitId,
                 OrgStructureId = purchaseRequisition.OrgStructureId,
                 EmployeeId = purchaseRequisition.EmployeeId,
                 ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -185,6 +186,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                 OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
                 OrgBranchName = purchaseRequisition.OrgBranchName,
+
+                IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
             });
 
             return Json(result);
@@ -226,7 +231,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 {
                     StoreRequisitionID = 0,
                     BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     ReferenceNo = purchaseRequisition.ReferenceNo,
                     ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
@@ -253,6 +258,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                     IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                     OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+
+                    IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                    BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                    BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
                     LastModified = purchaseRequisition.LastModified,
@@ -309,7 +319,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -337,6 +347,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                     IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                     OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+                    IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                    BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                    BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
                     DateCreated = purchaseRequisition.DateCreated,
                     CreatedBy = purchaseRequisition.CreatedBy,
                     ModifiedBy = User.Identity.Name,
@@ -389,7 +403,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
                     IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                     IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
-                    OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime
+                    OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+
+                    IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                    BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                    BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
                 };
 
                 db.PurchaseRequisitions.Attach(entity);
@@ -533,6 +551,73 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
+            return null;
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = db.PurchaseRequisitions.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid)
+            {
+                #region validate PR assignment
+
+                var purchaseOrder = db.PurchaseRequisitionAssignments
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => x.IsOnlineApproved)
+                    .FirstOrDefault(x => x.PurchaseRequisitionID == id);
+
+                if (purchaseOrder != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This PR can not be void since it is referred in PR Assignment {purchaseOrder.PurchaseRequisitionAssignmentId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsMiddleOnlineApproved = false;
+                record.IsMiddleSendForApproval = false;
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.PurchaseRequisitions.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
             return null;
         }
 

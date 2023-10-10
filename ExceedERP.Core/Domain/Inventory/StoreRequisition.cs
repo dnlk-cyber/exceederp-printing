@@ -23,6 +23,8 @@ namespace ExceedERP.Core.Domain.Inventory
         public virtual ICollection<StoreRequisitionValidation> StoreRequisitionValidation { get; set; }
         [JsonIgnore]
         public virtual ICollection<StoreRequisitionPropertyValidation> StoreRequisitionPropertyValidation { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<StoreRequisitionAttachment> StoreRequisitionAttachments { get; set; }
     }
 
     public class StoreRequisitionItem : StoreRequisitionItemBase
@@ -30,10 +32,6 @@ namespace ExceedERP.Core.Domain.Inventory
         public int StoreRequisitionItemID { get; set; }
         public int StoreRequisitionID { get; set; }
         public virtual StoreRequisition StoreRequisition { get; set; }
-        [Display(Name ="Job No")]
-        public string ProductionJobNo { get; set; }
-        [Display(Name = "MJob No")]
-        public string MaintenanceJobNo { get; set; }
     }
 
     public class StoreRequisitionValidation : StoreRequisitionValidationBase
@@ -48,6 +46,15 @@ namespace ExceedERP.Core.Domain.Inventory
         public int StoreRequisitionPropertyValidationID { get; set; }
         public int StoreRequisitionID { get; set; }
         public virtual StoreRequisition StoreRequisition { get; set; }
+    }
+
+    public class StoreRequisitionAttachment
+    {
+        public int StoreRequisitionAttachmentId { get; set; }
+        public int StoreRequisitionID { get; set; }
+        public virtual StoreRequisition StoreRequisition { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 
 }

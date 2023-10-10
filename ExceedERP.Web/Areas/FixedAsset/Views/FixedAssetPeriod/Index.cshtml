@@ -22,8 +22,8 @@
               command.Custom("Open").Click("OpenPeriod");
           }).Width(180);
       })
-      
-      
+
+
       .HtmlAttributes(new { style = "height: 550px;" })
       .Pageable(pageable => pageable
           .Input(true)
@@ -33,17 +33,17 @@
           .ButtonCount(10))
       .Selectable()
       .Scrollable()
-      .Selectable(selectable =>
-      {
-          selectable.Mode(GridSelectionMode.Single);
-          selectable.Type(GridSelectionType.Row);
-      })
+      //.Selectable(selectable =>
+      //{
+      //    selectable.Mode(GridSelectionMode.Single);
+      //    selectable.Type(GridSelectionType.Row);
+      //})
       .Sortable(sortable =>
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .Events(ev => ev.DetailExpand("detailExpand"))
       .Events(x => x.DataBound("onDataBoundMaster"))
 

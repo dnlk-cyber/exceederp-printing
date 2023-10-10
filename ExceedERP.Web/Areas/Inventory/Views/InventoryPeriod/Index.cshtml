@@ -41,7 +41,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .Events(ev => ev.DetailExpand("detailExpand"))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource

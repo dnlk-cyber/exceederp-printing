@@ -76,9 +76,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             #region get lot item result info
 
             var awardObj = _db.BidAwardedSuppliers.Find(id);
-            var lotItemResult = _db.ParticipantsItems
-                .Where(x => x.LotID == awardObj.LotID)
-                .Where(x => x.SupplierName== awardObj.SupplierName)
+
+            var supp = _db.BidPParticipatingSupplierses
+                           .Where(x => x.SupplierName == awardObj.SupplierName)
+                           .Where(x => x.LotID == awardObj.LotID).FirstOrDefault();
+
+            var lotItemResult = _db.BidParticipatingSupplierItems
+                .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID)        
                 .FirstOrDefault(x => x.LotItemID== bidAwardedSupplierItem.LotItemID);
            
             if (lotItemResult != null)

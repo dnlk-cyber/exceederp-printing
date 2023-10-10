@@ -84,6 +84,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                 AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
                 OrgStructureId = annualNeedAssesment.OrgStructureId,
                 BranchId = annualNeedAssesment.BranchId,
+                BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                 EmployeeId = annualNeedAssesment.EmployeeId,
                 Remark = annualNeedAssesment.Remark,
                 GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
@@ -128,8 +129,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             {
                 var entity = new AnnualNeedAssesment
                 {
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(annualNeedAssesment.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId),
                     BranchId = annualNeedAssesment.BranchId,// UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     EmployeeId = annualNeedAssesment.EmployeeId, //UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,
@@ -182,8 +184,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                 var entity = new AnnualNeedAssesment
                 {
                     AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(annualNeedAssesment.EmployeeId), // UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId), // UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
                     BranchId = annualNeedAssesment.BranchId,// UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                     EmployeeId = annualNeedAssesment.EmployeeId, //UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,
@@ -226,6 +229,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                     AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
                     OrgStructureId = annualNeedAssesment.OrgStructureId,
                     BranchId = annualNeedAssesment.BranchId,
+                    BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                     EmployeeId = annualNeedAssesment.EmployeeId,
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,

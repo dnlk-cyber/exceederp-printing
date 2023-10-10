@@ -65,7 +65,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable().Events(ev => ev.DetailExpand("detailExpandProperty"))
+      .Events(ev => ev.DetailExpand("detailExpandProperty"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMasterProperty"))
       .DataSource(dataSource => dataSource
@@ -106,223 +106,284 @@
 
 <script id="storerequisitions" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
-      {
-          items.Add().Text("Detail").Content(
-
-              @<text>
-    
-    
-                # if (!IsSecondOnlineApproved&&!IsSecondSendForApproval)
-                {#
-               
-                 <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                <br />
-                # } #
-
-                # if (IsSecondOnlineApproved)
-                {#
-                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                <br />
-                # } #
-                <div>
-                    <hr>
-                    <dl class="dl-horizontal">
-
-                        <dt>
-                            Request Date
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
-                        </dd>
-                        <dt>
-                            Status
-                        </dt>
-                        <dd>
-                            #= Status #
-                        </dd>
-                        <dt>
-                            Is Transfer
-                        </dt>
-                        <dd>
-                            #= IsTransfer #
-                        </dd>
-                        <dt>
-                            Receiver Store
-                        </dt>
-                        <dd>
-                            #= ToStoreCode #
-                        </dd>
-                        <dt>
-                            CreatedOn
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                        </dd>
-                        <dt>
-                            CreatedBy
-                        </dt>
-                        <dd>
-                            #= CreatedBy #
-                        </dd>
-                        <dt>
-                            Modified By
-                        </dt>
-                        <dd>
-                            #= ModifiedBy #s
-                        </dd>
-                        <dt>
-                            Modified Date
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                        </dd>
-                        <dt>
-                           Approved By
-                        </dt>
-                        <dd>
-                            #= OnlineApprovedBy #s
-                        </dd>
-                        <dt>
-                            Approval Time
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-                        </dd>
-                         <dt>
-                           Approved By -Property
-                        </dt>
-                        <dd>
-                            #= SecondOnlineApprovedBy #s
-                        </dd>
-                        <dt>
-                            Approval Time
-                        </dt>
-                        <dd>
-                            #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
-                        </dd>
-                    </dl>
-                </div>
-            </text>
-              );
-
-          items.Add().Text("Items").Content(
-            @<text>
-                @(Html.Kendo().Grid<StoreRequisitionItem>()
-                      .Name("StoreRequisitionItem_#=StoreRequisitionID#")
-                      .Columns(columns =>
                       {
-                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(170);
-                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(170);
-                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
-                          columns.Bound(c => c.ModelNo).Width(120);
-                          columns.Bound(c => c.SerialNo).Width(120);
-                          columns.Bound(c => c.ChasisNo).Width(120);
-                          columns.Bound(c => c.RequestedQuantity).Width(120);
-                          columns.Bound(c => c.ApprovedQuantity).Width(120);
-                          columns.Bound(c => c.CurrentBalance).Width(120);
-                          columns.Bound(c => c.IssuedQuantity).Width(120);
-                          columns.Bound(c => c.PurchaseQuantity).Width(120);
-                          columns.Bound(c => c.GeneratePurchaseReq).Width(100).ClientTemplate(
-                              "<input type='checkbox' disabled = 'true' value='\\#= GeneratePurchaseReq \\#' " +
-                              "\\# if (GeneratePurchaseReq) { \\#" +
-                              "checked='checked'" +
-                              "\\# } \\#" +
-                              "/>"
-                              );
-                         
-                          columns.Bound(c => c.CreatedBy).Hidden();
-                          columns.Bound(c => c.DateCreated).Hidden();
-                          columns.Bound(c => c.ModifiedBy).Hidden();
-                          columns.Bound(c => c.LastModified).Hidden();
-                          columns.Command(command =>
-                          {
-                              command.Edit();
-                              //command.Destroy();
-                          });
+                          items.Add().Text("Detail").Content(
 
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          //toolbar.Create();
-                      }).Events(ev => ev.Edit("onItemEdit"))
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable()
-                      .Events(x => x.DataBound("onDataBoundPropertyLines"))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev
-                              .Error("error_handler(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
-                              .RequestStart("onRequestStart(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
-                              .RequestEnd("onRequestEnd(\"StoreRequisitionItem_#=StoreRequisitionID#\")"))
-                          .Model(model =>
-                          {
-                              model.Id(p => p.StoreRequisitionItemID);
+                            @<text>
 
-                              model.Field(p => p.ItemCategoryCode).Editable(false);
-                              model.Field(p => p.ItemCode).Editable(false);
-                              model.Field(p => p.RequestedQuantity).Editable(false);
-                              model.Field(p => p.CurrentBalance).Editable(false);
-                              model.Field(p => p.ApprovedQuantity).Editable(false);
-                              model.Field(p => p.ModelNo).Editable(false);
-                              model.Field(p => p.SerialNo).Editable(false);
-                              model.Field(p => p.ChasisNo).Editable(false);
-                              model.Field(p => p.CreatedBy).Editable(false);
-                              model.Field(p => p.DateCreated).Editable(false);
-                              model.Field(p => p.ModifiedBy).Editable(false);
-                              model.Field(p => p.LastModified).Editable(false);
 
-                          })
-                          .Read(read => read.Action("StoreRequsitionItemPropertyReviews_Read", "StoreRequisitionItemPropertyReview", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("StoreRequsitionItemPropertyReviews_Create", "StoreRequisitionItemPropertyReview", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("StoreRequsitionItemPropertyReviews_Update", "StoreRequisitionItemPropertyReview"))
-                          .Destroy(destroy => destroy.Action("StoreRequsitionItemPropertyReviews_Destroy", "StoreRequisitionItemPropertyReview"))
-                      ).ToClientTemplate())
-            </text>
-              );
+                                # if (!IsSecondOnlineApproved&&!IsSecondSendForApproval)
+                                {#
 
-          items.Add().Text("Validation").Content(@<text>
-                @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
-                      .Name("StoreRequisitionPropertyValidation_#=StoreRequisitionID#")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                          columns.Bound(c => c.Remark).Width(170);
-                          columns.Command(command =>
-                          {
-                              command.Edit();
-                              //command.Destroy();
-                          });
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Scrollable()
-                      .Events(x => x.DataBound("onDataBoundPropertySecondValidation"))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev
-                              .Error("error_handler(\"StoreRequisitionPropertyValidation_#=StoreRequisitionID#\")")
-                              .RequestStart("onRequestStart(\"StoreRequisitionPropertyValidation_#=StoreRequisitionID#\")")
-                              .RequestEnd("onRequestEnd(\"StoreRequisitionPropertyValidation_#=StoreRequisitionID#\")"))
-                          .Model(model =>
-                          {
-                              model.Id(p => p.StoreRequisitionPropertyValidationID);
-                              model.Field(p => p.Approver).Editable(false);
-                          })
-                          .Read(read => read.Action("StoreRequisitionPropertyValidations_Read", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("StoreRequisitionPropertyValidations_Create", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("StoreRequisitionPropertyValidations_Update", "StoreRequisitionPropertyValidation"))
-                          .Destroy(destroy => destroy.Action("StoreRequisitionPropertyValidations_Destroy", "StoreRequisitionPropertyValidation"))
-                      ).ToClientTemplate())
-        </text>);
+                                <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #
 
-      }).ToClientTemplate())
+                                # if (IsSecondOnlineApproved)
+                                {#
+                                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                <br />
+                                # } #
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+
+                                        <dt>
+                                            Request Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
+                                        <dt>
+                                            Is Transfer
+                                        </dt>
+                                        <dd>
+                                            #= IsTransfer #
+                                        </dd>
+                                        <dt>
+                                            Receiver Store
+                                        </dt>
+                                        <dd>
+                                            #= ToStoreCode #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #s
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Approved By
+                                        </dt>
+                                        <dd>
+                                            #= OnlineApprovedBy #s
+                                        </dd>
+                                        <dt>
+                                            Approval Time
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Approved By -Property
+                                        </dt>
+                                        <dd>
+                                            #= SecondOnlineApprovedBy #s
+                                        </dd>
+                                        <dt>
+                                            Approval Time
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </text>
+                                            );
+
+                                  items.Add().Text("Items").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<StoreRequisitionItem>()
+                                              .Name("StoreRequisitionItem_#=StoreRequisitionID#")
+                                              .Columns(columns =>
+                                              {
+                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(170);
+                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(170);
+                                                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                                          columns.Bound(c => c.ModelNo).Width(120);
+                                                          columns.Bound(c => c.SerialNo).Width(120);
+                                                          columns.Bound(c => c.ChasisNo).Width(120);
+                                                          columns.Bound(c => c.RequestedQuantity).Width(120);
+                                                          columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                                          columns.Bound(c => c.CurrentBalance).Width(120);
+                                                          columns.Bound(c => c.IssuedQuantity).Width(120);
+                                                          columns.Bound(c => c.PurchaseQuantity).Width(120);
+                                                          columns.Bound(c => c.GeneratePurchaseReq).Width(100).ClientTemplate(
+                                                  "<input type='checkbox' disabled = 'true' value='\\#= GeneratePurchaseReq \\#' " +
+                                                  "\\# if (GeneratePurchaseReq) { \\#" +
+                                                  "checked='checked'" +
+                                                  "\\# } \\#" +
+                                                  "/>"
+                                                  );
+
+                                                          columns.Bound(c => c.CreatedBy).Hidden();
+                                                          columns.Bound(c => c.DateCreated).Hidden();
+                                                          columns.Bound(c => c.ModifiedBy).Hidden();
+                                                          columns.Bound(c => c.LastModified).Hidden();
+                                                          columns.Command(command =>
+                                              {
+                                                                      command.Edit();
+                                                          //command.Destroy();
+                                                      });
+
+                                                      })
+                                              .ToolBar(toolbar =>
+                                              {
+                                              //toolbar.Create();
+                                          }).Events(ev => ev.Edit("onItemEdit"))
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .Scrollable()
+                                              .Events(x => x.DataBound("onDataBoundPropertyLines"))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Events(ev => ev
+                                                      .Error("error_handler(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
+                                                      .RequestStart("onRequestStart(\"StoreRequisitionItem_#=StoreRequisitionID#\")")
+                                                      .RequestEnd("onRequestEnd(\"StoreRequisitionItem_#=StoreRequisitionID#\")"))
+                                                  .Model(model =>
+                                                  {
+                                                              model.Id(p => p.StoreRequisitionItemID);
+
+                                                              model.Field(p => p.ItemCategoryCode).Editable(false);
+                                                              model.Field(p => p.ItemCode).Editable(false);
+                                                              model.Field(p => p.RequestedQuantity).Editable(false);
+                                                              model.Field(p => p.CurrentBalance).Editable(false);
+                                                              model.Field(p => p.ApprovedQuantity).Editable(false);
+                                                              model.Field(p => p.ModelNo).Editable(false);
+                                                              model.Field(p => p.SerialNo).Editable(false);
+                                                              model.Field(p => p.ChasisNo).Editable(false);
+                                                              model.Field(p => p.CreatedBy).Editable(false);
+                                                              model.Field(p => p.DateCreated).Editable(false);
+                                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                                              model.Field(p => p.LastModified).Editable(false);
+
+                                                          })
+                                                  .Read(read => read.Action("StoreRequsitionItemPropertyReviews_Read", "StoreRequisitionItemPropertyReview", new { id = "#=StoreRequisitionID#" }))
+                                                  .Create(create => create.Action("StoreRequsitionItemPropertyReviews_Create", "StoreRequisitionItemPropertyReview", new { id = "#=StoreRequisitionID#" }))
+                                                  .Update(update => update.Action("StoreRequsitionItemPropertyReviews_Update", "StoreRequisitionItemPropertyReview"))
+                                                  .Destroy(destroy => destroy.Action("StoreRequsitionItemPropertyReviews_Destroy", "StoreRequisitionItemPropertyReview"))
+                                              ).ToClientTemplate())
+                    </text>
+                    );
+                      items.Add().Text("Attachment").Content(@<text>
+
+                        @FileUpload()
+
+                    </text>);
+
+                            items.Add().Text("Validation").Content(@<text>
+                                @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
+                                                      .Name("StoreRequisitionPropertyValidation_#=StoreRequisitionID#")
+                                                      .Columns(columns =>
+                                                      {
+                                                                                    columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                                    columns.Bound(c => c.Remark).Width(170);
+                                                                                    columns.Command(command =>
+                                                                        {
+                                                                                                  command.Edit();
+                                                                                      //command.Destroy();
+                                                                                  });
+                                                                                })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                                                    toolbar.Create();
+                                                                                })
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .Events(x => x.DataBound("onDataBoundPropertySecondValidation"))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"StoreRequisitionPropertyValidation_#=StoreRequisitionID#\")")
+                                                              .RequestStart("onRequestStart(\"StoreRequisitionPropertyValidation_#=StoreRequisitionID#\")")
+                                                              .RequestEnd("onRequestEnd(\"StoreRequisitionPropertyValidation_#=StoreRequisitionID#\")"))
+                                                          .Model(model =>
+                                                          {
+                                                                                        model.Id(p => p.StoreRequisitionPropertyValidationID);
+                                                                                        model.Field(p => p.Approver).Editable(false);
+                                                                                    })
+                                                          .Read(read => read.Action("StoreRequisitionPropertyValidations_Read", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
+                                                          .Create(create => create.Action("StoreRequisitionPropertyValidations_Create", "StoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
+                                                          .Update(update => update.Action("StoreRequisitionPropertyValidations_Update", "StoreRequisitionPropertyValidation"))
+                                                          .Destroy(destroy => destroy.Action("StoreRequisitionPropertyValidations_Destroy", "StoreRequisitionPropertyValidation"))
+                                                      ).ToClientTemplate())
+                            </text>);
+
+                                }).ToClientTemplate())
     @*============================================================ Store Requisition Property Validation ===============================================================================*@
 
 
+    @helper FileUpload()
+    {
+        <text>
+            @(Html.Kendo().Grid<StoreRequisitionAttachment>
+                                                        ()
+                                                        .Name("StoreRequisitionAttachment#=StoreRequisitionID#")
+                                                        .Columns(columns =>
+                                                            {
+                                                                columns.Bound(x => x.StoreRequisitionAttachmentId).Hidden(true);
+                                                                columns.Bound(c => c.FileName).ClientTemplate("<a href='/StoreRequisitionAttachment/FileDwonload?id=\\#=StoreRequisitionAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+
+                                                                columns.Command(command =>
+                                                                    {
+                                                                        command.Edit();
+                                                                        command.Destroy();
+                                                                    }).Width(580);
+                                                            })
+                                                        .ToolBar(t => t.Template(
+                                                            @<text>
+                                                                @(Html.Kendo().Upload()
+                                                                                                                                                            .Name("attachments")
+                                                                                                                                                            .Async(a => a.Save("StoreRequisitionAttachment_Create", "StoreRequisitionAttachment", new { id = "#=StoreRequisitionID #" }))
+                                                                                                                                                            .Events(e => e.Complete("onUploadSuccess"))
+                                                                                                                                                            .ShowFileList(false)
+                                                                                                                                                            .ToClientTemplate()
+                                                                )
+                                                            </text>
+                                                                                                                                                                                                                ))
+                                                                                                                                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                                    .HtmlAttributes(new { style = "height: 350px;" })
+                                                                                                                                                                    .Sortable(sortable =>
+                                                                                                                                                                    {
+                                                                                                                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                    })
+                                                                                                                                                                                                                .Scrollable()
+                                                                                                                                                                                                             .Pageable(pageable => pageable
+                                                          .Input(true)
+                                                          .Numeric(false)
+                                                          .Refresh(true)
+                                                          .PageSizes(true)
+                                                          .ButtonCount(5))
+                                                                                                                                                                    .Events(x => x.DataBound("onDataBoundLines"))
+                                                                                                                                                                                                                .DataSource(dataSource => dataSource
+                                                                                                                                                                                                                    .Ajax()
+                                                                                                                                                                                                                    .Events(ev => ev
+                                                                                                                                                                                                                        .Error("error_handler(\"StoreRequisitionAttachment#=StoreRequisitionID#\")")
+                                                                                                                                                                                                                        .RequestStart("onRequestStart(\"StoreRequisitionAttachment#=StoreRequisitionID#\")")
+                                                                                                                                                                                                                        .RequestEnd("onRequestEnd(\"StoreRequisitionAttachment#=StoreRequisitionID#\")"))
+                                                                                                                                                                                                                        .Model(model => model.Id(p => p.StoreRequisitionAttachmentId))
+                                                                                                                                                                                                                    .Read(read => read.Action("StoreRequisitionAttachment_Read", "StoreRequisitionAttachment", new { id = "#=StoreRequisitionID #" }))
+                                                                                                                                                                                                                    .Create(create => create.Action("StoreRequisitionAttachment_Create", "StoreRequisitionAttachment", new { id = "#=StoreRequisitionID #" }))
+                                                                                                                                                                                                                    .Update(update => update.Action("StoreRequisitionAttachment_Update", "StoreRequisitionAttachment"))
+                                                                                                                                                                                                                    .Destroy(destroy => destroy.Action("StoreRequisitionAttachment_Destroy", "StoreRequisitionAttachment"))
+                                                                                                                                                                                                        ).ToClientTemplate())
+        </text>
+    }
 
 </script>
 
@@ -531,8 +592,7 @@
 
 
 
-</script>
-<script>
+
     function onClick(e) {
 
         var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
@@ -590,7 +650,10 @@
         }
     }
 
-
+    function onUploadSuccess(e) {
+        var gridname = "#StoreRequisitionAttachment" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
    
    
 </script>

@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -101,6 +104,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 RecipientType = assetTransfer.RecipientType,
                 RecipientEmployee = assetTransfer.RecipientEmployee,
                 RecipientSupplier = assetTransfer.RecipientSupplier,
+                ConfirmReceive = assetTransfer.ConfirmReceive,
 
                 Status = assetTransfer.Status,
                 Remark = assetTransfer.Remark,
@@ -173,6 +177,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
                     FromBranchId = assetTransfer.FromBranchId,
                     ToBranchId = assetTransfer.ToBranchId,
+                    ConfirmReceive = assetTransfer.ConfirmReceive,
 
                     DriverType = assetTransfer.DriverType,
                     SupplierName = assetTransfer.SupplierName,
@@ -207,6 +212,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.SaveChanges();
                 assetTransfer.AssetTransferId = entity.AssetTransferId;
                 GetStoreRequisitionItems(entity);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransfer", "Success", User.Identity.Name, $"created AssetTransfer  {entity.AssetTransferId} plateNo {entity.PlateNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransfer }.ToDataSourceResult(request, ModelState));
@@ -260,6 +268,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
                     FromBranchId = assetTransfer.FromBranchId,
                     ToBranchId = assetTransfer.ToBranchId,
+                    ConfirmReceive = assetTransfer.ConfirmReceive,
 
                     DriverType = assetTransfer.DriverType,
                     SupplierName = assetTransfer.SupplierName,
@@ -293,6 +302,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransfers.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransfer", "Success", User.Identity.Name, $"update AssetTransfer  {entity.AssetTransferId} plateNo {entity.PlateNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransfer }.ToDataSourceResult(request, ModelState));
@@ -341,6 +353,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransfers.Attach(entity);
                 _db.AssetTransfers.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete AssetTransfer  {assetTransfer.AssetTransferId} plateNo {assetTransfer.PlateNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransfer }.ToDataSourceResult(request, ModelState));
@@ -420,18 +435,31 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         [AuthorizeRoles(FixedAssetConstants.FixedAssetVoid)]
         public JsonResult Void(int id)
         {
-            var record = _db.AssetTransfers.Find(id);
-            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.AssetTransferItems.Count > 0)
+            var assetTransfer = _db.AssetTransfers.Find(id);
+
+            // If receiver has already approved it Void shouldn't work
+            var approvedReceive = _db.AssetTransferReceives.FirstOrDefault(x => x.AssetTransferId == id && x.IsOnlineApproved);
+            if (approvedReceive != null)
+            {
+                var formattedData = new
+                {
+                    Message = "Asset has already been approved in Asset Transfer Receive!",
+                    Status = "Not Ok"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            
+            if (assetTransfer != null && assetTransfer.IsOnlineApproved && !assetTransfer.IsVoid &&
+                !assetTransfer.IsOnlineTransferred && assetTransfer.AssetTransferItems.Count > 0)
             {
                 //reverse transaction here
 
-
-                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
-                record.IsVoid = true;
-                record.VoidBy = User.Identity.Name;
-                record.VoidTime = DateTime.Now;
-                _db.AssetTransfers.Attach(record);
-                _db.Entry(record).State = EntityState.Modified;
+                assetTransfer.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                assetTransfer.IsVoid = true;
+                assetTransfer.VoidBy = User.Identity.Name;
+                assetTransfer.VoidTime = DateTime.Now;
+                _db.AssetTransfers.Attach(assetTransfer);
+                _db.Entry(assetTransfer).State = EntityState.Modified;
                 _db.SaveChanges();
 
                 //copy
@@ -444,7 +472,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            if (record == null)
+            
+
+            if (assetTransfer == null)
             {
                 var formattedData = new
                 {
@@ -454,7 +484,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record.AssetTransferItems.Count == 0)
+            if (assetTransfer.AssetTransferItems.Count == 0)
             {
                 var formattedData = new
                 {
@@ -463,7 +493,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            if (record.IsVoid)
+            if (assetTransfer.IsVoid)
             {
                 var formattedData = new
                 {
@@ -472,7 +502,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            if (record.IsOnlineTransferred)
+            if (assetTransfer.IsOnlineTransferred)
             {
                 var formattedData = new
                 {
@@ -481,7 +511,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            if (!record.IsOnlineApproved)
+            if (!assetTransfer.IsOnlineApproved)
             {
                 var formattedData = new
                 {
@@ -532,6 +562,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
                 _db.AssetTransfers.Add(entity);
                 _db.SaveChanges();
+
+                // if assetTransfer.AssetTransferItems returns null use 
+                var assetTransferItems = _db.AssetTransferItems.Where(x => x.AssetTransferId == assetTransfer.AssetTransferId).ToList();
+
                 #endregion
                 foreach (var assetTransferItem in assetTransfer.AssetTransferItems)
                 {
@@ -570,7 +604,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         private void GetStoreRequisitionItems(AssetTransfer assetTransfer)
         {
             var storeRequisitionItem = _db.FixedAssetRequisitionItems.Where(sr => sr.FixedAssetRequisitionId.ToString() == assetTransfer.RequestNumber).ToList();
-           foreach (var requestedItem in storeRequisitionItem)
+
+            foreach (var requestedItem in storeRequisitionItem)
             {
                 #region fixed asset
                 for (int i = 0; i < requestedItem.RequestedQuantity; i++)

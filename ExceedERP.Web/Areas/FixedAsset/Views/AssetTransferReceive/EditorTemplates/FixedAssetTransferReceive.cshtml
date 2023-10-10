@@ -55,19 +55,34 @@
 
         </div>
         
-    <div class="col-md-3 ro1">
+        <div class="col-md-3 ro1">
        
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
-            <div class="col-md-6">
-                @Html.Kendo().TextBoxFor(model => model.Remark)
-                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
-        <div class="row"></div>
+            <div class="row"></div>
         
-    </div>
+        </div>
+        
+        
+        @*<div class="col-md-3 ro1">
+       
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AssetTransferConfirm, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.AssetTransferConfirm)
+                    @Html.ValidationMessageFor(model => model.AssetTransferConfirm, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        
+        </div>*@
 
       
 

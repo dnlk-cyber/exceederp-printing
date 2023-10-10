@@ -5,9 +5,11 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -99,6 +101,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 db.PurchaseRequisitionUserDepartmentValidations.Add(entity);
                 db.SaveChanges();
                 purchaseRequisitionUserDepartmentValidation.PurchaseRequisitionUserDepartmentValidationID = entity.PurchaseRequisitionUserDepartmentValidationID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionUserDepartmentValidation", "Success", User.Identity.Name, $"created PurchaseRequisitionUserDepartmentValidation   {entity.PurchaseRequisitionUserDepartmentValidationID} Tag {entity.PurchaseRequisitionID}", Modules.FixedAsset);
+                #endregion
 
 
             }
@@ -125,6 +130,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 db.PurchaseRequisitionUserDepartmentValidations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionUserDepartmentValidation", "Success", User.Identity.Name, $"updated PurchaseRequisitionUserDepartmentValidation   {entity.PurchaseRequisitionUserDepartmentValidationID} Tag {entity.PurchaseRequisitionID}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { purchaseRequisitionUserDepartmentValidation }.ToDataSourceResult(request, ModelState));
@@ -148,6 +156,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 db.PurchaseRequisitionUserDepartmentValidations.Attach(entity);
                 db.PurchaseRequisitionUserDepartmentValidations.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete PurchaseRequisitionUserDepartmentValidation   {purchaseRequisitionUserDepartmentValidation.PurchaseRequisitionUserDepartmentValidationID} Tag {purchaseRequisitionUserDepartmentValidation.PurchaseRequisitionID}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { purchaseRequisitionUserDepartmentValidation }.ToDataSourceResult(request, ModelState));

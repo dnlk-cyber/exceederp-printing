@@ -10,9 +10,9 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(200);
-          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
-          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(200);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
           //columns.Bound(c => c.ReOrderPoint).Width(130);
           //columns.Bound(c => c.MinPoint).Width(150);
           //columns.Bound(c => c.MaxPoint).Width(150);
@@ -45,7 +45,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+      
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.StoreItemAssignmentID))

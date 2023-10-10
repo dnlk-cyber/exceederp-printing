@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
         public ActionResult PurchasePaymentValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, PurchasePaymentValidation PurchasePaymentValidation)
         {
             var record = _db.PurchasePayments.Find(id);
-            if (record.PaymentType == PaymentType.Payment && record.PurchasePaymentType == PurchasePaymentType.Credit && PurchasePaymentValidation.Status==ApprovalStatuses.Approve)
+            if (record.PaymentType ==PaymentType.Credit) //PaymentType.Payment && record.PurchasePaymentType == PurchasePaymentType.Credit && PurchasePaymentValidation.Status==ApprovalStatuses.Approve)
             {
                 //check if there is grn
                 var grns = _db.PurchasePaymentGrns.Where(x => x.PurchasePaymentId == record.PurchasePaymentId);

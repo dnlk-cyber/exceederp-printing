@@ -34,6 +34,7 @@ namespace ExceedERP.Reporting.Inventory.DataSource
                         ItemCategory = item.ItemCategory.Name,
                         ItemCode = item.InventoryItem.ItemCode,
                         InventoryItem =  item.InventoryItem.Name,
+                        ItemLocation = item.ItemLocation,
                         Balance = item.Balance,
                         AvgPrice = item.AvgPrice,
                         TotalAmount = item.Balance * item.AvgPrice

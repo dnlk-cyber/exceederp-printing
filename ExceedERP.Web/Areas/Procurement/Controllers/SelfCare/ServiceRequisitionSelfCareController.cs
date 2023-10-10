@@ -112,11 +112,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name);
+                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name);
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId));
+                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
@@ -227,7 +227,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                     BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     ReferenceNo = purchaseRequisition.ReferenceNo,
                     ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
@@ -308,7 +308,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     ReferenceNo = purchaseRequisition.ReferenceNo,

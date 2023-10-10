@@ -151,7 +151,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             {
                 var entity = new AnnualNeedAssesment
                 {
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(annualNeedAssesment.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId),
                     BranchId =EmployeeHelper.GetEmployeePlacementBranch(annualNeedAssesment.EmployeeId),
                     EmployeeId = annualNeedAssesment.EmployeeId,
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
@@ -204,7 +204,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                 var entity = new AnnualNeedAssesment
                 {
                     AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(annualNeedAssesment.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId),
                     BranchId = EmployeeHelper.GetEmployeePlacementBranch(annualNeedAssesment.EmployeeId),
                     EmployeeId = annualNeedAssesment.EmployeeId,
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,

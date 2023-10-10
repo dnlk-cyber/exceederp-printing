@@ -15,7 +15,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         private ExceedDbContext _db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ProcurementNeedViewModel> GetProcurementNeed(string project,string workunit, string fiscalyear)
+        public List<ProcurementNeedViewModel> GetProcurementNeed(string project,string workunit, string fiscalyear, string businessUnitId)
         {
             List<ProcurementNeedViewModel> list = new List<ProcurementNeedViewModel> { };
             if (!String.IsNullOrEmpty(fiscalyear))
@@ -33,6 +33,13 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 {
                     int prj = int.Parse(project);
                     reportData = reportData.Where(x => x.AnnualNeedAssesment.BranchId == prj).ToList();
+                }
+
+                if (!String.IsNullOrEmpty(businessUnitId))
+                {
+                    int bdid = int.Parse(businessUnitId);
+                    reportData = reportData.Where(x => x.AnnualNeedAssesment.BusinessUnitId
+                    == bdid).ToList();
                 }
 
                 if (!String.IsNullOrEmpty(workunit))

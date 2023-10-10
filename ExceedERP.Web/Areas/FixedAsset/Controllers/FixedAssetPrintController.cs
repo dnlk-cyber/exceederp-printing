@@ -32,32 +32,38 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
             return View();
         }
         public ActionResult FixedAssetIssuePrint(int id)
-            {
+        {
                 ViewBag.Id = id;
                 return View();
-            }
+        }
         public ActionResult FixedAssetTransferPrint(int id)
-            {
+        {
                 ViewBag.Id = id;
                 return View();
-            }
+        }
         public ActionResult FixedAssetTransferReceivePrint(int id)
         {
             ViewBag.Id = id;
             return View();
         }
         public ActionResult FixedAssetPurchaseRequistionPrint(int id)
-            {
+        {
                 ViewBag.Id = id;
                 return View();
-            }
+        }
         public ActionResult FixedAssetRequistionPrint(int id)
-            {
+        {
                 ViewBag.Id = id;
                 return View();
-            }
+        }
        
         public ActionResult PurchaseRequistionPrint(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+
+        public ActionResult FixedAssetDisposalPrint(int id)
         {
             ViewBag.Id = id;
             return View();

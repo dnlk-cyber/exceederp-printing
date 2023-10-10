@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -56,6 +58,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 db.DamagedParts.Add(entity);
                 db.SaveChanges();
                 damagedPart.DamagedPartId = entity.DamagedPartId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "DamagedPart", "Success", User.Identity.Name, $"created DamagedPart {entity.DamagedPartId} DamagePart {entity.DamagePart}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { damagedPart }.ToDataSourceResult(request, ModelState));
@@ -81,6 +86,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 db.DamagedParts.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "DamagedPart", "Success", User.Identity.Name, $"Update DamagedPart {entity.DamagedPartId} DamagePart {entity.DamagePart}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { damagedPart }.ToDataSourceResult(request, ModelState));
@@ -106,6 +114,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 db.DamagedParts.Attach(entity);
                 db.DamagedParts.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete DamagedPart {damagedPart.DamagedPartId} DamagePart {damagedPart.DamagePart}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { damagedPart }.ToDataSourceResult(request, ModelState));

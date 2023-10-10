@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -74,6 +76,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 _db.FixedAssetInspections.Add(entity);
                 _db.SaveChanges();
                 itemInspection.FixedAssetInspectionId = entity.FixedAssetInspectionId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetInspection", "Success", User.Identity.Name, $"created FixedAssetInspection {entity.FixedAssetInspectionId} Tag {entity.EmployeeId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { itemInspection }.ToDataSourceResult(request, ModelState));
@@ -103,6 +108,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 _db.FixedAssetInspections.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetInspection", "Success", User.Identity.Name, $"update FixedAssetInspection {entity.FixedAssetInspectionId} Tag {entity.EmployeeId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { itemInspection }.ToDataSourceResult(request, ModelState));
@@ -126,6 +134,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 _db.FixedAssetInspections.Attach(entity);
                 _db.FixedAssetInspections.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetInspection {itemInspection.FixedAssetInspectionId} Tag {itemInspection.EmployeeId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { itemInspection }.ToDataSourceResult(request, ModelState));

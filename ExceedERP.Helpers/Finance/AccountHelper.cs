@@ -8,6 +8,7 @@ using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
 
+
 namespace ExceedERP.Helpers.Finance
 {
     public class AccountHelper
@@ -802,7 +803,10 @@ namespace ExceedERP.Helpers.Finance
             return errorMsg;
         }
 
-    
+        //public string IsValidJournal(IQueryable<TDSJournalDetail> lines)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         //both
         public  string GetNaturalAccountSegment(string acct)

@@ -5,7 +5,9 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Reporting.FixedAsset.Print.ViewModel;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.SharedDataSources;
@@ -29,21 +31,59 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 _headerDs = new FixedAssetRequistionHeader
                 {
                     StoreRequsitionNo = InventoryPrintHelper.GetId(assetRequisition.FixedAssetRequisitionId),
-                    RequestedDate = assetRequisition.RequestDate.ToShortDateString(),
-                    ApprovedDate = assetRequisition.OnlineApprovedTime.GetValueOrDefault().ToShortDateString(),
+                    RequestedDate = assetRequisition.RequestDate,                   
                     Requestor = EmployeeHelper.GetEmployeeEnglishName(assetRequisition.EmployeeId),
+                    RequestorSignature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(assetRequisition.EmployeeId)),
+
                     StoreName = InventoryPrintHelper.StoreName(assetRequisition.StoreCode),
+
+                    PreparedDate = assetRequisition.DateCreated != null ? assetRequisition.DateCreated : null,
+                    PreparedBy =
+                        EmployeeHelper.GetEmployeeEnglishName(
+                            UserHelper.GetUserEmployeeId(assetRequisition.CreatedBy)),
+                    PreparedBySignature = SignatureHelper.GetUserSignature(assetRequisition.CreatedBy),
+
+                    //CheckedDate = assetRequisition.SendForApprovalTime != null ? assetRequisition.SendForApprovalTime : null,
+                    //CheckedBy =
+                    //    EmployeeHelper.GetEmployeeEnglishName(
+                    //        UserHelper.GetUserEmployeeId(assetRequisition.SendForApprovalBy)),
+                    //CheckedBySignature = SignatureHelper.GetUserSignature(assetRequisition.SendForApprovalBy),
+
+                    CheckedDate = assetRequisition.OnlineApprovedTime != null ? assetRequisition.OnlineApprovedTime : null,
+                    CheckedBy =
+                        EmployeeHelper.GetEmployeeEnglishName(
+                            UserHelper.GetUserEmployeeId(assetRequisition.OnlineApprovedBy)),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(assetRequisition.OnlineApprovedBy),
+
+                    AuthorizedDate = assetRequisition.MiddleOnlineApprovedTime != null ? assetRequisition.MiddleOnlineApprovedTime : null,
                     AuthorizedBy =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(assetRequisition.MiddleOnlineApprovedBy)),
+                    AuthorizedSignature = SignatureHelper.GetUserSignature(assetRequisition.MiddleOnlineApprovedBy),
+
+                    // ApprovedDate = assetRequisition.OnlineApprovedTime != null ? assetRequisition.OnlineApprovedTime : null,
+                    // ApprovedBy =
+                    //     EmployeeHelper.GetEmployeeEnglishName(
+                    //         UserHelper.GetUserEmployeeId(assetRequisition.OnlineApprovedBy)),
+                    //ApproverSignature = SignatureHelper.GetUserSignature(assetRequisition.OnlineApprovedBy),
+
+                    ApprovedDate = assetRequisition.MiddleOnlineApprovedTime != null ? assetRequisition.MiddleOnlineApprovedTime : null,
                     ApprovedBy =
                         EmployeeHelper.GetEmployeeEnglishName(
-                            UserHelper.GetUserEmployeeId(assetRequisition.OnlineApprovedBy)),
+                            UserHelper.GetUserEmployeeId(assetRequisition.MiddleOnlineApprovedBy)),
+                    ApproverSignature = SignatureHelper.GetUserSignature(assetRequisition.MiddleOnlineApprovedBy),
+
                     RequestingDepartment = InventoryPrintHelper.WorkUnitName(assetRequisition.OrgStructureId),
                     RequestingStore = InventoryPrintHelper.StoreName(assetRequisition.StoreCode),
                     ForProject = InventoryPrintHelper.BranchName(assetRequisition.BranchId),
                     Remark = assetRequisition.Remark
                 };
+
+                if(assetRequisition.IsTransfer)
+                {
+                    int forBranchid = InventoryHelper.GetStoreBranch(assetRequisition.ToStoreCode);
+                    _headerDs.ForProject = InventoryPrintHelper.BranchName(forBranchid);
+                }
 
 
                 if (organization != null)

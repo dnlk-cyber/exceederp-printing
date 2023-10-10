@@ -10,10 +10,8 @@ namespace ExceedERP.Core.Domain.FixedAsset.Receives
     {
         public int FixedAssetReceiveItemID { get; set; }
         public int FixedAssetReceiveId { get; set; }
-        public virtual FixedAssetReceive FixedAssetReceive { get; set; }
-        [Required]
-        [DisplayName("Name")]
-        public string Name { get; set; }
+        public virtual FixedAssetReceive FixedAssetReceive { get; set; }       
+     
         [Required]
         [DisplayName("Category")]
         public int FixedAssetCategoryID { get; set; }
@@ -22,6 +20,9 @@ namespace ExceedERP.Core.Domain.FixedAsset.Receives
         [DisplayName("Sub Category")]
         public int FixedAssetSubCategoryID { get; set; }
         public virtual FixedAssetSubCategory FixedAssetSubCategory { get; set; }
+        [DisplayName("Name")]
+        public string Name { get; set; }
+        public int  FixedAssetNameID { get; set; }
         public string Unit { get; set; }
         public int Quantity { get; set; }
         [Display(Name = "Unit Price")]

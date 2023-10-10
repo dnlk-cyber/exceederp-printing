@@ -32,5 +32,6 @@ namespace ExceedERP.Core.Domain.Inventory.BaseModel
         public string StoreCode { get; set; }//for transfer send/receive
         public BinCardTransactionTypes TransactionType { get; set; }
         public BinCardTransactionStatus StatusType { get; set; }
+        public BinCardTransactionOrder TransactionOrder { get; set; }
     }
 }

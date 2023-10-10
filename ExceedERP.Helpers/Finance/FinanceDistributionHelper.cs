@@ -14,6 +14,13 @@ using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Helpers.HR;
+using DocumentFormat.OpenXml.Bibliography;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
+using ExceedERP.Core.Domain.Finance.Common;
+using DocumentFormat.OpenXml.Vml;
+
+using ExceedERP.Core.Domain.CRM;
 
 namespace ExceedERP.Helpers.Finance
 {
@@ -1098,6 +1105,7 @@ namespace ExceedERP.Helpers.Finance
 
             foreach (var d in distributions)
             {
+                #region replace location account
                 int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
                 if (locationindex != -1)
                 {
@@ -1105,6 +1113,24 @@ namespace ExceedERP.Helpers.Finance
                     d.AccountCode = _dynamicAccount.ReplaceSegment(d.AccountCode, locationindex, branchAccountSeG);
                     d.AccountDesc = _dynamicAccount.GetAccountDesc(d.AccountCode);
                 }
+                #endregion
+                #region replace business unit
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    int storeBusinUnitId = record.BusinessUnitId;
+                    if (storeBusinUnitId != 0)
+                    {
+                        int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (bizunitindex != -1)
+                        {
+                            string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                            string newacc = _dynamicAccount.ReplaceSegment(d.AccountCode, bizunitindex, sectorAccountSeG);
+                            d.AccountCode = newacc;
+                            d.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                        }
+                    }
+                }
+                #endregion
                 _db.APPaybleInvoiceDistributions.Add(d);
                 _db.SaveChanges();
             }
@@ -1448,9 +1474,39 @@ namespace ExceedERP.Helpers.Finance
                 #endregion
 
 
-                foreach (var distribution in distributions)
+
+                int branchId = record.BranchId;
+
+                foreach (var d in distributions)
                 {
-                    _db.APMiscellaneousPaymentDistributions.Add(distribution);
+                    #region replace location account
+                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    if (locationindex != -1)
+                    {
+                        string branchAccountSeG = HrHelper.GetBranchLocationAccount(branchId);
+                        d.AccountCode = _dynamicAccount.ReplaceSegment(d.AccountCode, locationindex, branchAccountSeG);
+                        d.AccountDesc = _dynamicAccount.GetAccountDesc(d.AccountCode);
+                    }
+                    #endregion
+                    #region replace business unit
+                    if (GlobalHelper.IsMultipleBusinessUnit())
+                    {
+                        int storeBusinUnitId = record.BusinessUnitId;
+                        if (storeBusinUnitId != 0)
+                        {
+                            int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                            if (bizunitindex != -1)
+                            {
+                                string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                                string newacc = _dynamicAccount.ReplaceSegment(d.AccountCode, bizunitindex, sectorAccountSeG);
+                                d.AccountCode = newacc;
+                                d.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    _db.APMiscellaneousPaymentDistributions.Add(d);
                     _db.SaveChanges();
                 }
             }
@@ -1458,7 +1514,7 @@ namespace ExceedERP.Helpers.Finance
         }
         public  void UpdateApDirectPaymentDistribution(int id)
         {
-           
+            List<ApDirectPaymentDistribution> distributions = new List<ApDirectPaymentDistribution>();
             _accountHelper = new AccountHelper();
             var record = _db.ApDirectPayments.Find(id);
             string lcAccountCode = "";           
@@ -1480,7 +1536,7 @@ namespace ExceedERP.Helpers.Finance
                 _db.ApDirectPaymentDistributions.RemoveRange(records);
                 _db.SaveChanges();
                 #endregion
-                ApDirectPaymentDistribution defaultDistribution;
+               
 
                 var paymentlines = _db.ApDirectPaymentLines.Where(x => x.ApDirectPaymentId == id).AsNoTracking().ToList();
                 decimal total = paymentlines.Sum(x => x.TotalAmount);
@@ -1495,16 +1551,28 @@ namespace ExceedERP.Helpers.Finance
 
                             if (total > 0)
                             {
-                                defaultDistribution = new ApDirectPaymentDistribution
+                                var distribution = distributions.FirstOrDefault(x => x.AccountCode == lcAccountCode);
+                                if (distribution != null)
                                 {
-                                    AccountCode = lcAccountCode,
-                                    AccountDesc = _accountHelper.GetAccountDesc(lcAccountCode),
-                                    Debit = total,
-                                    Credit = 0,
-                                    ApDirectPaymentId = record.ApDirectPaymentId
-                                };
-                                _db.ApDirectPaymentDistributions.Add(defaultDistribution);
-                                _db.SaveChanges();
+                                    distribution.AccountCode = lcAccountCode;
+                                    distribution.AccountDesc = _accountHelper.GetAccountDesc(lcAccountCode);
+                                    distribution.Debit += total;
+                                    distribution.Credit = 0;
+                                    distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                                }
+                                else
+                                {
+                                    var defaultDistribution = new ApDirectPaymentDistribution
+                                    {
+                                        AccountCode = lcAccountCode,
+                                        AccountDesc = _accountHelper.GetAccountDesc(lcAccountCode),
+                                        Debit = total,
+                                        Credit = 0,
+                                        ApDirectPaymentId = record.ApDirectPaymentId
+                                    };
+                                    distributions.Add(defaultDistribution);
+                                }
+                               
                             }
 
                             #endregion
@@ -1521,16 +1589,28 @@ namespace ExceedERP.Helpers.Finance
 
                                 if (line.Amount > 0)
                                 {
-                                    defaultDistribution = new ApDirectPaymentDistribution
+                                    var distribution = distributions.FirstOrDefault(x => x.AccountCode == setupitem.AccountCode);
+                                    if (distribution != null)
                                     {
-                                        AccountCode = setupitem.AccountCode,
-                                        AccountDesc = _accountHelper.GetAccountDesc(setupitem.AccountCode),
-                                        Debit = line.Amount,
-                                        Credit = 0,
-                                        ApDirectPaymentId = record.ApDirectPaymentId
-                                    };
-                                    _db.ApDirectPaymentDistributions.Add(defaultDistribution);
-                                    _db.SaveChanges();
+                                        distribution.AccountCode = setupitem.AccountCode;
+                                        distribution.AccountDesc = _accountHelper.GetAccountDesc(setupitem.AccountCode);
+                                        distribution.Debit += line.Amount;
+                                        distribution.Credit = 0;
+                                        distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                                    }
+                                    else
+                                    {
+                                        var defaultDistribution = new ApDirectPaymentDistribution
+                                        {
+                                            AccountCode = setupitem.AccountCode,
+                                            AccountDesc = _accountHelper.GetAccountDesc(setupitem.AccountCode),
+                                            Debit = line.Amount,
+                                            Credit = 0,
+                                            ApDirectPaymentId = record.ApDirectPaymentId
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+                                   
                                 }
 
                                 #endregion
@@ -1538,10 +1618,86 @@ namespace ExceedERP.Helpers.Finance
                         }
                         break;
                     case "TRAVEL-ORDER":
+                        var travelOrderlines = _db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == did).ToList();
+                        foreach (var line in travelOrderlines)
+                        {
+                            var setupitem = _db.ApSetupItems.Find(int.Parse(line.ItemName));
+                            if (setupitem != null)
+                            {
+                                #region debit expense account
 
+                                if (line.Total > 0)
+                                {
+                                    var distribution = distributions.FirstOrDefault(x => x.AccountCode == setupitem.AccountCode);
+                                    if (distribution != null)
+                                    {
+                                        distribution.AccountCode = setupitem.AccountCode;
+                                        distribution.AccountDesc = _accountHelper.GetAccountDesc(setupitem.AccountCode);
+                                        distribution.Debit += line.Total;
+                                        distribution.Credit = 0;
+                                        distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                                    }
+                                    else
+                                    {
+                                        var defaultDistribution = new ApDirectPaymentDistribution
+                                        {
+                                            AccountCode = setupitem.AccountCode,
+                                            AccountDesc = _accountHelper.GetAccountDesc(setupitem.AccountCode),
+                                            Debit = line.Total,
+                                            Credit = 0,
+                                            ApDirectPaymentId = record.ApDirectPaymentId
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+
+                                }
+
+                                #endregion
+                            }
+                        }
                         break;
                     case "EXPENSE-CLAIM":
 
+                        break;
+                    case "FUND-TRANSFER":
+                        var fund = _db.FundTransfers.Find(did);
+                        if (fund != null)
+                        {
+                            var bankAccount = _db.BankAccounts.Find(fund.BankAccountId);
+                            if (bankAccount != null)
+                            {
+                                #region debit bank account
+
+                                if (totalnet > 0)
+                                {
+                                    var distribution = distributions.FirstOrDefault(x => x.AccountCode == bankAccount.AccountCode);
+                                    if (distribution != null)
+                                    {
+                                        distribution.AccountCode = bankAccount.AccountCode;
+                                        distribution.AccountDesc = _accountHelper.GetAccountDesc(bankAccount.AccountCode);
+                                        distribution.Debit += totalnet;
+                                        distribution.Credit = 0;
+                                        distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                                    }
+                                    else
+                                    {
+                                        var defaultDistribution = new ApDirectPaymentDistribution
+                                        {
+                                            AccountCode = bankAccount.AccountCode,
+                                            AccountDesc = _accountHelper.GetAccountDesc(bankAccount.AccountCode),
+                                            Debit = totalnet,
+                                            Credit = 0,
+                                            ApDirectPaymentId = record.ApDirectPaymentId
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+
+                                   
+                                }
+
+                                #endregion
+                            }
+                        }
                         break;
                 }
                 #endregion
@@ -1553,20 +1709,34 @@ namespace ExceedERP.Helpers.Finance
 
                     if (line.TaxAmount > 0)
                     {
-
-                        defaultDistribution = new ApDirectPaymentDistribution();
+                       
                         //get  account
                         var tax = _db.GLTaxRates.Find(line.GLTaxRateID);
                         if (tax != null)
                         {
-                            defaultDistribution.AccountCode = tax.ApAccountCode;
-                            defaultDistribution.AccountDesc = _accountHelper.GetAccountDesc(tax.ApAccountCode);
+                            var distribution = distributions.FirstOrDefault(x => x.AccountCode == tax.ApAccountCode);
+                            if (distribution != null)
+                            {
+                                distribution.AccountCode = tax.ApAccountCode;
+                                distribution.AccountDesc = _accountHelper.GetAccountDesc(tax.ApAccountCode);
+                                distribution.Debit += line.TaxAmount;
+                                distribution.Credit = 0;
+                                distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                            }
+                            else
+                            {
+                                var defaultDistribution = new ApDirectPaymentDistribution
+                                {
+                                    AccountCode = tax.ApAccountCode,
+                                    AccountDesc = _accountHelper.GetAccountDesc(tax.ApAccountCode),
+                                    Debit = line.TaxAmount,
+                                    Credit = 0,
+                                    ApDirectPaymentId = record.ApDirectPaymentId
+                                };
+                                distributions.Add(defaultDistribution);
+                            }
                         }
-                        defaultDistribution.Debit = line.TaxAmount;
-                        defaultDistribution.Credit = 0;
-                        defaultDistribution.ApDirectPaymentId = record.ApDirectPaymentId;
-                        _db.ApDirectPaymentDistributions.Add(defaultDistribution);
-                        _db.SaveChanges();
+                       
                     }
 
                     #endregion
@@ -1574,19 +1744,34 @@ namespace ExceedERP.Helpers.Finance
 
                     if (line.WithholdingAmount > 0)
                     {
-                        defaultDistribution = new ApDirectPaymentDistribution();
+                     
                         //get  account
                         var withholding = _db.GLTaxRates.Find(line.WithholdingType);
                         if (withholding != null)
                         {
-                            defaultDistribution.AccountCode = withholding.WithholdingAccountCode;
-                            defaultDistribution.AccountDesc = _accountHelper.GetAccountDesc(withholding.WithholdingAccountCode);
+                            var distribution = distributions.FirstOrDefault(x => x.AccountCode == withholding.WithholdingAccountCode);
+                            if (distribution != null)
+                            {
+                                distribution.AccountCode = withholding.WithholdingAccountCode;
+                                distribution.AccountDesc = _accountHelper.GetAccountDesc(withholding.WithholdingAccountCode);
+                                distribution.Debit = 0;
+                                distribution.Credit += line.WithholdingAmount;
+                                distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                            }
+                            else
+                            {
+                                var defaultDistribution = new ApDirectPaymentDistribution
+                                {
+                                    AccountCode = withholding.WithholdingAccountCode,
+                                    AccountDesc = _accountHelper.GetAccountDesc(withholding.WithholdingAccountCode),
+                                    Debit = 0,
+                                    Credit = line.WithholdingAmount,
+                                    ApDirectPaymentId = record.ApDirectPaymentId
+                                };
+                                distributions.Add(defaultDistribution);
+                            }
                         }
-                        defaultDistribution.Debit = 0;
-                        defaultDistribution.Credit = line.WithholdingAmount;
-                        defaultDistribution.ApDirectPaymentId = record.ApDirectPaymentId;
-                        _db.ApDirectPaymentDistributions.Add(defaultDistribution);
-                        _db.SaveChanges();
+                       
                     }
 
                     #endregion
@@ -1594,19 +1779,35 @@ namespace ExceedERP.Helpers.Finance
 
                     if (line.WithholdTaxAmount > 0)
                     {
-                        defaultDistribution = new ApDirectPaymentDistribution();
+                      
                         //get  account
                         var vatWithholding = _db.GLVatWithholdings.FirstOrDefault();
                         if (vatWithholding != null)
                         {
-                            defaultDistribution.AccountCode = vatWithholding.WithholdingAccountCode;
-                            defaultDistribution.AccountDesc = _accountHelper.GetAccountDesc(vatWithholding.WithholdingAccountCode);
+
+                            var distribution = distributions.FirstOrDefault(x => x.AccountCode == vatWithholding.WithholdingAccountCode);
+                            if (distribution != null)
+                            {
+                                distribution.AccountCode = vatWithholding.WithholdingAccountCode;
+                                distribution.AccountDesc = _accountHelper.GetAccountDesc(vatWithholding.WithholdingAccountCode);
+                                distribution.Debit = 0;
+                                distribution.Credit += line.WithholdTaxAmount;
+                                distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                            }
+                            else
+                            {
+                                var defaultDistribution = new ApDirectPaymentDistribution
+                                {
+                                    AccountCode = vatWithholding.WithholdingAccountCode,
+                                    AccountDesc = _accountHelper.GetAccountDesc(vatWithholding.WithholdingAccountCode),
+                                    Debit = 0,
+                                    Credit = line.WithholdTaxAmount,
+                                    ApDirectPaymentId = record.ApDirectPaymentId
+                                };
+                                distributions.Add(defaultDistribution);
+                            }
                         }
-                        defaultDistribution.Debit = 0;
-                        defaultDistribution.Credit = line.WithholdTaxAmount;
-                        defaultDistribution.ApDirectPaymentId = record.ApDirectPaymentId;
-                        _db.ApDirectPaymentDistributions.Add(defaultDistribution);
-                        _db.SaveChanges();
+                       
                     }
 
                     #endregion
@@ -1616,23 +1817,72 @@ namespace ExceedERP.Helpers.Finance
 
                 if (totalnet > 0)
                 {
-                    defaultDistribution = new ApDirectPaymentDistribution();
+                    
                     var paymentMethod = _db.PaymentMethods.FirstOrDefault(x => x.Method == record.PaymentMethod);
 
                     if (paymentMethod != null)
                     {
-                        defaultDistribution.AccountCode = paymentMethod.ApAccountCode;
-                        defaultDistribution.AccountDesc = _accountHelper.GetAccountDesc(paymentMethod.ApAccountCode);
+                        var distribution = distributions.FirstOrDefault(x => x.AccountCode == paymentMethod.ApAccountCode);
+                        if (distribution != null)
+                        {
+                            distribution.AccountCode = paymentMethod.ApAccountCode;
+                            distribution.AccountDesc = _accountHelper.GetAccountDesc(paymentMethod.ApAccountCode);
+                            distribution.Debit = 0;
+                            distribution.Credit += totalnet;
+                            distribution.ApDirectPaymentId = record.ApDirectPaymentId;
+                        }
+                        else
+                        {
+                            var defaultDistribution = new ApDirectPaymentDistribution
+                            {
+                                AccountCode = paymentMethod.ApAccountCode,
+                                AccountDesc = _accountHelper.GetAccountDesc(paymentMethod.ApAccountCode),
+                                Debit = 0,
+                                Credit = totalnet,
+                                ApDirectPaymentId = record.ApDirectPaymentId
+                            };
+                            distributions.Add(defaultDistribution);
+                        }
                     }
-                    defaultDistribution.Debit = 0;
-                    defaultDistribution.Credit = totalnet;
-                    defaultDistribution.ApDirectPaymentId = record.ApDirectPaymentId;
-                    _db.ApDirectPaymentDistributions.Add(defaultDistribution);
-                    _db.SaveChanges();
+                  
                 }
 
                 #endregion
 
+                int branchId =  record.BranchId;
+
+                foreach (var d in distributions)
+                {
+                    #region replace location account
+                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    if (locationindex != -1)
+                    {
+                        string branchAccountSeG = HrHelper.GetBranchLocationAccount(branchId);
+                        d.AccountCode = _dynamicAccount.ReplaceSegment(d.AccountCode, locationindex, branchAccountSeG);
+                        d.AccountDesc = _dynamicAccount.GetAccountDesc(d.AccountCode);
+                    }
+                    #endregion
+                    #region replace business unit
+                    if (GlobalHelper.IsMultipleBusinessUnit())
+                    {
+                        int storeBusinUnitId = record.BusinessUnitId;
+                        if (storeBusinUnitId != 0)
+                        {
+                            int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                            if (bizunitindex != -1)
+                            {
+                                string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                                string newacc = _dynamicAccount.ReplaceSegment(d.AccountCode, bizunitindex, sectorAccountSeG);
+                                d.AccountCode = newacc;
+                                d.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    _db.ApDirectPaymentDistributions.Add(d);
+                    _db.SaveChanges();
+                }
             }
 
         }
@@ -2123,6 +2373,7 @@ namespace ExceedERP.Helpers.Finance
 
             foreach (var d in distributions)
             {
+                #region replace location account
                 int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
                 if (locationindex != -1)
                 {
@@ -2130,6 +2381,25 @@ namespace ExceedERP.Helpers.Finance
                     d.AccountCode = _dynamicAccount.ReplaceSegment(d.AccountCode, locationindex, branchAccountSeG);
                     d.AccountDesc = _dynamicAccount.GetAccountDesc(d.AccountCode);
                 }
+                #endregion
+                #region replace business unit
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    int storeBusinUnitId = record.BusinessUnitId;
+                    if (storeBusinUnitId != 0)
+                    {
+                        int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (bizunitindex != -1)
+                        {
+                            string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                            string newacc = _dynamicAccount.ReplaceSegment(d.AccountCode, bizunitindex, sectorAccountSeG);
+                            d.AccountCode = newacc;
+                            d.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                        }
+                    }
+                }
+                #endregion
+
 
                 _db.APPaymentDistributions.Add(d);
                 _db.SaveChanges();
@@ -2406,6 +2676,7 @@ namespace ExceedERP.Helpers.Finance
 
             foreach (var d in distributions)
             {
+                #region replace location account
                 int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
                 if (locationindex != -1)
                 {
@@ -2413,6 +2684,24 @@ namespace ExceedERP.Helpers.Finance
                     d.AccountCode = _dynamicAccount.ReplaceSegment(d.AccountCode, locationindex, branchAccountSeG);
                     d.AccountDesc = _dynamicAccount.GetAccountDesc(d.AccountCode);
                 }
+                #endregion
+                #region replace business unit
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    int storeBusinUnitId = record.BusinessUnitId;
+                    if (storeBusinUnitId != 0)
+                    {
+                        int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (bizunitindex != -1)
+                        {
+                            string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                            string newacc = _dynamicAccount.ReplaceSegment(d.AccountCode, bizunitindex, sectorAccountSeG);
+                            d.AccountCode = newacc;
+                            d.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                        }
+                    }
+                }
+                #endregion
 
                 _db.APPaymentDistributions.Add(d);
                 _db.SaveChanges();

@@ -52,25 +52,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APMiscellaneousPaymentDistributions_Create(int id,[DataSourceRequest]DataSourceRequest request, ApMiscellaneousPaymentDistribution aPMiscellaneousPaymentDistribution)
         {
-            bool isvalid = true;
+            #region validated record
+
+            var parent =
+                _db.APMiscellaneousPayments.FirstOrDefault(
+                    x => x.ApMiscellaneousPaymentId ==id);
+            if (parent != null && parent.IsOnlineTransferred)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
+
+
+            #endregion
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApMiscellaneousPayment parent =
-                    _db.APMiscellaneousPayments.FirstOrDefault(
-                        x => x.ApMiscellaneousPaymentId == aPMiscellaneousPaymentDistribution.ApMiscellaneousPaymentId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
                     var entity = new ApMiscellaneousPaymentDistribution
                     {
                         ApMiscellaneousPaymentId = id,
@@ -94,7 +87,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "AP misc payment distribution", "Success", User.Identity.Name, $"updated AP misc payment distribution {entity.AccountCode} under record {entity.ApMiscellaneousPaymentId} ", Modules.Finance);
                     #endregion
-                }
+                
             }
             return Json(new[] { aPMiscellaneousPaymentDistribution }.ToDataSourceResult(request, ModelState));
         }
@@ -102,25 +95,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APMiscellaneousPaymentDistributions_Update(int id,[DataSourceRequest]DataSourceRequest request, ApMiscellaneousPaymentDistribution aPMiscellaneousPaymentDistribution)
         {
-             bool isvalid = true;
+            #region operation log
+            var parent =
+                _db.APMiscellaneousPayments.FirstOrDefault(
+                    x => x.ApMiscellaneousPaymentId == aPMiscellaneousPaymentDistribution.ApMiscellaneousPaymentId);
+            if (parent != null && parent.IsOnlineTransferred)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
+            #endregion
+
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApMiscellaneousPayment parent =
-                    _db.APMiscellaneousPayments.FirstOrDefault(
-                        x => x.ApMiscellaneousPaymentId == aPMiscellaneousPaymentDistribution.ApMiscellaneousPaymentId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
+              
                     var entity = new ApMiscellaneousPaymentDistribution
                     {
                         ApMiscellaneousPaymentDistributionId =aPMiscellaneousPaymentDistribution.ApMiscellaneousPaymentDistributionId,
@@ -140,7 +125,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     _db.APMiscellaneousPaymentDistributions.Attach(entity);
                     _db.Entry(entity).State = EntityState.Modified;
                     _db.SaveChanges();
-                }
+                
             }
 
             return Json(new[] { aPMiscellaneousPaymentDistribution }.ToDataSourceResult(request, ModelState));

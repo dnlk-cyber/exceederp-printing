@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
@@ -31,7 +34,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
         private void PopulateCategories()
         {
             var dataContext = new ExceedDbContext();
-            var categories = dataContext.ItemCategorys;
+            var categories = dataContext.ItemCategorys.Select(i => new {
+                ItemCategoryCode = i.ItemCategoryCode,
+                Name = i.ItemCategoryCode + "" + i.Name
+            })
+            .AsQueryable();
 
             ViewData["categories"] = categories;
             //ViewData["defaultCategory"] = categories.FirstOrDefault();
@@ -110,7 +117,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
 
 
                 if (!String.IsNullOrWhiteSpace(item.SubCategoryCode))
-                    prefixstring = item.SubCategoryCode;
+                    prefixstring = /*item.ItemCategoryCode + "-" +*/ item.SubCategoryCode;
                 else
                 {
                     prefixstring = item.ItemCategoryCode + "-" + "0".PadLeft(3, '0');
@@ -300,7 +307,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
             return Json(new[] { item }.ToDataSourceResult(request, ModelState));
         }
 
-        public ActionResult Enable_Disable(string id)
+        public JsonResult Enable_Disable(string id)
         {
             if (id != null)
             {
@@ -332,11 +339,16 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                 CacheHelper.ResetCache();
             }
 
-            return RedirectToAction("Index");
+            var formattedData = new
+            {
+                Message = "Operation Complete.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
 
         }
 
-        public ActionResult Items_Import([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> files)
+        public ActionResult Items_Import([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> files, InventoryItem item)
         {
             ExceedDbContext db= new ExceedDbContext();
             db.Configuration.ProxyCreationEnabled = false;
@@ -376,7 +388,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                 }
             #endregion
             
-            var item = db.InventoryItems.FirstOrDefault();
+            //var item = _db.InventoryItems.FirstOrDefault();
             DataSet ds = new DataSet();
             foreach (HttpPostedFileBase fileBase in files)
             {
@@ -444,11 +456,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
 
                     #region collect data
 
-                    var defaultunitset = db.UoMs.FirstOrDefault(x => x.Default);
+                    var defaultunitset = _db.UoMs.FirstOrDefault(x => x.Default);
 
-                    var defaultUnit = defaultunitset ?? db.UoMs.FirstOrDefault();
+                    var defaultUnit = defaultunitset ?? _db.UoMs.FirstOrDefault();
 
-                    List<InventoryItem> imports = new List<InventoryItem>();
+                    //List<InventoryItem> imports = new List<InventoryItem>();
                     if (ds.Tables[0].Rows.Count > 0)
                     {
                         for (int j = 0; j <= ds.Tables[0].Rows.Count - 1; j++)
@@ -491,31 +503,36 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
 
                             if (!String.IsNullOrWhiteSpace(itemCode)&&category!=null)
                             {
-                                var import = new InventoryItem
+                                var exisit = db.InventoryItems.Find(itemCode);
+                                if (exisit == null)
                                 {
-                                    ItemCode = itemCode,
-                                    ItemCategoryCode = catCode,
-                                    SubCategoryCode = subCatCode,
-                                    Name = name,
-                                    Type = ItemTypes.StockCommonItem,
-                                    UoMName = unitObj!=null? unitObj.UoMName: defaultUnit?.UoMName,
-                                    PartNo = partNo,
-                                    Balance = 0,
-                                    Enable = true,
-                                    AvgPrice = 0,
-                                    ItemIndex = itemIndex,
-                                    Prefix = prefixstring,
-                                    CreatedBy = User.Identity.Name,
-                                    DateCreated = DateTime.Now
-                                };
+                                    var import = new InventoryItem
+                                    {
+                                        ItemCode = itemCode,
+                                        ItemCategoryCode = catCode,
+                                        SubCategoryCode = subCatCode,
+                                        Name = name,
+                                        Type = ItemTypes.StockCommonItem,
+                                        UoMName = unitObj != null ? unitObj.UoMName : defaultUnit?.UoMName,
+                                        PartNo = partNo,
+                                        Balance = 0,
+                                        Enable = true,
+                                        AvgPrice = 0,
+                                        ItemIndex = itemIndex,
+                                        Prefix = prefixstring,
+                                        CreatedBy = User.Identity.Name,
+                                        DateCreated = DateTime.Now
+                                    };
 
-                                // imports.Add(import);
-                                db.InventoryItems.Add(import);
-                                db.SaveChanges();
+                                    // imports.Add(import);
+                                    db.InventoryItems.Add(import);
+                                    db.SaveChanges();
+                                    
 
-                                #region operation log
-                                UserHelper.OperationLog(Request.UserHostAddress, "inventory item ", "Success", User.Identity.Name, $"importred item {import.ItemCode}  ", Modules.Inventory);
-                                #endregion
+                                    #region operation log
+                                    UserHelper.OperationLog(Request.UserHostAddress, "inventory item ", "Success", User.Identity.Name, $"importred item {itemCode}  ", Modules.Inventory);
+                                    #endregion
+                                }
                             }
                         }
                     }

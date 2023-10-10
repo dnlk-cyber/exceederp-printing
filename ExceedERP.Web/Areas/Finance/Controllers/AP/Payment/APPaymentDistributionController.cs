@@ -57,9 +57,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             ApPayment parent =
                 _db.APPayments.FirstOrDefault(
-                    x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
-            if (parent != null && parent.IsOnlineApproved)
-                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already approved");
+                    x => x.ApPaymentId == id);
+            if (parent != null && parent.IsOnlineTransferred)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
 
 
             #endregion
@@ -101,8 +101,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             ApPayment parent =
                 _db.APPayments.FirstOrDefault(
                     x => x.ApPaymentId == aPPaymentDistribution.ApPaymentId);
-            if (parent != null && parent.IsOnlineApproved)
-                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already approved");
+            if (parent != null && parent.IsOnlineTransferred)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
           
 
             #endregion
@@ -110,7 +110,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             {
                 var entity = new ApPaymentDistribution
                     {
-                        ApPaymentId = id,
+                        ApPaymentId = aPPaymentDistribution.ApPaymentId,
                         ApPaymentDistributionId = aPPaymentDistribution.ApPaymentDistributionId,
                         AccountCode = aPPaymentDistribution.AccountCode,
                         AccountDesc = _accountHelper.GetAccountDesc(aPPaymentDistribution.AccountCode),

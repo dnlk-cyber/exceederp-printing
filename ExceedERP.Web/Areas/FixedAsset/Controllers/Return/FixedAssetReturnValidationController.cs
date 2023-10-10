@@ -7,7 +7,10 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Returns;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -45,13 +48,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
         public ActionResult FixedAssetReturnValidations_Create([DataSourceRequest] DataSourceRequest request, FixedAssetReturnValidation fixedAssetReturnValidation, int id)
         {
 
-            var record = _db.FixedAssetReturns.Find(id);
+            var fixedAssetReturn = _db.FixedAssetReturns.Find(id);
 
             #region Checking the return
 
-            if (record != null)
+            if (fixedAssetReturn != null)
             {
-                if (record.IsOnlineApproved)
+                if (fixedAssetReturn.IsOnlineApproved)
                 {
                     string message = "You cannot manipulate this record,it  is already approved";
                     ModelState.AddModelError("approved", message);
@@ -77,30 +80,42 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
 
             if (ModelState.IsValid)
             {
-                if (record != null)
+                if (fixedAssetReturn != null)
                 {
                     //validate 
                     if (fixedAssetReturnValidation.Status == ApprovalStatuses.Approve)
                     {
-                        #region update asset information
-                        foreach (var i in record.FixedAssetReturnItems)
+                        #region update locationTracking and userCard
+                        foreach (var fixedAssetReturnItem in fixedAssetReturn.FixedAssetReturnItems)
                         {
-                            UpdateAssetMovementAndUserCard(i);
+                            //UpdateAssetMovementAndUserCard(fixedAssetReturnItem);
+                            //UpdateLocationTrackingAndUserCard(fixedAssetReturnItem);
+
+                            // Update LocationTracking
+                            FixedAssetHelper.UpdateLocationTracking(fixedAssetReturnItem, User.Identity.Name);
+
+                            // Update AssetInfo
+                            FixedAssetHelper.UpdateAssetInfo(fixedAssetReturnItem);
+
+                            // Remove from UserCard
+                            FixedAssetHelper.RemovePreviousUserCard(fixedAssetReturnItem);
                         }
                         #endregion
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
-                        _db.Entry(record).State = EntityState.Modified;
+                        fixedAssetReturn.Status = "Approved";
+                        fixedAssetReturn.IsOnlineApproved = true;
+                        fixedAssetReturn.OnlineApprovedBy = User.Identity.Name;
+                        fixedAssetReturn.OnlineApprovedTime = DateTime.Now;
+                        _db.Entry(fixedAssetReturn).State = EntityState.Modified;
                         _db.SaveChanges();
+
+
 
                     }
                     if (fixedAssetReturnValidation.Status == ApprovalStatuses.Reject)
                     {
-                        record.IsSendForApproval = false;
-                        record.Status = "Rejected";
-                        _db.Entry(record).State = EntityState.Modified;
+                        fixedAssetReturn.IsSendForApproval = false;
+                        fixedAssetReturn.Status = "Rejected";
+                        _db.Entry(fixedAssetReturn).State = EntityState.Modified;
                         _db.SaveChanges();
                     }
 
@@ -120,6 +135,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                     _db.FixedAssetReturnValidations.Add(entity);
                     _db.SaveChanges();
                     fixedAssetReturnValidation.FixedAssetReturnValidationId = entity.FixedAssetReturnValidationId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReturnValidation", "Success", User.Identity.Name, $"created FixedAssetReturnValidation {entity.FixedAssetReturnValidationId} FixedAssetReturnId {entity.FixedAssetReturnId}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -143,6 +161,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturnValidations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReturnValidation", "Success", User.Identity.Name, $"update FixedAssetReturnValidation {entity.FixedAssetReturnValidationId} FixedAssetReturnId {entity.FixedAssetReturnId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReturnValidation }.ToDataSourceResult(request, ModelState));
@@ -164,9 +185,28 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturnValidations.Attach(entity);
                 _db.FixedAssetReturnValidations.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete FixedAssetReturnValidation {fixedAssetReturnValidation.FixedAssetReturnValidationId} FixedAssetReturnId {fixedAssetReturnValidation.FixedAssetReturnId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReturnValidation }.ToDataSourceResult(request, ModelState));
+        }
+
+        private void UpdateLocationTrackingAndUserCard(FixedAssetReturnItem fixedAssetReturnItem)
+        {
+            //var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name).ToString();
+            //var orgId = UserInformationHelper.GetEmployeeDepartmentId(User.Identity.Name).ToString();
+            //var user = User.Identity.Name;
+            
+            // Update LocationTracking
+            //FixedAssetHelper.UpdateLocationTracking(fixedAssetReturnItem, User.Identity.Name);
+
+            //// Update AssetInfo
+            //FixedAssetHelper.UpdateAssetInfo(fixedAssetReturnItem);
+
+            //// Remove from UserCard
+            //FixedAssetHelper.RemovePreviousUserCard(fixedAssetReturnItem);
         }
 
         private void UpdateAssetMovementAndUserCard(FixedAssetReturnItem item)
@@ -207,7 +247,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                     LocationType = LocationType.Store,
                     StartDate = DateTime.Today,
                     BranchId = InventoryHelper.GetStoreBranch(item.FixedAssetReturn.StoreCode),
-                    TransactionType = "Return",
+                    TransactionType = FixedAssetTransactionType.Return,
                     TransactionNo = item.FixedAssetReturnId.ToString(),
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
@@ -217,8 +257,16 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
 
                 #region update previous location track as not current
 
+                var userCard = _db.UserCardItems.Where(q => q.AssetRegistrationId == asset.AssetRegistrationId).FirstOrDefault();
+                if(userCard!=null)
+                {
+                    _db.UserCardItems.Attach(userCard);
+                    _db.UserCardItems.Remove(userCard);
+                }
+
                 var prevs = _db.LocationTrackings.Where(x => x.AssetRegistrationId == asset.AssetRegistrationId)
                     .Where(x => x.LocationTrackingId != location.LocationTrackingId).ToList();
+
                 foreach (var prev in prevs)
                 {
                     prev.IsCurrent = false;

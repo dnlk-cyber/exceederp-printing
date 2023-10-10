@@ -4,5 +4,6 @@
   
                     .DataValueField("ItemCategoryCode")
                     .DataTextField("Name")
+                      .Filter("contains")
                     .OptionLabel("Item Category").DataSource(
             read => read.Read(re => re.Action("GetItemCategoryForItemDef", "DataProvider"))))

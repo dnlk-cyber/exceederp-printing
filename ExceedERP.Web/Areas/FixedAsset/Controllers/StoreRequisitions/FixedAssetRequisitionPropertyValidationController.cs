@@ -7,9 +7,11 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -43,6 +45,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return Json(result);
         }
 
+        //FixedAsset Requisition Review Validation 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitionPropertyValidations_Create([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionPropertyValidation fixedAssetRequisitionPropertyValidation, int id)
@@ -63,8 +66,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                         fixedAssetRequisition.IsSecondOnlineApproved = true;
                         fixedAssetRequisition.SecondOnlineApprovedBy = User.Identity.Name;
                         fixedAssetRequisition.SecondOnlineApprovedTime = DateTime.Now;
+
                         _db.Entry(fixedAssetRequisition).State = EntityState.Modified;
                         _db.SaveChanges();
+
                         if (fixedAssetRequisition.IsTransfer)
                         {
                             #region transfer to transfer send
@@ -72,6 +77,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                            // TransferfixedAssetRequisitionItemsToTransfer(fixedAssetRequisition);
 
                             #endregion
+                            //Transfer to PO
                             #region transfer to purchase
 
                             TransferToPurchaseRequisition(fixedAssetRequisition);
@@ -80,12 +86,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                         }
                         else
                         {
-
+                            //Transfer to issue
                             #region transfer to issue
 
                             TransferRequisitionItemsToIssue(fixedAssetRequisition);
 
                             #endregion
+                            //Transfer to Purchase
                             #region transfer to purchase
 
                            TransferToPurchaseRequisition(fixedAssetRequisition);
@@ -116,6 +123,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                _db.FixedAssetRequisitionPropertyValidations.Add(entity);
                 _db.SaveChanges();
                 fixedAssetRequisitionPropertyValidation.FixedAssetRequisitionPropertyValidationId = entity.FixedAssetRequisitionPropertyValidationId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionPropertyValidation", "Success", User.Identity.Name, $"created FixedAssetRequisitionPropertyValidation {entity.FixedAssetRequisitionPropertyValidationId} Tag {entity.FixedAssetRequisitionId}", Modules.FixedAsset);
+                #endregion
             }
 
 
@@ -139,6 +149,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionPropertyValidations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionPropertyValidation", "Success", User.Identity.Name, $"Update FixedAssetRequisitionPropertyValidation {entity.FixedAssetRequisitionPropertyValidationId} Tag {entity.FixedAssetRequisitionId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetRequisitionPropertyValidation }.ToDataSourceResult(request, ModelState));
@@ -161,6 +174,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionPropertyValidations.Attach(entity);
                 _db.FixedAssetRequisitionPropertyValidations.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"created FixedAssetRequisitionPropertyValidation {fixedAssetRequisitionPropertyValidation.FixedAssetRequisitionPropertyValidationId} Tag {fixedAssetRequisitionPropertyValidation.FixedAssetRequisitionId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetRequisitionPropertyValidation }.ToDataSourceResult(request, ModelState));
@@ -238,8 +254,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
         //    }
 
         //}
+
+        /// <summary>
+        /// This function will create FixedAssetIssue and FixedAssetIssueItem
+        /// it uses FixedAssetRequisition and FixedAssetRequisition.FixedAssetRequisition for data
+        /// </summary>
+        /// <param name="fixedAssetRequisition"></param>
         private void TransferRequisitionItemsToIssue(FixedAssetRequisition fixedAssetRequisition)
         {
+            
             bool transferrable = false;
             #region check if there is anything to issue
 
@@ -265,6 +288,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     StoreCode = fixedAssetRequisition.StoreCode,
                     FixedAssetRequisitionId = fixedAssetRequisition.FixedAssetRequisitionId,
                     Reference = fixedAssetRequisition.Reference,
+                    RecipientId = fixedAssetRequisition.EmployeeId,
+                    EmployeeId = fixedAssetRequisition.EmployeeId,
+                    GLPeriodId = fixedAssetRequisition.GLPeriodId,
                     IssueDate = DateTime.Now,
                     Status = "Editing",
                     Remark = fixedAssetRequisition.Remark,
@@ -278,12 +304,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.SaveChanges();
                 #endregion
 
+                
                 foreach (var requestedItem in fixedAssetRequisition.FixedAssetRequisitionItem)
                 {
 
                     for (int i = 0; i < requestedItem.IssuedQuantity; i++)
                     {
-                        #region issue item
+                        #region issueitem
 
                         var issueItem = new FixedAssetIssueItem
                         {
@@ -291,14 +318,22 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                             FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
                             FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
                             FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
-                            RequestedQuantity = 1,
-                            ApprovedQuantity = 1,
-                            IssuedQuantity = 1,
+                            Unit = requestedItem.UoM, //added
+                            AssetRegistrationId = requestedItem.FixedAssetNameID,
+                            Name = requestedItem.Name,
+                            Size = requestedItem.Size,
+                            Model = requestedItem.ModelNo,
+                            SerialNo = requestedItem.SerialNo,
+                            SendToUserCard = true,
+                            ChassisNo = requestedItem.ChasisNo,
+                            RequestedQuantity = requestedItem.RequestedQuantity,
+                            ApprovedQuantity = requestedItem.ApprovedQuantity,
+                            IssuedQuantity = requestedItem.IssuedQuantity,
                             UnitPrice = 0,
                             Total = 0,
                             CreatedBy = User.Identity.Name,
                             DateCreated = DateTime.Now,
-                           
+                          
                         };
                         _db.FixedAssetIssueItems.Add(issueItem);
                         _db.SaveChanges();
@@ -315,6 +350,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
 
         }
        
+
+       
+        /// <summary>
+        /// This function will generate a PurchaseRequisition and PurchaseRequisitionItem. it take FixedAssetRequisition as a param and
+        ///  will populate values for PurchaseRequisition and FixedAssetRequisition.FixedAssetRequisitionItem for PurchaseRequisitionItem
+        /// </summary>
+        /// <param name="fixedAssetRequisition"></param>
         private void TransferToPurchaseRequisition(FixedAssetRequisition fixedAssetRequisition)
         {
             bool transferrable = false;
@@ -366,7 +408,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     ItemType = PurchaseItemType.FixedAsset,
                     PlateNo = fixedAssetRequisition.PlateNo,
                     Status = "Editing",
-                    Remark = fixedAssetRequisition.Remark +" Plate No.",
+                    Remark = fixedAssetRequisition.Remark,
 
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
@@ -396,12 +438,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                             ItmCode = requestedItem.FixedAssetSubCategoryID.ToString(),
                             ItemName = requestedItem.FixedAssetSubCategory.SubCategoryName,
                             PartNo = "",
+                            ModelNo = requestedItem.ModelNo,
+                            ChasisNo =requestedItem.ChasisNo,
                             UoM = requestedItem.UoM,
                             RequestedQuantity = requestedItem.PurchaseQuantity,
                             Quantity = requestedItem.PurchaseQuantity,
                             ItemSpecification = requestedItem.ItemSpecification,
                             Name=requestedItem.Name,
-                            ModelNo = requestedItem.ModelNo,
                             ItemType = PurchaseItemType.FixedAsset,
                             
                             CreatedBy = User.Identity.Name,

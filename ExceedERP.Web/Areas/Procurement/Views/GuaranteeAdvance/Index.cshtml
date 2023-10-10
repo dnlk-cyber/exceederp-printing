@@ -9,8 +9,8 @@
                       columns.Bound(c => c.GuaranteeId).Title("#").Width(70).ClientTemplate("#=appendZeros(GuaranteeId)#");
                       columns.Bound(c => c.SupplierName).Width(150);
                       columns.Bound(c => c.Purpose).Width(120);
-          //columns.Bound(c => c.SupplierId).Width(120);
-          columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(130);
+                     //columns.Bound(c => c.SupplierId).Width(120);
+                      columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(130);
                       columns.Bound(c => c.GuaranteeType).EditorTemplateName("GuaranteeTypes").Width(150);
                       columns.Bound(c => c.GuaranteeMode).EditorTemplateName("GuaranteeModesForGurantee").Width(150);
                       columns.Bound(c => c.GuaranteeRefNo).Width(160);
@@ -87,8 +87,10 @@
                                 {
                                     model.Id(p => p.GuaranteeId);
                                     model.Field(p => p.SupplierId).Editable(false);
+                                    model.Field(p => p.BranchId).Editable(false);
+                                    model.Field(p => p.BusinessUnitId).Editable(false);
                                     model.Field(p => p.ExpireDate).Editable(false);
-                                     model.Field(p => p.GuaranteeId).Editable(false);
+                                    model.Field(p => p.GuaranteeId).Editable(false);
                                     model.Field(p => p.VoidTime).Editable(false);
                                     model.Field(p => p.VoidBy).Editable(false);
                                     model.Field(p => p.isVoid).Editable(false);

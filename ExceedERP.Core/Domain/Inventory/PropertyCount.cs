@@ -13,6 +13,8 @@ namespace ExceedERP.Core.Domain.Inventory
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
         public Branch Branch { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [DisplayName("Store")]
         public string StoreCode { get; set; }
         public InventoryStore Store { get; set; }
@@ -52,11 +54,12 @@ namespace ExceedERP.Core.Domain.Inventory
         [DisplayName("Status")]
         public bool Status { get; set; }
         public bool Updated { get; set; }
-        [DisplayName("Cost")]
+       
         public decimal Price { get; set; }
         public string Location { get; set; }
         [DisplayName("Item Name")]
         public string ItemName { get; set; }
+        [DisplayName("Code")]
         public string ItemCodeReadOnly { get; set; }//for sort
     }
 

@@ -13,7 +13,7 @@
       {
           columns.Bound(c => c.IssueID).Title("Issue No.").Width(120).ClientTemplate("#=appendZeros(IssueID)#");
           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly");
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector"); 
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(100);
           columns.Bound(c => c.PlateNo).Title("Plate No.").Width(100);
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
@@ -77,9 +77,9 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+
       .Events(ev => ev.Edit("onMasterEdit"))
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
@@ -94,6 +94,7 @@
               model.Id(p => p.IssueID);
               // model.Field(p => p.BranchId).Editable(false);
               //  model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.Status).Editable(false);
               // model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.Owner).Editable(false);
@@ -239,7 +240,6 @@
                                           columns.Bound(c => c.IssuedQuantity).Width(70);
                                           columns.Bound(c => c.UnitPrice).Width(70);
                                           columns.Bound(c => c.Total).Width(70);
-                                          columns.Bound(c => c.ProductionJobNo).Width(70);
                                           columns.Bound(c => c.AdditionalCost).Hidden();
 
                                           columns.Bound(c => c.CreatedBy).Hidden();
@@ -373,6 +373,7 @@
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                   .Pageable()
                   .Scrollable()
+                   .Filterable()
                   .Events(ev => ev.DataBound("itemTransfered"))
                   .DataSource(dataSource => dataSource
                       .Ajax()

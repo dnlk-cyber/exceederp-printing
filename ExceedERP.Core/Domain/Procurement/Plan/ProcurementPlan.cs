@@ -1,5 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +15,8 @@ namespace ExceedERP.Core.Domain.Procurement.Plan
         [Required]
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [Display(Name = "Description")]
         public string Name { get; set; }
         public string Remark { get; set; }

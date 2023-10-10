@@ -401,7 +401,7 @@
                                                 .Columns(columns =>
                                                     {
                                                         columns.Bound(x => x.FundTransferAttachmentId).Hidden(true);
-                                                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/FundTransferAttachment/FileDwonload?id=\\#=FundTransferAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+                                                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/FundTransferRequestAttachment/FileDwonload?id=\\#=FundTransferAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
 
                                                         columns.Command(command =>
                                                             {

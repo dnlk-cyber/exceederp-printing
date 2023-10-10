@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -57,6 +59,20 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         public ActionResult AssetTransferItems_Create(int id,[DataSourceRequest]DataSourceRequest request, AssetTransferItem assetTransferItem)
         {
             var asset = _db.AssetRegistrations.Find(assetTransferItem.AssetRegistrationId);
+
+            assetTransferItem.Quantity = 1; // comment 143 not sure ??
+
+            //added validation for duplicate entry
+            var item = _db.AssetTransferItems.ToList();//.Where(x => x.AssetRegistrationId == assetTransferItem.AssetTransferId).ToList();
+
+            if (item.Exists(x => x.AssetRegistrationId == assetTransferItem.AssetRegistrationId))
+            {
+                var tagNo = asset?.Tag;
+                ModelState.AddModelError("Item exists", "Item with tag number " + tagNo + " already added!");
+            }
+
+            
+
             if (asset != null)
             {
                 assetTransferItem.TagNo = asset.Tag;
@@ -114,6 +130,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransferItems.Add(entity);
                 _db.SaveChanges();
                 assetTransferItem.AssetTransferItemId = entity.AssetTransferItemId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferItem", "Success", User.Identity.Name, $"created AssetTransferItem {entity.AssetTransferItemId} Tag {entity.GrnNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferItem }.ToDataSourceResult(request, ModelState));
@@ -189,9 +208,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransferItems.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferItem", "Success", User.Identity.Name, $"Update AssetTransferItem {entity.AssetTransferItemId} Tag {entity.GrnNo}", Modules.FixedAsset);
+                #endregion
+
             }
-        
+
             return Json(new[] { assetTransferItem }.ToDataSourceResult(request, ModelState));
         }
 
@@ -222,6 +244,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransferItems.Attach(entity);
                 _db.AssetTransferItems.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete AssetTransferItem {assetTransferItem.AssetTransferItemId} Tag {assetTransferItem.GrnNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferItem }.ToDataSourceResult(request, ModelState));

@@ -79,12 +79,13 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable().Events(ev => ev.DetailExpand("detailExpandFixedAssetRequisition"))
+      
+      .Events(ev => ev.DetailExpand("detailExpandFixedAssetRequisition"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMasterFixedAssetRequisition"))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .ServerOperation(true)
           .Sort(sort => sort.Add("FixedAssetRequisitionId").Descending())
           .Events(ev => ev
               .Error("error_handler(\"grid\")")
@@ -110,297 +111,300 @@
       ).Resizable(resize => resize.Columns(true))
       .ClientDetailTemplateId("FixedAssetRequisitions"))
 
-                               <script id="FixedAssetRequisitions" type="text/Kendo-tmpl">
+@* Tabs *@
+<script id="FixedAssetRequisitions" type="text/Kendo-tmpl">
+
+               @(Html.Kendo().TabStrip()
+                    .Name("tabStrip_#=FixedAssetRequisitionId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                       {
+//Details
+                           items.Add().Text("Detail").Content(
+
+                           @<text>
+                               # if (!IsOnlineApproved&&!IsSendForApproval)
+                               {#
+
+                               <a onclick='return sendForApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                               <br />
+                               # } #
+
+                               # if (IsOnlineApproved&&!IsMiddleSendForApproval)
+                               {#
+                               <div class="popupwrapper">
+                                   <input type="text" disabled="disabled" id="NextApprover" />
+                                   <img src="~/Content/Images/search.png" onclick="SelectApprover(this)" />
+                               </div>
+                               <a onclick='return sendForSecondApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Second Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                               <br />
+                               # } #
+
+        
+
+                               # if (IsMiddleOnlineApproved)
+                               {#
+
+
+                               <a href='@Url.Action("FixedAssetRequistionPrint", "FixedAssetPrint")/#=FixedAssetRequisitionId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                               <br />
+                               # } #
+                               <div>
+                                   <hr>
+                                   <dl class="dl-horizontal">
+
+                                       <dt>
+                                           Request Date
+                                       </dt>
+                                       <dd>
+                                           #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                       </dd>
+                                       <dt>
+                                           Status
+                                       </dt>
+                                       <dd>
+                                           #= Status #
+                                       </dd>
+                                       <dt>
+                                           Is Transfer
+                                       </dt>
+                                       <dd>
+                                           #= IsTransfer #
+                                       </dd>
+                                       <dt>
+                                           Receiver Store
+                                       </dt>
+                                       <dd>
+                                           #= ToStoreCode #
+                                       </dd>
+                                       <dt>
+                                           CreatedOn
+                                       </dt>
+                                       <dd>
+                                           #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                       </dd>
+                                       <dt>
+                                           CreatedBy
+                                       </dt>
+                                       <dd>
+                                           #= CreatedBy #
+                                       </dd>
+                                       <dt>
+                                           Modified By
+                                       </dt>
+                                       <dd>
+                                           #= ModifiedBy #s
+                                       </dd>
+                                       <dt>
+                                           Modified Date
+                                       </dt>
+                                       <dd>
+                                           #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                       </dd>
+                                       <dt>
+                                           Approved By
+                                       </dt>
+                                       <dd>
+                                           #= OnlineApprovedBy #s
+                                       </dd>
+                                       <dt>
+                                           Approval Time
+                                       </dt>
+                                       <dd>
+                                           #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                       </dd>
+                                       <dt>
+                                           Second Approved By
+                                       </dt>
+                                       <dd>
+                                           #= MiddleOnlineApprovedBy #s
+                                       </dd>
+                                       <dt>
+                                           Approval Time
+                                       </dt>
+                                       <dd>
+                                           #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy') #
+                                       </dd>
+                                       <dt>
+                                           Approved By -Procurement
+                                       </dt>
+                                       <dd>
+                                           #= SecondOnlineApprovedBy #s
+                                       </dd>
+                                       <dt>
+                                           Approval Time
+                                       </dt>
+                                       <dd>
+                                           #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
+                                       </dd>
+                                   </dl>
+                               </div>
+
+                               <hr>
+
+                               # if (IsOnlineApproved&&!IsVoid)
+                               {#
+                               @if (HttpContext.Current.User.IsInRole("FixedAsset_Void"))
+                               {
+                               <a onclick='return voidRecord("#=FixedAssetRequisitionId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                }
+                              
+                               # } #
+                           </text>
+                        );
+//Items   
+
+           items.Add().Text("Items").Content(
+           @<text>
+               @(Html.Kendo().Grid<FixedAssetRequisitionItem>()
+                     .Name("FixedAssetRequisitionItem_#=FixedAssetRequisitionId#")
+                     .Columns(columns =>
+                     {
+                         columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(180);
+                         columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(180);
+                         columns.ForeignKey(p => p.FixedAssetNameID, (IEnumerable)ViewData["SubCategoryName"], "FixedAssetSubCategoryNameID", "Name").Title("Name").EditorTemplateName("FixedAssetSubCategoryNameSelector").Width(180);
+                         //columns.Bound(c => c.FixedAssetNameID).EditorTemplateName("FixedAssetSubCategoryNameSelector").Width(130);
+                         columns.Bound(c => c.Name).Width(100);
+                         columns.Bound(c => c.ItemSpecification).EditorTemplateName("SpecTextEditor").Width(100);
+                         columns.Bound(c => c.ModelNo).Width(100);
+                         columns.Bound(c => c.SerialNo).Width(100);
+                         columns.Bound(c => c.ChasisNo).Width(100);
+                         columns.Bound(c => c.UoM).Width(100).EditorTemplateName("UoMSelector");
+                         columns.Bound(c => c.RequestedQuantity).Width(110);
+                         columns.Bound(c => c.ApprovedQuantity).Width(110);
+                         columns.Command(command =>
+                         {
+                             command.Edit();
+                             command.Destroy();
+                         });
+
+                     })
+                     .ToolBar(toolbar =>
+                     {
+                         toolbar.Create();
+                     }).Events(ev => ev.Edit("onItemEdit"))
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Scrollable()
+                     .Events(x => x.DataBound("onDataBoundLinesFixedAssetRequisition"))
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Events(ev => ev
+                             .Error("error_handler(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
+                             .RequestStart("onRequestStart(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
+                             .RequestEnd("onRequestEnd(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")"))
+                         .Model(model =>
+                         {
+                             model.Id(p => p.FixedAssetRequisitionItemId);
+                             model.Field(p => p.IssuedQuantity).Editable(false);
+                             model.Field(p => p.PurchaseQuantity).Editable(false);
+                             model.Field(p => p.Name).Editable(false);
+                             model.Field(p => p.CreatedBy).Editable(false);
+                             model.Field(p => p.DateCreated).Editable(false);
+                             model.Field(p => p.ModifiedBy).Editable(false);
+                             model.Field(p => p.LastModified).Editable(false);
+
+                         })
+                         .Read(read => read.Action("FixedAssetRequisitionItems_Read", "FixedAssetRequisitionItem", new { id = "#=FixedAssetRequisitionId#" }))
+                         .Create(create => create.Action("FixedAssetRequisitionItems_Create", "FixedAssetRequisitionItem", new { id = "#=FixedAssetRequisitionId#" }))
+                         .Update(update => update.Action("FixedAssetRequisitionItems_Update", "FixedAssetRequisitionItem"))
+                         .Destroy(destroy => destroy.Action("FixedAssetRequisitionItems_Destroy", "FixedAssetRequisitionItem"))
+                     ).ToClientTemplate())
+           </text>
+               );
+//Validation
+   items.Add().Text("Validation").Content(
+           @<text>
+
+               @(Html.Kendo().Grid<FixedAssetRequisitionValidation>()
+                     .Name("FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#")
+                     .Columns(columns =>
+                     {
+                        columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                        columns.Bound(c => c.Remark).Width(170);
+                        columns.Command(command =>
+                        {
+                             command.Edit();
+                            //command.Destroy();
+                        });
+                     })
+                     .ToolBar(toolbar =>
+                     {
+                        toolbar.Create();
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Scrollable()
+                     .Events(x => x.DataBound("onDataBoundFisrtValidationFixedAssetRequisition").Save("onSave"))
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Events(ev => ev
+                             .Error("error_handler(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")")
+                             .RequestStart("onRequestStart(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")")
+                             .RequestEnd("onRequestEnd(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")"))
+                         .Model(model =>
+                         {
+                            model.Id(p => p.FixedAssetRequisitionValidationId);
+                         })
+                         .Read(read => read.Action("FixedAssetRequisitionValidations_Read", "FixedAssetRequisitionValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                         .Create(create => create.Action("FixedAssetRequisitionValidations_Create", "FixedAssetRequisitionValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                         .Update(update => update.Action("FixedAssetRequisitionValidations_Update", "FixedAssetRequisitionValidation"))
+                         .Destroy(destroy => destroy.Action("FixedAssetRequisitionValidations_Destroy", "FixedAssetRequisitionValidation"))
+
+                     ).ToClientTemplate())
+
+           </text>
+               );
+
+//Second Validation 
+   items.Add().Text("Second Validation").Content(
+           @<text>
+
+               @(Html.Kendo().Grid<FixedAssetRequisitionSecondValidation>()
+                     .Name("FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                         columns.Bound(c => c.Remark).Width(170);
+                         columns.Command(command =>
+                         {
+                            command.Edit();
+                             //command.Destroy();
+                         });
+                     })
+                     .ToolBar(toolbar =>
+                     {
+
+                         toolbar.Create();
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Scrollable()
+                     .Events(x => x.DataBound("onDataBoundSecondValidationFixedAssetRequisition").Save("onSave"))
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Events(ev => ev
+                             .Error("error_handler(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")")
+                             .RequestStart("onRequestStart(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")")
+                             .RequestEnd("onRequestEnd(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")"))
+                         .Model(model =>
+                         {
+                            model.Id(p => p.FixedAssetRequisitionSecondValidationId);
+                         })
+                         .Read(read => read.Action("FixedAssetRequisitionSecondValidations_Read", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                         .Create(create => create.Action("FixedAssetRequisitionSecondValidations_Create", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                         .Update(update => update.Action("FixedAssetRequisitionSecondValidations_Create", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
+
+                     ).ToClientTemplate())
+
+           </text>
+               );
+
+        }).ToClientTemplate())
 
 
 
 
-                                   @(Html.Kendo().TabStrip().Name("tabStrip_#=FixedAssetRequisitionId#").SelectedIndex(0).Items(items =>
-                                           {
-                                               items.Add().Text("Detail").Content(
 
-
-                                               @<text>
-                                                   # if (!IsOnlineApproved&&!IsSendForApproval)
-                                                   {#
-
-                                                   <a onclick='return sendForApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                   <br />
-                                                   # } #
-
-                                                   # if (IsOnlineApproved&&!IsMiddleSendForApproval)
-                                                   {#
-                                                   <div class="popupwrapper">
-                                                       <input type="text" disabled="disabled" id="NextApprover" />
-                                                       <img src="~/Content/Images/search.png" onclick="SelectApprover(this)" />
-                                                   </div>
-                                                   <a onclick='return sendForSecondApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Second Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                   <br />
-                                                   # } #
-
-
-
-                                                   # if (IsMiddleOnlineApproved)
-                                                   {#
-
-
-                                                   <a href='@Url.Action("FixedAssetRequistionPrint", "FixedAssetPrint")/#=FixedAssetRequisitionId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                   <br />
-                                                   # } #
-                                                   <div>
-                                                       <hr>
-                                                       <dl class="dl-horizontal">
-
-                                                           <dt>
-                                                               Request Date
-                                                           </dt>
-                                                           <dd>
-                                                               #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
-                                                           </dd>
-                                                           <dt>
-                                                               Status
-                                                           </dt>
-                                                           <dd>
-                                                               #= Status #
-                                                           </dd>
-                                                           <dt>
-                                                               Is Transfer
-                                                           </dt>
-                                                           <dd>
-                                                               #= IsTransfer #
-                                                           </dd>
-                                                           <dt>
-                                                               Receiver Store
-                                                           </dt>
-                                                           <dd>
-                                                               #= ToStoreCode #
-                                                           </dd>
-                                                           <dt>
-                                                               CreatedOn
-                                                           </dt>
-                                                           <dd>
-                                                               #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                           </dd>
-                                                           <dt>
-                                                               CreatedBy
-                                                           </dt>
-                                                           <dd>
-                                                               #= CreatedBy #
-                                                           </dd>
-                                                           <dt>
-                                                               Modified By
-                                                           </dt>
-                                                           <dd>
-                                                               #= ModifiedBy #s
-                                                           </dd>
-                                                           <dt>
-                                                               Modified Date
-                                                           </dt>
-                                                           <dd>
-                                                               #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-                                                           </dd>
-                                                           <dt>
-                                                               Approved By
-                                                           </dt>
-                                                           <dd>
-                                                               #= OnlineApprovedBy #s
-                                                           </dd>
-                                                           <dt>
-                                                               Approval Time
-                                                           </dt>
-                                                           <dd>
-                                                               #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
-                                                           </dd>
-                                                           <dt>
-                                                               Second Approved By
-                                                           </dt>
-                                                           <dd>
-                                                               #= MiddleOnlineApprovedBy #s
-                                                           </dd>
-                                                           <dt>
-                                                               Approval Time
-                                                           </dt>
-                                                           <dd>
-                                                               #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy') #
-                                                           </dd>
-                                                           <dt>
-                                                               Approved By -Procurement
-                                                           </dt>
-                                                           <dd>
-                                                               #= SecondOnlineApprovedBy #s
-                                                           </dd>
-                                                           <dt>
-                                                               Approval Time
-                                                           </dt>
-                                                           <dd>
-                                                               #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
-                                                           </dd>
-                                                       </dl>
-                                                   </div>
-
-                                                   <hr>
-
-                                                   # if (IsOnlineApproved&&!IsVoid)
-                                                   {#
-                                                   @if (HttpContext.Current.User.IsInRole("FixedAsset_Void"))
-                                                   {
-                                                   <a onclick='return voidRecord("#=FixedAssetRequisitionId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                                    }
-                                                  
-                                                   # } #
-                                               </text>
-                                            );
-
-                               items.Add().Text("Items").Content(
-                               @<text>
-                                   @(Html.Kendo().Grid<FixedAssetRequisitionItem>()
-                                                 .Name("FixedAssetRequisitionItem_#=FixedAssetRequisitionId#")
-                                                 .Columns(columns =>
-                                                 {
-                                     columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(180);
-                                     columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(180);
-                                     columns.Bound(c => c.Name).Width(110).EditorTemplateName("FixedAssetSubCategoryNameSelector");
-                                     columns.Bound(c => c.ModelNo).Width(100);
-                                     columns.Bound(c => c.SerialNo).Width(100);
-                                     columns.Bound(c => c.ChasisNo).Width(100);
-                                     columns.Bound(c => c.UoM).Width(100).EditorTemplateName("UoMSelector");
-                                     columns.Bound(c => c.RequestedQuantity).Width(110);
-                                     columns.Bound(c => c.ApprovedQuantity).Width(110);
-                                     columns.Command(command =>
-                                     {
-                                         command.Edit();
-                                         command.Destroy();
-                                     });
-
-                                 })
-                                                 .ToolBar(toolbar =>
-                                                 {
-                                     toolbar.Create();
-                                 }).Events(ev => ev.Edit("onItemEdit"))
-                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                 .Scrollable()
-                                                 .Events(x => x.DataBound("onDataBoundLinesFixedAssetRequisition"))
-                                                 .DataSource(dataSource => dataSource
-                                                     .Ajax()
-                                                     .Events(ev => ev
-                                                         .Error("error_handler(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
-                                                         .RequestStart("onRequestStart(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
-                                                         .RequestEnd("onRequestEnd(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")"))
-                                                     .Model(model =>
-                                                     {
-                                         model.Id(p => p.FixedAssetRequisitionItemId);
-                                         model.Field(p => p.IssuedQuantity).Editable(false);
-                                         model.Field(p => p.PurchaseQuantity).Editable(false);
-
-                                         model.Field(p => p.CreatedBy).Editable(false);
-                                         model.Field(p => p.DateCreated).Editable(false);
-                                         model.Field(p => p.ModifiedBy).Editable(false);
-                                         model.Field(p => p.LastModified).Editable(false);
-
-                                     })
-                                                     .Read(read => read.Action("FixedAssetRequisitionItems_Read", "FixedAssetRequisitionItem", new { id = "#=FixedAssetRequisitionId#" }))
-                                                     .Create(create => create.Action("FixedAssetRequisitionItems_Create", "FixedAssetRequisitionItem", new { id = "#=FixedAssetRequisitionId#" }))
-                                                     .Update(update => update.Action("FixedAssetRequisitionItems_Update", "FixedAssetRequisitionItem"))
-                                                     .Destroy(destroy => destroy.Action("FixedAssetRequisitionItems_Destroy", "FixedAssetRequisitionItem"))
-                                                 ).ToClientTemplate())
-                               </text>
-                                   );
-
-                       items.Add().Text("Validation").Content(
-                               @<text>
-
-                                   @(Html.Kendo().Grid<FixedAssetRequisitionValidation>()
-                                                 .Name("FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#")
-                                                 .Columns(columns =>
-                                                 {
-                                     columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                     columns.Bound(c => c.Remark).Width(170);
-                                     columns.Command(command =>
-                                     {
-                                         command.Edit();
-                                                     //command.Destroy();
-                                                 });
-                                 })
-                                                 .ToolBar(toolbar =>
-                                                 {
-                                     toolbar.Create();
-                                 })
-                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                 .Scrollable()
-                                                 .Events(x => x.DataBound("onDataBoundFisrtValidationFixedAssetRequisition"))
-                                                 .DataSource(dataSource => dataSource
-                                                     .Ajax()
-                                                     .Events(ev => ev
-                                                         .Error("error_handler(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")")
-                                                         .RequestStart("onRequestStart(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")")
-                                                         .RequestEnd("onRequestEnd(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")"))
-                                                     .Model(model =>
-                                                     {
-                                         model.Id(p => p.FixedAssetRequisitionValidationId);
-                                     })
-                                                     .Read(read => read.Action("FixedAssetRequisitionValidations_Read", "FixedAssetRequisitionValidation", new { id = "#=FixedAssetRequisitionId#" }))
-                                                     .Create(create => create.Action("FixedAssetRequisitionValidations_Create", "FixedAssetRequisitionValidation", new { id = "#=FixedAssetRequisitionId#" }))
-                                                     .Update(update => update.Action("FixedAssetRequisitionValidations_Update", "FixedAssetRequisitionValidation"))
-                                                     .Destroy(destroy => destroy.Action("FixedAssetRequisitionValidations_Destroy", "FixedAssetRequisitionValidation"))
-
-                                                 ).ToClientTemplate())
-
-                               </text>
-                                   );
-
-                       items.Add().Text("Second Validation").Content(
-                               @<text>
-
-                                   @(Html.Kendo().Grid<FixedAssetRequisitionSecondValidation>()
-                                                 .Name("FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#")
-                                                 .Columns(columns =>
-                                                 {
-                                     columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                     columns.Bound(c => c.Remark).Width(170);
-                                     columns.Command(command =>
-                                     {
-                                         command.Edit();
-                                                     //command.Destroy();
-                                                 });
-                                 })
-                                                 .ToolBar(toolbar =>
-                                                 {
-
-                                     toolbar.Create();
-                                 })
-                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                 .Scrollable()
-                                                 .Events(x => x.DataBound("onDataBoundSecondValidationFixedAssetRequisition"))
-                                                 .DataSource(dataSource => dataSource
-                                                     .Ajax()
-                                                     .Events(ev => ev
-                                                         .Error("error_handler(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")")
-                                                         .RequestStart("onRequestStart(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")")
-                                                         .RequestEnd("onRequestEnd(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")"))
-                                                     .Model(model =>
-                                                     {
-                                         model.Id(p => p.FixedAssetRequisitionSecondValidationId);
-                                     })
-                                                     .Read(read => read.Action("FixedAssetRequisitionSecondValidations_Read", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
-                                                     .Create(create => create.Action("FixedAssetRequisitionSecondValidations_Create", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
-                                                     .Update(update => update.Action("FixedAssetRequisitionSecondValidations_Create", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
-
-                                                 ).ToClientTemplate())
-
-                               </text>
-                                   );
-
-
-
-
-                   }).ToClientTemplate())
-
-
-
-
-
-                               </script>
+    </script>
 
 
 
@@ -410,6 +414,14 @@
 
 
 <script>
+
+    function filterSubCategoryNames() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryID").data("kendoDropDownList").value(),
+            text: $("#FixedAssetNameID").data("kendoDropDownList").filterInput.val()
+        };
+    }
 
     var supplierTextBox;
     var popup;
@@ -532,6 +544,7 @@
     var masterGrid;
 
     var codeid;
+    var masid;
     var isapproved;
     var issecondapproved;
     var isSendForApproval;
@@ -546,6 +559,7 @@
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
         //codeid = masterDataItem.StoreRequisitionID;
+        masid = masterDataItem.FixedAssetRequisitionId;
         isapproved = masterDataItem.IsOnlineApproved;
         isSendForApproval = masterDataItem.IsSendForApproval;
         isOnlineTransferred = masterDataItem.IsOnlineTransferred;
@@ -580,22 +594,33 @@
             var row = $(rows[j]); 
             var dataItem = e.sender.dataItem(row);
 
+            if (!dataItem.IsSendForApproval) {
+                row.css("background-color", "lightskyblue");
+            }
             if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
-                row.css("background-color", "lightpink");
+                row.css("background-color", "lightgreen");
             }
 
             if (dataItem.IsOnlineApproved && !dataItem.IsMiddleSendForApproval) {
                 row.css("background-color", "orange");
+                row.css("color", "black");
             }
 
             if (dataItem.IsMiddleSendForApproval && !dataItem.IsMiddleOnlineApproved) {
-                row.css("background-color", "lightgreen");
+                row.css("background-color", "cyan");
             }
             if (dataItem.IsMiddleOnlineApproved && !dataItem.IsSecondSendForApproval) {
-                row.css("background-color", "lightskyblue");
+                row.css("background-color", "lightgray");
             }
         }
 
+
+    }
+    function onSave() {
+       $("#grid").data("kendoGrid").dataSource.read();
+        $("#FixedAssetRequisitionSecondValidation_" + masid).data("kendoGrid").dataSource.read();
+        $("#FixedAssetRequisitionValidation_" + masid).data("kendoGrid").dataSource.read();
+        location.reload();
 
     }
     function onDataBoundLinesFixedAssetRequisition(e) {

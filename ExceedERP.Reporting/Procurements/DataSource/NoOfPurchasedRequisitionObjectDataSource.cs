@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)] 
-        public List<NoOfPurchasedRequisitionViewModel> GetNoOfPurchasedRequisition(DateTime from, DateTime to,string type, string branchid, string purchaser)
+        public List<NoOfPurchasedRequisitionViewModel> GetNoOfPurchasedRequisition(DateTime from, DateTime to,string type, string branchid, string purchaser, string businessUnitId)
         {
             List<NoOfPurchasedRequisitionViewModel> list = new List<NoOfPurchasedRequisitionViewModel>();
             var branches = db.Branch.ToList();
@@ -336,7 +336,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<NoOfPurchasedRequisitionViewModel> GetNoOfPr(DateTime from, DateTime to,string type, string branchid, string purchaser)
+        public List<NoOfPurchasedRequisitionViewModel> GetNoOfPr(DateTime from, DateTime to,string type, string branchid, string purchaser, string businessUnitId)
         {
             List<NoOfPurchasedRequisitionViewModel> list = new List<NoOfPurchasedRequisitionViewModel>();
             

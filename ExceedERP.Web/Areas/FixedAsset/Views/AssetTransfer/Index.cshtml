@@ -14,13 +14,15 @@
           columns.ForeignKey(p => p.TransferTo, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(120).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.FromStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly");
           columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly");
+          //columns.Bound(c => c.ConfirmReceive).Width(90).Title("Confirm Receive").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=ConfirmReceive #' " + " # if (ConfirmReceive) { #" + "checked='checked'" + "# } #" + " />").Width(100);
           columns.Bound(c => c.Remark).Width(90);
           columns.Bound(c => c.Status).Width(90);
 
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
-      .ToolBar(toolbar => {
-                              toolbar.Create();
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FixedAssetTransfer").Window(w => w.Title("Asset Transfer")))
       .Events(ev => ev.DetailExpand("detailExpand"))
@@ -34,7 +36,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -44,6 +46,7 @@
 
       .Scrollable(height => height.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
+      .Events(e => e.DetailExpand("detailExpandAssetTransfer"))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(sort => sort.Add("AssetTransferId").Descending())
@@ -55,6 +58,7 @@
           {
               model.Id(p => p.AssetTransferId);
               model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.ConfirmReceive).Editable(false);
 
           })
           .Read(read => read.Action("AssetTransfers_Read", "AssetTransfer"))
@@ -64,9 +68,11 @@
       )
       .ClientDetailTemplateId("Itemtransfertemplate"))
 
+@* Tabs *@
 <script id="Itemtransfertemplate" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=AssetTransferId#").Items(items =>
               {
+                  //Detail Tab
                   items.Add().Text("Detail").Content(
                     @<text>
 
@@ -129,19 +135,19 @@
                             </dl>
                         </div>
 
-                        # if (IsOnlineApproved&&!IsVoid)
+                        # if (IsOnlineApproved && !IsVoid)
                         {#
                         @if (HttpContext.Current.User.IsInRole("FixedAsset_Void"))
-                                    {
+                        {
                             <a onclick='return voidRecord("#=AssetTransferId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                    }
+                        }
                         /**/
 
                         # } #
 
                     </text>
                             );
-
+    //Items Tab
                         items.Add().Text("Items").Content(
                             @<text>
                                 @(Html.Kendo().Grid<AssetTransferItem>()
@@ -213,7 +219,7 @@
 
 
 
-
+    //Validation Tab
                                 items.Add().Text("Validation").Content(
                                 @<text>
                                     @(Html.Kendo().Grid<AssetTransferValidation>()
@@ -264,6 +270,38 @@
 
 <script>
 
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var custodianBeforeTransfer;
+    var fromStoreCode;
+    var expandedRow;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+
+    function detailExpandAssetTransfer(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+
+        custodianBeforeTransfer = masterDataItem.CustodianBeforeTransfer;
+        fromStoreCode = masterDataItem.FromStoreCode;
+
+        // Only one open at a time
+        if (expandedRow != null && expandedRow[0] != e.masterRow[0]) {
+            masterGrid.collapseRow(expandedRow);
+        }
+        expandedRow = e.masterRow;
+
+    }
+
     function sendForApproval(id) {
         var recordStatus = "";
 
@@ -309,8 +347,15 @@
     function filterAssetsForTransfer() {
 
         return {
+
             subCategoryCode: $("#FixedAssetSubCategoryId").data("kendoDropDownList").value(),
+
+            custodianBeforeTransfer: custodianBeforeTransfer,
+
+            fromStoreCode: fromStoreCode, 
+
             text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+
         };
     }
 
@@ -354,6 +399,50 @@
         }
     }
 
-    
+    //added
+    function onSelectTransferType() {
+        var type = $("#Type").data("kendoDropDownList").value();
+        if (type == 1) {
+            $(".personperson").show();
+            $(".all").show();
+            $(".storestore").hide();
+
+        }
+        else if (type == 2) {
+            $(".storestore").show();
+            $(".all").show();
+            $(".personperson").hide();
+
+        } else {
+            $(".storestore").hide();
+            $(".personperson").hide();
+            $(".all").hide();
+        }
+        
+
+    }
+    function onSelectDelivererType() {
+        var type = $("#DriverType").data("kendoDropDownList").value();
+        if (type == 1) {
+            $(".internalDel").show();
+            $(".all").show();
+            $(".externalSup").hide();
+
+
+        }
+        else if (type == 2) {
+            $(".externalSup").show();
+            $(".all").show();
+            $(".internalDel").hide();
+
+        } else {
+            $(".internalDel").hide();
+            $(".externalSup").hide();
+            $(".all").hide();
+
+        }
+
+
+    }
 
 </script>

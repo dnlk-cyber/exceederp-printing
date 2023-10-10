@@ -1,7 +1,12 @@
-﻿using ExceedERP.Core.Domain.Inventory;
+﻿using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.HR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,14 +32,361 @@ namespace ExceedERP.Helpers.Inventory
                 PurchaseGoodReceiveDistribution(record);
             }
         }
-        public  void PurchaseGoodReceiveDistribution(GoodReceive record)
+        //new changed for invoice
+        public void PurchaseGoodReceiveDistribution(GoodReceive record)
+        {
+            if (!FinanceConfigurationHelper.IsGrnDistributionDisabled())
+            {
+                List<GoodReceiveDistribution> distributions = new List<GoodReceiveDistribution>();
+                var receiveItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == record.GoodReceiveId).ToList();
+                var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == record.SupplierId);
+
+                if (receiveItems.Any())
+                {
+                    if (FinanceConfigurationHelper.ApplyClearingAccountInGRN())
+                    {
+                        #region debit stock
+
+
+                        foreach (var line in receiveItems)
+                        {
+                            if (line.SubTotal != 0)
+                            {
+                                var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == line.ItemCode);
+                                if (item != null)
+                                {
+                                    string acc = item.ItemCategory.AccountCode;
+                                    if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
+                                    {
+                                        var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                        if (subcategory != null)
+                                            acc = subcategory.AccountCode;
+                                    }
+                                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                    string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                    string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+                                                                       
+                                    var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                    if (receiveDistribution != null)
+                                    {
+                                        receiveDistribution.Debit += line.SubTotal + line.TaxAmount;
+                                        receiveDistribution.Credit = 0;
+                                        receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                                    }
+                                    else
+                                    {
+
+                                        var defaultDistribution = new GoodReceiveDistribution()
+                                        {
+                                            AccountCode = newacc,
+                                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                            Debit = line.SubTotal + line.TaxAmount,
+                                            Credit = 0,
+                                            GoodReceiveId = line.GoodReceiveId,
+                                            GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        #endregion
+
+                        #region debit tax // added to stock
+
+                        //foreach (var line in receiveItems)
+                        //{
+                        //    if (line.TaxAmount != 0)
+                        //    {
+                        //        var tax = _db.GLTaxRates.Find(line.GLTaxRateID);
+                        //        if (tax != null)
+                        //        {
+                        //            string acc = tax.ApAccountCode;
+
+                        //            //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
+                        //            //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
+                        //            //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+
+                        //            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == acc);
+                        //            if (receiveDistribution != null)
+                        //            {
+                        //                receiveDistribution.Debit += line.TaxAmount;
+                        //                receiveDistribution.Credit = 0;
+                        //                receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                        //            }
+                        //            else
+                        //            {
+
+                        //                var defaultDistribution = new GoodReceiveDistribution()
+                        //                {
+                        //                    AccountCode = acc,
+                        //                    AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                        //                    Debit = line.TaxAmount,
+                        //                    Credit = 0,
+                        //                    GoodReceiveId = line.GoodReceiveId,
+                        //                    GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                        //                };
+                        //                distributions.Add(defaultDistribution);
+                        //            }
+
+
+                        //        }
+
+                        //    }
+                        //}
+
+                        #endregion
+
+                        #region credit GR/IR clearing account
+                        var clearingAccount = _db.StockClearingAccounts.Where(x => x.Type == ClearingAccountTypes.Inventory_Or_Good_Receiving).Where(x => x.Enable).FirstOrDefault();
+
+                        if (receiveItems.Sum(x => x.Total) != 0)
+                        {
+                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                            string newacc = _dynamicAccount.ReplaceSegment(clearingAccount.AccountCode, locationindex, locationAccountSeG);
+
+                            var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                            if (receiveDistribution != null)
+                            {
+                                receiveDistribution.Debit = 0;
+                                receiveDistribution.Credit += receiveItems.Sum(x => x.Total);
+                                receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                            }
+                            else
+                            {
+
+                                var defaultDistribution = new GoodReceiveDistribution()
+                                {
+                                    AccountCode = newacc,
+                                    AccountDesc = _dynamicAccount.GetAccountDesc(clearingAccount.AccountCode),
+                                    Debit = 0,
+                                    Credit = receiveItems.Sum(x => x.Total),
+                                    GoodReceiveId = record.GoodReceiveId
+                                };
+                                distributions.Add(defaultDistribution);
+                            }
+
+
+                        }
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region debit stock
+
+
+                        foreach (var line in receiveItems)
+                        {
+                            if (line.SubTotal != 0)
+                            {
+                                var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == line.ItemCode);
+                                if (item != null)
+                                {
+                                    string acc = item.ItemCategory.AccountCode;
+                                    if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
+                                    {
+                                        var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                        if (subcategory != null)
+                                            acc = subcategory.AccountCode;
+                                    }
+                                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                    string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                    string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+
+                                    var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                    if (receiveDistribution != null)
+                                    {
+                                        receiveDistribution.Debit += line.SubTotal;
+                                        receiveDistribution.Credit = 0;
+                                        receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                                    }
+                                    else
+                                    {
+
+                                        var defaultDistribution = new GoodReceiveDistribution()
+                                        {
+                                            AccountCode = newacc,
+                                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                            Debit = line.SubTotal,
+                                            Credit = 0,
+                                            GoodReceiveId = line.GoodReceiveId,
+                                            GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        #endregion
+
+                        #region debit tax
+
+                        foreach (var line in receiveItems)
+                        {
+                            if (line.TaxAmount != 0)
+                            {
+                                var tax = _db.GLTaxRates.Find(line.GLTaxRateID);
+                                if (tax != null)
+                                {
+                                    string acc = tax.ApAccountCode;
+
+                                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                    string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                    string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+
+                                    var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                    if (receiveDistribution != null)
+                                    {
+                                        receiveDistribution.Debit += line.TaxAmount;
+                                        receiveDistribution.Credit = 0;
+                                        receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                                    }
+                                    else
+                                    {
+
+                                        var defaultDistribution = new GoodReceiveDistribution()
+                                        {
+                                            AccountCode = newacc,
+                                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                                            Debit = line.TaxAmount,
+                                            Credit = 0,
+                                            GoodReceiveId = line.GoodReceiveId,
+                                            GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+
+
+                                }
+
+                            }
+                        }
+
+                        #endregion
+
+                        if (supplier != null && supplier.IsCredit)
+                        {
+                            #region Credit supplier
+
+                            if (record.GoodReceiveItem.Sum(x => x.Total) != 0)
+                            {
+                                int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                string newacc = _dynamicAccount.ReplaceSegment(supplier.AccountCode, locationindex, locationAccountSeG);
+                                var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                if (receiveDistribution != null)
+                                {
+                                    receiveDistribution.Debit = 0;
+                                    receiveDistribution.Credit += record.GoodReceiveItem.Sum(x => x.Total);
+                                    receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                                }
+                                else
+                                {
+
+                                    var defaultDistribution = new GoodReceiveDistribution()
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(supplier.AccountCode),
+                                        Debit = 0,
+                                        Credit = record.GoodReceiveItem.Sum(x => x.Total),
+                                        GoodReceiveId = record.GoodReceiveId
+                                    };
+                                    distributions.Add(defaultDistribution);
+                                }
+
+
+                            }
+
+                            #endregion
+                        }
+                        else
+                        {
+                            #region Credit common supplier
+
+                            var commonSupplier = _db.ApSetupCommonSuppliers.FirstOrDefault();
+                            if (record.GoodReceiveItem.Sum(x => x.Total) != 0)
+                            {
+                                if (commonSupplier != null)
+                                {
+                                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                    string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                    string newacc = _dynamicAccount.ReplaceSegment(commonSupplier.AccountCode, locationindex, locationAccountSeG);
+
+                                    var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                    if (receiveDistribution != null)
+                                    {
+                                        receiveDistribution.Debit = 0;
+                                        receiveDistribution.Credit += record.GoodReceiveItem.Sum(x => x.Total);
+                                        receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                                    }
+                                    else
+                                    {
+
+                                        var defaultDistribution = new GoodReceiveDistribution()
+                                        {
+                                            AccountCode = newacc,
+                                            AccountDesc = _dynamicAccount.GetAccountDesc(commonSupplier.AccountCode),
+                                            Debit = 0,
+                                            Credit = record.GoodReceiveItem.Sum(x => x.Total),
+                                            GoodReceiveId = record.GoodReceiveId
+                                        };
+                                        distributions.Add(defaultDistribution);
+                                    }
+
+
+                                }
+                            }
+
+                            #endregion
+                        }
+                    }
+                }
+
+                foreach (var d in distributions)
+                {
+
+                    var distribution = d;
+
+                    #region replace business unit
+                    if (GlobalHelper.IsMultipleBusinessUnit())
+                    {
+                        int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.StoreCode);
+                        if (storeBusinUnitId != 0)
+                        {
+                            int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                            if (bizunitindex != -1)
+                            {
+                                string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                                string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, bizunitindex, sectorAccountSeG);
+                                distribution.AccountCode = newacc;
+                                distribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            }
+                        }
+                    }
+                    #endregion
+                    _db.GoodReceiveDistributions.Add(distribution);
+                    _db.SaveChanges();
+                }
+            }
+        }
+
+        //was active
+        public  void PurchaseGoodReceiveDistribution_1(GoodReceive record)
         {
             List<GoodReceiveDistribution> distributions = new List<GoodReceiveDistribution>();
-            var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == record.SupplierName);
+            var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == record.SupplierId);
 
             if (record.GoodReceiveItem != null)
             {
-                GoodReceiveDistribution distribution;
+              
                 #region debit stock
 
 
@@ -46,9 +398,15 @@ namespace ExceedERP.Helpers.Inventory
                         if (item != null)
                         {
                             string acc = item.ItemCategory.AccountCode;
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
-                            string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
+                            {
+                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                if (subcategory != null)
+                                    acc = subcategory.AccountCode;
+                            }
+                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
                             var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
                             if (receiveDistribution != null)
@@ -108,7 +466,7 @@ namespace ExceedERP.Helpers.Inventory
                                 {
                                     AccountCode = acc,
                                     AccountDesc = _dynamicAccount.GetAccountDesc(acc),
-                                    Debit = line.SubTotal,
+                                    Debit = line.TaxAmount,
                                     Credit = 0,
                                     GoodReceiveId = line.GoodReceiveId,
                                     GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
@@ -194,137 +552,239 @@ namespace ExceedERP.Helpers.Inventory
                 }
             }
 
-            foreach (var distribution in distributions)
+            foreach (var d in distributions)
             {
+                var distribution = d;
+
+                #region replace business unit
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.StoreCode);
+                    if (storeBusinUnitId != 0)
+                    {
+                        int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                        string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, bizunitindex, sectorAccountSeG);
+                        distribution.AccountCode = newacc;
+                        distribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                    }
+                }
+                #endregion
                 _db.GoodReceiveDistributions.Add(distribution);
                 _db.SaveChanges();
             }
 
         }
-
-       
+              
 
         public  void DonationGoodReceiveDistribution(GoodReceive record)
         {
-            GoodReceiveDistribution distribution;
-            var revenueAccount = _db.RevenueAccounts.FirstOrDefault(x => x.ApplyToInventory);
-
-            if (record.GoodReceiveItem!=null)
+            if (!FinanceConfigurationHelper.IsGrnDistributionDisabled())
             {
-                #region debit stock
+                List<GoodReceiveDistribution> distributions = new List<GoodReceiveDistribution>();
+                var receiveItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == record.GoodReceiveId).ToList();
 
-                foreach (var line in record.GoodReceiveItem)
+                var revenueAccount = _db.RevenueAccounts.FirstOrDefault(x => x.ApplyToInventory);
+
+                if (record.GoodReceiveItem != null)
                 {
-                    if (line.SubTotal != 0)
-                    {
-                        var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == line.ItemCode);
-                        if (item != null)
-                        {
-                            string acc = item.ItemCategory.AccountCode;
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
-                            string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                    #region debit stock
 
-                            distribution = new GoodReceiveDistribution
+                    foreach (var line in record.GoodReceiveItem)
+                    {
+                        if (line.SubTotal != 0)
+                        {
+                            var item = _db.InventoryItems.FirstOrDefault(it => it.ItemCode == line.ItemCode);
+                            if (item != null)
+                            {
+                                string acc = item.ItemCategory.AccountCode;
+                                if (!String.IsNullOrWhiteSpace(item.SubCategoryCode))
+                                {
+                                    var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                    if (subcategory != null)
+                                        acc = subcategory.AccountCode;
+                                }
+                                int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+
+                                var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                if (receiveDistribution != null)
+                                {
+                                    receiveDistribution.Debit += line.SubTotal + line.TaxAmount;//vat added here
+                                    receiveDistribution.Credit = 0;
+                                    receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                                }
+                                else
+                                {
+                                    var defaultDistribution = new GoodReceiveDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = line.SubTotal + line.TaxAmount,//vat added here
+                                        Credit = 0,
+                                        GoodReceiveId = line.GoodReceiveId,
+                                        GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                                    };
+                                    distributions.Add(defaultDistribution);
+                                }
+                            }
+
+                        }
+                    }
+
+                    #endregion
+
+                    #region debit tax payable //commented
+
+                    //foreach (var line in record.GoodReceiveItem)
+                    //{
+                    //    if (line.TaxAmount != 0)
+                    //    {
+                    //        var tax = _db.GLTaxRates.Find(line.GLTaxRateID);
+                    //        if (tax != null)
+                    //        {
+                    //            string acc = tax.ApAccountCode;
+                    //            //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
+                    //            //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
+                    //            //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+
+                    //            distribution = new GoodReceiveDistribution
+                    //            {
+                    //                AccountCode = acc,
+                    //                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                    //                Debit = line.TaxAmount,
+                    //                Credit =0 ,
+                    //                GoodReceiveId = line.GoodReceiveId,
+                    //                GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                    //            };
+                    //            _db.GoodReceiveDistributions.Add(distribution);
+                    //            _db.SaveChanges();
+                    //        }
+
+                    //    }
+                    //}
+
+                    #endregion
+
+                    #region Credit revenue //commneted
+
+                    //if (record.GoodReceiveItem.Sum(x => x.SubTotal) != 0)
+                    //{
+                    //    if (revenueAccount != null)
+                    //    {
+                    //        var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == revenueAccount.InventoryAccountCode);
+                    //        if (receiveDistribution != null)
+                    //        {
+                    //            receiveDistribution.Debit = 0;
+                    //            receiveDistribution.Credit += record.GoodReceiveItem.Sum(x => x.SubTotal) + record.GoodReceiveItem.Sum(x => x.TaxAmount);
+                    //            receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                    //        }
+                    //        else
+                    //        {
+                    //            var defaultDistribution = new GoodReceiveDistribution
+                    //            {
+                    //                AccountCode = revenueAccount.InventoryAccountCode,
+                    //                AccountDesc = _dynamicAccount.GetAccountDesc(revenueAccount.InventoryAccountCode),
+                    //                Debit = 0,
+                    //                Credit = record.GoodReceiveItem.Sum(x => x.SubTotal) + record.GoodReceiveItem.Sum(x => x.TaxAmount),
+                    //                GoodReceiveId = record.GoodReceiveId
+                    //            };
+
+                    //            distributions.Add(defaultDistribution);
+                    //        }
+                    //    }
+                    //}
+
+                    #endregion
+
+                    #region credit GR/IR clearing account
+                    var clearingAccount = _db.StockClearingAccounts.Where(x => x.Type == ClearingAccountTypes.Inventory_Or_Good_Receiving).Where(x => x.Enable).FirstOrDefault();
+
+                    if (receiveItems.Sum(x => x.Total) != 0)
+                    {
+                        int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                        string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                        string newacc = _dynamicAccount.ReplaceSegment(clearingAccount.AccountCode, locationindex, locationAccountSeG);
+
+                        var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                        if (receiveDistribution != null)
+                        {
+                            receiveDistribution.Debit = 0;
+                            receiveDistribution.Credit += receiveItems.Sum(x => x.Total);
+                            receiveDistribution.GoodReceiveId = record.GoodReceiveId;
+                        }
+                        else
+                        {
+
+                            var defaultDistribution = new GoodReceiveDistribution()
                             {
                                 AccountCode = newacc,
-                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                                Debit = line.SubTotal,
-                                Credit = 0,
-                                GoodReceiveId = line.GoodReceiveId,
-                                GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
-                            };
-                            _db.GoodReceiveDistributions.Add(distribution);
-                            _db.SaveChanges();
-                        }
-
-                    }
-                }
-
-                #endregion
-
-                #region credit tax payable
-
-                foreach (var line in record.GoodReceiveItem)
-                {
-                    if (line.TaxAmount != 0)
-                    {
-                        var tax = _db.GLTaxRates.Find(line.GLTaxRateID);
-                        if (tax != null)
-                        {
-                            string acc = tax.ApAccountCode;
-                            //int subaccountindex = dynamicAccount.GetSubAccountSequenceIndex();
-                            //string subAccountSeG = HrHelper.GetBranchSubAccount(record.BranchId);
-                            //string newacc = dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-                            distribution = new GoodReceiveDistribution
-                            {
-                                AccountCode = acc,
-                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                                AccountDesc = _dynamicAccount.GetAccountDesc(clearingAccount.AccountCode),
                                 Debit = 0,
-                                Credit = line.TaxAmount,
-                                GoodReceiveId = line.GoodReceiveId,
-                                GoodReceiveItemIDTrackBack = line.GoodReceiveItemID
+                                Credit = receiveItems.Sum(x => x.Total),
+                                GoodReceiveId = record.GoodReceiveId
                             };
-                            _db.GoodReceiveDistributions.Add(distribution);
-                            _db.SaveChanges();
+                            distributions.Add(defaultDistribution);
                         }
 
+
                     }
+
+                    #endregion
                 }
 
-                #endregion
-
-                #region Credit revenue
-
-                if (record.GoodReceiveItem.Sum(x => x.SubTotal) != 0)
+                foreach (var d in distributions)
                 {
-                    if (revenueAccount != null)
+                    var distribution = d;
+
+                    #region replace business unit
+                    if (GlobalHelper.IsMultipleBusinessUnit())
                     {
-                        distribution = new GoodReceiveDistribution
+                        int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.StoreCode);
+                        if (storeBusinUnitId != 0)
                         {
-                            AccountCode = revenueAccount.InventoryAccountCode,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(revenueAccount.InventoryAccountCode),
-                            Debit = 0,
-                            Credit = record.GoodReceiveItem.Sum(x => x.SubTotal),
-                            GoodReceiveId = record.GoodReceiveId
-                        };
-
-                        _db.GoodReceiveDistributions.Add(distribution);
-                        _db.SaveChanges();
+                            int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                            string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                            string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, bizunitindex, sectorAccountSeG);
+                            distribution.AccountCode = newacc;
+                            distribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                        }
                     }
+                    #endregion
+                    _db.GoodReceiveDistributions.Add(distribution);
+                    _db.SaveChanges();
                 }
-
-                #endregion
             }
 
         }
         public  void UpdateIssueDistribution(Issue record)
         {
-            IssueDistribution distribution;
-            Dictionary<string, string> checkAccount = new Dictionary<string, string>();
             List<IssueDistribution> distributions = new List<IssueDistribution>();
 
             var issueDistributions = _db.IssueDistributions.Where(x => x.IssueID == record.IssueID).ToList();
             _db.IssueDistributions.RemoveRange(issueDistributions);
             _db.SaveChanges();
 
-            int branch = 0;
+            int branch = record.BranchId;
 
-            var storereq = _db.StoreRequisitions.FirstOrDefault(x => x.StoreRequisitionID == record.StoreRequisitionID);
-            if (storereq != null)
+            if (branch == 0)
             {
-                if (storereq.IsForOther)
+                var storereq = _db.StoreRequisitions.FirstOrDefault(x => x.StoreRequisitionID == record.StoreRequisitionID);
+                if (storereq != null)
                 {
-                    if (storereq.ForBranchId != null) branch = (int) storereq.ForBranchId;
+                    if (storereq.IsForOther)
+                    {
+                        if (storereq.ForBranchId != null) branch = (int)storereq.ForBranchId;
+                        else
+                        {
+                            branch = storereq.BranchId;
+                        }
+                    }
                     else
                     {
                         branch = storereq.BranchId;
                     }
-                }
-                else
-                {
-                    branch = storereq.BranchId;
                 }
             }
 
@@ -342,59 +802,77 @@ namespace ExceedERP.Helpers.Inventory
                         if (itemCategory != null)
                         {
                             string acc = itemCategory.IssueAccountCode;
-                          
-                            string newacc = "";
-                            int costcenterindex = _dynamicAccount.GetCostCenterAccountSequenceIndex();
-                            if (costcenterindex != -1)
+                            if (!String.IsNullOrWhiteSpace(item.SubCategoryCode))
                             {
-                                string costCenterSeG = HrHelper.GetWorkUnitCostCenter(record.OrgStructureId, branch);
-                                newacc = _dynamicAccount.ReplaceSegment(acc, costcenterindex, costCenterSeG);
+                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                if(subcategory!=null)
+                                    acc = subcategory.IssueAccountCode;
                             }
 
-                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                            if (costcenterindex != -1)
-                            {
-                                string branchAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
-                                newacc = _dynamicAccount.ReplaceSegment(newacc, locationindex, branchAccountSeG);
-                            }
+                            string newacc = acc;                           
+                            string replaceCostCenter = InventoryConfigurationHelper.GetIssueDistributionCostCenterDebitReplace();
 
-                            if (line.Total != 0 && checkAccount.ContainsKey(newacc))
+                            if (replaceCostCenter == BooleanTypeAttributes.TRUE.ToString())
                             {
-                                IssueDistribution iDistribution =distributions.FirstOrDefault(x => x.AccountCode == newacc);
-
-                                if (iDistribution != null)
+                                int costcenterindex = _dynamicAccount.GetCostCenterAccountSequenceIndex();
+                                if (costcenterindex != -1)
                                 {
-                                    iDistribution.AccountCode = newacc;
-                                    iDistribution.Debit += line.Total;
-                                    iDistribution.Credit = 0;
-                                    iDistribution.IssueID = line.IssueID;
-                                    iDistribution.IssueItemIDTrackBack = line.IssueItemID;
+                                    string costCenterSeG = HrHelper.GetWorkUnitCostCenter(record.OrgStructureId, branch);
+                                    newacc = _dynamicAccount.ReplaceSegment(acc, costcenterindex, costCenterSeG);
                                 }
                             }
-                            else if (line.Total != 0 && !checkAccount.ContainsKey(newacc))
+
+                            string applySubAccount = InventoryConfigurationHelper.GetBranchSubAccountReplace();
+                            if (applySubAccount == BooleanTypeAttributes.TRUE.ToString())
                             {
-                                distribution = new IssueDistribution
+                                int subAccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                                if (subAccountindex != -1)
                                 {
-                                    AccountCode = newacc,
-                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                                    Debit = line.Total,
-                                    Credit = 0,
-                                    IssueID = line.IssueID,
-                                    IssueItemIDTrackBack = line.IssueItemID
-                                };
-                                distributions.Add(distribution);
-                                checkAccount.Add(newacc, line.ItemCode);
+                                    string branchAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                    newacc = _dynamicAccount.ReplaceSegment(newacc, subAccountindex, branchAccountSeG);
+                                }
                             }
+                            else
+                            {
+                                int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                                if (locationindex != -1)
+                                {
+                                    string branchAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                                    newacc = _dynamicAccount.ReplaceSegment(newacc, locationindex, branchAccountSeG);
+                                }
+                            }
+
+                            if (line.Total != 0)
+                            {
+                                var issueDistribution =distributions.FirstOrDefault(x => x.AccountCode == newacc);
+
+                                if (issueDistribution != null)
+                                {
+                                    issueDistribution.AccountCode = newacc;
+                                    issueDistribution.Debit += line.Total;
+                                    issueDistribution.Credit = 0;
+                                    issueDistribution.IssueID = line.IssueID;
+                                    issueDistribution.IssueItemIDTrackBack = line.IssueItemID;
+                                }
+                                else
+                                {
+                                    var distribution = new IssueDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = line.Total,
+                                        Credit = 0,
+                                        IssueID = line.IssueID,
+                                        IssueItemIDTrackBack = line.IssueItemID
+                                    };
+                                    distributions.Add(distribution);
+                                }
+                            }
+                           
                         }
                     }
                 }
-                foreach (IssueDistribution issueDistribution in distributions)
-                {
-                    _db.IssueDistributions.Add(issueDistribution);
-                    _db.SaveChanges();
-                }
-                distributions.Clear();
-                checkAccount.Clear();
+               
 
                 #endregion
 
@@ -404,58 +882,85 @@ namespace ExceedERP.Helpers.Inventory
                 {
                     foreach (var items in record.IssueItems)
                     {
-                        var inventory = _db.InventoryItems.Find(items.ItemCode);
-                        if (inventory != null)
+                        var item = _db.InventoryItems.Find(items.ItemCode);
+                        if (item != null)
                         {
-                            string accCode = inventory.ItemCategory.AccountCode;
-
-                            if (items.Total != 0 && checkAccount.ContainsKey(accCode))
+                            string newacc = item.ItemCategory.AccountCode;
+                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
                             {
-                                var iDistribution = distributions.FirstOrDefault(x => x.AccountCode == accCode);
+                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                if(subcategory!=null)
+                                    newacc = subcategory.AccountCode;
+                            }
 
-                                if (iDistribution != null)
+                            int locationindexindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            if (locationindexindex != -1)
+                            {
+                                string branchSeG = HrHelper.GetBranchLocationAccount(branch);
+                                newacc = _dynamicAccount.ReplaceSegment(newacc, locationindexindex, branchSeG);
+                            }
+
+                            if (items.Total != 0 )
+                            {
+                                var issueDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+
+                                if (issueDistribution != null)
                                 {
-                                    iDistribution.AccountCode = accCode;
-                                    iDistribution.Debit = 0;
-                                    iDistribution.Credit += items.Total;
-                                    iDistribution.IssueID = items.IssueID;
-                                    iDistribution.IssueItemIDTrackBack = items.IssueItemID;
+                                    issueDistribution.AccountCode = newacc;
+                                    issueDistribution.Debit = 0;
+                                    issueDistribution.Credit += items.Total;
+                                    issueDistribution.IssueID = items.IssueID;
+                                    issueDistribution.IssueItemIDTrackBack = items.IssueItemID;
+                                }
+                                else
+                                {
+                                   var distribution = new IssueDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = 0,
+                                        Credit = items.Total,
+                                        IssueID = items.IssueID,
+                                        IssueItemIDTrackBack = items.IssueItemID
+                                    };
+                                    distributions.Add(distribution);
                                 }
                             }
-                            else if (items.Total != 0 && !checkAccount.ContainsKey(accCode))
-                            {
-                                distribution = new IssueDistribution
-                                {
-                                    AccountCode = accCode,
-                                    AccountDesc = _dynamicAccount.GetAccountDesc(accCode),
-                                    Debit = 0,
-                                    Credit = items.Total,
-                                    IssueID = items.IssueID,
-                                    IssueItemIDTrackBack = items.IssueItemID
-                                };
-                                distributions.Add(distribution);
-                                checkAccount.Add(accCode, items.ItemCode);
-                            }
+                         
                         }
                     }
-                    foreach (var issueDistribution in distributions)
-                    {
-                        _db.IssueDistributions.Add(issueDistribution);
-                        _db.SaveChanges();
-                    }
-                    distributions.Clear();
-                    checkAccount.Clear();
+                   
 
                 }
 
                 #endregion
             }
 
+            foreach (var d in distributions)
+            {
+                var distribution = d;
+
+                #region replace business unit
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.StoreCode);
+                    if (storeBusinUnitId != 0)
+                    {
+                        int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                        string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, bizunitindex, sectorAccountSeG);
+                        distribution.AccountCode = newacc;
+                        distribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                    }
+                }
+                #endregion
+                _db.IssueDistributions.Add(distribution);
+                _db.SaveChanges();
+            }
+
         }
         public  void UpdateStoreReturnDistribution(StoreReturn record)
         {
-            StoreReturnDistribution distribution;
-            Dictionary<string, string> checkAccount = new Dictionary<string, string>();
             List<StoreReturnDistribution> distributions = new List<StoreReturnDistribution>();
 
             var returnDistributions = _db.StoreReturnDistributions.Where(x => x.StoreReturnID == record.StoreReturnID).ToList();
@@ -494,51 +999,51 @@ namespace ExceedERP.Helpers.Inventory
                         if (itemCategory != null)
                         {
                             string acc = itemCategory.IssueAccountCode;
+                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
+                            {
+                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                if (subcategory != null)
+                                    acc = subcategory.IssueAccountCode;
+                            }
 
                             string newacc = "";
                             int costcenterindex = _dynamicAccount.GetCostCenterAccountSequenceIndex();
                             string costCenterSeG = HrHelper.GetWorkUnitCostCenter(record.OrgStructureId,branch);
                             newacc = _dynamicAccount.ReplaceSegment(acc, costcenterindex, costCenterSeG);
 
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(branch);
-                            newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(branch);
+                             newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
-                            if (line.Quantity * line.UnitPrice != 0 && checkAccount.ContainsKey(newacc))
+                            if (line.Quantity * line.UnitPrice != 0)
                             {
-                                StoreReturnDistribution iDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                var returnDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
 
-                                if (iDistribution != null)
+                                if (returnDistribution != null)
                                 {
-                                    iDistribution.AccountCode = newacc;
-                                    iDistribution.Debit = 0;
-                                    iDistribution.Credit += (line.Quantity * line.UnitPrice);
-                                    iDistribution.StoreReturnID = line.StoreReturnID;
+                                    returnDistribution.AccountCode = newacc;
+                                    returnDistribution.Debit = 0;
+                                    returnDistribution.Credit += (line.Quantity * line.UnitPrice);
+                                    returnDistribution.StoreReturnID = line.StoreReturnID;
+                                }
+                                else
+                                {
+                                   var distribution = new StoreReturnDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = 0,
+                                        Credit = (line.Quantity * line.UnitPrice),
+                                        StoreReturnID = line.StoreReturnID,
+                                    };
+                                    distributions.Add(distribution);
                                 }
                             }
-                            else if (line.Quantity * line.UnitPrice != 0 && !checkAccount.ContainsKey(newacc))
-                            {
-                                distribution = new StoreReturnDistribution
-                                {
-                                    AccountCode = newacc,
-                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                                    Debit = 0,
-                                    Credit = (line.Quantity * line.UnitPrice),
-                                    StoreReturnID = line.StoreReturnID,
-                                };
-                                distributions.Add(distribution);
-                                checkAccount.Add(newacc, line.ItemCode);
-                            }
+                           
                         }
                     }
                 }
-                foreach (StoreReturnDistribution returnDistribution in distributions)
-                {
-                    _db.StoreReturnDistributions.Add(returnDistribution);
-                    _db.SaveChanges();
-                }
-                distributions.Clear();
-                checkAccount.Clear();
+              
 
                 #endregion
 
@@ -548,56 +1053,75 @@ namespace ExceedERP.Helpers.Inventory
                 {
                     foreach (var items in record.StoreReturnItems)
                     {
-                        var inventory = _db.InventoryItems.Find(items.ItemCode);
-                        if (inventory != null)
+                        var item = _db.InventoryItems.Find(items.ItemCode);
+                        if (item != null)
                         {
-                            string accCode = inventory.ItemCategory.AccountCode;
-
-                            if (items.Quantity * items.UnitPrice != 0 && checkAccount.ContainsKey(accCode))
+                            string newacc = item.ItemCategory.AccountCode;
+                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
                             {
-                                var iDistribution = distributions.FirstOrDefault(x => x.AccountCode == accCode);
+                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode == item.SubCategoryCode).FirstOrDefault();
+                                if (subcategory != null)
+                                    newacc = subcategory.AccountCode;
+                            }
 
-                                if (iDistribution != null)
+                            if (items.Quantity * items.UnitPrice != 0 )
+                            {
+                                var returnDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+
+                                if (returnDistribution != null)
                                 {
-                                    iDistribution.AccountCode = accCode;
-                                    iDistribution.Debit += (items.Quantity * items.UnitPrice);
-                                    iDistribution.Credit = 0;
-                                    iDistribution.StoreReturnID = items.StoreReturnID;
+                                    returnDistribution.AccountCode = newacc;
+                                    returnDistribution.Debit += (items.Quantity * items.UnitPrice);
+                                    returnDistribution.Credit = 0;
+                                    returnDistribution.StoreReturnID = items.StoreReturnID;
+                                }
+                                else
+                                {
+                                   var distribution = new StoreReturnDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = (items.Quantity * items.UnitPrice),
+                                        Credit = 0,
+                                        StoreReturnID = items.StoreReturnID
+                                    };
+                                    distributions.Add(distribution);
                                 }
                             }
-                            else if (items.Quantity * items.UnitPrice != 0 && !checkAccount.ContainsKey(accCode))
-                            {
-                                distribution = new StoreReturnDistribution
-                                {
-                                    AccountCode = accCode,
-                                    AccountDesc = _dynamicAccount.GetAccountDesc(accCode),
-                                    Debit = (items.Quantity * items.UnitPrice),
-                                    Credit = 0,
-                                    StoreReturnID = items.StoreReturnID
-                                };
-                                distributions.Add(distribution);
-                                checkAccount.Add(accCode, items.ItemCode);
-                            }
+                           
                         }
                     }
-                    foreach (var returnDistribution in distributions)
-                    {
-                        _db.StoreReturnDistributions.Add(returnDistribution);
-                        _db.SaveChanges();
-                    }
-                    distributions.Clear();
-                    checkAccount.Clear();
+                   
 
                 }
 
                 #endregion
             }
 
+            foreach (var d in distributions)
+            {
+                var distribution = d;
+
+                #region replace business unit
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.StoreCode);
+                    if (storeBusinUnitId != 0)
+                    {
+                        int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                        string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, bizunitindex, sectorAccountSeG);
+                        distribution.AccountCode = newacc;
+                        distribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                    }
+                }
+                #endregion
+                _db.StoreReturnDistributions.Add(distribution);
+                _db.SaveChanges();
+            }
         }
         public  void UpdateTransferSendDistribution(ItemTransfer record)
         {
-           
-            Dictionary<string, string> checkAccount = new Dictionary<string, string>();
             List<ItemTransferDistribution> distributions = new List<ItemTransferDistribution>();
 
             var records = _db.ItemTransferDistributions.Where(x => x.ItemTransferID == record.ItemTransferID).ToList();
@@ -608,16 +1132,28 @@ namespace ExceedERP.Helpers.Inventory
 
             if (record.ItemTransferItem != null)
             {
-                ItemTransferDistribution distribution;
+                
                 #region debit clearing account
 
-                var clearingAccount = _db.StockClearingAccounts.FirstOrDefault(x => x.Enable);
+                var clearingAccount = _db.StockClearingAccounts.Where(x => x.Type == ClearingAccountTypes.Store_Transfer).Where(x => x.Enable).FirstOrDefault();
                 if (clearingAccount != null)
                 {
                     string acc = clearingAccount.AccountCode;
-                    int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchSubAccount(receiverBranchId);
-                    string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                    string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+                    #region replace business unit
+                    if (GlobalHelper.IsMultipleBusinessUnit())
+                    {
+                        int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.FromStore);
+                        if (storeBusinUnitId != 0)
+                        {
+                            int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                            string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                            newacc = _dynamicAccount.ReplaceSegment(newacc, bizunitindex, sectorAccountSeG);
+                        }
+                    }
+                    #endregion
 
                     decimal clearingAmount = 0;
                     foreach (var items in record.ItemTransferItem)
@@ -627,26 +1163,33 @@ namespace ExceedERP.Helpers.Inventory
 
                     if (clearingAmount != 0)
                     {
-                        ItemTransferDistribution iDistribution =new ItemTransferDistribution();
+                        var sendDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
 
-                        iDistribution.AccountCode = newacc;
-                        iDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                        iDistribution.Debit = clearingAmount;
-                        iDistribution.Credit = 0;
-                        iDistribution.ItemTransferID = record.ItemTransferID;
-                        distributions.Add(iDistribution);
-                        checkAccount.Add(newacc, "Clearing Account");
+                        if (sendDistribution != null)
+                        {
+                            sendDistribution.AccountCode = newacc;
+                            sendDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            sendDistribution.Debit += clearingAmount;
+                            sendDistribution.Credit =0;
+                            sendDistribution.ItemTransferID = record.ItemTransferID;
+                        }
+                        else
+                        {
+                            var distribution = new ItemTransferDistribution
+                            {
+                                AccountCode = newacc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                Debit = clearingAmount,
+                                Credit = 0,
+                                ItemTransferID = record.ItemTransferID
+                            };
+                            distributions.Add(distribution);
+                        }
                     }
 
 
                 }
-                foreach (ItemTransferDistribution transferDistribution in distributions)
-                {
-                    _db.ItemTransferDistributions.Add(transferDistribution);
-                    _db.SaveChanges();
-                }
-                distributions.Clear();
-                checkAccount.Clear();
+           
 
                 #endregion
 
@@ -661,54 +1204,65 @@ namespace ExceedERP.Helpers.Inventory
                         if (inventory != null && senderBranchId != 0)
                         {
                             string acc = inventory.ItemCategory.AccountCode;
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(senderBranchId);
-                            string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-                            if (items.TPrice != 0 && checkAccount.ContainsKey(newacc))
+                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(record.BranchId);
+                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
+                            #region replace business unit
+                            if (GlobalHelper.IsMultipleBusinessUnit())
                             {
-                                var iDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
-
-                                if (iDistribution != null)
+                                int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.FromStore);
+                                if (storeBusinUnitId != 0)
                                 {
-                                    iDistribution.AccountCode = newacc;
-                                    iDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                                    iDistribution.Debit = 0;
-                                    iDistribution.Credit += (items.ShippedQuantity * items.UPrice);
-                                    iDistribution.ItemTransferID = items.ItemTransferID;
+                                    int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                                    string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                                    newacc = _dynamicAccount.ReplaceSegment(newacc, bizunitindex, sectorAccountSeG);
                                 }
                             }
-                            else if (items.TPrice != 0 && !checkAccount.ContainsKey(newacc))
+                            #endregion
+                            if (items.TPrice != 0)
                             {
-                                distribution = new ItemTransferDistribution
+                                var sendDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+
+                                if (sendDistribution != null)
                                 {
-                                    AccountCode = newacc,
-                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                                    Debit = 0,
-                                    Credit = (items.ShippedQuantity * items.UPrice),
-                                    ItemTransferID = items.ItemTransferID,
-                                };
-                                distributions.Add(distribution);
-                                checkAccount.Add(newacc, items.ItemCode);
+                                    sendDistribution.AccountCode = newacc;
+                                    sendDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                                    sendDistribution.Debit = 0;
+                                    sendDistribution.Credit += (items.ShippedQuantity * items.UPrice);
+                                    sendDistribution.ItemTransferID = items.ItemTransferID;
+                                }
+                                else
+                                {
+                                    var distribution = new ItemTransferDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = 0,
+                                        Credit = (items.ShippedQuantity * items.UPrice),
+                                        ItemTransferID = items.ItemTransferID,
+                                    };
+                                    distributions.Add(distribution);
+
+                                }
                             }
+                         
                         }
                     }
-                    foreach (var transferDistribution in distributions)
-                    {
-                        _db.ItemTransferDistributions.Add(transferDistribution);
-                        _db.SaveChanges();
-                    }
-                    distributions.Clear();
-                    checkAccount.Clear();
+                  
                 }
 
                 #endregion
             }
+
+            foreach (var d in distributions)
+            {
+                var distribution = d;
+                _db.ItemTransferDistributions.Add(distribution);
+                _db.SaveChanges();
+            }
         }
         public  void UpdateTransferReceiveDistribution(ItemTransferReceive record)
         {
-           
-            Dictionary<string, string> checkAccount = new Dictionary<string, string>();
             List<ItemTransferReceiveDistribution> distributions = new List<ItemTransferReceiveDistribution>();
 
             var records = _db.ItemTransferReceiveDistribution.Where(x => x.ItemTransferReceiveId == record.ItemTransferReceiveId).ToList();
@@ -716,73 +1270,86 @@ namespace ExceedERP.Helpers.Inventory
             _db.SaveChanges();
 
             var receiverBranchId = InventoryHelper.GetStoreBranch(record.ToStore);
+            var senderBranchId = InventoryHelper.GetStoreBranch(record.FromStore);
 
             if (record.ItemTransferItemReceive != null)
             {
-                ItemTransferReceiveDistribution distribution;
+               
                 #region debit receiver stock
 
                 if (record.ItemTransferItemReceive.Sum(x => x.TPrice) != 0)
                 {
                     foreach (var items in record.ItemTransferItemReceive)
                     {
-                        var inventory = _db.InventoryItems.Find(items.ItemCode);
-                        if (inventory != null && receiverBranchId != 0)
+                        var item = _db.InventoryItems.Find(items.ItemCode);
+                        if (item != null && receiverBranchId != 0)
                         {
-                            string acc = inventory.ItemCategory.AccountCode;
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(receiverBranchId);
-                            string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-                            if (items.TPrice != 0 && checkAccount.ContainsKey(newacc))
+                            string acc = item.ItemCategory.AccountCode;
+                            if (!string.IsNullOrWhiteSpace(item.SubCategoryCode))
                             {
-                                var iDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+                                var subcategory = _db.ItemCategorys.Where(x => x.ItemCategoryCode ==item.SubCategoryCode).FirstOrDefault();
+                                if (subcategory != null)
+                                    acc = subcategory.AccountCode;
+                            }
+                            int loacationAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string branchSeg = HrHelper.GetBranchLocationAccount(receiverBranchId);
+                            string newacc = _dynamicAccount.ReplaceSegment(acc, loacationAccountIndex, branchSeg);
 
-                                if (iDistribution != null)
+                            if (items.TPrice != 0)
+                            {
+                                var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+
+                                if (receiveDistribution != null)
                                 {
-                                    iDistribution.AccountCode = newacc;
-                                    iDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                                    iDistribution.Debit += (items.ReceivedQuantity * items.UPrice);
-                                    iDistribution.Credit = 0;
-                                    iDistribution.ItemTransferReceiveId = items.ItemTransferReceiveId;
+                                    receiveDistribution.AccountCode = newacc;
+                                    receiveDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                                    receiveDistribution.Debit += (items.ReceivedQuantity * items.UPrice);
+                                    receiveDistribution.Credit = 0;
+                                    receiveDistribution.ItemTransferReceiveId = items.ItemTransferReceiveId;
+                                }
+                                else
+                                {
+                                    var distribution = new ItemTransferReceiveDistribution
+                                    {
+                                        AccountCode = newacc,
+                                        AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                        Debit = (items.ReceivedQuantity * items.UPrice),
+                                        Credit = 0,
+                                        ItemTransferReceiveId = items.ItemTransferReceiveId,
+                                    };
+                                    distributions.Add(distribution);
                                 }
                             }
-                            else if (items.TPrice != 0 && !checkAccount.ContainsKey(newacc))
-                            {
-                                distribution = new ItemTransferReceiveDistribution
-                                {
-                                    AccountCode = newacc,
-                                    AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                                    Debit = (items.ReceivedQuantity * items.UPrice),
-                                    Credit = 0,
-                                    ItemTransferReceiveId = items.ItemTransferReceiveId,
-                                };
-                                distributions.Add(distribution);
-                                checkAccount.Add(newacc, items.ItemCode);
-                            }
+                           
                         }
                     }
-                    foreach (var transferDistribution in distributions)
-                    {
-                        _db.ItemTransferReceiveDistribution.Add(transferDistribution);
-                        _db.SaveChanges();
-                    }
-                    distributions.Clear();
-                    checkAccount.Clear();
+                    
                 }
 
                 #endregion
 
                 #region credit clearing account
 
-                var clearingAccount = _db.StockClearingAccounts.FirstOrDefault(x => x.Enable);
+                var clearingAccount = _db.StockClearingAccounts.Where(x => x.Type == ClearingAccountTypes.Store_Transfer).Where(x => x.Enable).FirstOrDefault();
                 if (clearingAccount != null)
                 {
                     string acc = clearingAccount.AccountCode;
-                    int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchSubAccount(receiverBranchId);
-                    string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                    int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string locationAccountSeG = HrHelper.GetBranchLocationAccount(senderBranchId);
+                    string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
+                    #region replace business unit
+                    if (GlobalHelper.IsMultipleBusinessUnit())
+                    {
+                        int storeBusinUnitId = InventoryHelper.GetStoreBusinessUnit(record.FromStore);
+                        if (storeBusinUnitId != 0)                       
+                        {
+                            int bizunitindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                            string sectorAccountSeG = HrHelper.GetBusinessUnitSectorAccount(storeBusinUnitId);
+                             newacc = _dynamicAccount.ReplaceSegment(newacc, bizunitindex, sectorAccountSeG);
+                        }
+                    }
+                    #endregion
                     decimal clearingAmount = 0;
                     foreach (var items in record.ItemTransferItemReceive)
                     {
@@ -791,28 +1358,42 @@ namespace ExceedERP.Helpers.Inventory
 
                     if (clearingAmount != 0)
                     {
-                        ItemTransferReceiveDistribution iDistribution=new ItemTransferReceiveDistribution();
-                        iDistribution.AccountCode = newacc;
-                        iDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                        iDistribution.Debit = 0;
-                        iDistribution.Credit = clearingAmount;
-                        iDistribution.ItemTransferReceiveId = record.ItemTransferReceiveId;
-                        distributions.Add(iDistribution);
-                        checkAccount.Add(newacc, "Clearing Account");
+                        var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
+
+                        if (receiveDistribution != null)
+                        {
+                            receiveDistribution.AccountCode = newacc;
+                            receiveDistribution.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            receiveDistribution.Debit = 0;
+                            receiveDistribution.Credit += clearingAmount;
+                            receiveDistribution.ItemTransferReceiveId = record.ItemTransferReceiveId;
+                        }
+                        else
+                        {
+                            var distribution = new ItemTransferReceiveDistribution
+                            {
+                                AccountCode = newacc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                Debit = 0,
+                                Credit = clearingAmount,
+                                ItemTransferReceiveId = record.ItemTransferReceiveId
+                            };
+                            distributions.Add(distribution);
+                        }
                     }
 
 
                 }
-                foreach (ItemTransferReceiveDistribution transferDistribution in distributions)
-                {
-                    _db.ItemTransferReceiveDistribution.Add(transferDistribution);
-                    _db.SaveChanges();
-                }
-                distributions.Clear();
-                checkAccount.Clear();
+               
 
                 #endregion
                 
+            }
+
+            foreach (var d in distributions)
+            {
+                _db.ItemTransferReceiveDistribution.Add(d);
+                _db.SaveChanges();
             }
         }
         public void UpdateGoodSellingDistribution(GoodSellingAndLending record)

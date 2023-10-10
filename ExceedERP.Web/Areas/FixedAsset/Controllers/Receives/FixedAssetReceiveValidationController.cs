@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -137,8 +138,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                     db.FixedAssetReceiveValidations.Add(entity);
                     db.SaveChanges();
                     fixedAssetReceiveValidation.FixedAssetReceiveValidationID = entity.FixedAssetReceiveValidationID;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveValidation", "Success", User.Identity.Name, $"created  FixedAssetReceiveValidation {entity.FixedAssetReceiveValidationID} Tag {entity.FixedAssetReceiveId}", Modules.FixedAsset);
+                    #endregion
+
                 }
-               
+
             }
 
             return Json(new[] { fixedAssetReceiveValidation }.ToDataSourceResult(request, ModelState));
@@ -162,6 +167,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceiveValidations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveValidation", "Success", User.Identity.Name, $"updated  FixedAssetReceiveValidation {entity.FixedAssetReceiveValidationID} Tag {entity.FixedAssetReceiveId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveValidation }.ToDataSourceResult(request, ModelState));
@@ -184,6 +192,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceiveValidations.Attach(entity);
                 db.FixedAssetReceiveValidations.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Deleted", "Success", User.Identity.Name, $"Delete  FixedAssetReceiveValidation {fixedAssetReceiveValidation.FixedAssetReceiveValidationID} Tag {fixedAssetReceiveValidation.FixedAssetReceiveId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveValidation }.ToDataSourceResult(request, ModelState));
@@ -206,8 +217,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 PurchaseDate = assetReceive?.ReceiveDate,
                 GRNDate = assetReceive?.ReceiveDate,
                 IsMachinery = itemReceive.IsMachinery,
-                FixedAssetConditionId = itemReceive.FixedAssetConditionId,
+                FixedAssetConditionId = itemReceive.FixedAssetConditionId, 
                 GRN = assetReceive?.FixedAssetReceiveId.ToString(),
+                Tag = itemReceive.TagNo,
                 SerialNo = itemReceive.SerialNo,
                 ModelNo = itemReceive.Model,
                 Size = itemReceive.Size,
@@ -224,56 +236,57 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
             string tagPrefix = "";
             var tagSetting = db.TagCodeSettings.OrderBy(x => x.Index).ToList();
 
-
-            foreach (var tag in tagSetting)
+            if (tagSetting.Any())
             {
-                switch (tag.Type)
+                foreach (var tag in tagSetting)
                 {
-                    case TagAbbreviationType.Company:
-                        var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
-                        if (organization != null) tagPrefix = tagPrefix + "-" + organization.Abbreviation;
-                        break;
+                    switch (tag.Type)
+                    {
+                        case TagAbbreviationType.Company:
+                            var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+                            if (organization != null) tagPrefix = tagPrefix + "-" + organization.Abbreviation;
+                            break;
 
-                    case TagAbbreviationType.BranchOrSector:
-                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == itemReceive.FixedAssetReceive.BranchId);
-                        if (branch != null) tagPrefix = tagPrefix + "-" + branch.Abbreviation;
-                        break;
-                    case TagAbbreviationType.Category:
-                        tagPrefix = tagPrefix + "-" + itemReceive.FixedAssetCategory.Abbreviation;
-                        break;
-                    case TagAbbreviationType.SubCategory:
-                        tagPrefix = tagPrefix + "-" + itemReceive.FixedAssetSubCategory.SubCategoryCode;
-                        break;
-                    default:
-                        break;
+                        case TagAbbreviationType.BranchOrSector:
+                            var branch = db.Branch.FirstOrDefault(x => x.BranchId == itemReceive.FixedAssetReceive.BranchId);
+                            if (branch != null) tagPrefix = tagPrefix + "-" + branch.Abbreviation;
+                            break;
+                        case TagAbbreviationType.Category:
+                            tagPrefix = tagPrefix + "-" + itemReceive.FixedAssetCategory.Abbreviation;
+                            break;
+                        case TagAbbreviationType.SubCategory:
+                            tagPrefix = tagPrefix + "-" + itemReceive.FixedAssetSubCategory.SubCategoryCode;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                //trim first -
+                tagPrefix = tagPrefix.Remove(0, 1);
+                var indexNumber = db.IndexingCounts.FirstOrDefault(x => x.IndexCode == tagPrefix);
+                if (indexNumber == null)
+                {
+                    var newindexNumber = new IndexingCount
+                    {
+                        IndexCode = tagPrefix,
+                        SubCategoryCode = itemReceive.FixedAssetSubCategory.SubCategoryCode,
+                        CurrentValue = 1,
+                        FixedAssetSubCategory = itemReceive.FixedAssetSubCategory
+                    };
+                    db.IndexingCounts.Add(newindexNumber);
+                    db.SaveChanges();
+
+                    tagPrefix = tagPrefix + "-" + 1.ToString().PadLeft(4, '0');
+                }
+                else
+                {
+                    tagPrefix = tagPrefix + "-" + (indexNumber.CurrentValue + 1).ToString().PadLeft(4, '0');
+
+                    indexNumber.CurrentValue = indexNumber.CurrentValue + 1;
+                    db.Entry(indexNumber).State = EntityState.Modified;
+                    db.SaveChanges();
                 }
             }
-            //trim first -
-            tagPrefix = tagPrefix.Remove(0, 1);
-            var indexNumber = db.IndexingCounts.FirstOrDefault(x => x.IndexCode == tagPrefix);
-            if (indexNumber == null)
-            {
-                var newindexNumber = new IndexingCount
-                {
-                    IndexCode = tagPrefix,
-                    SubCategoryCode = itemReceive.FixedAssetSubCategory.SubCategoryCode,
-                    CurrentValue = 1,
-                    FixedAssetSubCategory = itemReceive.FixedAssetSubCategory
-                };
-                db.IndexingCounts.Add(newindexNumber);
-                db.SaveChanges();
-
-                tagPrefix = tagPrefix + "-" + 1.ToString().PadLeft(4, '0');
-            }
-            else
-            {
-                tagPrefix = tagPrefix + "-" + (indexNumber.CurrentValue + 1).ToString().PadLeft(4, '0');
-
-                indexNumber.CurrentValue = indexNumber.CurrentValue + 1;
-                db.Entry(indexNumber).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-
             #endregion
 
             #region get employee and workunit
@@ -285,13 +298,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
 
             #region update asset
 
-            assetRegistration.Tag = tagPrefix;
+            assetRegistration.Tag =String.IsNullOrEmpty(tagPrefix)? itemReceive.TagNo:tagPrefix;
             assetRegistration.EmployeeId =employeeid ;
             assetRegistration.OrgStructureId =orgid ;
             db.AssetRegistrations.Add(assetRegistration);
             db.SaveChanges();
 
-            itemReceive.TagNo = tagPrefix;
+            itemReceive.TagNo = String.IsNullOrEmpty(tagPrefix) ? itemReceive.TagNo : tagPrefix;
             db.FixedAssetReceiveItems.Attach(itemReceive);
             db.Entry(itemReceive).State = EntityState.Modified;
             db.SaveChanges();
@@ -311,7 +324,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 OrgStructureId=orgid,
                 AssetRegistration = assetRegistration,
                 AssetRegistrationId = assetRegistration.AssetRegistrationId,
-                TransactionType = "Receive",
+                TransactionType = FixedAssetTransactionType.Receive,//changed from string to enum
                 TransactionNo = itemReceive.FixedAssetReceiveId.ToString(),
             };
             db.LocationTrackings.Add(tracking);

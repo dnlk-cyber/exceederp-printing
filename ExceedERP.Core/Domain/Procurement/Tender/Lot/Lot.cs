@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Procurement.Proforma;
 
 namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
 {

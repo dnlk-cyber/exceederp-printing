@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -54,6 +56,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetClearingAccountSetups.Add(entity);
                 db.SaveChanges();
                 fixedAssetClearingAccountSetup.FixedAssetClearingAccountSetupID = entity.FixedAssetClearingAccountSetupID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetClearingAccountSetup", "Success", User.Identity.Name, $"created FixedAssetClearingAccountSetup {entity.FixedAssetClearingAccountSetupID} AccountCode {entity.AccountCode}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { fixedAssetClearingAccountSetup }.ToDataSourceResult(request, ModelState));
@@ -79,6 +85,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetClearingAccountSetups.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetClearingAccountSetup", "Success", User.Identity.Name, $"updated FixedAssetClearingAccountSetup {entity.FixedAssetClearingAccountSetupID} AccountCode {entity.AccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetClearingAccountSetup }.ToDataSourceResult(request, ModelState));
@@ -103,6 +112,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetClearingAccountSetups.Attach(entity);
                 db.FixedAssetClearingAccountSetups.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetClearingAccountSetup {fixedAssetClearingAccountSetup.FixedAssetClearingAccountSetupID} AccountCode {fixedAssetClearingAccountSetup.AccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetClearingAccountSetup }.ToDataSourceResult(request, ModelState));

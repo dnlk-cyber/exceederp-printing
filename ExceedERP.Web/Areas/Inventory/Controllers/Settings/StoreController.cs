@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                         BranchId = store.BranchId,
                         BusinessUnitId = store.BusinessUnitId,
                         Location = store.Location,
-                        Enable = store.Enable,
+                        Enable = true,
                         IsTemp = store.IsTemp,
                         Remark = store.Remark,
                         CreatedBy = User.Identity.Name,

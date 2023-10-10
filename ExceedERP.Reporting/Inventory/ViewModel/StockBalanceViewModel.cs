@@ -12,6 +12,8 @@ namespace ExceedERP.Reporting.Inventory.ViewModel
         public string ItemCode { get; set; }
         [Display(Name = "Item Name")]
         public string InventoryItem { get; set; }
+        public string ItemLocation { get; set; }
+        
         public decimal Balance { get; set; }
         public decimal AvgPrice { get; set; }
         public decimal TotalAmount { get; set; }

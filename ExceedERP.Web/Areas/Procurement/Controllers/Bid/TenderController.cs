@@ -105,6 +105,14 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
         }
 
+        private bool CheckStatus(DateTime date)
+        {
+            int days = (date - DateTime.Now).Days;
+            if (days > 0 && days <= 3)
+                return true;
+            else
+                return false;
+        }
         public JsonResult GetDepartment()
         {
             var company = _db.MainCompanyStructures.FirstOrDefault(x => x.Parent == 0);
@@ -162,6 +170,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 IsOnlineTransferred = tender.IsOnlineTransferred,
                 IsOnlineTransferredBy = tender.IsOnlineTransferredBy,
                 OnlineTransferredTime = tender.OnlineTransferredTime,
+                CloseStatus = CheckStatus(tender.ClosingDate),
+                OpenStatus = CheckStatus(tender.OpenigDate),
 
 
                 DateCreated = tender.DateCreated,
@@ -595,160 +605,160 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetParticipantItem(string id)
-        {
-            int lotId = int.Parse(id);
-            var lot = _db.Lots.Find(lotId);
-            if (lot != null)
-            {
-                //not to lose data on refresh
+        //public JsonResult GetParticipantItem(string id)
+        //{
+        //    int lotId = int.Parse(id);
+        //    var lot = _db.Lots.Find(lotId);
+        //    if (lot != null)
+        //    {
+        //        //not to lose data on refresh
 
-                //_db.ParticipantsItems.RemoveRange(lot.ParticipantsItems);
-                //_db.SaveChanges();
+        //        //_db.ParticipantsItems.RemoveRange(lot.ParticipantsItems);
+        //        //_db.SaveChanges();
 
-                #region items
-                var suppliers = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lotId).ToList();
+        //        #region items
+        //        var suppliers = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lotId).ToList();
 
-                var evalbydoc = _db.LotEvaluationByDocuments
-                    .Where(x => x.LotID == lotId)
-                    .Where(x => x.IsAvailable).ToList();
+        //        var evalbydoc = _db.LotEvaluationByDocuments
+        //            .Where(x => x.LotID == lotId)
+        //            .Where(x => x.IsAvailable).ToList();
 
-                foreach (var supplier in suppliers)
-                {
-                    //filter eval by doc
-                    var exist = evalbydoc.Where(x => x.SupplierName == supplier.SupplierName).ToList();
-                    if (exist.Any())
-                        continue;
+        //        foreach (var supplier in suppliers)
+        //        {
+        //            //filter eval by doc
+        //            var exist = evalbydoc.Where(x => x.SupplierName == supplier.SupplierName).ToList();
+        //            if (exist.Any())
+        //                continue;
 
-                    var lotitems = _db.LotItems.Where(x => x.LotID == lotId).ToList();
+        //            var lotitems = _db.LotItems.Where(x => x.LotID == lotId).ToList();
 
-                    var evaluations = _db.TenderEvaluationCriterias.Where(x => x.LotID == lotId).ToList();
+        //            var evaluations = _db.TenderEvaluationCriterias.Where(x => x.LotID == lotId).ToList();
 
-                    foreach (var lotitem in lotitems)
-                    {
-                        #region jump failed ones
+        //            foreach (var lotitem in lotitems)
+        //            {
+        //                #region jump failed ones
 
-                        var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
-                        if (passfailCriteria != null)
-                        {
-                            if (lotitem.ItemType == PurchaseItemType.FixedAsset)
-                            {
-                                var proformPassFail = _db.TenderPassFailResult.Where(
-                                    x => x.LotID == lotId && x.ItmCode == lotitem.ItmCode && 
-                                    x.Name == lotitem.Name &&
-                                     x.ModelNo == lotitem.ModelNo &&
-                                         x.SupplierName == supplier.SupplierName).FirstOrDefault();
+        //                var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
+        //                if (passfailCriteria != null)
+        //                {
+        //                    if (lotitem.ItemType == PurchaseItemType.FixedAsset)
+        //                    {
+        //                        var proformPassFail = _db.TenderPassFailResult.Where(
+        //                            x => x.LotID == lotId && x.ItmCode == lotitem.ItmCode && 
+        //                            x.Name == lotitem.Name &&
+        //                             x.ModelNo == lotitem.ModelNo &&
+        //                                 x.SupplierName == supplier.SupplierName).FirstOrDefault();
 
-                                if (proformPassFail?.Result == PassFailStatus.Fail)
-                                    continue;
+        //                        if (proformPassFail?.Result == PassFailStatus.Fail)
+        //                            continue;
 
-                            }
-                            else
-                            {
-                                var proformPassFail = _db.TenderPassFailResult
-                                    .Where(x=>x.SupplierName == supplier.SupplierName)
-                                     .Where(x => x.LotID == lotId)
-                                      .Where(x => x.ItmCode == lotitem.ItmCode)
-                                      .Where(x => x.ItemSpecification == lotitem.ItemSpecification)//added
-                                    .FirstOrDefault();
+        //                    }
+        //                    else
+        //                    {
+        //                        var proformPassFail = _db.TenderPassFailResult
+        //                            .Where(x=>x.SupplierName == supplier.SupplierName)
+        //                             .Where(x => x.LotID == lotId)
+        //                              .Where(x => x.ItmCode == lotitem.ItmCode)
+        //                              .Where(x => x.ItemSpecification == lotitem.ItemSpecification)//added
+        //                            .FirstOrDefault();
 
-                                if (proformPassFail?.Result == PassFailStatus.Fail)
-                                    continue;
-                            }
+        //                        if (proformPassFail?.Result == PassFailStatus.Fail)
+        //                            continue;
+        //                    }
                             
-                        }
+        //                }
 
-                        #endregion
+        //                #endregion
 
-                        if (lotitem.ItemType == PurchaseItemType.FixedAsset)
-                        {
-                            //if exists jump
-                            var exists = _db.ParticipantsItems.Where(
-                                x => x.LotID == lotId 
-                                && x.ItmCode == lotitem.ItmCode 
-                                 && x.Name == lotitem.Name
-                                  && x.ModelNo == lotitem.ModelNo
-                                 && x.SupplierName == supplier.SupplierName).FirstOrDefault();
+        //                if (lotitem.ItemType == PurchaseItemType.FixedAsset)
+        //                {
+        //                    //if exists jump
+        //                    var exists = _db.BidParticipatingSupplierItems.Where(
+        //                        x => x.BidPParticipatingSupplier.LotID == lotId 
+        //                        && x.ItmCode == lotitem.ItmCode 
+        //                         && x.Name == lotitem.Name
+        //                          && x.ModelNo == lotitem.ModelNo
+        //                         && x.SupplierName == supplier.SupplierName).FirstOrDefault();
 
-                            if (exists == null)
-                            {
-                                var item = new ParticipantsItem
-                                {
-                                    CatCode = lotitem.CatCode,
-                                    CategoryName = lotitem.CategoryName,
-                                    ItmCode = lotitem.ItmCode,
-                                    ItemName = lotitem.ItemName,
-                                    Name = lotitem.Name,
-                                    ModelNo = lotitem.ModelNo,
-                                    ItemSpecification = lotitem.ItemSpecification,
-                                    UoM = lotitem.UoM,
-                                    SupplierId = supplier.SupplierId,
-                                    IsNewSupplier = supplier.IsNewSupplier,
-                                    SupplierName = supplier.SupplierName,
-                                    LotID = lotId,
-                                    GLTaxRateID = 0,
-                                    Quantity = lotitem.Quantity,
-                                    LotItemID=lotitem.LotItemsID
-                                };
-                                _db.ParticipantsItems.Add(item);
-                                _db.SaveChanges();
-                            }
-                        }
-                        else
-                        {
-                            //if exists jump
-                            var exists = _db.ParticipantsItems
-                                        .Where(x => x.SupplierName == supplier.SupplierName)
-                                       .Where(x => x.LotID == lotId)
-                                      .Where(x => x.ItmCode == lotitem.ItmCode)
-                                      .Where(x => x.ItemSpecification == lotitem.ItemSpecification)//added
-                                    .FirstOrDefault();
+        //                    if (exists == null)
+        //                    {
+        //                        var item = new ParticipantsItem
+        //                        {
+        //                            CatCode = lotitem.CatCode,
+        //                            CategoryName = lotitem.CategoryName,
+        //                            ItmCode = lotitem.ItmCode,
+        //                            ItemName = lotitem.ItemName,
+        //                            Name = lotitem.Name,
+        //                            ModelNo = lotitem.ModelNo,
+        //                            ItemSpecification = lotitem.ItemSpecification,
+        //                            UoM = lotitem.UoM,
+        //                            SupplierId = supplier.SupplierId,
+        //                            IsNewSupplier = supplier.IsNewSupplier,
+        //                            SupplierName = supplier.SupplierName,
+        //                            LotID = lotId,
+        //                            GLTaxRateID = 0,
+        //                            Quantity = lotitem.Quantity,
+        //                            LotItemID=lotitem.LotItemsID
+        //                        };
+        //                        _db.ParticipantsItems.Add(item);
+        //                        _db.SaveChanges();
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    //if exists jump
+        //                    var exists = _db.ParticipantsItems
+        //                                .Where(x => x.SupplierName == supplier.SupplierName)
+        //                               .Where(x => x.LotID == lotId)
+        //                              .Where(x => x.ItmCode == lotitem.ItmCode)
+        //                              .Where(x => x.ItemSpecification == lotitem.ItemSpecification)//added
+        //                            .FirstOrDefault();
 
-                            if (exists == null)
-                            {
-                                var item = new ParticipantsItem
-                                {
-                                    CatCode = lotitem.CatCode,
-                                    CategoryName = lotitem.CategoryName,
-                                    ItmCode = lotitem.ItmCode,
-                                    ItemName = lotitem.ItemName,
-                                    ItemSpecification = lotitem.ItemSpecification,
-                                    Name = lotitem.Name,
-                                    ModelNo = lotitem.ModelNo,
-                                    UoM =lotitem.UoM,
-                                    SupplierId = supplier.SupplierId,
-                                    IsNewSupplier = supplier.IsNewSupplier,
-                                    SupplierName = supplier.SupplierName,
-                                    LotID = lotId,
-                                    GLTaxRateID = 0,
-                                    Quantity = lotitem.Quantity,
-                                    LotItemID = lotitem.LotItemsID
-                                };
-                                _db.ParticipantsItems.Add(item);
-                                _db.SaveChanges();
-                            }
-                        }
-                    }
-                }
+        //                    if (exists == null)
+        //                    {
+        //                        var item = new ParticipantsItem
+        //                        {
+        //                            CatCode = lotitem.CatCode,
+        //                            CategoryName = lotitem.CategoryName,
+        //                            ItmCode = lotitem.ItmCode,
+        //                            ItemName = lotitem.ItemName,
+        //                            ItemSpecification = lotitem.ItemSpecification,
+        //                            Name = lotitem.Name,
+        //                            ModelNo = lotitem.ModelNo,
+        //                            UoM =lotitem.UoM,
+        //                            SupplierId = supplier.SupplierId,
+        //                            IsNewSupplier = supplier.IsNewSupplier,
+        //                            SupplierName = supplier.SupplierName,
+        //                            LotID = lotId,
+        //                            GLTaxRateID = 0,
+        //                            Quantity = lotitem.Quantity,
+        //                            LotItemID = lotitem.LotItemsID
+        //                        };
+        //                        _db.ParticipantsItems.Add(item);
+        //                        _db.SaveChanges();
+        //                    }
+        //                }
+        //            }
+        //        }
 
                 
 
-                #endregion
+        //        #endregion
 
-                var formattedData = new
-                {
-                    Message = "Complete",
-                    Status = "OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
-            var formattedData1 = new
-            {
-                Message = "The record is not found.",
-                Status = "NOT_OK"
-            };
-            return Json(formattedData1, JsonRequestBehavior.AllowGet);
-        }
+        //        var formattedData = new
+        //        {
+        //            Message = "Complete",
+        //            Status = "OK"
+        //        };
+        //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //    }
+        //    var formattedData1 = new
+        //    {
+        //        Message = "The record is not found.",
+        //        Status = "NOT_OK"
+        //    };
+        //    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+        //}
 
         public JsonResult GenerateResult(string id)
         {
@@ -764,272 +774,374 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
                 #region validation 
 
-                var allParticipantItems = _db.ParticipantsItems
-                    .Where(x => x.LotID == lotid).Where(x => x.Total == 0);
+                var allNoPriceParticipantItems = _db.BidParticipatingSupplierItems
+                    .Where(x => x.BidPParticipatingSupplier.LotID == lotid)
+                    .Where(x => x.IsOutOfStock == false)
+                    .Where(x => x.Total == 0);
 
-                if (allParticipantItems.Any())
+                var lotCriteria = _db.TenderEvaluationCriterias.Where(x => x.LotID == lotid).ToList();
+
+                if (lotCriteria.Any())
                 {
-                    var formattedData3 = new
+                    if (lotCriteria.Count == 1 &&lotCriteria.FirstOrDefault().Type== CriteriaType.Pass_Fail)
                     {
-                        Message = "Please fill price for all items.",
-                        Status = "NOT_OK"
-                    };
-                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                        //if pass fail only, chekc passed only 
+                        var passedItems = _db.TenderPassFailResult.Where(x => x.LotID == lotid).Where(x => x.Result == PassFailStatus.Pass).ToList();
+                        foreach(var i in passedItems)
+                        {
+                            var supp= _db.BidPParticipatingSupplierses
+                                 .Where(x => x.LotID == lotid)
+                                 .Where(x => x.SupplierName == i.SupplierName).FirstOrDefault();
+
+                            var noPricePassItems= allNoPriceParticipantItems
+                                 .Where(x=>x.BidPParticipatingSuppliersID== supp.BidPParticipatingSuppliersID)
+                                 .Where(x=>x.LotItemID==i.LotItemID)
+                                 .ToArray();
+
+                            if (noPricePassItems.Any())
+                            {
+                                var formattedData3 = new
+                                {
+                                    Message = "Please fill price for all passed items.",
+                                    Status = "NOT_OK"
+                                };
+                                return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        if (allNoPriceParticipantItems.Any())
+                        {
+                            var formattedData3 = new
+                            {
+                                Message = "Please fill price for all items.",
+                                Status = "NOT_OK"
+                            };
+                            return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                        }
+                    }
                 }
-                
+                else
+                {
+
+                    if (allNoPriceParticipantItems.Any())
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill price for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
 
                 #endregion
-                foreach (var participantsItem in lot.ParticipantsItems)
+                var participants = _db.BidPParticipatingSupplierses
+                    .Where(x => x.LotID == lotid).ToList();
+                foreach (var supplier in participants)
                 {
+                    var participantsItems = _db.BidParticipatingSupplierItems
+                        .Where(x => x.BidPParticipatingSuppliersID == supplier.BidPParticipatingSuppliersID)
+                        .Where(x => x.IsOutOfStock == false).ToList();
 
                     var result = _db.TenderEvaluationResults
                         .Where(x => x.LotID == lotid)
-                        .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
                     if (result == null)
                     {
                         #region header
                         var evaluationResult = new TenderEvaluationResult
                         {
-                            LotID = lot.LotID,
+                            LotID = lotid,
                             Financial =0,
                             Technical = 0,
                             Pass = PassFailStatus.NA,
                             Total = 0,
-                            SupplierId = participantsItem.SupplierId,
-                            IsNewSupplier = participantsItem.IsNewSupplier,
-                            SupplierName = participantsItem.SupplierName,
+                            SupplierId = supplier.SupplierId,
+                            IsNewSupplier = supplier.IsNewSupplier,
+                            SupplierName = supplier.SupplierName,
                         };
                         _db.TenderEvaluationResults.Add(evaluationResult);
                         _db.SaveChanges();
                         #endregion
-                        #region line
-
-                        var evaluationResultItem = new TenderEvaluationItemResult
+                        foreach (var participantsItem in participantsItems)
                         {
-                            TenderEvaluationResult = evaluationResult,
-                            ItmCode = participantsItem.ItmCode,
-                            ItemName = participantsItem.ItemName,
-                            Name = participantsItem.Name,
-                            ItemSpecification = participantsItem.ItemSpecification,
-                            ModelNo = participantsItem.ModelNo,
-                            CatCode = participantsItem.CatCode,
-                            CategoryName = participantsItem.CategoryName,
-                            LotItemID = participantsItem.LotItemID
-                        };
+                            #region line
 
-                        #region pass fail
-
-                        bool isPassFail = false;
-                        var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
-                        if (passfailCriteria != null)
-                        {
-                            isPassFail = true;
-                           
-                            //    var passFailResult = _db.TenderPassFailResult.FirstOrDefault(
-                            //    x =>
-                            //        x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
-                            //        x.SupplierName == participantsItem.SupplierName);
-
-                            //if (passFailResult != null)
-                            //{
-                            //    //added to exclude failed ones
-                            //    if (passFailResult.Result == PassFailStatus.Fail)
-                            //        continue;
-                            //    evaluationResultItem.Pass = passFailResult.Result;
-                            //}
-
-                            if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+                            var evaluationResultItem = new TenderEvaluationItemResult
                             {
-                                var passFailResult = _db.TenderPassFailResult
-                                    .Where(x=>x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.Name == participantsItem.Name)
-                                    .Where(x => x.ModelNo == participantsItem.ModelNo)
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                                TenderEvaluationResult = evaluationResult,
+                                ItmCode = participantsItem.ItmCode,                              
+                                ItemName = participantsItem.ItemName,
+                                Name = participantsItem.Name,
+                                ItemSpecification = participantsItem.ItemSpecification,
+                                ModelNo = participantsItem.ModelNo,
+                                CatCode = participantsItem.CatCode,
+                                CategoryName = participantsItem.CategoryName,
+                                LotItemID = participantsItem.LotItemID
+                            };
 
-                                if (passFailResult != null)
+                            #region pass fail
+
+                            bool isPassFail = false;
+                            var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
+                            if (passfailCriteria != null)
+                            {
+                                isPassFail = true;
+
+                                //    var passFailResult = _db.TenderPassFailResult.FirstOrDefault(
+                                //    x =>
+                                //        x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
+                                //        x.SupplierName == participantsItem.SupplierName);
+
+                                //if (passFailResult != null)
+                                //{
+                                //    //added to exclude failed ones
+                                //    if (passFailResult.Result == PassFailStatus.Fail)
+                                //        continue;
+                                //    evaluationResultItem.Pass = passFailResult.Result;
+                                //}
+
+                                if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
                                 {
-                                    if (passFailResult.Result == PassFailStatus.Fail)
-                                        continue;
-                                    evaluationResultItem.Pass = passFailResult.Result;
+                                    var passFailResult = _db.TenderPassFailResult
+                                        .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.Name == participantsItem.Name)
+                                        .Where(x => x.ModelNo == participantsItem.ModelNo)
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (passFailResult != null)
+                                    {
+                                        if (passFailResult.Result == PassFailStatus.Fail)
+                                            continue;
+                                        evaluationResultItem.Pass = passFailResult.Result;
+                                    }
+
                                 }
-
-                            }
-                            else
-                            {
-                                var passFailResult = _db.TenderPassFailResult
-                                   .Where(x => x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
-
-                                if (passFailResult != null)
+                                else
                                 {
-                                    if (passFailResult.Result == PassFailStatus.Fail)
-                                        continue;
-                                    evaluationResultItem.Pass = passFailResult.Result;
+                                    var passFailResult = _db.TenderPassFailResult
+                                       .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (passFailResult != null)
+                                    {
+                                        if (passFailResult.Result == PassFailStatus.Fail)
+                                            continue;
+                                        evaluationResultItem.Pass = passFailResult.Result;
+                                    }
+
                                 }
-
                             }
-                        }
-                        #endregion
-                        #region financial
+                            #endregion
+                            #region financial
 
-                        var financialCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Financial);
-                        int criteriaid = 0;
-                        if (financialCriteria != null)
-                            criteriaid = financialCriteria.TenderEvaluationCriteriaID;
-
-                        evaluationResultItem.Financial =
-                            ComputeFinancial(participantsItem.ItemType,participantsItem.SupplierName, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.ItemSpecification, participantsItem.ModelNo,
-                            criteriaid, lot.ParticipantsItems.ToList(), isPassFail);
-                        #endregion
-                        #region technical
-
-                        var technicalCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Technical);
-                        if (technicalCriteria != null)
-                        {
-                            //var proformaTechnical = _db.TenderTechnicals.FirstOrDefault(x =>
-                            //    x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
-                            //    x.SupplierName == participantsItem.SupplierName);
-
-                            //if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
-
-                            if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+                            var financialCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Financial);
+                            int criteriaid = 0;
+                            if (financialCriteria != null)
+                                criteriaid = financialCriteria.TenderEvaluationCriteriaID;
+                            //new block
+                            List<BidParticipatingSupplierItem> allparticipantsItems = new List<BidParticipatingSupplierItem>();
+                            var bidparticipants = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lotid).ToList();
+                            foreach(var supp in bidparticipants)
                             {
-                                var proformaTechnical = _db.TenderTechnicals
-                                    .Where(x => x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.Name == participantsItem.Name)
-                                    .Where(x => x.ModelNo == participantsItem.ModelNo)
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                                var participantItems = _db.BidParticipatingSupplierItems
+                                    .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID).ToList();
 
-                                if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+                                allparticipantsItems.AddRange(participantItems);
                             }
-                            else
+
+                            evaluationResultItem.Financial =
+                                ComputeFinancial(participantsItem.ItemType, supplier.BidPParticipatingSuppliersID, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.ItemSpecification, participantsItem.ModelNo,
+                                criteriaid, allparticipantsItems, isPassFail);
+                            #endregion
+                            #region technical
+
+                            var technicalCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Technical);
+                            if (technicalCriteria != null)
                             {
-                                var proformaTechnical = _db.TenderTechnicals
-                                    .Where(x => x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                                //var proformaTechnical = _db.TenderTechnicals.FirstOrDefault(x =>
+                                //    x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
+                                //    x.SupplierName == participantsItem.SupplierName);
 
-                                if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+                                //if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+
+                                if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+                                {
+                                    var proformaTechnical = _db.TenderTechnicals
+                                        .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.Name == participantsItem.Name)
+                                        .Where(x => x.ModelNo == participantsItem.ModelNo)
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+                                }
+                                else
+                                {
+                                    var proformaTechnical = _db.TenderTechnicals
+                                        .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+                                }
                             }
+                            #endregion
+
+                            evaluationResultItem.Total = evaluationResultItem.Financial + evaluationResultItem.Technical;
+                            _db.TenderEvaluationItemResults.Add(evaluationResultItem);
+                            _db.SaveChanges();
+
+                            #endregion
                         }
-                        #endregion
-
-                        evaluationResultItem.Total = evaluationResultItem.Financial + evaluationResultItem.Technical;
-                        _db.TenderEvaluationItemResults.Add(evaluationResultItem);
-                        _db.SaveChanges();
-
-                        #endregion
                     }
                     else
                     {
-                        #region line
-
-                        var evaluationResultItem = new TenderEvaluationItemResult
+                        foreach (var participantsItem in participantsItems)
                         {
-                            TenderEvaluationResult = result,
-                            ItmCode = participantsItem.ItmCode,
-                            ItemName = participantsItem.ItemName,
-                            Name = participantsItem.Name,
-                            ItemSpecification = participantsItem.ItemSpecification,
-                            ModelNo = participantsItem.ModelNo,
-                            CatCode = participantsItem.CatCode,
-                            CategoryName = participantsItem.CategoryName,
-                            LotItemID = participantsItem.LotItemID
-                        };
+                            #region line
 
-                        #region pass fail
-
-                        bool isPassFail = false;
-                        var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
-                        if (passfailCriteria != null)
-                        {
-                            isPassFail = true;
-                            
-                            if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+                            var evaluationResultItem = new TenderEvaluationItemResult
                             {
-                                var passFailResult = _db.TenderPassFailResult
-                                    .Where(x=>x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.Name == participantsItem.Name)
-                                    .Where(x => x.ModelNo == participantsItem.ModelNo)
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                                TenderEvaluationResult = result,
+                                ItmCode = participantsItem.ItmCode,
+                                ItemName = participantsItem.ItemName,
+                                Name = participantsItem.Name,
+                                ItemSpecification = participantsItem.ItemSpecification,
+                                ModelNo = participantsItem.ModelNo,
+                                CatCode = participantsItem.CatCode,
+                                CategoryName = participantsItem.CategoryName,
+                                LotItemID = participantsItem.LotItemID
+                            };
 
-                                if (passFailResult != null)
+                            #region pass fail
+
+                            bool isPassFail = false;
+                            var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
+                            if (passfailCriteria != null)
+                            {
+                                isPassFail = true;
+
+                                //    var passFailResult = _db.TenderPassFailResult.FirstOrDefault(
+                                //    x =>
+                                //        x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
+                                //        x.SupplierName == participantsItem.SupplierName);
+
+                                //if (passFailResult != null)
+                                //{
+                                //    //added to exclude failed ones
+                                //    if (passFailResult.Result == PassFailStatus.Fail)
+                                //        continue;
+                                //    evaluationResultItem.Pass = passFailResult.Result;
+                                //}
+
+                                if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
                                 {
-                                    if (passFailResult.Result == PassFailStatus.Fail)
-                                        continue;
-                                    evaluationResultItem.Pass = passFailResult.Result;
+                                    var passFailResult = _db.TenderPassFailResult
+                                        .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.Name == participantsItem.Name)
+                                        .Where(x => x.ModelNo == participantsItem.ModelNo)
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (passFailResult != null)
+                                    {
+                                        if (passFailResult.Result == PassFailStatus.Fail)
+                                            continue;
+                                        evaluationResultItem.Pass = passFailResult.Result;
+                                    }
+
                                 }
-
-                            }
-                            else
-                            {
-                                var passFailResult = _db.TenderPassFailResult
-                                   .Where(x => x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
-
-                                if (passFailResult != null)
+                                else
                                 {
-                                    if (passFailResult.Result == PassFailStatus.Fail)
-                                        continue;
-                                    evaluationResultItem.Pass = passFailResult.Result;
+                                    var passFailResult = _db.TenderPassFailResult
+                                       .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (passFailResult != null)
+                                    {
+                                        if (passFailResult.Result == PassFailStatus.Fail)
+                                            continue;
+                                        evaluationResultItem.Pass = passFailResult.Result;
+                                    }
+
                                 }
-
                             }
-                        }
-                        #endregion
-                        #region financial
+                            #endregion
+                            #region financial
 
-                        var financialCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Financial);
-                        int criteriaid = 0;
-                        if (financialCriteria != null)
-                            criteriaid = financialCriteria.TenderEvaluationCriteriaID;
+                            var financialCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Financial);
+                            int criteriaid = 0;
+                            if (financialCriteria != null)
+                                criteriaid = financialCriteria.TenderEvaluationCriteriaID;
 
-                        evaluationResultItem.Financial = ComputeFinancial(participantsItem.ItemType,participantsItem.SupplierName, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.Name, participantsItem.ModelNo,
-                            criteriaid, lot.ParticipantsItems.ToList(), isPassFail);
-                        #endregion
-                        #region technical
-
-                        var technicalCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Technical);
-                        if (technicalCriteria != null)
-                        {
-                            if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+                            //new block
+                            List<BidParticipatingSupplierItem> allparticipantsItems = new List<BidParticipatingSupplierItem>();
+                            var bidparticipants = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lotid).ToList();
+                            foreach (var supp in bidparticipants)
                             {
-                                var tenderTechnical = _db.TenderTechnicals
-                                    .Where(x => x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.Name == participantsItem.Name)
-                                    .Where(x => x.ModelNo == participantsItem.ModelNo)
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                                var participantItems = _db.BidParticipatingSupplierItems
+                                    .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID).ToList();
 
-                                if (tenderTechnical != null) evaluationResultItem.Technical = tenderTechnical.Result;
+                                allparticipantsItems.AddRange(participantItems);
                             }
-                            else
+
+                            evaluationResultItem.Financial =
+                                ComputeFinancial(participantsItem.ItemType, supplier.BidPParticipatingSuppliersID, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.ItemSpecification, participantsItem.ModelNo,
+                                criteriaid, allparticipantsItems, isPassFail);
+                            #endregion
+                            #region technical
+
+                            var technicalCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Technical);
+                            if (technicalCriteria != null)
                             {
-                                var tenderTechnical = _db.TenderTechnicals
-                                    .Where(x => x.LotID == lotid)
-                                    .Where(x => x.ItmCode == participantsItem.ItmCode)
-                                    .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
-                                    .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+                                //var proformaTechnical = _db.TenderTechnicals.FirstOrDefault(x =>
+                                //    x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
+                                //    x.SupplierName == participantsItem.SupplierName);
 
-                                if (tenderTechnical != null) evaluationResultItem.Technical = tenderTechnical.Result;
+                                //if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+
+                                if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+                                {
+                                    var proformaTechnical = _db.TenderTechnicals
+                                        .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.Name == participantsItem.Name)
+                                        .Where(x => x.ModelNo == participantsItem.ModelNo)
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+                                }
+                                else
+                                {
+                                    var proformaTechnical = _db.TenderTechnicals
+                                        .Where(x => x.LotID == lotid)
+                                        .Where(x => x.ItmCode == participantsItem.ItmCode)
+                                        .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+                                        .FirstOrDefault(x => x.SupplierName == supplier.SupplierName);
+
+                                    if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+                                }
                             }
+                            #endregion
 
+                            evaluationResultItem.Total = evaluationResultItem.Financial + evaluationResultItem.Technical;
+                            _db.TenderEvaluationItemResults.Add(evaluationResultItem);
+                            _db.SaveChanges();
+
+                            #endregion
                         }
-                        #endregion
-
-                        evaluationResultItem.Total = evaluationResultItem.Financial + evaluationResultItem.Technical;
-                        _db.TenderEvaluationItemResults.Add(evaluationResultItem);
-                        _db.SaveChanges();
-
-                        #endregion
                     }
 
                 }
@@ -1051,6 +1163,308 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             };
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
         }
+
+        //public JsonResult GenerateResult_1(string id)
+        //{
+        //    int lotid = int.Parse(id);
+        //    var lot = _db.Lots.Find(lotid);
+
+        //    if (lot != null)
+        //    {
+        //        _db.TenderEvaluationResults.RemoveRange(lot.EvaluationResults);
+        //        _db.SaveChanges();
+
+        //        var evaluations = lot.EvaluationCriterias;
+
+        //        #region validation 
+
+        //        var allParticipantItems = _db.ParticipantsItems
+        //            .Where(x => x.LotID == lotid).Where(x => x.Total == 0);
+
+        //        if (allParticipantItems.Any())
+        //        {
+        //            var formattedData3 = new
+        //            {
+        //                Message = "Please fill price for all items.",
+        //                Status = "NOT_OK"
+        //            };
+        //            return Json(formattedData3, JsonRequestBehavior.AllowGet);
+        //        }
+
+
+        //        #endregion
+        //        foreach (var participantsItem in lot.ParticipantsItems)
+        //        {
+
+        //            var result = _db.TenderEvaluationResults
+        //                .Where(x => x.LotID == lotid)
+        //                .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+        //            if (result == null)
+        //            {
+        //                #region header
+        //                var evaluationResult = new TenderEvaluationResult
+        //                {
+        //                    LotID = lot.LotID,
+        //                    Financial = 0,
+        //                    Technical = 0,
+        //                    Pass = PassFailStatus.NA,
+        //                    Total = 0,
+        //                    SupplierId = participantsItem.SupplierId,
+        //                    IsNewSupplier = participantsItem.IsNewSupplier,
+        //                    SupplierName = participantsItem.SupplierName,
+        //                };
+        //                _db.TenderEvaluationResults.Add(evaluationResult);
+        //                _db.SaveChanges();
+        //                #endregion
+        //                #region line
+
+        //                var evaluationResultItem = new TenderEvaluationItemResult
+        //                {
+        //                    TenderEvaluationResult = evaluationResult,
+        //                    ItmCode = participantsItem.ItmCode,
+        //                    ItemName = participantsItem.ItemName,
+        //                    Name = participantsItem.Name,
+        //                    ItemSpecification = participantsItem.ItemSpecification,
+        //                    ModelNo = participantsItem.ModelNo,
+        //                    CatCode = participantsItem.CatCode,
+        //                    CategoryName = participantsItem.CategoryName,
+        //                    LotItemID = participantsItem.LotItemID
+        //                };
+
+        //                #region pass fail
+
+        //                bool isPassFail = false;
+        //                var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
+        //                if (passfailCriteria != null)
+        //                {
+        //                    isPassFail = true;
+
+        //                    //    var passFailResult = _db.TenderPassFailResult.FirstOrDefault(
+        //                    //    x =>
+        //                    //        x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
+        //                    //        x.SupplierName == participantsItem.SupplierName);
+
+        //                    //if (passFailResult != null)
+        //                    //{
+        //                    //    //added to exclude failed ones
+        //                    //    if (passFailResult.Result == PassFailStatus.Fail)
+        //                    //        continue;
+        //                    //    evaluationResultItem.Pass = passFailResult.Result;
+        //                    //}
+
+        //                    if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+        //                    {
+        //                        var passFailResult = _db.TenderPassFailResult
+        //                            .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.Name == participantsItem.Name)
+        //                            .Where(x => x.ModelNo == participantsItem.ModelNo)
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (passFailResult != null)
+        //                        {
+        //                            if (passFailResult.Result == PassFailStatus.Fail)
+        //                                continue;
+        //                            evaluationResultItem.Pass = passFailResult.Result;
+        //                        }
+
+        //                    }
+        //                    else
+        //                    {
+        //                        var passFailResult = _db.TenderPassFailResult
+        //                           .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (passFailResult != null)
+        //                        {
+        //                            if (passFailResult.Result == PassFailStatus.Fail)
+        //                                continue;
+        //                            evaluationResultItem.Pass = passFailResult.Result;
+        //                        }
+
+        //                    }
+        //                }
+        //                #endregion
+        //                #region financial
+
+        //                var financialCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Financial);
+        //                int criteriaid = 0;
+        //                if (financialCriteria != null)
+        //                    criteriaid = financialCriteria.TenderEvaluationCriteriaID;
+
+        //                evaluationResultItem.Financial =
+        //                    ComputeFinancial(participantsItem.ItemType, participantsItem.SupplierName, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.ItemSpecification, participantsItem.ModelNo,
+        //                    criteriaid, lot.ParticipantsItems.ToList(), isPassFail);
+        //                #endregion
+        //                #region technical
+
+        //                var technicalCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Technical);
+        //                if (technicalCriteria != null)
+        //                {
+        //                    //var proformaTechnical = _db.TenderTechnicals.FirstOrDefault(x =>
+        //                    //    x.LotID == lotid && x.ItmCode == participantsItem.ItmCode &&
+        //                    //    x.SupplierName == participantsItem.SupplierName);
+
+        //                    //if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+
+        //                    if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+        //                    {
+        //                        var proformaTechnical = _db.TenderTechnicals
+        //                            .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.Name == participantsItem.Name)
+        //                            .Where(x => x.ModelNo == participantsItem.ModelNo)
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+        //                    }
+        //                    else
+        //                    {
+        //                        var proformaTechnical = _db.TenderTechnicals
+        //                            .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (proformaTechnical != null) evaluationResultItem.Technical = proformaTechnical.Result;
+        //                    }
+        //                }
+        //                #endregion
+
+        //                evaluationResultItem.Total = evaluationResultItem.Financial + evaluationResultItem.Technical;
+        //                _db.TenderEvaluationItemResults.Add(evaluationResultItem);
+        //                _db.SaveChanges();
+
+        //                #endregion
+        //            }
+        //            else
+        //            {
+        //                #region line
+
+        //                var evaluationResultItem = new TenderEvaluationItemResult
+        //                {
+        //                    TenderEvaluationResult = result,
+        //                    ItmCode = participantsItem.ItmCode,
+        //                    ItemName = participantsItem.ItemName,
+        //                    Name = participantsItem.Name,
+        //                    ItemSpecification = participantsItem.ItemSpecification,
+        //                    ModelNo = participantsItem.ModelNo,
+        //                    CatCode = participantsItem.CatCode,
+        //                    CategoryName = participantsItem.CategoryName,
+        //                    LotItemID = participantsItem.LotItemID
+        //                };
+
+        //                #region pass fail
+
+        //                bool isPassFail = false;
+        //                var passfailCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
+        //                if (passfailCriteria != null)
+        //                {
+        //                    isPassFail = true;
+
+        //                    if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+        //                    {
+        //                        var passFailResult = _db.TenderPassFailResult
+        //                            .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.Name == participantsItem.Name)
+        //                            .Where(x => x.ModelNo == participantsItem.ModelNo)
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (passFailResult != null)
+        //                        {
+        //                            if (passFailResult.Result == PassFailStatus.Fail)
+        //                                continue;
+        //                            evaluationResultItem.Pass = passFailResult.Result;
+        //                        }
+
+        //                    }
+        //                    else
+        //                    {
+        //                        var passFailResult = _db.TenderPassFailResult
+        //                           .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (passFailResult != null)
+        //                        {
+        //                            if (passFailResult.Result == PassFailStatus.Fail)
+        //                                continue;
+        //                            evaluationResultItem.Pass = passFailResult.Result;
+        //                        }
+
+        //                    }
+        //                }
+        //                #endregion
+        //                #region financial
+
+        //                var financialCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Financial);
+        //                int criteriaid = 0;
+        //                if (financialCriteria != null)
+        //                    criteriaid = financialCriteria.TenderEvaluationCriteriaID;
+
+        //                evaluationResultItem.Financial = ComputeFinancial(participantsItem.ItemType, participantsItem.SupplierName, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.Name, participantsItem.ModelNo,
+        //                    criteriaid, lot.ParticipantsItems.ToList(), isPassFail);
+        //                #endregion
+        //                #region technical
+
+        //                var technicalCriteria = evaluations.FirstOrDefault(x => x.Type == CriteriaType.Technical);
+        //                if (technicalCriteria != null)
+        //                {
+        //                    if (participantsItem.ItemType == PurchaseItemType.FixedAsset)
+        //                    {
+        //                        var tenderTechnical = _db.TenderTechnicals
+        //                            .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.Name == participantsItem.Name)
+        //                            .Where(x => x.ModelNo == participantsItem.ModelNo)
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (tenderTechnical != null) evaluationResultItem.Technical = tenderTechnical.Result;
+        //                    }
+        //                    else
+        //                    {
+        //                        var tenderTechnical = _db.TenderTechnicals
+        //                            .Where(x => x.LotID == lotid)
+        //                            .Where(x => x.ItmCode == participantsItem.ItmCode)
+        //                            .Where(x => x.ItemSpecification == participantsItem.ItemSpecification)//added
+        //                            .FirstOrDefault(x => x.SupplierName == participantsItem.SupplierName);
+
+        //                        if (tenderTechnical != null) evaluationResultItem.Technical = tenderTechnical.Result;
+        //                    }
+
+        //                }
+        //                #endregion
+
+        //                evaluationResultItem.Total = evaluationResultItem.Financial + evaluationResultItem.Technical;
+        //                _db.TenderEvaluationItemResults.Add(evaluationResultItem);
+        //                _db.SaveChanges();
+
+        //                #endregion
+        //            }
+
+        //        }
+
+        //        GenerateSummaryResult(lotid);
+
+        //        var formattedData = new
+        //        {
+        //            Message = "Complete",
+        //            Status = "OK"
+        //        };
+        //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //    }
+
+        //    var formattedData1 = new
+        //    {
+        //        Message = "The record is not found.",
+        //        Status = "NOT_OK"
+        //    };
+        //    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GenerateWinner(string id)
         {
             int lotid = int.Parse(id);
@@ -1060,6 +1474,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 if (lot.EvaluateTotalFinance)
                 {
                     #region evaluate by total financial result
+                    List<TenderEvaluationResult> canProvideAllItems = new List<TenderEvaluationResult>();
+                    var lotItems = _db.LotItems.Where(x => x.LotID == lotid).ToList();
+
                     var awards = _db.BidAwardedSuppliers.Where(x => x.LotID == lotid).ToList();
                     var winnerCanProvide = awards.Where(x => x.AwardGiven).ToList();
                     var winnerCantProvide =
@@ -1074,10 +1491,38 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         tenderEvaluationResults = tenderEvaluationResults
                             .Where(x => winnerCantProvide.Contains(x.SupplierName) == false).ToList();
 
-                    var topResult = tenderEvaluationResults.OrderByDescending(x => x.Total).FirstOrDefault();
+                    #region remove suppliers that don't provide all items
+                    foreach (var s in tenderEvaluationResults)
+                    {
+                        bool canProvide = true;
+                        var supplierItems = _db.TenderEvaluationItemResults.Where(x =>
+                          x.TenderEvaluationResultID == s.TenderEvaluationResultID).ToList();
+
+                        foreach (var i in lotItems)
+                        {
+                            var exist = supplierItems.Where(x => x.ItmCode == i.ItmCode).FirstOrDefault();
+                            if (exist == null)
+                            {
+                                canProvide = false;
+                                break;
+                            }
+                        }
+
+                        if (canProvide)
+                            canProvideAllItems.Add(s);
+
+                    }
+                    #endregion
+
+                    var topResult = canProvideAllItems//tenderEvaluationResults
+                        .OrderByDescending(x => x.Total).FirstOrDefault();
 
                     if (topResult != null)
                     {
+                        var supp = _db.BidPParticipatingSupplierses
+                           .Where(x => x.SupplierName == topResult.SupplierName)
+                           .Where(x => x.LotID == lotid).FirstOrDefault();
+
                         var winner = _db.BidAwardedSuppliers.Where(x => x.LotID == lotid).FirstOrDefault(x => x.SupplierName == topResult.SupplierName);
                         var resultItems = _db.TenderEvaluationItemResults.Where(x =>
                             x.TenderEvaluationResultID == topResult.TenderEvaluationResultID).ToList();
@@ -1106,10 +1551,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                                 #region line
 
 
-                                var participantitem = _db.ParticipantsItems.Where(x => x.LotID == lotid)
+                                var participantitem = _db.BidParticipatingSupplierItems
+                                    .Where(x => x.BidPParticipatingSuppliersID==supp.BidPParticipatingSuppliersID)
                                     .Where(x => x.ItmCode == item.ItmCode)
-                                     .Where(x => x.ItemSpecification == item.ItemSpecification)//added
-                                    .FirstOrDefault(x => x.SupplierName == topResult.SupplierName);
+                                    .Where(x => x.ItemSpecification == item.ItemSpecification)//added
+                                    .FirstOrDefault();
+
                                 if (participantitem != null)
                                 {
                                     var supplierItem = new BidAwardedSupplierItem
@@ -1147,10 +1594,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             foreach (var item in resultItems)
                             {
                                 #region line
-                                var participantitem = _db.ParticipantsItems.Where(x => x.LotID == lotid)
+                                var participantitem = _db.BidParticipatingSupplierItems
+                                    .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID)
                                     .Where(x => x.ItmCode == item.ItmCode)
                                     .Where(x => x.ItemSpecification == item.ItemSpecification)//added
-                                    .FirstOrDefault(x => x.SupplierName == topResult.SupplierName);
+                                    .FirstOrDefault();
                                 if (participantitem != null)
                                 {
                                     var supplierItem = new BidAwardedSupplierItem
@@ -1217,17 +1665,23 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             .Where(x => x.ItmCode == item.ItmCode)
                             .Where(x => x.Name == item.Name)//added
                             .Where(x => x.ModelNo == item.ModelNo)//added
+                            .Where(x => x.LotItemID == item.LotItemsID)//new added
                             .OrderByDescending(x => x.Total).FirstOrDefault();
 
                         if (topResult != null)
                         {
-                            var participantitem = _db.ParticipantsItems
-                                .Where(x => x.LotID == lotid)
+                            var supp = _db.BidPParticipatingSupplierses
+                            .Where(x => x.SupplierName == topResult.TenderEvaluationResult.SupplierName)
+                            .Where(x => x.LotID == lotid).FirstOrDefault();
+
+                            var participantitem = _db.BidParticipatingSupplierItems
+                                .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID)
                                 .Where(x => x.ItmCode == item.ItmCode)
                                 .Where(x => x.Name == item.Name)//added
                                 .Where(x => x.ModelNo == item.ModelNo)//added
                                 .Where(x => x.ItemSpecification == item.ItemSpecification)//new  added
-                                .FirstOrDefault(x => x.SupplierName == topResult.TenderEvaluationResult.SupplierName);
+                                 .Where(x => x.LotItemID == item.LotItemsID)//new added
+                                                                          .FirstOrDefault();
                             if (participantitem != null)
                             {
                                 var winner = _db.BidAwardedSuppliers.Where(x => x.LotID == lotid)
@@ -1338,7 +1792,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
         }
 
-        private float ComputeFinancial(PurchaseItemType type,string suppliername, string itemcode,string spec, string name,string model, int criteriaId, List<ParticipantsItem> participantsItems,bool passfail)
+        private float ComputeFinancial(PurchaseItemType type,int participantId, string itemcode,string spec, string name,string model, int criteriaId, List<BidParticipatingSupplierItem> participantsItems,bool passfail)
         {
             float result = 0;
 
@@ -1348,8 +1802,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     .Where(x => x.ItmCode == itemcode)
                     .Where(x => x.Name == name)
                     .Where(x => x.ModelNo == model)
-                    .FirstOrDefault(x => x.SupplierName == suppliername);
-                float lowestPrice = (float)participantsItems.Where(x => x.ItmCode == itemcode).Where(x => x.Name == name).Where(x => x.ModelNo == model).Min(x => x.Total);
+                    .FirstOrDefault(x => x.BidPParticipatingSuppliersID == participantId);
+                var specificItems = participantsItems.Where(x => x.ItmCode == itemcode).Where(x => x.Name == name).Where(x => x.ModelNo == model).ToList();
+                float lowestPrice = specificItems.Any()? (float)specificItems.Min(x => x.Total):0;
                 if (participantsItem != null)
                 {
                     float price = (float)participantsItem.Total;
@@ -1371,8 +1826,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 var participantsItem = participantsItems
                     .Where(x => x.ItmCode == itemcode)
                     .Where(x => x.ItemSpecification ==spec)//added
-                    .FirstOrDefault(x => x.SupplierName == suppliername);
-                float lowestPrice = (float)participantsItems.Where(x => x.ItmCode == itemcode).Min(x => x.Total);
+                    .FirstOrDefault(x => x.BidPParticipatingSuppliersID == participantId);
+
+                var specificItems = participantsItems.Where(x => x.ItmCode == itemcode).ToList();
+                float lowestPrice = specificItems.Any() ? (float)specificItems.Min(x => x.Total) : 0;
                 if (participantsItem != null)
                 {
                     float price = (float)participantsItem.Total;
@@ -1401,8 +1858,20 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             foreach (var result in tenderEvaluationResults)
             {
-                decimal sum = _db.ParticipantsItems.Where(x => x.LotID == lotid)
-                    .Where(x => x.SupplierName == result.SupplierName).Sum(x => x.Total);
+
+                var supp = _db.BidPParticipatingSupplierses
+                    .Where(x => x.SupplierName == result.SupplierName)
+                    .Where(x => x.LotID == lotid).FirstOrDefault();
+
+                decimal sum = 0;
+
+                var participantItems = _db.BidParticipatingSupplierItems
+                    //.Where(x => x.LotID == lotid)
+                    .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID).ToList();
+
+               if(participantItems.Any())
+                    sum=participantItems.Sum(x => x.Total);
+
                 if ((minFinancial > 0 && sum < minFinancial) || minFinancial == 0)
                     minFinancial = sum;
             }
@@ -1421,13 +1890,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             foreach (var result in tenderEvaluationResults)
             {
+                var supp = _db.BidPParticipatingSupplierses
+                   .Where(x => x.SupplierName == result.SupplierName)
+                   .Where(x => x.LotID == lotid).FirstOrDefault();
+
                 var itemResult = _db.TenderEvaluationItemResults
                     .Where(x => x.TenderEvaluationResultID == result.TenderEvaluationResultID).ToList();
 
                 result.Technical = itemResult.Average(x => x.Technical);
 
-                decimal totalprice = _db.ParticipantsItems.Where(x => x.LotID == lotid)
-                    .Where(x => x.SupplierName == result.SupplierName).Sum(x => x.Total);
+                decimal totalprice = _db.BidParticipatingSupplierItems
+                     .Where(x => x.BidPParticipatingSuppliersID == supp.BidPParticipatingSuppliersID)
+                    .Sum(x => x.Total);
 
                 if (isPassFail)
                 {
@@ -1458,6 +1932,70 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             }
         }
 
+        //private void GenerateSummaryResult_1(int lotid)
+        //{
+        //    var tenderEvaluationResults = _db.TenderEvaluationResults.Where(x => x.LotID == lotid).ToList();
+
+        //    decimal minFinancial = 0;
+
+        //    foreach (var result in tenderEvaluationResults)
+        //    {
+        //        decimal sum = _db.ParticipantsItems.Where(x => x.LotID == lotid)
+        //            .Where(x => x.SupplierName == result.SupplierName).Sum(x => x.Total);
+        //        if ((minFinancial > 0 && sum < minFinancial) || minFinancial == 0)
+        //            minFinancial = sum;
+        //    }
+
+        //    #region pass fail and financial
+
+        //    bool isPassFail = false;
+        //    var passfailCriteria = _db.TenderEvaluationCriterias.Where(x => x.LotID == lotid).FirstOrDefault(x => x.Type == CriteriaType.Pass_Fail);
+        //    if (passfailCriteria != null)
+        //        isPassFail = true;
+
+        //    var financialCriteria = _db.TenderEvaluationCriterias.Where(x => x.LotID == lotid).FirstOrDefault(x => x.Type == CriteriaType.Financial);
+
+
+        //    #endregion
+
+        //    foreach (var result in tenderEvaluationResults)
+        //    {
+        //        var itemResult = _db.TenderEvaluationItemResults
+        //            .Where(x => x.TenderEvaluationResultID == result.TenderEvaluationResultID).ToList();
+
+        //        result.Technical = itemResult.Average(x => x.Technical);
+
+        //        decimal totalprice = _db.ParticipantsItems.Where(x => x.LotID == lotid)
+        //            .Where(x => x.SupplierName == result.SupplierName).Sum(x => x.Total);
+
+        //        if (isPassFail)
+        //        {
+        //            result.Financial = (float)(minFinancial * 100 / totalprice);
+        //        }
+        //        else
+        //        {
+        //            if (financialCriteria != null)
+        //                result.Financial = (float)(minFinancial * (decimal)financialCriteria.Weight / totalprice);
+        //        }
+
+        //        var passfail = itemResult.FirstOrDefault(x => x.Pass == PassFailStatus.Fail);
+
+        //        if (passfail != null)
+        //            result.Pass = passfail.Pass;
+
+        //        var passfailNa = itemResult.FirstOrDefault(x => x.Pass == PassFailStatus.NA);
+        //        if (passfailNa != null)
+        //            result.Pass = passfailNa.Pass;
+        //        if (passfail == null && passfailNa == null)
+        //            result.Pass = PassFailStatus.Pass;
+
+        //        result.Total = result.Financial + result.Technical;
+
+        //        _db.TenderEvaluationResults.Attach(result);
+        //        _db.Entry(result).State = EntityState.Modified;
+        //        _db.SaveChanges();
+        //    }
+        //}
         private void TransferToContract(int id)
         {
             var lots = _db.Lots.Where(x => x.TenderID == id).ToList();
@@ -2181,7 +2719,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public JsonResult GetLotParticipantItemsByLotId(string id)
         {
             int lotid = int.Parse(id);
-            var lotitems = _db.ParticipantsItems.Where(x => x.LotID == lotid);
+            var lotitems = _db.BidParticipatingSupplierItems
+                .Where(x => x.BidPParticipatingSupplier.LotID == lotid);
 
             return Json(lotitems.Select(i => new
             {

@@ -131,9 +131,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                         if (segment.SegmentType == DynamicSegmentTypes.BusinessUnit)
                         {
                             //var userid = UserInformationHelper.GetUserId(User.Identity.Name);
-                            ////List<int> bizmap = _db.UserBusinessUnitMaps
-                            ////    .Where(x => x.UserId == userid)
-                            ////    .Select(x => x.BusinessUnitId).ToList();
+                            //List<int> bizmap = _db.UserBusinessUnitMaps
+                            //    .Where(x => x.UserId == userid)
+                            //    .Select(x => x.BusinessUnitId).ToList();
 
                             //List<string> bizunits = _db.BusinessUnits.Where(x => bizmap.Contains(x.BusinessUnitId)).Select(x => x.Accountcode).ToList();
 

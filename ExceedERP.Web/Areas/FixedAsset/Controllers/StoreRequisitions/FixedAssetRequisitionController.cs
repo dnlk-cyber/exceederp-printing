@@ -5,13 +5,18 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Inventory.Models;
+//using ExceedERP.Helpers.Inventory;
+//using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;
@@ -39,7 +44,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             var assetCategories = _db.FixedAssetCategories;
             var assetSubCategories = _db.FixedAssetSubCategories;
             var fixedAsset = _db.AssetRegistrations;
-
+            var assetSubCategoryNames = _db.FixedAssetSubCategoryNames;
 
             var costCenter = _db.BranchCostCenter;
             var branches = _db.Branch;
@@ -47,6 +52,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             ViewData["Branches"] = branches;
             ViewData["SubCategory"] = assetSubCategories;
             ViewData["Category"] = assetCategories;
+            ViewData["SubCategoryName"] = assetSubCategoryNames;
             ViewData["FixedAsset"] = fixedAsset;
 
             var store = _db.InventoryStores.AsQueryable();
@@ -121,27 +127,27 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             {
                 if (!storekeepers.Any())
                 {
-                    storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit);
+                    storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit || x.CreatedBy == User.Identity.Name);
                 }
                 else
                 {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode));
+                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name);
                 }
             }
 
             else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover))
             {
-                storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name);
+                storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name);
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover))
             {
                 if (!storekeepers.Any())
                 {
-                    storeRequisitions = storeRequisitions.Where(x => x.OrgStructureId == userworkunit && userworkunit != 0).AsQueryable();
+                    storeRequisitions = storeRequisitions.Where(x => x.OrgStructureId == userworkunit && userworkunit != 0 || x.CreatedBy == User.Identity.Name).AsQueryable();
                 }
                 else
                 {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode));
+                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name);
                 }
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
@@ -245,7 +251,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 var entity = new FixedAssetRequisition
                     {
                         Reference = storeRequisition.Reference,
-                        OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(storeRequisition.EmployeeId),
+                        OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
                         BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
@@ -282,7 +288,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     _db.FixedAssetRequisitions.Add(entity);
                     _db.SaveChanges();
                     storeRequisition.FixedAssetRequisitionId = entity.FixedAssetRequisitionId;
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisition", "Success", User.Identity.Name, $"created FixedAssetRequisition {entity.FixedAssetRequisitionId} PlateNo {entity.PlateNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(ModelState.IsValid ? new object() : ModelState.ToDataSourceResult());
@@ -336,7 +344,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     {
                         FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
                         Reference = storeRequisition.Reference,
-                        OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(storeRequisition.EmployeeId),
+                        OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
                         BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
@@ -375,6 +383,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     _db.FixedAssetRequisitions.Attach(entity);
                     _db.Entry(entity).State = EntityState.Modified;
                     _db.SaveChanges();
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisition", "Success", User.Identity.Name, $"update FixedAssetRequisition {entity.FixedAssetRequisitionId} PlateNo {entity.PlateNo}", Modules.FixedAsset);
+                    #endregion
                 }
 
             }
@@ -423,6 +434,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitions.Attach(entity);
                 _db.FixedAssetRequisitions.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "delete", "Success", User.Identity.Name, $"delete FixedAssetRequisition {entity.FixedAssetRequisitionId} PlateNo {entity.PlateNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisition }.ToDataSourceResult(request, ModelState));
@@ -575,15 +589,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
-        
+
+        //First Send For Approval
         [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetUser)]
         public JsonResult SendForApproval(int id)
         {
             var record = _db.FixedAssetRequisitions.Find(id);
+
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.FixedAssetRequisitionItem.Count > 0)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
+                record.IsVoid = false;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
                 _db.FixedAssetRequisitions.Attach(record);
@@ -639,6 +656,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return null;
         }
 
+        //Middle Send For Approval 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetUser)]
         public JsonResult SendForSecondApproval(int id,string user)
         {
@@ -648,6 +666,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 record.Status = Enum.GetName(typeof(OperationStatuses), 13);
                 record.NextApprover = user;
                 record.IsMiddleSendForApproval = true;
+                record.IsVoid = false;
                 record.MiddleSendForApprovalBy = User.Identity.Name;
                 record.MiddleSendForApprovalTime = DateTime.Now;
                 _db.FixedAssetRequisitions.Attach(record);
@@ -730,12 +749,20 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 record.IsVoid = true;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
+                record.IsOnlineApproved = false;
+                record.IsMiddleOnlineApproved = false;
+                record.IsMiddleSendForApproval = false;
+                record.IsSecondSendForApproval = false;
+                record.IsSecondOnlineApproved = false;
+                record.IsOnlineTransferred = false;
+                record.IsSendForApproval = false;
+                record.Status = Enum.GetName(typeof(OperationStatuses), 5);
                 _db.FixedAssetRequisitions.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();
 
                 //copy
-                CopyRecord(id);
+                //CopyRecord(id);
 
                 var formattedData = new
                 {
@@ -803,7 +830,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 var entity = new FixedAssetRequisition
                 {
                     Reference = record.Reference,
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(record.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(record.EmployeeId),
                     BranchId = InventoryHelper.GetStoreBranch(record.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                     IsForOther = record.IsForOther,
                     ForBranchId = record.ForBranchId,

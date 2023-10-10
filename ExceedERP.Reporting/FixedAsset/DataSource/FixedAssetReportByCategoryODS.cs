@@ -93,6 +93,7 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
                 .Where(x => x.GRNDate <= to).AsQueryable();
 
             List<FixedAssetItemReport> assetCountItem = new List<FixedAssetItemReport>();
+
             if (!String.IsNullOrEmpty(category))
             {
                 assetRegistrations = assetRegistrations
@@ -142,32 +143,37 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
                         Category = asset.FixedAssetCategory.CategoryName,
                         SubCategory = asset.FixedAssetSubCategory.SubCategoryName,
                         Name = asset.Name,
-                        BookValue=asset.BookValue,
-                        PurchasePrice=asset.PurchasePrice,
+                        BookValue = asset.BookValue,
+                        PurchasePrice = asset.PurchasePrice,
                         Size = asset.Size,
                         Location = asset.Location,
                         SivDate = "",
                         SivNo = asset.SIV,
-                        GrnNo=asset.GRN,
-                        GrnDate=asset.GRNDate.ToString(),
+                        GrnNo = asset.GRN,
+                        GrnDate = asset.GRNDate.ToString(),
                         SerialNo = asset.SerialNo,
                         ChasisNo = asset.ChassisNo,
                         EngineNo = asset.EngineNo,
                         Model = asset.ModelNo,
                         PlateNo = asset.PlateNo,
                         Condition = asset.Condition.Name,
-                        Supplier=asset.Supplier,
-                        Manufacturer=asset.Manufacturer,
-                        ManufacturingYear =asset.ManufacturDate.ToString(),
-                        Quantity=asset.Quanity,
+                        Supplier = asset.Supplier,
+                        Manufacturer = asset.Manufacturer,
+                        ManufacturingYear = asset.ManufacturDate.ToString(),
+                        Quantity = asset.Quanity,
                         TotalPrice = asset.Quanity* asset.PurchasePrice,
                         Remark = "",
+                        TotalDepreciationValue = asset.PurchasePrice - asset.BookValue,
 
                     };
                     var branch = _db.Branch.Find(asset.BranchId);
+
                     item.Location = $"{branch?.Code}-{branch?.Name}";
+
                     var usercard = _db.UserCardItems.Where(x=>x.Active).FirstOrDefault(x => x.AssetRegistrationId == asset.AssetRegistrationId);
+
                     if (usercard != null) item.CurrentUser = EmployeeHelper.GetEmployeeEnglishName(usercard.EmployeeId);
+
                     //var locationTracking = _db.LocationTrackings
                     //    .Where(x => x.AssetRegistrationId == asset.AssetRegistrationId)
                     //    .FirstOrDefault(x => x.IsCurrent);

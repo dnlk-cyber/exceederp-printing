@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Procurements.ViewModel;
@@ -18,7 +19,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PurchaseFollowUpReportViewModel> GetPurchases(DateTime from, DateTime to,string purchaser, string branchid, string purchaseType)
+        public List<PurchaseFollowUpReportViewModel> GetPurchases(DateTime from, DateTime to,string purchaser, string branchid, string purchaseType, string businessUnitId)
         {
             string purchasetype = "All";
 
@@ -47,6 +48,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 int did = int.Parse(branchid);
                 purchaseRequisitions = purchaseRequisitions
                     .Where(x => x.BranchId == did).AsQueryable();
+            }
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                purchaseRequisitions = purchaseRequisitions.Where(x => x.BusinessUnitId == bdid).AsQueryable();
             }
 
 

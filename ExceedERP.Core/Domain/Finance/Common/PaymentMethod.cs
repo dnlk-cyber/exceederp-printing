@@ -9,7 +9,9 @@ namespace ExceedERP.Core.Domain.Finance.Common
         [Required]
         public string Method { get; set; }
         [Display(Name = "Branch")]
-        public int BranchId { get; set; }
+        public int? BranchId { get; set; }
+        [Display(Name = "Business Unit")]
+        public int? BusinessUnitId { get; set; }
         [Display(Name = "Apply to AR")]
         public bool ApplyToAr { get; set; }
         [Display(Name = "AR Account Code")]

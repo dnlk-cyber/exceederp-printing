@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         private ExceedDbContext _db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ProcurementPlanViewModel> GetProcurementNeed(string project, string period)
+        public List<ProcurementPlanViewModel> GetProcurementNeed(string project, string period, string businessUnitId)
         {
             List<ProcurementPlanViewModel> procurementNeed = new List<ProcurementPlanViewModel> { };
             try
@@ -33,7 +33,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     int per = int.Parse(period);
                     reportData = reportData.Where(x => x.ProcurementPlan.GlFiscalYearId == per).ToList();
                 }
-               
+                if (!String.IsNullOrEmpty(businessUnitId))
+                {
+                    int bdid = int.Parse(businessUnitId);
+                    reportData = reportData.Where(x => x.ProcurementPlan.BusinessUnitId== bdid).ToList();
+                }
+
 
                 foreach (var item in reportData)
                 {

@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -68,6 +70,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.FixedAssetRevaluations.Add(entity);
                 db.SaveChanges();
                 revaluation.FixedAssetRevaluationID = entity.FixedAssetRevaluationID;
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Revaluation ", "Success", User.Identity.Name, $"created Revaluation {entity.FixedAssetRevaluationID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { revaluation }.ToDataSourceResult(request, ModelState));
@@ -96,6 +102,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.FixedAssetRevaluations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Revaluation ", "Success", User.Identity.Name, $"Updated Revaluation {entity.FixedAssetRevaluationID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { revaluation }.ToDataSourceResult(request, ModelState));
@@ -124,6 +134,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.FixedAssetRevaluations.Attach(entity);
                 db.FixedAssetRevaluations.Remove(entity);
                 db.SaveChanges();
+
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted Revaluation {revaluation.FixedAssetRevaluationID } and Tag {revaluation.AssetRegistrationId}");
+                #endregion
             }
 
             return Json(new[] { revaluation }.ToDataSourceResult(request, ModelState));

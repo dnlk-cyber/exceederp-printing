@@ -1,6 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
-using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
 {

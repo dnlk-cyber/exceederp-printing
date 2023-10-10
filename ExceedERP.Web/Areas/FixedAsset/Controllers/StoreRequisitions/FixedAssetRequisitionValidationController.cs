@@ -6,7 +6,9 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -39,49 +41,52 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return Json(result);
         }
 
-
+        //FixedAsset Requisition First Validation
         [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionSecondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitionValidations_Create([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionValidation storeRequisitionValidation, int id)
+        {
+            var storeRequisition = _db.FixedAssetRequisitions.Find(id);
+            if (storeRequisition != null && storeRequisition.IsOnlineApproved)
             {
-              var storeRequisition = _db.FixedAssetRequisitions.Find(id);
-              if (storeRequisition != null && storeRequisition.IsOnlineApproved)
-                {
-                    ModelState.AddModelError(String.Empty, "You Can Not Manipulate this Record: It is Already Approved");
-                }
+                ModelState.AddModelError(String.Empty, "You Can Not Manipulate this Record: It is Already Approved");
+            }
            
                 
-                if (ModelState.IsValid)
+            if (ModelState.IsValid)
+            {
+                if (storeRequisition != null)
                 {
-                    if (storeRequisition != null)
+                    if (storeRequisitionValidation.Status == ApprovalStatuses.Approve)
                     {
-                        if (storeRequisitionValidation.Status == ApprovalStatuses.Approve)
-                        {
-                            storeRequisition.Status = "User Approved";
-                            storeRequisition.IsOnlineApproved = true;
-                            storeRequisition.OnlineApprovedBy = User.Identity.Name;
-                            storeRequisition.OnlineApprovedTime = DateTime.Now.Date;
-                        }
-                        else if (storeRequisitionValidation.Status == ApprovalStatuses.Reject)
-                        {
-                            storeRequisition.IsSendForApproval = false;
-                            storeRequisition.Status = "User Rejected";
-                        }
-                        _db.Entry(storeRequisition).State = EntityState.Modified;
-                        _db.SaveChanges();
-                        var entity = new FixedAssetRequisitionValidation
-                        {
-                            FixedAssetRequisitionId = id,
-                            Status = storeRequisitionValidation.Status,
-                            Remark = storeRequisitionValidation.Remark,
-                        };
-
-                        _db.FixedAssetRequisitionValidations.Add(entity);
-                        _db.SaveChanges();
-                        storeRequisitionValidation.FixedAssetRequisitionValidationId =
-                            entity.FixedAssetRequisitionValidationId;
+                        storeRequisition.Status = "User Approved";
+                        storeRequisition.IsOnlineApproved = true;
+                        storeRequisition.OnlineApprovedBy = User.Identity.Name;
+                        storeRequisition.OnlineApprovedTime = DateTime.Now.Date;
                     }
+                    else if (storeRequisitionValidation.Status == ApprovalStatuses.Reject)
+                    {
+                        storeRequisition.SendForApprovalBy = "";
+                        storeRequisition.IsSendForApproval = false;
+                        storeRequisition.Status = "User Rejected";
+                    }
+                    _db.Entry(storeRequisition).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    var entity = new FixedAssetRequisitionValidation
+                    {
+                        FixedAssetRequisitionId = id,
+                        Status = storeRequisitionValidation.Status,
+                        Remark = storeRequisitionValidation.Remark,
+                    };
+
+                    _db.FixedAssetRequisitionValidations.Add(entity);
+                    _db.SaveChanges();
+                    storeRequisitionValidation.FixedAssetRequisitionValidationId = entity.FixedAssetRequisitionValidationId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionValidation", "Success", User.Identity.Name, $"created FixedAssetRequisitionValidation {entity.FixedAssetRequisitionValidationId} req {entity.FixedAssetRequisitionId}", Modules.FixedAsset);
+                    #endregion
                 }
+            }
               
             
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));
@@ -103,6 +108,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionValidations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionValidation", "Success", User.Identity.Name, $"update FixedAssetRequisitionValidation {entity.FixedAssetRequisitionValidationId} req {entity.FixedAssetRequisitionId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));
@@ -124,6 +132,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionValidations.Attach(entity);
                 _db.FixedAssetRequisitionValidations.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete FixedAssetRequisitionValidation {storeRequisitionValidation.FixedAssetRequisitionValidationId} req {storeRequisitionValidation.FixedAssetRequisitionId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));

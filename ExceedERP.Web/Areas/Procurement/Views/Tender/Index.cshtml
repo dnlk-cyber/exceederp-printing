@@ -783,6 +783,49 @@
 
                                                                                                                                         </text>);
 
+        itemm.Add().Text("Evaluation by Document").Content(@<text>
+        @(Html.Kendo().Grid<LotEvaluationByDocument>()
+                                                                                                                      .Name("LotEvaluationByDocument_#=LotID#")
+                                                                                                                      .Columns(columns =>
+                                                                                                                      {
+                                                                                                                                                                        columns.Bound(c => c.SupplierName).EditorTemplateName("BidParticipant").Width(130);
+                                                                                                                                                                        columns.Bound(c => c.Document).Width(140);
+                                                                                                                                                                        columns.Bound(c => c.IsAvailable).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsAvailable ? checked='checked' :'' \\# />");
+                                                                                                                                                                        columns.Bound(c => c.Remark).Width(80);
+                                                                                                                                                                        columns.Command(command =>
+                        {
+                                                                                      command.Edit();
+                                                                                      command.Destroy();
+                                                                                  }).Width(580);
+                                                                                                                                                                    })
+                                                                                                                      .ToolBar(toolbar =>
+                                                                                                                      {
+                                                                                                                                                                        toolbar.Create();
+                                                                                                                                                                    })
+                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                      .Scrollable()
+                                                                                                                      .Sortable(sortable =>
+                                                                                                                      {
+                                                                                                                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                    })
+                                                                                                                      .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                                          .Ajax()
+                                                                                                                          .Events(ev => ev
+                                                                                                                              .Error("error_handler(\"LotEvaluationByDocument_#=LotID#\")")
+                                                                                                                              .RequestStart("onRequestStart(\"LotEvaluationByDocument_#=LotID#\")")
+                                                                                                                              .RequestEnd("onRequestEnd(\"LotEvaluationByDocument_#=LotID#\")"))
+                                                                                                                          .Model(model => model.Id(p => p.LotEvaluationByDocumentId))
+                                                                                                                          .Read(read => read.Action("LotEvaluationByDocuments_Read", "LotEvaluationByDocument", new { id = "#= LotID #" }))
+                                                                                                                          .Create(create => create.Action("LotEvaluationByDocuments_Create", "LotEvaluationByDocument", new { id = "#= LotID #" }))
+                                                                                                                          .Update(update => update.Action("LotEvaluationByDocuments_Update", "LotEvaluationByDocument"))
+                                                                                                                          .Destroy(destroy => destroy.Action("LotEvaluationByDocuments_Destroy", "LotEvaluationByDocument"))
+                                                                                                                      ).ToClientTemplate())
+
+
+    </text>);
+@*======================================================================== Lots Tender Evaluation Criteria ========================================================*@
+
 
                                                                                                                                     @*======================================================================== Lots BidParticipatingSuppliers ========================================================*@
 
@@ -821,6 +864,7 @@
                                                                                                                                                                                                                                                                                                             sortable.SortMode(GridSortMode.SingleColumn);
                                                                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                                   .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                                                                                                                                                                                                  .ClientDetailTemplateId("supplierDetail")
                                                                                                                                                                                                                                                                   .DataSource(dataSource => dataSource
                                                                                                                                                                                                                                                                       .Ajax()
                                                                                                                                                                                                                                                                       .Events(ev => ev
@@ -838,48 +882,7 @@
                                                                                                                                                 </text>);
                                                                                                                                             @*======================================================================== Lots BidParticipatingSuppliers ========================================================*@
 
-                                                                                                                                                        itemm.Add().Text("Evaluation by Document").Content(@<text>
-                                                                                                                                                            @(Html.Kendo().Grid<LotEvaluationByDocument>()
-                                                                                                                                                                                                                                                                          .Name("LotEvaluationByDocument_#=LotID#")
-                                                                                                                                                                                                                                                                          .Columns(columns =>
-                                                                                                                                                                                                                                                                          {
-                                                                                                                                                                                                                                                                                                                            columns.Bound(c => c.SupplierName).EditorTemplateName("BidParticipant").Width(130);
-                                                                                                                                                                                                                                                                                                                            columns.Bound(c => c.Document).Width(140);
-                                                                                                                                                                                                                                                                                                                            columns.Bound(c => c.IsAvailable).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsAvailable ? checked='checked' :'' \\# />");
-                                                                                                                                                                                                                                                                                                                            columns.Bound(c => c.Remark).Width(80);
-                                                                                                                                                                                                                                                                                                                            columns.Command(command =>
-                                                                                                                                                                            {
-                                                                                                                                                                                                                                          command.Edit();
-                                                                                                                                                                                                                                          command.Destroy();
-                                                                                                                                                                                                                                      }).Width(580);
-                                                                                                                                                                                                                                                                                                                        })
-                                                                                                                                                                                                                                                                          .ToolBar(toolbar =>
-                                                                                                                                                                                                                                                                          {
-                                                                                                                                                                                                                                                                                                                            toolbar.Create();
-                                                                                                                                                                                                                                                                                                                        })
-                                                                                                                                                                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                                                                                                                                                          .Scrollable()
-                                                                                                                                                                                                                                                                          .Sortable(sortable =>
-                                                                                                                                                                                                                                                                          {
-                                                                                                                                                                                                                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                                                                                                                                                                                                                                        })
-                                                                                                                                                                                                                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
-                                                                                                                                                                                                                                                                          .DataSource(dataSource => dataSource
-                                                                                                                                                                                                                                                                              .Ajax()
-                                                                                                                                                                                                                                                                              .Events(ev => ev
-                                                                                                                                                                                                                                                                                  .Error("error_handler(\"LotEvaluationByDocument_#=LotID#\")")
-                                                                                                                                                                                                                                                                                  .RequestStart("onRequestStart(\"LotEvaluationByDocument_#=LotID#\")")
-                                                                                                                                                                                                                                                                                  .RequestEnd("onRequestEnd(\"LotEvaluationByDocument_#=LotID#\")"))
-                                                                                                                                                                                                                                                                              .Model(model => model.Id(p => p.LotEvaluationByDocumentId))
-                                                                                                                                                                                                                                                                              .Read(read => read.Action("LotEvaluationByDocuments_Read", "LotEvaluationByDocument", new { id = "#= LotID #" }))
-                                                                                                                                                                                                                                                                              .Create(create => create.Action("LotEvaluationByDocuments_Create", "LotEvaluationByDocument", new { id = "#= LotID #" }))
-                                                                                                                                                                                                                                                                              .Update(update => update.Action("LotEvaluationByDocuments_Update", "LotEvaluationByDocument"))
-                                                                                                                                                                                                                                                                              .Destroy(destroy => destroy.Action("LotEvaluationByDocuments_Destroy", "LotEvaluationByDocument"))
-                                                                                                                                                                                                                                                                          ).ToClientTemplate())
 
-
-                                                                                                                                                        </text>);
-                                                                                                                                                    @*======================================================================== Lots Tender Evaluation Criteria ========================================================*@
 
                                                                                                                                                                 itemm.Add().Text("Criteria").Content(@<text>
                                                                                                                                                                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderEvaluationCriteria>()
@@ -1133,6 +1136,88 @@
                                                                                                                   .Actions(actions => actions.Minimize().Maximize().Close())
                                                                                                                   .Events(e => e.Close("WindowClosed")).ToClientTemplate()
     )
+</script>
+
+<script id="supplierDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("supplier_item_tabStrip_#=BidPParticipatingSuppliersID#").SelectedIndex(0).Items(items =>
+              {
+                  items.Add().Text("Supplier Items").Content(@<text>
+                    @(Html.Kendo().Grid<BidParticipatingSupplierItem>()
+                                  .Name("participatingsupplieritemgrid_#=BidPParticipatingSuppliersID#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotItemSelector").Width(140);
+                                      // columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(130);
+                                      columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").Width(140).EditorTemplateName("ItemProformaSelector");
+                                      columns.Bound(c => c.Name).Width(60);
+                                      columns.Bound(c => c.ModelNo).Width(60);
+                                      columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(80);
+                                      columns.Bound(c => c.Quantity).Width(60);
+                                      columns.Bound(c => c.UnitPrice).Width(60);
+                                      columns.Bound(c => c.SubTotal).Width(60);
+                                      columns.Bound(c => c.TaxAmount).Title("Tax").Width(60);
+                                      columns.Bound(c => c.DiscountAmount).Width(70);
+                                      columns.Bound(c => c.Total).Width(60);
+                                      columns.Bound(c => c.IsOutOfStock).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsOutOfStock ? checked='checked' :'' \\# />");
+                                      columns.Bound(c => c.Remark).Width(80);
+
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+                                          command.Destroy();
+                                      }).Width(180);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .HtmlAttributes(new { style = "height: 450px;" })
+                                  .Scrollable()
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(20))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  //.Events(events => events.Edit("participatingSupplierEdit"))
+                                  .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"participatingsupplieritemgrid_#=BidPParticipatingSuppliersID#\")")
+                                          .RequestStart("onRequestStart(\"participatingsupplieritemgrid_#=BidPParticipatingSuppliersID#\")")
+                                          .RequestEnd("onRequestEnd(\"participatingsupplieritemgrid_#=BidPParticipatingSuppliersID#\")"))
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.BidParticipatingSupplierItemId);
+                                          model.Field(p => p.Quantity).Editable(false);
+                                          model.Field(p => p.TaxAmount).Editable(false);
+                                          model.Field(p => p.SubTotal).Editable(false);
+                                          model.Field(p => p.Total).Editable(false);
+                                          model.Field(p => p.CatCode).Editable(false);
+                                          model.Field(p => p.ItmCode).Editable(false);
+                                          model.Field(p => p.CategoryName).Editable(false);
+                                          model.Field(p => p.ItemName).Editable(false);
+                                          model.Field(p => p.Name).Editable(false);
+                                          model.Field(p => p.ModelNo).Editable(false);
+                                          model.Field(p => p.Technical).Editable(false);
+                                      })
+                                      .Read(read => read.Action("ParticipatingSupplierItems_Read", "BidParticipatingSupplierItem", new { id = " #= BidPParticipatingSuppliersID #  " }))
+                                      .Create(create => create.Action("ParticipatingSupplierItems_Create", "BidParticipatingSupplierItem", new { id = " #= BidPParticipatingSuppliersID #  " }))
+                                      .Update(update => update.Action("ParticipatingSupplierItems_Update", "BidParticipatingSupplierItem"))
+                                      .Destroy(destroy => destroy.Action("ParticipatingSupplierItems_Destroy", "BidParticipatingSupplierItem"))
+                                  ).ToClientTemplate())
+
+
+                </text>);
+
+
+                    }).ToClientTemplate())
 </script>
 
 <script id="resultDetail" type="text/Kendo-tmpl">
@@ -1572,8 +1657,8 @@
                                                                               //toolbar.Create();
                                                                               toolbar.Template(@<text>
 
-                                                                                @Html.Kendo().Button().Content("Get Items").Name("GetSuppliersItem").Events(events => events.Click("GetSuppliersClicked")).ToClientTemplate() |
-                                                                                @Html.Kendo().Button().Content("Delete Selected Items").Name("DeleteSelectedItems").Events(events => events.Click("DeleteSelectedClicked")).ToClientTemplate()
+                                                                                @*@Html.Kendo().Button().Content("Get Items").Name("GetSuppliersItem").Events(events => events.Click("GetSuppliersClicked")).ToClientTemplate() |
+                                                                                @Html.Kendo().Button().Content("Delete Selected Items").Name("DeleteSelectedItems").Events(events => events.Click("DeleteSelectedClicked")).ToClientTemplate()*@
 
 
                                                                             </text>);
@@ -1990,6 +2075,12 @@
             }
             if (!dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
                 row.css("background-color", "lightskyblue");
+            }
+            if (dataItem.CloseStatus) {
+                row.css("color", "yellow");
+            }
+            if (dataItem.OpenStatus) {
+                row.css("color", "red");
             }
         }
     }

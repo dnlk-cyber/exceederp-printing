@@ -66,16 +66,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 			//    ModelState.AddModelError("lines", "Please add line items");
 
 			var lines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
-			if (!lines.Any() && record.Type == PaymentRequestType.Payment)
+			if (!lines.Any())
 			{
 				ModelState.AddModelError("", "Please add payment request line items.");
 			}
-
-			var fundLines = _db.FundTransferLines.Where(x => x.PaymentRequestId == id);
-			if (!fundLines.Any() && record.Type == PaymentRequestType.Fund_Transfer)
-			{
-				ModelState.AddModelError("", "Please add fund transfer request line items.");
-			}
+			
 
 			if (record != null && record.IsDepartmentOnlineApproved)
 				ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");

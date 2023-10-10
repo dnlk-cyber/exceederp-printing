@@ -12,9 +12,10 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.FixedAssetReturnId).Title("#").Width(120).ClientTemplate("#=appendZeros(FixedAssetReturnId)#");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(160);
           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
           columns.Bound(c => c.ReturnDate).Title("Return Date").Width(130);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(160);
+          
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(150).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.Bound(c => c.Reference).Width(90);
@@ -52,8 +53,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable().Events(ev => ev.DetailExpand("detailExpandFixedIssue"))
+      
+      .Events(ev => ev.DetailExpand("detailExpandFixedIssue"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
@@ -79,9 +80,11 @@
       ).Resizable(x => x.Columns(true))
       .ClientDetailTemplateId("template"))
 
+@* Tabs *@
 <script id="template" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_#=FixedAssetReturnId#").SelectedIndex(0).Items(items =>
               {
+//Detail Tab
                   items.Add().Text("Detail").Content(
                     @<text>
 
@@ -180,7 +183,7 @@
 
                     </text>
                             );
-
+    //Item Tab
                         items.Add().Text("Item").Content(
                         @<text>
 
@@ -194,7 +197,7 @@
                                                   columns.Bound(c => c.IsGroup).Width(80).Title("Is Group").ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsGroup ? checked='checked' :'' \\# />");
                                                   columns.Bound(c => c.ItemName).Width(90);
                                                   columns.Bound(c => c.TagNo).Width(90);
-                                                  columns.Bound(c => c.Quantity).Format("{0:n}").Width(90);
+                                                  columns.Bound(c => c.Quantity).Width(90);
                                                   columns.Bound(c => c.UnitPrice).Format("{0:n}").Width(80);
                                                   columns.Bound(c => c.Total).Format("{0:n}").Width(80);
                                                   columns.Bound(c => c.Remark).Width(110);
@@ -243,7 +246,7 @@
 
                         </text>
                                   );
-
+    //Validation Tab
                               items.Add().Text("Validation").Content(
                                 @<text>
                                     @(Html.Kendo().Grid<FixedAssetReturnValidation>()
@@ -356,7 +359,7 @@
     var recordStatus;
     var validationGrid;
     var storeCode;
-
+    var empId;
     
   
     var issecondapproved;
@@ -374,6 +377,8 @@
         recordStatus = masterDataItem.Status;
         storeCode = masterDataItem.StoreCode;
 
+        empId = masterDataItem.EmployeeId; //added
+
         isapproved = masterDataItem.IsOnlineApproved;
         isSendForApproval = masterDataItem.IsSendForApproval;
         isOnlineTransferred = masterDataItem.IsOnlineTransferred;
@@ -388,11 +393,12 @@
     }
 
     function filterAssetsForReturn() {
-       
+
         return {
             subCategoryCode: $("#FixedAssetSubCategoryId").val(),
-            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
-        };
+            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val(),
+            empId: empId //added
+    };
     }
 
     function filterSubCategory() {
@@ -541,8 +547,14 @@
         }
         $(document).ready(function () {
             $("#file").closest(".k-upload").find("span").text("Import");
-        });
+    });
+    // added
+    function filterStoreByBranch() {
 
+        return {
+            BranchId: $("#BranchId").data("kendoDropDownList").value()
+        };
+    }
 
 </script>
 

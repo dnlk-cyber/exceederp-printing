@@ -40,6 +40,7 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                 {
                     var sr = dbContext.StoreRequisitions.Find(issue.StoreRequisitionID);
                     headerDs.IssueTo = sr?.OrgStructureId.ToString();
+                    headerDs.ExternalDriver = sr?.ExternalDriver;
                 }
                
                 headerDs.ODOMeter = issue.ReadingKM;

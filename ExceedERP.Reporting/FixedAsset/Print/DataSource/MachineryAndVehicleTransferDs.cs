@@ -67,10 +67,13 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
 
                 }
 
-                headerDs.ApprovedDate = transfer.OnlineApprovedTime.GetValueOrDefault().ToShortDateString();
-                headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(transfer.OnlineApprovedBy));
-                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(transfer.CreatedBy));
-                headerDs.Datecreated = transfer.DateCreated.GetValueOrDefault().ToShortDateString();
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(transfer.CreatedBy));
+                headerDs.PreparedDate = transfer.DateCreated != null ? transfer.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(transfer.CreatedBy);
+
+                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(transfer.OnlineApprovedBy));
+                headerDs.ApprovedDate = transfer.OnlineApprovedTime != null ? transfer.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(transfer.OnlineApprovedBy);
 
 
 

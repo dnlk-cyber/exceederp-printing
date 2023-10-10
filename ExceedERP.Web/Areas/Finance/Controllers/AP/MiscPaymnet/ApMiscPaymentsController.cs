@@ -9,6 +9,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
@@ -50,50 +51,65 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AuthorizeRoles(FinanceConstants.AccountPayableView ,FinanceConstants.AccountPayableApprover ,FinanceConstants.AccountPayablePayment)]
         public ActionResult APMiscellaneousPayments_Read([DataSourceRequest]DataSourceRequest request, bool isNotTransffered)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<ApMiscellaneousPayment> apmiscellaneouspayments = _db.APMiscellaneousPayments.Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            List<string> mybrachesStr = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+
+            //cuz it was not having branchid
+            IQueryable<ApMiscellaneousPayment> miscPayments = _db.APMiscellaneousPayments
+                  .Where(x => mybraches.Contains(x.BranchId) || mybrachesStr.Contains(x.OrgBranchName));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                miscPayments = miscPayments.Where(x => myBusinessUnits.Contains(x.BusinessUnitId) ||x.BusinessUnitId==0); //to include null
+            }
+
             if (isNotTransffered)
             {
                 List<int> transfferableList = FinanceTransferHelper.GetApMiscPaymentTranferableList();
-                apmiscellaneouspayments =
-                    apmiscellaneouspayments.Where(x => transfferableList.Contains(x.ApMiscellaneousPaymentId));
+                miscPayments =
+                    miscPayments.Where(x => transfferableList.Contains(x.ApMiscellaneousPaymentId));
             }
-            DataSourceResult result = apmiscellaneouspayments.ToDataSourceResult(request, aPMiscellaneousPayments => new {
-                ApMiscellaneousPaymentId = aPMiscellaneousPayments.ApMiscellaneousPaymentId,
-                BranchId = aPMiscellaneousPayments.BranchId,
-                BusinessUnitId = aPMiscellaneousPayments.BusinessUnitId,
-                IsDirectPayment = aPMiscellaneousPayments.IsDirectPayment,
-                SupplierId = aPMiscellaneousPayments.SupplierId,
-                IsNewSupplier = aPMiscellaneousPayments.IsNewSupplier,
-                SupplierName = aPMiscellaneousPayments.SupplierName,
-                Purchaser = aPMiscellaneousPayments.Purchaser,
-                Grn = aPMiscellaneousPayments.Grn,
-                Po = aPMiscellaneousPayments.Po,
-                PaymentType = aPMiscellaneousPayments.PaymentType,
-                PaymentMethod = aPMiscellaneousPayments.PaymentMethod,
-                PaymentReference = aPMiscellaneousPayments.PaymentReference,
-                Reference = aPMiscellaneousPayments.Reference,
-                PaymentDate = aPMiscellaneousPayments.PaymentDate,
-                LineAmount = Math.Round(aPMiscellaneousPayments.LineAmount, 2),
-                TaxAmount = Math.Round(aPMiscellaneousPayments.TaxAmount, 2),
-                TotalAmount = Math.Round(aPMiscellaneousPayments.TotalAmount, 2),
-                Remark = aPMiscellaneousPayments.Remark,
-                IsSendForApproval = aPMiscellaneousPayments.IsSendForApproval,
-                IsOnlineTransferred = aPMiscellaneousPayments.IsOnlineTransferred,
-                IsOnlineTransferredBy = aPMiscellaneousPayments.IsOnlineTransferredBy,
-                OnlineTransferredTime = aPMiscellaneousPayments.OnlineTransferredTime,
-                Status = aPMiscellaneousPayments.Status,
-                IsOnlineApproved = aPMiscellaneousPayments.IsOnlineApproved,
-                OnlineApprovedBy = aPMiscellaneousPayments.OnlineApprovedBy,
-                OnlineApprovedTime = aPMiscellaneousPayments.OnlineApprovedTime,
-                IsVoid = aPMiscellaneousPayments.IsVoid,
-                VoidBy = aPMiscellaneousPayments.VoidBy,
-                VoidTime = aPMiscellaneousPayments.VoidTime,
-                OrgBranchName = aPMiscellaneousPayments.OrgBranchName,
-                DateCreated = aPMiscellaneousPayments.DateCreated,
-                LastModified = aPMiscellaneousPayments.LastModified,
-                CreatedBy = aPMiscellaneousPayments.CreatedBy,
-                ModifiedBy = aPMiscellaneousPayments.ModifiedBy
+            DataSourceResult result = miscPayments.ToDataSourceResult(request, miscPayment => new {
+                ApMiscellaneousPaymentId = miscPayment.ApMiscellaneousPaymentId,
+                BranchId = miscPayment.BranchId,
+                BusinessUnitId = miscPayment.BusinessUnitId,
+                IsDirectPayment = miscPayment.IsDirectPayment,
+                SupplierId = miscPayment.SupplierId,
+                IsNewSupplier = miscPayment.IsNewSupplier,
+                SupplierName = miscPayment.SupplierName,
+                Purchaser = miscPayment.Purchaser,
+                Grn = miscPayment.Grn,
+                Po = miscPayment.Po,
+                PaymentType = miscPayment.PaymentType,
+                PaymentMethod = miscPayment.PaymentMethod,
+                PaymentReference = miscPayment.PaymentReference,
+                Reference = miscPayment.Reference,
+                PaymentDate = miscPayment.PaymentDate,
+                LineAmount = Math.Round(miscPayment.LineAmount, 2),
+                TaxAmount = Math.Round(miscPayment.TaxAmount, 2),
+                TotalAmount = Math.Round(miscPayment.TotalAmount, 2),
+                WithholdingAmount = Math.Round(miscPayment.WithholdingAmount, 2),
+                WithholdTaxAmount = Math.Round(miscPayment.WithholdTaxAmount, 2),
+                DeductAmount = Math.Round(miscPayment.DeductAmount, 2),
+                NetPayable = Math.Round(miscPayment.NetPayable, 2),
+                Remark = miscPayment.Remark,
+                IsSendForApproval = miscPayment.IsSendForApproval,
+                IsOnlineTransferred = miscPayment.IsOnlineTransferred,
+                IsOnlineTransferredBy = miscPayment.IsOnlineTransferredBy,
+                OnlineTransferredTime = miscPayment.OnlineTransferredTime,
+                Status = miscPayment.Status,
+                IsOnlineApproved = miscPayment.IsOnlineApproved,
+                OnlineApprovedBy = miscPayment.OnlineApprovedBy,
+                OnlineApprovedTime = miscPayment.OnlineApprovedTime,
+                IsVoid = miscPayment.IsVoid,
+                VoidBy = miscPayment.VoidBy,
+                VoidTime = miscPayment.VoidTime,
+                OrgBranchName = miscPayment.OrgBranchName,
+                DateCreated = miscPayment.DateCreated,
+                LastModified = miscPayment.LastModified,
+                CreatedBy = miscPayment.CreatedBy,
+                ModifiedBy = miscPayment.ModifiedBy
             });
 
             return Json(result);
@@ -101,142 +117,145 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
          [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult APMiscellaneousPayments_Create([DataSourceRequest]DataSourceRequest request, ApMiscellaneousPayment aPMiscellaneousPayments)
+        public ActionResult APMiscellaneousPayments_Create([DataSourceRequest]DataSourceRequest request, ApMiscellaneousPayment miscPayments)
         {
             #region validation
 
 
-            if (aPMiscellaneousPayments.IsNewSupplier && String.IsNullOrWhiteSpace(aPMiscellaneousPayments.SupplierName))
+            if (miscPayments.IsNewSupplier && String.IsNullOrWhiteSpace(miscPayments.SupplierName))
                 ModelState.AddModelError("supplier", "Please enter supplier name.");
-            if (!aPMiscellaneousPayments.IsNewSupplier && String.IsNullOrWhiteSpace(aPMiscellaneousPayments.SupplierId))
+            if (!miscPayments.IsNewSupplier && String.IsNullOrWhiteSpace(miscPayments.SupplierId))
                 ModelState.AddModelError("supplier", "Please choose supplier.");
 
-            if (!String.IsNullOrEmpty(aPMiscellaneousPayments.PaymentReference))
+            if (!String.IsNullOrEmpty(miscPayments.PaymentReference))
             {
-                var exists = _db.APMiscellaneousPayments.Where(x => x.PaymentReference == aPMiscellaneousPayments.PaymentReference && x.IsVoid == false).ToList();
+                var exists = _db.APMiscellaneousPayments.Where(x => x.PaymentReference == miscPayments.PaymentReference && x.IsVoid == false).ToList();
 
                 if (exists.Any())
-                    ModelState.AddModelError("PaymentReference", $"{aPMiscellaneousPayments.PaymentReference}  already exists in the system.");
+                    ModelState.AddModelError("PaymentReference", $"{miscPayments.PaymentReference}  already exists in the system.");
             }
 
-            if (!String.IsNullOrEmpty(aPMiscellaneousPayments.Remark))
+            if (!String.IsNullOrEmpty(miscPayments.Remark))
             {
-                var exists = _db.APMiscellaneousPayments.Where(x => x.Remark == aPMiscellaneousPayments.Remark && x.IsVoid == false).ToList();
+                var exists = _db.APMiscellaneousPayments.Where(x => x.Remark == miscPayments.Remark && x.IsVoid == false).ToList();
 
                 if (exists.Any())
-                    ModelState.AddModelError("Remark", $"{aPMiscellaneousPayments.Remark}  already exists in the system.");
+                    ModelState.AddModelError("Remark", $"{miscPayments.Remark}  already exists in the system.");
             }
 
             #endregion
-
-            if (!aPMiscellaneousPayments.IsNewSupplier && !String.IsNullOrWhiteSpace(aPMiscellaneousPayments.SupplierId))
+            #region data
+            if (!miscPayments.IsNewSupplier && !String.IsNullOrWhiteSpace(miscPayments.SupplierId))
             {
-                var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == aPMiscellaneousPayments.SupplierId);
-                if (supplier != null) aPMiscellaneousPayments.SupplierName = supplier.Name;
+                var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == miscPayments.SupplierId);
+                if (supplier != null) miscPayments.SupplierName = supplier.Name;
             }
 
-            if (aPMiscellaneousPayments.IsNewSupplier)
-                aPMiscellaneousPayments.SupplierId = "";
+            if (miscPayments.IsNewSupplier)
+                miscPayments.SupplierId = "";
 
+            miscPayments.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            miscPayments.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new ApMiscellaneousPayment
                 {
-                    BranchId = aPMiscellaneousPayments.BranchId,
-                    BusinessUnitId = aPMiscellaneousPayments.BusinessUnitId,
-                    IsDirectPayment = aPMiscellaneousPayments.IsDirectPayment,
-                    SupplierId = aPMiscellaneousPayments.SupplierId,
-                    IsNewSupplier = aPMiscellaneousPayments.IsNewSupplier,
-                    SupplierName = aPMiscellaneousPayments.SupplierName,
-                    Purchaser = aPMiscellaneousPayments.Purchaser,
-                    Grn = aPMiscellaneousPayments.Grn,
-                    Po = aPMiscellaneousPayments.Po,
-                    PaymentType = aPMiscellaneousPayments.PaymentType,
-                    PaymentMethod = aPMiscellaneousPayments.PaymentMethod,
-                    PaymentReference = aPMiscellaneousPayments.PaymentReference,
-                    Reference = aPMiscellaneousPayments.Reference,
-                    PaymentDate = aPMiscellaneousPayments.PaymentDate.Date,
-                    LineAmount = Math.Round(aPMiscellaneousPayments.LineAmount, 2),
-                    TaxAmount = Math.Round(aPMiscellaneousPayments.TaxAmount, 2),
-                    TotalAmount = Math.Round(aPMiscellaneousPayments.TotalAmount, 2),
+                    BranchId = miscPayments.BranchId,
+                    BusinessUnitId = miscPayments.BusinessUnitId,
+                    IsDirectPayment = miscPayments.IsDirectPayment,
+                    SupplierId = miscPayments.SupplierId,
+                    IsNewSupplier = miscPayments.IsNewSupplier,
+                    SupplierName = miscPayments.SupplierName,
+                    Purchaser = miscPayments.Purchaser,
+                    Grn = miscPayments.Grn,
+                    Po = miscPayments.Po,
+                    PaymentType = miscPayments.PaymentType,
+                    PaymentMethod = miscPayments.PaymentMethod,
+                    PaymentReference = miscPayments.PaymentReference,
+                    Reference = miscPayments.Reference,
+                    PaymentDate = miscPayments.PaymentDate.Date,
+                    LineAmount = Math.Round(miscPayments.LineAmount, 2),
+                    TaxAmount = Math.Round(miscPayments.TaxAmount, 2),
+                    TotalAmount = Math.Round(miscPayments.TotalAmount, 2),
                    
-                    Remark = aPMiscellaneousPayments.Remark,
-                    IsSendForApproval = aPMiscellaneousPayments.IsSendForApproval,
-                    IsOnlineTransferred = aPMiscellaneousPayments.IsOnlineTransferred,
-                    IsOnlineTransferredBy = aPMiscellaneousPayments.IsOnlineTransferredBy,
-                    OnlineTransferredTime = aPMiscellaneousPayments.OnlineTransferredTime,
-                    Status = aPMiscellaneousPayments.Status,
-                    IsOnlineApproved = aPMiscellaneousPayments.IsOnlineApproved,
-                    OnlineApprovedBy = aPMiscellaneousPayments.OnlineApprovedBy,
-                    OnlineApprovedTime = aPMiscellaneousPayments.OnlineApprovedTime,
-                    IsVoid = aPMiscellaneousPayments.IsVoid,
-                    VoidBy = aPMiscellaneousPayments.VoidBy,
-                    VoidTime = aPMiscellaneousPayments.VoidTime,
+                    Remark = miscPayments.Remark,
+                    IsSendForApproval = miscPayments.IsSendForApproval,
+                    IsOnlineTransferred = miscPayments.IsOnlineTransferred,
+                    IsOnlineTransferredBy = miscPayments.IsOnlineTransferredBy,
+                    OnlineTransferredTime = miscPayments.OnlineTransferredTime,
+                    Status = miscPayments.Status,
+                    IsOnlineApproved = miscPayments.IsOnlineApproved,
+                    OnlineApprovedBy = miscPayments.OnlineApprovedBy,
+                    OnlineApprovedTime = miscPayments.OnlineApprovedTime,
+                    IsVoid = miscPayments.IsVoid,
+                    VoidBy = miscPayments.VoidBy,
+                    VoidTime = miscPayments.VoidTime,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     DateCreated = DateTime.Now,
-                    LastModified = aPMiscellaneousPayments.LastModified,
+                    LastModified = miscPayments.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = aPMiscellaneousPayments.ModifiedBy
+                    ModifiedBy = miscPayments.ModifiedBy
                 };
 
                 _db.APMiscellaneousPayments.Add(entity);
                 _db.SaveChanges();
-                aPMiscellaneousPayments.ApMiscellaneousPaymentId = entity.ApMiscellaneousPaymentId;
+                miscPayments.ApMiscellaneousPaymentId = entity.ApMiscellaneousPaymentId;
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "AP misc payment", "Success", User.Identity.Name, $"created misc payment {entity.ApMiscellaneousPaymentId} ", Modules.Finance);
                 #endregion
             }
 
-            return Json(new[] { aPMiscellaneousPayments }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { miscPayments }.ToDataSourceResult(request, ModelState));
         }
 
          [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult APMiscellaneousPayments_Update([DataSourceRequest]DataSourceRequest request, ApMiscellaneousPayment aPMiscellaneousPayments)
+        public ActionResult APMiscellaneousPayments_Update([DataSourceRequest]DataSourceRequest request, ApMiscellaneousPayment miscPayment)
         {
             #region validation
 
-            if (aPMiscellaneousPayments.IsNewSupplier && String.IsNullOrWhiteSpace(aPMiscellaneousPayments.SupplierName))
+            if (miscPayment.IsNewSupplier && String.IsNullOrWhiteSpace(miscPayment.SupplierName))
                 ModelState.AddModelError("supplier", "Please enter supplier name.");
-            if (!aPMiscellaneousPayments.IsNewSupplier && String.IsNullOrWhiteSpace(aPMiscellaneousPayments.SupplierId))
+            if (!miscPayment.IsNewSupplier && String.IsNullOrWhiteSpace(miscPayment.SupplierId))
                 ModelState.AddModelError("supplier", "Please choose supplier.");
 
-            if (!String.IsNullOrEmpty(aPMiscellaneousPayments.PaymentReference))
+            if (!String.IsNullOrEmpty(miscPayment.PaymentReference))
             {
                 var exists = _db.APMiscellaneousPayments
-                    .Where(x=>x.ApMiscellaneousPaymentId!=aPMiscellaneousPayments.ApMiscellaneousPaymentId)
-                    .Where(x => x.PaymentReference == aPMiscellaneousPayments.PaymentReference && x.IsVoid == false).ToList();
+                    .Where(x=>x.ApMiscellaneousPaymentId!=miscPayment.ApMiscellaneousPaymentId)
+                    .Where(x => x.PaymentReference == miscPayment.PaymentReference && x.IsVoid == false).ToList();
 
                 if (exists.Any())
-                    ModelState.AddModelError("PaymentReference", $"{aPMiscellaneousPayments.PaymentReference}  already exists in the system.");
+                    ModelState.AddModelError("PaymentReference", $"{miscPayment.PaymentReference}  already exists in the system.");
             }
 
-            if (!String.IsNullOrEmpty(aPMiscellaneousPayments.Remark))
+            if (!String.IsNullOrEmpty(miscPayment.Remark))
             {
                 var exists = _db.APMiscellaneousPayments
-                    .Where(x => x.ApMiscellaneousPaymentId != aPMiscellaneousPayments.ApMiscellaneousPaymentId)
-                    .Where(x => x.Remark == aPMiscellaneousPayments.Remark && x.IsVoid == false).ToList();
+                    .Where(x => x.ApMiscellaneousPaymentId != miscPayment.ApMiscellaneousPaymentId)
+                    .Where(x => x.Remark == miscPayment.Remark && x.IsVoid == false).ToList();
 
                 if (exists.Any())
-                    ModelState.AddModelError("Remark", $"{aPMiscellaneousPayments.Remark}  already exists in the system.");
+                    ModelState.AddModelError("Remark", $"{miscPayment.Remark}  already exists in the system.");
             }
 
             #endregion
 
-            if (!aPMiscellaneousPayments.IsNewSupplier && !String.IsNullOrWhiteSpace(aPMiscellaneousPayments.SupplierId))
+            if (!miscPayment.IsNewSupplier && !String.IsNullOrWhiteSpace(miscPayment.SupplierId))
             {
-                var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == aPMiscellaneousPayments.SupplierId);
-                if (supplier != null) aPMiscellaneousPayments.SupplierName = supplier.Name;
+                var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == miscPayment.SupplierId);
+                if (supplier != null) miscPayment.SupplierName = supplier.Name;
             }
 
 
-            if (aPMiscellaneousPayments.IsNewSupplier)
-                aPMiscellaneousPayments.SupplierId = "";
+            if (miscPayment.IsNewSupplier)
+                miscPayment.SupplierId = "";
 
             #region validated record
 
-            var parent = _db.APMiscellaneousPayments.Find(aPMiscellaneousPayments.ApMiscellaneousPaymentId);
+            var parent = _db.APMiscellaneousPayments.Find(miscPayment.ApMiscellaneousPaymentId);
             if (parent != null)
             {
                 if (parent.IsOnlineApproved)
@@ -262,41 +281,41 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             {
                     var entity = new ApMiscellaneousPayment
                     {
-                        BranchId = aPMiscellaneousPayments.BranchId,
-                        BusinessUnitId = aPMiscellaneousPayments.BusinessUnitId,
-                        IsDirectPayment = aPMiscellaneousPayments.IsDirectPayment,
-                        ApMiscellaneousPaymentId = aPMiscellaneousPayments.ApMiscellaneousPaymentId,
-                        SupplierId = aPMiscellaneousPayments.SupplierId,
-                        IsNewSupplier = aPMiscellaneousPayments.IsNewSupplier,
-                        SupplierName = aPMiscellaneousPayments.SupplierName,
-                        Purchaser = aPMiscellaneousPayments.Purchaser,
-                        Grn = aPMiscellaneousPayments.Grn,
-                        Po = aPMiscellaneousPayments.Po,
-                        PaymentType = aPMiscellaneousPayments.PaymentType,
-                        PaymentMethod = aPMiscellaneousPayments.PaymentMethod,
-                        PaymentReference = aPMiscellaneousPayments.PaymentReference,
-                        Reference = aPMiscellaneousPayments.Reference,
-                        PaymentDate = aPMiscellaneousPayments.PaymentDate,
-                        LineAmount = Math.Round(aPMiscellaneousPayments.LineAmount, 2),
-                        TaxAmount = Math.Round(aPMiscellaneousPayments.TaxAmount, 2),
-                        TotalAmount = Math.Round(aPMiscellaneousPayments.TotalAmount, 2),
+                        BranchId = miscPayment.BranchId,
+                        BusinessUnitId = miscPayment.BusinessUnitId,
+                        IsDirectPayment = miscPayment.IsDirectPayment,
+                        ApMiscellaneousPaymentId = miscPayment.ApMiscellaneousPaymentId,
+                        SupplierId = miscPayment.SupplierId,
+                        IsNewSupplier = miscPayment.IsNewSupplier,
+                        SupplierName = miscPayment.SupplierName,
+                        Purchaser = miscPayment.Purchaser,
+                        Grn = miscPayment.Grn,
+                        Po = miscPayment.Po,
+                        PaymentType = miscPayment.PaymentType,
+                        PaymentMethod = miscPayment.PaymentMethod,
+                        PaymentReference = miscPayment.PaymentReference,
+                        Reference = miscPayment.Reference,
+                        PaymentDate = miscPayment.PaymentDate,
+                        LineAmount = Math.Round(miscPayment.LineAmount, 2),
+                        TaxAmount = Math.Round(miscPayment.TaxAmount, 2),
+                        TotalAmount = Math.Round(miscPayment.TotalAmount, 2),
                        
-                        Remark = aPMiscellaneousPayments.Remark,
-                        IsSendForApproval = aPMiscellaneousPayments.IsSendForApproval,
-                        IsOnlineTransferred = aPMiscellaneousPayments.IsOnlineTransferred,
-                        IsOnlineTransferredBy = aPMiscellaneousPayments.IsOnlineTransferredBy,
-                        OnlineTransferredTime = aPMiscellaneousPayments.OnlineTransferredTime,
-                        Status = aPMiscellaneousPayments.Status,
-                        IsOnlineApproved = aPMiscellaneousPayments.IsOnlineApproved,
-                        OnlineApprovedBy = aPMiscellaneousPayments.OnlineApprovedBy,
-                        OnlineApprovedTime = aPMiscellaneousPayments.OnlineApprovedTime,
-                        IsVoid = aPMiscellaneousPayments.IsVoid,
-                        VoidBy = aPMiscellaneousPayments.VoidBy,
-                        VoidTime = aPMiscellaneousPayments.VoidTime,
-                        OrgBranchName = aPMiscellaneousPayments.OrgBranchName,
-                        DateCreated = aPMiscellaneousPayments.DateCreated,
+                        Remark = miscPayment.Remark,
+                        IsSendForApproval = miscPayment.IsSendForApproval,
+                        IsOnlineTransferred = miscPayment.IsOnlineTransferred,
+                        IsOnlineTransferredBy = miscPayment.IsOnlineTransferredBy,
+                        OnlineTransferredTime = miscPayment.OnlineTransferredTime,
+                        Status = miscPayment.Status,
+                        IsOnlineApproved = miscPayment.IsOnlineApproved,
+                        OnlineApprovedBy = miscPayment.OnlineApprovedBy,
+                        OnlineApprovedTime = miscPayment.OnlineApprovedTime,
+                        IsVoid = miscPayment.IsVoid,
+                        VoidBy = miscPayment.VoidBy,
+                        VoidTime = miscPayment.VoidTime,
+                        OrgBranchName = miscPayment.OrgBranchName,
+                        DateCreated = miscPayment.DateCreated,
                         LastModified = DateTime.Now,
-                        CreatedBy = aPMiscellaneousPayments.CreatedBy,
+                        CreatedBy = miscPayment.CreatedBy,
                         ModifiedBy = User.Identity.Name
                     };
 
@@ -308,12 +327,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 UserHelper.OperationLog(Request.UserHostAddress, "AP misc payment", "Success", User.Identity.Name, $"updated misc payment {entity.ApMiscellaneousPaymentId} ", Modules.Finance);
                 #endregion
             }
-            return Json(new[] { aPMiscellaneousPayments }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { miscPayment }.ToDataSourceResult(request, ModelState));
         }
 
          [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult APMiscellaneousPayments_Destroy([DataSourceRequest]DataSourceRequest request, ApMiscellaneousPayment aPMiscellaneousPayments)
+        public ActionResult APMiscellaneousPayments_Destroy([DataSourceRequest]DataSourceRequest request, ApMiscellaneousPayment miscPayment)
         {
 
             
@@ -322,51 +341,51 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             {
                     var entity = new ApMiscellaneousPayment
                     {
-                        BranchId = aPMiscellaneousPayments.BranchId,
-                        BusinessUnitId = aPMiscellaneousPayments.BusinessUnitId,
-                        IsDirectPayment = aPMiscellaneousPayments.IsDirectPayment,
-                        ApMiscellaneousPaymentId = aPMiscellaneousPayments.ApMiscellaneousPaymentId,
-                        SupplierId = aPMiscellaneousPayments.SupplierId,
-                        IsNewSupplier = aPMiscellaneousPayments.IsNewSupplier,
-                        SupplierName = aPMiscellaneousPayments.SupplierName,
-                        Purchaser = aPMiscellaneousPayments.Purchaser,
-                        Grn = aPMiscellaneousPayments.Grn,
-                        Po = aPMiscellaneousPayments.Po,
-                        PaymentType = aPMiscellaneousPayments.PaymentType,
-                        PaymentMethod = aPMiscellaneousPayments.PaymentMethod,
-                        PaymentReference = aPMiscellaneousPayments.PaymentReference,
-                        Reference = aPMiscellaneousPayments.Reference,
-                        PaymentDate = aPMiscellaneousPayments.PaymentDate,
+                        BranchId = miscPayment.BranchId,
+                        BusinessUnitId = miscPayment.BusinessUnitId,
+                        IsDirectPayment = miscPayment.IsDirectPayment,
+                        ApMiscellaneousPaymentId = miscPayment.ApMiscellaneousPaymentId,
+                        SupplierId = miscPayment.SupplierId,
+                        IsNewSupplier = miscPayment.IsNewSupplier,
+                        SupplierName = miscPayment.SupplierName,
+                        Purchaser = miscPayment.Purchaser,
+                        Grn = miscPayment.Grn,
+                        Po = miscPayment.Po,
+                        PaymentType = miscPayment.PaymentType,
+                        PaymentMethod = miscPayment.PaymentMethod,
+                        PaymentReference = miscPayment.PaymentReference,
+                        Reference = miscPayment.Reference,
+                        PaymentDate = miscPayment.PaymentDate,
                      
-                        Remark = aPMiscellaneousPayments.Remark,
-                        IsSendForApproval = aPMiscellaneousPayments.IsSendForApproval,
-                        IsOnlineTransferred = aPMiscellaneousPayments.IsOnlineTransferred,
-                        IsOnlineTransferredBy = aPMiscellaneousPayments.IsOnlineTransferredBy,
-                        OnlineTransferredTime = aPMiscellaneousPayments.OnlineTransferredTime,
-                        Status = aPMiscellaneousPayments.Status,
-                        IsOnlineApproved = aPMiscellaneousPayments.IsOnlineApproved,
-                        OnlineApprovedBy = aPMiscellaneousPayments.OnlineApprovedBy,
-                        OnlineApprovedTime = aPMiscellaneousPayments.OnlineApprovedTime,
-                        IsVoid = aPMiscellaneousPayments.IsVoid,
-                        VoidBy = aPMiscellaneousPayments.VoidBy,
-                        VoidTime = aPMiscellaneousPayments.VoidTime,
-                        OrgBranchName = aPMiscellaneousPayments.OrgBranchName,
-                        DateCreated = aPMiscellaneousPayments.DateCreated,
-                        LastModified = aPMiscellaneousPayments.LastModified,
-                        CreatedBy = aPMiscellaneousPayments.CreatedBy,
-                        ModifiedBy = aPMiscellaneousPayments.ModifiedBy
+                        Remark = miscPayment.Remark,
+                        IsSendForApproval = miscPayment.IsSendForApproval,
+                        IsOnlineTransferred = miscPayment.IsOnlineTransferred,
+                        IsOnlineTransferredBy = miscPayment.IsOnlineTransferredBy,
+                        OnlineTransferredTime = miscPayment.OnlineTransferredTime,
+                        Status = miscPayment.Status,
+                        IsOnlineApproved = miscPayment.IsOnlineApproved,
+                        OnlineApprovedBy = miscPayment.OnlineApprovedBy,
+                        OnlineApprovedTime = miscPayment.OnlineApprovedTime,
+                        IsVoid = miscPayment.IsVoid,
+                        VoidBy = miscPayment.VoidBy,
+                        VoidTime = miscPayment.VoidTime,
+                        OrgBranchName = miscPayment.OrgBranchName,
+                        DateCreated = miscPayment.DateCreated,
+                        LastModified = miscPayment.LastModified,
+                        CreatedBy = miscPayment.CreatedBy,
+                        ModifiedBy = miscPayment.ModifiedBy
                     };
 
                     _db.APMiscellaneousPayments.Attach(entity);
                     _db.APMiscellaneousPayments.Remove(entity);
                     _db.SaveChanges();
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted misc. payment " + aPMiscellaneousPayments.ApMiscellaneousPaymentId + " " + aPMiscellaneousPayments.Remark, Modules.Finance);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted misc. payment " + miscPayment.ApMiscellaneousPaymentId + " " + miscPayment.Remark, Modules.Finance);
                 #endregion
 
 
             }
-            return Json(new[] { aPMiscellaneousPayments }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { miscPayment }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(FinanceConstants.AccountPayableView ,FinanceConstants.AccountPayableApprover ,FinanceConstants.AccountPayablePayment)]
@@ -516,6 +535,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
+
+            var lines = _db.ApMiscellaneousPaymentLines.Where(x => x.ApMiscellaneousPaymentId == id);
+            if (!lines.Any())
+            {
+                isValid = false;
+                errMsg = "Please add lines first";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+               
 
             if (record != null && !record.IsOnlineApproved && !record.IsSendForApproval)
             {
@@ -741,8 +774,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                          Remark = record.Remark,
                          PaymentReference = record.PaymentReference,
                          ReferenceDoc = "",
-                         BranchId = 0,//to change
-                         InvoiceReferenceDoc = "",
+                        BranchId = record.BranchId,
+                        BusinessUnitId = record.BusinessUnitId,
+                        InvoiceReferenceDoc = "",
                          IsOnlineApproved = true,
                          OnlineApprovedBy = User.Identity.Name,
                          OnlineApprovedTime = DateTime.Now
@@ -815,7 +849,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public JsonResult Void(int id)
         {
             var record = _db.APMiscellaneousPayments.Find(id);
-            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.ApMiscellaneousPaymentLines.Count > 0)
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 10);
                 record.IsOnlineApproved = false;
@@ -853,15 +887,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            if (record.ApMiscellaneousPaymentLines.Count == 0)
-            {
-                var formattedData = new
-                {
-                    Message = "Please add lines and try again.",
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
+           
 
             if (record.IsVoid)
             {

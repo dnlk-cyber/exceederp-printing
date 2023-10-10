@@ -76,15 +76,15 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                     {
                         headerDs.CreatedBy =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(storeRequisition.CreatedBy));
-                        if (storeRequisition.DateCreated != null)
-                            headerDs.CreatedDate = (DateTime) storeRequisition.DateCreated;
+                                UserHelper.GetUserEmployeeId(pr.CreatedBy));
+                        if (pr.DateCreated != null)
+                            headerDs.CreatedDate = (DateTime) pr.DateCreated;
 
                         headerDs.ApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(storeRequisition.SecondOnlineApprovedBy));
-                        if (storeRequisition.SecondOnlineApprovedTime != null)
-                            headerDs.ApprovalDate = (DateTime) storeRequisition.SecondOnlineApprovedTime;
+                                UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
+                        if (pr.OnlineApprovedTime != null)
+                            headerDs.ApprovalDate = (DateTime) pr.OnlineApprovedTime;
                     }
 
                     headerDs.AuthorizerName =
@@ -95,6 +95,12 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
 
                     #endregion
                 }
+
+                headerDs.BudgetAuthorizerName =
+                        EmployeeHelper.GetEmployeeEnglishName(
+                            UserHelper.GetUserEmployeeId(pr.BudgetApprovedBy));
+                if (pr.BudgetApprovedTime != null)
+                    headerDs.BudgetAuthorizationDate = (DateTime)pr.BudgetApprovedTime;
 
                 headerDs.PRDate = pr.DateCreated.GetValueOrDefault().ToShortDateString();
                 headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(pr.StoreRequisitionID);

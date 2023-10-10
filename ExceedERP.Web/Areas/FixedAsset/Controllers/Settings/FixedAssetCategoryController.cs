@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -89,6 +91,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                     db.FixedAssetCategories.Add(entity);
                     db.SaveChanges();
                     fixedAssetCategory.FixedAssetCategoryID = entity.FixedAssetCategoryID;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetCategory", "Success", User.Identity.Name, $"created FixedAssetCategory {entity.FixedAssetCategoryID} Tag {entity.CategoryCode}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -135,6 +140,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                     db.FixedAssetCategories.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetCategory", "Success", User.Identity.Name, $"update FixedAssetCategory {entity.FixedAssetCategoryID} Tag {entity.CategoryCode}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -180,6 +188,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                     db.FixedAssetCategories.Attach(entity);
                     db.FixedAssetCategories.Remove(entity);
                     db.SaveChanges();
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete FixedAssetCategory {fixedAssetCategory.FixedAssetCategoryID} Tag {fixedAssetCategory.CategoryCode}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 

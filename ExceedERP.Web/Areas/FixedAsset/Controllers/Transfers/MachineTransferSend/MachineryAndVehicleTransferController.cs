@@ -2,10 +2,13 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -235,6 +238,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                     _db.MachineryAndVehicleTransfers.Add(entity);
                     _db.SaveChanges();
                     machineryAndVehicleTransfer.MachineryAndVehicleTransferId = entity.MachineryAndVehicleTransferId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransfer", "Success", User.Identity.Name, $"created MachineryAndVehicleTransfer {entity.MachineryAndVehicleTransferId} ChasisNo {entity.ChassisNo}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -345,6 +351,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
 
                     _db.MachineryAndVehicleTransfers.Attach(entity);
                     _db.Entry(entity).State = EntityState.Modified;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransfer", "Success", User.Identity.Name, $"update MachineryAndVehicleTransfer {entity.MachineryAndVehicleTransferId} ChasisNo {entity.ChassisNo}", Modules.FixedAsset);
+                    #endregion
                 }
                 _db.SaveChanges();
             }
@@ -423,6 +432,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferSe
                 _db.MachineryAndVehicleTransfers.Attach(entity);
                 _db.MachineryAndVehicleTransfers.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete MachineryAndVehicleTransfer {machineryAndVehicleTransfer.MachineryAndVehicleTransferId} ChasisNo {machineryAndVehicleTransfer.ChassisNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { machineryAndVehicleTransfer }.ToDataSourceResult(request, ModelState));

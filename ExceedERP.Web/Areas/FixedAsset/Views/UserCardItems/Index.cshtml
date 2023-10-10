@@ -52,9 +52,9 @@
                                       .HtmlAttributes(new { style = "width: 250px;" })
                                       .DataSource(dataSource =>
                                       {
-                                                                           dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
-                                                                               .ServerFiltering(false);
-                                                                       }))
+                                            dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                            .ServerFiltering(false);
+                                      }))
 
                         @(Html.Kendo().DropDownList()
                                       .ValuePrimitive(true)
@@ -66,14 +66,14 @@
                                       .HtmlAttributes(new { style = "width: 250px;" })
                                       .DataSource(dataSource =>
                                       {
-                                                                           dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
-                                                                               .ServerFiltering(true);
-                                                                       })
+                                            dataSource.Read(read => read.Action("GetSUbCategories", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
+                                            .ServerFiltering(true);
+                                      })
                                       .CascadeFrom("CategoryCode")
                                       .Events(e =>
                                       {
-                                                                           e.Select("onSelectSubCategoryCode");
-                                                                       }))
+                                            e.Select("onSelectSubCategoryCode"); 
+                                      }))
 
                         @(Html.Kendo().TextBox()
                                       .Name("txtSearch")
@@ -98,6 +98,7 @@
                     .ButtonCount(5))
                 .Filterable()
                 .Scrollable()
+                .Events(x => x.DataBound("userCardMasterGrid"))
                 .Selectable(selectable =>
                 {
                     selectable.Mode(GridSelectionMode.Single);
@@ -107,7 +108,7 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-
+                
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     // .Group(groups => groups.Add(p => p.EmployeeFullName))
@@ -133,10 +134,55 @@
 
 
 <script>
+    
+    var Active;
+
+    function userCardMasterGrid(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+        // Hide Edit and Delete button if when sent for approval and is online approved
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (!gridData[i].Active) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Active) {
+                row.css("background-color", "lightskyblue");
+            }
+            if (!dataItem.Active) {
+                row.css("background-color", "slategray");
+            }
+        }
+    }
+
+    function filterSubCategories() {
+        var code_name = $("#CategoryCode").data("kendoDropDownList").text();
+       
+        var code_name_arr = code_name.split("-");
+        var categoryCode_only = code_name_arr[0];
+        var name_only = code_name_arr[1];
+        return {
+            categoryCode: categoryCode_only,
+            text: name_only
+        };
+    }
 
     function filterAssetsForCard() {
+        var ddl = $("#AssetRegistrationId").data("kendoDropDownList");
         return {
-            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+            text: ddl.filterInput.val()
         }
     }
 
@@ -163,8 +209,8 @@
         };
     }
 
-      function onSelectType(e) {
-          var assetid = $("#AssetRegistrationId").data("kendoDropDownList").value();
+    function onSelectType(e) {
+        var assetid = $("#AssetRegistrationId").data("kendoDropDownList").value();
 
 
         $.ajax({

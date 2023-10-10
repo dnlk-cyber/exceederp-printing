@@ -99,23 +99,23 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
                         #region send notification
 
-                        List<UserVM> users = new List<UserVM>();
-                        users.AddRange(UserInformationHelper.GetUsersInRole("Property_User"));
-                        users.AddRange(UserInformationHelper.GetUsersInRole("Property_Authorizer"));
-                        var uniqueusers = users.DistinctByField(x => x.UserId);
+                        //List<UserVM> users = new List<UserVM>();
+                        //users.AddRange(UserInformationHelper.GetUsersInRole("Property_User"));
+                        //users.AddRange(UserInformationHelper.GetUsersInRole("Property_Authorizer"));
+                        //var uniqueusers = users.DistinctByField(x => x.UserId);
 
-                        string message = "New store requisition generated.";
-                        foreach (var user in uniqueusers)
-                        {
-                            NotifModels notif = new NotifModels
-                            {
-                                UserId = user.UserName,
-                                Title = "store requisition",
-                                Message = message,
-                                URL = "~/Inventory/StoreRequisitionPropertyReview"
-                            };
-                            Notify.NotifyUser(notif);
-                        }
+                        //string message = "New store requisition generated.";
+                        //foreach (var user in uniqueusers)
+                        //{
+                        //    NotifModels notif = new NotifModels
+                        //    {
+                        //        UserId = user.UserName,
+                        //        Title = "store requisition",
+                        //        Message = message,
+                        //        URL = "/Inventory/StoreRequisitionPropertyReview"
+                        //    };
+                        //    Notify.NotifyUser(notif);
+                        //}
 
                         #endregion
                     }

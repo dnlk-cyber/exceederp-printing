@@ -73,7 +73,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByBranch", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
+                              dataSource.Read(read => read.Action("GetStoreByBranchForSR", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
                                   .ServerFiltering(true);
                           })
                           .CascadeFrom("BranchId")

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Procurement.Settings;
 
 namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
@@ -25,6 +23,10 @@ namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
         public bool ApplyPenality { get; set; }
         [Display(Name = "Penality Amount")]
         public decimal PenalityAmount { get; set; }
+        [Display(Name = "Service Charge %")]
+        public decimal ServiceCharge { get; set; }
+        [Display(Name = "Other Payment")]
+        public decimal OtherPayment { get; set; } //stamp
         [Display(Name = "Net Payable")]
         public decimal NetPayable { get; set; }
         [Display(Name = "Remaining")]

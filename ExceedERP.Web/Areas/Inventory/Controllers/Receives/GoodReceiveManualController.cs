@@ -93,13 +93,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
             //IQueryable<GoodReceive> goodreceives = db.GoodReceives.Where(x => mybraches.Contains(x.OrgBranchName));
 
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<GoodReceive> goodreceives = db.GoodReceives.Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<GoodReceive> goodreceives = db.GoodReceives.Where(x=>x.IsManual).Where(x => userStores.Contains(x.StoreCode));
 
             DataSourceResult result = goodreceives.ToDataSourceResult(request, goodReceive => new
             {
                 ReceiveRef = goodReceive.ReceiveRef,
                 IsManual = goodReceive.IsManual,
                 BranchId = goodReceive.BranchId,
+                BusinessUnitId = goodReceive.BusinessUnitId,
                 ReceiveTypeId = goodReceive.ReceiveTypeId,
                 GoodReceiveId = goodReceive.GoodReceiveId,
                 TenderLot = goodReceive.TenderLot,
@@ -221,8 +222,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
 
                 var entity = new GoodReceive
                     {
-                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
-                        IsManual = true,
+                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                    IsManual = true,
                         ReceiveRef = goodReceive.ReceiveRef,
                         ReceiveTypeId = goodReceive.ReceiveTypeId,
                         StoreCode = goodReceive.StoreCode,
@@ -348,6 +350,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 var entity = new GoodReceive
                 {
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
+                    BusinessUnitId = goodReceive.BusinessUnitId,
                     IsManual = goodReceive.IsManual,
                     GoodReceiveId = goodReceive.GoodReceiveId,
                     ReceiveRef = goodReceive.ReceiveRef,
@@ -399,6 +402,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 var entity = new GoodReceive
                 {
                     BranchId = goodReceive.BranchId,
+                    BusinessUnitId = goodReceive.BusinessUnitId,
                     GoodReceiveId = goodReceive.GoodReceiveId,
                     StoreCode = goodReceive.StoreCode,
                     SupplierName = goodReceive.SupplierName,
@@ -692,7 +696,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
         public JsonResult SendForApproval(int id)
         {
             var record = db.GoodReceives.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.GoodReceiveItem.Count > 0)
+            var items = db.GoodReceiveItems.Where(x => x.GoodReceiveId == id).ToList();
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -722,7 +727,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            else if (record.GoodReceiveItem.Count == 0)
+            else if (!items.Any())
             {
                 var formattedData = new
                 {
@@ -854,6 +859,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                                 GLPeriodId = record.GLPeriodId,
                                 TransactionType = BinCardTransactionTypes.Receive,
                                 StatusType = BinCardTransactionStatus.Regular,
+                                TransactionOrder = BinCardTransactionOrder.VoidReceive
                             };
                             db.BinCardLines.Add(binCardLine);
                             //db.SaveChanges();
@@ -962,6 +968,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                     {
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(record.StoreCode),
                         ReceiveRef = record.ReceiveRef,
+                        IsManual=record.IsManual,
                         ReceiveTypeId = record.ReceiveTypeId,
                         StoreCode = record.StoreCode,
                         SupplierName = record.SupplierName,

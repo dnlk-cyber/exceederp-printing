@@ -1456,10 +1456,17 @@
     <Compile Include="FixedAsset\FixedAssetMachineCountSheet.Designer.cs">
       <DependentUpon>FixedAssetMachineCountSheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="FixedAsset\Print\DataSource\FixedAssetDisposalOds.cs" />
     <Compile Include="FixedAsset\Print\DataSource\FixedAssetReturnOds.cs" />
     <Compile Include="FixedAsset\Print\DataSource\FixedAssetTransferReceiveDs.cs" />
     <Compile Include="FixedAsset\Print\DataSource\FixedAssetTransferDs.cs" />
     <Compile Include="FixedAsset\Print\DataSource\MachineryAndVehicleTransferReceiveDs.cs" />
+    <Compile Include="FixedAsset\Print\FixedAssetDisposal.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FixedAsset\Print\FixedAssetDisposal.Designer.cs">
+      <DependentUpon>FixedAssetDisposal.cs</DependentUpon>
+    </Compile>
     <Compile Include="FixedAsset\Print\FixedAssetReturn.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1484,6 +1491,7 @@
     <Compile Include="FixedAsset\Print\MachineryAndVehicleTransferReceive.Designer.cs">
       <DependentUpon>MachineryAndVehicleTransferReceive.cs</DependentUpon>
     </Compile>
+    <Compile Include="FixedAsset\Print\ViewModel\FixedAssetDisposalItemsViewModel.cs" />
     <Compile Include="FixedAsset\rptMachineryCountSummary.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4181,6 +4189,7 @@
     <Compile Include="SharedDataSources\AssignmentTypeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\AttachmentTypeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\BranchObjectDataSource.cs" />
+    <Compile Include="SharedDataSources\BusinessUnitOds.cs" />
     <Compile Include="SharedDataSources\CascadedInternalJobTitleObjectDataSource.cs" />
     <Compile Include="SharedDataSources\CascadedJobTitleObjectDataSource.cs" />
     <Compile Include="SharedDataSources\CascadedJobTitleRecruitmentSummaryObjectDataSource.cs" />
@@ -4915,6 +4924,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FixedAsset\FixedAssetMachineCountSheet.resx">
       <DependentUpon>FixedAssetMachineCountSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FixedAsset\Print\FixedAssetDisposal.resx">
+      <DependentUpon>FixedAssetDisposal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FixedAsset\Print\FixedAssetReturn.resx">
       <DependentUpon>FixedAssetReturn.cs</DependentUpon>

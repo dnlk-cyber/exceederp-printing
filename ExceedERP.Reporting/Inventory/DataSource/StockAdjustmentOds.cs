@@ -61,7 +61,7 @@ namespace ExceedERP.Reporting.Inventory.DataSource
                             InventoryItem = adjustmentItems.InventoryItem.Name,
                             BinCardBalance = adjustmentItems.BinCardBalance,
                             AdjustedPrice = adjustmentItems.AdjustedPrice,
-                            StockAdjustmentType = adjustmentItems.StockAdjustmentType,
+                            StockAdjustmentType = adjustmentItems.StockAdjustmentType.ToString(),
                             PriceAdjustmentType = adjustmentItems.PriceAdjustmentType,
                             AdjustedQuantity = adjustmentItems.AdjustedQuantity
                         };

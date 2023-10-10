@@ -62,8 +62,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable().Events(ev => ev.DetailExpand("detailExpandProperty"))
+      
+      .Events(ev => ev.DetailExpand("detailExpandProperty"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMasterProperty"))
       .DataSource(dataSource => dataSource
@@ -92,6 +92,7 @@
       ).Resizable(resize => resize.Columns(true))
       .ClientDetailTemplateId("FixedAssetrequisitions"))
 
+@* Tabs *@
 <script id="FixedAssetrequisitions" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_#=FixedAssetRequisitionId#").SelectedIndex(0).Items(items =>
               {
@@ -168,7 +169,7 @@
                         </div>
                     </text>
                             );
-
+    //Items tab
                         items.Add().Text("Items").Content(
                         @<text>
                             @(Html.Kendo().Grid<FixedAssetRequisitionItem>()
@@ -237,7 +238,7 @@
                                   ).ToClientTemplate())
                         </text>
                                   );
-
+    //validation tab
                               items.Add().Text("Validation").Content(@<text>
                                 @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
                                       .Name("FixedAssetRequisitionPropertyValidation_#=FixedAssetRequisitionId#")
@@ -399,11 +400,15 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
+            if (!dataItem.IsSecondSendForApproval) {
+                row.css("background-color", "lightskyblue");
+            }
             if (dataItem.IsSecondSendForApproval && !dataItem.IsSecondOnlineApproved) {
                 row.css("background-color", "lightgreen");
+
             }
-            if (dataItem.IsOnlineApproved && !dataItem.IsSecondSendForApproval) {
-                row.css("background-color", "lightskyblue");
+            if (dataItem.IsSecondOnlineApproved) {
+                row.css("background-color", "lightgrey");
             }
         }
 

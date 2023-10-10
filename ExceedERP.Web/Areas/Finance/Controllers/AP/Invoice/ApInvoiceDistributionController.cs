@@ -52,25 +52,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APPaybleInvoiceDistributions_Create(int id,[DataSourceRequest]DataSourceRequest request, ApPaybleInvoiceDistribution aPPaybleInvoiceDistribution)
         {
-            bool isvalid = true;
+            #region validated record
+
+            var parent =
+                _db.APPaybleInvoices.FirstOrDefault(
+                    x => x.ApPaybleInvoicesId == id);
+            if (parent != null && !parent.IsOnlineTransferred)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
+
+
+            #endregion
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApPaybleInvoices parent =
-                    _db.APPaybleInvoices.FirstOrDefault(
-                        x => x.ApPaybleInvoicesId == aPPaybleInvoiceDistribution.ApPaybleInvoicesId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
+               
                     var entity = new ApPaybleInvoiceDistribution
                     {
                         ApPaybleInvoicesId = id,
@@ -91,7 +85,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "AP invoice distribution", "Success", User.Identity.Name, $"updated AP invoice distribution {entity.AccountCode} under record {entity.ApPaybleInvoicesId} ", Modules.Finance);
                     #endregion
-                }
+                
             }
 
             return Json(new[] { aPPaybleInvoiceDistribution }.ToDataSourceResult(request, ModelState));
@@ -101,28 +95,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult APPaybleInvoiceDistributions_Update(int id,[DataSourceRequest]DataSourceRequest request, ApPaybleInvoiceDistribution aPPaybleInvoiceDistribution)
         {
-           bool isvalid = true;
+            #region validated record
+
+            var parent =
+                _db.APPaybleInvoices.FirstOrDefault(
+                    x => x.ApPaybleInvoicesId == aPPaybleInvoiceDistribution.ApPaybleInvoicesId);
+            if (parent != null && !parent.IsOnlineTransferred)
+                ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
+
+
+            #endregion
+
             if (ModelState.IsValid)
             {
-                #region validated record
-
-                ApPaybleInvoices parent =
-                    _db.APPaybleInvoices.FirstOrDefault(
-                        x => x.ApPaybleInvoicesId == aPPaybleInvoiceDistribution.ApPaybleInvoicesId);
-                if (parent != null && parent.IsOnlineApproved)
-                {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record";
-                    //return View("Error");
-                }
-
-                #endregion
-
-                if (isvalid)
-                {
-                    var entity = new ApPaybleInvoiceDistribution
+                var entity = new ApPaybleInvoiceDistribution
                     {
-                        ApPaybleInvoicesId = id,
+                        ApPaybleInvoicesId = aPPaybleInvoiceDistribution.ApPaybleInvoicesId,
                         ApPaybleInvoiceDistributionId = aPPaybleInvoiceDistribution.ApPaybleInvoiceDistributionId,
                         AccountCode = aPPaybleInvoiceDistribution.AccountCode,
                         AccountDesc = _accountHelper.GetAccountDesc(aPPaybleInvoiceDistribution.AccountCode),
@@ -141,7 +129,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "AP invoice distribution", "Success", User.Identity.Name, $"updated AP invoice distribution {entity.AccountCode} under record {entity.ApPaybleInvoicesId} ", Modules.Finance);
                     #endregion
-                }
+                
             }
 
             return Json(new[] { aPPaybleInvoiceDistribution }.ToDataSourceResult(request, ModelState));

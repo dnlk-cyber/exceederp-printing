@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PurchaseFollowingForm> GetPurchaseFollow(string supplier, DateTime from, DateTime to, string purchaser)
+        public List<PurchaseFollowingForm> GetPurchaseFollow(string supplier, DateTime from, DateTime to, string purchaser, string businessUnitId)
         {
             List<PurchaseFollowingForm> purchaseFollowingList = new List<PurchaseFollowingForm>();
             var purchaseFollowing = new PurchaseFollowingForm();
@@ -30,6 +30,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     .ToList();
                 purchaseRequisition = purchaseRequisition.Where(x => prassignments.Contains(x.PurchaseRequisitionID))
                     .ToList();
+            }
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                purchaseRequisition = purchaseRequisition.Where(x => x.BusinessUnitId == bdid).ToList();
             }
 
             var vat = db.PurchaseOrderItems.FirstOrDefault()?.TaxAmount;

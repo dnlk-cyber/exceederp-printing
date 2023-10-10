@@ -58,6 +58,23 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
         {
             purchaseRequisitionItem.Quantity = purchaseRequisitionItem.RequestedQuantity;
 
+            if (purchaseRequisitionItem.Quantity > purchaseRequisitionItem.RequestedQuantity)
+                ModelState.AddModelError("qty", "Final quantity can not be more than requested quanity");
+
+            if (purchaseRequisitionItem.Quantity <= 0 || purchaseRequisitionItem.RequestedQuantity <= 0)
+                ModelState.AddModelError("qty", "Quantity should be above zero");
+
+            var item = db.InventoryItems.Where(x => x.ItemCode == purchaseRequisitionItem.ItmCode).FirstOrDefault();
+            if (item != null)
+            {
+                purchaseRequisitionItem.ItemName = item.Name;
+                purchaseRequisitionItem.UoM = item.UoMName;
+            }
+
+            var category = db.ItemCategorys.Where(x => x.ItemCategoryCode == purchaseRequisitionItem.CatCode).FirstOrDefault();
+            if (category != null)
+                purchaseRequisitionItem.CategoryName = category.Name;
+
             if (ModelState.IsValid)
             {
                 var entity = new PurchaseRequisitionItem
@@ -101,6 +118,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
         {
             if (purchaseRequisitionItem.Quantity > purchaseRequisitionItem.RequestedQuantity)
                 ModelState.AddModelError("qty", "Final quantity can not be more than requested quanity");
+
+            if (purchaseRequisitionItem.Quantity <= 0 || purchaseRequisitionItem.RequestedQuantity <= 0)
+                ModelState.AddModelError("qty", "Quantity should be above zero");
+
+            var item = db.InventoryItems.Where(x => x.ItemCode == purchaseRequisitionItem.ItmCode).FirstOrDefault();
+            if (item != null)
+            {
+                purchaseRequisitionItem.ItemName = item.Name;
+                purchaseRequisitionItem.UoM = item.UoMName;
+            }
+
+            var category = db.ItemCategorys.Where(x => x.ItemCategoryCode == purchaseRequisitionItem.CatCode).FirstOrDefault();
+            if (category != null)
+                purchaseRequisitionItem.CategoryName = category.Name;
 
             if (ModelState.IsValid)
             {

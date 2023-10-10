@@ -350,7 +350,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public JsonResult GetBidPurchase(string id)
         {
             int lotid = int.Parse(id);
-            var persons = _db.BidPurchasingSupplierses.Where(x => x.LotID == lotid).AsQueryable();
+            var failedPrequalification=_db.LotEvaluationByDocuments
+                .Where(x => x.LotID == lotid)
+                .Where(x=>x.IsAvailable)//IsAvailable is not available
+                .Select(x=>x.SupplierName);
+
+            var persons = _db.BidPurchasingSupplierses
+                .Where(x => x.LotID == lotid)
+                .Where(x => failedPrequalification.Contains(x.SupplierName)==false)
+                .AsQueryable();
+
             return Json(persons.Select(i => new
                 {
                     Supplier = i.SupplierName,

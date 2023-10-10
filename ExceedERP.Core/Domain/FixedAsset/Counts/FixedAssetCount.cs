@@ -13,10 +13,8 @@ namespace ExceedERP.Core.Domain.FixedAsset.Counts
         public int FixedAssetCountId { get; set; }
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
-        public Branch Branch { get; set; }
-        [DisplayName("Store")]
-        public string StoreCode { get; set; }
-        public InventoryStore Store { get; set; }
+        [DisplayName("Business Unit")]
+        public int ? BusinessUnitId { get; set; }        
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime CountDate { get; set; }
@@ -25,9 +23,6 @@ namespace ExceedERP.Core.Domain.FixedAsset.Counts
         public int GlFiscalYearId { get; set; }
         [Display(Name = "Period")]
         public int GLPeriodId { get; set; }
-
-        [DisplayName("Mid of Period?")]
-        public bool IsMidOfPeriod { get; set; }//mid of term count
         public bool IsClosed { get; set; }
         public List<FixedAssetCountItem> FixedAssetCountItems { get; set; }
         public List<FixedAssetCountValidation> FixedAssetCountValidations { get; set; }

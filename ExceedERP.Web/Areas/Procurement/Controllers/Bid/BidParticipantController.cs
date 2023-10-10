@@ -108,6 +108,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     _db.BidPParticipatingSupplierses.Add(entity);
                     _db.SaveChanges();
                     bidPParticipatingSuppliers.BidPParticipatingSuppliersID = entity.BidPParticipatingSuppliersID;
+                    GetParticipantItems(entity.BidPParticipatingSuppliersID);
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "lot bid participant", "Success", User.Identity.Name, $"created bid partifipant {entity.SupplierName} under record {entity.LotID} ", Modules.Procurement);
                     #endregion
@@ -209,6 +210,40 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(new[] { bidPParticipatingSuppliers }.ToDataSourceResult(request, ModelState));
         }
 
+        private void GetParticipantItems(int participantId)
+        {
+            var record = _db.BidPParticipatingSupplierses.Find(participantId);
+            var lotItems = _db.LotItems.Where(x => x.LotID == record.LotID).ToList();
+            foreach (var lotItem in lotItems)
+            {
+                var entity = new BidParticipatingSupplierItem
+                {
+                    BidPParticipatingSuppliersID = participantId,
+                    LotItemID = lotItem.LotItemsID,
+                    CatCode = lotItem.CatCode,
+                    CategoryName = lotItem.CategoryName,
+                    ItmCode = lotItem.ItmCode,
+                    ItemName = lotItem.ItemName,
+                    PartNo = lotItem.PartNo,
+                    Name = lotItem.Name,
+                    ItemSpecification = lotItem.ItemSpecification,
+                    UoM = lotItem.UoM,
+                    ItemType = lotItem.ItemType,
+                    GLTaxRateID = 0,
+                    TaxAmount = 0,
+                    Quantity = lotItem.Quantity,
+                    SubTotal=0,
+                    UnitPrice = 0,
+                    Total = 0,
+
+                    IsOutOfStock = false
+                };
+
+                _db.BidParticipatingSupplierItems.Add(entity);
+                _db.SaveChanges();
+            }
+
+        }
         public JsonResult GetBidParticipant(int id)
         {
             var participatingSupplier = _db.BidPParticipatingSupplierses.Where(x => x.LotID == id).AsQueryable();

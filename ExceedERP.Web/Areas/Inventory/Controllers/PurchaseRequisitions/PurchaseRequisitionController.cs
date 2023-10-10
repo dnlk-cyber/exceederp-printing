@@ -88,6 +88,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     ForBranchId = purchaseRequisition.ForBranchId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
@@ -116,7 +117,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                     OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
 
-                    OrgBranchName = purchaseRequisition.OrgBranchName,
+                    IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                    BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                    BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
+                OrgBranchName = purchaseRequisition.OrgBranchName,
             });
 
             return Json(result);
@@ -155,7 +160,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     var entity = new PurchaseRequisition
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                        BranchId = UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                        BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         ForBranchId = purchaseRequisition.ForBranchId,
                         OrgStructureId = UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
                         EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
@@ -180,9 +186,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                         IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                         OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+                        IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                        BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                        BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
                         DateCreated = DateTime.Now,
                         CreatedBy = User.Identity.Name,
-                        OrgBranchName = UserInformationHelper.GetEmployeeBranchId(User.Identity.Name).ToString(),
+                        OrgBranchName = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name).ToString(),
                     };
 
                     db.PurchaseRequisitions.Add(entity);
@@ -234,6 +243,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
+                        BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         ForBranchId = purchaseRequisition.ForBranchId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
@@ -259,6 +269,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                         IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                         OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+                        IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                        BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                        BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
                         CreatedBy = purchaseRequisition.CreatedBy,
                         DateCreated = purchaseRequisition.DateCreated,
                         ModifiedBy = User.Identity.Name,
@@ -290,7 +303,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
-                        OrgStructureId = purchaseRequisition.OrgStructureId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                    OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
                         ReferenceNo = purchaseRequisition.ReferenceNo,
                         ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
@@ -299,7 +313,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         PurchaseCategory = purchaseRequisition.PurchaseCategory,
                         ItemType = purchaseRequisition.ItemType,
                         ModelNo = purchaseRequisition.ModelNo,
-                    Status = purchaseRequisition.Status,
+                        Status = purchaseRequisition.Status,
                         Remark = purchaseRequisition.Remark,
                         IsVoid = purchaseRequisition.IsVoid,
                         VoidBy = purchaseRequisition.VoidBy,
@@ -309,8 +323,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                         IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
-                        OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime
-                    };
+                        OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+                         IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                    BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                    BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+                };
 
                 db.PurchaseRequisitions.Attach(entity);
                 db.PurchaseRequisitions.Remove(entity);

@@ -42,9 +42,8 @@ namespace ExceedERP.Core.Domain.Inventory
         public bool IsFixedAsset { get; set; }
         public string ParentName { get; set; }
         public string Abbreviation { get; set; }
-        public StockCostTypes CostType { get; set; }
-
-        public virtual ICollection<InventoryItem> Items { get; set; }
+        public StockCostTypes CostType { get; set; }        
+        public virtual ICollection<InventoryItem> Items { get; set; }       
         public virtual ICollection<ItemCategoryUserRole> Roles { get; set; }
     }
 
@@ -65,6 +64,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public string Name { get; set; }
         //[Required]
         public ItemTypes Type { get; set; }
+        [Required]
         [DisplayName("Unit")]
         public string UoMName { get; set; }
         public virtual UoM UoM { get; set; }
@@ -78,7 +78,6 @@ namespace ExceedERP.Core.Domain.Inventory
         public string Prefix { get; set; } //category+sub prefix
         public int ItemIndex { get; set; } //sequencial number within category
         public string SubCategoryCode { get; set; }
-
         public virtual ICollection<StoreItemAssignment> StoreItemAssignments { get; set; }
 
     }

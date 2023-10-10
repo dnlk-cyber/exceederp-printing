@@ -1,16 +1,37 @@
 ﻿namespace ExceedERP.Core.Domain.FixedAsset.Setting
 {
+
+    public enum FixedAssetSettingCategories
+    {
+        FIXED_ASSET_CONSIDERATION
+    }
+    public enum MinimumAssetValue
+    {
+        Value
+    }
+
+    public enum BooleanTypeAttributes
+    {
+        TRUE,
+        FALSE
+    }
+
     public enum AssetTransferDelivererType
     {
-        Internal, External
+        None,
+        Internal,
+        External
     }
 
     public enum AssetTransferRecipientType
     {
-        Employee, ExternalSupplier
+        None,
+        Employee,
+        ExternalSupplier
     }
     public enum TransferType
     {
+        None,
         PersonToPerson,
         StoreToStore
     }

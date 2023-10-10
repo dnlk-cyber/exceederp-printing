@@ -19,6 +19,7 @@ namespace ExceedERP.Core.Domain.FixedAsset.Requisitions
         public int FixedAssetSubCategoryID { get; set; }
         public virtual FixedAssetSubCategory FixedAssetSubCategory { get; set; }
         [Display(Name = "Name")]
+        public int FixedAssetNameID { get; set; }
         public string Name { get; set; }
         public string Size { get; set; }
         [Display(Name = "Part No.")]
@@ -29,8 +30,10 @@ namespace ExceedERP.Core.Domain.FixedAsset.Requisitions
         public string SerialNo { get; set; }
         [Display(Name = "Chasis No.")]
         public string ChasisNo { get; set; }
+
+        [Required]
         public string UoM { get; set; }
-        [Display(Name = "Requested QTY")]
+        [Display(Name = "Requested QTY"), Required]//Added required 
         public int RequestedQuantity { get; set; }
         [Display(Name = "Approved QTY")]
         public int ApprovedQuantity { get; set; }

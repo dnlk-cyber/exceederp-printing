@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.Finance
+﻿namespace ExceedERP.Core.Domain.Finance
 {
-   public enum KnownPaymentMethods
+    public enum KnownPaymentMethods
     {
         TELEBIRR
     }

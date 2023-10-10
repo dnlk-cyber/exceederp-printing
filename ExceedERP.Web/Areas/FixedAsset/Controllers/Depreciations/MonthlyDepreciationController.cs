@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.FixedAsset;
@@ -146,12 +147,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 
             if (!String.IsNullOrEmpty(periodid) && !String.IsNullOrEmpty(branchid))
             {
+                decimal minimumAssetValue = FixedAssetConfigurationHelper.GetAssetMinimumLevel();
                 int yearidd = int.Parse(fiscalyearid);
                 int periodidd = int.Parse(periodid);
                 int branchidd = int.Parse(branchid);
                 var branch = _db.Branch.Find(branchidd);
                 var glPeriod = _db.GLPeriods.Find(periodidd);
-
+              
 
                 if (glPeriod != null && branch != null)
                 {
@@ -161,6 +163,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                     var groups = _db.FixedAssetGroups.AsNoTracking().ToList();
                     var activeAssets = _db.AssetRegistrations
                         .Where(x => x.Status == RegistrationStatus.Active || x.Status==RegistrationStatus.Revalued)
+                        .Where(x => x.PurchasePrice>minimumAssetValue)//added to exclude small items 
                         .ToList();
 
                     activeAssets = activeAssets.Where(x => x.BranchId == branchidd)
@@ -184,7 +187,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                         _db.SaveChanges();
                     }
 
-                    foreach (var asset in activeAssets)
+                    var activeList = activeAssets.ToList();
+                    foreach (var asset in activeList)
                     {
                         #region skip if deprecation is done for this item and year
 

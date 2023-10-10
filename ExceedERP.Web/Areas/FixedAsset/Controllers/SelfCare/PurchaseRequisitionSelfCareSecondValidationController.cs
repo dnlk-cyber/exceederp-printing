@@ -3,10 +3,14 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
+//using ExceedERP.Core.Domain.Procurement.PR;
+//using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -88,7 +92,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     db.PurchaseRequisitionSecondValidations.Add(entity);
                     db.SaveChanges();
                     purchaseRequisitionSecondValidation.PurchaseRequisitionSecondValidationId =
-                        entity.PurchaseRequisitionSecondValidationId;
+                    entity.PurchaseRequisitionSecondValidationId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionSecondValidation", "Success", User.Identity.Name, $"created PurchaseRequisitionSecondValidation  {entity.PurchaseRequisitionSecondValidationId} PurchReq {entity.PurchaseRequisitionID}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -116,6 +123,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 db.PurchaseRequisitionSecondValidations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionSecondValidation", "Success", User.Identity.Name, $"Updated PurchaseRequisitionSecondValidation  {entity.PurchaseRequisitionSecondValidationId} PurchReq {entity.PurchaseRequisitionID}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { purchaseRequisitionSecondValidation }.ToDataSourceResult(request, ModelState));

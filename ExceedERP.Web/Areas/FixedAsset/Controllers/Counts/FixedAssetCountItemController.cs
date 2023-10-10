@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Counts;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -41,9 +42,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     AssetRegistrationId = fixedAssetCountItem.AssetRegistrationId,
                     Count = fixedAssetCountItem.Count,
                     PreviousBalance = fixedAssetCountItem.PreviousBalance,
-                    Price = fixedAssetCountItem.Price,
-                    Location = fixedAssetCountItem.Location,
-                    ItemName = fixedAssetCountItem.ItemName,
+                    Value = fixedAssetCountItem.Value,
                     Status = fixedAssetCountItem.Status
                 });
 
@@ -77,18 +76,21 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                         FixedAssetSubCategoryId = fixedAssetCountItem.FixedAssetSubCategoryId,
                         AssetRegistrationId = fixedAssetCountItem.AssetRegistrationId,
                         Count = fixedAssetCountItem.Count,
-                        Price = fixedAssetCountItem.Price,
+                        Value = fixedAssetCountItem.Value,
                         CreatedBy = User.Identity.Name,
                         Status = true,
-                        Location = fixedAssetCountItem.Location,
+                     
                         DateCreated = DateTime.Now
                     };
 
                     _db.FixedAssetCountItems.Add(entity);
                     _db.SaveChanges();
                     fixedAssetCountItem.FixedAssetCountItemId = entity.FixedAssetCountItemId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Asset Count Item", "Success", User.Identity.Name, $"created asset count item {entity.FixedAssetCountId} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                    #endregion
                 }
-              
+
             }
 
             return Json(new[] { fixedAssetCountItem }.ToDataSourceResult(request, ModelState));
@@ -111,13 +113,17 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     Count = fixedAssetCountItem.Count,
                     FixedAssetCountId = fixedAssetCountItem.FixedAssetCountId,
                     Status = true,
-                    Location = fixedAssetCountItem.Location,
+                   
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
                 };
                 _db.FixedAssetCountItems.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Count Item", "Success", User.Identity.Name, $"updated asset count item {entity.FixedAssetCountId} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetCountItem }.ToDataSourceResult(request, ModelState));
@@ -141,6 +147,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                 _db.FixedAssetCountItems.Attach(entity);
                 _db.FixedAssetCountItems.Remove(entity);
                 _db.SaveChanges();
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset count item {fixedAssetCountItem.FixedAssetCountItemId } and Tag {fixedAssetCountItem.AssetRegistrationId}");
+                #endregion
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted property count number " + fixedAssetCountItem.FixedAssetCountId + " " + fixedAssetCountItem.FixedAssetCount.Remark);
                 #endregion

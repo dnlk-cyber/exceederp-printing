@@ -4,7 +4,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -59,6 +61,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 _db.MonthlyDepreciationDistributions.Add(entity);
                 _db.SaveChanges();
                 issueDistribution.MonthlyDepreciationDistributionId = entity.MonthlyDepreciationDistributionId;
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Monthly Depreciation Distribution", "Success", User.Identity.Name, $"created Monthly Depreciation Distribution {entity.MonthlyDepreciationDistributionId} Tag {entity.MonthlyDepreciationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { issueDistribution }.ToDataSourceResult(request, ModelState));
@@ -82,6 +88,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 _db.MonthlyDepreciationDistributions.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Monthly Depreciation Distribution", "Success", User.Identity.Name, $"update Monthly Depreciation Distribution {entity.MonthlyDepreciationDistributionId} Tag {entity.MonthlyDepreciationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { issueDistribution }.ToDataSourceResult(request, ModelState));
@@ -105,6 +114,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 _db.MonthlyDepreciationDistributions.Attach(entity);
                 _db.MonthlyDepreciationDistributions.Remove(entity);
                 _db.SaveChanges();
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset registration number {issueDistribution.MonthlyDepreciationDistributionId } and Tag {issueDistribution.MonthlyDepreciationId}");
+                #endregion
             }
 
             return Json(new[] { issueDistribution }.ToDataSourceResult(request, ModelState));

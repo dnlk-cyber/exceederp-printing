@@ -1,11 +1,19 @@
-﻿using ExceedERP.Core.Domain.Inventory;
+﻿using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Helpers.HR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ExceedERP.Helpers.Inventory
 {
     public  class DistributionHelper
     {
-        private readonly StaticDistributionHelper _staticDistributionHelper = new StaticDistributionHelper();
+       // private readonly StaticDistributionHelper _staticDistributionHelper = new StaticDistributionHelper();
         private readonly DynamicDistributionHelper _dynamicDistributionHelper = new DynamicDistributionHelper();
         AccountHelper _accountHelper = new AccountHelper();
         // inventory
@@ -17,7 +25,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.UpdateGoodReceiveDistribution(record);
+                //_staticDistributionHelper.UpdateGoodReceiveDistribution(record);
             }
            
         }
@@ -29,7 +37,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.UpdateIssueDistribution(record);
+                //_staticDistributionHelper.UpdateIssueDistribution(record);
             }
 
         }
@@ -41,7 +49,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.UpdateStoreReturnDistribution(record);
+                //_staticDistributionHelper.UpdateStoreReturnDistribution(record);
             }
 
         }
@@ -53,7 +61,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.UpdateTransferSendDistribution(record);
+                //_staticDistributionHelper.UpdateTransferSendDistribution(record);
             }
         }
         public  void UpdateTransferReceiveDistribution(ItemTransferReceive record)
@@ -64,7 +72,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.UpdateTransferReceiveDistribution(record);
+                //_staticDistributionHelper.UpdateTransferReceiveDistribution(record);
             }
         }
         public void UpdateGoodSellingDistribution(GoodSellingAndLending record)
@@ -75,7 +83,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.UpdateGoodSellingDistribution(record);
+                //_staticDistributionHelper.UpdateGoodSellingDistribution(record);
             }
         }
 
@@ -84,22 +92,22 @@ namespace ExceedERP.Helpers.Inventory
         {
             if (_accountHelper.IsDynamicCoA())
             {
-                _staticDistributionHelper.GenerateIssueDistribution(inventoryperiod,start);
+                _dynamicDistributionHelper.GenerateIssueDistribution(inventoryperiod,start);
             }
             else
             {
-                _staticDistributionHelper.GenerateIssueDistribution(inventoryperiod,start);
+               // _staticDistributionHelper.GenerateIssueDistribution(inventoryperiod,start);
             }
         }
         public  void GenerateGoodReceiveDistribution(int inventoryperiod, int start)
         {
             if (_accountHelper.IsDynamicCoA())
             {
-                _staticDistributionHelper.GenerateGoodReceiveDistribution(inventoryperiod, start);
+                _dynamicDistributionHelper.GenerateGoodReceiveDistribution(inventoryperiod, start);
             }
             else
             {
-                _staticDistributionHelper.GenerateGoodReceiveDistribution(inventoryperiod, start);
+                //_staticDistributionHelper.GenerateGoodReceiveDistribution(inventoryperiod, start);
             }
         }
         public  void GenerateStoreReturnDistribution(int inventoryperiod, int start)
@@ -110,7 +118,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.GenerateStoreReturnDistribution(inventoryperiod, start);
+               // _staticDistributionHelper.GenerateStoreReturnDistribution(inventoryperiod, start);
             }
         }
         public  void GenerateTransferSendDistribution(int inventoryperiod, int start)
@@ -121,7 +129,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.GenerateTransferSendDistribution(inventoryperiod, start);
+                //_staticDistributionHelper.GenerateTransferSendDistribution(inventoryperiod, start);
             }
         }
         public  void GenerateTransferReceiveDistribution(int inventoryperiod, int start)
@@ -132,7 +140,7 @@ namespace ExceedERP.Helpers.Inventory
             }
             else
             {
-                _staticDistributionHelper.GenerateTransferReceiveDistribution(inventoryperiod, start);
+                //_staticDistributionHelper.GenerateTransferReceiveDistribution(inventoryperiod, start);
             }
         }
 

@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
@@ -27,7 +28,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
             return View();
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, InventoryConstants.PropertyInspector)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, InventoryConstants.PropertyInspector, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult GoodReceiveItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
 
@@ -39,6 +40,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 GoodReceiveId = goodReceiveItem.GoodReceiveId,
                 ItemCategoryCode = goodReceiveItem.ItemCategoryCode,
                 ItemCode = goodReceiveItem.ItemCode,
+                UOM = goodReceiveItem.UOM,
                 Quantity = goodReceiveItem.Quantity,
                 UnitPrice = goodReceiveItem.UnitPrice,
                 SubTotal = goodReceiveItem.SubTotal,
@@ -64,10 +66,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
         public ActionResult GoodReceiveItems_Create([DataSourceRequest]DataSourceRequest request, GoodReceiveItem goodReceiveItem, int id)
         {
             var tax = db.GLTaxRates.Find(goodReceiveItem.GLTaxRateID);
-            var exist = db.GoodReceiveItems.Where(x => x.GoodReceiveId == id).Where(x => x.ItemCode == goodReceiveItem.ItemCode).AsQueryable();
+            var exist = db.GoodReceiveItems
+                .Where(x => x.GoodReceiveId == id)
+                .Where(x => x.ItemCode == goodReceiveItem.ItemCode)
+                 .Where(x => x.UnitPrice == goodReceiveItem.UnitPrice)
+                .AsQueryable();
             if (exist.Any())
             {
-                ModelState.AddModelError("exist", "Item " + goodReceiveItem.ItemCode + " already exists");
+                ModelState.AddModelError("exist", "Item " + goodReceiveItem.ItemCode + " with same price already exists");
             }
             if (goodReceiveItem.UnitPrice==0)
             {
@@ -125,6 +131,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                         GoodReceiveId = id,
                         ItemCategoryCode = goodReceiveItem.ItemCategoryCode,
                         ItemCode = goodReceiveItem.ItemCode,
+                        UOM = goodReceiveItem.UOM,
                         Quantity = goodReceiveItem.Quantity,
                         UnitPrice = goodReceiveItem.UnitPrice,
                         SubTotal = goodReceiveItem.UnitPrice * goodReceiveItem.Quantity,
@@ -171,10 +178,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
             var exist = db.GoodReceiveItems.Where(x => x.GoodReceiveItemID != goodReceiveItem.GoodReceiveItemID)
                        .Where(x => x.GoodReceiveId == goodReceiveItem.GoodReceiveId)
                        .Where(x => x.ItemCode == goodReceiveItem.ItemCode)
+                       .Where(x => x.UnitPrice == goodReceiveItem.UnitPrice)
                        .AsQueryable();
             if (exist.Any())
             {
-                ModelState.AddModelError("exist", "Item " + goodReceiveItem.ItemCode + " already exists");
+                ModelState.AddModelError("exist", "Item " + goodReceiveItem.ItemCode + " with same price already exists");
             }
             if (goodReceiveItem.UnitPrice == 0)
             {
@@ -232,6 +240,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                     GoodReceiveItemID = goodReceiveItem.GoodReceiveItemID,
                     ItemCategoryCode = goodReceiveItem.ItemCategoryCode,
                     ItemCode = goodReceiveItem.ItemCode,
+                    UOM = goodReceiveItem.UOM,
                     Quantity = goodReceiveItem.Quantity,
                     UnitPrice = goodReceiveItem.UnitPrice,
                     SubTotal = goodReceiveItem.UnitPrice * goodReceiveItem.Quantity,
@@ -299,6 +308,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 {
                     GoodReceiveItemID = goodReceiveItem.GoodReceiveItemID,
                     ItemCode = goodReceiveItem.ItemCode,
+                    UOM = goodReceiveItem.UOM,
                     Quantity = goodReceiveItem.Quantity,
                     UnitPrice = goodReceiveItem.UnitPrice,
                     SubTotal = goodReceiveItem.SubTotal,

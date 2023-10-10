@@ -5,10 +5,8 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.Construction;
 using ExceedERP.Reporting.FixedAsset.ViewModel;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
-using ExceedERP.Reporting.Inventory.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
 

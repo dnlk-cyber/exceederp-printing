@@ -22,8 +22,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
     public class ApPaymentRequestController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
-        HRMInputs _inputs = new HRMInputs();
-        public static bool IsForOther { get; set; }
+      
 
         [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayablePayment)]
         public ActionResult Index()
@@ -74,6 +73,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 paymentRequests = paymentRequests.Where(x => x.IsBudgetApproved);
             }
 
+            if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
+            {
+                paymentRequests = paymentRequests.Where(x => x.IsAuthorized);
+            }
+
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
@@ -100,7 +104,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                 PONo = paymentRequest.PONo,
                 GRN = paymentRequest.GRN,
-                Type = paymentRequest.Type,
+                
                 Status =paymentRequest.Status,
                 Remark =paymentRequest.Remark,
                 IsVoid =paymentRequest.IsVoid,
@@ -127,6 +131,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 IsBudgetApproved = paymentRequest.IsBudgetApproved,
                 BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
                 BudgetApprovedTime = paymentRequest.BudgetApprovedTime,
+
+                IsAuthorized = paymentRequest.IsAuthorized,
+                AuthorizedBy = paymentRequest.AuthorizedBy,
+                AuthorizedTime = paymentRequest.AuthorizedTime,
 
                 ForwardedFrom = paymentRequest.ForwardedFrom,
                 ForwardedTo = paymentRequest.ForwardedTo,
@@ -197,7 +205,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                    Type = paymentRequest.Type,
+                    
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
                     VoidBy = paymentRequest.VoidBy,
@@ -307,7 +315,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                    Type = paymentRequest.Type,
+                   
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
                     VoidBy = paymentRequest.VoidBy,

@@ -4,7 +4,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -59,6 +61,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceiveDistributions.Add(entity);
                 db.SaveChanges();
                 fixedAssetReceiveDistribution.FixedAssetReceiveDistributionID = entity.FixedAssetReceiveDistributionID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveDistribution", "Success", User.Identity.Name, $"created FixedAssetReceiveDistribution {entity.FixedAssetReceiveDistributionID} Tag {entity.AccountCode}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { fixedAssetReceiveDistribution }.ToDataSourceResult(request, ModelState));
@@ -83,6 +89,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceiveDistributions.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveDistribution", "Success", User.Identity.Name, $"Update FixedAssetReceiveDistribution {entity.FixedAssetReceiveDistributionID} Tag {entity.AccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveDistribution }.ToDataSourceResult(request, ModelState));
@@ -107,6 +116,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceiveDistributions.Attach(entity);
                 db.FixedAssetReceiveDistributions.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveDistribution", "Success", User.Identity.Name, $"created FixedAssetReceiveDistribution {fixedAssetReceiveDistribution.FixedAssetReceiveDistributionID} Tag {fixedAssetReceiveDistribution.AccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveDistribution }.ToDataSourceResult(request, ModelState));

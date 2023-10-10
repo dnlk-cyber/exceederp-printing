@@ -80,6 +80,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
             DataSourceResult result = storereturns.ToDataSourceResult(request, storeReturn => new
             {
                 StoreReturnID = storeReturn.StoreReturnID,
+                BranchId = storeReturn.BranchId,
+                BusinessUnitId = storeReturn.BusinessUnitId,
                 Reference = storeReturn.Reference,
                 StoreCode = storeReturn.StoreCode,
                 ReturnDate = storeReturn.ReturnDate,
@@ -145,6 +147,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
             {
                 var entity = new StoreReturn
                 {
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeReturn.StoreCode),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     Reference = storeReturn.Reference,
                     StoreCode = storeReturn.StoreCode,
                     GLPeriodId = storeReturn.GLPeriodId,
@@ -220,6 +224,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 var entity = new StoreReturn
                 {
                     StoreReturnID = storeReturn.StoreReturnID,
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeReturn.StoreCode),
+                    BusinessUnitId = storeReturn.BusinessUnitId,
                     Reference = storeReturn.Reference,
                     StoreCode = storeReturn.StoreCode,
                     GLPeriodId = storeReturn.GLPeriodId,
@@ -265,6 +271,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 var entity = new StoreReturn
                 {
                     StoreReturnID = storeReturn.StoreReturnID,
+                    BranchId = storeReturn.BranchId,
+                    BusinessUnitId = storeReturn.BusinessUnitId,
                     Reference = storeReturn.Reference,
                     StoreCode = storeReturn.StoreCode,
                     ReturnDate = storeReturn.ReturnDate,
@@ -531,6 +539,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                                 GLPeriodId = record.GLPeriodId,
                                 TransactionType = BinCardTransactionTypes.Return,
                                 StatusType = BinCardTransactionStatus.Void,
+                                TransactionOrder = BinCardTransactionOrder.VoidReturn
                             };
 
                             db.BinCardLines.Add(binCardLine);

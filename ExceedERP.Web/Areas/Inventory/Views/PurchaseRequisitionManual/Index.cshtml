@@ -50,7 +50,7 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-            .Groupable()
+
 
            .Events(x => x.DataBound("onDataBoundMasterStockRequisition"))
       .DataSource(dataSource => dataSource
@@ -66,8 +66,9 @@
                   model.Field(p => p.PurchaseRequisitionID).Editable(false);
                   model.Field(p => p.StoreRequisitionID).Editable(false);
                   model.Field(p => p.OrgStructureId).Editable(false);
-                 // model.Field(p => p.EmployeeId).Editable(false);
-                 // model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
+                  // model.Field(p => p.EmployeeId).Editable(false);
+                  // model.Field(p => p.BranchId).Editable(false);
                   //model.Field(p => p.ForBranchId).Editable(false);
                   model.Field(p => p.ProcurementOfficer).Editable(false);
                   model.Field(p => p.ModelNo).Editable(false);
@@ -86,13 +87,13 @@
       {
           itemn.Add().Text("Detail").Content(
               @<text>
-               
+
                 # if (!IsOnlineApproved&&!IsSendForApproval)
-                {#                 
+                {#
                   <a onclick='return sendForApproval("#=PurchaseRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
                 <br />
                 # } #
-    
+
                  # if (IsOnlineApproved&&!IsMiddleSendForApproval)
                 {#
                 <div class="popupwrapper">
@@ -187,14 +188,22 @@
                             #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
                         </dd>
                     </dl>
+                         <hr>
 
+                     # if (IsOnlineApproved && !IsVoid)
+                     {#
+                     @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                 {
+                         <a onclick='return voidRecord("#=PurchaseRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                 }
+                     # } #
 
                 </div>
 
 
 
             </text>);
-        
+
           itemn.Add().Text("Item").Content(
               @<text>
                 @(Html.Kendo().Grid<PurchaseRequisitionItem>()
@@ -202,15 +211,17 @@
                       .Columns(columns =>
                       {
                           columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("CategorySelector").Width(200);
-                          columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemsSelector").Width(200);
+                          columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemsSelector").Width(300);
                           columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
                           columns.Bound(c => c.ModelNo).Width(100);
                           columns.Bound(c => c.SerialNo).Width(100);
                           columns.Bound(c => c.ChasisNo).Width(100);
+                          columns.Bound(c => c.UoM).Width(100);
                           columns.Bound(c => c.RequestedQuantity).Width(100);
                           columns.Bound(c => c.Quantity).Width(100);
                           columns.Bound(c => c.ItemSpecification).Width(200);
-                         
+                          columns.Bound(c => c.BudgetCode).Width(70);
+
                           columns.Command(command =>
                           {
                               command.Edit();
@@ -221,7 +232,7 @@
                       {
                           toolbar.Create();
                       })
-                      .Events(ev => ev.Edit("onItemEdit"))
+                      //.Events(ev => ev.Edit("onItemEdit"))
                       .Events(x => x.DataBound("onDataBoundLinesStockRequisition"))
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Scrollable()
@@ -237,8 +248,8 @@
                           .Model(model =>
                           {
                               model.Id(p => p.PurchaseRequisitionItemID);
-                 
 
+                              model.Field(p => p.UoM).Editable(false);
                               model.Field(p => p.CreatedBy).Editable(false);
                               model.Field(p => p.DateCreated).Editable(false);
                               model.Field(p => p.ModifiedBy).Editable(false);
@@ -294,7 +305,7 @@
                           .Model(model =>
                           {
                               model.Id(p => p.PurchaseRequisitionUserDepartmentValidationID);
-             
+
                           })
                           .Read(read => read.Action("PurchaseRequisitionUserDepartmentValidations_Read", "PurchaseRequsitionValidationUser", new { id = "#=PurchaseRequisitionID#" }))
                           .Create(create => create.Action("PurchaseRequisitionUserDepartmentValidations_Create", "PurchaseRequsitionValidationUser", new { id = "#=PurchaseRequisitionID#" }))
@@ -341,11 +352,11 @@
                                           .Read(read => read.Action("PurchaseRequisitionSecondValidations_Read", "PurchaseRequisitionSecondValidation", new { id = "#=PurchaseRequisitionID#" }))
                                           .Create(create => create.Action("PurchaseRequisitionSecondValidations_Create", "PurchaseRequisitionSecondValidation", new { id = "#=PurchaseRequisitionID#" }))
                                           .Update(update => update.Action("PurchaseRequisitionSecondValidations_Update", "PurchaseRequisitionSecondValidation"))
-                                                                                
+
                                       ).ToClientTemplate())
 
                             </text>);
-         
+
       }).ToClientTemplate())
 </script>
 
@@ -450,7 +461,7 @@
     }
 
     function filterItems() {
-    
+
         return {
             itemCategoryCode: $("#CatCode").data("kendoDropDownList").value(),
             text: $("#ItmCode").data("kendoDropDownList").filterInput.val()
@@ -556,7 +567,7 @@
         }
 
         var currentuser =@Html.Raw(Json.Encode(ViewBag.User));
-       
+
         if (currentuser !== nextApprover)
         {
             $(".k-grid-add", detailGrid).hide();
@@ -628,6 +639,27 @@
         }
     }
 
+    function voidRecord(id) {
+    var recordStatus = "";
+    var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+    if (conf === true) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Void", "PurchaseRequisitionManual", new {area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+}
+
     function onItemEdit(e) {
 
         if (e.model.isNew() === false) {
@@ -639,7 +671,7 @@
             //var dropdownlistCat = $("#ItemCategoryCode").data("kendoDropDownList");
             //dropdownlistCat.enable(false);
 
-           
+
         }
     }
 
@@ -675,7 +707,7 @@
 
     }
 
-       
+
     function OnIndexCall(elem) {
 
         var a = codeid;
@@ -689,5 +721,12 @@
         $("#ProcurementOfficer").val(code);
 
 
+    }
+
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
     }
 </script>

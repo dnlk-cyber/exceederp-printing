@@ -108,6 +108,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                                         GLPeriodId = record.GLPeriodId,
                                         TransactionType = BinCardTransactionTypes.Return,
                                         StatusType = BinCardTransactionStatus.Regular,
+                                        TransactionOrder = BinCardTransactionOrder.Return
                                     };
                                     //price if manual
                                     db.BinCardLines.Add(binCardLine);

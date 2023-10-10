@@ -85,11 +85,26 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
              List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //var xb = System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion);
             var user = userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
-            var storekeepers = db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
-            int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+           // var storekeepers = db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
 
-            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Stock && x.IsManual).Where(x => mybraches.Contains(x.OrgBranchName));
-          
+            var purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Stock && x.IsManual).ToList(); 
+            if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment))
+            {
+                if (userworkunit.Any())
+                {
+                    purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+                                                                     || x.CreatedBy == User.Identity.Name).ToList();
+                }
+                else
+                {
+                    purchaserequisitions = purchaserequisitions.Where(x => x.CreatedBy == User.Identity.Name).ToList();
+                }
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
+            {
+                purchaserequisitions = purchaserequisitions.Where(x => x.CreatedBy == User.Identity.Name).ToList();
+            }           
             
 
             var result = purchaserequisitions.ToDataSourceResult(request, purchaseRequisition => new
@@ -97,6 +112,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                 StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                 BranchId = purchaseRequisition.BranchId,
+                BusinessUnitId = purchaseRequisition.BusinessUnitId,
                 OrgStructureId = purchaseRequisition.OrgStructureId,
                 EmployeeId = purchaseRequisition.EmployeeId,
                 ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -192,8 +208,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = 0,
-                    BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
+                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     ReferenceNo = purchaseRequisition.ReferenceNo,
                     ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
@@ -272,7 +289,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(purchaseRequisition.EmployeeId),
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -329,6 +347,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
                     ReferenceNo = purchaseRequisition.ReferenceNo,

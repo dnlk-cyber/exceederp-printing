@@ -485,6 +485,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     }
                 }
                 #endregion
+                #region validate payment schedule
+                var paymentSchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id);
+                if (!paymentSchedule.Any())
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "Please add payment schedule first.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;

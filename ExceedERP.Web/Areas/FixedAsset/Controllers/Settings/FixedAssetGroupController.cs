@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -79,6 +81,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                     db.FixedAssetGroups.Add(entity);
                     db.SaveChanges();
                     fixedAssetGroup.FixedAssetGroupID = entity.FixedAssetGroupID;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetGroup", "Success", User.Identity.Name, $"created FixedAssetGroup {entity.FixedAssetGroupID} Name {entity.Name}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -124,6 +129,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                     db.FixedAssetGroups.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetGroup", "Success", User.Identity.Name, $"update FixedAssetGroup {entity.FixedAssetGroupID} Name {entity.Name}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -152,6 +160,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetGroups.Attach(entity);
                 db.FixedAssetGroups.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete FixedAssetGroup {fixedAssetGroup.FixedAssetGroupID} Name {fixedAssetGroup.Name}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetGroup }.ToDataSourceResult(request, ModelState));

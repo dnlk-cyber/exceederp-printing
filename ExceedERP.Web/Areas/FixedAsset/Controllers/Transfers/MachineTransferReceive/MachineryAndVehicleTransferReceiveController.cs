@@ -2,10 +2,13 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -142,7 +145,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                     _db.MachineryAndVehicleTransferReceives.Add(entity);
                     _db.SaveChanges();
                     machineryAndVehicleTransferReceive.MachineryAndVehicleTransferReceiveId = entity.MachineryAndVehicleTransferReceiveId;
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransferReceive", "Success", User.Identity.Name, $"created MachineryAndVehicleTransferReceive {entity.MachineryAndVehicleTransferReceiveId} OrgBranchName {entity.OrgBranchName}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { machineryAndVehicleTransferReceive }.ToDataSourceResult(request, ModelState));
@@ -196,6 +202,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                     _db.Entry(entity).State = EntityState.Modified;
                 
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransferReceive", "Success", User.Identity.Name, $"update MachineryAndVehicleTransferReceive {entity.MachineryAndVehicleTransferReceiveId} OrgBranchName {entity.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { machineryAndVehicleTransferReceive }.ToDataSourceResult(request, ModelState));
@@ -235,6 +244,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                 _db.MachineryAndVehicleTransferReceives.Attach(entity);
                 _db.MachineryAndVehicleTransferReceives.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete MachineryAndVehicleTransferReceive {machineryAndVehicleTransferReceive.MachineryAndVehicleTransferReceiveId} OrgBranchName {machineryAndVehicleTransferReceive.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { machineryAndVehicleTransferReceive }.ToDataSourceResult(request, ModelState));

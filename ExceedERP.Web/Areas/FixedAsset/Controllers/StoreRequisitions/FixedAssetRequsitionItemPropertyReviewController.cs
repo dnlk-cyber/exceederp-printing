@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -36,6 +38,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                 FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
                 Name = storeRequisitionItem.Name,
+                FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
                 PartNo = storeRequisitionItem.PartNo,
                 ModelNo = storeRequisitionItem.ModelNo,
                 SerialNo = storeRequisitionItem.SerialNo,
@@ -79,6 +82,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionId = id,
                     FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
+                    FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
                     Name = storeRequisitionItem.Name,
                     PartNo = storeRequisitionItem.PartNo,
                     ModelNo = storeRequisitionItem.ModelNo,
@@ -103,6 +107,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionItems.Add(entity);
                 _db.SaveChanges();
                 storeRequisitionItem.FixedAssetRequisitionItemId = entity.FixedAssetRequisitionItemId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionItem", "Success", User.Identity.Name, $"created FixedAssetRequisitionItem {entity.FixedAssetRequisitionItemId} FixedAssetName {entity.FixedAssetNameID}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -135,6 +142,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionItemId = storeRequisitionItem.FixedAssetRequisitionItemId,
                     FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
+                    FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
                     Name = storeRequisitionItem.Name,
                     PartNo = storeRequisitionItem.PartNo,
                     ModelNo = storeRequisitionItem.ModelNo,
@@ -159,6 +167,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionItems.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionItem", "Success", User.Identity.Name, $"updated FixedAssetRequisitionItem {entity.FixedAssetRequisitionItemId} FixedAssetName {entity.FixedAssetNameID}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -191,6 +202,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionItems.Attach(entity);
                 _db.FixedAssetRequisitionItems.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionItem", "Success", User.Identity.Name, $"Delete FixedAssetRequisitionItem {storeRequisitionItem.FixedAssetRequisitionItemId} FixedAssetName {storeRequisitionItem.FixedAssetNameID}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));

@@ -10,19 +10,21 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
 
         [Display(Name = "Fixed Asset")]
         public int AssetRegistrationId { get; set; }
+
         public virtual AssetRegistration AssetRegistration { get; set; }
 
-        [Required]
-        [Display(Name = "Belong To")]
+       
+        [Display(Name = "Belong To"), Required]
         public string LocationUser { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Received Date")]
+
+
+        [Display(Name = "Received Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
         public DateTime Date { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Return Date")]
+
+
+        [Display(Name = "Return Date"), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), DataType(DataType.Date)]
         public DateTime? ReturnDate { get; set; }
+
         public string Description { get; set; }
     }
 }

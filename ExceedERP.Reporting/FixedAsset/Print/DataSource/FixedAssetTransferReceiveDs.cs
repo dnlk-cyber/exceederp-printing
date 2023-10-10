@@ -46,10 +46,13 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 
                 headerDs.StoreKeeperName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransferReceive.CreatedBy));
 
-                headerDs.ApprovedDate = assetTransferReceive.OnlineApprovedTime.GetValueOrDefault().ToShortDateString();
-                headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransferReceive.OnlineApprovedBy));
-                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransferReceive.CreatedBy));
-                headerDs.Datecreated = assetTransferReceive.DateCreated.GetValueOrDefault().ToShortDateString();
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransferReceive.CreatedBy));
+                headerDs.PreparedDate = assetTransferReceive.DateCreated != null ? assetTransferReceive.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(assetTransferReceive.CreatedBy);
+
+                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransferReceive.OnlineApprovedBy));
+                headerDs.ApprovedDate = assetTransferReceive.OnlineApprovedTime != null ? assetTransferReceive.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(assetTransferReceive.OnlineApprovedBy);
 
                 headerDs.Remark = assetTransferReceive.Remark;
 

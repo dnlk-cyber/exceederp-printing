@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
@@ -50,6 +51,10 @@ namespace ExceedERP.Core.Domain.Procurement.Guarantee
         [Display(Name = "Expire Date")]
         public DateTime ExpireDate { get; set; }
         [Display(Name = "Validity Status")]
+        [DisplayName("Branch or Project")]
+        public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         public GuaranteeValidityStatus ValidityStatus { get; set; }
         public GuaranteeRenewalStatus RenewalStatus { get; set; }
 

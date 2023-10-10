@@ -28,6 +28,8 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
         public string ItemName { get; set; }
         public string UOM { get; set; }
         public decimal PhysicalCount { get; set; }
+        public decimal Price { get; set; }
+        public decimal Total { get; set; }
         public bool Status { get; set; }
     }
 }

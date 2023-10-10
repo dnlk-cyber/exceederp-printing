@@ -23,9 +23,14 @@
       .HtmlAttributes(new { style = "height: 550px;" })
       .ToolBar(toolbar => {
           toolbar.Create();
-          //toolbar.Excel();
+          toolbar.Excel();
           //toolbar.Pdf();
       })
+      .Excel(excel => excel
+          .FileName("Item Price Index.xlsx")
+          .Filterable(true)
+          .AllPages(true)
+      )
       .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("PriceIndex").Window(w => w.Title("Item Price Index")).Window(w => w.HtmlAttributes(new { @style = "width:1000px;" })))
           .Pageable(pageable => pageable
                             .Input(true)

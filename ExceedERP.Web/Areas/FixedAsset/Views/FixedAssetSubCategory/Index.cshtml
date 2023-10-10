@@ -29,7 +29,6 @@
                               toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
       .Pageable(pageable => pageable
           .Input(true)
@@ -48,8 +47,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      //.Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      
+      //.Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
      // .Events(x => x.DataBound("onDataBoundMaster"))
       .ClientDetailTemplateId("detailTemplate")

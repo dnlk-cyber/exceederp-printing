@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Construction;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Construction;
 
 namespace ExceedERP.Helpers.Inventory
@@ -90,6 +91,14 @@ namespace ExceedERP.Helpers.Inventory
             var record = db.InventoryStores.FirstOrDefault(x => x.StoreCode == storecode);
             if (record != null) branchid = record.BranchId;
             return branchid;
+        }
+        public static int GetStoreBusinessUnit(string storecode)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            int bizUnitId = 0;
+            var record = db.InventoryStores.FirstOrDefault(x => x.StoreCode == storecode);
+            if (record != null) bizUnitId = record.BusinessUnitId;
+            return bizUnitId;
         }
 
         public static string GetItemUom(string itemcode)
@@ -349,7 +358,7 @@ namespace ExceedERP.Helpers.Inventory
             List<InternalExternalEquipmentViewModel> views = new List<InternalExternalEquipmentViewModel>();
             InternalExternalEquipmentViewModel view = new InternalExternalEquipmentViewModel();
             var internalList = db.Fleets.Where(x => x.Status == "Active").AsQueryable();
-            var externalList = db.RentOtherSuppliers.AsQueryable();
+            //var externalList = db.RentToExternals.AsQueryable();
 
             foreach (var i in internalList)
             {
@@ -363,16 +372,16 @@ namespace ExceedERP.Helpers.Inventory
                 view.PurchaseCost = i.PurchasingCost;
                 views.Add(view);
             }
-            foreach (var i in externalList)
-            {
-                view = new InternalExternalEquipmentViewModel();
-                view.AssetNumber = i.RentOtherSuppliersID;
-                view.Name = i.Description;
-                view.Type = "External";
-                view.EquipmentTypeID = i.EquipmentTypeID;
-                // view.Year = i.ManufacturedYear;
-                views.Add(view);
-            }
+            //foreach (var i in externalList)
+            //{
+            //    view = new InternalExternalEquipmentViewModel();
+            //    //view.AssetNumber = i.RentOtherSuppliersID;
+            //    view.Name = i.Description;
+            //    view.Type = "External";
+            //    //view.EquipmentTypeID = i.EquipmentTypeID;
+            //    // view.Year = i.ManufacturedYear;
+            //    views.Add(view);
+            //}
             var list = views.ToList();
             return list;
         }

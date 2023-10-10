@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.FixedAsset;
+using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;

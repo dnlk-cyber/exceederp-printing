@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -60,6 +62,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                 _db.AccessoryReceives.Add(entity);
                 _db.SaveChanges();
                 accessoryReceive.AccessoryReceiveId = entity.AccessoryReceiveId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AccessoryReceive", "Success", User.Identity.Name, $"created AccessoryReceive {entity.AccessoryReceiveId} SerialNo {entity.SerialNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { accessoryReceive }.ToDataSourceResult(request, ModelState));
@@ -87,6 +92,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                 _db.AccessoryReceives.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AccessoryReceive", "Success", User.Identity.Name, $"updated AccessoryReceive {entity.AccessoryReceiveId} SerialNo {entity.SerialNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { accessoryReceive }.ToDataSourceResult(request, ModelState));
@@ -114,6 +122,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                 _db.AccessoryReceives.Attach(entity);
                 _db.AccessoryReceives.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete AccessoryReceive {accessoryReceive.AccessoryReceiveId} SerialNo {accessoryReceive.SerialNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { accessoryReceive }.ToDataSourceResult(request, ModelState));

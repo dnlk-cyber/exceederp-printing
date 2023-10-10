@@ -33,14 +33,23 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                
                 headerDs.Recipient = EmployeeHelper.GetEmployeeEnglishName(issue.RecipientId);
                 headerDs.StoreKeeperName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(issue.CreatedBy));
-                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(issue.CreatedBy));
-                headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(issue.OnlineApprovedBy));
+               
                 headerDs.Project = InventoryPrintHelper.BranchName(issue.BranchId);
                 headerDs.Department = InventoryPrintHelper.WorkUnitName(issue.OrgStructureId);
-                headerDs.Datecreated = issue.DateCreated.GetValueOrDefault().ToShortDateString();
+               
                 headerDs.IssueTo = issue.FixedAssetRequisition.OrgStructureId.ToString();
                 headerDs.GatePass = issue.GatePass;
                 headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(issue.FixedAssetRequisitionId);
+
+
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(issue.CreatedBy));
+                headerDs.PreparedDate = issue.DateCreated != null ? issue.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(issue.CreatedBy);
+
+                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(issue.OnlineApprovedBy));
+                headerDs.ApprovedDate = issue.OnlineApprovedTime != null ? issue.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(issue.OnlineApprovedBy);
+
             }
 
             if (organization != null)

@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     {
                         StoreCode = store,
                         InventoryPeriodId = period.InventoryPeriodId,
-                        Status = FiscalYearStatus.Close,
+                        Status = period.Status,
                         DateCreated = period.DateCreated,
                         LastModified = period.LastModified,
                         CreatedBy = User.Identity.Name,

@@ -106,6 +106,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 IsManual = issue.IsManual,
                 OrgStructureId = issue.OrgStructureId,
                 BranchId = issue.BranchId,
+                BusinessUnitId = issue.BusinessUnitId,
                 ForBranchId = issue.ForBranchId,
                 EmployeeId = issue.EmployeeId,
                 RecipientId = issue.RecipientId,
@@ -153,7 +154,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             if (issue.EmployeeId == 0)
                ModelState.AddModelError("requester","Please choose requester");
             else
-            issue.OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(issue.EmployeeId);
+            issue.OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(issue.EmployeeId);
 
             if (!String.IsNullOrEmpty(issue.Reference))
             {
@@ -206,6 +207,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IsManual = true,
                     OrgStructureId = issue.OrgStructureId,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(issue.StoreCode),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     ForBranchId = issue.ForBranchId,
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
@@ -259,7 +261,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             if (issue.EmployeeId == 0)
                 ModelState.AddModelError("requester", "Please choose requester");
             else
-                issue.OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(issue.EmployeeId);
+                issue.OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(issue.EmployeeId);
 
             if (!String.IsNullOrEmpty(issue.Reference))
             {
@@ -313,6 +315,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     ForBranchId = issue.ForBranchId,
                     StoreCode = issue.StoreCode,
                     StoreRequisitionID = issue.StoreRequisitionID,
@@ -363,6 +366,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     ForBranchId = issue.ForBranchId,
                     IssueID = issue.IssueID,
                     StoreCode = issue.StoreCode,
@@ -489,7 +493,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         public JsonResult SendForApproval(int id)
         {
             var record = _db.Issues.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.IssueItems.Count > 0)
+            var items = _db.IssueItems.Where(x => x.IssueID == id).ToList();
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -521,7 +526,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            else if (record.IssueItems.Count == 0)
+            else if (!items.Any())
             {
                 var formattedData = new
                 {
@@ -604,6 +609,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                             GLPeriodId = record.GLPeriodId,
                             TransactionType = BinCardTransactionTypes.Issue,
                             StatusType = BinCardTransactionStatus.Void,
+                            TransactionOrder = BinCardTransactionOrder.VoidIssue
                         };
                         _db.BinCardLines.Add(binCardLine);
                         //_db.SaveChanges();

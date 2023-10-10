@@ -133,13 +133,15 @@
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                           .ValuePrimitive(true)
                           .OptionLabel("Select Employee")
-                          .DataTextField("Name")
-                          .DataValueField("Code")
+                         .DataValueField("EmployeeId")
+                         .DataTextField("FullNameaEnglish")
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
-                                  .ServerFiltering(false);
+                              //dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
+                              //   .ServerFiltering(false);
+                              dataSource.Read(read => read.Action("GetAllEmployees", "DataProvider", new { area = "Inventory" }).Data("filterEmployees"))
+                              .ServerFiltering(false);
                           })
                           )
                     @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })

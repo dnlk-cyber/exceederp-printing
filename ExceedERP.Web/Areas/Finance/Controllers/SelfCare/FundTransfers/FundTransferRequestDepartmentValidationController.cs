@@ -9,7 +9,6 @@ using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;

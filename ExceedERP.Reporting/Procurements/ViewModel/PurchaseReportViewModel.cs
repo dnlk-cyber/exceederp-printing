@@ -9,6 +9,7 @@ namespace ExceedERP.Reporting.Procurements.ViewModel
    public class PurchaseReportViewModel
     {
         public string ItemCategory { get; set; }
+        public string ItemName { get; set; }
         public string RefNo { get; set; }
         public DateTime? Date { get; set; }
         public string PurchaseMethod { get; set; }

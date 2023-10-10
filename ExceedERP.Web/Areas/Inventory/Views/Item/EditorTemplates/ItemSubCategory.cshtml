@@ -6,6 +6,7 @@
                     .DataValueField("SubCategoryCode")
                     .DataTextField("Name")
                     .OptionLabel("Sub Category")
+                      .Filter("contains")
       .CascadeFrom("ItemCategoryCode")
       .DataSource(
             read => read.Read(re => re.Action("GetItemSubCategoryForItemDef", "DataProvider").Data("filterSubcategories"))

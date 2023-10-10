@@ -29,6 +29,8 @@ namespace ExceedERP.Core.Domain.Inventory
         [Required]
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [Required]
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
@@ -110,11 +112,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public string Name { get; set; }
         [Display(Name = "Work Item Code")] 
         public string WorkItemCode { get; set; }
-
-        [Display(Name = "Job No")]
         public string ProductionJobNo { get; set; }
-        [Display(Name = "Job No")]
-        public string MaintenanceJobNo { get; set; }
     }
     public class IssueValidation : VoucherValidation
     {

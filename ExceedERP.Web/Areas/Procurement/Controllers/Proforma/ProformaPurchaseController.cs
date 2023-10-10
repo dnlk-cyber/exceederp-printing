@@ -855,7 +855,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         foreach (var i in proformaItems)
                         {
                             var exist = supplierItems.Where(x => x.ItemName == i.ItemName).FirstOrDefault();
-                            if(exist!=null)
+                            if(exist==null)
                             {
                                 canProvide = false;
                                 break;
@@ -1187,10 +1187,14 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
             foreach (var result in proformaEvaluationResults)
             {
-                decimal sum = _db.ParticipatingSupplierItems
-                    .Where(x=>x.IsOutOfStock==false)
+                decimal sum = 0;
+                var participantItems = _db.ParticipatingSupplierItems
+                    .Where(x => x.IsOutOfStock == false)
                     .Where(x => x.ParticipatingSupplier.ProformaPurchaseID == proformaid)
-                    .Where(x => x.ParticipatingSupplier.SupplierName == result.SupplierName).Sum(x => x.TPrice);
+                    .Where(x => x.ParticipatingSupplier.SupplierName == result.SupplierName).ToList();
+                if(participantItems.Any())
+                    sum=participantItems.Sum(x => x.TPrice);
+
                 if ((minFinancial > 0 && sum < minFinancial) || minFinancial == 0)
                     minFinancial = sum;
             }
@@ -1212,9 +1216,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 var itemResult = _db.ProformaEvaluationItemResults
                     .Where(x => x.ProformaEvaluationResultID == result.ProformaEvaluationResultID).ToList();
 
-                result.Technical = itemResult.Average(x => x.Technical);
+                result.Technical = itemResult.Any()? itemResult.Average(x => x.Technical):0;
 
-                decimal totalprice = _db.ParticipatingSupplierItems.Where(x => x.ParticipatingSupplier.ProformaPurchaseID == proformaid)
+                decimal totalprice = _db.ParticipatingSupplierItems
+                    .Where(x => x.ParticipatingSupplier.ProformaPurchaseID == proformaid)
                     .Where(x => x.ParticipatingSupplier.SupplierName == result.SupplierName).Sum(x => x.TPrice);
 
                 if (isPassFail)

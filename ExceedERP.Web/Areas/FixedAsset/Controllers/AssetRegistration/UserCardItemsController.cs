@@ -6,7 +6,9 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.UserCard;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -21,20 +23,20 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult Index()
-            {
-                var employee = db.Person_Employee;
-                ViewData["userCard"] = employee;
+        {
+            var employee = db.Person_Employee;
+            ViewData["userCard"] = employee;
 
-                var selectedEmployee = employee.Select(
-                    i => new
-                    {
-                        Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                        Code = i.EmployeeId
-                    }).AsQueryable();
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
 
-                ViewData["personEmployees"] = selectedEmployee;
+            ViewData["personEmployees"] = selectedEmployee;
 
-                return View();
+            return View();
         }
 
 
@@ -82,25 +84,27 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult UserCardItems_Create(  [DataSourceRequest]DataSourceRequest request, UserCardItems userCardItems )
-            {
-
-            #region validations
-            if (userCardItems.Quanity <= 0)
+        public ActionResult UserCardItems_Create([DataSourceRequest]DataSourceRequest request, UserCardItems userCardItems )
+        {
+                            
+                #region validations
+                if (userCardItems.Quanity <= 0)
                 ModelState.AddModelError("qty", "Quantity should be positive number");
 
-            if (userCardItems.UnitPrice <= 0)
-                ModelState.AddModelError("price", "Price should be positive number");
+                //if (userCardItems.UnitPrice <= 0)
+                //    ModelState.AddModelError("price", "Price should be positive number");
             #endregion
-            var employee = db.Person_Employee.Find(userCardItems.EmployeeId);
+                var employee = db.Person_Employee.Find(userCardItems.EmployeeId);
                 string fullName = "";
                 if (employee != null)
                 {
                     fullName = employee.FirstNameEnglish + "_" + employee.MiddleNameEnglish + "_" + employee.LastNameEnglish;
                 }
                 var asset = db.AssetRegistrations.Find(userCardItems.AssetRegistrationId);
+
                 var exist = db.UserCardItems.Where(x => x.EmployeeId == userCardItems.EmployeeId)
                     .Where(x => x.AssetRegistrationId == userCardItems.AssetRegistrationId).ToList();
+
                 if (exist.Any())
                 {
                     ModelState.AddModelError("exist","The item is already under the selected employee user card.");
@@ -138,14 +142,21 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                         db.UserCardItems.Add(entity);
                         db.SaveChanges();
                         userCardItems.UserCardItemsID = entity.UserCardItemsID;
+
                         #region update asset location
-                        int emppid = userCardItems.EmployeeId;
-                        int branchid = UserInformationHelper.GetEmployeeBranchById(emppid);
+
+                        int branchId = UserInformationHelper.GetEmployeeBranchById(userCardItems.EmployeeId);
+
                         string user = User.Identity.Name;
-                        FixedAssetHelper.UpdateAssetLocation(asset.AssetRegistrationId, branchid, emppid, "", LocationType.Employee, user,"User Card",entity.UserCardItemsID.ToString());
-                        #endregion
-                    }
+
+                        FixedAssetHelper.UpdateLocationTracking(userCardItems, User.Identity.Name, branchId);
+
+                    #endregion
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "UserCard ", "Success", User.Identity.Name, $"created User card {entity.UserCardItemsID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                    #endregion
                 }
+            }
 
               return Json(new[] { userCardItems }.ToDataSourceResult(request, ModelState));
             }
@@ -162,12 +173,16 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 ModelState.AddModelError("price", "Price should be positive number");
             #endregion
             var employee = db.Person_Employee.Find(userCardItems.EmployeeId);
+
             string fullName = "";
+
             if (employee != null)
             {
-                fullName = employee.FirstNameEnglish + "_" + employee.MiddleNameEnglish + "_" + employee.LastNameEnglish;
+                fullName = employee.FirstNameEnglish + " " + employee.MiddleNameEnglish + " " + employee.LastNameEnglish;
             }
+
             var asset = db.AssetRegistrations.Find(userCardItems.AssetRegistrationId);
+
             var exist = db.UserCardItems.Where(x => x.UserCardItemsID != userCardItems.UserCardItemsID)
                                         .Where(x => x.EmployeeId == userCardItems.EmployeeId)
                                         .Where(x => x.AssetRegistrationId == userCardItems.AssetRegistrationId).ToList();
@@ -175,6 +190,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             {
                 ModelState.AddModelError("exist", "The item is already under the selected employee user card.");
             }
+
             if (ModelState.IsValid)
             {
                 if (asset != null)
@@ -210,13 +226,20 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
                     #region update asset location
-                    int emppid = userCardItems.EmployeeId;
-                    int branchid = UserInformationHelper.GetEmployeeBranchById(emppid);
+
+                   
+                    int branchId = UserInformationHelper.GetEmployeeBranchById(userCardItems.EmployeeId);
+
                     string user = User.Identity.Name;
-                    FixedAssetHelper.UpdateAssetLocation(asset.AssetRegistrationId, branchid, emppid, "", LocationType.Employee, user,"User Card", userCardItems.UserCardItemsID.ToString());
+
+                    FixedAssetHelper.UpdateLocationTracking(userCardItems, user, branchId);
+
+                    #endregion
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "UserCard ", "Success", User.Identity.Name, $"Updated User card {entity.UserCardItemsID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
                     #endregion
                 }
-               
+
             }
 
             return Json(new[] { userCardItems }.ToDataSourceResult(request, ModelState));
@@ -255,6 +278,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.UserCardItems.Attach(entity);
                 db.UserCardItems.Remove(entity);
                 db.SaveChanges();
+
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted UserCard {userCardItems.UserCardItemsID } and Tag {userCardItems.AssetRegistrationId}");
+                #endregion
             }
 
             return Json(new[] { userCardItems }.ToDataSourceResult(request, ModelState));

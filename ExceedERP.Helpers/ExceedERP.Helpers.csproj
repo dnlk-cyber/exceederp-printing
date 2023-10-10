@@ -163,6 +163,7 @@
     <Compile Include="Finance\ReportHelperUnused.cs" />
     <Compile Include="Finance\ReportHelperWithAllSegment.cs" />
     <Compile Include="FixedAsset\DistributionHelper.cs" />
+    <Compile Include="FixedAsset\FixedAssetConfigurationHelper.cs" />
     <Compile Include="FixedAsset\FixedAssetTransferHelper.cs" />
     <Compile Include="Fleet\FleetBindingHelper.cs" />
     <Compile Include="Fleet\FleetCostHelper.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Inventory\TransactionHelper.cs" />
     <Compile Include="Procurement\GuaranteeHelper.cs" />
     <Compile Include="Procurement\ItemHelper.cs" />
+    <Compile Include="Procurement\PaymentHelper.cs" />
     <Compile Include="Procurement\ProcurementTransactionHelper.cs" />
     <Compile Include="Production\CleanedProductsSellingPriceHelper.cs" />
     <Compile Include="Production\CostTrackingHelper.cs" />

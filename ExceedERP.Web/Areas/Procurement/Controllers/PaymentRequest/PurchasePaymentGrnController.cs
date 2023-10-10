@@ -2,12 +2,14 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Procurement;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -49,8 +51,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchasePaymentGrns_Create(int id, [DataSourceRequest]DataSourceRequest request, PurchasePaymentGrn purchasePaymentGrn)
         {
-           
-           
+            #region validation
+            var exist=_db.PurchasePaymentGrns                
+                .Where(x=>x.ItemType==purchasePaymentGrn.ItemType)
+                .Where(x => x.GrnNo == purchasePaymentGrn.GrnNo)
+                .FirstOrDefault();
+
+            if (exist != null)
+                ModelState.AddModelError("exist",$" Grn No of type {purchasePaymentGrn.ItemType.ToString()} is alreay added in purchase payment {exist.PurchasePaymentId}.");
+            #endregion
+
             if (ModelState.IsValid)
             {
                 var entity = new PurchasePaymentGrn
@@ -68,6 +78,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
                 _db.PurchasePaymentGrns.Add(entity);
                 _db.SaveChanges();
                 purchasePaymentGrn.PurchasePaymentGrnId = entity.PurchasePaymentGrnId;
+
+                PaymentHelper.UpdatePurchasePaymentTotals(entity.PurchasePaymentId);
+
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Purchase payment GRN", "Success", User.Identity.Name, $"created Purchase item {entity.GrnNo} under record {entity.PurchasePaymentGrnId} ", Modules.Procurement);
                 #endregion
@@ -77,32 +90,45 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
 
        [AuthorizeRoles(ProcurementRoles.ProcurementPaymentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PurchasePaymentGrns_Update([DataSourceRequest]DataSourceRequest request, PurchasePaymentGrn PurchasePaymentGrn)
+        public ActionResult PurchasePaymentGrns_Update([DataSourceRequest]DataSourceRequest request, PurchasePaymentGrn purchasePaymentGrn)
         {
+            #region validation
+            var exist = _db.PurchasePaymentGrns
+                .Where(x => x.PurchasePaymentGrnId != purchasePaymentGrn.PurchasePaymentGrnId)
+                .Where(x => x.ItemType == purchasePaymentGrn.ItemType)
+                .Where(x => x.GrnNo == purchasePaymentGrn.GrnNo)
+                .FirstOrDefault();
+
+            if (exist != null)
+                ModelState.AddModelError("exist", $" Grn No of type {purchasePaymentGrn.ItemType.ToString()} is alreay added in purchase payment {exist.PurchasePaymentId}.");
+            #endregion
+
             if (ModelState.IsValid)
             {
                 var entity = new PurchasePaymentGrn
                 {                               
-                    PurchasePaymentGrnId = PurchasePaymentGrn.PurchasePaymentGrnId,
-                    PurchasePaymentId = PurchasePaymentGrn.PurchasePaymentId,
-                    GrnNo = PurchasePaymentGrn.GrnNo,
-                    ItemType = PurchasePaymentGrn.ItemType,
-                    OrgBranchName = PurchasePaymentGrn.OrgBranchName,
-                    DateCreated = PurchasePaymentGrn.DateCreated,
+                    PurchasePaymentGrnId = purchasePaymentGrn.PurchasePaymentGrnId,
+                    PurchasePaymentId = purchasePaymentGrn.PurchasePaymentId,
+                    GrnNo = purchasePaymentGrn.GrnNo,
+                    ItemType = purchasePaymentGrn.ItemType,
+                    OrgBranchName = purchasePaymentGrn.OrgBranchName,
+                    DateCreated = purchasePaymentGrn.DateCreated,
                     LastModified = DateTime.Now,
-                    CreatedBy = PurchasePaymentGrn.CreatedBy,
+                    CreatedBy = purchasePaymentGrn.CreatedBy,
                     ModifiedBy = User.Identity.Name
                 };
 
                 _db.PurchasePaymentGrns.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+
+                PaymentHelper.UpdatePurchasePaymentTotals(entity.PurchasePaymentId);
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Purchase payment GRN", "Success", User.Identity.Name, $"updated Purchase item {entity.GrnNo} under record {entity.PurchasePaymentGrnId} ", Modules.Procurement);
                 #endregion
             }
 
-            return Json(new[] { PurchasePaymentGrn }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { purchasePaymentGrn }.ToDataSourceResult(request, ModelState));
         }
 
        [AuthorizeRoles(ProcurementRoles.ProcurementPaymentUser)]
@@ -128,6 +154,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
                 _db.PurchasePaymentGrns.Attach(entity);
                 _db.PurchasePaymentGrns.Remove(entity);
                 _db.SaveChanges();
+
+                PaymentHelper.UpdatePurchasePaymentTotals(PurchasePaymentGrn.PurchasePaymentId);
+
+                #region operation log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Purchase payment GRN", "Success", User.Identity.Name, $"deleted Purchase item {PurchasePaymentGrn.GrnNo} under record {entity.PurchasePaymentGrnId} ", Modules.Procurement);
+                #endregion
             }
 
             return Json(new[] { PurchasePaymentGrn }.ToDataSourceResult(request, ModelState));

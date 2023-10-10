@@ -16,14 +16,14 @@
           columns.Bound(c => c.AccumulatedAccount).EditorTemplateName("AccountCode").Width(220);
           columns.Command(command =>
           {
-              command.Edit(); 
+              command.Edit();
               command.Destroy();
           }).Width(180);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
-                              //toolbar.Excel();
-                              //// toolbar.Pdf();
+          toolbar.Create();
+          //toolbar.Excel();
+          //// toolbar.Pdf();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -34,11 +34,11 @@
           .PageSizes(true)
           .ButtonCount(20))
       .Scrollable()
-      .Selectable(selectable =>
-      {
-          selectable.Mode(GridSelectionMode.Single);
-          selectable.Type(GridSelectionType.Row);
-      })
+      //.Selectable(selectable =>
+      //{
+      //    selectable.Mode(GridSelectionMode.Single);
+      //    selectable.Type(GridSelectionType.Row);
+      //})
       .Sortable(sortable =>
       {
           sortable.SortMode(GridSortMode.SingleColumn);
@@ -49,7 +49,7 @@
           .Model(model =>
           {
               model.Id(p => p.DepreciationRuleId);
-                 
+
           })
           .Read(read => read.Action("DepretiationRules_Read", "DepreciationRule"))
           .Create(create => create.Action("DepretiationRules_Create", "DepreciationRule"))

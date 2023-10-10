@@ -45,9 +45,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         {
 
             var record = db.Issues.Find(id);
-            var issueItems = db.IssueItems.Where(x => x.IssueID == id).AsNoTracking().ToList();
+            var items = db.IssueItems.Where(x => x.IssueID == id).AsNoTracking().ToList();
             var pricesetting = db.AveragePriceSettings.FirstOrDefault();
             #region validation 
+
+            if (!items.Any())
+            {
+                string message = "The Record Does not Contain Any Item";
+                ModelState.AddModelError(String.Empty, message);
+            }
 
             if (record != null)
             {
@@ -59,7 +65,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 {
                     if (issueValidation.Status == ApprovalStatuses.Approve)
                     {
-                        foreach (var i in issueItems)
+                        foreach (var i in items)
                         {
 
                             #region stock
@@ -121,7 +127,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                        // db.SaveChanges();
                         #region update stock based on the issue
                         string storecode = record.StoreCode;
-                        foreach (var i in issueItems)
+                        foreach (var i in items)
                         {
                             if (i.IssuedQuantity > 0)
                             {
@@ -156,7 +162,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
                                     #region bin card line
 
-                                    BinCardLine binCardLine = new BinCardLine
+                                    var binCardLine = new BinCardLine
                                     {
                                         StoreItemAssignment = storeItem,
                                         ReferenceDoc = "Issue " + record.IssueID.ToString(),
@@ -174,6 +180,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                         GLPeriodId = record.GLPeriodId,
                                         TransactionType = BinCardTransactionTypes.Issue,
                                         StatusType = BinCardTransactionStatus.Regular,
+                                        TransactionOrder = BinCardTransactionOrder.Issue
 
                                     };
                                     db.BinCardLines.Add(binCardLine);
@@ -216,9 +223,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                         #region add to asset value
                         if(record.AssetRegistrationId!=null)
                         {
-                            if (issueItems.Any())
+                            if (items.Any())
                             {
-                                decimal total = issueItems.Sum(x => x.Total);
+                                decimal total = items.Sum(x => x.Total);
                                 var appreciation = new Appreciation
                                 {
                                     AppreciationDate = record.IssueDate,

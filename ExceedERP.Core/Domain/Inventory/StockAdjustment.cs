@@ -7,7 +7,7 @@ using ExceedERP.Core.Domain.Common;
 namespace ExceedERP.Core.Domain.Inventory
 {
 
-    public enum StockAdjustmentType
+    public enum AdjustmentType
     {
         Shortage,
         Overage
@@ -32,6 +32,10 @@ namespace ExceedERP.Core.Domain.Inventory
         public string Reason { get; set; }
         [Display(Name = "Period")]
         public int GLPeriodId { get; set; }
+        [DisplayName("Branch or Project")]
+        public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<StockAdjustmentItems> StockAdjustmentItems { get; set; }
         public virtual ICollection<StockAdjustmentValidation> StockAdjustmentValidation { get; set; }
         public virtual ICollection<StockAdjustmentDistribution> StockAdjustmentDistribution { get; set; }
@@ -55,13 +59,15 @@ namespace ExceedERP.Core.Domain.Inventory
         [DisplayName("Adjusted Price")]
         public decimal AdjustedPrice { get; set;  }
         [DisplayName("Stock Adjustment Type")]
-        public string StockAdjustmentType { get; set;  }
+        public AdjustmentType StockAdjustmentType { get; set;  }
         public string PriceAdjustmentType { get; set;  }
         [DisplayName("Adjusted Quantity")]
         public int AdjustedQuantity { get; set;  }
         [Display(Name = "Unit")]
         public string UOM { get; set; }
     }
+
+   
     public class StockAdjustmentValidation    : TrackUserSettingOperation
     {
         public int StockAdjustmentValidationID { get; set; }

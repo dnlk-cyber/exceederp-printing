@@ -10,12 +10,13 @@
           columns.Bound(c => c.AssetTransferId).Title("Transfer Send. No.").Width(120);
           columns.Bound(c => c.ReceiveDate).Width(130);
           columns.Bound(c => c.Remark).Width(90);
+          columns.Bound(c => c.AssetTransferConfirm).Width(90).Title("Asset Transfer Confirm?").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=AssetTransferConfirm #' " + " # if (IsOnlineApproved) { #" + "checked='checked'" + "# } #" + " />").Width(110); ;//added
           columns.Bound(c => c.Status).Width(90);
 
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FixedAssetTransferReceive").Window(w => w.Title("Asset Transfer Receive")))
       .Events(ev => ev.DetailExpand("detailExpand"))
@@ -29,7 +30,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -49,6 +50,7 @@
           .Model(model =>
           {
               model.Id(p => p.AssetTransferReceiveId);
+              model.Field(p => p.AssetTransferConfirm).Editable(false);
               model.Field(p => p.Status).Editable(false);
 
           })

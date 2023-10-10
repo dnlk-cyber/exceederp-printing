@@ -36,7 +36,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()

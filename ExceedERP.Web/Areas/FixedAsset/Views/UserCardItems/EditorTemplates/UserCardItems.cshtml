@@ -10,7 +10,7 @@
 
         <div class="col-md-3 ro1">
             <div class="form-group">
-                @Html.LabelFor(model => model.EmployeeId, "Employee ID", htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.EmployeeId, "Employee", htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                            .ValuePrimitive(true)
@@ -37,8 +37,8 @@
                           .OptionLabel("Select Asset...")
                           .DataTextField("Name")
                           .DataValueField("AssetRegistrationId")
-                          .Filter("contains")
-                           .Events(e =>
+                          .Filter(FilterType.Contains)
+                          .Events(e =>
                           {
                               e.Change("onSelectType");
                           })

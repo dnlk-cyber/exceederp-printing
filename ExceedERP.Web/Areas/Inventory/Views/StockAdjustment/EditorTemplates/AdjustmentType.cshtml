@@ -4,6 +4,6 @@
 @(
  Html.Kendo().DropDownListFor(m => m)
         .DataTextField("Text")
-        .DataValueField("Text")
-        .BindTo(EnumExtension.EnumToSelectList(typeof(StockAdjustmentType)))
+        .DataValueField("Value")
+        .BindTo(EnumExtension.EnumToSelectList(typeof(AdjustmentType)))
 )

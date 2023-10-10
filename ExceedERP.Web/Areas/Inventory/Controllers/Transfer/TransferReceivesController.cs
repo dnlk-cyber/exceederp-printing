@@ -87,6 +87,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 Remark = itemTransferReceive.Remark,
                 GLPeriodId = itemTransferReceive.GLPeriodId,
                 BranchId = itemTransferReceive.BranchId,
+                BusinessUnitId = itemTransferReceive.BusinessUnitId,
                 IsVoid = itemTransferReceive.IsVoid,
                 VoidBy = itemTransferReceive.VoidBy,
                 VoidTime = itemTransferReceive.VoidTime,
@@ -117,7 +118,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             #region validations
 
             var transfer = db.ItemTransfers.Find(itemTransferReceive.ItemTransferID);
-
+            itemTransferReceive.BusinessUnitId = transfer.BusinessUnitId;
             if (itemTransferReceive.GLPeriodId != 0)
             {
                 var inventoryPeriod = db.InventoryPeriods.Find(itemTransferReceive.GLPeriodId);
@@ -170,6 +171,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     var entity = new ItemTransferReceive
                     {
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(transfer.ToStore),
+                        BusinessUnitId=itemTransferReceive.BusinessUnitId,
                         ItemTransferID = itemTransferReceive.ItemTransferID,
                         ReceiveDate = itemTransferReceive.ReceiveDate.Date,
                         FromStore = transfer.FromStore,
@@ -218,6 +220,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             #region validations
 
             var transfer = db.ItemTransfers.Find(itemTransferReceive.ItemTransferID);
+            itemTransferReceive.BusinessUnitId = transfer.BusinessUnitId;
 
             if (itemTransferReceive.GLPeriodId != 0)
             {
@@ -271,6 +274,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     var entity = new ItemTransferReceive
                     {
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(transfer.ToStore),
+                        BusinessUnitId=itemTransferReceive.BusinessUnitId,
                         ItemTransferReceiveId = itemTransferReceive.ItemTransferReceiveId,
                         ItemTransferID = itemTransferReceive.ItemTransferID,
                         DocumentRef = itemTransferReceive.DocumentRef,
@@ -599,6 +603,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                 GLPeriodId = record.GLPeriodId,
                                 TransactionType = BinCardTransactionTypes.TransferReceive,
                                 StatusType = BinCardTransactionStatus.Void,
+                                TransactionOrder = BinCardTransactionOrder.VoidTransferReceive
                             };
                             db.BinCardLines.Add(binCardLine);
                             //db.SaveChanges();
@@ -694,18 +699,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         private void TransferredItem(ItemTransferReceive record)
         {
             var itemTransfer = db.ItemTransfers.Find(record.ItemTransferID);
+            var items = db.ItemTransferItems.Where(x => x.ItemTransferID == record.ItemTransferID).ToList();
 
             if (itemTransfer != null)
-                foreach (var item in itemTransfer.ItemTransferItem)
+                foreach (var sentItem in items)
                 {
-                    decimal totalQty = item.ShippedQuantity;
+                    decimal totalQty = sentItem.ShippedQuantity;
                     decimal receivedQty = 0;
                     decimal remainingQty = 0;
 
                     var alreadyReceivedQty = db.ItemTransferItemReceive
                         .Where(x => x.ItemTransferReceive.IsOnlineApproved)
                          .Where(x => x.ItemTransferReceive.IsVoid==false)
-                        .Where(x => x.ItemCode == item.ItemCode)
+                        .Where(x => x.ItemCode == sentItem.ItemCode)
                         .Where(x => x.ItemTransferReceive.ItemTransferID == record.ItemTransferID).ToList();
                     if (alreadyReceivedQty != null)
                         receivedQty = alreadyReceivedQty.Sum(x => x.ReceivedQuantity);
@@ -716,13 +722,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                         var itemReceive = new ItemTransferItemReceive
                         {
                             ItemTransferReceiveId = record.ItemTransferReceiveId,
-                            ItemCategoryCode = item.ItemCategoryCode,
-                            ItemCode = item.ItemCode,
-                            RequestedQuantity = item.RequestedQuantity,
-                            UPrice = item.UPrice,
-                            PartOrCodeNumber = item.PartOrCodeNumber,
-                            ShippedQuantity = item.ShippedQuantity,
-                            TPrice = item.ShippedQuantity * item.UPrice,
+                            ItemCategoryCode = sentItem.ItemCategoryCode,
+                            ItemCode = sentItem.ItemCode,
+                            RequestedQuantity = sentItem.RequestedQuantity,
+                            UPrice = sentItem.UPrice,
+                            PartOrCodeNumber = sentItem.PartOrCodeNumber,
+                            ShippedQuantity = sentItem.ShippedQuantity,
+                            TPrice = sentItem.ShippedQuantity * sentItem.UPrice,
                             ReceivedQuantity = remainingQty,
                             DateCreated = DateTime.Now,
                             CreatedBy = User.Identity.Name

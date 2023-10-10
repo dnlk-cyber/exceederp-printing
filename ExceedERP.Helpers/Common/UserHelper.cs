@@ -179,11 +179,44 @@ namespace ExceedERP.Helpers.Common
             db.SaveChanges();
         }
 
-       
+
         #endregion
 
         //new
-
+        public static string GetEmployeeUserName(int empid)
+        {
+            string userName = "";
+            string strcon = ConfigurationManager.ConnectionStrings["ExceedERPUserManagment"].ConnectionString;
+            SqlConnection con = new SqlConnection(strcon);
+            SqlDataReader myReader = null;
+            try
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand("Select UserName from  [User].AspNetUsers where EmployeeId=@empid", con);
+                cmd.Parameters.AddWithValue("@empid", empid);
+                myReader = cmd.ExecuteReader();
+                while (myReader.Read())
+                {
+                    userName = myReader[0].ToString();
+                }
+            }
+            catch (Exception exe)
+            {
+                //log
+            }
+            finally
+            {
+                if (myReader != null)
+                {
+                    myReader.Close();
+                }
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return userName;
+        }
         public static int  GetUserEmployeeId(string user)
         {
             int empid = 0;

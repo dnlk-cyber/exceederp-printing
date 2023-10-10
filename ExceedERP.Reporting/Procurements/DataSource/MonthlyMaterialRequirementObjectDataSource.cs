@@ -15,7 +15,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<MonthlyMaterialRequirementViewModel> GetMonthlyMaterialRequirementByPrice(string branch, string fisicalYear)
+        public List<MonthlyMaterialRequirementViewModel> GetMonthlyMaterialRequirementByPrice(string branch, string fisicalYear, string businessUnitId)
         {
             List<MonthlyMaterialRequirementViewModel> materialRequirementList = new List<MonthlyMaterialRequirementViewModel>();
 
@@ -33,7 +33,13 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             {
                 procurementPlans = procurementPlans.Where(x => x.BranchId.ToString() == branch).AsQueryable();
             }
-               
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                procurementPlans = procurementPlans.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+            }
+
 
             foreach (var inventoryPlan in procurementPlans)
                 {
@@ -72,7 +78,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<MonthlyMaterialRequirementViewModel> GetMonthlyMaterialRequirementByQuantity (string branch, string fisicalYear)
+        public List<MonthlyMaterialRequirementViewModel> GetMonthlyMaterialRequirementByQuantity (string branch, string fisicalYear, string businessUnitId)
         {
             List<MonthlyMaterialRequirementViewModel> materialRequirementList = new List<MonthlyMaterialRequirementViewModel>();
 
@@ -89,6 +95,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             if (!String.IsNullOrEmpty(branch))
             {
                 procurementPlans = procurementPlans.Where(x => x.BranchId.ToString() == branch).AsQueryable();
+            }
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                procurementPlans = procurementPlans.Where(x => x.BusinessUnitId == bdid).AsQueryable();
             }
 
 

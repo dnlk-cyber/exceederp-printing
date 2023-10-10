@@ -27,7 +27,7 @@
                               toolbar.Create();
       })
       .Filterable()
-      .Groupable()
+      
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -44,7 +44,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
@@ -269,6 +269,7 @@
           })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
           .Scrollable()
+           .Filterable()
           .DataSource(dataSource => dataSource
               .Ajax()
               .Model(model =>

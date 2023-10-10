@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.AP.PettyCash;
 
 namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
 {
-    public enum PaymentRequestType
-    {
-        Payment,
-        Fund_Transfer
-    }
+    
    public class PaymentRequest: DepartmentNewOperations
     {
         public int PaymentRequestId { get; set; }
@@ -45,11 +39,14 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         [Display(Name = "Employee")]
         public int EmployeeId { get; set; }
         public bool Paid { get; set; }
-        public PaymentRequestType Type { get; set; }
         //budget controll
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        //authorization
+        public bool IsAuthorized { get; set; }
+        public string AuthorizedBy { get; set; }
+        public DateTime? AuthorizedTime { get; set; }
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
@@ -58,6 +55,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         public virtual ICollection<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }
         public virtual ICollection<PaymentRequestDepartmentValidation> PaymentRequestDepartmentValidations { get; set; }       
         public virtual ICollection<PaymentRequestBudgetValidation> PaymentRequestBudgetValidations { get; set; }
+        public virtual ICollection<PaymentRequestAuthorizeValidation> PaymentRequestAuthorizeValidations { get; set; }
         public virtual ICollection<PaymentRequestValidation> PaymentRequestValidations { get; set; }
     }
 

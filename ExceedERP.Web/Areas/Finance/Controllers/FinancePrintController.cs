@@ -76,6 +76,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             return View();
         }
 
+        public ActionResult ApPaymentRequestNew(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+
         public ActionResult ArSalesOrderInvoice(int id)
         {
             ViewBag.Id = id;

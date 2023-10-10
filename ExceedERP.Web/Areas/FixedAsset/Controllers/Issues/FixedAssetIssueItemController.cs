@@ -4,7 +4,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -37,6 +39,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
 
                 Unit = fixedAssetIssueItem.Unit,
                 Name = fixedAssetIssueItem.Name,
+                ItemName = fixedAssetIssueItem.ItemName,
                 Size = fixedAssetIssueItem.Size,
                 GrnNo = fixedAssetIssueItem.GrnNo,
 
@@ -81,14 +84,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
 
 
             string storeCode = "";
+
             var fixedIssue = db.FixedAssetIssues.Find(id);
+
             storeCode = fixedIssue?.StoreCode;
+
             if (!FixedAssetHelper.IsAssetCurrentLocationStore(issueItem.AssetRegistrationId, storeCode))
             {
                 string message = "Asset with tag number " + asset?.Tag + " does not exist in store " + storeCode;
                 ModelState.AddModelError("doesnotexist", message);
 
             }
+
             if (ModelState.IsValid && asset!=null)
             {
                 var entity = new FixedAssetIssueItem
@@ -135,6 +142,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 db.FixedAssetIssueItems.Add(entity);
                 db.SaveChanges();
                 issueItem.FixedAssetIssueItemID = entity.FixedAssetIssueItemID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetIssueItem", "Success", User.Identity.Name, $"created asset issue item {entity.FixedAssetIssueItemID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { issueItem }.ToDataSourceResult(request, ModelState));
@@ -168,7 +179,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     FixedAssetCategoryId = issueItem.FixedAssetCategoryId,
                     FixedAssetSubCategoryId = issueItem.FixedAssetSubCategoryId,
                     AssetRegistrationId = issueItem.AssetRegistrationId,
-                    SendToUserCard = issueItem.SendToUserCard,
+                    SendToUserCard = true,
 
                     Unit = asset.Unit,
                     Name = asset.Name,
@@ -178,6 +189,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     RequestedQuantity = issueItem.RequestedQuantity,
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
+                    ItemName = issueItem.ItemName,
                     UnitPrice = asset.BookValue,
 
                     Total = issueItem.IssuedQuantity * asset.BookValue,
@@ -206,9 +218,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 db.FixedAssetIssueItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetIssueItem", "Success", User.Identity.Name, $"updated asset Issue item {entity.FixedAssetIssueItemID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
+
             }
-        
+
             return Json(new[] { issueItem }.ToDataSourceResult(request, ModelState));
         }
 
@@ -255,6 +270,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 db.FixedAssetIssueItems.Attach(entity);
                 db.FixedAssetIssueItems.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"deleted asset Issue item {issueItem.FixedAssetIssueItemID} Tag {issueItem.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { issueItem }.ToDataSourceResult(request, ModelState));

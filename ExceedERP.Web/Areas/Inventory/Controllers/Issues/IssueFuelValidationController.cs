@@ -44,10 +44,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         public ActionResult IssueFuelValidations_Create([DataSourceRequest]DataSourceRequest request, IssueValidation issueFuelValidation, int id)
         {
             var record = db.Issues.Find(id);
-            var issueItems = db.IssueItems.Where(x => x.IssueID == id).AsNoTracking().ToList();
+            var items = db.IssueItems.Where(x => x.IssueID == id).AsNoTracking().ToList();
             var pricesetting = db.AveragePriceSettings.FirstOrDefault();
             #region validation 
 
+            if (!items.Any())
+            {
+                string message = "The Record Does not Contain Any Item";
+                ModelState.AddModelError(String.Empty, message);
+            }
             if (record != null)
             {
                 if (record.IsOnlineApproved)
@@ -58,7 +63,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 {
                     if (issueFuelValidation.Status == ApprovalStatuses.Approve)
                     {
-                        foreach (var i in issueItems)
+                        foreach (var i in items)
                         {
 
                             #region stock
@@ -120,7 +125,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                         //db.SaveChanges();
                         #region update stock based on the issue
                         string storecode = record.StoreCode;
-                        foreach (var i in issueItems)
+                        foreach (var i in items)
                         {
                             if (i.IssuedQuantity > 0)
                             {
@@ -173,6 +178,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                         GLPeriodId = record.GLPeriodId,
                                         TransactionType = BinCardTransactionTypes.Issue,
                                         StatusType = BinCardTransactionStatus.Regular,
+                                        TransactionOrder = BinCardTransactionOrder.Issue
 
                                     };
                                     db.BinCardLines.Add(binCardLine);

@@ -93,14 +93,22 @@
             </div>
             <div class="row"></div>
 
+            @Html.LabelFor(model => model.SupplierInvoice, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @Html.Kendo().TextBoxFor(model => model.SupplierInvoice)
+                @Html.ValidationMessageFor(model => model.SupplierInvoice, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row"></div>
+
             @*<br />
 
-            <div class="col-md-6">
-                @Html.Kendo().CheckBoxFor(model => model.WithOutGRN).HtmlAttributes(new { @class = "control-label col-md-8" })
-                @Html.ValidationMessageFor(model => model.WithOutGRN, "", new { @class = "text-danger" })
-            </div>
-            <div class="row"></div>*@
-                                          
+        <div class="col-md-6">
+            @Html.Kendo().CheckBoxFor(model => model.WithOutGRN).HtmlAttributes(new { @class = "control-label col-md-8" })
+            @Html.ValidationMessageFor(model => model.WithOutGRN, "", new { @class = "text-danger" })
+        </div>
+        <div class="row"></div>*@
+
         </div>
 
         <div class="col-md-3 ro1">
@@ -115,14 +123,6 @@
             </div>
             <div class="row"></div>
 
-
-            @Html.LabelFor(model => model.SupplierInvoice, htmlAttributes: new { @class = "control-label col-md-8" })
-            <div class="col-md-6">
-                @Html.Kendo().TextBoxFor(model => model.SupplierInvoice)
-                @Html.ValidationMessageFor(model => model.SupplierInvoice, "", new { @class = "text-danger" })
-            </div>
-
-            <div class="row"></div>
 
             @Html.LabelFor(model => model.PurposeOfPayment, htmlAttributes: new { @class = "control-label col-md-8" })
             <div class="col-md-6">
@@ -152,9 +152,25 @@
             </div>
             <div class="row"></div>
 
-        </div>
-
-        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ForBranchId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ForBranchId)
+                       .ValuePrimitive(true)
+                       .OptionLabel("Select Branch...")
+                       .DataTextField("Name")
+                       .DataValueField("Code")
+                       .Filter("contains")
+                       .DataSource(dataSource =>
+                       {
+                           dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
+                               .ServerFiltering(false);
+                       })
+                     )
+                    @Html.ValidationMessageFor(model => model.ForBranchId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
 
             @Html.LabelFor(model => model.PaymentAmount, htmlAttributes: new { @class = "control-label col-md-8" })
             <div class="col-md-6">
@@ -164,20 +180,40 @@
 
             <div class="row"></div>
 
-            @*@Html.LabelFor(model => model.PenalityAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+
+        <div class="col-md-3 ro1">          
+
+            @Html.LabelFor(model => model.PenalityAmount, htmlAttributes: new { @class = "control-label col-md-8" })
         <div class="col-md-6">
             @Html.Kendo().TextBoxFor(model => model.PenalityAmount)
             @Html.ValidationMessageFor(model => model.PenalityAmount, "", new { @class = "text-danger" })
         </div>
 
-        <div class="row"></div>*@
+        <div class="row"></div>
 
-            @*<br />
-        <div class="col-md-6">
+         <br />
+        <div class="col-md-8">
             @Html.Kendo().CheckBoxFor(model => model.ApplyPenality).HtmlAttributes(new { onchange = "applyPenalty(this)" })
             @Html.ValidationMessageFor(model => model.ApplyPenality, "", new { @class = "text-danger" })
         </div>
-        <div class="row"></div>*@
+
+            @Html.LabelFor(model => model.ServiceCharge, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @Html.Kendo().TextBoxFor(model => model.ServiceCharge)@*.HtmlAttributes(new { onchange = "serviceChargeChange(this)" })*@
+                @Html.ValidationMessageFor(model => model.ServiceCharge, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row"></div>
+
+            @Html.LabelFor(model => model.OtherPayment, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @Html.Kendo().TextBoxFor(model => model.OtherPayment)
+                @Html.ValidationMessageFor(model => model.OtherPayment, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row"></div>
 
             @Html.LabelFor(model => model.NetPayable, htmlAttributes: new { @class = "control-label col-md-8" })
             <div class="col-md-6">
@@ -185,29 +221,7 @@
                 @Html.ValidationMessageFor(model => model.NetPayable, "", new { @class = "text-danger" })
             </div>
 
-            <div class="row"></div>
-
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.ForBranchId, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.ForBranchId)
-                                  .ValuePrimitive(true)
-                                  .OptionLabel("Select Branch...")
-                                  .DataTextField("Name")
-                                  .DataValueField("Code")
-                                  .Filter("contains")
-                                  .DataSource(dataSource =>
-                                  {
-                                      dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
-                                          .ServerFiltering(false);
-                                  })
-                    )
-                    @Html.ValidationMessageFor(model => model.ForBranchId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="row"></div>
-
+            <div class="row"></div>           
 
             <div class="form-group">
                 @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })

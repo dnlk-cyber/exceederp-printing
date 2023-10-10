@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Finance.Report.IFRS;
 
 namespace ExceedERP.Core.Domain.Finance.Report.GAAP
 {

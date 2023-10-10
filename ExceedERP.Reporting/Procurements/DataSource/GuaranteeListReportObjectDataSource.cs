@@ -17,7 +17,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext _db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<GuaranteeListReportViewModel> GetGuarantee(DateTime from, DateTime to,string gtype)
+        public List<GuaranteeListReportViewModel> GetGuarantee(DateTime from, DateTime to,string gtype,string businessUnitId)
         {
             List<GuaranteeListReportViewModel> guaranteeList = new List<GuaranteeListReportViewModel>();
 
@@ -27,7 +27,13 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             if (!String.IsNullOrEmpty(gtype))
                 guarantees = guarantees.Where(x => x.GuaranteeType.ToString() == gtype).ToList();
 
-                foreach (var guarantee in guarantees)
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                guarantees = guarantees.Where(x => x.BusinessUnitId == bdid).ToList();
+            }
+
+            foreach (var guarantee in guarantees)
                 {
                     var guaranteeRecord = new GuaranteeListReportViewModel
                     {
@@ -43,7 +49,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 }
             return guaranteeList;
         }
-        public List<GuaranteeListReportViewModel> GetGuaranteeRequested(DateTime from, DateTime to, string gtype)
+        public List<GuaranteeListReportViewModel> GetGuaranteeRequested(DateTime from, DateTime to, string gtype, string businessUnitId)
         {
             List<GuaranteeListReportViewModel> guaranteeList = new List<GuaranteeListReportViewModel>();
 
@@ -73,7 +79,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
             return guaranteeList;
         }
-        public List<GuaranteeListReportViewModel> GetGuaranteeRenewed(DateTime from, DateTime to, string gtype)
+        public List<GuaranteeListReportViewModel> GetGuaranteeRenewed(DateTime from, DateTime to, string gtype, string businessUnitId)
         {
             List<GuaranteeListReportViewModel> guaranteeList = new List<GuaranteeListReportViewModel>();
 
@@ -101,7 +107,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
             return guaranteeList;
         }
-        public List<GuaranteeListReportViewModel> GetGuaranteeRequestedButNotRenewd(DateTime from, DateTime to, string gtype)
+        public List<GuaranteeListReportViewModel> GetGuaranteeRequestedButNotRenewd(DateTime from, DateTime to, string gtype, string businessUnitId)
         {
             List<GuaranteeListReportViewModel> guaranteeList = new List<GuaranteeListReportViewModel>();
 

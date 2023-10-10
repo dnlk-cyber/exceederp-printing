@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
+//using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Setting
 {
@@ -11,14 +12,14 @@ namespace ExceedERP.Core.Domain.FixedAsset.Setting
         [Display(Name = "Category")]
         public string CategoryCode { get; set; }
         [Required]
-        [Display(Name = "Sub Category Name")]
+        [Display(Name = "Name")]
         public string SubCategoryName { get; set; }
         [Required]
-        [Display(Name = "Sub Category Code")]
+        [Display(Name = "Code")]
         public string SubCategoryCode { get; set; }
         [Display(Name = "Abbreviation")]
         public string Abbreviation { get; set; }
-        public bool IsGroup { get; set; }
+        public bool IsGroup { get; set; }       
         public virtual ICollection<FixedAssetSubCategoryName> Names { get; set; }
     }
     public class FixedAssetSubCategoryName : TrackUserSettingOperation

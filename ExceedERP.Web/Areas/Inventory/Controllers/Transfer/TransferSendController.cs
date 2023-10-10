@@ -93,6 +93,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 Remark = itemTransfer.Remark,
                 GLPeriodId = itemTransfer.GLPeriodId,
                 BranchId = itemTransfer.BranchId,
+                BusinessUnitId = itemTransfer.BusinessUnitId,
                 IsVoid = itemTransfer.IsVoid,
                 VoidBy = itemTransfer.VoidBy,
                 VoidTime = itemTransfer.VoidTime,
@@ -115,6 +116,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         public ActionResult ItemTransfers_Create([DataSourceRequest]DataSourceRequest request, ItemTransfer itemTransfer)
         {
             var storeRequisition = db.StoreRequisitions.Find(itemTransfer.StoreRequisitionID);
+            itemTransfer.BusinessUnitId = storeRequisition.BusinessUnitId;
             ModelState.Remove("FromStore");
             ModelState.Remove("ToStore");
             ModelState.Remove("BranchId");
@@ -169,8 +171,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     var entity = new ItemTransfer
                     {
                         StoreRequisitionID = itemTransfer.StoreRequisitionID,
-                        EmployeeId = storeRequisition.EmployeeId,
+                        EmployeeId = (int)storeRequisition.EmployeeId,
                         BranchId =ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode),
+                        BusinessUnitId=itemTransfer.BusinessUnitId,
                         TransferDate = itemTransfer.TransferDate.Date,
                         FromStore = storeRequisition.StoreCode,
                         ToStore = storeRequisition.ToStoreCode,
@@ -217,6 +220,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         {
 
             var storeRequisition = db.StoreRequisitions.Find(itemTransfer.StoreRequisitionID);
+            itemTransfer.BusinessUnitId = storeRequisition.BusinessUnitId;
+
             ModelState.Remove("FromStore");
             ModelState.Remove("ToStore");
             ModelState.Remove("BranchId");
@@ -271,8 +276,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     var entity = new ItemTransfer
                     {
                         ItemTransferID = itemTransfer.ItemTransferID,
-                        EmployeeId = storeRequisition.EmployeeId,
+                        EmployeeId = (int)storeRequisition.EmployeeId,
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode),
+                        BusinessUnitId=itemTransfer.BusinessUnitId,
                         StoreRequisitionID = itemTransfer.StoreRequisitionID,
                         TransferDate = itemTransfer.TransferDate,
                         FromStore = storeRequisition.StoreCode,
@@ -359,7 +365,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         public ActionResult SendForApproval(int id)
         {
             var record = db.ItemTransfers.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.ItemTransferItem.Count > 0)
+            var items = db.ItemTransferItems.Where(x => x.ItemTransferID == id).ToList();
+            bool zeroShippedQty = false;
+            foreach (var item in items)
+                if (item.ShippedQuantity <= 0)
+                    zeroShippedQty = true;
+
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any() &&!zeroShippedQty)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -518,6 +530,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                             GLPeriodId = record.GLPeriodId,
                             TransactionType = BinCardTransactionTypes.TransferSend,
                             StatusType = BinCardTransactionStatus.Void,
+                            TransactionOrder = BinCardTransactionOrder.VoidTransferSend
                         };
                         db.BinCardLines.Add(binCardLine);
                         //db.SaveChanges();
@@ -546,9 +559,16 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     #endregion
                 }
 
-                db.SaveChanges();
                 #endregion
 
+                #region remove unapproved transfer receives
+                var receives = db.ItemTransferReceive
+                    .Where(x => x.IsOnlineApproved == false)
+                    .Where(x => x.ItemTransferID == record.ItemTransferID)
+                    .ToList();
+                db.ItemTransferReceive.RemoveRange(receives);
+                #endregion
+                db.SaveChanges();
                 CopyRecord(id);
 
                 #region operation log
@@ -622,8 +642,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                  var entity = new ItemTransfer
                  {
                      StoreRequisitionID = record.StoreRequisitionID,
-                     TransferDate = record.TransferDate,
-                     FromStore =record.FromStore,
+                     EmployeeId = record.EmployeeId,
+                     BranchId = record.BranchId,
+                     BusinessUnitId = record.BusinessUnitId,
+                     TransferDate = record.TransferDate.Date,
+                     FromStore = record.FromStore,
                      ToStore = record.ToStore,
                      DeliveredBy = record.DeliveredBy,
                      PlateNo = record.PlateNo,
@@ -632,10 +655,18 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                      Status = Enum.GetName(typeof(OperationStatuses), 5),
                      Remark = record.Remark,
                      GLPeriodId = record.GLPeriodId,
-                    
+                     IsVoid = record.IsVoid,
+                     VoidBy = record.VoidBy,
+                     VoidTime = record.VoidTime,
+                     IsOnlineApproved = record.IsOnlineApproved,
+                     OnlineApprovedBy = record.OnlineApprovedBy,
+                     OnlineApprovedTime = record.OnlineApprovedTime,
+                     IsOnlineTransferred = record.IsOnlineTransferred,
+                     IsOnlineTransferredBy = record.IsOnlineTransferredBy,
+                     OnlineTransferredTime = record.OnlineTransferredTime,
                      DocumentRef = record.DocumentRef,
                      CreatedBy = User.Identity.Name,
-                     DateCreated = DateTime.Now,
+                     DateCreated = DateTime.Now,                     
                      OrgBranchName = record.OrgBranchName
                  };
 

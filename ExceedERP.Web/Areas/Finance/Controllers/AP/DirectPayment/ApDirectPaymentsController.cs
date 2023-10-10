@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Reporting.Finance.DataSource.Print;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -50,9 +51,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 		[AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayablePayment)]
 		public ActionResult APDirectPayments_Read([DataSourceRequest]DataSourceRequest request, bool isNotTransffered)
 		{
-			List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+			List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+			IQueryable<ApDirectPayment> apDirectpayments = _db.ApDirectPayments
+				 .Where(x => mybraches.Contains(x.CreatedAtBranchId));
 
-			IQueryable<ApDirectPayment> apDirectpayments = _db.ApDirectPayments.Where(x => mybraches.Contains(x.OrgBranchName));
+			if (GlobalHelper.IsMultipleBusinessUnit())
+			{
+				List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+				apDirectpayments = apDirectpayments.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+			}
+
+
 			if (isNotTransffered)
 			{
 				List<int> transfferableList = FinanceTransferHelper.GetApDirectPaymentTranferableList();
@@ -813,6 +822,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				return Json(formattedData, JsonRequestBehavior.AllowGet);
 			}
 
+			var lines = _db.ApDirectPaymentLines.Where(x => x.ApDirectPaymentId == id);
+			if (!lines.Any())
+			{
+				errMsg = "Please add lines first";
+				var formattedData = new
+				{
+					Message = errMsg,
+					Status = "NOT_OK"
+				};
+				return Json(formattedData, JsonRequestBehavior.AllowGet);
+			}
+
 			if (record != null && !record.IsOnlineApproved && !record.IsSendForApproval)
 			{
 				record.Status = Enum.GetName(typeof(OperationStatuses), 4);
@@ -1039,6 +1060,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						EffectiveDate = record.PaymentDate.Date,
 						OrgBranchName = record.OrgBranchName,
 						Status = "Approved",
+						BranchId = record.CreatedAtBranchId,
+						BusinessUnitId = record.CreatedAtBusinessUnitId,
 						Remark = record.PaymentReference,
 						PaymentReference = record.PaymentReference,
 						ReferenceDoc = record.Remark,
@@ -1125,7 +1148,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				return Json(formattedData, JsonRequestBehavior.AllowGet);
 			}
 
-			if (record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.ApDirectPaymentLines.Count > 0)
+			if (record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred )
 			{
 				record.Status = Enum.GetName(typeof(OperationStatuses), 10);
 				record.IsOnlineApproved = false;
@@ -1137,20 +1160,67 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				record.VoidTime = DateTime.Now;
 				_db.ApDirectPayments.Attach(record);
 				_db.Entry(record).State = EntityState.Modified;
-				_db.SaveChanges();
+				//_db.SaveChanges();
 
 				#region update payment request
+			 
 
-				int requestid = int.Parse(record.SourceId);
-				var payment = _db.ForeignPurchaseCosts.Find(requestid);
-				if (payment != null)
+				int did = int.Parse(record.SourceId.Split('_')[1]);
+				string sourceType = record.SourceId.Split('_')[0];
+				switch (sourceType)
 				{
-					payment.Paid = false;
-					_db.Entry(payment).State = EntityState.Modified;
+					case "LC":
+						var purchaseCost = _db.ForeignPurchaseCosts.Find(did);
+						if (purchaseCost != null)
+						{
+							purchaseCost.Paid = false;
+							_db.ForeignPurchaseCosts.Attach(purchaseCost);
+							_db.Entry(purchaseCost).State = EntityState.Modified;
+
+						}
+						break;
+					case "PAYMENT-REQUEST":
+						var paymentRequest = _db.PaymentRequests.Find(did);
+						if (paymentRequest != null)
+						{
+							paymentRequest.Paid = false;
+							_db.PaymentRequests.Attach(paymentRequest);
+							_db.Entry(paymentRequest).State = EntityState.Modified;
+						}
+						break;
+					case "TRAVEL-ORDER":
+						var travelOrder = _db.ApTravelOrders.Find(did);
+						if (travelOrder != null)
+						{
+							travelOrder.Paid = false;
+							_db.ApTravelOrders.Attach(travelOrder);
+							_db.Entry(travelOrder).State = EntityState.Modified;
+						}
+						break;
+					case "EXPENSE-CLAIM":
+						var claim = _db.ApTravelExpenseClaims.Find(did);
+						if (claim != null)
+						{
+							claim.Paid = false;
+							_db.ApTravelExpenseClaims.Attach(claim);
+							_db.Entry(claim).State = EntityState.Modified;
+						}
+						break;
+					case "FUND-TRANSFER":
+						var fund = _db.FundTransfers.Find(did);
+						if (fund != null)
+						{
+							fund.Paid = false;
+							_db.FundTransfers.Attach(fund);
+							_db.Entry(fund).State = EntityState.Modified;
+						}
+						break;
 				}
 
-				_db.SaveChanges();
 				#endregion
+
+				_db.SaveChanges();
+				
 				//copy
 				//CopyRecord(id);
 
@@ -1166,15 +1236,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				return Json(formattedData, JsonRequestBehavior.AllowGet);
 			}
 
-			if (record.ApDirectPaymentLines.Count == 0)
-			{
-				var formattedData = new
-				{
-					Message = "Please add lines and try again.",
-					Status = "NOT_OK"
-				};
-				return Json(formattedData, JsonRequestBehavior.AllowGet);
-			}
+			
 
 			if (record.IsVoid)
 			{

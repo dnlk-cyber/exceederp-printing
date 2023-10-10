@@ -13,7 +13,7 @@
           columns.Bound(c => c.ItemTransferID).Title("Transfer No.").Width(120).ClientTemplate("#=appendZeros(ItemTransferID)#");
           columns.Bound(c => c.StoreRequisitionID).Title("Req. No.").EditorTemplateName("TransferStoreRequistion").Width(110).ClientTemplate("#=appendZeros(StoreRequisitionID)#"); ;
           columns.Bound(c => c.DocumentRef).Title("Doc Ref No.").Width(110);
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(110).Title("Period").EditorTemplateName("InventoryPeriodSelector"); 
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(110).Title("Period").EditorTemplateName("InventoryPeriodSelector");
           columns.Bound(c => c.TransferDate).Title("Transfer Date").Width(130);
           columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120);
           columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(120);
@@ -26,11 +26,11 @@
           columns.Bound(c => c.Status).Width(90);
           columns.Bound(c => c.BranchId).Hidden().Width(100);
 
-          
-           
+
+
           columns.Command(command => {
-                                         command.Edit();
-                                         command.Destroy(); 
+              command.Edit();
+              command.Destroy();
           }).Width(180);
       })
       .ToolBar(toolbar =>
@@ -49,7 +49,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -74,13 +74,14 @@
               model.Field(p => p.ToStore).Editable(false);
               model.Field(p => p.Status).Editable(false);
               model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.EmployeeId).Editable(false);
 
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
               model.Field(p => p.ModifiedBy).Editable(false);
               model.Field(p => p.LastModified).Editable(false);
-                  
+
           })
           .Read(read => read.Action("ItemTransfers_Read", "TransferSend"))
           .Create(create => create.Action("ItemTransfers_Create", "TransferSend"))
@@ -195,11 +196,11 @@
                                             {
                                     <a onclick='return voidRecord("#=ItemTransferID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                             }
-                                /**/
+                              
 
                                 # } #
 
-                                <hr>
+                                @*<hr>
                                 <p>for old record</p>
                                 # if (IsOnlineApproved&&IsVoid&&Status=="ReceiverVoid")
                                 {#
@@ -207,9 +208,9 @@
                                             {
                                     <a onclick='return voidRecord("#=ItemTransferID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                             }
-                                /**/
+                                
 
-                                # } #
+                                # } #*@
 
                             </text>
                                             );
@@ -333,6 +334,7 @@
                   })
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                   .Scrollable()
+                   .Filterable()
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model =>

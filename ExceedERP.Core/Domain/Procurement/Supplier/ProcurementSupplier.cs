@@ -24,6 +24,7 @@ namespace ExceedERP.Core.Domain.Procurement.Supplier
         public string SupplierId { get; set; }
         [Display(Name = "Trade License")]
         public string TradeLicense { get; set; }
+        [Required]
         [Display(Name = "TIN")]
         public string TIN { get; set; }
         public string Address { get; set; }

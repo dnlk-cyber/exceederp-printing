@@ -31,15 +31,22 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 headerDs.ReturnNo = InventoryPrintHelper.GetId(assetReturn.FixedAssetReturnId);
                 headerDs.StoreCode = assetReturn.StoreCode+"-"+InventoryPrintHelper.StoreName(assetReturn.StoreCode);
                 headerDs.ReturnDate = assetReturn.ReturnDate.ToShortDateString();
-               
-              
+                headerDs.ReturnedBy = EmployeeHelper.GetEmployeeEnglishName(assetReturn.EmployeeId);
+
                 headerDs.StoreKeeperName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReturn.CreatedBy));
-                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReturn.CreatedBy));
-                headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReturn.OnlineApprovedBy));
+
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReturn.CreatedBy));
+                headerDs.PreparedDate = assetReturn.DateCreated != null ? assetReturn.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(assetReturn.CreatedBy);
+
+                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReturn.OnlineApprovedBy));
+                headerDs.ApprovedDate = assetReturn.OnlineApprovedTime != null ? assetReturn.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(assetReturn.OnlineApprovedBy);
+
                 headerDs.BranchOrProject = InventoryPrintHelper.BranchName(assetReturn.BranchId);
                 headerDs.Department = InventoryPrintHelper.WorkUnitName(assetReturn.OrgStructureId);
-                headerDs.Datecreated = assetReturn.DateCreated.GetValueOrDefault().ToShortDateString();
-                headerDs.ReturnedBy = EmployeeHelper.GetEmployeeEnglishName(assetReturn.EmployeeId);
+               
+               
 
 
             }

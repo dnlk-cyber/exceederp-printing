@@ -37,8 +37,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 UnitPrice = storeReturnItems.UnitPrice,
                 Quantity = storeReturnItems.Quantity,
                 StoreReturnID = storeReturnItems.StoreReturnID,
-                ProductionJobNo = storeReturnItems.ProductionJobNo,
-                MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
                
             });
 
@@ -51,18 +49,27 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
         public ActionResult StoreReturnItems_Create([DataSourceRequest]DataSourceRequest request, StoreReturnItems storeReturnItems , int id )
          {
             var record = db.StoreReturns.Find(id);
-            var exist =
-              db.StoreReturnItemss.Where(x => x.StoreReturnID == id)
+            var exist =db.StoreReturnItemss.Where(x => x.StoreReturnID == id)
                   .Where(x => x.ItemCode == storeReturnItems.ItemCode)
                   .ToList();
              if (exist.Any())
                 ModelState.AddModelError("exist", "Item " + storeReturnItems.ItemCode + " already exists");
 
+            if (storeReturnItems.Quantity <= 0)
+                ModelState.AddModelError("quantity", "Item qualtity should be positive number.");
+
             if (record != null)
              {
                  decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeReturnItems.ItemCode, record.StoreCode);
-                 if (avgPrice == 0&&storeReturnItems.UnitPrice==0)
-                    ModelState.AddModelError("", "Please enter price,since there is no price set in the system.");
+                if (avgPrice == 0)
+                {
+                    if(storeReturnItems.UnitPrice == 0)
+                    ModelState.AddModelError("price", "Please enter price,since there is no price set in the system.");
+                }
+                else
+                {
+                    storeReturnItems.UnitPrice = avgPrice;
+                }
              }
 
             if (ModelState.IsValid)
@@ -76,9 +83,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Quantity = storeReturnItems.Quantity,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
-                    ProductionJobNo = storeReturnItems.ProductionJobNo,
-                    MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
-
+                    
                 };
 
                 db.StoreReturnItemss.Add(entity);
@@ -101,20 +106,30 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
         public ActionResult StoreReturnItems_Update([DataSourceRequest]DataSourceRequest request, StoreReturnItems storeReturnItems)
         {
             var record = db.StoreReturns.Find(storeReturnItems.StoreReturnID);
-            var exist =
-             db.StoreReturnItemss.Where(x => x.StoreReturnID == storeReturnItems.StoreReturnID)
+
+            var exist =db.StoreReturnItemss.Where(x => x.StoreReturnID == storeReturnItems.StoreReturnID)
                     .Where(x => x.StoreReturnItemsID != storeReturnItems.StoreReturnItemsID)
                  .Where(x => x.ItemCode == storeReturnItems.ItemCode)
                  .ToList();
+
             if (exist.Any())
-            {
                 ModelState.AddModelError("exist", "Item " + storeReturnItems.ItemCode + " already exists");
-            }
+
+            if (storeReturnItems.Quantity <= 0)
+                ModelState.AddModelError("quantity", "Item qualtity should be positive number.");
+
             if (record != null)
             {
                 decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeReturnItems.ItemCode, record.StoreCode);
-                if (avgPrice == 0 && storeReturnItems.UnitPrice == 0)
-                    ModelState.AddModelError("", "Please enter price,since there is no price set in the system.");
+                if (avgPrice == 0)
+                {
+                    if (storeReturnItems.UnitPrice == 0)
+                        ModelState.AddModelError("price", "Please enter price,since there is no price set in the system.");
+                }
+                else
+                {
+                    storeReturnItems.UnitPrice = avgPrice;
+                }
             }
             if (ModelState.IsValid)
             {
@@ -128,8 +143,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Quantity = storeReturnItems.Quantity,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
-                    ProductionJobNo = storeReturnItems.ProductionJobNo,
-                    MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
                 };
 
                 db.StoreReturnItemss.Attach(entity);
@@ -164,8 +177,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                      Quantity = storeReturnItems.Quantity,
                      ModifiedBy = User.Identity.Name,
                      LastModified = DateTime.Now,
-                     ProductionJobNo = storeReturnItems.ProductionJobNo,
-                     MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
                  };
 
                  db.StoreReturnItemss.Attach(entity);

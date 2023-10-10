@@ -27,6 +27,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
         {
             var branches = _db.Branch;
             ViewData["Branches"] = branches;
+
+            var businessUnits = _db.BusinessUnits;
+            ViewData["businessUnits"] = businessUnits;
         }
 
         public ActionResult PaymentMethods_Read([DataSourceRequest]DataSourceRequest request)
@@ -36,6 +39,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                 PaymentMethodID = paymentMethod.PaymentMethodID,
                 Method = paymentMethod.Method,
                 BranchId = paymentMethod.BranchId,
+                BusinessUnitId = paymentMethod.BusinessUnitId,
                 ApplyToAr = paymentMethod.ApplyToAr,
                 ArAccountCode = paymentMethod.ArAccountCode,
                 ApplyToAp = paymentMethod.ApplyToAp,
@@ -60,7 +64,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                 #region validation
 
                 bool valid = true;
-                var exists = _db.PaymentMethods.Where(x => x.PaymentMethodID != paymentMethod.PaymentMethodID).Where(x => x.Method.ToUpper().Equals(paymentMethod.Method.ToUpper())).ToList();
+                var exists = _db.PaymentMethods
+                    .Where(x => x.PaymentMethodID != paymentMethod.PaymentMethodID)
+                    .Where(x => x.Method.ToUpper().Equals(paymentMethod.Method.ToUpper())).ToList();
 
                 if (exists.Any())
                 {
@@ -76,6 +82,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                     {
                         Method = paymentMethod.Method,
                         BranchId = paymentMethod.BranchId,
+                        BusinessUnitId = paymentMethod.BusinessUnitId,
                         ApplyToAr = paymentMethod.ApplyToAr,
                         ArAccountCode = paymentMethod.ArAccountCode,
                         ApplyToAp = paymentMethod.ApplyToAp,
@@ -127,6 +134,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                         PaymentMethodID = paymentMethod.PaymentMethodID,
                         Method = paymentMethod.Method,
                         BranchId = paymentMethod.BranchId,
+                        BusinessUnitId = paymentMethod.BusinessUnitId,
                         ApplyToAr = paymentMethod.ApplyToAr,
                         ArAccountCode = paymentMethod.ArAccountCode,
                         ApplyToAp = paymentMethod.ApplyToAp,
@@ -163,6 +171,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                     PaymentMethodID = paymentMethod.PaymentMethodID,
                     Method = paymentMethod.Method,
                     BranchId = paymentMethod.BranchId,
+                    BusinessUnitId = paymentMethod.BusinessUnitId,
                     ApplyToAr = paymentMethod.ApplyToAr,
                     ArAccountCode = paymentMethod.ArAccountCode,
                     ApplyToAp = paymentMethod.ApplyToAp,

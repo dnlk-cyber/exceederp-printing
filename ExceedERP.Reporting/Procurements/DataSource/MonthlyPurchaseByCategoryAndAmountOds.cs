@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Procurements.ViewModel;
 
@@ -17,7 +18,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext _db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<MonthlyPurchaseByCategoryAndAmountReportViewModel> GetPurchases(DateTime from,DateTime to,string type, string purchaser, string branchid)
+        public List<MonthlyPurchaseByCategoryAndAmountReportViewModel> GetPurchases(DateTime from,DateTime to,string type, string purchaser, string branchid, string businessUnitId)
         {
             List< MonthlyPurchaseByCategoryAndAmountReportViewModel > monthlyPurchaseList = new List<MonthlyPurchaseByCategoryAndAmountReportViewModel>();
 
@@ -46,6 +47,14 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                 tenders = tenders
                     .Where(x => x.BranchId == did).AsQueryable();
+            }
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                manualPurchaseOrders = manualPurchaseOrders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+                purchaseOrders = purchaseOrders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+                tenders = tenders.Where(x => x.BusinessUnitId == bdid).AsQueryable();
             }
 
             if (!String.IsNullOrWhiteSpace(purchaser))

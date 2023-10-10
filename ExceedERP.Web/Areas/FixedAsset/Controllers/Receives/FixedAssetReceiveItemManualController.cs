@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -35,6 +37,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 FixedAssetReceiveItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
                 FixedAssetReceiveId = fixedAssetReceiveItem.FixedAssetReceiveId,
                 Name = fixedAssetReceiveItem.Name,
+                FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                 TagNo = fixedAssetReceiveItem.TagNo,
                 FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                 FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
@@ -92,8 +95,16 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 ModelState.AddModelError("zero", "Unit Price can't be zero.");
             if (fixedAssetReceiveItem.GLTaxRateID == 0)
                 ModelState.AddModelError("zero", "Please select tax.");
+            if (fixedAssetReceiveItem.FixedAssetNameID == 0)
+                ModelState.AddModelError("zero", "Please select Name.");
+
+            var tagExisit = db.FixedAssetReceiveItems.Where(x => x.FixedAssetReceiveItemID != fixedAssetReceiveItem.FixedAssetReceiveItemID).Where(x => x.TagNo == fixedAssetReceiveItem.TagNo).FirstOrDefault();
+            if (tagExisit != null)
+                ModelState.AddModelError("exisit", "The tag number already taken");
 
             var tax = db.GLTaxRates.Find(fixedAssetReceiveItem.GLTaxRateID);
+
+            
             if (ModelState.IsValid)
             {
                 if (tax != null)
@@ -105,7 +116,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                         var entity = new FixedAssetReceiveItem
                         {
                             FixedAssetReceiveId = id,
-                            Name = fixedAssetReceiveItem.Name,
+                            FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
+                            Name = db.FixedAssetSubCategoryNames.Find(fixedAssetReceiveItem.FixedAssetNameID)?.Name,
                             TagNo = fixedAssetReceiveItem.TagNo,
                             FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                             FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
@@ -154,6 +166,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                         db.FixedAssetReceiveItems.Add(entity);
                         db.SaveChanges();
                         fixedAssetReceiveItem.FixedAssetReceiveItemID = entity.FixedAssetReceiveItemID;
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"created FixedAssetReceiveItem {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
+                        #endregion
+
                         #endregion
                     }
                     else
@@ -165,7 +181,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                             var entity = new FixedAssetReceiveItem
                             {
                                 FixedAssetReceiveId = id,
-                                Name = fixedAssetReceiveItem.Name,
+                                FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
+                                Name = db.FixedAssetSubCategoryNames.Find(fixedAssetReceiveItem.FixedAssetNameID)?.Name,
                                 TagNo = fixedAssetReceiveItem.TagNo,
                                 FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                                 FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
@@ -214,6 +231,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                             db.FixedAssetReceiveItems.Add(entity);
                             db.SaveChanges();
                             fixedAssetReceiveItem.FixedAssetReceiveItemID = entity.FixedAssetReceiveItemID;
+                            #region operation log
+                            UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"created FixedAssetReceiveItem {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
+                            #endregion
                         }
                         #endregion
 
@@ -241,20 +261,29 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 ModelState.AddModelError("zero", "Unit Price can't be zero.");
             if (fixedAssetReceiveItem.GLTaxRateID == 0)
                 ModelState.AddModelError("zero", "Please select tax.");
+            if (fixedAssetReceiveItem.FixedAssetNameID == 0)
+                ModelState.AddModelError("zero", "Please select Name.");
 
             var subCat = db.FixedAssetSubCategories.Find(fixedAssetReceiveItem.FixedAssetSubCategoryID);
             if (!subCat.IsGroup&& fixedAssetReceiveItem.Quantity > 1)
                 ModelState.AddModelError("qty", "For non group items quantity should be one");
 
+            var tagExisit = db.FixedAssetReceiveItems.Where(x => x.FixedAssetReceiveItemID != fixedAssetReceiveItem.FixedAssetReceiveItemID).Where(x => x.TagNo == fixedAssetReceiveItem.TagNo).FirstOrDefault();
+            if (tagExisit != null)
+                ModelState.AddModelError("exisit", "The tag number already taken");
+
 
             var tax = db.GLTaxRates.Find(fixedAssetReceiveItem.GLTaxRateID);
+
+           
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetReceiveItem
                 {
                     FixedAssetReceiveId = fixedAssetReceiveItem.FixedAssetReceiveId,
                     FixedAssetReceiveItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
-                    Name = fixedAssetReceiveItem.Name,
+                    FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
+                    Name = db.FixedAssetSubCategoryNames.Find(fixedAssetReceiveItem.FixedAssetNameID)?.Name,
                     TagNo = fixedAssetReceiveItem.TagNo,
                     FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
@@ -305,6 +334,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 var record = db.FixedAssetReceives.Find(id);
                 if (record != null)
                     _distributionHelper.UpdateGoodReceiveDistribution(record);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"updated FixedAssetReceiveItem {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
+                #endregion
 
             }
 
@@ -322,6 +354,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 {
                     FixedAssetReceiveItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
                     Name = fixedAssetReceiveItem.Name,
+                    FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                     FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
                     Quantity = fixedAssetReceiveItem.Quantity,
@@ -369,6 +402,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 var record = db.FixedAssetReceives.Find(fixedAssetReceiveItem.FixedAssetReceiveId);
                 if (record != null)
                     _distributionHelper.UpdateGoodReceiveDistribution(record);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted FixedAssetReceiveItem {fixedAssetReceiveItem.FixedAssetReceiveItemID} Tag {fixedAssetReceiveItem.TagNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceiveItem }.ToDataSourceResult(request, ModelState));

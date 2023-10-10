@@ -16,12 +16,14 @@ namespace ExceedERP.Core.Domain.Inventory
         [Required]
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [Required]
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
         [Required]
         [Display(Name = "Requester Name")]
-        public int EmployeeId { get; set; }
+        public int  EmployeeId { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Request Date")]
@@ -47,12 +49,19 @@ namespace ExceedERP.Core.Domain.Inventory
         
         [Display(Name = "Model No.")]
         public string ModelNo { get; set; }
+       
+        [DisplayName("Is For Maintenance")]
+        public bool IsForMaintenance { get; set; }
         [Display(Name = "Job Order No.")]
         public string JobOrderNo { get; set; }
         [Display(Name = "Plate No")]
         public string PlateNo { get; set; }
+        [Display(Name = "External ?")]
+        public bool IsExternalDriver { get; set; }
+        [Display(Name = "External Driver")]
+        public string ExternalDriver { get; set; }
 
-        
+
     }
 
     public class StoreRequisitionItemBase : TrackUserSettingOperation

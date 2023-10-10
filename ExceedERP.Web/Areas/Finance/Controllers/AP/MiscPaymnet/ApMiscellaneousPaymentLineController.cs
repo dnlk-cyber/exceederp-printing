@@ -70,8 +70,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             #endregion
             #region withheld tax
 
-            apMiscellaneousPaymentLine.WithholdTaxAmount = apMiscellaneousPaymentLine.WithholdTax ? apMiscellaneousPaymentLine.TaxAmount : 0;
-
+            if (apMiscellaneousPaymentLine.WithholdTax)
+            {
+                //get the percentage
+                var varwitholding = _db.GLVatWithholdings.FirstOrDefault();
+                if (varwitholding != null)
+                {
+                    apMiscellaneousPaymentLine.WithholdTaxAmount = apMiscellaneousPaymentLine.TaxAmount * (varwitholding.WithholdPercent / 100);
+                }
+                else
+                {
+                    apMiscellaneousPaymentLine.WithholdTaxAmount = apMiscellaneousPaymentLine.TaxAmount;
+                }
+            }
+            else
+            {
+                apMiscellaneousPaymentLine.WithholdTaxAmount = 0;
+            }
             #endregion
             #region net
             apMiscellaneousPaymentLine.NetPayable = apMiscellaneousPaymentLine.Amount
@@ -140,13 +155,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             if (apMiscellaneousPaymentLine.WithholdTax)
             {
-                apMiscellaneousPaymentLine.WithholdTaxAmount = apMiscellaneousPaymentLine.TaxAmount;
+                //get the percentage
+                var varwitholding = _db.GLVatWithholdings.FirstOrDefault();
+                if (varwitholding != null)
+                {
+                    apMiscellaneousPaymentLine.WithholdTaxAmount = apMiscellaneousPaymentLine.TaxAmount * (varwitholding.WithholdPercent / 100);
+                }
+                else
+                {
+                    apMiscellaneousPaymentLine.WithholdTaxAmount = apMiscellaneousPaymentLine.TaxAmount;
+                }
             }
             else
             {
                 apMiscellaneousPaymentLine.WithholdTaxAmount = 0;
             }
-
             #endregion
             #region net
             apMiscellaneousPaymentLine.NetPayable = apMiscellaneousPaymentLine.Amount

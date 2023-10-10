@@ -1,5 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 
 namespace ExceedERP.Core.Domain.Finance.AP

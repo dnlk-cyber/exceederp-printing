@@ -28,6 +28,7 @@
         public const string AccountPayableSettlement = "Account_Payable_Settlement";
         public const string AccountPayableVoid = "Account_Payable_Void";
         public const string AccountPayableReport = "Account_Payable_Report";
+        public const string AccountPayablePaymentRequestAuthorizer = "AP_PaymentRequest_Authorizer";
 
         public const string AccountPayablePettyCashApprover = "Account_Payable_PettyCash_Approver";
         public const string AccountPayablePettyCash = "Account_Payable_PettyCash";

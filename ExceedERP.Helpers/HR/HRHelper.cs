@@ -50,6 +50,16 @@ namespace ExceedERP.Helpers.HR
                     }
             }
         }
+
+        public static string GetBusinessUnitSectorAccount(int businessUnitId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+
+            string businessUnitAccount = "";
+            var record = db.BusinessUnits.FirstOrDefault(x => x.BusinessUnitId == businessUnitId);
+            if (record != null) businessUnitAccount = record.Accountcode;
+            return businessUnitAccount;
+        }
         public static decimal GetSalaryFromSalarySetting(int stepId, int rankId, int lookUpId)
         {
             ExceedDbContext db = new ExceedDbContext();

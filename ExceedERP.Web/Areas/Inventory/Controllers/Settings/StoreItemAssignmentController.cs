@@ -74,6 +74,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                 ItemCode = storeItemAssignment.ItemCode,
                 ItemName = storeItemAssignment.ItemName,
                 ItemLocation = storeItemAssignment.ItemLocation,
+                ShelfNo = storeItemAssignment.ShelfNo,
+                Row = storeItemAssignment.Row,
+                Column = storeItemAssignment.Column,
                 ReOrderPoint = storeItemAssignment.ReOrderPoint,
                 SafetyPoint = storeItemAssignment.SafetyPoint,
                 DangerPoint = storeItemAssignment.DangerPoint,
@@ -133,6 +136,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                         Balance = storeItemAssignment.Balance,
                         AvgPrice = storeItemAssignment.AvgPrice,
                         ItemLocation = storeItemAssignment.ItemLocation,
+                        ShelfNo = storeItemAssignment.ShelfNo,
+                        Row = storeItemAssignment.Row,
+                        Column = storeItemAssignment.Column,
                         BegAvgPrice = storeItemAssignment.BegAvgPrice,
                         BegBalance = storeItemAssignment.BegBalance,
                         Type = storeItemAssignment.Type,
@@ -189,6 +195,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                         Balance = storeItemAssignment.Balance,
                         AvgPrice = storeItemAssignment.AvgPrice,
                         ItemLocation = storeItemAssignment.ItemLocation,
+                        ShelfNo = storeItemAssignment.ShelfNo,
+                        Row = storeItemAssignment.Row,
+                        Column = storeItemAssignment.Column,
                         BegAvgPrice = storeItemAssignment.BegAvgPrice,
                         BegBalance = storeItemAssignment.BegBalance,
                         Type = storeItemAssignment.Type,
@@ -253,7 +262,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
         [AuthorizeRoles(InventoryConstants.PropertyBincard)]
         public JsonResult RecalculateTransaction(string assignmentid,string binid)
         {
-            if(!InventoryConfigurationHelper.IsBinCardRecalculateAllowed())
+            string errorMessage = string.Empty;
+            if (!InventoryConfigurationHelper.IsBinCardRecalculateAllowed())
             {
                 var errorformattedData = new
                 {
@@ -274,7 +284,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     .Where(x => x.StoreItemAssignmentID == storeAssignmentId)
                     .FirstOrDefault(x => x.BinCardLineID == bincardId);
 
-                InventoryBalanceHelper.RecalculateTransactionBincardData(storeAssignmentId, bincardId);
+                errorMessage=InventoryBalanceHelper.RecalculateTransactionBincardData(storeAssignmentId, bincardId);
 
                 #region  log
                 UserHelper.OperationLog(Request.UserHostAddress, "Bin Card recalculation", "Success", User.Identity.Name, $"Bin Card recalculation done starting for item" +
@@ -286,22 +296,34 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                 {
                     var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateInventoryRecordWithBincardData(assignmentid, binid));
                 }
-
-                var formattedData1 = new
+                if (String.IsNullOrEmpty(errorMessage))
                 {
-                    Message = "Operation complete.",
-                    Status = "OK"
-                };
-                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                    var formattedData = new
+                    {
+                        Message = "Operation complete.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var formattedData = new
+                    {
+                        Message = errorMessage,
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+
 
             }
 
-            var formattedData = new
+            var formattedData1 = new
             {
                 Message = "Please select a record to update transaction.",
                 Status = "NOT_OK"
             };
-            return Json(formattedData, JsonRequestBehavior.AllowGet);
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
 
         }
 

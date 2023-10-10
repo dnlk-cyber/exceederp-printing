@@ -32,6 +32,7 @@ namespace ExceedERP.Reporting.Procurements
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
@@ -120,6 +121,7 @@ namespace ExceedERP.Reporting.Procurements
             this.PurchaseFollowingODS = new Telerik.Reporting.ObjectDataSource();
             this.SupplierODS = new Telerik.Reporting.ObjectDataSource();
             this.PurchaserObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.BusinessUnitOds = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -127,33 +129,33 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.322916716337204D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox1.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox1.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox1.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox1.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox1.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox1.Style.Font.Name = "Nyala";
+            this.textBox1.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox1.Value = "No";
             // 
             // textBox3
             // 
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61458379030227661D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox3.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox3.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox3.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox3.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox3.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox3.Style.Font.Name = "Nyala";
+            this.textBox3.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox3.Value = "Branch";
             // 
             // textBox9
             // 
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.64583331346511841D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox9.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox9.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox9.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox9.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox9.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox9.Style.Font.Name = "Nyala";
+            this.textBox9.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox9.StyleName = "";
             this.textBox9.Value = "Requisition ID";
             // 
@@ -161,11 +163,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox13.Name = "textBox13";
             this.textBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77083307504653931D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox13.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox13.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox13.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox13.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox13.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox13.Style.Font.Name = "Nyala";
+            this.textBox13.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox13.StyleName = "";
             this.textBox13.Value = "Delivery Date";
             // 
@@ -173,11 +175,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox31.Name = "textBox31";
             this.textBox31.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71875005960464478D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox31.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox31.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox31.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox31.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox31.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox31.Style.Font.Name = "Nyala";
+            this.textBox31.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox31.StyleName = "";
             this.textBox31.Value = "Item Type";
             // 
@@ -185,11 +187,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox29.Name = "textBox29";
             this.textBox29.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.66666549444198608D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
-            this.textBox29.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox29.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox29.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox29.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox29.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox29.Style.Font.Name = "Nyala";
+            this.textBox29.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox29.StyleName = "";
             this.textBox29.Value = "Item Amount";
             // 
@@ -197,11 +199,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox27.Name = "textBox27";
             this.textBox27.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82291591167449951D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
-            this.textBox27.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox27.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox27.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox27.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox27.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox27.Style.Font.Name = "Nyala";
+            this.textBox27.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox27.StyleName = "";
             this.textBox27.Value = "Unit Price";
             // 
@@ -209,11 +211,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox25.Name = "textBox25";
             this.textBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71875005960464478D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox25.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox25.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox25.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox25.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox25.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox25.Style.Font.Name = "Nyala";
+            this.textBox25.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox25.StyleName = "";
             this.textBox25.Value = "Total Price";
             // 
@@ -221,11 +223,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox23.Name = "textBox23";
             this.textBox23.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59375011920928955D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox23.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox23.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox23.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox23.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox23.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox23.Style.Font.Name = "Nyala";
+            this.textBox23.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox23.StyleName = "";
             this.textBox23.Value = "Transport Payment Sending Date";
             // 
@@ -233,11 +235,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox21.Name = "textBox21";
             this.textBox21.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71875029802322388D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox21.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox21.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox21.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox21.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox21.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox21.Style.Font.Name = "Nyala";
+            this.textBox21.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox21.StyleName = "";
             this.textBox21.Value = "Transport Payment Date";
             // 
@@ -245,11 +247,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox19.Name = "textBox19";
             this.textBox19.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.76041680574417114D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox19.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox19.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox19.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox19.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox19.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox19.Style.Font.Name = "Nyala";
+            this.textBox19.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox19.StyleName = "";
             this.textBox19.Value = "Item Payment Sending Date";
             // 
@@ -257,11 +259,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox17.Name = "textBox17";
             this.textBox17.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.74999964237213135D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox17.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox17.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox17.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox17.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox17.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox17.Style.Font.Name = "Nyala";
+            this.textBox17.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox17.StyleName = "";
             this.textBox17.Value = "Item Reciept No";
             // 
@@ -269,11 +271,11 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox15.Name = "textBox15";
             this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72916609048843384D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox15.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox15.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox15.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox15.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox15.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox15.Style.Font.Name = "Nyala";
+            this.textBox15.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox15.StyleName = "";
             this.textBox15.Value = "No Of Item";
             // 
@@ -281,22 +283,22 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5000002384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
-            this.textBox5.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox5.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox5.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox5.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox5.Style.Font.Name = "Nyala";
+            this.textBox5.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox5.Value = "Item Left";
             // 
             // textBox7
             // 
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
-            this.textBox7.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox7.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox7.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox7.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox7.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
-            this.textBox7.Style.Font.Name = "Nyala";
+            this.textBox7.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox7.StyleName = "";
             this.textBox7.Value = "Remark";
             // 
@@ -325,7 +327,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox77.Name = "textBox77";
             this.textBox77.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(7.4333286285400391D), Telerik.Reporting.Drawing.Unit.Inch(0.29996061325073242D));
             this.textBox77.Style.Font.Bold = true;
-            this.textBox77.Style.Font.Name = "Nyala";
+            this.textBox77.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox77.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox77.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
             this.textBox77.Value = "= Fields.Name";
@@ -336,7 +338,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox76.Name = "textBox76";
             this.textBox76.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(7.4333286285400391D), Telerik.Reporting.Drawing.Unit.Inch(0.29996061325073242D));
             this.textBox76.Style.Font.Bold = true;
-            this.textBox76.Style.Font.Name = "Nyala";
+            this.textBox76.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox76.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox76.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
             this.textBox76.Value = "= Fields.AmharicName";
@@ -347,7 +349,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox78.Name = "textBox78";
             this.textBox78.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(7.4333291053771973D), Telerik.Reporting.Drawing.Unit.Inch(0.20000004768371582D));
             this.textBox78.Style.Font.Bold = true;
-            this.textBox78.Style.Font.Name = "Nyala";
+            this.textBox78.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox78.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox78.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
             this.textBox78.Value = "= Parameters.supplier.Label";
@@ -364,7 +366,7 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.32291656732559204D)));
             this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.61458402872085571D)));
-            this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.6458325982093811D)));
+            this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64583253860473633D)));
             this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.770832359790802D)));
             this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D)));
             this.tblFollowup.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.66666567325592041D)));
@@ -582,6 +584,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.322916716337204D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox2.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox2.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox2.Value = "= RowNumber(\"tblFollowup\")";
             // 
             // textBox4
@@ -590,6 +593,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61458379030227661D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox4.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox4.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox4.Value = "= Fields.Branch";
             // 
             // textBox6
@@ -598,6 +602,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5000002384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox6.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox6.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox6.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox6.Value = "= Fields.ItemLeft";
             // 
             // textBox8
@@ -606,6 +611,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
             this.textBox8.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox8.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox8.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox8.StyleName = "";
             // 
             // textBox10
@@ -614,6 +620,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.64583331346511841D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox10.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox10.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox10.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox10.StyleName = "";
             this.textBox10.Value = "= Fields.RequisitionNo";
             // 
@@ -623,6 +630,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox14.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77083307504653931D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox14.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox14.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox14.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox14.StyleName = "";
             this.textBox14.Value = "= Fields.DeliveryDate";
             // 
@@ -632,6 +640,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox16.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72916609048843384D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox16.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox16.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox16.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox16.StyleName = "";
             this.textBox16.Value = "= Fields.NoOfItemRecieved";
             // 
@@ -641,6 +650,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox18.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.74999964237213135D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox18.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox18.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox18.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox18.StyleName = "";
             this.textBox18.Value = "= Fields.ItemRecieptNo";
             // 
@@ -651,6 +661,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox20.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.76041680574417114D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox20.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox20.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox20.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox20.StyleName = "";
             this.textBox20.Value = "= Fields.ItemPaymentSendingDate";
             // 
@@ -661,6 +672,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71875029802322388D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox22.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox22.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox22.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox22.StyleName = "";
             this.textBox22.Value = "= Fields.TransportPanymentDate";
             // 
@@ -671,6 +683,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59375011920928955D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox24.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox24.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox24.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox24.StyleName = "";
             this.textBox24.Value = "= Fields.TransportPaymentSendingDate";
             // 
@@ -680,6 +693,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71875005960464478D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox26.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox26.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox26.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox26.StyleName = "";
             this.textBox26.Value = "= Fields.TotalPrice";
             // 
@@ -689,6 +703,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox28.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82291591167449951D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
             this.textBox28.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox28.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox28.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox28.StyleName = "";
             this.textBox28.Value = "= Fields.UnitPrice";
             // 
@@ -698,6 +713,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox30.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.66666549444198608D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
             this.textBox30.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox30.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox30.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox30.StyleName = "";
             this.textBox30.Value = "= Fields.ItemAmount";
             // 
@@ -707,6 +723,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox32.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71875005960464478D), Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D));
             this.textBox32.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox32.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox32.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox32.StyleName = "";
             this.textBox32.Value = "= Fields.ItemType";
             // 
@@ -715,6 +732,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.32291656732559204D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox11.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox11.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox11.StyleName = "";
             // 
             // textBox12
@@ -722,6 +740,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61458396911621094D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox12.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox12.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox12.StyleName = "";
             // 
             // textBox33
@@ -729,6 +748,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox33.Name = "textBox33";
             this.textBox33.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.6458325982093811D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox33.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox33.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox33.StyleName = "";
             // 
             // textBox34
@@ -736,6 +756,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox34.Name = "textBox34";
             this.textBox34.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77083247900009155D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox34.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox34.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox34.StyleName = "";
             // 
             // textBox35
@@ -743,6 +764,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox35.Name = "textBox35";
             this.textBox35.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox35.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox35.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox35.StyleName = "";
             // 
             // textBox36
@@ -750,6 +772,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox36.Name = "textBox36";
             this.textBox36.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.66666549444198608D), Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D));
             this.textBox36.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox36.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox36.StyleName = "";
             // 
             // textBox37
@@ -757,6 +780,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox37.Name = "textBox37";
             this.textBox37.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82291591167449951D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
             this.textBox37.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox37.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox37.StyleName = "";
             this.textBox37.Value = "Sum :-";
             // 
@@ -766,6 +790,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox38.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox38.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox38.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox38.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox38.StyleName = "";
             this.textBox38.Value = "= Sum(Fields.SubTotal)";
             // 
@@ -774,6 +799,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox39.Name = "textBox39";
             this.textBox39.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59374970197677612D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox39.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox39.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox39.StyleName = "";
             // 
             // textBox40
@@ -781,6 +807,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox40.Name = "textBox40";
             this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874970197677612D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox40.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox40.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox40.StyleName = "";
             // 
             // textBox41
@@ -788,6 +815,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox41.Name = "textBox41";
             this.textBox41.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.76041644811630249D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox41.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox41.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox41.StyleName = "";
             // 
             // textBox42
@@ -795,6 +823,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox42.Name = "textBox42";
             this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.74999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox42.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox42.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox42.StyleName = "";
             // 
             // textBox43
@@ -802,6 +831,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox43.Name = "textBox43";
             this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72916615009307861D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox43.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox43.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox43.StyleName = "";
             // 
             // textBox44
@@ -809,6 +839,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox44.Name = "textBox44";
             this.textBox44.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5000002384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox44.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox44.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox44.StyleName = "";
             // 
             // textBox45
@@ -816,48 +847,56 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox45.Name = "textBox45";
             this.textBox45.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D));
             this.textBox45.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.textBox45.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox45.StyleName = "";
             // 
             // textBox46
             // 
             this.textBox46.Name = "textBox46";
             this.textBox46.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.32291656732559204D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox46.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox46.StyleName = "";
             // 
             // textBox47
             // 
             this.textBox47.Name = "textBox47";
             this.textBox47.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61458396911621094D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox47.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox47.StyleName = "";
             // 
             // textBox48
             // 
             this.textBox48.Name = "textBox48";
             this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.6458325982093811D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox48.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox48.StyleName = "";
             // 
             // textBox49
             // 
             this.textBox49.Name = "textBox49";
             this.textBox49.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77083247900009155D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox49.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox49.StyleName = "";
             // 
             // textBox50
             // 
             this.textBox50.Name = "textBox50";
             this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox50.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox50.StyleName = "";
             // 
             // textBox51
             // 
             this.textBox51.Name = "textBox51";
             this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.66666549444198608D), Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D));
+            this.textBox51.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox51.StyleName = "";
             // 
             // textBox52
             // 
             this.textBox52.Name = "textBox52";
             this.textBox52.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82291591167449951D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
+            this.textBox52.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox52.StyleName = "";
             this.textBox52.Value = "Total Sum :-";
             // 
@@ -867,6 +906,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox53.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox53.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox53.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox53.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox53.StyleName = "";
             this.textBox53.Value = "= Fields.TotalPrice";
             // 
@@ -874,84 +914,98 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox54.Name = "textBox54";
             this.textBox54.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59374970197677612D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox54.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox54.StyleName = "";
             // 
             // textBox55
             // 
             this.textBox55.Name = "textBox55";
             this.textBox55.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874970197677612D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox55.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox55.StyleName = "";
             // 
             // textBox56
             // 
             this.textBox56.Name = "textBox56";
             this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.76041644811630249D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox56.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox56.StyleName = "";
             // 
             // textBox57
             // 
             this.textBox57.Name = "textBox57";
             this.textBox57.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.74999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox57.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox57.StyleName = "";
             // 
             // textBox58
             // 
             this.textBox58.Name = "textBox58";
             this.textBox58.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72916615009307861D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox58.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox58.StyleName = "";
             // 
             // textBox59
             // 
             this.textBox59.Name = "textBox59";
             this.textBox59.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5000002384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox59.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox59.StyleName = "";
             // 
             // textBox60
             // 
             this.textBox60.Name = "textBox60";
             this.textBox60.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D));
+            this.textBox60.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox60.StyleName = "";
             // 
             // textBox61
             // 
             this.textBox61.Name = "textBox61";
             this.textBox61.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.32291656732559204D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox61.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox61.StyleName = "";
             // 
             // textBox62
             // 
             this.textBox62.Name = "textBox62";
             this.textBox62.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61458396911621094D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox62.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox62.StyleName = "";
             // 
             // textBox63
             // 
             this.textBox63.Name = "textBox63";
             this.textBox63.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.6458325982093811D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox63.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox63.StyleName = "";
             // 
             // textBox64
             // 
             this.textBox64.Name = "textBox64";
             this.textBox64.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.77083247900009155D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox64.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox64.StyleName = "";
             // 
             // textBox65
             // 
             this.textBox65.Name = "textBox65";
             this.textBox65.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox65.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox65.StyleName = "";
             // 
             // textBox66
             // 
             this.textBox66.Name = "textBox66";
             this.textBox66.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.66666549444198608D), Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D));
+            this.textBox66.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox66.StyleName = "";
             // 
             // textBox67
             // 
             this.textBox67.Name = "textBox67";
             this.textBox67.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82291591167449951D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
+            this.textBox67.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox67.StyleName = "";
             this.textBox67.Value = "Vat :-";
             // 
@@ -961,6 +1015,7 @@ namespace ExceedERP.Reporting.Procurements
             this.textBox68.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874916553497314D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox68.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox68.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox68.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox68.StyleName = "";
             this.textBox68.Value = "= Sum(Fields.Vat)";
             // 
@@ -968,42 +1023,49 @@ namespace ExceedERP.Reporting.Procurements
             // 
             this.textBox69.Name = "textBox69";
             this.textBox69.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59374970197677612D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox69.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox69.StyleName = "";
             // 
             // textBox70
             // 
             this.textBox70.Name = "textBox70";
             this.textBox70.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.71874970197677612D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox70.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox70.StyleName = "";
             // 
             // textBox71
             // 
             this.textBox71.Name = "textBox71";
             this.textBox71.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.76041644811630249D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox71.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox71.StyleName = "";
             // 
             // textBox72
             // 
             this.textBox72.Name = "textBox72";
             this.textBox72.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.74999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox72.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox72.StyleName = "";
             // 
             // textBox73
             // 
             this.textBox73.Name = "textBox73";
             this.textBox73.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72916615009307861D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox73.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox73.StyleName = "";
             // 
             // textBox74
             // 
             this.textBox74.Name = "textBox74";
             this.textBox74.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5000002384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox74.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox74.StyleName = "";
             // 
             // textBox75
             // 
             this.textBox75.Name = "textBox75";
             this.textBox75.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49999940395355225D), Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D));
+            this.textBox75.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox75.StyleName = "";
             // 
             // pageFooterSection1
@@ -1028,7 +1090,8 @@ namespace ExceedERP.Reporting.Procurements
             new Telerik.Reporting.ObjectDataSourceParameter("supplier", typeof(string), "= Parameters.supplier.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("from", typeof(System.DateTime), "= Parameters.from.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("to", typeof(System.DateTime), "= Parameters.to.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("purchaser", typeof(string), "= Parameters.purchaser.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("purchaser", typeof(string), "= Parameters.purchaser.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("businessUnitId", typeof(string), "= Parameters.businessUnit.Value")});
             // 
             // SupplierODS
             // 
@@ -1041,6 +1104,12 @@ namespace ExceedERP.Reporting.Procurements
             this.PurchaserObjectDataSource.DataMember = "GetEmployees";
             this.PurchaserObjectDataSource.DataSource = typeof(ExceedERP.Reporting.Procurements.DataSource.PurchaserDataSource);
             this.PurchaserObjectDataSource.Name = "PurchaserObjectDataSource";
+            // 
+            // BusinessUnitOds
+            // 
+            this.BusinessUnitOds.DataMember = "GetBusinessUnits";
+            this.BusinessUnitOds.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BusinessUnitOds);
+            this.BusinessUnitOds.Name = "BusinessUnitOds";
             // 
             // Organization
             // 
@@ -1086,10 +1155,18 @@ namespace ExceedERP.Reporting.Procurements
             reportParameter4.Name = "purchaser";
             reportParameter4.Text = "Procurement Officer";
             reportParameter4.Visible = true;
+            reportParameter5.AllowNull = true;
+            reportParameter5.AvailableValues.DataSource = this.BusinessUnitOds;
+            reportParameter5.AvailableValues.DisplayMember = "= Fields.Name";
+            reportParameter5.AvailableValues.ValueMember = "= Fields.BusinessUnitId";
+            reportParameter5.Name = "businessUnit";
+            reportParameter5.Text = "Business Unit";
+            reportParameter5.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
+            this.ReportParameters.Add(reportParameter5);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -1191,5 +1268,6 @@ namespace ExceedERP.Reporting.Procurements
         private Telerik.Reporting.ObjectDataSource PurchaseFollowingODS;
         private Telerik.Reporting.ReportHeaderSection reportHeaderSection1;
         private Telerik.Reporting.ObjectDataSource PurchaserObjectDataSource;
+        private Telerik.Reporting.ObjectDataSource BusinessUnitOds;
     }
 }

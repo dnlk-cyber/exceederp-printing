@@ -7,7 +7,9 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Counts;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -30,22 +32,26 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
         private void PopulateViewData()
         {
             var branches = _db.Branch;
+            var businessUnits = _db.BusinessUnits;
             var stores = _db.InventoryStores;
 
-            var categories = _db.ItemCategorys;
-            var items = _db.InventoryItems;
+            var categories = _db.FixedAssetCategories; 
+            var subCategories = _db.FixedAssetSubCategories;
+            var items = _db.AssetRegistrations;
+
             var fiscalYears = _db.GLFiscalYears;
             var periods = _db.GLPeriods;
 
             ViewData["Years"] = fiscalYears;
-            ViewData["periods"] = periods;
+            ViewData["Periods"] = periods;
 
             ViewData["Items"] = items;
             ViewData["Category"] = categories;
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
+            ViewData["SubCategory"] = subCategories;
+           
             ViewData["Stores"] = stores;
             ViewData["branches"] = branches;
-            ViewData["defaultCategory"] = branches.FirstOrDefault();
+            ViewData["businessUnits"] = businessUnits;
         }
 
 
@@ -53,16 +59,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
         public ActionResult FixedAssetCounts_Read([DataSourceRequest]DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<FixedAssetCount> fixedAssetCounts = _db.FixedAssetCounts.Where(x => userStores.Contains(x.StoreCode));
+            //List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+            IQueryable<FixedAssetCount> fixedAssetCounts = _db.FixedAssetCounts;
 
             DataSourceResult result = fixedAssetCounts.ToDataSourceResult(request, fixedAssetCount => new
             {
                 FixedAssetCountId = fixedAssetCount.FixedAssetCountId,
                 CountDate = fixedAssetCount.CountDate,
                 BranchId = fixedAssetCount.BranchId,
-                StoreCode = fixedAssetCount.StoreCode,
-                IsMidOfPeriod = fixedAssetCount.IsMidOfPeriod,
+                BusinessUnitId = fixedAssetCount.BusinessUnitId,
                 GlFiscalYearId = fixedAssetCount.GlFiscalYearId,
                 GLPeriodId = fixedAssetCount.GLPeriodId,
                 IsClosed = fixedAssetCount.IsClosed,
@@ -75,20 +80,48 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetCounts_Create([DataSourceRequest]DataSourceRequest request, FixedAssetCount fixedAssetCount)
         {
-            var exist = _db.FixedAssetCounts.Where(x => x.BranchId == fixedAssetCount.BranchId)
-                .Where(x => x.StoreCode == fixedAssetCount.StoreCode)
-                .Where(x => x.CountDate ==fixedAssetCount.CountDate.Date).AsQueryable();
+            #region validation
+            var exist = _db.FixedAssetCounts
+                .Where(x => x.BusinessUnitId == fixedAssetCount.BusinessUnitId)
+                .Where(x => x.BranchId == fixedAssetCount.BranchId)                
+                .Where(x => x.GlFiscalYearId ==fixedAssetCount.GlFiscalYearId).AsQueryable();
             if (exist.Any())
             {
-                ModelState.AddModelError("exist", "Count for date " + fixedAssetCount.CountDate + " and store " + fixedAssetCount.StoreCode + " already exists");
+                ModelState.AddModelError("exist", "Count already exists");
             }
+            if (fixedAssetCount.GLPeriodId != 0)
+            {
+                var glPeriod = _db.GLPeriods.Find(fixedAssetCount.GLPeriodId);
+                if (glPeriod != null)
+                {
+                    if (
+                        !((fixedAssetCount.CountDate.Date >= glPeriod.DateFrom) &&
+                          (fixedAssetCount.CountDate.Date <= glPeriod.DateTo)))
+                        ModelState.AddModelError("",
+                            $"Count Date should be within the period: " + glPeriod.Name + "(From " +
+                            glPeriod.DateFrom.ToShortDateString() + " To " +
+                            glPeriod.DateTo.ToShortDateString() + ")");
+
+                }
+                else
+                {
+                    ModelState.AddModelError("", "The selected Period is not defined.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please select period.");
+            }
+
+            #endregion 
+
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetCount
                 {
                     CountDate =fixedAssetCount.CountDate.Date,
                     BranchId = fixedAssetCount.BranchId,
-                    StoreCode = fixedAssetCount.StoreCode,
+                    BusinessUnitId = fixedAssetCount.BusinessUnitId,
                     GlFiscalYearId = fixedAssetCount.GlFiscalYearId,
                     GLPeriodId = fixedAssetCount.GLPeriodId,
                     CreatedBy = User.Identity.Name,
@@ -99,19 +132,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                 _db.FixedAssetCounts.Add(entity);
                 _db.SaveChanges();
                 fixedAssetCount.FixedAssetCountId = entity.FixedAssetCountId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Count", "Success", User.Identity.Name, $"created asset Count {entity.FixedAssetCountId} Tag {entity.BusinessUnitId}", Modules.FixedAsset);
+                #endregion
             }
+                
 
-            #region disable store
-
-            var store = _db.InventoryStores.Find(fixedAssetCount.StoreCode);
-            if (store != null)
-            {
-                store.Enable = false;
-                _db.Entry(store).State = EntityState.Modified;
-                _db.SaveChanges();
-            }
-
-            #endregion
             return Json(new[] { fixedAssetCount }.ToDataSourceResult(request, ModelState));
         }
 
@@ -119,14 +145,41 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetCounts_Update([DataSourceRequest]DataSourceRequest request, FixedAssetCount fixedAssetCount)
         {
+            #region
             var exist = _db.FixedAssetCounts.Where(x => x.FixedAssetCountId != fixedAssetCount.FixedAssetCountId)
-                            .Where(x => x.BranchId == fixedAssetCount.BranchId)
-                            .Where(x => x.StoreCode == fixedAssetCount.StoreCode)
-                            .Where(x => x.CountDate == fixedAssetCount.CountDate.Date).AsQueryable();
+                                .Where(x => x.BusinessUnitId == fixedAssetCount.BusinessUnitId)
+                                .Where(x => x.BranchId == fixedAssetCount.BranchId)
+                                .Where(x => x.GlFiscalYearId == fixedAssetCount.GlFiscalYearId).AsQueryable();
             if (exist.Any())
             {
-                ModelState.AddModelError("exist", "Count for date " + fixedAssetCount.CountDate + " and store " + fixedAssetCount.StoreCode + " already exists");
+                ModelState.AddModelError("exist", "Count already exists");
             }
+            if (fixedAssetCount.GLPeriodId != 0)
+            {
+                var glPeriod = _db.GLPeriods.Find(fixedAssetCount.GLPeriodId);
+                if (glPeriod != null)
+                {
+                    if (
+                        !((fixedAssetCount.CountDate.Date >= glPeriod.DateFrom) &&
+                          (fixedAssetCount.CountDate.Date <= glPeriod.DateTo)))
+                        ModelState.AddModelError("",
+                            $"Count Date should be within the period: " + glPeriod.Name + "(From " +
+                            glPeriod.DateFrom.ToShortDateString() + " To " +
+                            glPeriod.DateTo.ToShortDateString() + ")");
+
+                }
+                else
+                {
+                    ModelState.AddModelError("", "The selected Period is not defined.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please select period.");
+            }
+
+            #endregion 
+
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetCount
@@ -134,7 +187,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     FixedAssetCountId = fixedAssetCount.FixedAssetCountId,
                     CountDate = fixedAssetCount.CountDate.Date,
                     BranchId = fixedAssetCount.BranchId,
-                    StoreCode = fixedAssetCount.StoreCode,
+                    BusinessUnitId = fixedAssetCount.BusinessUnitId,
                     GlFiscalYearId = fixedAssetCount.GlFiscalYearId,
                     GLPeriodId = fixedAssetCount.GLPeriodId,
                     ModifiedBy = User.Identity.Name,
@@ -145,16 +198,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
 
-                #region disable store
-
-                var store = _db.InventoryStores.Find(fixedAssetCount.StoreCode);
-                if (store != null)
-                {
-                    store.Enable = false;
-                    _db.Entry(store).State = EntityState.Modified;
-                    _db.SaveChanges();
-                }
-
+              
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Count", "Success", User.Identity.Name, $"updated asset Count {entity.FixedAssetCountId} Tag {entity.BusinessUnitId}", Modules.FixedAsset);
                 #endregion
 
             }
@@ -173,7 +219,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     FixedAssetCountId = fixedAssetCount.FixedAssetCountId,
                     CountDate = fixedAssetCount.CountDate,
                     BranchId = fixedAssetCount.BranchId,
-                    StoreCode = fixedAssetCount.StoreCode,
+                    BusinessUnitId = fixedAssetCount.BusinessUnitId,
 
                 };
 
@@ -183,14 +229,22 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted property count number " + fixedAssetCount.FixedAssetCountId + " " + fixedAssetCount.Remark);
                 #endregion
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset Count {fixedAssetCount.FixedAssetCountId } and Tag {fixedAssetCount.BusinessUnitId}");
+                #endregion
             }
 
             return Json(new[] { fixedAssetCount }.ToDataSourceResult(request, ModelState));
         }
 
+
+      
         private bool GetStatus(int id)
         {
-            var data = _db.FixedAssetCountItems.Where(a => a.FixedAssetCountId.Equals(id)).Count(x => x.Status == false);
+            var data = _db.FixedAssetCountItems
+                .Where(a => a.FixedAssetCountId
+                .Equals(id)).Count(x => x.Status == false);
+
             if (data > 0)
             {
                 return false;
@@ -198,6 +252,75 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
             return true;
 
         }
+
+        [AuthorizeRoles(FixedAssetConstants.FixedAssetCount)]
+        public JsonResult LoadAssets(int id)
+        {            
+            var record = _db.FixedAssetCounts.Find(id);
+            
+            if (record != null)
+            {
+                var assets = _db.AssetRegistrations
+                    .Where(x => x.BranchId == record.BranchId).AsQueryable();
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    assets= assets
+                        .Where(x => x.BusinessUnitId == record.BusinessUnitId ||x.BusinessUnitId==0 || x.BusinessUnitId == null).AsQueryable();
+                }
+
+                var assetList= assets.ToList();
+                foreach (var item in assetList)
+                {
+                    var exist=_db.FixedAssetCountItems
+                        .Where(x=>x.FixedAssetCountId==id)
+                        .Where(x => x.AssetRegistrationId == item.AssetRegistrationId).FirstOrDefault();
+                    if (exist == null)
+                    {
+                        #region create count item
+                        int empId = 0;
+                        int.TryParse(item.EmployeeId,out empId);
+
+                        var fixedAssetCountItem = new FixedAssetCountItem
+                        {
+                            FixedAssetCountId = id,
+                            AssetRegistrationId = item.AssetRegistrationId,
+                            FixedAssetCategoryId = item.FixedAssetCategoryID,
+                            FixedAssetSubCategoryId = item.FixedAssetSubCategoryID,
+                            Value = item.BookValue,
+                            PreviousBalance = item.Quanity,
+                            Count = item.Quanity,
+                            Updated =false,
+                            Status=false,
+                            AssetStatus=item.Status,
+                            EmployeeId= empId,
+                            StoreCode=item.StoreCode,
+
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Now
+                        };
+                      
+                        _db.FixedAssetCountItems.Add(fixedAssetCountItem);
+                        _db.SaveChanges();
+
+                        #endregion
+                    }
+
+                }
+                var formattedData = new
+                {
+                    Message = "Loading items completed.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData2 = new
+            {
+                Message = "The count is not found.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+        }
+
 
         public ActionResult FixedAssetCountPrint(int id)
         {
@@ -218,45 +341,30 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                 return Json(formattedData0, JsonRequestBehavior.AllowGet);
             }
             var record = _db.FixedAssetCounts.Find(id);
-            var fixedAssetCountItems = _db.FixedAssetCountItems.Where(x => x.FixedAssetCountId == id).ToList();
+            var fixedAssetCountItems = _db.FixedAssetCountItems
+                .Where(x => x.FixedAssetCountId == id)
+                .ToList();
+
             if (record != null)
             {
                 foreach (var item in fixedAssetCountItems)
                 {
                     if (!item.Updated)
                     {
-                        var assetRegistration = _db.AssetRegistrations.FirstOrDefault(x => x.AssetRegistrationId == item.AssetRegistrationId);
+                        var assetRegistration = _db.AssetRegistrations
+                            .FirstOrDefault(x => x.AssetRegistrationId == item.AssetRegistrationId);
+
                         if (assetRegistration != null)
                         {
                             assetRegistration.Quanity = (int)item.Count;
-                            assetRegistration.Location = !String.IsNullOrWhiteSpace(item.Location)? item.Location:assetRegistration.Location;
+                            assetRegistration.Status = item.AssetStatus;
+                          
                             item.Updated = true;
                             _db.Entry(item).State = EntityState.Modified;
+
                             _db.Entry(assetRegistration).State = EntityState.Modified;
                             _db.SaveChanges();
-                        }
-                        else
-                        {
-                            #region create asset
-
-                            assetRegistration = new AssetRegistration
-                            {
-                                StoreCode = record.StoreCode,
-                                FixedAssetCategoryID = item.FixedAssetCategoryId,
-                                FixedAssetSubCategoryID = item.FixedAssetSubCategoryId,
-                                Quanity = (int)item.Count,
-                                Location = item.Location,
-                                CreatedBy = User.Identity.Name,
-                                DateCreated = DateTime.Now
-                            };
-                            item.Updated = true;
-                            _db.AssetRegistrations.Add(assetRegistration);
-                            _db.SaveChanges();
-
-                            #endregion
-                           
-
-                        }
+                        }                        
 
                     }
 
@@ -276,66 +384,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
             return Json(formattedData2, JsonRequestBehavior.AllowGet);
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetCountApprover)]
-        public JsonResult ReverseUpdate(int id)
-        {
-            var record = _db.FixedAssetCounts.Find(id);
-            var fixedAssetCountItems = _db.FixedAssetCountItems.Where(x => x.FixedAssetCountId == id).ToList();
-
-            #region validate if all are updated
-
-            foreach (var item in fixedAssetCountItems)
-            {
-                if (!item.Updated)
-                {
-                    var formattedData = new
-                    {
-                        Message = "There are items not update, please update before reversing.",
-                        Status = "NOT_OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-
-            }
-
-            #endregion
-
-            foreach (var item in fixedAssetCountItems)
-            {
-                var storeItem = _db.AssetRegistrations.FirstOrDefault(x => x.AssetRegistrationId == item.AssetRegistrationId);
-                if (storeItem != null)
-                {
-                    #region reverse store balance
-                    storeItem.Quanity = (int)item.PreviousBalance;
-                    item.Updated = false;
-                    _db.Entry(item).State = EntityState.Modified;
-                    _db.Entry(storeItem).State = EntityState.Modified;
-                    _db.SaveChanges();
-                    #endregion
-
-                }
-
-            }
-            if (record != null)
-            {
-                var referenceDoc = "Count on date " + record.CountDate.ToShortDateString();
-                var reference = record.FixedAssetCountId.ToString();
-                #region remove bin card
-                var bincardLines = _db.BinCardLines
-                    .Where(x => x.ReferenceDoc == referenceDoc && x.Reference == reference).ToList();
-                _db.BinCardLines.RemoveRange(bincardLines);
-                _db.SaveChanges();
-
-                #endregion
-            }
-            var formattedData1 = new
-            {
-                Message = "Reversed Successfully.",
-                Status = "OK"
-            };
-            return Json(formattedData1, JsonRequestBehavior.AllowGet);
-        }
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetCountApprover)]
+        [AuthorizeRoles(FixedAssetConstants.FixedAssetCountApprover)]      
         public JsonResult CloseCount(int id)
         {
             

@@ -5,7 +5,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Manual Stock Purchase Requisition</legend>
+<legend>Self Service - Purchase Requisition</legend>
 @(Html.Kendo().Grid<PurchaseRequisition>()
       .Name("grid")
       .Columns(columns =>
@@ -50,7 +50,7 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-            .Groupable()
+            
 
            .Events(x => x.DataBound("onDataBoundMasterStockRequisition"))
       .DataSource(dataSource => dataSource
@@ -68,6 +68,7 @@
                   model.Field(p => p.OrgStructureId).Editable(false);
                   model.Field(p => p.EmployeeId).Editable(false);
                   model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
                   model.Field(p => p.ForBranchId).Editable(false);
                   model.Field(p => p.ProcurementOfficer).Editable(false);
                   model.Field(p => p.ModelNo).Editable(false);

@@ -7,7 +7,9 @@ using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
 using ExceedERP.Core.Domain.FixedAsset.UserCard;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -91,6 +93,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                     _db.MachineryAndVehicleTransferReceiveValidations.Add(entity);
                     _db.SaveChanges();
                     machineryAndVehicleTransferReceiveValidation.MachineryAndVehicleTransferReceiveValidationId =entity.MachineryAndVehicleTransferReceiveValidationId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransferReceiveValidation", "Success", User.Identity.Name, $"created MachineryAndVehicleTransferReceiveValidation {entity.MachineryAndVehicleTransferReceiveValidationId} OrgBranchName {entity.OrgBranchName}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -117,6 +122,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                 _db.MachineryAndVehicleTransferReceiveValidations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransferReceiveValidation", "Success", User.Identity.Name, $"Update MachineryAndVehicleTransferReceiveValidation {entity.MachineryAndVehicleTransferReceiveValidationId} OrgBranchName {entity.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { machineryAndVehicleTransferReceiveValidation }.ToDataSourceResult(request, ModelState));
@@ -142,6 +150,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                 _db.MachineryAndVehicleTransferReceiveValidations.Attach(entity);
                 _db.MachineryAndVehicleTransferReceiveValidations.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "MachineryAndVehicleTransferReceiveValidation", "Success", User.Identity.Name, $"Delete MachineryAndVehicleTransferReceiveValidation {machineryAndVehicleTransferReceiveValidation.MachineryAndVehicleTransferReceiveValidationId} OrgBranchName {machineryAndVehicleTransferReceiveValidation.OrgBranchName}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { machineryAndVehicleTransferReceiveValidation }.ToDataSourceResult(request, ModelState));
@@ -175,7 +186,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
 
                 #endregion
 
-                #region Update current UserCard
+                #region Update current PersonEmployee
 
                 UserCardItems userCard = new UserCardItems();
                 if (employee != null)
@@ -214,9 +225,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                         EmployeeId = employeeid,
                         OrgStructureId = orgid,
                         StartDate = DateTime.Today,
-                        BranchId = UserInformationHelper.GetEmployeeBranchId(
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(
                             UserInformationHelper.GetEmployeeUserId(int.Parse(employeeid))),
-                        TransactionType = "Machine Transfer",
+                        TransactionType = FixedAssetTransactionType.MachineTransfer,//changed from string to enum
                         TransactionNo = item.MachineryAndVehicleTransferReceiveId.ToString(),
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name
@@ -227,7 +238,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
 
                 #endregion
 
-                #region Update previous UserCard
+                #region Update previous PersonEmployee
 
                 var prevUsercards = _db.UserCardItems.Where(x => x.AssetRegistrationId == asset.AssetRegistrationId)
                     .Where(x => x.EmployeeId == preEmployee.EmployeeId).ToList();
@@ -265,7 +276,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.MachineTransferRe
                         LocationType = LocationType.Store,
                         StartDate = DateTime.Today,
                         BranchId = InventoryHelper.GetStoreBranch(item.Transfer.ToStoreCode),
-                        TransactionType = "Machine Transfer",
+                        TransactionType = FixedAssetTransactionType.MachineTransfer,//changed from string to enum
                         TransactionNo = item.MachineryAndVehicleTransferReceiveId.ToString(),
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name

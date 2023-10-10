@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
@@ -116,6 +118,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -167,6 +170,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                 IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                 OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+
+                IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
                 OrgBranchName = purchaseRequisition.OrgBranchName,
             });
 
@@ -231,6 +239,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                         IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                         OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+
+                        IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                        BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                        BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+
                         DateCreated = DateTime.Now,
                         CreatedBy = User.Identity.Name,
                         OrgBranchName = purchaseRequisition.BranchId.ToString(),
@@ -240,7 +253,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     db.SaveChanges();
                     purchaseRequisition.PurchaseRequisitionID = entity.PurchaseRequisitionID;
                     GetStoreRequisitionItems(entity);
-                
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisition", "Success", User.Identity.Name, $"created PurchaseRequisition {entity.PurchaseRequisitionID} Tag {entity.StoreRequisitionID}", Modules.FixedAsset);
+                    #endregion
+
+
             }
 
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
@@ -307,7 +325,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                         IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
                         OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
-                        CreatedBy = purchaseRequisition.CreatedBy,
+
+                    IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                    BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                    BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+                    CreatedBy = purchaseRequisition.CreatedBy,
                         DateCreated = purchaseRequisition.DateCreated,
                         ModifiedBy = User.Identity.Name,
                         LastModified = DateTime.Now,
@@ -317,7 +339,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     db.PurchaseRequisitions.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisition", "Success", User.Identity.Name, $"Update PurchaseRequisition  {entity.PurchaseRequisitionID} Tag {entity.StoreRequisitionID}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
@@ -353,14 +378,20 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                         OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
                         IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
-                        OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime
-                    };
+                        OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+                        IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
+                        BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
+                        BudgetApprovedTime = purchaseRequisition.BudgetApprovedTime,
+                };
 
                 db.PurchaseRequisitions.Attach(entity);
                 db.PurchaseRequisitions.Remove(entity);
                 db.SaveChanges();
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted purchase requisition number " + purchaseRequisition.StoreRequisitionID + " " + purchaseRequisition.ReferenceNo);
+                #endregion
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete PurchaseRequisition  {purchaseRequisition.PurchaseRequisitionID} Tag {purchaseRequisition.StoreRequisitionID}", Modules.FixedAsset);
                 #endregion
             }
 
@@ -444,6 +475,73 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
+            return null;
+        }
+
+        [AuthorizeRoles(FixedAssetConstants.FixedAssetVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = db.PurchaseRequisitions.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid)
+            {
+                #region validate PR assignment
+
+                var purchaseOrder = db.PurchaseRequisitionAssignments
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => x.IsOnlineApproved)
+                    .FirstOrDefault(x => x.PurchaseRequisitionID == id);
+
+                if (purchaseOrder != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This PR can not be void since it is referred in PR Assignment {purchaseOrder.PurchaseRequisitionAssignmentId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsMiddleOnlineApproved = false;
+                record.IsMiddleSendForApproval = false;
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.PurchaseRequisitions.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
             return null;
         }
 

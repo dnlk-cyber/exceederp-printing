@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
+//using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -50,8 +53,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 
             var costCenter = db.BranchCostCenter;
 
-            var selectedcostCenter = costCenter.Select(
-                i => new
+            var selectedcostCenter = costCenter.Select(i => new
                 {
                     Name = i.MainCompanyStructure.Name,
                     Code = i.OrgStructureId
@@ -71,11 +73,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.FixedAsset).Where(x=>x.IsManual).Where(x => mybraches.Contains(x.OrgBranchName));
+            var purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.FixedAsset).Where(x=>x.IsManual).Where(x => mybraches.Contains(x.OrgBranchName)).ToList();
             var result = purchaserequisitions.ToDataSourceResult(request, purchaseRequisition => new
                 {
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     BranchId = purchaseRequisition.BranchId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
@@ -168,7 +171,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     {
                         StoreRequisitionID = 0,
                         IsManual=true,
-                        BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                        BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         OrgStructureId =EmployeeHelper.GetEmployeeWorkUnitId(purchaseRequisition.EmployeeId),
                         EmployeeId =purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -201,7 +205,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     db.SaveChanges();
                     purchaseRequisition.PurchaseRequisitionID = entity.PurchaseRequisitionID;
                     GetStoreRequisitionItems(entity);
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisition", "Success", User.Identity.Name, $"created PurchaseRequisition {entity.PurchaseRequisitionID} Emp {entity.EmployeeId}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
@@ -242,6 +249,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
+                        BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         OrgStructureId = EmployeeHelper.GetEmployeeWorkUnitId(purchaseRequisition.EmployeeId),
                         EmployeeId = purchaseRequisition.EmployeeId,
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
@@ -277,7 +285,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     db.PurchaseRequisitions.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisition", "Success", User.Identity.Name, $"update PurchaseRequisition {entity.PurchaseRequisitionID} Emp {entity.EmployeeId}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
@@ -294,6 +305,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                         BranchId = purchaseRequisition.BranchId,
+                        BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
                         ReferenceNo = purchaseRequisition.ReferenceNo,

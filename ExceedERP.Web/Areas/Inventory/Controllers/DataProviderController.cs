@@ -30,6 +30,48 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
     {
         ExceedDbContext db = new ExceedDbContext();
 
+
+        public JsonResult GetAllEmployees(string text)
+        {
+            List<EmployeeVm> list = new List<EmployeeVm>();
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                var employees = db.Person_Employee
+                    .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+                    )
+                    .Select(x => new EmployeeVm
+                    {
+                        EmployeeId = x.EmployeeId,
+                        EmployeeCode = x.EmployeeCode,
+                        FirstName = x.FirstName,
+                        MiddleName = x.MiddleName,
+                        LastName = x.LastName,
+                        FirstNameEnglish = x.FirstNameEnglish,
+                        MiddleNameEnglish = x.MiddleNameEnglish,
+                        LastNameEnglish = x.LastNameEnglish
+                    }).ToList();
+
+                list = employees;
+            }
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult getAllInventories()
+        {
+            var data = db.ItemCategorys.Select(s => new { s.ItemCategoryCode, s.Name }).ToList();
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetAllStoresByBranch(string BranchId)
         {
             var store = db.InventoryStores.Where(x => x.Enable && x.BranchId.ToString() == BranchId).AsQueryable();
@@ -160,6 +202,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
         }
 
+        public JsonResult GetAllStoreByKeepers()
+        {
+            ApplicationDbContext app = new ApplicationDbContext();
+            var keepers = db.StoreKeeperAssignments.DistinctByField(x => x.StoreKeeper).Select(x=>x.StoreKeeper).ToList();
+
+            var users = app.Users.Where(x => keepers.Contains(x.Id)).ToList();
+            return Json(users.Select(p => new
+            {
+                Code = p.Id,
+                Name = p.UserName + "(" + p.FirstName +" "+p.MiddleName + " " +p.LastName + ")"
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
         public JsonResult GetStoreByBranchForCount(string id)
         {
             int did = int.Parse(id);
@@ -176,6 +232,24 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         {
             int did = int.Parse(id);
             var store = db.InventoryStores.Where(x => x.Enable).Where(x => x.BranchId == did).AsQueryable();
+
+            if (!string.IsNullOrEmpty(text))
+                store = store.Where(x => x.StoreCode.Contains(text) || x.Name.Contains(text));
+
+            return Json(store.Select(p => new
+            {
+                StoreCode = p.StoreCode,
+                Name = p.StoreCode + "-" + p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult GetStoreByBranchForSR(string id, string text)
+        {
+            int did = int.Parse(id);
+            var store = db.InventoryStores
+                //.Where(x => x.Enable) //they shall ask SR but no other transaction
+                .Where(x => x.BranchId == did).AsQueryable();
 
             if (!string.IsNullOrEmpty(text))
                 store = store.Where(x => x.StoreCode.Contains(text) || x.Name.Contains(text));
@@ -545,15 +619,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetItemSubCategoryForItemDef(string catcode)
+        public JsonResult GetItemSubCategoryForItemDef(string catcode,string text)
         {
-            var itemCategory = db.ItemCategorys.Where(x=>x.ParentName==catcode).ToList();
+            var itemSubCategory = db.ItemCategorys.Where(x => x.ParentName == catcode).AsQueryable();
             List<ItemCategory> list = new List<ItemCategory>();
 
-            foreach (var category in itemCategory)
+
+            if (!String.IsNullOrEmpty(text))
+                itemSubCategory = itemSubCategory.Where(x => x.Name.ToUpper().Contains(text.ToUpper())
+                 || x.ItemCategoryCode.ToUpper().Contains(text.ToUpper()));
+
+
+            foreach (var category in itemSubCategory)
             {
-                List<string> roles = db.ItemCategoryUserRoles.Where(x => x.ItemCategoryCode == category.ItemCategoryCode).Select(x => x.RoleName).ToList();
-                if (roles.Contains(User.Identity.GetUserId()))
+                //List<string> roles = db.ItemCategoryUserRoles.Where(x => x.ItemCategoryCode == category.ItemCategoryCode).Select(x => x.RoleName).ToList();
+                //if (roles.Contains(User.Identity.GetUserId()))
                     list.Add(category);
             }
             return Json(list.Select(p => new
@@ -566,7 +646,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         public JsonResult GetItemCategory()
         {
             var itemCategory = db.ItemCategorys
-                .Where(x => x.HaveParent == false)
+                //.Where(x => x.HaveParent == false)
                 .ToList();//exclude sub categories
             return Json(itemCategory.Select(p => new
                 {
@@ -1571,8 +1651,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         public JsonResult GetCompany()
         {
             var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
-            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
-
+            var locations =db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+           
             return Json(locations.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
@@ -1597,7 +1677,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
             var costCenters =
                 db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId);
-
+            
             return Json(costCenters.Select(i => new { Name = i.Values + "-" + i.Description, code = i.Values }), JsonRequestBehavior.AllowGet);
         }
 
@@ -1622,7 +1702,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     employee.Select(
                         i => new
                         {
-                            Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                            Name = i.EmployeeCode + " -" + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
                             Code = i.EmployeeId
                         }), JsonRequestBehavior.AllowGet);
         }
@@ -1644,7 +1724,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             var unitOfm = appdb.Users.AsQueryable();
             return Json(unitOfm.Select(i => new
                 {
-                    Name = i.UserName,
+                    Name = i.UserName +"_"+i.FirstName+ " " + i.MiddleName +" " + i.LastName,
                     Code = i.Id
                 }),
                 JsonRequestBehavior.AllowGet);
@@ -1720,12 +1800,48 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 .Where(a => string.IsNullOrEmpty(a.PlateNo) == false).Select(p => new { p.PlateNo }).Distinct().ToList();
             return Json(plateNumbers.Select(p => new { p.PlateNo }), JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetPlateNumbersFromFleetForFuelRequisition()
+        {
+            List<string> plateNums=new List<string>();
+
+            var fixedPlates=db.AssetRegistrations
+                .Where(a => string.IsNullOrEmpty(a.PlateNo) == false).Select(a => a.PlateNo).ToList();
+
+            if (fixedPlates.Any())
+                plateNums.AddRange(fixedPlates);
+
+            var fleetPlates = db.Fleets
+                .Where(a => string.IsNullOrEmpty(a.PlateNumber) == false).Select(a => a.PlateNumber).ToList();
+            
+            if (fleetPlates.Any())
+                plateNums.AddRange(fleetPlates);
+
+            //var plateNumbers = db.Fleets
+            //    .Where(a => string.IsNullOrEmpty(a.PlateNumber) == false)
+            //    .Select(p => new
+            //    { 
+            //        p.PlateNumber
+            //    })
+            //    .Distinct().ToList();
+            return Json(plateNums.Distinct().Select(p => new { PlateNo=p }), JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetStoreCounts(string store)
         {
-            var plateNumbers = db.PropertyCounts
-                .Where(a => a.StoreCode == store)
-                .Select(p => new { p.PropertyCountId, p.CountDate }).OrderByDescending(p => p.CountDate).ToList();
-            return Json(plateNumbers.Select(p => new { Code = p.PropertyCountId, Name = p.CountDate.ToShortDateString() }), JsonRequestBehavior.AllowGet);
+            int maxCount = db.PropertyCounts
+                .Where(a => a.StoreCode == store && a.IsClosed).Max(x => x.PropertyCountId);
+
+            var counts = db.PropertyCounts
+                .Where(a => a.StoreCode == store && a.PropertyCountId==maxCount)
+                .Select(p => new { p.PropertyCountId, p.CountDate })
+                .OrderByDescending(p => p.CountDate).ToList();
+
+            return Json(counts.Select(p => new
+            { Code = p.PropertyCountId,
+                Name = p.CountDate.ToShortDateString()
+            }),
+            JsonRequestBehavior.AllowGet);
         }
     }
 }

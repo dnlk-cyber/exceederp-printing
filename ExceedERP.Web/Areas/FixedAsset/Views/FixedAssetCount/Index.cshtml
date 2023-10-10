@@ -1,0 +1,519 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Counts
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>PPE Count</legend>
+@(Html.Kendo().Grid<FixedAssetCount>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FixedAssetCountId).Title("Count No.").Width(120).ClientTemplate("#=appendZeros(FixedAssetCountId)#");
+                      if (GlobalHelper.IsMultipleBusinessUnit())
+                      {
+                          columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").EditorTemplateName("BusinessUnitSelector").Width(160).Filterable(ftb => ftb.Multi(true).Search(true));
+                      }
+                      columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").EditorTemplateName("GlFiscalYearSelector").Width(150);
+                      columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["periods"], "GlPeriodId", "Name").EditorTemplateName("GlPeriodSelector").Width(150);
+                      columns.Bound(p => p.CountDate).Width(110);
+                      columns.Bound(c => c.IsClosed).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsClosed ? checked='checked' :'' # />");
+
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                      }).Width(280);
+                  })
+                  .ToolBar(toolbar => {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .HtmlAttributes(new { style = "height: 600px;" })
+                .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(20))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                     .Selectable(selectable =>
+                     {
+                         selectable.Mode(GridSelectionMode.Single);
+                         selectable.Type(GridSelectionType.Row);
+                     })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Events(ev => ev.DetailExpand("detailExpand"))
+                .Scrollable(h => h.Height(500))
+                .Events(x => x.DataBound("onDataBoundCountMaster").Edit("onMasterEdit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Sort(sort => sort.Add("FixedAssetCountId").Descending())
+              .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                    //.Sync("sync_handler"))
+                    .Model(model =>
+                    {
+                        model.Id(p => p.FixedAssetCountId);
+                        model.Field(p => p.FixedAssetCountId).Editable(false);
+
+
+                        model.Field(p => p.CreatedBy).Editable(false);
+                        model.Field(p => p.DateCreated).Editable(false);
+                        model.Field(p => p.ModifiedBy).Editable(false);
+                        model.Field(p => p.LastModified).Editable(false);
+
+                    })
+          .Read(read => read.Action("FixedAssetCounts_Read", "FixedAssetCount"))
+          .Create(create => create.Action("FixedAssetCounts_Create", "FixedAssetCount"))
+          .Update(update => update.Action("FixedAssetCounts_Update", "FixedAssetCount"))
+          .Destroy(destroy => destroy.Action("FixedAssetCounts_Destroy", "FixedAssetCount"))
+          ).ClientDetailTemplateId("propCounttemplate")
+)
+<script type="text/kendo" id="propCounttemplate">
+    @(Html.Kendo().Grid<FixedAssetCountItem>()
+                                              .Name("Item_#=FixedAssetCountId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.ForeignKey(p => p.FixedAssetCategoryId, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(110).Editable("isEditable");
+                                          columns.ForeignKey(p => p.FixedAssetSubCategoryId, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(110).Editable("isEditable");
+                                          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Items"], "AssetRegistrationId", "Name").Title("Asset").EditorTemplateName("ItemCategorySelector").Width(110).Editable("isEditable");                                                                       
+                                          columns.Bound(c => c.Value).Width(100);
+                                          columns.Bound(c => c.PreviousBalance).Width(80);
+                                          columns.Bound(c => c.Count).Width(50);
+                                          columns.Bound(c => c.AssetStatus).Width(100);
+                                          columns.Bound(c => c.EmployeeId).Width(100);
+                                          columns.Bound(c => c.StoreCode).Width(100);
+                                          columns.Bound(c => c.Status).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
+
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                  //command.Destroy();
+                                  command.Custom("✅").Click("ChangeStatus");
+                                          }).Width(180);
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Template(@<text>
+                                            # if (!IsClosed)
+                                            {#
+                                            @*<a class="k-button k-button-icontext k-grid-add" href='\#'> <span class="k-icon k-i-add"></span> Add new record </a>*@
+                                            @Html.Kendo().Button().Name("load").Content("Load Items").Events(events => events.Click("loadItems")).ToClientTemplate()
+                                            
+                                            @if (HttpContext.Current.User.IsInRole("FixedAsset_Count_Approver"))
+                                                        {
+                                                @Html.Kendo().Button().Name("zerostatus").Content("Change Status of 0 Count").Tag("Change Status of 0 Count").Events(events => events.Click("zeroStatusClicked")).ToClientTemplate()
+                                                @Html.Kendo().Button().Name("update").Content("Update Registration").Tag("Update Registration").Events(events => events.Click("updateRegistration")).ToClientTemplate()
+                                                @Html.Kendo().Button().Name("close").Content("Close Count").Events(events => events.Click("close")).ToClientTemplate()
+                                                        }
+                                            # } #
+                                            &nbsp;&nbsp;
+                                            &nbsp;
+                                            <a target="new" title="Print" href='@Url.Action("FixedAssetCountPrint", "FixedAssetCount")/#=FixedAssetCountId#'><i class="fa fa-print fa-2x"></i></a>
+
+                                        </text>);
+                                            })
+                                                                .HtmlAttributes(new { style = "height: 550px;" })
+                                                                    .Pageable(pageable => pageable
+                                                                                .Input(true)
+                                                                                .Numeric(false)
+                                                                                .Refresh(true)
+                                                                                .PageSizes(true)
+                                                                                .ButtonCount(20))
+                                                                    .Scrollable()
+                                                                    .Sortable()
+                                                                    .Filterable()
+
+                                                                    .Scrollable(h => h.Height(500))
+                                                                    .Events(x => x.DataBound("onDataBoundCountLines"))
+                                                               .Events(events => events.Edit("edit"))
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                   .Events(ev => ev
+                                                                            .Error("error_handler(\"Item_#=FixedAssetCountId#\")")
+                                                                            .RequestStart("onRequestStart(\"Item_#=FixedAssetCountId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"Item_#=FixedAssetCountId#\")"))
+                                                                  .Model(model =>
+                                                                  {
+                                                                      model.Id(p => p.FixedAssetCountItemId);
+                                                        
+                                                                      model.Field(p => p.Status).Editable(false);
+                                                                      model.Field(p => p.Value).Editable(false);
+                                                                      model.Field(p => p.PreviousBalance).Editable(false);
+                                                                      model.Field(p => p.EmployeeId).Editable(false);
+                                                                      model.Field(p => p.StoreCode).Editable(false);
+                                                          //model.Field(p => p.Uom).Editable(false);
+                                                      })
+                                                                    .Read(read => read.Action("FixedAssetCountItems_Read", "FixedAssetCountItem", new { id = "#= FixedAssetCountId #" }))
+                                                                     .Create(create => create.Action("FixedAssetCountItems_Create", "FixedAssetCountItem", new { id = "#= FixedAssetCountId #" }))
+                                                                  .Update(update => update.Action("FixedAssetCountItems_Update", "FixedAssetCountItem"))
+                                                                  .Destroy(destroy => destroy.Action("FixedAssetCountItems_Destroy", "FixedAssetCountItem"))
+                                                              ).ToClientTemplate()
+    )
+
+
+</script>
+<script>
+
+    function filterStoresByBranchForCount() {
+        return {
+            id: $("#BranchId").data("kendoDropDownList").value(),
+            text: $("#BranchId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function filterPeriodsByYear() {
+        return {
+            year: $("#GlFiscalYearId").data("kendoDropDownList").value(),
+            text: $("#GlFiscalYearId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#CountDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+            });
+         }
+
+
+    }
+
+    function isEditable(dataItem) {
+
+        return dataItem.FixedAssetCountItemId === 0;
+    }
+
+    function edit(e) {
+        //var row = e.masterRow;
+        //var detailGrid = "#" + e.sender.element[0].id;
+        //var grid = $(detailGrid).data("kendoGrid");
+        //var dataitem = grid.dataItem();
+        //dataitem.dirty = true;
+        //dataSource.sync();
+
+        // $("#Status").trigger('change');
+
+
+        //alert('edit');
+        if (e.model.isNew() === false) {
+            $("#ItemCategoryCode").kendoDropDownList({
+                enable: false
+            });
+            $("#ItemCode").kendoDropDownList({
+                enable: false
+            });
+
+
+            $("#ItemName").attr("readonly", true);
+           // $("#Price").attr("readonly", true);
+            $("#Status").attr("readonly", true);
+
+
+
+        } else {
+            $("#ItemName").attr("readonly", true);
+        }
+    }
+
+    function filterStores() {
+        return {
+            id: $("#BranchId").data("kendoDropDownList").value()
+
+        }
+    }
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var codeid;
+    var isclosed;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.FixedAssetCountId;
+        isclosed = masterDataItem.IsClosed;
+
+
+    }
+
+    function onDataBoundCountMaster() {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsClosed) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+
+    function onDataBoundCountLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isclosed) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+            $(".k-grid-✅", detailGrid).hide();
+        }
+    }
+
+
+
+    function ChangeStatus(e) {
+
+        //var detailGrid = "#" + e.sender.element[0].id;
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        $.ajax({
+            type: "GET",
+            id: dataItem.FixedAssetCountItemId, //I obtained the id properly
+            url: '@Url.Action("Change", "FixedAssetCountItem")/' + dataItem.FixedAssetCountItemId,
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                var resultgritn = "#Item_" + codeid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+
+                alert(result.Message);
+
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+
+    }
+
+
+
+    function zeroStatusClicked(e) {
+
+        var conf = confirm("Are you sure you want to Update 0 physical count status ?");
+        if (conf === true) {
+
+            $('#loading-image').show();
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateZeroBalance", "FixedAssetCount")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: codeid },
+                    dataType: "json",
+                    success: function (result) {
+                        // toastr.warnning(result.Message);
+                        alert(result.Message);
+                        //location.reload(true);
+                    }, //end succ
+                    error: function (result) {
+                        alert(result);
+                    },
+                    complete: function () {
+                        $('#loading-image').hide();
+                    }
+                });
+        }
+
+    }
+    function updateRegistration(e) {
+
+        var conf = confirm("Are you sure you want to Update ?");
+        if (conf === true) {
+
+            $('#loading-image').show();
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateBalance", "FixedAssetCount")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: codeid },
+                    dataType: "json",
+                    success: function (result) {
+                        // toastr.warnning(result.Message);
+                        alert(result.Message);
+                        //location.reload(true);
+                    }, //end succ
+                    error: function (result) {
+                        alert(result);
+                    },
+                    complete: function () {
+                        $('#loading-image').hide();
+                    }
+                });
+        }
+
+    }
+
+    function reverse(e) {
+        var conf = confirm("Are you sure you want to Reverse ?");
+        if (conf === true) {
+            $('#loading-image').show();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("ReverseUpdate", "FixedAssetCount")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    //location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                },
+                complete: function () {
+                    $('#loading-image').hide();
+                }
+            });
+        }
+
+    }
+    function close(e) {
+        var conf = confirm("Are you sure you want to Close ?");
+        if (conf === true) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("CloseCount", "FixedAssetCount")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    //location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                },
+                complete: function () {
+
+                }
+            });
+        }
+
+    }
+
+    function refresh(e) {
+
+        var conf = confirm("Are you sure you want to Refresh ?");
+        if (conf === true) {
+            $('#loading-image').show();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("RefreshStoreItems", "FixedAssetCount")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    //location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                },
+                complete: function () {
+                    $('#loading-image').hide();
+                }
+            });
+        }
+
+    }
+
+
+
+    function loadItems(e) {
+        $('#loading-image').show();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("LoadAssets", "FixedAssetCount")',
+            contentType: "application/json; charset=utf-8",
+            data: { id: codeid },
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                //location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            },
+            complete: function () {
+                $('#loading-image').hide();
+            }
+        });
+
+    }
+
+
+
+
+    function printClicked(e) {
+        $.ajax({
+            type: "GET",
+            data: codeid,
+            url: '@Url.Action("FixedAssetCountPrint", "FixedAssetCount")/' + codeid
+        });
+    };
+
+
+    function onDataBinding(e){
+        //Implement the event handler for DataBinding
+    }
+
+    function onMasterEdit(e){
+        //Implement the event handler for Edit
+    }
+
+</script>
+
+

@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -63,6 +65,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 db.Appreciations.Add(entity);
                 db.SaveChanges();
                 appreciation.AppreciationID = entity.AppreciationID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "appreciation", "Success", User.Identity.Name, $"created appreciation {entity.AppreciationID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { appreciation }.ToDataSourceResult(request, ModelState));
@@ -93,6 +98,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 db.Appreciations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "appreciation", "Success", User.Identity.Name, $"update appreciation {entity.AppreciationID} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { appreciation }.ToDataSourceResult(request, ModelState));
@@ -117,6 +125,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 db.Appreciations.Attach(entity);
                 db.Appreciations.Remove(entity);
                 db.SaveChanges();
+
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset registration number {appreciation.AppreciationID } and Tag {appreciation.AssetRegistrationId}");
+                #endregion
             }
 
             return Json(new[] { appreciation }.ToDataSourceResult(request, ModelState));

@@ -72,6 +72,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 PaymentAmount = purchasePayment.PaymentAmount,
                 ApplyPenality = purchasePayment.ApplyPenality,
                 PenalityAmount = purchasePayment.PenalityAmount,
+                ServiceCharge = purchasePayment.ServiceCharge,
+                OtherPayment = purchasePayment.OtherPayment,
                 NetPayable = purchasePayment.NetPayable,
                 AmountDue = purchasePayment.AmountDue,
                 Remark = purchasePayment.Remark,
@@ -184,6 +186,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     PaymentAmount = purchasePayment.PaymentAmount,
                     ApplyPenality = purchasePayment.ApplyPenality,
                     PenalityAmount = purchasePayment.PenalityAmount,
+                    ServiceCharge = purchasePayment.ServiceCharge,
+                    OtherPayment = purchasePayment.OtherPayment,
                     NetPayable = purchasePayment.NetPayable,
                     AmountDue = purchasePayment.AmountDue,
                     Remark = purchasePayment.Remark,
@@ -308,6 +312,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     PaymentAmount = purchasePayment.PaymentAmount,
                     ApplyPenality = purchasePayment.ApplyPenality,
                     PenalityAmount = purchasePayment.PenalityAmount,
+                    ServiceCharge = purchasePayment.ServiceCharge,
+                    OtherPayment = purchasePayment.OtherPayment,
                     NetPayable = purchasePayment.NetPayable,
                     AmountDue = purchasePayment.AmountDue,
                     Remark = purchasePayment.Remark,
@@ -379,6 +385,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     WithOutGRN = purchasePayment.WithOutGRN,
                     PaymentAmount = purchasePayment.PaymentAmount,
                     ApplyPenality = purchasePayment.ApplyPenality,
+                    PenalityAmount = purchasePayment.PenalityAmount,
+                    ServiceCharge = purchasePayment.ServiceCharge,
+                    OtherPayment = purchasePayment.OtherPayment,
+                    NetPayable = purchasePayment.NetPayable,
                     AmountDue = purchasePayment.AmountDue,
                     Remark = purchasePayment.Remark,
                     IsOnlineApproved = purchasePayment.IsOnlineApproved,
@@ -423,8 +433,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
         public JsonResult SendForApproval(int id)
         {
             var record = _db.PurchasePayments.Find(id);
-            
-            if (record.PaymentType == PaymentType.Payment && record.PurchasePaymentType == PurchasePaymentType.Credit)
+            //except advance all should have grn
+            if (record.PaymentType == PaymentType.Credit)  //PaymentType.Payment && record.PurchasePaymentType == PurchasePaymentType.Credit)
             {
                 //check if there is grn
                 var grns = _db.PurchasePaymentGrns
@@ -519,6 +529,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     else
                         return true;
                 }
+                else if (record.PaymentType == PaymentType.Credit)
+                {
+                    var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Credit).ToList();
+                    decimal sumPaymentPercent = payments.Sum(x => x.Percentage);
+                    if (sumPaymentPercent <= 0)
+                        return false;
+                    else
+                        return true;
+                }
                 else
                 {
                     var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).ToList();
@@ -540,6 +559,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 if (record.PaymentType == PaymentType.Advance)
                 {
                     var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).ToList();
+                    decimal sumAdvancePercent = advances.Sum(x => x.Percentage);
+                    if (sumAdvancePercent <= 0)
+                        return false;
+                    else
+                        return true;
+                }
+                else if (record.PaymentType == PaymentType.Credit)
+                {
+                    var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Credit).ToList();
                     decimal sumAdvancePercent = advances.Sum(x => x.Percentage);
                     if (sumAdvancePercent <= 0)
                         return false;

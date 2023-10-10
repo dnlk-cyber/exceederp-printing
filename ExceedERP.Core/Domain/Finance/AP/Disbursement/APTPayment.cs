@@ -1,12 +1,11 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.AP.Travel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Finance.AP
 {
- 
+
     public class ApTPayment : NewOperations
     {
         public int ApTPaymentId { get; set; }

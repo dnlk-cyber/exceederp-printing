@@ -31,16 +31,22 @@ namespace ExceedERP.Core.Domain.Inventory
 
         [DisplayName("For Branch/Project")]
         public int? ForBranchId { get; set; }
+        [DisplayName("Issue Number")]
+        public string IssueNumber { get; set; }
+        [DisplayName("Job Order")]
+        public string JobOrderId { get; set; }
         [Display(Name = "Confirmation Letter")]
         public string ConfirmationLetter { get; set; }//if bad items are returned need to a
+        [DisplayName("Branch or Project")]
+        public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<StoreReturnItems> StoreReturnItems { get; set; }
         public virtual ICollection<StoreReturnValidation> StoreReturnValidation { get; set; }
         public virtual ICollection<StoreReturnDistribution> StoreReturnDistribution { get; set; }
         public virtual ICollection<StoreReturnAttachment> StoreReturnAttachments { get; set; }
-        public string IssueNumber { get; set; }
-        public string JobOrderId { get; set; }
     }
-    public class StoreReturnItems : TrackUserOperation
+    public class StoreReturnItems : TrackUserOperation, IValidatableObject
     {
         public int StoreReturnItemsID { get; set; }
 
@@ -56,13 +62,21 @@ namespace ExceedERP.Core.Domain.Inventory
         //public string ItemName { get; set; }
         public virtual InventoryItem InventoryItem { get; set; }
         [Display(Name = "Quantity")]
+        [Range(0.0, Double.MaxValue, ErrorMessage = "The field {0} must be greater than {0}.")]
         public decimal Quantity { get; set; }
         [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
-        [Display(Name = "Job No")]
         public string ProductionJobNo { get; set; }
-        [Display(Name = "Job No")]
-        public string MaintenanceJobNo { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if  (UnitPrice <0)
+            {
+                yield return new ValidationResult(
+                    $"Price should be positive number.",
+                    new[] { nameof(UnitPrice) });
+            }
+        }
     }
     public class StoreReturnValidation : TrackUserSettingOperation
     {

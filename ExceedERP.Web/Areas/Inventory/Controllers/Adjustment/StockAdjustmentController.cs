@@ -19,24 +19,83 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
 
     public class StockAdjustmentController : Controller
     {
-        private ExceedDbContext db = new ExceedDbContext();
+        private ExceedDbContext _db = new ExceedDbContext();
 
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
         public ActionResult Index()
         {
-
-            PopulateCategories();
+            PopulateViewData();
             return View();
+        }
+
+        private void PopulateViewData()
+        {
+
+            var categories = _db.ItemCategorys;
+            var items = _db.InventoryItems;
+            //var stores = _db.InventoryStores;
+
+            //var branches = _db.Branch;
+            //var costCenter = _db.BranchCostCenter;
+            //var selectedcostCenter = costCenter.Select(
+            //  i => new
+            //  {
+            //      Name = i.MainCompanyStructure.Name,
+            //      Code = i.OrgStructureId
+            //  }).AsQueryable();
+            //var inventoryPeriods = _db.InventoryPeriods;
+            //var selectedinventoryPeriods = inventoryPeriods.Select(
+            // i => new
+            // {
+            //     Name = i.Name,
+            //     GLPeriodId = i.InventoryPeriodId
+            // }).AsQueryable();
+            //ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            //ViewData["costCenters"] = selectedcostCenter;
+
+            //ViewData["Branches"] = branches;
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+            //ViewData["stores"] = stores;
+
+            //var employee = _db.Person_Employee;
+            //var selectedEmployee = employee.Select(
+            //    i => new
+            //    {
+            //        Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+            //        Code = i.EmployeeId
+            //    }).AsQueryable();
+            //ViewData["personEmployees"] = selectedEmployee;
+
+            //var workitem = _db.ProjectEstimationWorkItem.Where(w => !string.IsNullOrEmpty(w.ItemCode));
+            //var selectedWorkitem = workitem.Select(
+            //    i => new
+            //    {
+            //        Name = i.ItemCode + "-" + i.ItemName,
+            //        Code = i.ItemCode
+            //    }).AsQueryable();
+            //ViewData["WorkItem"] = selectedWorkitem;
         }
 
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
         public ActionResult StockAdjustments_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<StockAdjustment> stockadjustments = db.StockAdjustments.Where(x => mybraches.Contains(x.OrgBranchName));
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+            IQueryable<StockAdjustment> stockadjustments = _db.StockAdjustments.Where(x => userStores.Contains(x.StoreCode));
             DataSourceResult result = stockadjustments.ToDataSourceResult(request, stockAdjustment => new
             {
                 StockAdjustmentID = stockAdjustment.StockAdjustmentID,
+                BranchId = stockAdjustment.BranchId,
+                BusinessUnitId = stockAdjustment.BusinessUnitId,
                 Reference = stockAdjustment.Reference,
                 StoreCode = stockAdjustment.StoreCode,
                 AdjustmentDate = stockAdjustment.AdjustmentDate,
@@ -55,6 +114,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                 IsOnlineTransferred = stockAdjustment.IsOnlineTransferred,
                 IsOnlineTransferredBy = stockAdjustment.IsOnlineTransferredBy,
                 OnlineTransferredTime = stockAdjustment.OnlineTransferredTime,
+                DateCreated = stockAdjustment.DateCreated,
+                CreatedBy = stockAdjustment.CreatedBy,
+                LastModified = stockAdjustment.LastModified,
+                ModifiedBy = stockAdjustment.ModifiedBy,
             });
 
             return Json(result);
@@ -64,7 +127,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustments_Create([DataSourceRequest]DataSourceRequest request, StockAdjustment stockAdjustment)
         {
-            if (stockAdjustment.AdjustmentDate > DateTime.Today)
+            if (stockAdjustment.AdjustmentDate.Date > DateTime.Today.Date)
             {
                 ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
             }
@@ -72,6 +135,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             {
                 var entity = new StockAdjustment
                 {
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(stockAdjustment.StoreCode),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     Reference = stockAdjustment.Reference,
                     StoreCode = stockAdjustment.StoreCode,
                     AdjustmentDate = stockAdjustment.AdjustmentDate.Date,
@@ -93,8 +158,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                     OrgBranchName = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(stockAdjustment.StoreCode).ToString()
                 };
 
-                db.StockAdjustments.Add(entity);
-                db.SaveChanges();
+                _db.StockAdjustments.Add(entity);
+                _db.SaveChanges();
                 stockAdjustment.StockAdjustmentID = entity.StockAdjustmentID;
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment", "Success", User.Identity.Name, $"created stock adjustment id {entity.StockAdjustmentID}  ", Modules.Inventory);
@@ -108,7 +173,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustments_Update([DataSourceRequest]DataSourceRequest request, StockAdjustment stockAdjustment)
         {
-            if (stockAdjustment.AdjustmentDate > DateTime.Today)
+            if (stockAdjustment.AdjustmentDate.Date > DateTime.Today.Date)
             {
                 ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
             }
@@ -117,6 +182,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                 var entity = new StockAdjustment
                 {
                     StockAdjustmentID = stockAdjustment.StockAdjustmentID,
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(stockAdjustment.StoreCode),
+                    BusinessUnitId =stockAdjustment.BusinessUnitId,
                     Reference = stockAdjustment.Reference,
                     StoreCode = stockAdjustment.StoreCode,
                     AdjustmentDate = stockAdjustment.AdjustmentDate,
@@ -136,9 +203,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                     LastModified = DateTime.Now
                 };
 
-                db.StockAdjustments.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.StockAdjustments.Attach(entity);
+                _db.Entry(entity).State = EntityState.Modified;
+                _db.SaveChanges();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment", "Success", User.Identity.Name, $"updated stock adjustment id {entity.StockAdjustmentID}  ", Modules.Inventory);
                 #endregion
@@ -156,6 +223,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                 var entity = new StockAdjustment
                 {
                     StockAdjustmentID = stockAdjustment.StockAdjustmentID,
+                    BranchId = stockAdjustment.BranchId,
+                    BusinessUnitId =stockAdjustment.BusinessUnitId,
                     Reference = stockAdjustment.Reference,
                     StoreCode = stockAdjustment.StoreCode,
                     AdjustmentDate = stockAdjustment.AdjustmentDate,
@@ -173,9 +242,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                     OnlineTransferredTime = stockAdjustment.OnlineTransferredTime,
                 };
 
-                db.StockAdjustments.Attach(entity);
-                db.StockAdjustments.Remove(entity);
-                db.SaveChanges();
+                _db.StockAdjustments.Attach(entity);
+                _db.StockAdjustments.Remove(entity);
+                _db.SaveChanges();
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted stock adjustment number " + stockAdjustment.StockAdjustmentID + " " + stockAdjustment.Remark);
                 #endregion
@@ -188,12 +257,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         public JsonResult TransferDistribution(string id)
         {
             int myid = int.Parse(id);
-            StockAdjustment record = db.StockAdjustments.Find(myid);
+            StockAdjustment record = _db.StockAdjustments.Find(myid);
 
             if (record != null && record.IsOnlineApproved && !record.IsOnlineTransferred)
             {
                 #region check if already transffered 
-                var exist = db.GLRecordJournals
+                var exist = _db.GLRecordJournals
                    .Where(x => x.Source == JournalSources.Stock_Adjustment.ToString())
                    .Where(x => x.SourceId == record.StockAdjustmentID.ToString())
                    .FirstOrDefault();
@@ -258,7 +327,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                 string glperiod = "";
                 string glyear = "";
                 #region get period
-                var period = db.GLPeriods.Where(x => x.DateFrom <= record.AdjustmentDate).Where(x => x.DateTo >= record.AdjustmentDate).ToList();
+                var period = _db.GLPeriods.Where(x => x.DateFrom <= record.AdjustmentDate).Where(x => x.DateTo >= record.AdjustmentDate).ToList();
                 if (period.Any())
                 {
                     if (period.Count == 1)
@@ -325,8 +394,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                         OrgBranchName=record.OrgBranchName
                     };
 
-                    db.GLRecordJournals.Add(journal);
-                    db.SaveChanges();
+                    _db.GLRecordJournals.Add(journal);
+                    _db.SaveChanges();
                     foreach (StockAdjustmentDistribution i in record.StockAdjustmentDistribution)
                     {
                         #region debit and credit
@@ -341,15 +410,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                             Debit = i.Debit,
                             Credit = i.Credit
                         };
-                        db.GLRecordJournalDetails.Add(journalDetail);
-                        db.SaveChanges();
+                        _db.GLRecordJournalDetails.Add(journalDetail);
+                        _db.SaveChanges();
                         #endregion
                     }
                     record.IsOnlineTransferred = true;
                     record.IsOnlineTransferredBy = User.Identity.Name;
                     record.OnlineTransferredTime = DateTime.Now;
-                    db.Entry(record).State = EntityState.Modified;
-                    db.SaveChanges();
+                    _db.Entry(record).State = EntityState.Modified;
+                    _db.SaveChanges();
                     var formattedData = new
                     {
                         Message = "Successfully transferred.",
@@ -395,16 +464,16 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
         public JsonResult SendForApproval(int id)
         {
-            var record = db.StockAdjustments.Find(id);
+            var record = _db.StockAdjustments.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StockAdjustmentItems.Count > 0)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;
-                db.StockAdjustments.Attach(record);
-                db.Entry(record).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.StockAdjustments.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "stock adjustment", "Success", User.Identity.Name, $"send for approval stock adjustment id {id}  ", Modules.Inventory);
@@ -460,7 +529,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         }
         protected override void Dispose(bool disposing)
         {
-            db.Dispose();
+            _db.Dispose();
             base.Dispose(disposing);
         }
         private void PopulateCategories()

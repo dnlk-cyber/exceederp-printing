@@ -131,6 +131,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                         GLPeriodId = itemTransfer.GLPeriodId,
                                         TransactionType = BinCardTransactionTypes.TransferSend,
                                         StatusType = BinCardTransactionStatus.Regular,
+                                        TransactionOrder = BinCardTransactionOrder.TransferSend
                                     };
 
                                     db.BinCardLines.Add(binCardLine);
@@ -236,9 +237,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 var transferReceive = new ItemTransferReceive
                 {
                     ItemTransferID = itemTransfer.ItemTransferID,
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.ToStore),
+                    BusinessUnitId = itemTransfer.BusinessUnitId,
                     ReceiveDate = itemTransfer.TransferDate,
                     FromStore = itemTransfer.FromStore,
                     ToStore = itemTransfer.ToStore,
+                    DocumentRef = itemTransfer.DocumentRef,
                     DeliveredBy = itemTransfer.DeliveredBy,
                     PlateNo = itemTransfer.PlateNo,
                     SupplierName = itemTransfer.SupplierName,

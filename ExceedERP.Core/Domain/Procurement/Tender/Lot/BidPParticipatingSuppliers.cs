@@ -70,13 +70,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
         public string ModelNo { get; set; }
         [Display(Name = "Unit")]
         public string UoM { get; set; }
-        public PurchaseItemType ItemType { get; set; }
-        [Display(Name = "Supplier ID")]//supplier database
-        public string SupplierId { get; set; }
-        [Display(Name = "New Supplier")]//manual supplier
-        public bool IsNewSupplier { get; set; }
-        [Display(Name = "Supplier Name")]//manual supplier
-        public string SupplierName { get; set; }
+        public PurchaseItemType ItemType { get; set; }       
         [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
         [Display(Name = "Quantity")]
@@ -89,8 +83,7 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
         public decimal Total { get; set; }
         [Display(Name = "Rebate Amount")]
         public decimal DiscountAmount { get; set; }
-        public virtual Lot Lot { get; set; }
-        public int LotID { get; set; }
+        
         [DisplayName("Tax Type")]
         public int GLTaxRateID { get; set; }
         public float Technical { get; set; }

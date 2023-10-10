@@ -1174,11 +1174,26 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         public JsonResult GetArPaymentMethods()
         {
-            string mybrach = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            int mybrachId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            
+            var paymentMethods = _db.PaymentMethods.Where(x => x.ApplyToAr).Where(x => x.Enable);
 
-            var paymentMethods = _db.PaymentMethods.Where(x => x.ApplyToAr).Where(x => x.Enable)
-                .Where(x => x.BranchId.ToString() == mybrach)
-                .AsQueryable();
+            if(GlobalHelper.IsMultipleBusinessUnit())
+            {
+                int myBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                paymentMethods = paymentMethods
+                  .Where(x => x.BusinessUnitId == myBusinessUnitId)
+                  .AsQueryable();
+            }
+            else
+            {
+                paymentMethods = paymentMethods
+               .Where(x => x.BranchId == mybrachId)
+               .AsQueryable();
+            }
+
+           
             return Json(paymentMethods.Select(p => new
             {
                 Method = p.Method
@@ -1187,11 +1202,24 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         }
         public JsonResult GetApPaymentMethods()
         {
-             string mybrach = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            int mybrachId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
 
-            var paymentMethods = _db.PaymentMethods.Where(x => x.ApplyToAp).Where(x => x.Enable)
-                .Where(x =>x.BranchId.ToString()== mybrach)
-                .AsQueryable();
+            var paymentMethods = _db.PaymentMethods.Where(x => x.ApplyToAp).Where(x => x.Enable);
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                int myBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                paymentMethods = paymentMethods
+                  .Where(x => x.BusinessUnitId == myBusinessUnitId)
+                  .AsQueryable();
+            }
+            else
+            {
+                paymentMethods = paymentMethods
+               .Where(x => x.BranchId == mybrachId)
+               .AsQueryable();
+            }
             return Json(paymentMethods.Select(p => new
             {
                 Method = p.Method
@@ -1706,7 +1734,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
             var paymentRequests = _db.PurchasePayments
                                     .Where(x => x.IsFinanceApproved && x.IsVoid == false)
-                                    .Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
+                                    .Where(x => x.Paid == false && x.PaymentType == PaymentType.Credit)
                                     .Where(x => x.PurchasePaymentType == PurchasePaymentType.Credit)
                                     .Select(x => new
                                     {

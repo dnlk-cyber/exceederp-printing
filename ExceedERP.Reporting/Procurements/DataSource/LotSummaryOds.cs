@@ -26,17 +26,21 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         {
             List<ProformaAndLotSummaryViewModel> summaryList = new List<ProformaAndLotSummaryViewModel>();
 
-            var supplierData = _db.ParticipantsItems.Where(x => x.LotID.ToString() == id);
+            int did = int.Parse(id);
+            var supp = _db.BidPParticipatingSupplierses.Where(x => x.LotID == did).Select(x=>x.BidPParticipatingSuppliersID).ToList();
 
-            foreach (var supplier in supplierData)
+            var supplierItem = _db.BidParticipatingSupplierItems.Where(x => supp.Contains(x.BidPParticipatingSuppliersID));
+
+            foreach (var item in supplierItem)
             {
+                var supplier = _db.BidPParticipatingSupplierses.Where(x => x.LotID == did).Where(x => x.BidPParticipatingSuppliersID == item.BidPParticipatingSuppliersID).FirstOrDefault();
                 var summary = new ProformaAndLotSummaryViewModel
                 {
-                    Description =  supplier.ItemName + "-" + supplier.Name + "-" + supplier.ModelNo ,
-                    SupplierName = supplier.SupplierName,
-                    Quantity = supplier.Quantity,
-                    Unit = supplier.UoM,
-                    UPrice=supplier.UnitPrice.ToString(),// supplier.IsOutOfStock ? "Out of Stock" : (supplier.UPrice).ToString(),
+                    Description =  item.ItemName + "-" + item.Name + "-" + item.ModelNo+"-" +item.LotItemID ,
+                    SupplierName = supplier?.SupplierName,
+                    Quantity = item.Quantity,
+                    Unit = item.UoM,
+                    UPrice=item.UnitPrice.ToString(),// supplier.IsOutOfStock ? "Out of Stock" : (supplier.UPrice).ToString(),
                     //TPrice = supplier.IsOutOfStock ? "Out of Stock" : (supplier.Quantity * supplier.UPrice).ToString()
                 };
                 //sub total

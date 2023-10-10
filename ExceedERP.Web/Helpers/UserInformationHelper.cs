@@ -44,6 +44,20 @@ namespace ExceedERP.Web.Helpers
          ExceedDbContext db = new ExceedDbContext();
          ApplicationDbContext _dbApplication = new ApplicationDbContext();
         #region User Infromation
+        public static int GetEmployeeWorkUnitById(int employeeid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            int branch = 0;
+
+            var placment = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeid && x.isCurrent);
+            if (placment != null)
+            {
+                branch = placment.OrgStructureId;
+            }
+
+            return branch;
+
+        }
         public static int GetEmployeeBranchById(int employeeid)
         {
             ExceedDbContext db = new ExceedDbContext();

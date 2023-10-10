@@ -25,8 +25,10 @@
                                   columns.Bound(c => c.PaymentType).Width(110);
                                   columns.Bound(c => c.PurchasePaymentType).Width(130);
                                   columns.Bound(p => p.PaymentAmount).Width(130);
-                                  //columns.Bound(p => p.PenalityAmount).Width(130);
-                                  //columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
+                                  columns.Bound(p => p.PenalityAmount).Width(130);
+                                  columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
+                                  columns.Bound(p => p.ServiceCharge).Width(130);
+                                  columns.Bound(p => p.OtherPayment).Width(130);
                                   columns.Bound(p => p.NetPayable).Width(130);
                                   columns.Bound(p => p.AmountDue).Width(130);
                                   columns.Bound(c => c.Paid).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' #= Paid ? checked='checked' :'' # />");

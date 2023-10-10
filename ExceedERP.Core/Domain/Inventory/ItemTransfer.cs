@@ -48,6 +48,8 @@ namespace ExceedERP.Core.Domain.Inventory
         [DisplayName("Is Fullfilled")]
         public bool IsFullfilled { get; set; }
         public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [Display(Name = "Requester Name")]
         public int EmployeeId { get; set; }
         public virtual ICollection<ItemTransferItem> ItemTransferItem { get; set; }

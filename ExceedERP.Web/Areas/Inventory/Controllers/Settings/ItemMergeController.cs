@@ -122,6 +122,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                         destiStoreItem.AvgPrice = (totalOfAvgPriceMulByBalance + totalAmountExisting) / destiStoreItem.Balance;
                     }
 
+
                     db.StoreItemAssignments.Attach(destiStoreItem);
                     db.Entry(destiStoreItem).State = EntityState.Modified;
                     db.SaveChanges();

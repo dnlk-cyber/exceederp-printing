@@ -7,7 +7,7 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.ItemTransferReceiveId).Title("#").Width(60).ClientTemplate("#=appendZeros(ItemTransferReceiveId)#");
+          columns.Bound(c => c.ItemTransferReceiveId).Title("#").Width(120).ClientTemplate("#=appendZeros(ItemTransferReceiveId)#");
           columns.Bound(c => c.ItemTransferID).Title("Trans. Send. No.").Width(110);//.EditorTemplateName("TransferStoreRequistion");
           columns.Bound(c => c.DocumentRef).Title("Doc Ref No.").Width(100);
           columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120);
@@ -21,7 +21,7 @@
           columns.Bound(c => c.Status).Width(80);
           columns.Bound(c => c.GLPeriodId).Hidden().Width(150);
           columns.Bound(c => c.BranchId).Hidden().Width(100);
-       
+
           columns.Command(command =>
           {
               command.Edit();
@@ -42,7 +42,7 @@
           .PageSizes(true)
           .ButtonCount(5))
       .Filterable()
-      .Groupable()
+
       .Selectable(selectable =>
       {
           selectable.Mode(GridSelectionMode.Single);
@@ -54,7 +54,7 @@
       })
       .Scrollable(height => height.Height(500))
       .Events(events => {
-                            events.DetailExpand("detailExpand");
+          events.DetailExpand("detailExpand");
       })
       .Events(ev => ev.Edit("onMasterEdit"))
       .Events(x => x.DataBound("onDataBoundMaster"))
@@ -69,7 +69,8 @@
           .Model(model =>
           {
               model.Id(p => p.ItemTransferReceiveId);
-              model.Field(p => p.BranchId).Editable(false);       
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
           })
           .Read(read => read.Action("ItemTransferReceives_Read", "TransferReceives"))
           .Create(create => create.Action("ItemTransferReceives_Create", "TransferReceives"))
@@ -301,6 +302,7 @@
                   })
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                   .Scrollable()
+                   .Filterable()
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model =>

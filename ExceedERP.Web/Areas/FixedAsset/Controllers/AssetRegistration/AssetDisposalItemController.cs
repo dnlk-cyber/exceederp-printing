@@ -4,7 +4,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -83,6 +85,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.DisposalItems.Add(entity);
                 db.SaveChanges();
                 disposalItem.DisposalItemId = entity.DisposalItemId;
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Disposal Item", "Success", User.Identity.Name, $"created asset Disposal Item {entity.DisposalItemId} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { disposalItem }.ToDataSourceResult(request, ModelState));
@@ -126,6 +132,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 db.DisposalItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset Disposal Item", "Success", User.Identity.Name, $"updated asset Disposal Item {entity.AssetRegistrationId} Tag {disposalItem.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { disposalItem }.ToDataSourceResult(request, ModelState));
@@ -154,7 +165,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     LastModified = disposalItem.LastModified,
                     CreatedBy = disposalItem.CreatedBy,
                     ModifiedBy = disposalItem.ModifiedBy
+
                 };
+
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset Disposal Item  {disposalItem.DisposalItemId } and Tag {disposalItem.AssetRegistrationId}");
+                #endregion
 
                 db.DisposalItems.Attach(entity);
                 db.DisposalItems.Remove(entity);

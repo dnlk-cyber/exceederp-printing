@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -108,14 +109,17 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 
             if (!String.IsNullOrEmpty(periodid) && !String.IsNullOrEmpty(branchid))
             {
+                decimal minimumAssetValue = FixedAssetConfigurationHelper.GetAssetMinimumLevel();
                 int periodidd = int.Parse(periodid);
                 int branchidd = int.Parse(branchid);
                 var branch = _db.Branch.Find(branchidd);
                 var glPeriod = _db.GLPeriods.Find(periodidd);
-
                 var rules = _db.DepretiationRules.ToList();
-
-                var activeAssets = _db.AssetRegistrations.Where(x => x.Status == RegistrationStatus.Active).ToList();
+               
+                var activeAssets = _db.AssetRegistrations
+                        .Where(x => x.Status == RegistrationStatus.Active || x.Status == RegistrationStatus.Revalued)
+                        .Where(x => x.PurchasePrice>=minimumAssetValue)//added to exclude small items 
+                      .ToList();
                 if (glPeriod != null &&branch!=null)
                 {
                     foreach (var asset in activeAssets)

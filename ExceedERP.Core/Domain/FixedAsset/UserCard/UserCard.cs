@@ -1,6 +1,6 @@
 ﻿namespace ExceedERP.Core.Domain.FixedAsset.UserCard
 {
-    //public class UserCard : TrackUserOperation
+    //public class PersonEmployee : TrackUserOperation
     //{
     //    public int UserCardID { get; set; }
     //    [Display(Name = "Employee ID")]

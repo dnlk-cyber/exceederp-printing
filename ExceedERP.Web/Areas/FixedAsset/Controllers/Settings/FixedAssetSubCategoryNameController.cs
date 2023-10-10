@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -36,6 +38,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetSubCategoryNames_Create(int id,[DataSourceRequest]DataSourceRequest request, FixedAssetSubCategoryName fixedAssetSubCategoryName)
         {
+            var exisit = db.FixedAssetSubCategoryNames.Where(x => x.Name == fixedAssetSubCategoryName.Name).FirstOrDefault();
+            if (exisit != null)
+                ModelState.AddModelError("name","Name already Exisits");
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetSubCategoryName
@@ -51,6 +56,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetSubCategoryNames.Add(entity);
                 db.SaveChanges();
                 fixedAssetSubCategoryName.FixedAssetSubCategoryNameId = entity.FixedAssetSubCategoryNameId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetSubCategoryName", "Success", User.Identity.Name, $"created FixedAssetSubCategoryName {entity.FixedAssetSubCategoryNameId} subCatName {entity.FixedAssetSubCategoryNameId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetSubCategoryName }.ToDataSourceResult(request, ModelState));
@@ -59,6 +67,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetSubCategoryNames_Update([DataSourceRequest]DataSourceRequest request, FixedAssetSubCategoryName fixedAssetSubCategoryName)
         {
+            var exisit = db.FixedAssetSubCategoryNames
+                 .Where(x => x.FixedAssetSubCategoryNameId != fixedAssetSubCategoryName.FixedAssetSubCategoryNameId)
+                .Where(x => x.Name == fixedAssetSubCategoryName.Name).FirstOrDefault();
+            if (exisit != null)
+                ModelState.AddModelError("name", "Name already Exisits");
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetSubCategoryName
@@ -75,6 +88,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetSubCategoryNames.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetSubCategoryName", "Success", User.Identity.Name, $"Update FixedAssetSubCategoryName {entity.FixedAssetSubCategoryNameId} SubCatName {entity.FixedAssetSubCategoryNameId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetSubCategoryName }.ToDataSourceResult(request, ModelState));
@@ -98,6 +114,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetSubCategoryNames.Attach(entity);
                 db.FixedAssetSubCategoryNames.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetSubCategoryName {fixedAssetSubCategoryName.FixedAssetSubCategoryNameId} subCatName {fixedAssetSubCategoryName.FixedAssetSubCategoryNameId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetSubCategoryName }.ToDataSourceResult(request, ModelState));

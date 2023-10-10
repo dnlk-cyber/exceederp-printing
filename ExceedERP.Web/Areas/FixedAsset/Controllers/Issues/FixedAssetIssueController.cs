@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -126,13 +129,22 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetIssues_Create([DataSourceRequest]DataSourceRequest request, FixedAssetIssue issue)
         {
-            var fixedAssetRequisition = _db.FixedAssetRequisitions
-                .FirstOrDefault(sr => sr.FixedAssetRequisitionId == issue.FixedAssetRequisitionId);
+            var fixedAssetRequisition = _db.FixedAssetRequisitions.FirstOrDefault(sr => sr.FixedAssetRequisitionId == issue.FixedAssetRequisitionId);
+
+            var fixedAssetIssueItems = _db.FixedAssetIssueItems.Where(q => q.AssetRegistrationId == issue.FixedAssetRequisitionId).ToList();
+
+            var fixedAssetReturnItems = _db.FixedAssetReturnItems.Where(q => q.AssetRegistrationId == issue.FixedAssetRequisitionId).ToList();
 
             if (fixedAssetRequisition != null && fixedAssetRequisition.FixedAssetRequisitionItem.Count == 0)
             {
                 ModelState.AddModelError("requestedItem", "The requisition does not have line items.");
             }
+
+            if (fixedAssetIssueItems.Count() > fixedAssetReturnItems.Count())
+            {
+                ModelState.AddModelError("requestedItem", "Item already existed");
+            }
+
             if (fixedAssetRequisition != null)
             {
                 issue.StoreCode = fixedAssetRequisition.StoreCode;
@@ -183,6 +195,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 _db.SaveChanges();
                 issue.FixedAssetIssueID = entity.FixedAssetIssueID;
                 GetStoreRequisitionItems(entity);
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Fixed Asset Issue", "Success", User.Identity.Name, $"created asset issue {entity.FixedAssetIssueID} Tag {entity.StoreCode}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { issue }.ToDataSourceResult(request, ModelState));
@@ -193,9 +210,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
         public ActionResult FixedAssetIssues_Update([DataSourceRequest]DataSourceRequest request, FixedAssetIssue issue)
         {
             var fixedAssetRequisition = _db.FixedAssetRequisitions.FirstOrDefault(sr => sr.FixedAssetRequisitionId == issue.FixedAssetRequisitionId);
+            var fixedAssetIssueItems = _db.FixedAssetIssueItems.Where(q => q.AssetRegistrationId == issue.FixedAssetRequisitionId).ToList();
+            var fixedAssetReturnItems = _db.FixedAssetReturnItems.Where(q => q.AssetRegistrationId == issue.FixedAssetRequisitionId).ToList();
             if (fixedAssetRequisition != null && fixedAssetRequisition.FixedAssetRequisitionItem.Count == 0)
             {
                 ModelState.AddModelError("requestedItem", "The requisition does not have line items.");
+            }
+            if (fixedAssetIssueItems.Count()> fixedAssetReturnItems.Count())
+            {
+                ModelState.AddModelError("requestedItem", "Item already existed");
             }
             if (fixedAssetRequisition != null)
             {
@@ -247,6 +270,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 _db.FixedAssetIssues.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Fixed Asset Issue", "Success", User.Identity.Name, $"updated asset issue {entity.FixedAssetIssueID} Tag {entity.StoreCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { issue }.ToDataSourceResult(request, ModelState));
@@ -292,6 +319,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 _db.FixedAssetIssues.Attach(entity);
                 _db.FixedAssetIssues.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Fixed Asset Issue", "Success", User.Identity.Name, $"deleted asset issue {issue.FixedAssetIssueID} Tag {issue.StoreCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { issue }.ToDataSourceResult(request, ModelState));
@@ -532,16 +562,26 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             }
 
         }
+        /// <summary>
+        /// Gets FixedAssetRequisitionItems and populates FixedAssetIssueItem
+        /// </summary>
+        /// <param name="issue"></param>
         private void GetStoreRequisitionItems(FixedAssetIssue issue)
         {
-            var storeRequisitionItem = _db.FixedAssetRequisitionItems.Where(sr => sr.FixedAssetRequisitionId == issue.FixedAssetRequisitionId).ToList();
-            var storerequisition = storeRequisitionItem.FirstOrDefault();
+            var fixedAssetRequisitionItems = _db.FixedAssetRequisitionItems
+                .Where(sr => sr.FixedAssetRequisitionId == issue.FixedAssetRequisitionId)
+                .ToList();
+
+            var fixedAssetRequisitionItem = fixedAssetRequisitionItems.FirstOrDefault();
+
             string storeCode = "";
-            if (storerequisition != null)
+
+            if (fixedAssetRequisitionItem != null)
             {
-                storeCode = storerequisition.FixedAssetRequisition.StoreCode;
+                storeCode = fixedAssetRequisitionItem.FixedAssetRequisition.StoreCode;
             }
-            foreach (var requestedItem in storeRequisitionItem)
+
+            foreach (var requestedItem in fixedAssetRequisitionItems)
             {
 
                 #region fixed asset
@@ -554,6 +594,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                         FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
                         ItemName=requestedItem.Name,
                         Size=requestedItem.Size,
+                        SendToUserCard = true,//added
                         ChassisNo = requestedItem.ChasisNo,
                         Model = requestedItem.ModelNo,
                         SerialNo = requestedItem.SerialNo,
@@ -565,7 +606,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                         CreatedBy = User.Identity.Name,
                         DateCreated = DateTime.Today,
                         ModifiedBy = User.Identity.Name,
-                        LastModified = DateTime.Today
+                        LastModified = DateTime.Today,
+                        Unit = requestedItem.UoM //added
+                        
                     };
 
                     _db.FixedAssetIssueItems.Add(issueItem);

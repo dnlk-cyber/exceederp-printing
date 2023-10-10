@@ -57,6 +57,10 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox10 = new Telerik.Reporting.TextBox();
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox12 = new Telerik.Reporting.TextBox();
+            this.store = new Telerik.Reporting.ObjectDataSource();
+            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
+            this.countdates = new Telerik.Reporting.ObjectDataSource();
+            this.itemCategoryODS = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table4 = new Telerik.Reporting.Table();
             this.textBox48 = new Telerik.Reporting.TextBox();
@@ -84,6 +88,7 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox53 = new Telerik.Reporting.TextBox();
             this.textBox54 = new Telerik.Reporting.TextBox();
             this.textBox27 = new Telerik.Reporting.TextBox();
+            this.variation = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox41 = new Telerik.Reporting.TextBox();
             this.txtOrgName = new Telerik.Reporting.TextBox();
@@ -113,11 +118,6 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox67 = new Telerik.Reporting.TextBox();
             this.textBox68 = new Telerik.Reporting.TextBox();
             this.textBox30 = new Telerik.Reporting.TextBox();
-            this.variation = new Telerik.Reporting.ObjectDataSource();
-            this.store = new Telerik.Reporting.ObjectDataSource();
-            this.fiscalYeardDs = new Telerik.Reporting.ObjectDataSource();
-            this.countdates = new Telerik.Reporting.ObjectDataSource();
-            this.itemCategoryODS = new Telerik.Reporting.ObjectDataSource();
             this.headerComp = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -125,6 +125,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox42.Name = "textBox42";
             this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.38489994406700134D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox42.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox42.Style.Color = System.Drawing.Color.White;
             this.textBox42.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox42.StyleName = "Civic.TableHeader";
             this.textBox42.Value = "S.N";
@@ -133,6 +135,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.895074188709259D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox1.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox1.Style.Color = System.Drawing.Color.White;
             this.textBox1.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox1.StyleName = "Civic.TableHeader";
             this.textBox1.Value = "Item Code";
@@ -141,6 +145,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.103380560874939D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox2.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox2.Style.Color = System.Drawing.Color.White;
             this.textBox2.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox2.StyleName = "Civic.TableHeader";
             this.textBox2.Value = "Item Description";
@@ -149,6 +155,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox51.Name = "textBox51";
             this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61002522706985474D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox51.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox51.Style.Color = System.Drawing.Color.White;
             this.textBox51.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox51.StyleName = "Civic.TableHeader";
             this.textBox51.Value = "Location";
@@ -157,6 +165,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.43227222561836243D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox3.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox3.Style.Color = System.Drawing.Color.White;
             this.textBox3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox3.StyleName = "Civic.TableHeader";
             this.textBox3.Value = "Unit";
@@ -165,6 +175,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.570439875125885D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox4.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox4.Style.Color = System.Drawing.Color.White;
             this.textBox4.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox4.StyleName = "Civic.TableHeader";
             this.textBox4.Value = "Balance";
@@ -173,6 +185,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.50135558843612671D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox5.Style.Color = System.Drawing.Color.White;
             this.textBox5.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox5.StyleName = "Civic.TableHeader";
             this.textBox5.Value = "Price";
@@ -182,6 +196,8 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox6.Format = "{0:N4}";
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.85664677619934082D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox6.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox6.Style.Color = System.Drawing.Color.White;
             this.textBox6.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox6.StyleName = "Civic.TableHeader";
             this.textBox6.Value = "Total Amount";
@@ -190,6 +206,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.51122504472732544D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox7.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox7.Style.Color = System.Drawing.Color.White;
             this.textBox7.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox7.StyleName = "Civic.TableHeader";
             this.textBox7.Value = "Count";
@@ -199,6 +217,8 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox8.Format = "{0:N4}";
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.66913247108459473D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox8.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox8.Style.Color = System.Drawing.Color.White;
             this.textBox8.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox8.StyleName = "Civic.TableHeader";
             this.textBox8.Value = "Physical Amount";
@@ -207,6 +227,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.84677904844284058D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox9.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox9.Style.Color = System.Drawing.Color.White;
             this.textBox9.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox9.StyleName = "Civic.TableHeader";
             this.textBox9.Value = "Shortage Qty";
@@ -215,6 +237,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.91586399078369141D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox10.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox10.Style.Color = System.Drawing.Color.White;
             this.textBox10.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox10.StyleName = "Civic.TableHeader";
             this.textBox10.Value = "Shortage Price";
@@ -223,6 +247,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox11.Name = "textBox11";
             this.textBox11.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.82704049348831177D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox11.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox11.Style.Color = System.Drawing.Color.White;
             this.textBox11.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox11.StyleName = "Civic.TableHeader";
             this.textBox11.Value = "Overage Qty";
@@ -231,9 +257,35 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.88625591993331909D), Telerik.Reporting.Drawing.Unit.Inch(0.16270257532596588D));
+            this.textBox12.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox12.Style.Color = System.Drawing.Color.White;
             this.textBox12.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox12.StyleName = "Civic.TableHeader";
             this.textBox12.Value = "Overage Price";
+            // 
+            // store
+            // 
+            this.store.DataMember = "GetStores";
+            this.store.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.Stores);
+            this.store.Name = "store";
+            // 
+            // fiscalYeardDs
+            // 
+            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
+            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
+            this.fiscalYeardDs.Name = "fiscalYeardDs";
+            // 
+            // countdates
+            // 
+            this.countdates.DataMember = "GetCountDates";
+            this.countdates.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.VariationDs);
+            this.countdates.Name = "countdates";
+            // 
+            // itemCategoryODS
+            // 
+            this.itemCategoryODS.DataMember = "GetItemCategories";
+            this.itemCategoryODS.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.CategoryItemCustomOds);
+            this.itemCategoryODS.Name = "itemCategoryODS";
             // 
             // detailSection1
             // 
@@ -246,8 +298,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(10.010391235351563D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1041666641831398D)));
-            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999992847442627D)));
-            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.4718748927116394D)));
+            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999995827674866D)));
+            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.47187495231628418D)));
             this.table4.Body.SetCellContent(1, 0, this.textBox48);
             this.table4.Body.SetCellContent(0, 0, this.textBox49);
             this.table4.Body.SetCellContent(2, 0, this.table1);
@@ -601,6 +653,16 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox27.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox27.StyleName = "Civic.TableBody";
             // 
+            // variation
+            // 
+            this.variation.DataMember = "GetVariations";
+            this.variation.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.VariationDs);
+            this.variation.Name = "variation";
+            this.variation.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("category", typeof(string), "= Parameters.category.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("ignoreZeroValues", typeof(bool), "= Parameters.ignoreZeroValues.Value")});
+            // 
             // pageHeaderSection1
             // 
             this.pageHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1.7999999523162842D);
@@ -881,40 +943,6 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox30.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.3915913105010986D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
             this.textBox30.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox30.Value = "Signature.............................";
-            // 
-            // variation
-            // 
-            this.variation.DataMember = "GetVariations";
-            this.variation.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.VariationDs);
-            this.variation.Name = "variation";
-            this.variation.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("category", typeof(string), "= Parameters.category.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("ignoreZeroValues", typeof(bool), "= Parameters.ignoreZeroValues.Value")});
-            // 
-            // store
-            // 
-            this.store.DataMember = "GetStores";
-            this.store.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.Stores);
-            this.store.Name = "store";
-            // 
-            // fiscalYeardDs
-            // 
-            this.fiscalYeardDs.DataMember = "GetFiscalYearss";
-            this.fiscalYeardDs.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
-            this.fiscalYeardDs.Name = "fiscalYeardDs";
-            // 
-            // countdates
-            // 
-            this.countdates.DataMember = "GetCountDates";
-            this.countdates.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.VariationDs);
-            this.countdates.Name = "countdates";
-            // 
-            // itemCategoryODS
-            // 
-            this.itemCategoryODS.DataMember = "GetItemCategories";
-            this.itemCategoryODS.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.CategoryItemCustomOds);
-            this.itemCategoryODS.Name = "itemCategoryODS";
             // 
             // headerComp
             // 

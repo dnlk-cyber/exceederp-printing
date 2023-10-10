@@ -27,6 +27,8 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
 
             FixedAssetTransferHeader headerDs = new FixedAssetTransferHeader();
+
+
             if (assetTransfer != null)
             {
                 headerDs.StoreRequistionNo = assetTransfer.RequestNumber;
@@ -44,10 +46,14 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 
                 headerDs.StoreKeeperName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransfer.CreatedBy));
 
-                headerDs.ApprovedDate = assetTransfer.OnlineApprovedTime.GetValueOrDefault().ToShortDateString();
-                headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransfer.OnlineApprovedBy));
-                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransfer.CreatedBy));
-                headerDs.Datecreated = assetTransfer.DateCreated.GetValueOrDefault().ToShortDateString();
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransfer.CreatedBy));
+                headerDs.PreparedDate = assetTransfer.DateCreated != null ? assetTransfer.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(assetTransfer.CreatedBy);
+
+                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetTransfer.OnlineApprovedBy));
+                headerDs.ApprovedDate = assetTransfer.OnlineApprovedTime != null ? assetTransfer.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(assetTransfer.OnlineApprovedBy);
+
                 headerDs.DelivererPlate = assetTransfer.PlateNo;
 
                 if (assetTransfer.FromBranchId != null)
@@ -129,15 +135,18 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
             }
             return headerDs;
         }
+
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<FixedAssetTransferItemVm>TransferItems(int id)
+        public List<FixedAssetTransferItemVm> TransferItems(int id)
         {
             List<FixedAssetTransferItemVm> list = new List<FixedAssetTransferItemVm>();
 
             var assetTransferItems = db.AssetTransferItems.Where(x => x.AssetTransferId == id).ToList();
+
             foreach (var item in assetTransferItems)
             {
                 var asset = db.AssetRegistrations.Find(item.AssetRegistrationId);
+
                 if (asset != null)
                 {
                     var issueitem = new FixedAssetTransferItemVm

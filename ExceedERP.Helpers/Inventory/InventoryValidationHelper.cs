@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using ExceedERP.Core.Domain.Construction;
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
+using ExceedERP.Helpers.Construction;
 
 namespace ExceedERP.Helpers.Inventory
 {
@@ -64,8 +69,8 @@ namespace ExceedERP.Helpers.Inventory
 
                     decimal totalReceived = prevReceivedQty + currentReceivedQty;
 
-                    if (totalReceived > orderItem.Quantity)
-                        errorMessage = $"You can not receive above PO quantity for item {orderItem.ItmCode}.\n Award quanity is {orderItem.Quantity} ,but total receive including previously received will be {totalReceived}";
+                    //if (totalReceived > orderItem.Quantity)
+                    //    errorMessage = $"You can not receive above PO quantity for item {orderItem.ItmCode}.\n Award quanity is {orderItem.Quantity} ,but total receive including previously received will be {totalReceived}";
                                                            
                 }
 
@@ -140,8 +145,8 @@ namespace ExceedERP.Helpers.Inventory
 
                     decimal totalReceived = prevReceivedQty + currentReceivedQty;
 
-                    if (totalReceived > awardItem.Quanity)
-                        errorMessage = $"You can not receive above Award quantity for item {awardItem.ItmCode}.\n Award quanity is {awardItem.Quanity} ,but total receive including previously received will be {totalReceived}";
+                    //if (totalReceived > awardItem.Quanity)
+                    //    errorMessage = $"You can not receive above Award quantity for item {awardItem.ItmCode}.\n Award quanity is {awardItem.Quanity} ,but total receive including previously received will be {totalReceived}";
 
 
 

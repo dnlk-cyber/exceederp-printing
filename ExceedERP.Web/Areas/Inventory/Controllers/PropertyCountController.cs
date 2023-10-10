@@ -4,6 +4,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -18,6 +19,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
     public class PropertyCountController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
+        private ApplicationDbContext userDb = new ApplicationDbContext();
+        private readonly object countLock = new object();
 
 
         [AuthorizeRoles(InventoryConstants.PropertyCount, InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyCountApprover)]
@@ -35,6 +38,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             var items = db.InventoryItems;
             var fiscalYears = db.GLFiscalYears;
             var periods = db.InventoryPeriods;
+            //var users = userDb.Users;
+            var keepers = db.StoreKeeperAssignments.DistinctByField(x => x.StoreKeeper).Select(x => x.StoreKeeper).ToList();
+            var users = userDb.Users.Where(x => keepers.Contains(x.Id)).Select(p => new
+            {
+                Code = p.Id,
+                Name = p.UserName + "(" + p.FirstName + " " + p.MiddleName + " " + p.LastName + ")"
+            });
+
+            ViewData["users"] = users;
 
             ViewData["Years"] = fiscalYears;
             ViewData["periods"] = periods;
@@ -45,6 +57,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             ViewData["Stores"] = stores;
             ViewData["branches"] = branches;
             ViewData["defaultCategory"] = branches.FirstOrDefault();
+
+            
         }
 
 
@@ -60,11 +74,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 PropertyCountId = propertyCount.PropertyCountId,
                 CountDate = propertyCount.CountDate,
                 BranchId = propertyCount.BranchId,
+                BusinessUnitId = propertyCount.BusinessUnitId,
                 StoreCode = propertyCount.StoreCode,
                 IsMidOfPeriod = propertyCount.IsMidOfPeriod,
                 GlFiscalYearId = propertyCount.GlFiscalYearId,
                 GLPeriodId = propertyCount.GLPeriodId,
-                StoreKeeperId = UserInformationHelper.GetUserFullNamebyId(propertyCount.StoreKeeperId),
+                StoreKeeperId = propertyCount.StoreKeeperId, //UserInformationHelper.GetUserFullNamebyId(propertyCount.StoreKeeperId),
                 IsClosed = propertyCount.IsClosed,
             });
 
@@ -81,7 +96,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             if (exist.Any())
                 ModelState.AddModelError("exist", "Count for date " + propertyCount.CountDate + " and store " + propertyCount.StoreCode + " already exists");
 
-            propertyCount.StoreKeeperId =ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreKeeper(propertyCount.StoreCode);
+            if (String.IsNullOrEmpty(propertyCount.StoreKeeperId))
+                propertyCount.StoreKeeperId =ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreKeeper(propertyCount.StoreCode);
 
             if (ModelState.IsValid)
             {
@@ -89,6 +105,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 {
                     CountDate =propertyCount.CountDate.Date,
                     BranchId = propertyCount.BranchId,
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     StoreCode = propertyCount.StoreCode,
                     GlFiscalYearId = propertyCount.GlFiscalYearId,
                     GLPeriodId = propertyCount.GLPeriodId,
@@ -101,7 +118,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 db.PropertyCounts.Add(entity);
                 db.SaveChanges();
                 propertyCount.PropertyCountId = entity.PropertyCountId;
-                GetItemsInStore(entity);
+               // GetItemsInStore(entity);
             }
 
             #region disable store
@@ -129,7 +146,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             if (exist.Any())
                 ModelState.AddModelError("exist", "Count for date " + propertyCount.CountDate + " and store " + propertyCount.StoreCode + " already exists");
 
-            propertyCount.StoreKeeperId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreKeeper(propertyCount.StoreCode);
+            if(String.IsNullOrEmpty(propertyCount.StoreKeeperId))
+                propertyCount.StoreKeeperId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreKeeper(propertyCount.StoreCode);
 
             if (ModelState.IsValid)
             {
@@ -138,6 +156,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     PropertyCountId = propertyCount.PropertyCountId,
                     CountDate = propertyCount.CountDate.Date,
                     BranchId = propertyCount.BranchId,
+                    BusinessUnitId = propertyCount.BusinessUnitId,
                     StoreCode = propertyCount.StoreCode,
                     GlFiscalYearId = propertyCount.GlFiscalYearId,
                     GLPeriodId = propertyCount.GLPeriodId,
@@ -300,6 +319,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
         public JsonResult RecalculateAllStoreItems(string id)
         {
+            string errorMessage = string.Empty;
+
+            if (string.IsNullOrEmpty(id))
+            {
+                var formattedData = new
+                {
+                    Message = "There is no valid count selected.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+           
             var countRecord = db.PropertyCounts.Find(int.Parse(id));
             var storeitems = db.StoreItemAssignments
                 //.Where(x=>x.ItemCode== "11411-90-20-0001")
@@ -324,7 +356,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                         DateTime recentCountDate = previousCountBinCard.Where(x => x.ReferenceDoc.Contains("Count")).Max(x => x.Date);
                         int previousCountBinCardId = previousCountBinCard.Where(x => x.Date == recentCountDate).Select(x => x.BinCardLineID).FirstOrDefault();
 
-                        InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, previousCountBinCardId, true);
+                        errorMessage=InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, previousCountBinCardId, true);
 
                         #region  log
                         UserHelper.OperationLog(Request.UserHostAddress, "Bin Card recalculation", "Success", User.Identity.Name, $"Bin Card recalculation done starting for item" +
@@ -342,7 +374,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                             DateTime firstTransactionDate = inyearBincards.Min(x => x.Date);
                             int fisrstBincardId = inyearBincards.Where(x => x.Date == firstTransactionDate).Select(x => x.BinCardLineID).FirstOrDefault();
 
-                            InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, fisrstBincardId);
+                            errorMessage=InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, fisrstBincardId);
 
                             #region  log
                             UserHelper.OperationLog(Request.UserHostAddress, "Bin Card recalculation", "Success", User.Identity.Name, $"Bin Card recalculation done starting for item" +
@@ -361,79 +393,101 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             #region operation log
             UserHelper.OperationLog(Request.UserHostAddress, "Count recalculate", "Success", User.Identity.Name, $"recalculated  {countRecord.StoreCode} ", Modules.Inventory);
             #endregion
+            if (String.IsNullOrEmpty(errorMessage))
+            {
+                var formattedData = new
+                {
+                    Message = "Completed.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                var formattedData = new
+                {
+                    Message =errorMessage,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
 
+        }
+        public JsonResult LoadItemsInStore(string id)
+        {
+            var countRecord = db.PropertyCounts.Find(int.Parse(id));
+            //List<PropertyCountItem> list = new List<PropertyCountItem>();
+            lock (countLock)
+            {
+                var itmeList = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode).ToList();
+
+             
+                foreach (var item in itmeList)
+                {
+                    var inventoryitem = db.InventoryItems.Find(item.ItemCode);                  
+                    var exist = db.PropertyCountItems
+                        .Where(x => x.PropertyCountId == countRecord.PropertyCountId)
+                        .Where(x => x.ItemCode == item.ItemCode).FirstOrDefault();
+
+                    if (inventoryitem != null && exist == null)
+                    {
+                        var propertyCountItem = new PropertyCountItem
+                        {
+                            ItemCategoryCode = item.ItemCategoryCode,
+                            ItemCode = item.ItemCode,
+                            ItemCodeReadOnly = item.ItemCode.Trim(),
+                            ItemName = inventoryitem.Name,
+                            PropertyCountId = countRecord.PropertyCountId,
+                            Count = 0,
+                            PreviousBalance = item.Balance,
+                            Location = item.ItemLocation,
+                            Price = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(item.ItemCode, countRecord.StoreCode),
+                            Status = false,
+                            CreatedBy = "Loading Store items"
+                        };
+
+                        //list.Add(propertyCountItem);
+                        db.PropertyCountItems.Add(propertyCountItem);
+                        db.SaveChanges();
+                    }
+
+
+                }
+                // db.PropertyCountItems.AddRange(list);
+                // db.SaveChanges();
+                #region remove duplicate items
+                db.Database.CommandTimeout = 7200;
+                var duplicateItems = db.PropertyCountItems
+                    .Where(x => x.PropertyCountId == countRecord.PropertyCountId)
+                    .GroupBy(x => new { x.ItemCode, x.PropertyCountId })
+                    .Where(g => g.Count() > 1)
+                    .Select(y => new { Element = y.Key, Counter = y.Count() })
+                    .AsNoTracking()
+                    .ToList();
+
+                foreach (var duplicate in duplicateItems)
+                {
+                    var duplicateledgerlines = db.PropertyCountItems
+                        .Where(x => x.ItemCode == duplicate.Element.ItemCode)
+                        .Where(x => x.PropertyCountId == duplicate.Element.PropertyCountId).ToList();
+                    if (duplicateledgerlines.Any())
+                    {
+                        var minline = duplicateledgerlines.Min(x => x.PropertyCountItemId);
+                        var toberemoved = duplicateledgerlines.Where(x => x.PropertyCountItemId != minline).ToList();
+                        db.PropertyCountItems.RemoveRange(toberemoved);
+                        db.SaveChanges();
+                    }
+
+                }
+
+                #endregion
+            }
             var formattedData1 = new
             {
                 Message = "Completed.",
                 Status = "OK"
             };
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
-
-        }
-        private void GetItemsInStore(PropertyCount countRecord)
-        {
-            List<PropertyCountItem> list = new List<PropertyCountItem>();
-            var itmeList = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode).ToList();
-
-            string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
-            foreach (var item in itmeList)
-            {
-                var inventoryitem = db.InventoryItems.Find(item.ItemCode);
-                //decimal balanceBeforeCount = item.Balance;
-                // temporary change
-                //#region get balance with respect to property count date instead of CURRENT BALANCE
-                //var binCardLines =
-                //   db.BinCardLines.Where(b => b.Date <= countRecord.CountDate && //added =
-                //   b.StoreItemAssignmentID == item.StoreItemAssignmentID&&
-                //   //b.ReferenceDoc != null &&
-                //   !b.ReferenceDoc.StartsWith("Count on date") // exclude count
-                //   ).AsQueryable();
-                //if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
-                //{
-                //    var sorted = binCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).Take(1).ToList();
-                //    if (sorted.Any())
-                //    {
-                //        var targetBinTransaction = sorted[0];
-                //        balanceBeforeCount = targetBinTransaction.BalanceQTY;
-                //    }
-                //}
-                //else if (sortOrder == BincardSortOrderAttributes.SequencialId.ToString())
-                //{
-                //    var sorted = binCardLines.OrderByDescending(d => d.BinCardLineID).Take(1).ToList();
-                //    if (sorted.Any())
-                //    {
-                //        var targetBinTransaction = sorted[0];
-                //        balanceBeforeCount = targetBinTransaction.BalanceQTY;
-                //    }
-
-                //}
-
-                //#endregion
-                if (inventoryitem != null)
-                {
-                    var propertyCountItem = new PropertyCountItem
-                    {
-                        ItemCategoryCode = item.ItemCategoryCode,
-                        ItemCode = item.ItemCode,
-                        ItemCodeReadOnly = item.ItemCode.Trim(),
-                        ItemName =inventoryitem.Name,
-                        PropertyCountId = countRecord.PropertyCountId,
-                        Count = 0,
-                        PreviousBalance = item.Balance,
-                        Location=item.ItemLocation,
-                        Price = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(item.ItemCode, countRecord.StoreCode),
-                        Status = false,
-                        CreatedBy = "Loading Store items"
-                    };
-
-                    list.Add(propertyCountItem);
-                    //db.PropertyCountItems.Add(propertyCountItem);
-                }
-
-                //db.SaveChanges();
-            }
-            db.PropertyCountItems.AddRange(list);
-            db.SaveChanges();
         }
 
         private string GetStatus(int id)
@@ -452,13 +506,47 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             {
                 return "There are items with zero price.Please update them first";
             }
-            return "";
+            return null;
         }
 
         public ActionResult PropertyCountPrint(int id)
         {
             ViewBag.Id = id;
             return View();
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyCountApprover)]
+        public JsonResult UpdateZeroBalance(int id)
+        {            
+            var record = db.PropertyCounts.Find(id);
+            var propertyCountItems = db.PropertyCountItems.Where(x => x.PropertyCountId == id)
+                .Where(x=>x.Count==0 && x.Status==false).ToList();
+            if (record != null)
+            {
+                foreach (var item in propertyCountItems)
+                {
+                    item.Status = true;
+                    db.Entry(item).State = EntityState.Modified;
+                    db.SaveChanges();                
+
+                }
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Count zero count status update", "Success", User.Identity.Name, $"updated  {record.StoreCode} ", Modules.Inventory);
+                #endregion
+                var formattedData = new
+                {
+                    Message = "Updating zero count items completed.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData2 = new
+            {
+                Message = "The count is not found.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData2, JsonRequestBehavior.AllowGet);
         }
 
         [AuthorizeRoles(InventoryConstants.PropertyCountApprover)]
@@ -506,7 +594,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                                 BalanceTPrice = storeItem.AvgPrice * storeItem.Balance,
                                 TimeStamp = DateTime.Now.Date,
                                 TransactionType= BinCardTransactionTypes.Count,
-                                StatusType= BinCardTransactionStatus.Regular
+                                StatusType= BinCardTransactionStatus.Regular,
+                                TransactionOrder=BinCardTransactionOrder.Count
                             };
                             db.BinCardLines.Add(binCardLine);
                             db.SaveChanges();
@@ -607,7 +696,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 if (storeItem != null)
                 {
                     #region reverse store balance
-                    storeItem.Balance = item.PreviousBalance;
+                   // storeItem.Balance = item.PreviousBalance; if the reverse is after many transaction, current balance will be wrong
                     item.Updated = false;
                     db.Entry(item).State = EntityState.Modified;
                     db.Entry(storeItem).State = EntityState.Modified;

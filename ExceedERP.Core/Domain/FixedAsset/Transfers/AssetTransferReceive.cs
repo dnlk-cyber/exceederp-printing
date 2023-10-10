@@ -17,6 +17,9 @@ namespace ExceedERP.Core.Domain.FixedAsset.Transfers
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ReceiveDate { get; set; }
         
+        //added
+        public bool AssetTransferConfirm { get; set; }
+
         public virtual ICollection<AssetTransferReceiveItem> AssetTransferReceiveItems { get; set; }
         public virtual ICollection<AssetTransferReceiveValidation> AssetTransferReceiveValidations { get; set; }
     }

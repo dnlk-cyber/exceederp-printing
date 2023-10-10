@@ -11,7 +11,7 @@
       .Columns(columns =>
       {
           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(250).EditorTemplateName("StoresSelector");
-          columns.ForeignKey(p => p.StoreKeeper, (IEnumerable)ViewData["users"], "Code", "Name").Title("Store Clerk").Width(250).EditorTemplateName("StoreKeeperSelector");
+          columns.ForeignKey(p => p.StoreKeeper, (IEnumerable)ViewData["users"], "Code", "Name").Title("Store Clerk").Width(300).EditorTemplateName("StoreKeeperSelector");
 
           columns.Command(command =>
           {
@@ -33,7 +33,7 @@
       .Scrollable()
       .Sortable()
       .Filterable()
-      .Groupable()
+      
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(

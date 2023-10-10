@@ -50,7 +50,7 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-            .Groupable()
+            
 
            .Events(x => x.DataBound("onDataBoundMasterNew"))
       .DataSource(dataSource => dataSource
@@ -67,6 +67,7 @@
                   model.Field(p => p.StoreRequisitionID).Editable(false);
                   model.Field(p => p.OrgStructureId).Editable(false);
                   model.Field(p => p.EmployeeId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
                   model.Field(p => p.BranchId).Editable(false);
                   model.Field(p => p.ForBranchId).Editable(false);
                   model.Field(p => p.ProcurementOfficer).Editable(false);
@@ -200,6 +201,7 @@
                           columns.Bound(c => c.RequestedQuantity).Width(110);
                           columns.Bound(c => c.Quantity).Width(100);
                           columns.Bound(c => c.ItemSpecification).Width(200);
+                          columns.Bound(c => c.BudgetCode).Width(70);
                           columns.Command(command =>
                           {
                               command.Edit();

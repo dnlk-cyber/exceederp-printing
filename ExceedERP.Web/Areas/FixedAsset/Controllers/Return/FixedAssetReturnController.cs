@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Returns;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -118,7 +121,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
             {
                 var entity = new FixedAssetReturn
                 {
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(fixedAssetReturn.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(fixedAssetReturn.EmployeeId),
                     BranchId = fixedAssetReturn.BranchId,
                     EmployeeId = fixedAssetReturn.EmployeeId,
                     StoreCode = fixedAssetReturn.StoreCode,
@@ -147,6 +150,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturns.Add(entity);
                 _db.SaveChanges();
                 fixedAssetReturn.FixedAssetReturnId = entity.FixedAssetReturnId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReturn", "Success", User.Identity.Name, $"created FixedAssetReturn  {entity.FixedAssetReturnId} Tag {entity.EmployeeId}", Modules.FixedAsset);
+                #endregion
+
+
             }
 
             return Json(new[] { fixedAssetReturn }.ToDataSourceResult(request, ModelState));
@@ -186,11 +194,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                     CreatedBy = fixedAssetReturn.CreatedBy,
                     LastModified = DateTime.Now,
                     ModifiedBy = User.Identity.Name,
+
                 };
 
                 _db.FixedAssetReturns.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReturn", "Success", User.Identity.Name, $"updated FixedAssetReturn  {entity.FixedAssetReturnId} Tag {entity.EmployeeId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReturn }.ToDataSourceResult(request, ModelState));
@@ -232,6 +244,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturns.Attach(entity);
                 _db.FixedAssetReturns.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"deleted FixedAssetReturn  {fixedAssetReturn.FixedAssetReturnId} Tag {fixedAssetReturn.EmployeeId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReturn }.ToDataSourceResult(request, ModelState));
@@ -389,7 +404,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 #region header
                 var entity = new FixedAssetReturn
                 {
-                    OrgStructureId = UserInformationHelper.GetEmployeeReportsTo(fixedAssetReturn.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(fixedAssetReturn.EmployeeId),
                     BranchId = fixedAssetReturn.BranchId,
                     EmployeeId = fixedAssetReturn.EmployeeId,
                     StoreCode = fixedAssetReturn.StoreCode,
@@ -429,6 +444,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
             }
 
         }
+
+        
 
         protected override void Dispose(bool disposing)
         {

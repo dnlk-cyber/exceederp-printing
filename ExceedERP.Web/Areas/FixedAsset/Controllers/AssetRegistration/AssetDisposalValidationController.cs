@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -45,23 +46,27 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssetDisposalValidation_Create(int id,[DataSourceRequest]DataSourceRequest request, AssetDisposalValidation assetDisposalValidation)
         {
-            var record = db.AssetDisposals.Find(id);
+            var assetDisposal = db.AssetDisposals.Find(id);
+
             if (ModelState.IsValid)
             {
-                if (record != null)
+                if (assetDisposal != null)
                 {
                     if (assetDisposalValidation.Status == ApprovalStatuses.Approve)
                     {
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
+                        assetDisposal.Status = "Approved";
+                        assetDisposal.IsOnlineApproved = true;
+                        assetDisposal.OnlineApprovedBy = User.Identity.Name;
+                        assetDisposal.OnlineApprovedTime = DateTime.Now;
+
+                        //update asset status to disposed
+                        FixedAssetHelper.UpdateAssetRegistrationAfterDisposal(assetDisposal, User.Identity.Name);
                     }
 
                     if (assetDisposalValidation.Status == ApprovalStatuses.Reject)
                     {
-                        record.IsSendForApproval = false;
-                        record.Status = "Rejected";
+                        assetDisposal.IsSendForApproval = false;
+                        assetDisposal.Status = "Rejected";
                     }
 
                     var entity = new AssetDisposalValidation
@@ -133,6 +138,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             return Json(new[] { assetDisposalValidation }.ToDataSourceResult(request, ModelState));
         }
+
 
         protected override void Dispose(bool disposing)
         {

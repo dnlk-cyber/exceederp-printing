@@ -73,7 +73,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByBranch", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
+                              dataSource.Read(read => read.Action("GetStoreByBranchForSR", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
                                   .ServerFiltering(true);
                           })
                           .CascadeFrom("BranchId")
@@ -165,7 +165,7 @@
                                   .Filter("contains")
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetPlateNumbersForFuelRequisition", "DataProvider", new { area = "Inventory" }))
+                                      dataSource.Read(read => read.Action("GetPlateNumbersFromFleetForFuelRequisition", "DataProvider", new { area = "Inventory" }))
                                           .ServerFiltering(false);
                                   })
                     )
@@ -177,8 +177,6 @@
         </div>
 
         <div class="col-md-3 ro1">
-
-
            
 
             <div class="form-group">

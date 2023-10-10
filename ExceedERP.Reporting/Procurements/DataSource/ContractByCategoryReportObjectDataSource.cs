@@ -16,43 +16,56 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ContractByCategoryReportViewModel> GetContracts(DateTime from, DateTime to)
+        public List<ContractByCategoryReportViewModel> GetContracts(DateTime from, DateTime to, string businessUnitId)
         {
             List<ContractByCategoryReportViewModel> purchaseSupportList = new List<ContractByCategoryReportViewModel>();
             
-
-                var contracts = db.ContractManagements
+            var contracts = db.ContractManagements
                 .Where(x => x.SigningDate >= from && x.SigningDate <= to)
                     .ToList();
 
-                if (contracts.Any())
-                {
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                contracts = contracts.Where(x => x.BusinessUnitId == bdid).ToList();
+            }
+
+            if (contracts.Any())
+                {                   
+
                     foreach (var contract in contracts)
-                    {
-
-                        var purchaseSupport = new ContractByCategoryReportViewModel
                         {
-                            SupplierName = contract.SupplierName,
-                            ContractRefNo = contract.ContractRefNo,
-                            TenderRef=contract.TenderRefNo,
-                            ContractAmount = contract.ContractAmount
-                        };
 
-                        purchaseSupportList.Add(purchaseSupport);
-                    }
+                            var purchaseSupport = new ContractByCategoryReportViewModel
+                            {
+                                SupplierName = contract.SupplierName,
+                                ContractRefNo = contract.ContractRefNo,
+                                TenderRef=contract.TenderRefNo,
+                                ContractAmount = contract.ContractAmount
+                            };
+
+                         purchaseSupportList.Add(purchaseSupport);
+                     }
                 }
-            //}
+         
 
             return purchaseSupportList;
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ContractByCategoryReportViewModel> GetContractsCompleted(DateTime from, DateTime to)
+        public List<ContractByCategoryReportViewModel> GetContractsCompleted(DateTime from, DateTime to, string businessUnitId)
         {
             List<ContractByCategoryReportViewModel> contractsCompleted = new List<ContractByCategoryReportViewModel>();
           
 
             var contracts = db.ContractManagements.Where(x => x.SigningDate >= from && x.SigningDate <= to).ToList();
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                contracts = contracts.Where(x => x.BusinessUnitId == bdid).ToList();
+            }
+            
             if (contracts.Any())
             {
                 foreach (var contract in contracts)
@@ -107,15 +120,25 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ContractByCategoryReportViewModel> GetContractsThatTookAdvance(DateTime from, DateTime to)
+        public List<ContractByCategoryReportViewModel> GetContractsThatTookAdvance(DateTime from, DateTime to, string businessUnitId)
         {
             List<ContractByCategoryReportViewModel> purchaseSupportList = new List<ContractByCategoryReportViewModel>();
 
 
-            var contracts = db.ContractManagements.Where(x => x.SigningDate >= from && x.SigningDate <= to && x.Advance > 0)
+            var contracts = db.ContractManagements
+                .Where(x => x.SigningDate >= from && x.SigningDate <= to && x.Advance > 0)
                 .ToList();
+
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                contracts = contracts.Where(x => x.BusinessUnitId == bdid).ToList();
+            }
+
             if (contracts.Any())
             {
+
+               
                 foreach (var contract in contracts)
                 {
 

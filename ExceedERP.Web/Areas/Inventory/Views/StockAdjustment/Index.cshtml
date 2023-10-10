@@ -1,239 +1,316 @@
-﻿@using ExceedERP.Core.Domain.Inventory
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
 @{ Layout = "~/Views/Shared/_Layout.cshtml";}
 
+<legend>Stock Adjustment</legend>
 @(Html.Kendo().Grid<StockAdjustment>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.StockAdjustmentID).ClientTemplate("#=appendZeros(StockAdjustmentID)#");
-          columns.Bound(c => c.StoreCode).EditorTemplateName("Stores");
-          columns.Bound(c => c.AdjustmentDate);
-          columns.Bound(c => c.Reason);
-          columns.Bound(c => c.Status);
-          columns.Bound(c => c.Remark);
-       
-        
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
-      .ToolBar(toolbar => {
-                              toolbar.Create().Text("Add New Stock Adjustment");
-      })
-      .Selectable()
-      .Filterable()
-      .Groupable()
-      .Pageable(pageable => pageable
-          .Input(true)
-          .Numeric(false)
-          .Refresh(true)
-          .PageSizes(true)
-          .ButtonCount(5))
-      .Events(ev => ev.DetailExpand("detailExpand"))
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .Selectable(selectable =>
-      {
-          selectable.Mode(GridSelectionMode.Single);
-          selectable.Type(GridSelectionType.Row);
-      })
-      .Sortable(sortable =>
-      {
-          sortable.SortMode(GridSortMode.SingleColumn);
-      })
-      .Scrollable(h => h.Height(500))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Events(ev => ev
-              .Error("error_handler(\"grid\")")
-              .RequestStart("onRequestStart(\"grid\")")
-              .RequestEnd("onRequestEnd(\"grid\")"))
-          .Model(model =>
+          .Name("grid")
+          .Columns(columns =>
           {
-              model.Id(p => p.StockAdjustmentID);
-              model.Field(p => p.StockAdjustmentID).Editable(false);
-              model.Field(p => p.Status).Editable(false);
+              columns.Bound(c => c.StockAdjustmentID).ClientTemplate("#=appendZeros(StockAdjustmentID)#");
+              columns.Bound(c => c.StoreCode).EditorTemplateName("Stores");
+              columns.Bound(c => c.AdjustmentDate);
+              columns.Bound(c => c.Reason);
+              columns.Bound(c => c.Status);
+              columns.Bound(c => c.Remark);
+
+
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
           })
-          .Read(read => read.Action("StockAdjustments_Read", "StockAdjustment"))
-          .Create(create => create.Action("StockAdjustments_Create", "StockAdjustment"))
-          .Update(update => update.Action("StockAdjustments_Update", "StockAdjustment"))
-          .Destroy(destroy => destroy.Action("StockAdjustments_Destroy", "StockAdjustment"))
-      ).ClientDetailTemplateId("stockadjustment"))
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Selectable()
+          .Filterable()
+
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+          .Events(ev => ev.DetailExpand("detailExpand"))
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"grid\")")
+                  .RequestStart("onRequestStart(\"grid\")")
+                  .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model =>
+              {
+                  model.Id(p => p.StockAdjustmentID);
+                  model.Field(p => p.StockAdjustmentID).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.BusinessUnitId).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+              })
+              .Read(read => read.Action("StockAdjustments_Read", "StockAdjustment"))
+              .Create(create => create.Action("StockAdjustments_Create", "StockAdjustment"))
+              .Update(update => update.Action("StockAdjustments_Update", "StockAdjustment"))
+              .Destroy(destroy => destroy.Action("StockAdjustments_Destroy", "StockAdjustment"))
+          ).ClientDetailTemplateId("stockadjustment"))
 <script type="text/kendo" id="stockadjustment">
     @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=StockAdjustmentID#").Items(Itemn =>
-              {
-                  Itemn.Add().Text("Detail").Content(
-                    @<text>
+                      {
+                          Itemn.Add().Text("Detail").Content(
+                            @<text>
 
 
-                        # if (!IsOnlineApproved&&!IsSendForApproval)
-                        {#
-                        <a onclick='return sendForApproval("#=StockAdjustmentID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                        <br />
-                        # } #
+                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=StockAdjustmentID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #
 
 
-                        # if (IsOnlineApproved)
-                        {#
-                        @*<a href='@Url.Action("IssuePrint", "InventoryPrint")/#=StockAdjustmentID#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
-                        <br />
-                        # } #
+                                # if (IsOnlineApproved)
+                                {#
+                                @*<a href='@Url.Action("IssuePrint", "InventoryPrint")/#=StockAdjustmentID#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                                <br />
+                                # } #
 
-                        <div>
-                            <hr>
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    Stock Adjustment Date
-                                </dt>
-                                <dd>
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            Stock Adjustment Date
+                                        </dt>
+                                        <dd>
 
-                                    #=kendo.toString(kendo.parseDate(AdjustmentDate), 'dd/MM/yyyy') #
-                                </dd>
+                                            #=kendo.toString(kendo.parseDate(AdjustmentDate), 'dd/MM/yyyy') #
+                                        </dd>
 
-                                <dt>
-                                    Store
-                                </dt>
-                                <dd>
-                                    #= StoreCode #
-                                </dd>
+                                        <dt>
+                                            Store
+                                        </dt>
+                                        <dd>
+                                            #= StoreCode #
+                                        </dd>
 
 
-                                <dt>
-                                    Status
-                                </dt>
-                                <dd>
-                                    #= Status #
-                                </dd>
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
 
-                                <dt>
-                                    Reason
-                                </dt>
-                                <dd>
-                                    #= Reason #
-                                </dd>
-                                <dt>
-                                    Remark
-                                </dt>
-                                <dd>
-                                    #= Remark #
-                                </dd>
-                                <dt>
-                                    CreatedOn
-                                </dt>
-                                <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                        <dt>
+                                            Reason
+                                        </dt>
+                                        <dd>
+                                            #= Reason #
+                                        </dd>
+                                        <dt>
+                                            Remark
+                                        </dt>
+                                        <dd>
+                                            #= Remark #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
 
-                                </dd>
-                                <dt>
-                                    CreatedBy
-                                </dt>
-                                <dd>
-                                    #= CreatedBy #
-                                </dd>
-                            </dl>
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                    </dl>
 
-                        </div>
+                                </div>
 
-                    </text>);
-                        Itemn.Add().Text("Item").Content(@<text>
+                            </text>);
+                                  Itemn.Add().Text("Item").Content(@<text>
 
-                            @(Html.Kendo().Grid<StockAdjustmentItems>()
-                                      .Name("stokAdjustmentGrid#=StockAdjustmentID#")
-                                      .Columns(columns =>
-                                      {
+                                    @(Html.Kendo().Grid<StockAdjustmentItems>()
+                                                      .Name("stokAdjustmentGrid#=StockAdjustmentID#")
+                                                      .Columns(columns =>
+                                                      {
 
-                                        columns.ForeignKey(p => p.ItemCode, (System.Collections.IEnumerable)ViewData["Items"], "ItemCode", "Name")
-                                            .Title("Items").Width(220).EditorTemplateName("filterItem");
-                                        columns.Bound(c => c.BinCardBalance);
-                                        columns.Bound(c => c.AdjustedQuantity);
+                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
+                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+                                                          columns.Bound(c => c.BinCardBalance);
+                                                          columns.Bound(c => c.AdjustedQuantity);
 
-                                        columns.Bound(c => c.StockAdjustmentType).EditorTemplateName("AdjustmentType");
-                            //columns.Bound(c => c.AdjustedPrice);
-                            // columns.Bound(c => c.PriceAdjustmentType).EditorTemplateName("PriceType");
-                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                    })
-                                      .ToolBar(toolbar =>
-                                    {
-                                        toolbar.Create();
-                                    })
-                                      .Events(ev => ev.Edit("onEdit"))
-                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                      .Scrollable()
-                                      .DataSource(dataSource => dataSource
-                                          .Ajax()
-                                          .Events(ev => ev
-                                              .Error("error_handler(\"stokAdjustmentGrid#=StockAdjustmentID#\")")
-                                              .RequestStart("onRequestStart(\"stokAdjustmentGrid#=StockAdjustmentID#\")")
-                                              .RequestEnd("onRequestEnd(\"stokAdjustmentGrid#=StockAdjustmentID#\")"))
-                                          .Model(model =>
-                                          {
-                                            model.Id(p => p.StockAdjustmentItemsID);
-                                            model.Field(p => p.BinCardBalance).Editable(false);
-                                        })
-                                          .Read(read => read.Action("StockAdjustmentItemss_Read", "StockAdjustmentItem", new { id = "#=StockAdjustmentID#" }))
-                                          .Create(create => create.Action("StockAdjustmentItemss_Create", "StockAdjustmentItem", new { id = "#=StockAdjustmentID#" }))
-                                          .Update(update => update.Action("StockAdjustmentItemss_Update", "StockAdjustmentItem", new { id = "#=StockAdjustmentID#" }))
-                                          .Destroy(destroy => destroy.Action("StockAdjustmentItemss_Destroy", "StockAdjustmentItem"))
-                                      ).ToClientTemplate())
-
-                        </text>);
-
-                                Itemn.Add().Text("Validation").Content(@<text>
-
-                                    @(Html.Kendo().Grid<StockAdjustmentValidation>()
-                                                  .Name("StockAdjustmentValidation#=StockAdjustmentID#")
-                                                  .Columns(columns =>
-                                                  {
-                                                      columns.Bound(c => c.Status).EditorTemplateName("ValidationStatus");
-                                                      columns.Bound(c => c.Remark);
-                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                                  })
-                                                  .ToolBar(toolbar =>
-                                                  {
-                                                      toolbar.Create();
-                                                  })
-                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                  .Scrollable()
-                                                  .DataSource(dataSource => dataSource
-                                                      .Ajax()
-                                                      .Events(ev => ev
-                                                          .Error("error_handler(\"StockAdjustmentValidation#=StockAdjustmentID#\")")
-                                                          .RequestStart("onRequestStart(\"StockAdjustmentValidation#=StockAdjustmentID#\")")
-                                                          .RequestEnd("onRequestEnd(\"StockAdjustmentValidation#=StockAdjustmentID#\")"))
-                                                      .Model(model => model.Id(p => p.StockAdjustmentValidationID))
-                                                      .Read(read => read.Action("StockAdjustmentValidations_Read", "StockAdjustmentValidation", new { id = "#=StockAdjustmentID#" }))
-                                                      .Create(create => create.Action("StockAdjustmentValidations_Create", "StockAdjustmentValidation", new { id = "#=StockAdjustmentID#" }))
-                                                      .Update(update => update.Action("StockAdjustmentValidations_Update", "StockAdjustmentValidation"))
-                                                      .Destroy(destroy => destroy.Action("StockAdjustmentValidations_Destroy", "StockAdjustmentValidation"))
-                                                  ).ToClientTemplate())
+                                                          columns.Bound(c => c.StockAdjustmentType).EditorTemplateName("AdjustmentType");
+                                                          //columns.Bound(c => c.AdjustedPrice);
+                                                          // columns.Bound(c => c.PriceAdjustmentType).EditorTemplateName("PriceType");
+                                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                      })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                          toolbar.Create();
+                                                      })
+                                                      
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .Events(x => x.DataBound("onDataBoundLines"))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"stokAdjustmentGrid#=StockAdjustmentID#\")")
+                                                              .RequestStart("onRequestStart(\"stokAdjustmentGrid#=StockAdjustmentID#\")")
+                                                              .RequestEnd("onRequestEnd(\"stokAdjustmentGrid#=StockAdjustmentID#\")"))
+                                                          .Model(model =>
+                                                          {
+                                                              model.Id(p => p.StockAdjustmentItemsID);
+                                                              model.Field(p => p.BinCardBalance).Editable(false);
+                                                          })
+                                                          .Read(read => read.Action("StockAdjustmentItemss_Read", "StockAdjustmentItem", new { id = "#=StockAdjustmentID#" }))
+                                                          .Create(create => create.Action("StockAdjustmentItemss_Create", "StockAdjustmentItem", new { id = "#=StockAdjustmentID#" }))
+                                                          .Update(update => update.Action("StockAdjustmentItemss_Update", "StockAdjustmentItem", new { id = "#=StockAdjustmentID#" }))
+                                                          .Destroy(destroy => destroy.Action("StockAdjustmentItemss_Destroy", "StockAdjustmentItem"))
+                                                      ).ToClientTemplate())
 
                                 </text>);
 
+                                        Itemn.Add().Text("Validation").Content(@<text>
 
-                                    }).ToClientTemplate())
+                                            @(Html.Kendo().Grid<StockAdjustmentValidation>()
+                                                                  .Name("StockAdjustmentValidation#=StockAdjustmentID#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                      columns.Bound(c => c.Remark).Width(170);
+                                                                      columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                                  })
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                      toolbar.Create();
+                                                                  })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                  .Scrollable()
+                                                                   .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .Events(ev => ev
+                                                                          .Error("error_handler(\"StockAdjustmentValidation#=StockAdjustmentID#\")")
+                                                                          .RequestStart("onRequestStart(\"StockAdjustmentValidation#=StockAdjustmentID#\")")
+                                                                          .RequestEnd("onRequestEnd(\"StockAdjustmentValidation#=StockAdjustmentID#\")"))
+                                                                       .Model(model =>
+                                                                       {
+                                                                           model.Id(p => p.StockAdjustmentValidationID);
+                                                                           model.Field(p => p.CreatedBy).Editable(false);
+                                                                           model.Field(p => p.DateCreated).Editable(false);
+                                                                           model.Field(p => p.ModifiedBy).Editable(false);
+                                                                           model.Field(p => p.LastModified).Editable(false);
+                                                                       }
+                                  )
+                                                                      .Read(read => read.Action("StockAdjustmentValidations_Read", "StockAdjustmentValidation", new { id = "#=StockAdjustmentID#" }))
+                                                                      .Create(create => create.Action("StockAdjustmentValidations_Create", "StockAdjustmentValidation", new { id = "#=StockAdjustmentID#" }))
+                                                                      .Update(update => update.Action("StockAdjustmentValidations_Update", "StockAdjustmentValidation"))
+                                                                      .Destroy(destroy => destroy.Action("StockAdjustmentValidations_Destroy", "StockAdjustmentValidation"))
+                                                                  ).ToClientTemplate())
+
+                                        </text>);
+
+
+                                            }).ToClientTemplate())
 </script>
 
-           
+
 
 <script>
 
-    function error_handler(e) {
-        if (e.errors) {
-            var message = "Errors:\n";
-            $.each(e.errors, function(key, value) {
-                if ('errors' in value) {
-                    $.each(value.errors, function() {
-                        message += this + "\n";
-                    });
-                }
-            });
-            alert(message);
+    function sendForApproval(id) {
+        var recordStatus = "";
 
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "StockAdjustment", new { area = "Inventory" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#AdjustmentDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+                });
+          }
+
+    }
+
+    
+
+    function filterPeriodsByMyStore() {
+        return {
+            store: $("#StoreCode").val(),
+            text: null
         }
-
     }
 
-    function sync_handler(e) {
-        this.read();
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
 
-    }
+    //    }
+
+    //}
+
+    //function sync_handler(e) {
+    //    this.read();
+
+    //}
 
     var storeCode;
     var codeid;
@@ -250,67 +327,51 @@
 
     //}
 
-    var masterDataItem;
-    var masterRow;
-    var masterGrid;
+    //var masterDataItem;
+    //var masterRow;
+    //var masterGrid;
 
-    function detailExpand(e) {
+    //function detailExpand(e) {
 
-        masterRow = e.masterRow;
+    //    masterRow = e.masterRow;
 
-        masterGrid = $("#grid").data("kendoGrid");
+    //    masterGrid = $("#grid").data("kendoGrid");
 
-        masterDataItem = masterGrid.dataItem(masterRow);
+    //    masterDataItem = masterGrid.dataItem(masterRow);
 
-        //  var masterDataItem = masterGrid.dataItem();
-        codeid = masterDataItem.StockAdjustmentID;
-    }
+    //    //  var masterDataItem = masterGrid.dataItem();
+    //    codeid = masterDataItem.StockAdjustmentID;
+    //}
 
-    function OnIndexCall(elem) {
+    //function OnIndexCall(elem) {
 
-        var a = codeid;
-        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
-
-
-    }
-
-    var popup;
-    var aCode;
+    //    var a = codeid;
+    //    $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
 
 
-    function SelectItemCode() {
+    //}
 
-        // codeid = masterDataItem.GoodSellingAndLendingID;
-        popup = window.open('/Inventory/DataProvider/ItemFiltering', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
-        popup.focus();
-        return false;
-    }
+    //var popup;
+    //var aCode;
 
-    function setLang(ItemCode) {
-        aCode = ItemCode;
-        $("#ItemCode").val(aCode).trigger("change");
-    }
+
+    //function SelectItemCode() {
+
+    //    // codeid = masterDataItem.GoodSellingAndLendingID;
+    //    popup = window.open('/Inventory/DataProvider/ItemFiltering', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+    //    popup.focus();
+    //    return false;
+    //}
+
+    //function setLang(ItemCode) {
+    //    aCode = ItemCode;
+    //    $("#ItemCode").val(aCode).trigger("change");
+    //}
 
     function getItems() {
         return {
             storeCode: storeCode
         }
     }
-</script>   
-<style type="text/css">
-    div.k-edit-form-container {
-        width: 700px;
-    }
-
-        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
-            width: auto;
-            max-width: none;
-        }
-
-    div.k-popup-edit-form.k-window-content.k-content {
-    }
-
-    div.k-content {
-        height: auto;
-    }
-</style>     
+</script>
+    

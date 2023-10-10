@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Reporting.FixedAsset.Print.ViewModel;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -19,11 +20,11 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
         ExceedDbContext dbContext = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PurchaseRequistionHeader GetPurchaseRequistions(int id)
+        public FixedAssetPurchaseRequistionHeader GetPurchaseRequistions(int id)
         {
             string storeCode = "";
             int requetserid = 0;
-            PurchaseRequisition purchaseRequisition = dbContext.PurchaseRequisitions.Find(id);
+            var purchaseRequisition = dbContext.PurchaseRequisitions.Find(id);
             if (purchaseRequisition != null && purchaseRequisition.ItemType == PurchaseItemType.Stock)
             {
                 var sr = dbContext.StoreRequisitions
@@ -31,7 +32,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 if (sr != null)
                 {
                     storeCode = sr.StoreCode;
-                    requetserid = sr.EmployeeId;
+                    requetserid = (int)sr.EmployeeId;
                 }
             }
             else if (purchaseRequisition != null && purchaseRequisition.ItemType == PurchaseItemType.FixedAsset)
@@ -49,8 +50,8 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 requetserid = purchaseRequisition.EmployeeId;
             }
             var organization = dbContext.Companies.FirstOrDefault(x => x.Category == "0");
-         
-            PurchaseRequistionHeader headerDs = new PurchaseRequistionHeader();
+
+            var headerDs = new FixedAssetPurchaseRequistionHeader();
             if (purchaseRequisition != null)
             {
                 var authorization =
@@ -62,6 +63,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 headerDs.RequestingDate = purchaseRequisition.RequestDate.ToShortDateString();
                 headerDs.Requestor =  EmployeeHelper.GetEmployeeEnglishName(requetserid);
                 headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(purchaseRequisition.OnlineApprovedBy));
+                headerDs.ApprovalBySignature = SignatureHelper.GetUserSignature(purchaseRequisition.OnlineApprovedBy);
                 headerDs.RequestingStore =InventoryPrintHelper.StoreName(storeCode);
 
                 //headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(purchaseRequisition.CreatedBy));
@@ -85,11 +87,15 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                     if (purchaseRequisition.DateCreated != null)
                         headerDs.CreatedDate = (DateTime)purchaseRequisition.DateCreated;
 
+                    headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(purchaseRequisition.CreatedBy);
+
                     headerDs.ApproverName =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(purchaseRequisition.OnlineApprovedBy));
                     if (purchaseRequisition.OnlineApprovedTime != null)
                         headerDs.ApprovalDate = (DateTime)purchaseRequisition.OnlineApprovedTime;
+
+                    headerDs.ApprovalBySignature = SignatureHelper.GetUserSignature(purchaseRequisition.OnlineApprovedBy);
 
                     headerDs.AuthorizerName =
                         EmployeeHelper.GetEmployeeEnglishName(
@@ -97,12 +103,16 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                     if (purchaseRequisition.MiddleOnlineApprovedTime != null)
                         headerDs.AuthorizationDate = (DateTime)purchaseRequisition.MiddleOnlineApprovedTime;
 
+                    headerDs.AuthorizerBySignature = SignatureHelper.GetUserSignature(purchaseRequisition.MiddleOnlineApprovedBy);
+
                     // added
                     headerDs.PrApproverName =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(purchaseRequisition.SecondOnlineApprovedBy));
                     if (purchaseRequisition.SecondOnlineApprovedTime != null)
                         headerDs.PrApprovalDate = (DateTime)purchaseRequisition.SecondOnlineApprovedTime;
+
+                    
 
                     #endregion
                 }
@@ -118,11 +128,15 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                         if (storeRequisition.DateCreated != null)
                             headerDs.CreatedDate = (DateTime)storeRequisition.DateCreated;
 
+                        headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(storeRequisition.CreatedBy);
+
                         headerDs.ApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
                                 UserHelper.GetUserEmployeeId(storeRequisition.SecondOnlineApprovedBy));
                         if (storeRequisition.SecondOnlineApprovedTime != null)
                             headerDs.ApprovalDate = (DateTime)storeRequisition.SecondOnlineApprovedTime;
+
+                        headerDs.ApprovalBySignature = SignatureHelper.GetUserSignature(storeRequisition.SecondOnlineApprovedBy);
                     }
 
                     headerDs.AuthorizerName =
@@ -131,13 +145,15 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                     if (purchaseRequisition.OnlineApprovedTime != null)
                         headerDs.AuthorizationDate = (DateTime)purchaseRequisition.OnlineApprovedTime;
 
+                    headerDs.AuthorizerBySignature = SignatureHelper.GetUserSignature(purchaseRequisition.OnlineApprovedBy);
+
                     #endregion
                 }
 
                 headerDs.PRDate = purchaseRequisition.DateCreated.GetValueOrDefault().ToShortDateString();
                 headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(purchaseRequisition.StoreRequisitionID);
                 headerDs.RequestingDepartment = InventoryPrintHelper.WorkUnitName(purchaseRequisition.OrgStructureId);
-                headerDs.ForProject = InventoryPrintHelper.BranchName(purchaseRequisition.BranchId);
+                headerDs.ForProject = InventoryPrintHelper.BranchName((int)purchaseRequisition.ForBranchId);
 
             }
 

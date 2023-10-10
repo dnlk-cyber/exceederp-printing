@@ -37,14 +37,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                 ItemCode = storeRequisitionItem.ItemCode,
                 PartNo = storeRequisitionItem.PartNo,
                 ModelNo = storeRequisitionItem.ModelNo,
+                ChasisNo = storeRequisitionItem.ChasisNo,
                 RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                 ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
                 IssuedQuantity = storeRequisitionItem.IssuedQuantity,
                 PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
                 IsApproved = storeRequisitionItem.IsApproved,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
-                ProductionJobNo = storeRequisitionItem.ProductionJobNo,
-                MaintenanceJobNo = storeRequisitionItem.MaintenanceJobNo,
                 Unit= ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
                 CurrentBalance = 0
             });
@@ -89,9 +88,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     PurchaseQuantity = 0,//assuming all will be given
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
-                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
-                    MaintenanceJobNo = storeRequisitionItem.MaintenanceJobNo,
 
+                   
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
                 };
@@ -147,8 +145,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IssuedQuantity = storeRequisitionItem.ApprovedQuantity,//default issue is equal to approved
                     PurchaseQuantity = 0,//assuming all will be given
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
-                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
-                    MaintenanceJobNo = storeRequisitionItem.MaintenanceJobNo,
 
                     DateCreated = storeRequisitionItem.DateCreated,
                     CreatedBy = storeRequisitionItem.CreatedBy,
@@ -189,10 +185,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IssuedQuantity = storeRequisitionItem.IssuedQuantity,
                     PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
                     IsApproved = storeRequisitionItem.IsApproved,
-                    ItemSpecification = storeRequisitionItem.ItemSpecification,
-
-                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
-                    MaintenanceJobNo = storeRequisitionItem.MaintenanceJobNo,
+                    ItemSpecification = storeRequisitionItem.ItemSpecification
                 };
 
                 db.StoreRequisitionItems.Attach(entity);

@@ -4,7 +4,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Returns;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -88,6 +90,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturnItems.Add(entity);
                 _db.SaveChanges();
                 fixedAssetReturnItem.FixedAssetReturnItemId = entity.FixedAssetReturnItemId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReturnItem", "Success", User.Identity.Name, $"created FixedAssetReturnItem {entity.AssetRegistrationId} TagNo {entity.TagNo}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { fixedAssetReturnItem }.ToDataSourceResult(request, ModelState));
@@ -130,9 +136,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturnItems.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReturnItem", "Success", User.Identity.Name, $"updated FixedAssetReturnItem {entity.AssetRegistrationId} TagNo {entity.TagNo}", Modules.FixedAsset);
+                #endregion
             }
-        
+
             return Json(new[] { fixedAssetReturnItem }.ToDataSourceResult(request, ModelState));
         }
 
@@ -162,6 +170,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 _db.FixedAssetReturnItems.Attach(entity);
                 _db.FixedAssetReturnItems.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete FixedAssetReturnItem {fixedAssetReturnItem.AssetRegistrationId} TagNo {fixedAssetReturnItem.TagNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReturnItem }.ToDataSourceResult(request, ModelState));

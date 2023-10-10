@@ -16,6 +16,8 @@ namespace ExceedERP.Core.Domain.Inventory
         [Required]
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         [Display(Name = "Receive Type")]
         public int ReceiveTypeId { get; set; }
         public virtual ReceiveType ReceiveType { get; set; }

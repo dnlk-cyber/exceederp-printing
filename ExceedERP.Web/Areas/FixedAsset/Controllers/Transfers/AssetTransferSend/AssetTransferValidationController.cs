@@ -7,7 +7,10 @@ using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
 using ExceedERP.Core.Domain.FixedAsset.UserCard;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -46,36 +49,43 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         public ActionResult AssetTransferValidations_Create([DataSourceRequest] DataSourceRequest request, AssetTransferValidation assetTransferValidation, int id)
         {
 
-            var record = _db.AssetTransfers.Find(id);
+            var assetTransfer = _db.AssetTransfers.Find(id);
 
+            var assetTransferItems = assetTransfer.AssetTransferItems;
+
+            var user = User.Identity.Name;
             #region validation
 
-            if (record != null)
+            
+
+            if (assetTransfer != null)
             {
-                if (record.IsOnlineApproved)
+                if (!assetTransferItems.Any()) ModelState.AddModelError(string.Empty, "No Items to transfer");
+
+                if (assetTransfer.IsOnlineApproved)
                 {
                     string message = "You cannot manipulate this record,it  is already approved";
                     ModelState.AddModelError("approved", message);
                 }
-                {
-                    if (assetTransferValidation.Status == ApprovalStatuses.Approve)
-                    {
-                        //foreach (var i in record.AssetTransferItems)
-                        //{
-                        //    if (!FixedAssetHelper.IsAssetCurrentLocationStore(i.AssetRegistrationId, i..StoreCode))
-                        //    {
-                        //        string message = "Asset with tag number " + i.TagNo + " does not exist in store " + i.FixedAssetIssue.StoreCode;
-                        //        ModelState.AddModelError("doesnotexist", message);
+                //{
+                //    if (assetTransferValidation.Status == ApprovalStatuses.Approve)
+                //    {
+                //        foreach (var i in assetTransfer.AssetTransferItems)
+                //        {
+                //            if (!FixedAssetHelper.IsAssetCurrentLocationStore(i.AssetRegistrationId, i..StoreCode))
+                //            {
+                //                string message = "Asset with tag number " + i.TagNo + " does not exist in store " + i.FixedAssetIssue.StoreCode;
+                //                ModelState.AddModelError("doesnotexist", message);
 
-                        //    }
-                        //}
-                    }
-                    if (assetTransferValidation.Status == ApprovalStatuses.Reject)
-                    {
-                        record.IsSendForApproval = false;
-                        record.Status = "Rejected";
-                    }
-                }
+                //            }
+                //        }
+                //    }
+                //    if (assetTransferValidation.Status == ApprovalStatuses.Reject)
+                //    {
+                //        assetTransfer.IsSendForApproval = false;
+                //        assetTransfer.Status = "Rejected";
+                //    }
+                //}
             }
             else
             {
@@ -87,30 +97,35 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
             if (ModelState.IsValid)
             {
-                if (record != null)
+                if (assetTransfer != null && assetTransferItems.Any())
                 {
                     //validate 
                     if (assetTransferValidation.Status == ApprovalStatuses.Approve)
                     {
-                        #region update asset information
-                        foreach (var i in record.AssetTransferItems)
-                        {
-                            UpdateAssetMovementAndUserCard(i);
-                        }
-                        #endregion
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
+                        //#region update Movement in locationTracking and userCard
 
+                        //foreach (var assetTransferItem in assetTransferItems)
+                        //{
+                        //    // Update UserCard
+                        //    FixedAssetHelper.UpdateUserCard(assetTransferItem, user);
+
+                        //    // Update LocationTracking
+                        //    FixedAssetHelper.UpdateLocationTrackingForStore(assetTransferItem, user);
+                        //}
+                        //#endregion
+                        assetTransfer.Status = "Approved";
+                        assetTransfer.IsOnlineApproved = true;
+                        assetTransfer.OnlineApprovedBy = User.Identity.Name;
+                        assetTransfer.OnlineApprovedTime = DateTime.Now;
+                        
                     }
                     if (assetTransferValidation.Status == ApprovalStatuses.Reject)
                     {
-                        record.IsSendForApproval = false;
-                        record.Status = "Rejected";
+                        assetTransfer.IsSendForApproval = false;
+                        assetTransfer.Status = "Rejected";
                     }
 
-                    _db.Entry(record).State = EntityState.Modified;
+                    _db.Entry(assetTransfer).State = EntityState.Modified;
                     _db.SaveChanges();
 
                     var entity = new AssetTransferValidation
@@ -127,6 +142,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                     _db.AssetTransferValidations.Add(entity);
                     _db.SaveChanges();
                     assetTransferValidation.AssetTransferValidationId = entity.AssetTransferValidationId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferValidation", "Success", User.Identity.Name, $"created AssetTransferValidation {entity.AssetTransferValidationId} Tag {entity.AssetTransferId}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 
@@ -150,6 +168,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransferValidations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferValidation", "Success", User.Identity.Name, $"update AssetTransferValidation {entity.AssetTransferValidationId} Tag {entity.AssetTransferId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferValidation }.ToDataSourceResult(request, ModelState));
@@ -171,24 +192,34 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 _db.AssetTransferValidations.Attach(entity);
                 _db.AssetTransferValidations.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete AssetTransferValidation {assetTransferValidation.AssetTransferValidationId} Tag {assetTransferValidation.AssetTransferId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferValidation }.ToDataSourceResult(request, ModelState));
         }
 
+        
+        /// <summary>
+        /// updates userCard, assetInfo, and location tracking 
+        /// </summary>
+        /// <param name="item"></param>
         private void UpdateAssetMovementAndUserCard(AssetTransferItem item)
         {
 
             var asset = _db.AssetRegistrations.Find(item.AssetRegistrationId);
+
+            //if transfer type is person to person
             if (item.Transfer.Type == TransferType.PersonToPerson)
             {
-                var employee = _db.Person_Employee.Find(item.Transfer.TransferTo);
-                var preEmployee = _db.Person_Employee.Find(item.Transfer.CustodianBeforeTransfer);
+                var transferTo = _db.Person_Employee.Find(item.Transfer.TransferTo);
+                var custodianBeforeTransfer = _db.Person_Employee.Find(item.Transfer.CustodianBeforeTransfer);
 
-                #region get employee and workunit
+                #region get employee id and workunit
 
-                string employeeid = employee?.EmployeeId.ToString() ?? "";
-                string orgid = employee != null ? UserInformationHelper.GetEmployeeDepartmentIdByEmpId(employee.EmployeeId).ToString() : "";
+                string employeeid = transferTo?.EmployeeId.ToString() ?? "";
+                string orgid = transferTo != null ? UserInformationHelper.GetEmployeeDepartmentIdByEmpId(transferTo.EmployeeId).ToString() : "";
 
                 #endregion
                 #region Update asset info
@@ -197,6 +228,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 {
                     asset.EmployeeId = employeeid;
                     asset.OrgStructureId = orgid;
+
+                    //save on db
                     _db.Entry(asset).State = EntityState.Modified;
                     _db.SaveChanges();
                 }
@@ -205,11 +238,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 #region Update current UserCard
 
                 UserCardItems userCard = new UserCardItems();
-                if (employee != null)
+                if (transferTo != null)
                 {
-                    userCard.EmployeeId = employee.EmployeeId;
+                    userCard.EmployeeId = transferTo.EmployeeId;
                     userCard.EmployeeFullName =
-                        employee.FirstNameEnglish + "_" + employee.MiddleNameEnglish + "_" + employee.LastNameEnglish;
+                        transferTo.FirstNameEnglish + "_" + transferTo.MiddleNameEnglish + "_" + transferTo.LastNameEnglish;
                 }
                 if (asset != null)
                 {
@@ -225,6 +258,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 userCard.Active = true;
                 userCard.DateCreated = DateTime.Now;
                 userCard.CreatedBy = User.Identity.Name;
+
+                //save on db
                 _db.UserCardItems.Add(userCard);
                 _db.SaveChanges();
 
@@ -240,9 +275,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                         EmployeeId = employeeid,
                         OrgStructureId = orgid,
                         StartDate = DateTime.Today,
-                        BranchId = UserInformationHelper.GetEmployeeBranchId(
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(
                             UserInformationHelper.GetEmployeeUserId(int.Parse(employeeid))),
-                        TransactionType = "Asset Transfer",
+                        TransactionType = FixedAssetTransactionType.AssetTransfer,//changed from string to enum
                         TransactionNo = item.AssetTransferId.ToString(),
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name
@@ -252,10 +287,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 }
 
                 #endregion
-                #region Update previous UserCard
+
+                #region Update previous usercard
 
                 var prevUsercards = _db.UserCardItems.Where(x => x.AssetRegistrationId == asset.AssetRegistrationId)
-                    .Where(x => x.EmployeeId == preEmployee.EmployeeId).ToList();
+                    .Where(x => x.EmployeeId == custodianBeforeTransfer.EmployeeId).ToList();
                 foreach (var prev in prevUsercards)
                 {
                     prev.Active = false;
@@ -266,6 +302,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
                 #endregion
             }
+            //If TransferType is Store To Store
             else if (item.Transfer.Type == TransferType.StoreToStore)
             {
                 #region Update asset info
@@ -292,7 +329,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                         LocationType = LocationType.Store,
                         StartDate = DateTime.Today,
                         BranchId = InventoryHelper.GetStoreBranch(item.Transfer.ToStoreCode),
-                        TransactionType = "Asset Transfer",
+                        TransactionType = FixedAssetTransactionType.AssetTransfer,
                         TransactionNo = item.AssetTransferId.ToString(),
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name
@@ -302,7 +339,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
                    
 
-                    #region update previous location track as not current
+                    #region update previous location tracking as not current 
 
                     var prevs = _db.LocationTrackings.Where(x => x.AssetRegistrationId == asset.AssetRegistrationId)
                         .Where(x => x.LocationTrackingId != location.LocationTrackingId).ToList();

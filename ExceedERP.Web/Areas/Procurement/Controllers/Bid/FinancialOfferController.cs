@@ -140,12 +140,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         public JsonResult GetFinancialOfferedSupplier(string id)
         {
             int lotid = int.Parse(id);
-            var persons = _db.ParticipantsItems.Where(l => l.LotID == lotid).AsQueryable();
+            var persons = _db.BidParticipatingSupplierItems.Where(l => l.BidPParticipatingSupplier.LotID == lotid).AsQueryable();
             List<BidPurchasingSuppliers> supplierList = new List<BidPurchasingSuppliers>();
-            foreach (ParticipantsItem participantsItem in persons)
+            foreach (var participantsItem in persons)
             {
 
-                var suppliers = _db.BidPurchasingSupplierses.FirstOrDefault(x=>x.SupplierName==participantsItem.SupplierName);
+                var suppliers = _db.BidPurchasingSupplierses.FirstOrDefault(x=>x.BidPurchasingSuppliersID==participantsItem.BidPParticipatingSuppliersID);
                 supplierList.Add(suppliers);
             }
             return Json(supplierList.Select(i => new { Supplier = i.SupplierName, SupplierCode = i.BidPurchasingSuppliersID }), JsonRequestBehavior.AllowGet);

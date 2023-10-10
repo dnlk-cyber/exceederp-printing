@@ -33,6 +33,27 @@ namespace ExceedERP.Core.Domain.Inventory
         Void,
     }
 
+    public enum BinCardTransactionOrder
+    {
+        NA=0,
+        Count = 1,
+        Receive =2,
+        TransferReceive=3,
+        Return=4,
+        VoidIssue=5,
+        VoidTransferSend=6,
+        VoidSalesOrLend=7,
+        VoidShipment=8,
+        Adjustment=20,       
+        Issue=30,
+        TransferSend=31,    
+        Shipment=32,
+        SalesOrLend=33,
+        VoidReceive=34,
+        VoidTransferReceive=35,
+        VoidReturn=36,
+    }
+
     public class StoreItemAssignment : TrackUserSettingOperation
     {
         public int StoreItemAssignmentID { get; set; }
@@ -68,6 +89,9 @@ namespace ExceedERP.Core.Domain.Inventory
       
 
         public string ItemLocation { get; set; }
+        public string ShelfNo { get; set; }
+        public string Row { get; set; }
+        public string Column { get; set; }
 
         public string Remark { get; set; }
         public virtual ICollection<BinCardLine> BinCardLines { get; set; }

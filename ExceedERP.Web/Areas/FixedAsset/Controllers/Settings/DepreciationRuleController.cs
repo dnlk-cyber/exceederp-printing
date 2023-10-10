@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -78,6 +80,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.DepretiationRules.Add(entity);
                 db.SaveChanges();
                 depreciationRule.DepreciationRuleId = entity.DepreciationRuleId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "DepreciationRule", "Success", User.Identity.Name, $"created DepreciationRule  {entity.DepreciationRuleId} Tag {entity.DepreciationCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { depreciationRule }.ToDataSourceResult(request, ModelState));
@@ -112,6 +117,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.DepretiationRules.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "DepreciationRule", "Success", User.Identity.Name, $"updated DepreciationRule  {entity.DepreciationRuleId} Tag {entity.DepreciationCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { depreciationRule }.ToDataSourceResult(request, ModelState));
@@ -137,6 +145,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.DepretiationRules.Attach(entity);
                 db.DepretiationRules.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "DepreciationRule", "Success", User.Identity.Name, $"delete DepreciationRule  {depreciationRule.DepreciationRuleId} Tag {depreciationRule.DepreciationCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { depreciationRule }.ToDataSourceResult(request, ModelState));

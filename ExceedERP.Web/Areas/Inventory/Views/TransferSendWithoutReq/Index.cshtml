@@ -46,7 +46,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable()
+      
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -69,6 +69,7 @@
               model.Field(p => p.ItemTransferID).Editable(false);
               model.Field(p => p.Status).Editable(false);
               model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               //model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
@@ -308,6 +309,7 @@
                   })
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                   .Scrollable()
+                   .Filterable()
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model =>

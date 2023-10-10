@@ -47,6 +47,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
         public ActionResult GoodReceiveValidations_Create([DataSourceRequest] DataSourceRequest request, GoodReceiveValidation goodReceiveValidation, int id)
         {
             var record = db.GoodReceives.Find(id);
+            var items = db.GoodReceiveItems.Where(x => x.GoodReceiveId == id).ToList();
             var pricesetting = db.AveragePriceSettings.FirstOrDefault();
             if (pricesetting == null)
                 ModelState.AddModelError("price setting", "Average price setting is not defined.");
@@ -59,7 +60,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                     string message = "You cannot manipulate this record,it  is already approved";
                     ModelState.AddModelError("approved", message);
                 }
-                if (record.GoodReceiveItem.Count == 0)
+                if (!items.Any())
                 {
                     string message = "The Record Does not Contain Any Item";
                     ModelState.AddModelError(String.Empty, message);
@@ -229,6 +230,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                                             GLPeriodId = record.GLPeriodId,
                                             TransactionType = BinCardTransactionTypes.Receive,
                                             StatusType = BinCardTransactionStatus.Regular,
+                                            TransactionOrder = BinCardTransactionOrder.Receive
                                         };
 
                                         #region bin card average price

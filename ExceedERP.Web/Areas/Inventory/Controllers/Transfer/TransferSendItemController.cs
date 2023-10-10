@@ -188,8 +188,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     ReceivedQuantity = itemTransferItem.ReceivedQuantity,
                     Remark = itemTransferItem.Remark,
                      
-                };
-                //_distributionHelper.UpdateTransferSendDistribution(entity.ItemTransfer);
+                };              
                 _db.ItemTransferItems.Attach(entity);
                 _db.ItemTransferItems.Remove(entity);
                 _db.SaveChanges();

@@ -41,46 +41,123 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentValidations_Create([DataSourceRequest]DataSourceRequest request, StockAdjustmentValidation stockAdjustmentValidation , int id)
             {
-                 var stockAdjustment = db.StockAdjustments.Find(id);
+                 var record = db.StockAdjustments.Find(id);
 
-                if (stockAdjustment != null && stockAdjustment.IsOnlineApproved)
+            #region validation 
+
+            if (record != null)
+            {
+                if (record.IsOnlineApproved)
                 {
-                    ModelState.AddModelError("already", "You Can not Manipulate This Record : It is Already Approved");
+                    string message = "You cannot manipulate this record,it  is already approved";
+                    ModelState.AddModelError("approved", message);
                 }
-               
-                if (ModelState.IsValid)
+                {
+                    
+                    if (stockAdjustmentValidation.Status == ApprovalStatuses.Reject)
                     {
-                        if (stockAdjustment != null)
+                        record.IsSendForApproval = false;
+                        record.Status = "Rejected";
+                    }
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("No Found", "Issue record not found");
+            }
+
+
+            #endregion
+
+            if (ModelState.IsValid)
+                    {
+                        if (record != null)
                         {
                             if (stockAdjustmentValidation.Status == ApprovalStatuses.Approve)
                             {
-                                stockAdjustment.Status = Enum.GetName(typeof(OperationStatuses), 1);
-                                stockAdjustment.IsOnlineApproved = true;
-                                stockAdjustment.OnlineApprovedBy = User.Identity.Name;
-                                stockAdjustment.OnlineApprovedTime = DateTime.Now.Date;
-                                foreach (var adjustedItem in stockAdjustment.StockAdjustmentItems)
+                                record.Status = Enum.GetName(typeof(OperationStatuses), 1);
+                                record.IsOnlineApproved = true;
+                                record.OnlineApprovedBy = User.Identity.Name;
+                                record.OnlineApprovedTime = DateTime.Now.Date;
+                                foreach (var i in record.StockAdjustmentItems)
                                 {
-                                    var item = db.InventoryItems.Find(adjustedItem.ItemCode);
+                                    var item = db.InventoryItems.Find(i.ItemCode);
                                     var storeItem =db.StoreItemAssignments.FirstOrDefault(
-                                            it => it.ItemCode == adjustedItem.ItemCode &&
-                                                  it.StoreCode == stockAdjustment.StoreCode);
-                                    if (adjustedItem.StockAdjustmentType == "Shortage")
+                                            it => it.ItemCode == i.ItemCode &&
+                                                  it.StoreCode == record.StoreCode);
+                            decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(i.ItemCode, record.StoreCode);
+                            if (i.StockAdjustmentType == AdjustmentType.Shortage)
                                     {
-                                        if (item != null) item.Balance -= adjustedItem.AdjustedQuantity;
-                                        if (storeItem != null) storeItem.Balance -= adjustedItem.AdjustedQuantity;
+                                        if (item != null) item.Balance -= i.AdjustedQuantity;
+                                        if (storeItem != null) storeItem.Balance -= i.AdjustedQuantity;
+                                #region bin card line
+
+                                var binCardLine = new BinCardLine
+                                {
+                                    StoreItemAssignment = storeItem,
+                                    ReferenceDoc = "Adjustment_Shortage-" + record.StockAdjustmentID.ToString(),
+                                    Reference = record.Remark,
+                                    Date = record.AdjustmentDate,
+                                    IssuedQTY = i.AdjustedQuantity,
+                                    IssuedUPrice = avgPrice,
+                                    IssuedTPrice = i.AdjustedQuantity*avgPrice,
+                                    BalanceQTY = storeItem.Balance,
+                                    BalanceUPrice = avgPrice,
+                                    BalanceTPrice = avgPrice * storeItem.Balance,
+                                    IssuedTo = "",
+                                    //new    
+                                    StoreCode = record.StoreCode,
+                                    GLPeriodId = record.GLPeriodId,
+                                    TransactionType = BinCardTransactionTypes.Adjustment,
+                                    StatusType = BinCardTransactionStatus.Regular,
+                                    TransactionOrder=BinCardTransactionOrder.Adjustment
+
+                                };
+                                db.BinCardLines.Add(binCardLine);
+                                // db.SaveChanges();
+
+                                #endregion
+                            }
+                            else if (i.StockAdjustmentType == AdjustmentType.Overage)
+                                    {
+                                        if (item != null) item.Balance += i.AdjustedQuantity;
+                                        if (storeItem != null) storeItem.Balance += i.AdjustedQuantity;
+                                #region bin card line
+
+                                BinCardLine binCardLine = new BinCardLine
+                                {
+                                    StoreItemAssignment = storeItem,
+                                    ReferenceDoc = "Adjustment_Shortage-" + record.StockAdjustmentID.ToString(),
+                                    Reference =  record.Reference,
+                                    Date = record.AdjustmentDate,
+                                    ReceivedQTY = i.AdjustedQuantity,
+                                    ReceivedUPrice = avgPrice,
+                                    ReceivedTPrice = i.AdjustedQuantity * avgPrice,//i.Total,
+                                    BalanceQTY = storeItem.Balance,
+                                    BalanceUPrice = avgPrice,
+                                    BalanceTPrice=avgPrice* storeItem.Balance,
+                                    SupplierName = "",
+                                    //new    
+                                    StoreCode = record.StoreCode,
+                                    GLPeriodId = record.GLPeriodId,
+                                    TransactionType = BinCardTransactionTypes.Adjustment,
+                                    StatusType = BinCardTransactionStatus.Regular,
+                                };
+
+                                
+
+                                db.BinCardLines.Add(binCardLine);
+                                // db.SaveChanges();
+
+                                #endregion
+                            }
+                            if (i.PriceAdjustmentType == " Income")
+                                    {
+                                        if (item != null) item.AvgPrice += i.AdjustedPrice;
                                     }
-                                    else if (adjustedItem.StockAdjustmentType == "Overage")
+                                    else if (i.PriceAdjustmentType == "Loss")
                                     {
-                                        if (item != null) item.Balance += adjustedItem.AdjustedQuantity;
-                                        if (storeItem != null) storeItem.Balance += adjustedItem.AdjustedQuantity;
-                                    }
-                                    if (adjustedItem.PriceAdjustmentType == " Income")
-                                    {
-                                        if (item != null) item.AvgPrice += adjustedItem.AdjustedPrice;
-                                    }
-                                    else if (adjustedItem.PriceAdjustmentType == "Loss")
-                                    {
-                                        if (item != null) item.AvgPrice -= adjustedItem.AdjustedPrice;
+                                        if (item != null) item.AvgPrice -= i.AdjustedPrice;
                                     }
                                     db.InventoryItems.Attach(item);
                                     db.Entry(item).State = EntityState.Modified;
@@ -92,11 +169,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                             }
                             else if (stockAdjustmentValidation.Status == ApprovalStatuses.Reject)
                             {
-                                stockAdjustment.Status = Enum.GetName(typeof(OperationStatuses), 8);
-                                stockAdjustment.IsSendForApproval = false;
+                                record.Status = Enum.GetName(typeof(OperationStatuses), 8);
+                                record.IsSendForApproval = false;
                             }
-                            db.StockAdjustments.Attach(stockAdjustment);
-                            db.Entry(stockAdjustment).State = EntityState.Modified;
+                            db.StockAdjustments.Attach(record);
+                            db.Entry(record).State = EntityState.Modified;
                            // db.SaveChanges();
                             var entity = new StockAdjustmentValidation
                             {

@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -116,7 +118,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     }
                 }
                 #endregion
-                }
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Location Tracking", "Success", User.Identity.Name, $"created Location Tracking {entity.LocationTrackingId} Tag {entity.AssetRegistrationId}", Modules.FixedAsset);
+                #endregion
+            }
 
             return Json(new[] { locationTracking }.ToDataSourceResult(request, ModelState));
         }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.FixedAsset.Registrations;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Counts
 {
@@ -16,17 +17,21 @@ namespace ExceedERP.Core.Domain.FixedAsset.Counts
 
         [DisplayName("Asset")]
         public int AssetRegistrationId { get; set; }
-        [DisplayName("Record Qty.")]
+        [DisplayName("Book Value")]
+        public decimal Value { get; set; }
+        [DisplayName("Qty.")]
         public decimal PreviousBalance { get; set; }
-        [DisplayName("Physical Count")]
+        [DisplayName("Count")]
         public decimal Count { get; set; }
         [DisplayName("Status")]
         public bool Status { get; set; }
-        public bool Updated { get; set; }
-        [DisplayName("Cost")]
-        public decimal Price { get; set; }
-        public string Location { get; set; }
-        [DisplayName("Item Name")]
-        public string ItemName { get; set; }
+        public bool Updated { get; set; }       
+        [DisplayName("Asset Status")]
+        public RegistrationStatus AssetStatus { get; set; }
+        [DisplayName("Employee")]
+        public int? EmployeeId { get; set; }
+        [DisplayName("Store")]
+        public string StoreCode { get; set; }
+
     }
 }

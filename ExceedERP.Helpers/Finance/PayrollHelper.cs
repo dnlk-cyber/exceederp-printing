@@ -20,7 +20,7 @@ namespace ExceedERP.Helpers.Finance
                             join p in db.Placements
                                 on e.EmployeeId equals p.EmployeeId
                             where e.IsActive && p.isCurrent && !p.IsPend
-                           // where e.EmployeeCode== "OCC-000180"
+                            //where e.EmployeeCode== "133682"
                             select (new
                             {
                                 e.EmployeeId,

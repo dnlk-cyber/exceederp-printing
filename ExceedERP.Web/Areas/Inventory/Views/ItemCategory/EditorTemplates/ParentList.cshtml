@@ -3,8 +3,9 @@
                    .DataValueField("ItemCategoryCode")
                    .DataTextField("Name")
                    .OptionLabel("...Parent...")
+                     .Filter("contains")
                    .DataSource(
-                   read => read.Read(re => re.Action("GetParents", "DataProvider")).ServerFiltering(true)).ValuePrimitive(true))
+                   read => read.Read(re => re.Action("GetParents", "DataProvider")).ServerFiltering(false)).ValuePrimitive(true))
 
 
  

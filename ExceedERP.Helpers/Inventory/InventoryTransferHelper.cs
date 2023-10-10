@@ -1,10 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Helpers.Inventory
@@ -114,6 +121,8 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         DateCreated = DateTime.Now,
                         CreatedBy = user,
+                        BusinessUnitId = record.BusinessUnitId,
+                        BranchId = record.BranchId,
                         JournalName = "GoodReceive",
                         Description = !String.IsNullOrEmpty(description) ? description : "GoodReceive",
                         FiscalYear = glyear,
@@ -278,6 +287,8 @@ namespace ExceedERP.Helpers.Inventory
                         {
                             DateCreated = DateTime.Now,
                             CreatedBy = user,
+                            BusinessUnitId = record.BusinessUnitId,
+                            BranchId = record.BranchId,
                             JournalName = "Issue",
                             Description = !String.IsNullOrEmpty(description) ? description : "Issue",
                             FiscalYear = glyear,
@@ -285,6 +296,7 @@ namespace ExceedERP.Helpers.Inventory
                             CategoryName = "Issue",
                             SourcesName = "Issue",
                             JournalNumber = "Issue." + record.IssueID,
+                            ReferenceDoc=record.Reference,
                             SourceId = record.IssueID.ToString(),
                             Source = JournalSources.Stock_Issue.ToString(),
                             EffectiveDate = record.IssueDate.Date.Date,
@@ -449,6 +461,8 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         DateCreated = DateTime.Now,
                         CreatedBy = user,
+                        BusinessUnitId = record.BusinessUnitId,
+                        BranchId = record.BranchId,
                         JournalName = "Issue Fuel",
                         Description = !String.IsNullOrEmpty(description) ? description : "Issue Fuel",
                         FiscalYear = glyear,
@@ -458,6 +472,7 @@ namespace ExceedERP.Helpers.Inventory
                         JournalNumber = "Issue Fuel." + record.IssueID,
                         SourceId = record.IssueID.ToString(),
                         Source = JournalSources.Stock_Issue_fuel.ToString(),
+                        ReferenceDoc = record.Reference,
                         EffectiveDate = record.IssueDate.Date,
                         Status = "Approved",
                         IsOnlineApproved = true,
@@ -614,6 +629,8 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         DateCreated = DateTime.Now,
                         CreatedBy = user,
+                        BusinessUnitId = record.BusinessUnitId,
+                        BranchId = record.BranchId,
                         JournalName = "Good Selling",
                         Description = !String.IsNullOrEmpty(description) ? description : "Good Selling",
                         FiscalYear = glyear,
@@ -623,6 +640,7 @@ namespace ExceedERP.Helpers.Inventory
                         JournalNumber = "Good Selling." + record.GoodSellingAndLendingID,
                         SourceId = record.GoodSellingAndLendingID.ToString(),
                         Source = JournalSources.Stock_SaleOrLend.ToString(),
+                        ReferenceDoc = record.Remark,
                         EffectiveDate = record.Date.Date,
                         Status = "Approved",
                         IsOnlineApproved = true,
@@ -777,6 +795,8 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         DateCreated = DateTime.Now,
                         CreatedBy = user,
+                        BusinessUnitId =record.BusinessUnitId,
+                        BranchId = record.BranchId,                       
                         JournalName = "Transfer Send",
                         Description = !String.IsNullOrEmpty(description) ? description : "Transfer Send",
                         FiscalYear = glyear,
@@ -786,6 +806,7 @@ namespace ExceedERP.Helpers.Inventory
                         JournalNumber = "Transfer Send." + record.ItemTransferID,
                         SourceId = record.ItemTransferID.ToString(),
                         Source = JournalSources.Stock_Transfer.ToString(),
+                        ReferenceDoc = record.DocumentRef,
                         EffectiveDate = record.TransferDate.Date,
                         Status = "Approved",
                         IsOnlineApproved = true,
@@ -939,6 +960,8 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         DateCreated = DateTime.Now,
                         CreatedBy = user,
+                        BusinessUnitId = record.BusinessUnitId,
+                        BranchId = record.BranchId,
                         JournalName = "Transfer Receive",
                         Description = !String.IsNullOrEmpty(description) ? description : "Transfer Receive",
                         FiscalYear = glyear,
@@ -948,6 +971,7 @@ namespace ExceedERP.Helpers.Inventory
                         JournalNumber = "Transfer Receive." + record.ItemTransferID,
                         SourceId = record.ItemTransferReceiveId.ToString(),
                         Source = JournalSources.Stock_Transfer_Receive.ToString(),
+                        ReferenceDoc = record.DocumentRef,
                         EffectiveDate = record.ReceiveDate.Date,
                         Status = "Approved",
                         IsOnlineApproved = true,
@@ -1100,6 +1124,8 @@ namespace ExceedERP.Helpers.Inventory
                     GlRecordJournal journal = new GlRecordJournal
                     {
                         DateCreated = DateTime.Now,
+                        BusinessUnitId = record.BusinessUnitId,
+                        BranchId = record.BranchId,
                         CreatedBy = user,
                         JournalName = "Store Return",
                         Description = !String.IsNullOrEmpty(description) ? description : "Store Return",
@@ -1110,6 +1136,7 @@ namespace ExceedERP.Helpers.Inventory
                         JournalNumber = "Store Return." + record.StoreReturnID,
                         SourceId = record.StoreReturnID.ToString(),
                         Source = JournalSources.Stock_Return.ToString(),
+                        ReferenceDoc = record.Reference,
                         EffectiveDate = record.ReturnDate.Date,
                         Status = "Approved",
                         IsOnlineApproved = true,

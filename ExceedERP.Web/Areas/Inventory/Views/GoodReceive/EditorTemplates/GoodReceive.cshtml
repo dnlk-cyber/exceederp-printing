@@ -162,6 +162,15 @@
             <div class="row"></div>
 
             <div class="form-group">
+                @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Reference)
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
                 @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @Html.Kendo().TextBoxFor(model => model.Remark)
@@ -169,15 +178,15 @@
                 </div>
             </div>
             <div class="row"></div>
-            
-            <div class="form-group">
+
+            @*<div class="form-group">
                 @Html.LabelFor(model => model.IsFreshBazaar, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @Html.Kendo().CheckBoxFor(model => model.IsFreshBazaar)
                     @Html.ValidationMessageFor(model => model.IsFreshBazaar, "", new { @class = "text-danger" })
                 </div>
             </div>
-            <div class="row"></div>
+            <div class="row"></div>*@
 
 
 

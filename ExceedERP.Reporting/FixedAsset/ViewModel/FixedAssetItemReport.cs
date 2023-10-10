@@ -31,6 +31,10 @@
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
 
+        //new added
+        public decimal TotalDepreciationValue { get; set; }
+
+
     }
 
     

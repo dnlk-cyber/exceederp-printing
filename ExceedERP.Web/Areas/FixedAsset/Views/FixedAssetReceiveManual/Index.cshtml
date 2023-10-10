@@ -51,8 +51,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster").Edit("onMasterEdit"))
       .DataSource(dataSource => dataSource
@@ -261,7 +261,7 @@
                                       model.Field(p => p.SubTotal).Editable(false);
                                       // model.Field(p => p.Quantity).Editable(false);
 
-                                      model.Field(p => p.TagNo).Editable(false);
+                                      //model.Field(p => p.TagNo).Editable(false);
 
                                       model.Field(p => p.CreatedBy).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);

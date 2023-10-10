@@ -83,6 +83,8 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                     ItemName =line.InventoryItem.Name,
                     UOM = line.InventoryItem.UoMName,
                     PhysicalCount = line.Count,
+                    Price=line.Price,
+                    Total=line.Count*line.Price,
                     Status = line.Status
                 };
 

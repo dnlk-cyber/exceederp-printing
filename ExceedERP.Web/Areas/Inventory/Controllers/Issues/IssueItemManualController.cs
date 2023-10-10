@@ -44,8 +44,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 Total = issueItem.Total,
                 WorkItemCode = issueItem.WorkItemCode,
                 AdditionalCost = issueItem.AdditionalCost,
-                ProductionJobNo = issueItem.ProductionJobNo,
-                MaintenanceJobNo = issueItem.MaintenanceJobNo,
+
 
                 OrgBranchName = issueItem.OrgBranchName,
                 DateCreated = issueItem.DateCreated,
@@ -65,7 +64,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             var issue = db.Issues.Find(id);
 
             var exist = db.IssueItems.Where(x => x.IssueID == id)
-             .Where(x => x.ItemCode == issueItem.ItemCode && x.ProductionJobNo == issueItem.ProductionJobNo)
+             .Where(x => x.ItemCode == issueItem.ItemCode)
              .AsQueryable();
             if (exist.Any())
             {
@@ -83,7 +82,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             //}
             var storeItem = db.StoreItemAssignments.FirstOrDefault(x => x.ItemCode == issueItem.ItemCode && x.StoreCode ==issue.StoreCode);
             if (storeItem == null)
-                ModelState.AddModelError("not defined", "The item " + issueItem.Name + " is not available in store " + issue.StoreCode);
+                ModelState.AddModelError("not defined", "The item " + issueItem.ItemCode + " is not available in store " + issue.StoreCode);
 
             if (storeItem != null && storeItem.Balance < issueItem.IssuedQuantity)
                 ModelState.AddModelError("minBalance", "The remaining balance in Store" + storeItem.StoreCode + " is only " + storeItem.Balance);
@@ -102,9 +101,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssuedQuantity = issueItem.IssuedQuantity,
                     UnitPrice = avgPrice,
                     Total = avgPrice * issueItem.IssuedQuantity,
-                    ProductionJobNo = issueItem.ProductionJobNo,
-                    MaintenanceJobNo = issueItem.MaintenanceJobNo,
-
                     OrgBranchName = issueItem.OrgBranchName,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
@@ -133,7 +129,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
             var exist = db.IssueItems.Where(x => x.IssueID == id)
                 .Where(x => x.IssueItemID != issueItem.IssueItemID)
-          .Where(x => x.ItemCode == issueItem.ItemCode && x.ProductionJobNo == issueItem.ProductionJobNo)
+          .Where(x => x.ItemCode == issueItem.ItemCode)
           .AsQueryable();
             if (exist.Any())
             {
@@ -154,7 +150,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
             var storeItem = db.StoreItemAssignments.FirstOrDefault(x => x.ItemCode == issueItem.ItemCode && x.StoreCode == issue.StoreCode);
             if (storeItem == null)
-                ModelState.AddModelError("not defined", "The item " + issueItem.Name + " is not available in store " + issue.StoreCode);
+                ModelState.AddModelError("not defined", "The item " + issueItem.ItemCode + " is not available in store " + issue.StoreCode);
 
             if (storeItem != null && storeItem.Balance < issueItem.IssuedQuantity)
                 ModelState.AddModelError("minBalance", "The remaining balance in Store" + storeItem.StoreCode + " is only " + storeItem.Balance);
@@ -175,9 +171,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssuedQuantity = issueItem.IssuedQuantity,
                     UnitPrice = avgPrice,
                     Total = avgPrice* issueItem.IssuedQuantity,
-                    ProductionJobNo = issueItem.ProductionJobNo,
-                    MaintenanceJobNo = issueItem.MaintenanceJobNo,
-
                     OrgBranchName = issueItem.OrgBranchName,
                     LastModified = DateTime.Now,
                     ModifiedBy = User.Identity.Name,
@@ -216,8 +209,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     UnitPrice = issueItem.UnitPrice,
 
                     Total = issueItem.Total,
-                    ProductionJobNo = issueItem.ProductionJobNo,
-                    MaintenanceJobNo = issueItem.MaintenanceJobNo,
+                   
 
                     OrgBranchName = issueItem.OrgBranchName,
                     DateCreated = issueItem.DateCreated,

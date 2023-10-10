@@ -18,9 +18,9 @@ namespace ExceedERP.Reporting.Inventory.ViewModel
         public DateTime RequisitionDate { get; set; }
         [Display(Name = "Item")]
         public string InventoryItem { get; set; }
-        [Display(Name = "Requested Quantity")]
+        public string PartNo { get; set; }
+        public string ModelNo { get; set; }
         public decimal RequestedQuantity { get; set; }
-        [Display(Name = "Approved Quantity")]
         public decimal ApprovedQuantity { get; set; }
         public string RequestingDepartment { get; set; }
         public string ForProject { get; set; }

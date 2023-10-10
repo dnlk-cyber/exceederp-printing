@@ -9,7 +9,9 @@ using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.UserCard;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -109,6 +111,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                     _db.MonthlyDepreciationValidations.Add(entity);
                     _db.SaveChanges();
                     monthlyDepreciationValidation.MonthlyDepreciationId = entity.MonthlyDepreciationId;
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Monthly Depreciation Validation", "Success", User.Identity.Name, $"create {entity.MonthlyDepreciationValidationId} Tag {entity.MonthlyDepreciationId}", Modules.FixedAsset);
+                    #endregion
+
                 }
             }
 
@@ -132,6 +139,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 _db.MonthlyDepreciationValidations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Monthly Depreciation Validation", "Success", User.Identity.Name, $"update  {entity.MonthlyDepreciationValidationId} Tag {entity.MonthlyDepreciationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { monthlyDepreciationValidation }.ToDataSourceResult(request, ModelState));
@@ -153,6 +163,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 _db.MonthlyDepreciationValidations.Attach(entity);
                 _db.MonthlyDepreciationValidations.Remove(entity);
                 _db.SaveChanges();
+                 #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Monthly Depreciation Validation", "Success", User.Identity.Name, $"delete  {monthlyDepreciationValidation.MonthlyDepreciationValidationId} Tag {monthlyDepreciationValidation.MonthlyDepreciationId}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { monthlyDepreciationValidation }.ToDataSourceResult(request, ModelState));
@@ -163,7 +176,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 
             var asset = _db.AssetRegistrations.Find(issueItem.AssetRegistrationId);
             var employee = _db.Person_Employee.Find(issueItem.FixedAssetIssue.EmployeeId);
-            #region Update UserCard
+            #region Update PersonEmployee
             UserCardItems userCard = new UserCardItems();
             if (employee != null)
             {

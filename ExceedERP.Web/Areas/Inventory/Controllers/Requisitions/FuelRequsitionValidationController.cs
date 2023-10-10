@@ -66,26 +66,26 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     }
                 }
             }
-            //if (ModelState.IsValid)
-            //{
-            if (storeRequisition != null)
+            if (ModelState.IsValid)
             {
-                if (storeRequisitionValidation.Status == ApprovalStatuses.Approve)
+                if (storeRequisition != null)
                 {
-                    foreach (var item in storeRequisition.StoreRequisitionItem)
+                    if (storeRequisitionValidation.Status == ApprovalStatuses.Approve)
                     {
-                        var currentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(item.ItemCode, item.StoreRequisition.StoreCode);
-                        if (item.IssuedQuantity > currentBalance)
+                        foreach (var item in storeRequisition.StoreRequisitionItem)
                         {
-                            ModelState.AddModelError("no balance", "There is no enough balance in store for item: " + item.InventoryItem.Name + " current balance is: " + currentBalance);
+                            var currentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(item.ItemCode, item.StoreRequisition.StoreCode);
+                            if (item.IssuedQuantity > currentBalance)
+                            {
+                                ModelState.AddModelError("no balance", "There is no enough balance in store for item: " + item.InventoryItem.Name + " current balance is: " + currentBalance);
+                            }
+
                         }
 
                     }
-
-                }
-                // check again because other validation errors may have been added since last check
-                if (ModelState.IsValid)
-                {
+                    // check again because other validation errors may have been added since last check
+                    //if (ModelState.IsValid)
+                    //{
                     if (storeRequisitionValidation.Status == ApprovalStatuses.Approve)
                     {
                         storeRequisition.Status = "User Approved";
@@ -141,10 +141,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "fuel requisition approval", "Success", User.Identity.Name, $"approved fuel requisition {entity.StoreRequisitionID} ", Modules.Inventory);
                     #endregion
-                }
+                    //}
 
+                }
             }
-            //}
 
 
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));

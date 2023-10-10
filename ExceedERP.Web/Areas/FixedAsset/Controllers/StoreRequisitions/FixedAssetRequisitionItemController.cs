@@ -5,7 +5,9 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -35,6 +37,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                 FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
                 Name = storeRequisitionItem.Name,
+                FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
                 PartNo = storeRequisitionItem.PartNo,
                 ModelNo = storeRequisitionItem.ModelNo,
                 SerialNo = storeRequisitionItem.SerialNo,
@@ -58,10 +61,23 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
         {
             storeRequisitionItem.IssuedQuantity = 0;
             storeRequisitionItem.PurchaseQuantity = 0;
-            if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
+            //Added to validate same entry
+            var item = _db.FixedAssetRequisitionItems.Where(x => x.FixedAssetNameID == storeRequisitionItem.FixedAssetNameID && x.ItemSpecification == storeRequisitionItem.ItemSpecification && x.FixedAssetRequisitionId == id).ToList();
+            if (item.Any())
+            {
+                ModelState.AddModelError("error", "Item with the same specification exists");
+            }
+;           if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
             {
                 ModelState.AddModelError("above","Approved quantity cannot be more than requested.");
             }
+           
+            //Added to validate 0 or negative quantity 
+            if(storeRequisitionItem.RequestedQuantity <= 0)
+            {
+                ModelState.AddModelError("Error", "Requested QTY can't be 0 or negative value");
+            }
+            
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetRequisitionItem
@@ -69,7 +85,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionId = id,
                     FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
-                    Name = storeRequisitionItem.Name,
+                    FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
+                    Name =_db.FixedAssetSubCategoryNames.Find(storeRequisitionItem.FixedAssetNameID).Name,
                     PartNo = storeRequisitionItem.PartNo,
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
@@ -91,6 +108,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionItems.Add(entity);
                 _db.SaveChanges();
                 storeRequisitionItem.FixedAssetRequisitionItemId = entity.FixedAssetRequisitionItemId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionItem", "Success", User.Identity.Name, $"created FixedAssetRequisitionItem {entity.FixedAssetRequisitionItemId} PartNo {entity.PartNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -107,6 +127,17 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             {
                 ModelState.AddModelError("above", "Approved quantity cannot be more than requested.");
             }
+            //Added to validate same entry
+            var item = _db.FixedAssetRequisitionItems.Where(x => x.FixedAssetNameID == storeRequisitionItem.FixedAssetNameID && x.ItemSpecification == storeRequisitionItem.ItemSpecification && x.FixedAssetRequisitionId == storeRequisitionItem.FixedAssetRequisitionId && x.FixedAssetRequisitionItemId != storeRequisitionItem.FixedAssetRequisitionItemId).ToList();
+            if (item.Any())
+            {
+                ModelState.AddModelError("error", "Item with the same specification exists");
+            }
+            //Added to validate 0 or negative quantity 
+            if (storeRequisitionItem.RequestedQuantity <= 0)
+            {
+                ModelState.AddModelError("Error", "Requested QTY can't be 0 or negative value");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetRequisitionItem
@@ -116,15 +147,16 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionItemId = storeRequisitionItem.FixedAssetRequisitionItemId,
                     FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
-                    Name = storeRequisitionItem.Name,
+                    FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
+                    Name = _db.FixedAssetSubCategoryNames.Find(storeRequisitionItem.FixedAssetNameID).Name,
                     PartNo = storeRequisitionItem.PartNo,
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
                     UoM = storeRequisitionItem.UoM,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
-                    ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
-                    IssuedQuantity = storeRequisitionItem.ApprovedQuantity,
+                    ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
+                    IssuedQuantity = storeRequisitionItem.RequestedQuantity,
                     PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
 
@@ -137,6 +169,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionItems.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionItem", "Success", User.Identity.Name, $"Updated FixedAssetRequisitionItem {entity.FixedAssetRequisitionItemId} PartNo {entity.PartNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -155,7 +190,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionItemId = storeRequisitionItem.FixedAssetRequisitionItemId,
                     FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
-                   Name = storeRequisitionItem.Name,
+                    FixedAssetNameID = storeRequisitionItem.FixedAssetNameID,
+                    Name = storeRequisitionItem.Name,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
                     IssuedQuantity = storeRequisitionItem.IssuedQuantity,
@@ -167,6 +203,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 _db.FixedAssetRequisitionItems.Attach(entity);
                 _db.FixedAssetRequisitionItems.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"delete FixedAssetRequisitionItem {storeRequisitionItem.FixedAssetRequisitionItemId} PartNo {storeRequisitionItem.PartNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));

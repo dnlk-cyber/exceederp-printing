@@ -507,7 +507,31 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     break;
 
                 case "Duplicate_Ledger_Line":
-                   
+                    #region fixe duplicate  ledger line
+                    _db.Database.CommandTimeout = 7200;
+                    var duplicateLines = _db.GLLedgerPostingLines
+                        .Where(x => x.Type == LedgerPostTypes.Standard)
+                        .GroupBy(x => x.JournalNumber)
+                        .Where(g => g.Count() > 1)
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })
+                        .AsNoTracking()
+                        .ToList();
+
+                    foreach (var duplicate in duplicateLines)
+                    {
+                        var duplicateledgerlines = _db.GLLedgerPostingLines
+                            .Where(x => x.JournalNumber == duplicate.Element).ToList();
+                        if (duplicateledgerlines.Any())
+                        {
+                            var minline = duplicateledgerlines.Min(x => x.GLLedgerPostingLinesID);
+                            var toberemoved = duplicateledgerlines.Where(x => x.GLLedgerPostingLinesID != minline).ToList();
+                            _db.GLLedgerPostingLines.RemoveRange(toberemoved);
+                            _db.SaveChanges();
+                        }
+
+                    }
+
+                    #endregion
                     break;
 
                 case "Duplicate_Beginning_Ledger_Line":

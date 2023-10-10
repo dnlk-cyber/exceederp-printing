@@ -228,6 +228,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         TransferDate = DateTime.Today,
                         FromStore = storerequisition.StoreCode,
                         BranchId = storerequisition.BranchId,
+                        BusinessUnitId = storerequisition.BusinessUnitId,
                         OrgBranchName = inventoryItemService.GetStoreBranch(storerequisition.StoreCode).ToString(),
                         ToStore = storerequisition.ToStoreCode,
                         DeliveredBy = "",
@@ -287,7 +288,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             }
 
         }
-
         private void TransferStoreRequisitionItemsToIssue(StoreRequisition storerequisition)
         {
             InventoryItemService inventoryItemService = new InventoryItemService();
@@ -320,8 +320,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     {
                         OrgStructureId = storerequisition.OrgStructureId,
                         PlateNo = storerequisition.PlateNo,
-                        EmployeeId = storerequisition.EmployeeId,
+                        EmployeeId = (int)storerequisition.EmployeeId,
                         BranchId =storerequisition.BranchId,
+                        BusinessUnitId = storerequisition.BusinessUnitId,
                         ForBranchId = storerequisition.IsForOther? (int)storerequisition.ForBranchId: storerequisition.BranchId,
                         OrgBranchName = inventoryItemService.GetStoreBranch(storerequisition.StoreCode).ToString(),
                         StoreCode = storerequisition.StoreCode,
@@ -397,7 +398,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
             }
         }
-
         private void TransferToPurchaseRequisition(StoreRequisition storerequisition)
         {
             bool transferrable = false;
@@ -444,10 +444,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     {
                         StoreRequisitionID = storerequisition.StoreRequisitionID,
                         BranchId = storerequisition.BranchId,
+                        BusinessUnitId = storerequisition.BusinessUnitId,
                         ForBranchId = forbranch,
                         OrgBranchName = storerequisition.BranchId.ToString(),
                         OrgStructureId = storerequisition.OrgStructureId,
-                        EmployeeId = storerequisition.EmployeeId,
+                        EmployeeId = (int)storerequisition.EmployeeId,
                         ReferenceNo = storerequisition.Reference,
                         ProcurementOfficer = 0,
                         RequestDate = storerequisition.RequestDate,
@@ -475,16 +476,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         {
                             #region stock item
 
+                            var item = db.InventoryItems.Where(x => x.ItemCode == requestedItem.ItemCode).FirstOrDefault();
+
                             var purchaseRequisitionItem = new PurchaseRequisitionItem
                             {
                                 PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                                 CatCode = requestedItem.ItemCategoryCode,
                                 CategoryName = requestedItem.ItemCategory.Name,
                                 ItmCode = requestedItem.ItemCode,
-                                ItemName = requestedItem.InventoryItem.Name,
+                                ItemName = item.Name,
                                 PartNo = requestedItem.PartNo,
                                 ModelNo = requestedItem.ModelNo,
-                                UoM = requestedItem.InventoryItem.UoMName,
+                                ChasisNo=requestedItem.ChasisNo,
+                                UoM = item.UoMName,
                                 RequestedQuantity = requestedItem.PurchaseQuantity,
                                 Quantity = requestedItem.PurchaseQuantity,
                                 ItemSpecification = requestedItem.ItemSpecification,
@@ -497,6 +501,23 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
                             #endregion
                         }
+
+                    }
+
+                    foreach (var attachement in storerequisition.StoreRequisitionAttachments)
+                    {
+                        #region attachment
+                        
+                        var prattachment = new PurchaseRequisitionAttachment
+                        {
+                            PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
+                            FileName = attachement.FileName,
+                            FilePath = attachement.FilePath
+                        };
+                        db.PurchaseRequisitionAttachments.Add(prattachment);
+                        db.SaveChanges();
+
+                        #endregion
 
                     }
 

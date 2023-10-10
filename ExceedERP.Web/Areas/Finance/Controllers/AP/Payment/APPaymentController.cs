@@ -129,9 +129,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayablePayment)]
         public ActionResult APPayments_Read([DataSourceRequest]DataSourceRequest request, bool isNotTransffered)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<ApPayment> appayments = _db.APPayments.Where(x => x.IsPrepayment==false)
-                .Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<ApPayment> appayments = _db.APPayments
+                .Where(x => mybraches.Contains(x.CreatedAtBranchId))
+                .Where(x => x.IsPrepayment==false);
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                appayments = appayments.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+            }
 
             if (isNotTransffered)
             {
@@ -450,6 +458,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     }
                 }
             }
+          
             #endregion
             #region net
             //apPayment.NetAmount = apPayment.PaymentAmount;
@@ -1085,8 +1094,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         PaymentReference = record.PaymentReference,
                         ReferenceDoc = "",
                         InvoiceReferenceDoc = record.InvoiceNumber,
-                        Remark = record.Remark,
-                        BranchId = 0,//to change
+                        BranchId = record.CreatedAtBranchId,
+                        BusinessUnitId = record.CreatedAtBusinessUnitId,
+                        Remark = record.Remark,                     
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now

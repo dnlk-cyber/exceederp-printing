@@ -36,6 +36,8 @@ namespace ExceedERP.Core.Domain.Inventory
         [Display(Name = "Period")]
         public int GLPeriodId { get; set; }
         public int BranchId { get; set; }
+        [DisplayName("Business Unit")]
+        public int BusinessUnitId { get; set; }
         public virtual ICollection<ItemTransferItemReceive> ItemTransferItemReceive { get; set; }
         public virtual ICollection<ItemTransferReceiverValidation> ItemTransferReceiverValidation { get; set; }
         public virtual ICollection<ItemTransferReceiveDistribution> ItemTransferReceiveDistribution { get; set; }

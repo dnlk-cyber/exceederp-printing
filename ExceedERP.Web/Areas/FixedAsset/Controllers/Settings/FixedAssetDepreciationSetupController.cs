@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -58,6 +60,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetDepreciationSetups.Add(entity);
                 db.SaveChanges();
                 fixedAssetDepreciationSetup.FixedAssetDepreciationSetupID = entity.FixedAssetDepreciationSetupID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetDepreciationSetup", "Success", User.Identity.Name, $"created FixedAssetDepreciationSetup {entity.FixedAssetDepreciationSetupID} code {entity.AccumulatedDepreciationAccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetDepreciationSetup }.ToDataSourceResult(request, ModelState));
@@ -84,6 +89,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetDepreciationSetups.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetDepreciationSetup", "Success", User.Identity.Name, $"update FixedAssetDepreciationSetup {entity.FixedAssetDepreciationSetupID} code {entity.AccumulatedDepreciationAccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetDepreciationSetup }.ToDataSourceResult(request, ModelState));
@@ -110,6 +118,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
                 db.FixedAssetDepreciationSetups.Attach(entity);
                 db.FixedAssetDepreciationSetups.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetDepreciationSetup {fixedAssetDepreciationSetup.FixedAssetDepreciationSetupID} code {fixedAssetDepreciationSetup.AccumulatedDepreciationAccountCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetDepreciationSetup }.ToDataSourceResult(request, ModelState));

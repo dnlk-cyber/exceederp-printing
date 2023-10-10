@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -36,6 +38,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return Json(result);
         }
 
+        //FixedAsset Requisition Second Validation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitionSecondValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionSecondValidation fixedAssetRequisitionSecondValidation)
         {
@@ -62,6 +65,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     }
                     else if (fixedAssetRequisitionSecondValidation.Status == ApprovalStatuses.Reject)
                     {
+                        storeRequisition.MiddleOnlineApprovedBy = "";
                         storeRequisition.IsMiddleSendForApproval = false;
                         storeRequisition.Status = "Second Approval Rejected";
                         _db.Entry(storeRequisition).State = EntityState.Modified;
@@ -86,6 +90,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     _db.SaveChanges();
                     fixedAssetRequisitionSecondValidation.FixedAssetRequisitionSecondValidationId =
                         entity.FixedAssetRequisitionSecondValidationId;
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetRequisitionSecondValidation", "Success", User.Identity.Name, $"created FixedAssetRequisitionSecondValidation  {entity.FixedAssetRequisitionSecondValidationId} Tag {entity.FixedAssetRequisitionId}", Modules.FixedAsset);
+                    #endregion
                 }
             }
 

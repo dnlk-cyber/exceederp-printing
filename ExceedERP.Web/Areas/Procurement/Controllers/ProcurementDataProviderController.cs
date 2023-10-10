@@ -1363,8 +1363,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 {
                     decimal sumAdvancePercent = 0;
                     decimal sumPaymentPercent = 0;
+                    decimal sumCreditPercent = 0;
                     var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).Where(x => x.PurchaseOrderID == did).ToList();
                     var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).Where(x => x.PurchaseOrderID == did).ToList();
+                    var credits = paymentSchedule.Where(x => x.PaymentType == PaymentType.Credit).Where(x => x.PurchaseOrderID == did).ToList();
 
                     var items = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == did).ToList();
                     if (items.Any())
@@ -1380,6 +1382,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                     {
                         sumPaymentPercent = payments.Sum(x => x.Percentage);
                         amount = amount * (sumPaymentPercent / 100);
+                    }
+                    else if (credits.Any() && paymenttype == "2")
+                    {
+                        sumCreditPercent = credits.Sum(x => x.Percentage);
+                        amount = amount * (sumCreditPercent / 100);
                     }
                     else
                         amount = 0;
@@ -1406,6 +1413,82 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 PaymentAmount = amount,
                 SupplierId=supplierId,
                 SupplierName=supplierName
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPoDataWithServiceCharge(string id, string type, string paymenttype)
+        {
+
+            decimal amount = 0;
+            string supplierId = "";
+            string supplierName = "";
+            int did = int.Parse(id);
+
+            if (type == "Purchase Order")
+            {
+                var po = db.PurchaseOrders.Find(did);
+                var paymentSchedule = db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == did);
+                if (po != null)
+                {
+                    supplierId = po.SupplierId;
+                    supplierName = po.SupplierName;
+                }
+
+                if (paymentSchedule.Any())
+                {
+                    decimal sumAdvancePercent = 0;
+                    decimal sumPaymentPercent = 0;
+                    decimal sumCreditPercent = 0;
+                    var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).Where(x => x.PurchaseOrderID == did).ToList();
+                    var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).Where(x => x.PurchaseOrderID == did).ToList();
+                    var credits = paymentSchedule.Where(x => x.PaymentType == PaymentType.Credit).Where(x => x.PurchaseOrderID == did).ToList();
+
+                    var items = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == did).ToList();
+                    if (items.Any())
+                        amount = items.Sum(x => x.SubTotal);
+
+                    if (advances.Any() && paymenttype == "0")
+                    {
+                        sumAdvancePercent = advances.Sum(x => x.Percentage);
+                        amount = amount * (sumAdvancePercent / 100);
+                    }
+
+                    else if (payments.Any() && paymenttype == "1")
+                    {
+                        sumPaymentPercent = payments.Sum(x => x.Percentage);
+                        amount = amount * (sumPaymentPercent / 100);
+                    }
+                    else if (payments.Any() && paymenttype == "2")
+                    {
+                        sumCreditPercent = credits.Sum(x => x.Percentage);
+                        amount = amount * (sumCreditPercent / 100);
+                    }
+                    else
+                        amount = 0;
+
+                }
+            }
+
+            else if (type == "Tender Award")
+            {
+                var contract = db.ContractManagements.Find(did);
+                if (contract != null)
+                {
+                    supplierId = contract.SupplierId;
+                    supplierName = contract.SupplierName;
+                }
+
+                var items = db.ContractManagementItems.Where(x => x.ContractManagementID == did).ToList();
+                if (items.Any())
+                    amount = items.Sum(x => x.Total) - items.Sum(x => x.TaxAmount);
+            }
+
+            var formattedData = new
+            {
+                PaymentAmount = amount,
+                SupplierId = supplierId,
+                SupplierName = supplierName
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }

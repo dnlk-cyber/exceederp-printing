@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -23,7 +24,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
             return View();
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult GoodSellingAndLendingItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<GoodSellingAndLendingItem> goodsellingandlendingItems = _db.GoodSellingAndLendingItems.Where(gsl => gsl.GoodSellingAndLendingID == id);

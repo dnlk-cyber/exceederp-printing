@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
@@ -104,6 +105,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 db.PurchaseRequisitionItems.Add(entity);
                 db.SaveChanges();
                 purchaseRequisitionItem.PurchaseRequisitionItemID = entity.PurchaseRequisitionItemID;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionItem", "Success", User.Identity.Name, $"created PurchaseRequisitionItem  {entity.PurchaseRequisitionItemID} CatCode {entity.CatCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -163,6 +167,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 db.PurchaseRequisitionItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "PurchaseRequisitionItem", "Success", User.Identity.Name, $"update PurchaseRequisitionItem  {entity.PurchaseRequisitionItemID} CatCode {entity.CatCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
@@ -197,6 +204,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted purchase requisition item " + purchaseRequisitionItem.PurchaseRequisitionID + " " + purchaseRequisitionItem.ItemName);
                 #endregion
+
             }
 
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));

@@ -23,7 +23,8 @@ namespace ExceedERP.Reporting.FixedAsset.ViewModel
     public class FixedAssetCountSheetHeader : Organization
     {
         public string FiscalYear { get; set; }
-        public string CountDate { get; set; }
+        public DateTime CountDate { get; set; }
+        public string BusinessUnit { get; set; }
         public string ProjectOrBranch { get; set; }
         public string No { get; set; }
         public string WorkUnit { get; set; }

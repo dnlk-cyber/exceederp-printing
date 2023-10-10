@@ -1,8 +1,10 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.FixedAsset.Depreciation
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <legend>Annual Depreciation</legend>
 
 @(Html.Kendo().Grid<AnnualDepreciation>()
@@ -30,9 +32,9 @@
                               .HtmlAttributes(new { style = "width: 200px;" })
                               .DataSource(dataSource =>
                               {
-                                                           dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
-                                                               .ServerFiltering(false);
-                                                       }))
+                                    dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
+                                        .ServerFiltering(false);
+                              }))
 
                 @(Html.Kendo().DropDownList()
                               .OptionLabel("Select Year")
@@ -43,9 +45,9 @@
                               .HtmlAttributes(new { style = "width: 200px;" })
                               .DataSource(dataSource =>
                               {
-                                                           dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
-                                                               .ServerFiltering(false);
-                                                       }))
+                                    dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                        .ServerFiltering(false);
+                              }))
 
                 @(Html.Kendo().DropDownList()
                         .OptionLabel("Select Asset Group")
@@ -59,12 +61,6 @@
                         dataSource.Read(read => read.Action("GetGroup", "FixedAssetDataProvider", new { area = "FixedAsset" }))
                             .ServerFiltering(false);
                     }))
-
-
-
-
-
-
 
 
 

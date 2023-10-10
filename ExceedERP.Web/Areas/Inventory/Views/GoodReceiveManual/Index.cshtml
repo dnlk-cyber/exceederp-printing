@@ -74,7 +74,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster")
           .Edit("onMasterEdit"))
@@ -92,6 +92,8 @@
               model.Field(p => p.Status).Editable(false);
               // model.Field(p => p.ReceiveDate).Editable(false);
               model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
+              model.Field(p => p.IsManual).Editable(false);
               // model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
@@ -244,6 +246,7 @@
                                               .Events(x => x.DataBound("onDataBoundLines"))
                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                                               .Scrollable()
+                                              .Filterable()
                                               .DataSource(dataSource =>
                                                   dataSource
                                                       .Ajax()
@@ -392,7 +395,7 @@
                   })
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                   .Scrollable()
-
+                  .Filterable()
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Events(e => e.Error("error_handler_one").Sync("sync_handler"))

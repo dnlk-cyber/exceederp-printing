@@ -162,7 +162,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             var exists4 = _db.TenderEvaluationCriterias.Where(x => x.LotID == lot.LotID).ToList();
             var exists5 = _db.TenderTechnicals.Where(x => x.LotID == lot.LotID).ToList();
             var exists6 = _db.TenderPassFailResult.Where(x => x.LotID == lot.LotID).ToList();
-            var exists7 = _db.ParticipantsItems.Where(x => x.LotID == lot.LotID).ToList();
+            var exists7 = _db.BidParticipatingSupplierItems.Where(x => x.BidPParticipatingSupplier.LotID == lot.LotID).ToList();
             var exists8 = _db.TenderEvaluationResults.Where(x => x.LotID == lot.LotID).ToList();
             var exists9 = _db.BidAwardedSuppliers.Where(x => x.LotID == lot.LotID).ToList();
 

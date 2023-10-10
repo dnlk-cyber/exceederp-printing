@@ -3,7 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -113,6 +115,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 _db.AssetTransferReceiveItems.Add(entity);
                 _db.SaveChanges();
                 assetTransferReceiveItem.AssetTransferReceiveItemId = entity.AssetTransferReceiveItemId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferReceiveItem", "Success", User.Identity.Name, $"created AssetTransferReceiveItem {entity.AssetTransferReceiveItemId} GrnNo {entity.GrnNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferReceiveItem }.ToDataSourceResult(request, ModelState));
@@ -188,9 +193,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 _db.AssetTransferReceiveItems.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
-                
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "AssetTransferReceiveItem", "Success", User.Identity.Name, $"Updated AssetTransferReceiveItem {entity.AssetTransferReceiveItemId} GrnNo {entity.GrnNo}", Modules.FixedAsset);
+                #endregion
+
             }
-        
+
             return Json(new[] { assetTransferReceiveItem }.ToDataSourceResult(request, ModelState));
         }
 
@@ -222,6 +230,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferRece
                 _db.AssetTransferReceiveItems.Attach(entity);
                 _db.AssetTransferReceiveItems.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete AssetTransferReceiveItem {assetTransferReceiveItem.AssetTransferReceiveItemId} GrnNo {assetTransferReceiveItem.GrnNo}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetTransferReceiveItem }.ToDataSourceResult(request, ModelState));

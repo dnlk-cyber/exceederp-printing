@@ -5,15 +5,20 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
+//using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Inventory.Models;
+//using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -290,6 +295,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceives.Add(entity);
                 db.SaveChanges();
                 fixedAssetReceive.FixedAssetReceiveId = entity.FixedAssetReceiveId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceive", "Success", User.Identity.Name, $"created FixedAssetReceive  {entity.FixedAssetReceiveId} Tag {entity.StoreCode}", Modules.FixedAsset);
+                #endregion
+
             }
 
             return Json(new[] { fixedAssetReceive }.ToDataSourceResult(request, ModelState));
@@ -409,6 +418,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceives.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceive", "Success", User.Identity.Name, $"updated FixedAssetReceive  {entity.FixedAssetReceiveId} Tag {entity.StoreCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceive }.ToDataSourceResult(request, ModelState));
@@ -452,6 +464,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 db.FixedAssetReceives.Attach(entity);
                 db.FixedAssetReceives.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted FixedAssetReceive  {fixedAssetReceive.FixedAssetReceiveId} Tag {fixedAssetReceive.StoreCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceive }.ToDataSourceResult(request, ModelState));

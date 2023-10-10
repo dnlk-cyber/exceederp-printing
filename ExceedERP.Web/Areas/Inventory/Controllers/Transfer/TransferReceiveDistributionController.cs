@@ -34,6 +34,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 ItemTransferReceiveId = itemTransferDistribution.ItemTransferReceiveId,
                 AccountCode = itemTransferDistribution.AccountCode,
                 AccountDesc = itemTransferDistribution.AccountDesc,
+                AdditionalDescription = itemTransferDistribution.AdditionalDescription,
                 Debit = itemTransferDistribution.Debit,
                 Credit = itemTransferDistribution.Credit
             });
@@ -62,10 +63,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             {
                 var entity = new ItemTransferReceiveDistribution
                 {
+                    ItemTransferReceiveId = itemTransferDistribution.ItemTransferReceiveId,
                     AccountCode = itemTransferDistribution.AccountCode,
                     AccountDesc = accountHelper.GetAccountDesc(itemTransferDistribution.AccountCode),
                     Debit = itemTransferDistribution.Debit,
-                    Credit = itemTransferDistribution.Credit
+                    Credit = itemTransferDistribution.Credit,
+                    AdditionalDescription = itemTransferDistribution.AdditionalDescription,
                 };
 
                 _db.ItemTransferReceiveDistribution.Add(entity);
@@ -100,11 +103,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             {
                 var entity = new ItemTransferReceiveDistribution
                 {
+                    ItemTransferReceiveId = itemTransferDistribution.ItemTransferReceiveId,
                     ItemTransferReceiveDistributionId = itemTransferDistribution.ItemTransferReceiveDistributionId,
                     AccountCode = itemTransferDistribution.AccountCode,
                     AccountDesc = accountHelper.GetAccountDesc(itemTransferDistribution.AccountCode),
                     Debit = itemTransferDistribution.Debit,
-                    Credit = itemTransferDistribution.Credit
+                    Credit = itemTransferDistribution.Credit,
+                    AdditionalDescription = itemTransferDistribution.AdditionalDescription,
                 };
 
                 _db.ItemTransferReceiveDistribution.Attach(entity);

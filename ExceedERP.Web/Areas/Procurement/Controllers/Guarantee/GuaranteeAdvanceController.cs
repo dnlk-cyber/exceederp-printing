@@ -66,6 +66,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
                 RenewalStatus =  guarantee.RenewalStatus,
                 IsExpired=GuaranteeHelper.IsGuaranteeExpired(guarantee.GuaranteeId),
 
+                BranchId = guarantee.BranchId,
+                BusinessUnitId = guarantee.BusinessUnitId,
+               
                 Status = guarantee.Status,
                 IsOnlineApproved = guarantee.IsOnlineApproved,
                 OnlineApprovedBy = guarantee.OnlineApprovedBy,
@@ -97,6 +100,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
             {
                 var entity = new Core.Domain.Procurement.Guarantee.Guarantee
                 {
+                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     Purpose = guarantee.Purpose,
                     SupplierName = guarantee.SupplierName,
                     SupplierId = guarantee.SupplierId,
@@ -155,6 +160,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
                 var entity = new Core.Domain.Procurement.Guarantee.Guarantee
                 {
                     GuaranteeId = guarantee.GuaranteeId,
+                    BranchId = guarantee.BranchId,
+                    BusinessUnitId = guarantee.BusinessUnitId,
                     Purpose = guarantee.Purpose,
                     SupplierName = guarantee.SupplierName,
                     SupplierId = guarantee.SupplierId,
@@ -209,6 +216,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
                 var entity = new Core.Domain.Procurement.Guarantee.Guarantee
                 {
                     GuaranteeId = guarantee.GuaranteeId,
+                    BranchId = guarantee.BranchId,
+                    BusinessUnitId = guarantee.BusinessUnitId,
                     Purpose = guarantee.Purpose,
                     SupplierName = guarantee.SupplierName,
                     SupplierId = guarantee.SupplierId,

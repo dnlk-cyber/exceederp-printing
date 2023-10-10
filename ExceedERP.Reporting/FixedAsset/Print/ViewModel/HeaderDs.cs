@@ -7,13 +7,13 @@ using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System.Drawing;
+using ExceedERP.Reporting.Inventory.ViewModel;
 using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
 namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
 {
-    class HeaderDs
-    {
-    }
+
     public class MachineryAndVehicleTransferHeader : Organization
     {
         public string TransferNumber { get; set; }
@@ -83,10 +83,12 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
 
         public string Recipient { get; set; }
 
-        public string ApproverName { get; set; }
-        public string ApprovedDate { get; set; }
-        public string CreatedBy { get; set; }
-        public string Datecreated { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+        public string Approver { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
     }
     public class MachineryAndVehicleTransferViewModel
     {
@@ -123,10 +125,12 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
         public string TransferDate { get; set; }
 
 
-        public string ApproverName { get; set; }
-        public string ApprovedDate { get; set; }
-        public string CreatedBy { get; set; }
-        public string Datecreated { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+        public string Approver { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
     }
     public class FixedAssetTransferItemVm
     {
@@ -167,8 +171,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
 
     public class FixedAssetReturnHeader : Organization
     {
-        public string ReturnNo { get; set; }
-        public string ReturnedBy { get; set; }
+        public string ReturnNo { get; set; }      
         public string Reference { get; set; }
         public string StoreCode { get; set; }
         public string BranchOrProject { get; set; }
@@ -176,10 +179,14 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
         public string StoreKeeperName { get; set; }
         public string ApproverName { get; set; }
         public string Recipient { get; set; }
+        public string ReturnedBy { get; set; }
         public string ReturnDate { get; set; }
-        public string ApprovedDate { get; set; }
-        public string CreatedBy { get; set; }
-        public string Datecreated { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+        public string Approver { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
     }
     public class FixedAssetReturnItemVm
     {
@@ -214,12 +221,14 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
         public string Project { get; set; }
         public string Department { get; set; }
         public string StoreKeeperName { get; set; }
-        public string ApproverName { get; set; }
         public string Recipient { get; set; }
         public string IssueDate { get; set; }
-        public string ApprovedDate { get; set; }
-        public string CreatedBy { get; set; }
-        public string Datecreated { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+        public string Approver { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
     }
     public class FixedAssetIssueItemVm
     {
@@ -271,10 +280,12 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
         public string Deliverer { get; set; }
         public string Receiver { get; set; }
         public string Supplier { get; set; }
-        public string CreatedBy { get; set; }
-        public string CreatedDate { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
         public string Approver { get; set; }
-        public string ApprovedDate { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
         public string ReceiveDate { get; set; }
 
         public string Inspector1 { get; set; }
@@ -285,15 +296,57 @@ namespace ExceedERP.Reporting.FixedAsset.Print.ViewModel
     public class FixedAssetRequistionHeader : Organization
     {
         public string StoreRequsitionNo { get; set; }
-        public string RequestedDate { get; set; }
-        public string ApprovedDate { get; set; }
+        public DateTime RequestedDate { get; set; }
         public string Requestor { get; set; }
+        public Image RequestorSignature { get; set; }
         public string RequestingDepartment { get; set; }
         public string RequestingStore { get; set; }
         public string ForProject { get; set; }
         public string Remark { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+
+        public string CheckedBy { get; set; }
+        public DateTime? CheckedDate { get; set; }
+        public Image CheckedBySignature { get; set; }
+
         public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
         public string AuthorizedBy { get; set; }
+        public DateTime? AuthorizedDate { get; set; }
+        public Image AuthorizedSignature { get; set; }
         public string StoreName { get; set; }
+    }
+
+    public class FixedAssetPurchaseRequistionHeader : InventoryVoucherHeaderVm
+    {
+        public string PurchaseRequistionNo { get; set; }
+        public string StoreRequistionNo { get; set; }
+        public string Requestor { get; set; }
+        public string ApproverName { get; set; }//sr
+        public DateTime ApprovalDate { get; set; }//sr
+        public Image ApprovalBySignature { get; set; }
+
+        public string PrApproverName { get; set; }//pr
+        public DateTime PrApprovalDate { get; set; }//pr
+        public string AuthorizerName { get; set; }
+        public DateTime AuthorizationDate { get; set; }
+        public Image AuthorizerBySignature { get; set; }
+        public string BudgetAuthorizerName { get; set; }
+        public DateTime BudgetAuthorizationDate { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+        public string RequestingDate { get; set; }
+        public string RequestingDepartment { get; set; }
+        public string RequestingStore { get; set; }
+        public string RequestingProject { get; set; }
+        public string ForProject { get; set; }
+        public string PRDate { get; set; }
+        public string Model { get; set; }
+        public string PlateNo { get; set; }
+        public string Remark { get; set; }
     }
 }

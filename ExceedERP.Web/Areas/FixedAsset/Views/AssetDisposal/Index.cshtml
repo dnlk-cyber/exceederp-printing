@@ -7,24 +7,36 @@
       {
           columns.Bound(c => c.AssetDisposalId).Title("Disposal No.").Width(120).ClientTemplate("#=appendZeros(AssetDisposalId)#");
           columns.ForeignKey(p => p.CustomerId, (IEnumerable)ViewData["customers"], "CustomerId", "CompanyName").Title("Customer").EditorTemplateName("ActiveCustomerSelectorAR").Width(180);
+          columns.Bound(c => c.ExternalCustomer).Width(130);
           columns.Bound(c => c.Date).Width(130);
+          //columns.Bound(c => c.IsExternalCustomer).Width(130);
           columns.Bound(c => c.DisposalType).Width(120);
           columns.Bound(c => c.Description).Width(200);
           columns.Bound(c => c.Status).Width(100);
           columns.Command(command =>
           {
-
               command.Edit();
               command.Destroy();
-
-
           }).Width(180);
       })
       .ToolBar(toolbar =>
       {
           toolbar.Create();
       })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp);
+          editable.TemplateName("AssetDisposalEditorTemplate");
+          editable.Window(window =>
+          {
+              window.Title("Disposal");
+
+          });
+      })
+      .Events(ev =>
+      {
+          ev.Edit("onEdit");
+      })
       .HtmlAttributes(new { style = "height: 550px;" })
       .Pageable(pageable => pageable
           .Input(true)
@@ -43,8 +55,8 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
-      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      
+      .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
@@ -82,7 +94,7 @@
 
                 # if (IsOnlineApproved)
                 {#
-                @*<a href='@Url.Action("IssuePrint", "InventoryPrint")/#=AssetDisposalId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                <a href='@Url.Action("FixedAssetDisposalPrint", "FixedAssetPrint")/#=AssetDisposalId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                 <br />
                 # } #
                 <div>
@@ -281,4 +293,29 @@
     function onItemEdit() {
 
     }
+    function onCheckBoxClick(checked) {
+        if (checked) {
+            $("#ExternalCustomerArea").show();
+            $("#InternalCustomerArea").hide();
+        } else {
+            $("#ExternalCustomerArea").hide();
+            $("#InternalCustomerArea").show();
+        }
+    }
+    function onEdit(e) {
+        var checked = $('#IsExternalCustomer').is(':checked');
+        if (checked == true) {
+            $("#ExternalCustomerArea").show();
+            $("#InternalCustomerArea").hide();
+        } else {
+            $("#ExternalCustomerArea").hide();
+            $("#InternalCustomerArea").show();
+        }
+    }
 </script>
+
+<style>
+    div.k-edit-form-container {
+        width: 400px;
+    }
+</style>

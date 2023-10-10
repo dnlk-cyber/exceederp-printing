@@ -42,12 +42,16 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                 }
 
                 headerDs.StoreName = InventoryPrintHelper.StoreName(assetReceive.StoreCode);
-                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReceive.CreatedBy));
-                headerDs.CreatedDate = assetReceive.DateCreated.ToString();
 
-                headerDs.ApprovedDate = assetReceive.OnlineApprovedTime.GetValueOrDefault().Date.ToShortDateString();
-                headerDs.Receiver = InventoryPrintHelper.GetStoreKeeper(assetReceive.StoreCode);
-                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReceive.OnlineApprovedBy)); ;
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReceive.CreatedBy));
+                headerDs.PreparedDate = assetReceive.DateCreated != null ? assetReceive.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(assetReceive.CreatedBy);
+
+                headerDs.Approver = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(assetReceive.OnlineApprovedBy)); 
+                headerDs.ApprovedDate = assetReceive.OnlineApprovedTime != null ? assetReceive.OnlineApprovedTime : null;                
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(assetReceive.OnlineApprovedBy);
+
+                headerDs.Receiver = InventoryPrintHelper.GetStoreKeeper(assetReceive.StoreCode);               
                 headerDs.SupplierInvoice = assetReceive.SupplierInvoiceNo;
 
                 if (!assetReceive.IsManual)

@@ -252,6 +252,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                             GLPeriodId = transferReceive.GLPeriodId,
                                             TransactionType = BinCardTransactionTypes.TransferReceive,
                                             StatusType = BinCardTransactionStatus.Regular,
+                                            TransactionOrder = BinCardTransactionOrder.TransferReceive
                                         };
 
                                         db.BinCardLines.Add(binCardLine);

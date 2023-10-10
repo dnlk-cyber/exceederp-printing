@@ -85,6 +85,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                 ProcurementPlanId = plan.ProcurementPlanId,
                 Name = plan.Name,
                 BranchId = plan.BranchId,
+                BusinessUnitId = plan.BusinessUnitId,
                 GlFiscalYearId = plan.GlFiscalYearId,
                 Remark = plan.Remark,
                 Status = plan.Status,
@@ -178,6 +179,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                 var entity = new ProcurementPlan
                 {
                     BranchId = plan.BranchId,
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     GlFiscalYearId = plan.GlFiscalYearId,
                     Remark = plan.Remark,
                     Status = plan.Status,
@@ -232,6 +234,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                     Name = plan.Name,
                     GlFiscalYearId = plan.GlFiscalYearId,
                     BranchId = plan.BranchId,
+                    BusinessUnitId = plan.BusinessUnitId,
                     Remark = plan.Remark,
                     Status = plan.Status,
                     IsOnlineApproved = plan.IsOnlineApproved,
@@ -270,7 +273,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                     ProcurementPlanId = plan.ProcurementPlanId,
                     Name = plan.Name,
                     GlFiscalYearId = plan.GlFiscalYearId,
-
+                    BranchId = plan.BranchId,
+                    BusinessUnitId = plan.BusinessUnitId,
                     Remark = plan.Remark,
                     Status = plan.Status,
                     IsOnlineApproved = plan.IsOnlineApproved,

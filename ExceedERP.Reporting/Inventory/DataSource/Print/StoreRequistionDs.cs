@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
@@ -32,22 +33,29 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                 if (record.IsTransfer)
                         branchid =InventoryHelper.GetStoreBranch(record.ToStoreCode);
 
-                headerDs = new StoreRequistionHeader
+                headerDs = new StoreRequistionHeader();
+
+                headerDs.StoreRequsitionNo = InventoryPrintHelper.GetId(record.StoreRequisitionID);
+                headerDs.WorkUnit = HrHelper.GetOrganizatioName(record.OrgStructureId);
+                headerDs.Model = record.ModelNo;
+                    headerDs.RequestedDate = record.RequestDate.ToShortDateString();
+                headerDs.ApprovedDate = record.OnlineApprovedTime.GetValueOrDefault().ToShortDateString();
+                headerDs.PlateNo = record.PlateNo;
+                headerDs.ExternalDriver = record.ExternalDriver;
+                headerDs.BranchName = InventoryPrintHelper.BranchName(branchid);
+                headerDs.Requestor = InventoryPrintHelper.EmployeeName((int)record.EmployeeId);
+                headerDs.StoreName = InventoryPrintHelper.StoreName(record.StoreCode);
+                headerDs.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.CreatedBy));
+                Image signImg = SignatureHelper.GetUserSignature(record.CreatedBy);
+                if(signImg!=null)
                 {
-                    StoreRequsitionNo = InventoryPrintHelper.GetId(record.StoreRequisitionID),
-                    WorkUnit = HrHelper.GetOrganizatioName(record.OrgStructureId),
-                    Model =record.ModelNo,
-                    RequestedDate = record.RequestDate.ToShortDateString(),
-                    ApprovedDate = record.OnlineApprovedTime.GetValueOrDefault().ToShortDateString(),
-                    PlateNo = record.PlateNo,
-                    BranchName = InventoryPrintHelper.BranchName(branchid),
-                    Requestor = InventoryPrintHelper.EmployeeName(record.EmployeeId),
-                    StoreName = InventoryPrintHelper.StoreName(record.StoreCode),
-                    CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.CreatedBy)),
-                    Reviewer = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.SecondSendForApprovalBy)),
-                    AuthorizedBy =EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy)),
-                    ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.OnlineApprovedBy))
-                };
+                headerDs.CreatedBySignature = signImg;
+
+                }
+                headerDs.Reviewer = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.SecondSendForApprovalBy));
+                headerDs.AuthorizedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy));
+                headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
+                
 
                 headerDs.NoOfCopy = InventoryHelper.GetDocumentCopy(PrintCopyAttributes.STORE_REQUISITION);
                 headerDs.CopyMembers = InventoryHelper.GetDocumentCopyList(PrintCopyAttributes.STORE_REQUISITION);

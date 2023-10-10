@@ -30,7 +30,7 @@
           columns.ForeignKey(c => c.Purchaser, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").Width(150).EditorTemplateName("PurchaserSelector");
           columns.Bound(c => c.ReasonOfPayment).Width(130);
           columns.Bound(c => c.RequestDate).Width(120);
-          columns.Bound(c => c.Type).Width(120);
+          
           //columns.Bound(c => c.RequestDateAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.InvoiceNo).Width(110);
           columns.Bound(c => c.PurchaseRequestNo).Width(100);
@@ -123,6 +123,8 @@
                                                                                             @<text>
                                                                                                 <p><b>Record Status :#= Status #</b></p>
                                                                                                 <a href='@Url.Action("ApPaymentRequest", "FinancePrint")/#=PaymentRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                                                                <br />
+                                                                                                <a href='@Url.Action("ApPaymentRequestNew", "FinancePrint")/#=PaymentRequestId#' title="Print 2"><i class="fa fa-print fa-2x"></i></a>
 
                                                                                                 # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
                                                                                                 {#
@@ -274,9 +276,9 @@
                                                                           })
                                                                   .ToolBar(toolbar =>
                                                                   {
-                                                                 
+
                                                                   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                
+
                                                               })
                                                                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("ExitInterview").Window(window => { window.Title(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview); window.Scrollable(false); }))
                                                                   .Selectable(selectable =>
@@ -323,7 +325,7 @@
 
         </text>
 );
-                                                                         
+
 
                                                                           items.Add().Text("Attachment").Content(@<text>
 

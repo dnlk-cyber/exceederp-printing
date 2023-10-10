@@ -70,6 +70,21 @@ namespace ExceedERP.Helpers.Finance
             else
                 return false;
         }
+        public static bool IsPaymentRequestAuthorizationEnabled()
+        {
+            ExceedDbContext db = new ExceedDbContext();
+
+            var conf = db.Configurations
+                    .Where(x => x.Category == "Finance")
+                    .Where(x => x.Reference == "ENABLE_PAYMENT_REQUEST_AUTHORIZATION")
+                   .Where(x => x.Attribute == "TRUE")
+                    .FirstOrDefault();
+
+            if (conf != null)
+                return true;
+            else
+                return false;
+        }
         public static string GetBranchSubAccountReplace()
         {
             ExceedDbContext db = new ExceedDbContext();

@@ -1,0 +1,85 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.FixedAsset.Registrations
+@using ExceedERP.Helpers.Common
+@model AssetDisposal
+
+<form method="post">
+    <div class="k-edit-form-container">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsExternalCustomer)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().CheckBoxFor(m => m.IsExternalCustomer)
+                        .Name("IsExternalCustomer")
+                        .HtmlAttributes(new { @onClick = "onCheckBoxClick(this.checked)", @style = "vertical-align:center;" })
+                        .Label(" ")
+            )
+        </div>
+        <div id="InternalCustomerArea">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.CustomerId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select Customer...")
+                                                    .DataTextField("CompanyName")
+                                                    .DataValueField("CustomerId")
+                                                    .Filter("contains")
+                                                    .HtmlAttributes(new { style = "width:100%;" })
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetActiveCustomers", "FinanceDataProvider", new { area = "Finance" }))
+                                                        .ServerFiltering(false);
+                                                    })
+                )
+            </div>
+        </div>
+        <div id="ExternalCustomerArea">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ExternalCustomer)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().TextBoxFor(m => m.ExternalCustomer)
+                            .HtmlAttributes(new { style = "width:100%;" })
+                )
+            </div>
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Date)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.Date)
+                        .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DisposalType)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(model => model.DisposalType)
+                                .OptionLabel(Resources.Select)
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .ValuePrimitive(true)
+                                .HtmlAttributes(new { style = "width:100%;" })
+                                .Filter("contains")
+                                //.Events(ev =>
+                                //{
+                                //    ev.Change("shipmentSourceChange");
+                                //})
+                                .BindTo(EnumExtension.EnumToSelectList(typeof(DisposalType))))
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Description)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.Description)
+                        .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div>
+    </div>
+</form>
+

@@ -5,16 +5,18 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Inventory.Models;
@@ -299,7 +301,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 _db.FixedAssetReceives.Add(entity);
                 _db.SaveChanges();
                 fixedAssetReceive.FixedAssetReceiveId = entity.FixedAssetReceiveId;
-
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceive", "Success", User.Identity.Name, $"created FixedAssetReceive {entity.FixedAssetReceiveId} Tag {entity.StoreCode}", Modules.FixedAsset);
+                #endregion
                 GetGoodReceiveItems(entity);
             }
 
@@ -435,7 +439,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 _db.FixedAssetReceives.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
-
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceive", "Success", User.Identity.Name, $"updated FixedAssetReceive {entity.FixedAssetReceiveId} Tag {entity.StoreCode}", Modules.FixedAsset);
+                #endregion
                 GetGoodReceiveItems(entity);
             }
 
@@ -480,6 +486,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 _db.FixedAssetReceives.Attach(entity);
                 _db.FixedAssetReceives.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Delete FixedAssetReceive {fixedAssetReceive.FixedAssetReceiveId} Tag {fixedAssetReceive.StoreCode}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { fixedAssetReceive }.ToDataSourceResult(request, ModelState));
@@ -823,7 +832,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                     .ToList();
 
                 _db.AssetRegistrations.RemoveRange(assetRegistrations);
-                _db.SaveChanges();
+                //_db.SaveChanges();
 
 
                 #endregion
@@ -835,9 +844,28 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 record.VoidTime = DateTime.Now;
                 _db.FixedAssetReceives.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
-                _db.SaveChanges();
-               
+                // _db.SaveChanges();
 
+                #region update  po status
+                var receiveType = _db.ReceiveTypes.Where(x => x.ReceiveTypeId == record.ReceiveTypeId).FirstOrDefault();
+                if (receiveType != null)
+                {
+                    if (receiveType.Type == GoodReceiveType.PurchaseOrder)
+                    {
+                        int did = int.Parse(record.ReceiveRef);
+                        var po = _db.PurchaseOrders.Find(did);
+                        if (po != null)
+                        {
+                            po.IsFullfilled = false;
+                            _db.PurchaseOrders.Attach(po);
+                            _db.Entry(po).State = EntityState.Modified;
+                            //_db.SaveChanges();
+                        }
+                    }
+                }
+                #endregion
+
+                _db.SaveChanges();
                 //copy
                 //CopyRecord(id);
 

@@ -7,6 +7,7 @@
       {
           columns.Bound(c => c.Method).Width(150);
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(150);
+          columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Title("Business Unit").EditorTemplateName("BusinessUnitSelector").Width(200);
           columns.Bound(c => c.ApplyToAr).Width(112).ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= ApplyToAr#' " +
               "# if (ApplyToAr) { #" +
@@ -40,9 +41,9 @@
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
-                              toolbar.Excel();
-                              //// toolbar.Pdf();
+          toolbar.Create();
+          toolbar.Excel();
+          //// toolbar.Pdf();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
@@ -64,7 +65,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      
+
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.PaymentMethodID))

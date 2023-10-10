@@ -24,7 +24,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             return list;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PurchasedItemVm> PurchasedItem(DateTime from, DateTime to, string type)
+        public List<PurchasedItemVm> PurchasedItem(DateTime from, DateTime to, string type, string businessUnitId)
         {
             List<PurchasedItemVm> list = new List<PurchasedItemVm> { };
 

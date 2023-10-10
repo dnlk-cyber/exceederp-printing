@@ -336,8 +336,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         #endregion
                         #region fixed asset from participant item item
 
-                        var existingPriceItem = _db.ParticipantsItems
-                            .Where(x => x.LotID == id)
+                        var existingPriceItem = _db.BidParticipatingSupplierItems
+                            .Where(x => x.BidPParticipatingSupplier.LotID == id)
                             .Where(x => x.Name == item.Name)
                             .FirstOrDefault(x => x.ItmCode == item.ItmCode);
                         if (existingPriceItem != null)
@@ -345,7 +345,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             decimal qty = existingPriceItem.Quantity - item.Quantity;
                             if (qty <= 0)
                             {
-                                _db.ParticipantsItems.Remove(existingPriceItem);
+                                _db.BidParticipatingSupplierItems.Remove(existingPriceItem);
                                 _db.SaveChanges();
                             }
                             else
@@ -386,7 +386,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         #endregion
                         #region stock and service from bid partifipant item
 
-                        var existingPriceItem = _db.ParticipantsItems.Where(x => x.LotID == id)
+                        var existingPriceItem = _db.BidParticipatingSupplierItems.Where(x => x.BidPParticipatingSupplier.LotID == id)
                             .Where(x => x.ItemSpecification == item.ItemSpecification)//added
                             .FirstOrDefault(x => x.ItmCode == item.ItmCode);
                         if (existingPriceItem != null)
@@ -394,7 +394,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             decimal qty = existingPriceItem.Quantity - item.Quantity;
                             if (qty <= 0)
                             {
-                                _db.ParticipantsItems.Remove(existingPriceItem);
+                                _db.BidParticipatingSupplierItems.Remove(existingPriceItem);
                                 _db.SaveChanges();
                             }
                             else

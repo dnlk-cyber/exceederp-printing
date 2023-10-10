@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.Inventory.Print
             // Required for telerik Reporting designer support
             //
             InitializeComponent();
-            this.DataSource = Header; 
+           // this.DataSource = Header; 
             //
             // TODO: Add any constructor code after InitializeComponent call
             //

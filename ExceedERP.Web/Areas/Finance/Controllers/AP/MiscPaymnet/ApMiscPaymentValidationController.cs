@@ -54,12 +54,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public ActionResult APMiscellaneousPaymentValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ApMiscellaneousPaymentValidation aPMiscellaneousPaymentValidation)
         {
             #region validated record
-            ApMiscellaneousPayment record = _db.APMiscellaneousPayments.Find(id);
+            var record = _db.APMiscellaneousPayments.Find(id);
 
             if (record != null && record.IsOnlineApproved)
-            {
-               ModelState.AddModelError("approved","You cannot manipulate this record,it is already approved");
-            }
+                ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
+            var lines = _db.ApMiscellaneousPaymentLines.Where(x => x.ApMiscellaneousPaymentId == id);
+
+            if(!lines.Any())
+                ModelState.AddModelError("lines", "Please add lines first");
             #endregion
             if (ModelState.IsValid)
             {

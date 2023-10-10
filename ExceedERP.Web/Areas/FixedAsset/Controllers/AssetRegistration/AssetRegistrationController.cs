@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -8,7 +8,10 @@ using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -38,6 +41,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             var fixedAssetSubCategories = _db.FixedAssetSubCategories;
             ViewData["fixedAssetSubCategories"] = fixedAssetSubCategories.ToList();
+            var fixedAssetSubCategoryNames = _db.FixedAssetSubCategoryNames;
+            ViewData["fixedAssetSubCategoryNames"] = fixedAssetSubCategoryNames.Select(s=>new {
+                FixedAssetSubCategoryNameId = s.FixedAssetSubCategoryNameId,
+                Name = s.Name
+            }).ToList();
 
             var fiscalYears = _db.GLFiscalYears;
             ViewData["fiscalYears"] = fiscalYears.ToList();
@@ -74,10 +82,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult Registrations_Read([DataSourceRequest]DataSourceRequest request,string subcategory, string searchkey)
-    {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+        {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            IQueryable<AssetRegistration> registrations = _db.AssetRegistrations.Where(x => mybraches.Contains(x.BranchId.ToString()));
+            IQueryable<AssetRegistration> registrations = _db.AssetRegistrations.Where(x => mybraches.Contains(x.BranchId));
             if (!String.IsNullOrEmpty(subcategory))
             {
                 int id = int.Parse(subcategory);
@@ -98,10 +106,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 FixedAssetConditionId = registration.FixedAssetConditionId,
                 FixedAssetCategoryID = registration.FixedAssetCategoryID,
                 FixedAssetSubCategoryID = registration.FixedAssetSubCategoryID,
+                FixedAssetNameID = registration.FixedAssetNameID,
                 Unit = registration.Unit,
                 Size = registration.Size,
                 Tag = registration.Tag,
                 SIV = registration.SIV,
+                SIVDate = registration.SIVDate,
                 PurchaseDate = registration.PurchaseDate,
                 PurchasePrice = registration.PurchasePrice,
                 GRN = registration.GRN,
@@ -191,9 +201,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             if (String.IsNullOrEmpty(assetRegistration.GroupCode) && assetRegistration.IsGroup)
                 ModelState.AddModelError("group", "Group Code is required");
+            //added
+            if(string.IsNullOrEmpty(assetRegistration.Unit))
+                ModelState.AddModelError("unit", "Unit is required");
 
-            if (String.IsNullOrEmpty(assetRegistration.Name))
-                ModelState.AddModelError("name", "Name is required");
+            //if (String.IsNullOrEmpty(assetRegistration.Name))
+            //    ModelState.AddModelError("name", "Name is required");
 
             if (!String.IsNullOrEmpty(assetRegistration.Tag))
             {
@@ -205,68 +218,68 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             }
 
             if (!String.IsNullOrEmpty(assetRegistration.SerialNo))
-        {
-            var exist = _db.AssetRegistrations.Where(x => x.SerialNo == assetRegistration.SerialNo).AsQueryable();
-            if (exist.Any())
             {
-                ModelState.AddModelError("exist", "The Serial Number already exists in the system");
+                var exist = _db.AssetRegistrations.Where(x => x.SerialNo == assetRegistration.SerialNo).AsQueryable();
+                if (exist.Any())
+                {
+                    ModelState.AddModelError("exist", "The Serial Number already exists in the system");
+                }
             }
-        }
-        if (!String.IsNullOrEmpty(assetRegistration.PlateNo))
-        {
-            var exist = _db.AssetRegistrations.Where(x => x.PlateNo == assetRegistration.PlateNo).AsQueryable();
-            if (exist.Any())
+            if (!String.IsNullOrEmpty(assetRegistration.PlateNo))
             {
-                ModelState.AddModelError("exist", "The Plate Number already exists in the system");
+                var exist = _db.AssetRegistrations.Where(x => x.PlateNo == assetRegistration.PlateNo).AsQueryable();
+                if (exist.Any())
+                {
+                    ModelState.AddModelError("exist", "The Plate Number already exists in the system");
+                }
             }
-        }
-        if (!String.IsNullOrEmpty(assetRegistration.ChassisNo))
-        {
-            var exist = _db.AssetRegistrations.Where(x => x.ChassisNo == assetRegistration.ChassisNo).AsQueryable();
-            if (exist.Any())
+            if (!String.IsNullOrEmpty(assetRegistration.ChassisNo))
             {
-                ModelState.AddModelError("exist", "The Chassis Number already exists in the system");
+                var exist = _db.AssetRegistrations.Where(x => x.ChassisNo == assetRegistration.ChassisNo).AsQueryable();
+                if (exist.Any())
+                {
+                    ModelState.AddModelError("exist", "The Chassis Number already exists in the system");
+                }
             }
-        }
-        if (!String.IsNullOrEmpty(assetRegistration.EngineNo))
-        {
-            var exist = _db.AssetRegistrations.Where(x => x.EngineNo == assetRegistration.EngineNo).AsQueryable();
-            if (exist.Any())
+            if (!String.IsNullOrEmpty(assetRegistration.EngineNo))
             {
-                ModelState.AddModelError("exist", "The Chassis Number already exists in the system");
+                var exist = _db.AssetRegistrations.Where(x => x.EngineNo == assetRegistration.EngineNo).AsQueryable();
+                if (exist.Any())
+                {
+                    ModelState.AddModelError("exist", "The Chassis Number already exists in the system");
+                }
             }
-        }
 
-        if (assetRegistration.IsMachinery)
-        {
-            //if (String.IsNullOrEmpty(assetRegistration.SerialNo))
-            //{
-            //    ModelState.AddModelError("fill", "Please fill Serial Number.");
-            //}
-            if (String.IsNullOrEmpty(assetRegistration.PlateNo))
+            if (assetRegistration.IsMachinery)
             {
-                ModelState.AddModelError("fill", "Please fill Plate Number.");
+                //if (String.IsNullOrEmpty(assetRegistration.SerialNo))
+                //{
+                //    ModelState.AddModelError("fill", "Please fill Serial Number.");
+                //}
+                //if (String.IsNullOrEmpty(assetRegistration.PlateNo))
+                //{
+                //    ModelState.AddModelError("fill", "Please fill Plate Number.");
+                //}
+                if (String.IsNullOrEmpty(assetRegistration.ChassisNo))
+                {
+                    ModelState.AddModelError("fill", "Please fill Chassis Number.");
+                }
+                if (String.IsNullOrEmpty(assetRegistration.EngineNo))
+                {
+                    ModelState.AddModelError("fill", "Please fill Engine Number.");
+                }
             }
-            if (String.IsNullOrEmpty(assetRegistration.ChassisNo))
+            if (assetRegistration.IsGroup)
             {
-                ModelState.AddModelError("fill", "Please fill Chassis Number.");
+                if (assetRegistration.Quanity == 0)
+                    ModelState.AddModelError("qty", "Please fill quantity.");
             }
-            if (String.IsNullOrEmpty(assetRegistration.EngineNo))
+            else
             {
-                ModelState.AddModelError("fill", "Please fill Engine Number.");
+                if (assetRegistration.Quanity > 1)
+                    ModelState.AddModelError("qty", "Quanity for non group assets should be 1.");
+                assetRegistration.Quanity = 1;
             }
-        }
-        if (assetRegistration.IsGroup)
-        {
-            if (assetRegistration.Quanity == 0)
-                ModelState.AddModelError("qty", "Please fill quantity.");
-        }
-        else
-        {
-            if (assetRegistration.Quanity > 1)
-                ModelState.AddModelError("qty", "Quanity for non group assets should be 1.");
-            assetRegistration.Quanity = 1;
-        }
 
             #endregion
             if (ModelState.IsValid)
@@ -279,13 +292,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     EmployeeId = assetRegistration.EmployeeId,
                     FixedAssetConditionId = assetRegistration.FixedAssetConditionId,
                     FixedAssetCategoryID = assetRegistration.FixedAssetCategoryID,
-                    FixedAssetSubCategoryID = assetRegistration.FixedAssetSubCategoryID, 
-                    Name = assetRegistration.Name,
+                    FixedAssetSubCategoryID = assetRegistration.FixedAssetSubCategoryID,
+                    FixedAssetNameID = assetRegistration.FixedAssetNameID,
+                    Name = _db.FixedAssetSubCategoryNames.Find(assetRegistration.FixedAssetNameID)?.Name,
                     Unit = assetRegistration.Unit,
                     Size = assetRegistration.Size,
                     
                     Tag = assetRegistration.Tag,
                     SIV = assetRegistration.SIV,
+                    SIVDate = assetRegistration.SIVDate,
                     PurchaseDate = assetRegistration.PurchaseDate,
                     PurchasePrice = assetRegistration.PurchasePrice,
                     GRN = assetRegistration.GRN,
@@ -313,6 +328,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     TotalWeight = assetRegistration.TotalWeight,
                     Battery = assetRegistration.Battery,
                     Tyre = assetRegistration.Tyre,
+                    Color = assetRegistration.Color,
                     IsBuilding = assetRegistration.IsBuilding,
                     Location = assetRegistration.Location,
                     Contractor = assetRegistration.Contractor,
@@ -327,22 +343,36 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = assetRegistration.ModifiedBy
                 };
-
-              
-
+               
                 _db.AssetRegistrations.Add(entity);
                 _db.SaveChanges();
                 assetRegistration.AssetRegistrationId = entity.AssetRegistrationId;
-               
 
+                #region Update UserCard if Registered with Employee
+
+                if (assetRegistration.EmployeeId != null)
+                {
+                    FixedAssetHelper.UpdateUserCardFromAssetRegistration(assetRegistration.AssetRegistrationId, User.Identity.Name);
+                }
+
+                #endregion
+
+                #region Update LocationTracking
+
+                FixedAssetHelper.UpdateAssetLocationTrackingForAssetRegistration(assetRegistration.AssetRegistrationId, User.Identity.Name);
+
+                #endregion
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset registration", "Success", User.Identity.Name, $"created asset reg {entity.AssetRegistrationId} Tag {entity.Tag}", Modules.FixedAsset);
+                #endregion
             }
             return Json(new[] { assetRegistration }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Registrations_Update([DataSourceRequest] DataSourceRequest request,
-            AssetRegistration assetRegistration)
+        public ActionResult Registrations_Update([DataSourceRequest] DataSourceRequest request, AssetRegistration assetRegistration)
         {
 
             ModelState.Clear();
@@ -360,9 +390,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             if (String.IsNullOrEmpty(assetRegistration.GroupCode) && assetRegistration.IsGroup)
                 ModelState.AddModelError("group", "Group Code is required");
-
-            if (String.IsNullOrEmpty(assetRegistration.Name))
-                ModelState.AddModelError("name", "Name is required");
+            //added
+            if (string.IsNullOrEmpty(assetRegistration.Unit))
+                ModelState.AddModelError("unit", "Unit is required");
+            //if (String.IsNullOrEmpty(assetRegistration.Name))
+            //    ModelState.AddModelError("name", "Name is required");
 
             if (!String.IsNullOrEmpty(assetRegistration.Tag))
             {
@@ -438,9 +470,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     ModelState.AddModelError("qty", "Quanity for non group assets should be 1.");
                 assetRegistration.Quanity = 1;
             }
-            #endregion
-
-           
+            #endregion           
 
             if (ModelState.IsValid)
             {
@@ -454,12 +484,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     AssetRegistrationId = assetRegistration.AssetRegistrationId,
                     FixedAssetCategoryID = assetRegistration.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = assetRegistration.FixedAssetSubCategoryID,
+                    FixedAssetNameID = assetRegistration.FixedAssetNameID,
                     Unit = assetRegistration.Unit,
-                    Size = assetRegistration.Size,
-                    
-                    Name = assetRegistration.Name,
+                    Size = assetRegistration.Size,                    
+                    Name = _db.FixedAssetSubCategoryNames.Find(assetRegistration.FixedAssetNameID)?.Name,
                     Tag = assetRegistration.Tag,
                     SIV = assetRegistration.SIV,
+                    SIVDate = assetRegistration.SIVDate,
                     PurchaseDate = assetRegistration.PurchaseDate,
                     PurchasePrice = assetRegistration.PurchasePrice,
                     GRN = assetRegistration.GRN,
@@ -487,6 +518,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     TotalWeight = assetRegistration.TotalWeight,
                     Battery = assetRegistration.Battery,
                     Tyre = assetRegistration.Tyre,
+                    Color = assetRegistration.Color,
                     IsBuilding = assetRegistration.IsBuilding,
                     Location = assetRegistration.Location,
                     Contractor = assetRegistration.Contractor,
@@ -502,11 +534,31 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     ModifiedBy = User.Identity.Name
                 };
 
+                //modify in db
                 _db.AssetRegistrations.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
 
                 UpdateFleet(assetRegistration.Tag,assetRegistration.PlateNo,assetRegistration.ChassisNo,assetRegistration.SerialNo);
+
+                #region Update UserCard if Registered with Employee
+
+                if (assetRegistration.EmployeeId != null)
+                {
+                    FixedAssetHelper.UpdateUserCardFromAssetRegistration(assetRegistration.AssetRegistrationId, User.Identity.Name);
+                }
+
+                #endregion
+
+                #region Update LocationTracking
+
+                FixedAssetHelper.UpdateAssetLocationTrackingForAssetRegistration(assetRegistration.AssetRegistrationId, User.Identity.Name);
+
+                #endregion
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Asset registration", "Success", User.Identity.Name, $"updated asset reg {entity.AssetRegistrationId} Tag {assetRegistration.Tag}", Modules.FixedAsset);
+                #endregion
             }
 
             return Json(new[] { assetRegistration }.ToDataSourceResult(request, ModelState));
@@ -526,12 +578,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                     AssetRegistrationId = assetRegistration.AssetRegistrationId,
                     FixedAssetCategoryID = assetRegistration.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = assetRegistration.FixedAssetSubCategoryID,
+                    FixedAssetNameID = assetRegistration.FixedAssetNameID,
                     Unit = assetRegistration.Unit,
                     Size = assetRegistration.Size,
                     
                     Name = assetRegistration.Name,
                     Tag = assetRegistration.Tag,
                     SIV = assetRegistration.SIV,
+                    SIVDate = assetRegistration.SIVDate,
                     PurchaseDate = assetRegistration.PurchaseDate,
                     PurchasePrice = assetRegistration.PurchasePrice,
                     GRN = assetRegistration.GRN,
@@ -572,6 +626,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 _db.AssetRegistrations.Attach(entity);
                 _db.AssetRegistrations.Remove(entity);
                 _db.SaveChanges();
+
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted asset registration number {assetRegistration.AssetRegistrationId } and Tag {assetRegistration.Tag}");
+                #endregion
             }
 
             return Json(new[] { assetRegistration }.ToDataSourceResult(request, ModelState));
@@ -673,23 +731,21 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             return Json(result);
         }
-
-       
         
-
+        //Uncomment in production
         public void UpdateFleet(string tagNo, string plateNo, string chasisNo, string serialNo)
         {
-            IFleetService fleetService = new FleetService();
-            var fleet = fleetService.GetAll().FirstOrDefault(f => f.UnitNum == tagNo || f.PlateNumber == plateNo || f.SerialNo == serialNo || f.ChasisNumber == chasisNo);
+            //IFleetService fleetService = new FleetService();
+            //var fleet = fleetService.GetAll().FirstOrDefault(f => f.UnitNum == tagNo || f.PlateNumber == plateNo || f.SerialNo == serialNo || f.ChasisNumber == chasisNo);
 
-            if (fleet != null)
-            {
-                fleet.PlateNumber = plateNo;
-                fleet.UnitNum = tagNo;
-                fleet.ChasisNumber = chasisNo;
-                fleet.SerialNo = serialNo;
-                fleetService.Update(fleet);
-            }
+            //if (fleet != null)
+            //{
+            //    fleet.PlateNumber = plateNo;
+            //    fleet.UnitNum = tagNo;
+            //    fleet.ChasisNumber = chasisNo;
+            //    fleet.SerialNo = serialNo;
+            //    fleetService.Update(fleet);
+            //}
         }
         protected override void Dispose(bool disposing)
         {

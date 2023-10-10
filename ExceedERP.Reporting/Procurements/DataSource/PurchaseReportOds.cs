@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
     {
         ExceedDbContext _db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PurchaseReportViewModel> GetPurchaseReport(DateTime from, DateTime to, string purchaser,string branchid,string purchaseType,string status)
+        public List<PurchaseReportViewModel> GetPurchaseReport(DateTime from, DateTime to, string purchaser,string branchid,string purchaseType,string status, string businessUnitId)
         {
             List<PurchaseReportViewModel> list = new List<PurchaseReportViewModel>();
             string purchasetype = "All";
@@ -33,7 +33,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 purchaseRequisions = purchaseRequisions
                     .Where(x => x.BranchId.ToString() == branchid).AsQueryable();
             }
-            
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int bdid = int.Parse(businessUnitId);
+                purchaseRequisions = purchaseRequisions.Where(x => x.BusinessUnitId == bdid).AsQueryable();
+            }
+
             if (!String.IsNullOrWhiteSpace(purchaser))
             {
                 //purchaseRequisions = purchaseRequisions
@@ -243,7 +248,8 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                                         #endregion
                                     }
-                                    purchase.ItemCategory = poItem.CatCode + "-" + poItem.CategoryName+"-"+poItem.ItmCode+"-"+poItem.ItemName;
+                                    purchase.ItemCategory = poItem.CatCode + "-" + poItem.CategoryName;
+                                    purchase.ItemName = poItem.ItmCode+"-"+poItem.ItemName;
                                     purchase.RefNo = purchaseRequision.PurchaseRequisitionID.ToString();
                                     purchase.Date = assignment.OnlineApprovedTime;
                                     purchase.PurchaseMethod = "Purchase Order";
@@ -442,7 +448,8 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                         #endregion
                                     }
 
-                                    purchase.ItemCategory = poItem.CatCode + "-" + poItem.CategoryName + "-" + poItem.ItmCode + "-" + poItem.ItemName;
+                                    purchase.ItemCategory = poItem.CatCode + "-" + poItem.CategoryName ;
+                                    purchase.ItemName =  poItem.ItmCode + "-" + poItem.ItemName;
                                     purchase.RefNo = purchaseRequision.PurchaseRequisitionID.ToString();
                                     purchase.Date = assignment.OnlineApprovedTime;
                                     purchase.PurchaseMethod = "Proforma";
@@ -691,7 +698,8 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                         #endregion
                                     }
 
-                                    purchase.ItemCategory =awardItem.CatCode + "-" + awardItem.CategoryName + "-" + awardItem.ItmCode +"-" + awardItem.ItemName;
+                                    purchase.ItemCategory =awardItem.CatCode + "-" + awardItem.CategoryName ;
+                                    purchase.ItemName = awardItem.ItmCode +"-" + awardItem.ItemName;
                                     purchase.RefNo = purchaseRequision.PurchaseRequisitionID.ToString();
                                     purchase.Date = assignment.OnlineApprovedTime;
                                     purchase.PurchaseMethod = "Tender";

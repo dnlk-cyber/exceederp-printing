@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.AP.PettyCash;
 
 namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
 {
 
-   public class FundTransfer: DepartmentNewOperations
+    public class FundTransfer: DepartmentNewOperations
     {
         public int FundTransferId { get; set; }
         [Required]

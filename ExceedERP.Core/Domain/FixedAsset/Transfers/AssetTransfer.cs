@@ -10,8 +10,13 @@ namespace ExceedERP.Core.Domain.FixedAsset.Transfers
     public class AssetTransfer : Operations
     {
         public int AssetTransferId { get; set; }
+
         [Display(Name = "Request Document No.")]
         public string RequestNumber { get; set; }
+
+        public bool ConfirmReceive { get; set; }
+
+        [Display(Name = "Transfer Type")]
         public TransferType Type { get; set; }
 
         [Display(Name = "Transfer Date")]
@@ -39,17 +44,24 @@ namespace ExceedERP.Core.Domain.FixedAsset.Transfers
        
         [Display(Name = "Deliverer Type")]
         public AssetTransferDelivererType DriverType { get; set; }
+
         [Display(Name = "Deliverer Name")]
         public string DeliveredBy { get; set; }//internal
+
         [Display(Name = "Supplier Name")]
         public string SupplierName { get; set; }//external
+
         [Display(Name = "Recipient Type")]
         public AssetTransferRecipientType RecipientType { get; set; }
+
         [Display(Name = "Recipient Employee")]
         public string RecipientEmployee { get; set; }//internal
+
         [Display(Name = "Recipient Supplier")]
         public string RecipientSupplier { get; set; }//external
+
         public virtual ICollection<AssetTransferItem> AssetTransferItems { get; set; }
+
         public virtual ICollection<AssetTransferValidation> AssetTransferValidations { get; set; }
     }
 }

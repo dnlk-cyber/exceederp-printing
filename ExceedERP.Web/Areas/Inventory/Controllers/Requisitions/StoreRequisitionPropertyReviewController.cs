@@ -83,7 +83,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsOnlineApproved && !x.IsVoid).Where(x => mybraches.Contains(x.OrgBranchName));
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsOnlineApproved && !x.IsVoid).Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsForMaintenance == false).Where(x => x.IsOnlineApproved && !x.IsVoid).Where(x => userStores.Contains(x.StoreCode));
             var result = storerequisitions.ToDataSourceResult(request, storeRequisition => new
                 {
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
