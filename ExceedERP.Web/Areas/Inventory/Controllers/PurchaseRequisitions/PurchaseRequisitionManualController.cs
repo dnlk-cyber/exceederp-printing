@@ -82,25 +82,25 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             //var xb = System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementUserDepartmentUser);
             var user = userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
             var storekeepers = db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
-            int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
 
-            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Stock && x.IsManual).Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Stock && x.IsManual).Where(x => mybraches.Contains(x.BranchId));
 
             if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit || x.CreatedBy == User.Identity.Name);
+                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
             }
 
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.OrgStructureId == userworkunit || x.CreatedBy == User.Identity.Name);
+                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)  || x.CreatedBy == User.Identity.Name);
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
@@ -110,7 +110,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
                 && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.OrgStructureId == userworkunit);
+                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) );
             }
 
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover))
@@ -119,7 +119,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.OrgStructureId == userworkunit);
+                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) );
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
             {
