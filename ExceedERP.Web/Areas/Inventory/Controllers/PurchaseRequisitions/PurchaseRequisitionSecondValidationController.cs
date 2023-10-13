@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return View();
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementPRRequisitionSecondApprover)]
         public ActionResult PurchaseRequisitionSecondValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchaseRequisitionSecondValidation> purchaserequisitionsecondvalidations = db.PurchaseRequisitionSecondValidations.Where(x=>x.PurchaseRequisitionID==id);
@@ -42,7 +42,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPRRequisitionSecondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionSecondValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, PurchaseRequisitionSecondValidation purchaseRequisitionSecondValidation)
         {
@@ -98,7 +98,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             return Json(new[] { purchaseRequisitionSecondValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(ProcurementRoles.ProcurementPRRequisitionSecondApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionSecondValidations_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionSecondValidation purchaseRequisitionSecondValidation)
         {

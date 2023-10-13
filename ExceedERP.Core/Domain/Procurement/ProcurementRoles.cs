@@ -6,6 +6,7 @@ namespace ExceedERP.Core.Domain.Procurement.Settings
         public const string ProcurementUserDepartmentUser = "Procurement_UserDepartment_User";
         public const string ProcurementUserDepartmentApprover = "Procurement_UserDepartment_Approver";
         public const string ProcurementServiceRequisitionSecondApprover = "Service_Requisition_Second_Approver";
+        public const string ProcurementPRRequisitionSecondApprover = "PR_Requisition_Second_Approver";
 
         public const string ProcurementUser = "Procurement_User";
         public const string ProcurementApprover = "Procurement_Approver";
