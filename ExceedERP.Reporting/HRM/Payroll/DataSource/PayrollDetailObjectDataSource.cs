@@ -128,19 +128,29 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                         EmployeeInfo.ProvidentPensionComp = payrolldata.PensionFromCompany +
                                                         payrolldata.ProvidentFromCompany;
                         EmployeeInfo.Loan = payrolldata.TotalLoan;
-                        var deductions =
+                        var creatAssoc =
                             db.PayrollProcessDeductions.Where(
                                 x =>
                                     x.PayrollProcessViewModelId == payrolldata.PayrollProcessViewModelId &&
                                     x.Name == "CREDIT").FirstOrDefault();
-                        if (deductions != null)
+                        if (creatAssoc != null)
                         {
-                            EmployeeInfo.SavingCredit = deductions.Amount;
+                            EmployeeInfo.SavingCredit = creatAssoc.Amount;
+                        }
+
+                        var labourUnion =
+                            db.PayrollProcessDeductions.Where(
+                                x =>
+                                    x.PayrollProcessViewModelId == payrolldata.PayrollProcessViewModelId &&
+                                    x.Name == "LABOUR").FirstOrDefault();
+                        if (labourUnion != null)
+                        {
+                            EmployeeInfo.LabourUnion = labourUnion.Amount;
                         }
 
                         EmployeeInfo.SportFee = payrolldata.SportFee;
                         EmployeeInfo.Advance = payrolldata.TotalAdvance;
-                        EmployeeInfo.LabourUnion = payrolldata.LabourUnionContribution;
+                        //EmployeeInfo.LabourUnion = payrolldata.LabourUnionContribution;
                         EmployeeInfo.NonTaxAddition = payrolldata.TotalNonTaxAdditions;
                         EmployeeInfo.OtherDeduction =
                             payrolldata.TotalLongTermDeductions

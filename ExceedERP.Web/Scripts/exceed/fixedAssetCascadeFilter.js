@@ -7,7 +7,7 @@ function filterSubCategoryNames() {
 
     return {
         subCategoryCode: $("#FixedAssetSubCategoryID").data("kendoDropDownList").value(),
-        text: $("#Name").data("kendoDropDownList").filterInput.val()
+        text: $("#FixedAssetNameID").data("kendoDropDownList").filterInput.val()
     };
 }
 

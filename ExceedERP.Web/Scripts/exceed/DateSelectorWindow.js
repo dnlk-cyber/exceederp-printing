@@ -48,7 +48,7 @@ function SetDate(date) {
 
                 var Datee = dates[0]._day + "/" + dates[0]._month + "/" + dates[0]._year;
 
-                $("#" + DateTextBox + "").val(Datee);
+                $("#" + DateTextBox + "").val(Datee).trigger("change");
                 SetDate(Datee);
                 AssignDates();
                 var window = $("#DateWindow").data("kendoWindow");

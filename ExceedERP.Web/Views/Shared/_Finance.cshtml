@@ -349,7 +349,7 @@
                             @Html.ActionLink("Miscellaneous Collections", "Index", "ArMiscelaneousCollection", new { area = "Finance" }, null)<b class="arrow"></b>
                         </li>
                     }
-                    @if (User.IsInRole(ConstructionRoles.PaymentCollectionUser)
+                    @*@if (User.IsInRole(ConstructionRoles.PaymentCollectionUser)
                           || User.IsInRole(ConstructionRoles.PaymentCollectionApprover)
                           )
                     {
@@ -365,7 +365,7 @@
                                 <li id="CONS-FINANCE-INTGR-09" class="actionlinlk">@Html.ActionLink("Standard Collection", "Index", "StandardCollection", new { area = "Construction" }, null)<b class="arrow"></b></li>
                             </ul>
                         </li>
-                    }
+                    }*@
                     @if (HttpContext.Current.User.IsInRole("Account_Receivable_Admin"))
                     {
 
@@ -544,7 +544,7 @@
                     {
                         <li id="link1282to" class="actionlinlk">@Html.ActionLink("Travel Expense Claim", "Index", "ApTravelExpenseClaim", new { area = "Finance" }, null)<b class="arrow"></b></li>
                     }
-                    @if (User.IsInRole(ConstructionRoles.SubContractPaymentRequestApprover)
+                    @*@if (User.IsInRole(ConstructionRoles.SubContractPaymentRequestApprover)
                            || User.IsInRole(ConstructionRoles.SubContractPaymentRequestChecker)
                          )
                     {
@@ -561,7 +561,7 @@
                             </ul>
                         </li>
 
-                    }
+                    }*@
                     @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin"))
                     {
                         <li class="">
