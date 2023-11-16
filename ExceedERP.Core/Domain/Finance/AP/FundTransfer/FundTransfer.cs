@@ -18,10 +18,10 @@ namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
         [Display(Name = "Branch")]
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
-            
-        [Display(Name = "From Branch or Project")]
+
+        [Display(Name = "From Branch/Project")]
         public int FromBranchId { get; set; }
-        [Display(Name = "From Business Unit or Sector")]
+        [Display(Name = "From Business Unit")]
         public int FromBusinessUnitId { get; set; }
         //requestor
         [Display(Name = "Employee")]
@@ -38,6 +38,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.FundTransfer
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
         public virtual ICollection<FundTransferDetail> FundTransferDetails { get; set; }
         public virtual ICollection<FundTransferAttachment> FundTransferAttachments { get; set; }
         public virtual ICollection<FundTransferDepartmentValidation> FundTransferDepartmentValidations { get; set; }

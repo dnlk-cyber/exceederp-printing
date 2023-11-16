@@ -2,6 +2,7 @@
 @using ExceedERP.Core.Domain.Finance.AP.Travel
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -15,7 +16,11 @@
           columns.Bound(c => c.ApTravelOrderId).Width(110).Title("Travel Order Id").EditorTemplateName("TravelOrderSelector");
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          if (GlobalHelper.IsMultipleBusinessUnit())
+          {
+              columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+          }
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Title("Branch/Project").EditorTemplateName("BranchSelector").Width(200);
           columns.Bound(c => c.PurposeOfTravel).Width(150);
           columns.Bound(c => c.ClaimDate).Width(130);
           // columns.Bound(c => c.PaymentMethod).Width(120).EditorTemplateName("PaymentMethodSelectorAP");
@@ -68,6 +73,7 @@
               model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.CreatedAtBranchId).Editable(false);
               model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
 
               model.Field(p => p.IsForOther).Editable(false);
 
@@ -171,7 +177,7 @@
                 </text>);
                       items.Add().Text("Travel Expense").Content(
             @<text>
-                
+
                 @(Html.Kendo().Grid<ApTravelExpenseExpense>()
                                                   .Name("TravelExpenseExpensegrid_#=ApTravelExpenseClaimId#")
                                           .Columns(columns =>

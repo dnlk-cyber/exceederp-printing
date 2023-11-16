@@ -185,6 +185,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                                 }
                                 _db.SaveChanges();
                                 break;
+                            //case "SALES-RETURN":
+
+                            //    var refund = _db.SalesReturn.Find(did);
+                            //    if (refund != null)
+                            //    {
+                            //        refund.Paid = true;
+                            //        _db.Entry(refund).State = EntityState.Modified;
+                            //    }
+                            //    _db.SaveChanges();
+                            //    break;
                         }
                         
                        

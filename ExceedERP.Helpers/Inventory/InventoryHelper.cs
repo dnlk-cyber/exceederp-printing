@@ -352,39 +352,7 @@ namespace ExceedERP.Helpers.Inventory
             //return Json(items.Select(p => new { AssetNumber = p.AssetNumber, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
 
-        private static List<InternalExternalEquipmentViewModel> GetInternalExternalEquipmentViewModel()
-        {
-            var db = new ExceedDbContext();
-            List<InternalExternalEquipmentViewModel> views = new List<InternalExternalEquipmentViewModel>();
-            InternalExternalEquipmentViewModel view = new InternalExternalEquipmentViewModel();
-            var internalList = db.Fleets.Where(x => x.Status == "Active").AsQueryable();
-            //var externalList = db.RentToExternals.AsQueryable();
-
-            foreach (var i in internalList)
-            {
-                view = new InternalExternalEquipmentViewModel();
-                view.AssetNumber = i.FleetsID;
-                view.Name = i.EquipmentName;
-                view.Model = i.Model;
-                view.Year = i.ManufacturerYear;
-                view.Type = "Internal";
-                view.EquipmentTypeID = i.EquipmentTypeID;
-                view.PurchaseCost = i.PurchasingCost;
-                views.Add(view);
-            }
-            //foreach (var i in externalList)
-            //{
-            //    view = new InternalExternalEquipmentViewModel();
-            //    //view.AssetNumber = i.RentOtherSuppliersID;
-            //    view.Name = i.Description;
-            //    view.Type = "External";
-            //    //view.EquipmentTypeID = i.EquipmentTypeID;
-            //    // view.Year = i.ManufacturedYear;
-            //    views.Add(view);
-            //}
-            var list = views.ToList();
-            return list;
-        }
+      
 
 
         // 

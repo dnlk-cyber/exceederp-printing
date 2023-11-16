@@ -1,6 +1,8 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Finance.AP.PettyCash
 @using ExceedERP.Core.Domain.Finance.AP.Travel
+@using ExceedERP.Helpers.Common
+
 <legend>Travel Order</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelOrder>()
               .Name("grid")
@@ -8,6 +10,11 @@
               {
                   columns.Bound(c => c.ApTravelOrderId).ClientTemplate("#=appendZeros(ApTravelOrderId)#").Width(100).Title("ID");
                   columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+                  if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+                  {
+                      columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+                  }
+                  columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
                   columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
                   columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
                   columns.Bound(c => c.PurposeOfTravel).Width(150);
@@ -67,9 +74,13 @@
                           model.Field(p => p.OrgStructureId).Editable(false);
                           model.Field(p => p.BranchId).Editable(false);
                           model.Field(p => p.BusinessUnitId).Editable(false);
+                          model.Field(p => p.FromBusinessUnitId).Editable(false);
+                          model.Field(p => p.FromBranchId).Editable(false);
                           model.Field(p => p.CreatedAtBranchId).Editable(false);
                           model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+                          model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
                           model.Field(p => p.IsForOther).Editable(false);
+                          model.Field(p => p.VehicleDistributionID).Editable(false);
                           model.Field(p => p.CreatedBy).Editable(false);
                           model.Field(p => p.DateCreated).Editable(false);
                           model.Field(p => p.ModifiedBy).Editable(false);
@@ -102,8 +113,8 @@
                                                                     <a href='@Url.Action("ApTravelOrder", "FinancePrint")/#=ApTravelOrderId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
                                                                     <br />
                                                                     # } #
-    
-                                                                  
+
+
 
                                                                     <div>
                                                                         <hr>
@@ -414,7 +425,7 @@ command.Edit();
           }).ToClientTemplate()
 
     )
-   
+
 </script>
 
 
@@ -469,7 +480,7 @@ command.Edit();
     }
 
 
-  
+
 
 
 
@@ -553,7 +564,7 @@ command.Edit();
             $(".k-grid-edit", detailGrid).hide();
         }
 
-       
+
     }
     function onDataBoundValidationNew(e) {
         var currentUser=@Html.Raw(Json.Encode(User.Identity.Name));
@@ -582,7 +593,7 @@ command.Edit();
             $(".k-grid-edit", detailGrid).hide();
         }
 
-        
+
     }
 
 

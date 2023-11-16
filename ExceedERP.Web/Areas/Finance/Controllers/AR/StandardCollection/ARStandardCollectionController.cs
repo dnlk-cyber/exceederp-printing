@@ -792,6 +792,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.StandardCollection
                         PaymentReference = record.ReceiptNumber,
                         ReferenceDoc = record.Reference,
                         InvoiceReferenceDoc = invoices,
+                        DebitSum = debit,
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now

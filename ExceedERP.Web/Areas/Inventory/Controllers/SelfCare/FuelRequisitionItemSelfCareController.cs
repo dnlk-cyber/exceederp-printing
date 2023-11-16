@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -12,20 +13,20 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 {
-    [Authorize]
-  
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
+
     public class FuelRequisitionItemSelfCareController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-         [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+      
         public ActionResult Index()
         {
             return View();
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+       
         public ActionResult StoreRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<StoreRequisitionItem> storerequisitionItems = db.StoreRequisitionItems.Where(p => p.StoreRequisitionID == id);
@@ -52,7 +53,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem , int id)
         {
@@ -106,7 +107,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         }
 
 
-       [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem)
         {
@@ -164,8 +165,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
-
-         [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreRequisitionItems_Destroy([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem)
         {

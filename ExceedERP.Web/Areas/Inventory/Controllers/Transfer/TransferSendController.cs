@@ -366,13 +366,24 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         {
             var record = db.ItemTransfers.Find(id);
             var items = db.ItemTransferItems.Where(x => x.ItemTransferID == id).ToList();
-            bool zeroShippedQty = false;
-            foreach (var item in items)
-                if (item.ShippedQuantity <= 0)
-                    zeroShippedQty = true;
-
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any() &&!zeroShippedQty)
+          
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any() )
             {
+                #region validate qty,price and tax
+
+                foreach (var item in items)
+                {
+                    if (item.ShippedQuantity <= 0 || item.UPrice <= 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill quantity and unit price information for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
@@ -654,16 +665,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                      DriverType = record.DriverType,
                      Status = Enum.GetName(typeof(OperationStatuses), 5),
                      Remark = record.Remark,
-                     GLPeriodId = record.GLPeriodId,
-                     IsVoid = record.IsVoid,
-                     VoidBy = record.VoidBy,
-                     VoidTime = record.VoidTime,
-                     IsOnlineApproved = record.IsOnlineApproved,
-                     OnlineApprovedBy = record.OnlineApprovedBy,
-                     OnlineApprovedTime = record.OnlineApprovedTime,
-                     IsOnlineTransferred = record.IsOnlineTransferred,
-                     IsOnlineTransferredBy = record.IsOnlineTransferredBy,
-                     OnlineTransferredTime = record.OnlineTransferredTime,
+                     GLPeriodId = record.GLPeriodId,                     
                      DocumentRef = record.DocumentRef,
                      CreatedBy = User.Identity.Name,
                      DateCreated = DateTime.Now,                     

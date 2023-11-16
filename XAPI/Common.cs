@@ -17,6 +17,16 @@ namespace XAPI
 
         public static CultureInfo exceedculture = new CultureInfo("am-ET");
 
+        public static string RemoveSpecialChars(string str)
+        {
+            if (str == null)
+            {
+                return "";
+            }
+            //string newstr= Regex.Replace(str, "[^0-9A-Za-z _-]", "");
+            string newstr= Regex.Replace(str, "[^0-9A-Za-z '_\"-./@$?%*]", "");
+            return newstr;
+        }
         public static string GetConcatenatedYearMonthDay(DateTime From, DateTime To)
         {
             var dateDif = To.Subtract(From).TotalDays;

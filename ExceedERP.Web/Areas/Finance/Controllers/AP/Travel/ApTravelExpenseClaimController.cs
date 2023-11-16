@@ -74,7 +74,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 
             IQueryable<ApTravelExpenseClaim> aptravelexpenseclaims = _db.ApTravelExpenseClaims.Where(x => x.IsDepartmentOnlineApproved);
 
-            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            if (FinanceConfigurationHelper.IsPaymentBudgetControlEnabled())
             {
                 aptravelexpenseclaims = aptravelexpenseclaims.Where(x => x.IsBudgetApproved);
             }
@@ -86,6 +86,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                 CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                 OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                 PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                 ClaimDate = apTravelExpenseClaim.ClaimDate,
@@ -137,6 +138,30 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 apTravelExpenseClaim.ForwardedTo = User.Identity.Name;
 
             #endregion
+            #region data 
+            if (apTravelExpenseClaim.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (apTravelExpenseClaim.EmployeeId != 0)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelExpenseClaim.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    apTravelExpenseClaim.OrgStructureId = placement.OrgStructureId;
+                    apTravelExpenseClaim.BranchId = placement.BranchId;
+                    apTravelExpenseClaim.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+
+            apTravelExpenseClaim.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            apTravelExpenseClaim.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            apTravelExpenseClaim.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelExpenseClaim
@@ -146,6 +171,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate.Date,
@@ -199,6 +225,27 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApTravelExpenseClaims_Update([DataSourceRequest]DataSourceRequest request, ApTravelExpenseClaim apTravelExpenseClaim)
         {
+            #region data 
+            if (apTravelExpenseClaim.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (apTravelExpenseClaim.EmployeeId != 0)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelExpenseClaim.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    apTravelExpenseClaim.OrgStructureId = placement.OrgStructureId;
+                    apTravelExpenseClaim.BranchId = placement.BranchId;
+                    apTravelExpenseClaim.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelExpenseClaim
@@ -209,6 +256,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate,
@@ -273,6 +321,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                     PurposeOfTravel = apTravelExpenseClaim.PurposeOfTravel,
                     ClaimDate = apTravelExpenseClaim.ClaimDate,
                    
@@ -318,72 +367,72 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             var record = _db.ApTravelExpenseClaims.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.Expenses.Count > 0)
             {
-                #region check segment length validation
+                //#region check segment length validation
 
-                var distributions = _db.ApTravelExpenseDistributions.Where(x => x.ApTravelExpenseClaimId == id).ToList();
-                AccountHelper accountHelper = new AccountHelper();
-                foreach (var dist in distributions)
-                {
-                    string message = accountHelper.ValidateSegmentCombinationLength(dist.AccountCode);
-                    if (!String.IsNullOrEmpty(message))
-                    {
-                        var formattedData1 = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData1, JsonRequestBehavior.AllowGet);
-                    }
-                    #region debit credit validation
-                    if (dist.Debit != 0 && dist.Credit != 0)
-                    {
-                        message = $"{dist.AccountCode} Account has both debit and credit value.";
-                        var formattedData1 = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData1, JsonRequestBehavior.AllowGet);
-                    }
+                //var distributions = _db.ApTravelExpenseDistributions.Where(x => x.ApTravelExpenseClaimId == id).ToList();
+                //AccountHelper accountHelper = new AccountHelper();
+                //foreach (var dist in distributions)
+                //{
+                //    string message = accountHelper.ValidateSegmentCombinationLength(dist.AccountCode);
+                //    if (!String.IsNullOrEmpty(message))
+                //    {
+                //        var formattedData1 = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                //    }
+                //    #region debit credit validation
+                //    if (dist.Debit != 0 && dist.Credit != 0)
+                //    {
+                //        message = $"{dist.AccountCode} Account has both debit and credit value.";
+                //        var formattedData1 = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    if (dist.Debit == 0 && dist.Credit == 0)
-                    {
-                        message = $"{dist.AccountCode} Both debit and credit can't have zero value at the same time.";
-                        var formattedData1 = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData1, JsonRequestBehavior.AllowGet);
-                    }
+                //    if (dist.Debit == 0 && dist.Credit == 0)
+                //    {
+                //        message = $"{dist.AccountCode} Both debit and credit can't have zero value at the same time.";
+                //        var formattedData1 = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    if (dist.Debit > 0 && dist.Credit > 0)
-                    {
-                        message = $"{dist.AccountCode} Both debit and credit can't have non zero value at the same time.";
-                        var formattedData1 = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData1, JsonRequestBehavior.AllowGet);
-                    }
+                //    if (dist.Debit > 0 && dist.Credit > 0)
+                //    {
+                //        message = $"{dist.AccountCode} Both debit and credit can't have non zero value at the same time.";
+                //        var formattedData1 = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    if (dist.Debit < 0 || dist.Credit < 0)
-                    {
-                        message = $"{dist.AccountCode} Negative values are not allowed.";
-                        var formattedData1 = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData1, JsonRequestBehavior.AllowGet);
-                    }
-                    #endregion
+                //    if (dist.Debit < 0 || dist.Credit < 0)
+                //    {
+                //        message = $"{dist.AccountCode} Negative values are not allowed.";
+                //        var formattedData1 = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                //    }
+                //    #endregion
 
-                }
+                //}
 
 
-                #endregion
+                //#endregion
 
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -487,97 +536,97 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 
                 #endregion
                 #region check segment length validation
-                AccountHelper accountHelper = new AccountHelper();
-                foreach (var dist in record.Distributions)
-                {
-                    string message = accountHelper.ValidateSegmentCombinationLength(dist.AccountCode);
-                    if (!String.IsNullOrEmpty(message))
-                    {
-                        var formattedData = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-                    }
+                //AccountHelper accountHelper = new AccountHelper();
+                //foreach (var dist in record.Distributions)
+                //{
+                //    string message = accountHelper.ValidateSegmentCombinationLength(dist.AccountCode);
+                //    if (!String.IsNullOrEmpty(message))
+                //    {
+                //        var formattedData = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    #region debit credit validation
-                    if (dist.Debit != 0 && dist.Credit != 0)
-                    {
-                        message = $"{dist.AccountCode} Account has both debit and credit value.";
-                        var formattedData = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-                    }
+                //    #region debit credit validation
+                //    if (dist.Debit != 0 && dist.Credit != 0)
+                //    {
+                //        message = $"{dist.AccountCode} Account has both debit and credit value.";
+                //        var formattedData = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    if (dist.Debit == 0 && dist.Credit == 0)
-                    {
-                        message = $"{dist.AccountCode} Both debit and credit can't have zero value at the same time.";
-                        var formattedData = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-                    }
+                //    if (dist.Debit == 0 && dist.Credit == 0)
+                //    {
+                //        message = $"{dist.AccountCode} Both debit and credit can't have zero value at the same time.";
+                //        var formattedData = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    if (dist.Debit > 0 && dist.Credit > 0)
-                    {
-                        message = $"{dist.AccountCode} Both debit and credit can't have non zero value at the same time.";
-                        var formattedData = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-                    }
+                //    if (dist.Debit > 0 && dist.Credit > 0)
+                //    {
+                //        message = $"{dist.AccountCode} Both debit and credit can't have non zero value at the same time.";
+                //        var formattedData = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //    }
 
-                    if (dist.Debit < 0 || dist.Credit < 0)
-                    {
-                        message = $"{dist.AccountCode} Negative values are not allowed.";
-                        var formattedData = new
-                        {
-                            Message = message,
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-                    }
-                    #endregion
+                //    if (dist.Debit < 0 || dist.Credit < 0)
+                //    {
+                //        message = $"{dist.AccountCode} Negative values are not allowed.";
+                //        var formattedData = new
+                //        {
+                //            Message = message,
+                //            Status = "NOT_OK"
+                //        };
+                //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //    }
+                //    #endregion
 
-                }
+                //}
 
 
                 #endregion
                 #region check if debit and credit are equal
-                decimal debit = 0;
-                decimal credit = 0;
-                var distribution = record.Distributions.ToList();
-                if (distribution.Any())
-                {
-                    debit = distribution.Sum(x => x.Debit);
-                    credit = distribution.Sum(x => x.Credit);
-                }
-                if (debit != credit)
-                {
-                    var formattedData = new
-                    {
-                        Message = "Total debit and total credit is not balanced.",
-                        Status = "NOT_OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                if (debit == 0)
-                {
-                    var formattedData = new
-                    {
-                        Message = "Total debit and total credit is zero.",
-                        Status = "NOT_OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
+                //decimal debit = 0;
+                //decimal credit = 0;
+                //var distribution = record.Distributions.ToList();
+                //if (distribution.Any())
+                //{
+                //    debit = distribution.Sum(x => x.Debit);
+                //    credit = distribution.Sum(x => x.Credit);
+                //}
+                //if (debit != credit)
+                //{
+                //    var formattedData = new
+                //    {
+                //        Message = "Total debit and total credit is not balanced.",
+                //        Status = "NOT_OK"
+                //    };
+                //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //}
+                //if (debit == 0)
+                //{
+                //    var formattedData = new
+                //    {
+                //        Message = "Total debit and total credit is zero.",
+                //        Status = "NOT_OK"
+                //    };
+                //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //}
                 #endregion
 
                 #region send to GL
@@ -642,76 +691,76 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 
                 #endregion
                
-                if (record.Distributions.Any())
-                {
-                    GlRecordJournal journal = new GlRecordJournal
-                    {
-                        DateCreated = DateTime.Now,
-                        CreatedBy = User.Identity.Name,
-                        JournalName = "AP Expense Claim",
-                        Description = !String.IsNullOrEmpty(description) ? description : "AP Expense Claim",
-                        FiscalYear = glyear,
-                        PeriodName = glperiod,
-                        CategoryName = "AP Expense Claim",
-                        SourcesName = "AP",
-                        JournalNumber = "APEXPCLA." + record.ApTravelExpenseClaimId.ToString(),
-                        SourceId = record.ApTravelExpenseClaimId.ToString(),
-                        Source = JournalSources.AP_TravelExpenseClaim.ToString(),
-                        EffectiveDate = record.ClaimDate.Date,
-                        OrgBranchName = record.OrgBranchName,
-                        BranchId = record.BranchId,
-                        Status = "Approved",
-                        IsOnlineApproved = true,
-                        OnlineApprovedBy = User.Identity.Name,
-                        OnlineApprovedTime = DateTime.Now
-                    };
-                    _db.GLRecordJournals.Add(journal);
-                    _db.SaveChanges();
-                    foreach (var i in record.Distributions)
-                    {
-                        #region debit and credit
+                //if (record.Distributions.Any())
+                //{
+                //    GlRecordJournal journal = new GlRecordJournal
+                //    {
+                //        DateCreated = DateTime.Now,
+                //        CreatedBy = User.Identity.Name,
+                //        JournalName = "AP Expense Claim",
+                //        Description = !String.IsNullOrEmpty(description) ? description : "AP Expense Claim",
+                //        FiscalYear = glyear,
+                //        PeriodName = glperiod,
+                //        CategoryName = "AP Expense Claim",
+                //        SourcesName = "AP",
+                //        JournalNumber = "APEXPCLA." + record.ApTravelExpenseClaimId.ToString(),
+                //        SourceId = record.ApTravelExpenseClaimId.ToString(),
+                //        Source = JournalSources.AP_TravelExpenseClaim.ToString(),
+                //        EffectiveDate = record.ClaimDate.Date,
+                //        OrgBranchName = record.OrgBranchName,
+                //        BranchId = record.BranchId,
+                //        Status = "Approved",
+                //        IsOnlineApproved = true,
+                //        OnlineApprovedBy = User.Identity.Name,
+                //        OnlineApprovedTime = DateTime.Now
+                //    };
+                //    _db.GLRecordJournals.Add(journal);
+                //    _db.SaveChanges();
+                //    foreach (var i in record.Distributions)
+                //    {
+                //        #region debit and credit
 
-                        var journalDetail = new GLRecordJournalDetail
-                        {
-                            DateCreated = DateTime.Now,
-                            CreatedBy = User.Identity.Name,
-                            GLRecordJournal = journal,
-                            AccountCode = i.AccountCode,
-                            AccountDesc = i.AccountDesc,
-                            Debit = i.Debit,
-                            Credit = i.Credit,
-                            AdditionalDescription = i.AdditionalDescription,
-                        };
-                        _db.GLRecordJournalDetails.Add(journalDetail);
-                        _db.SaveChanges();
-                        #endregion
-                    }
+                //        var journalDetail = new GLRecordJournalDetail
+                //        {
+                //            DateCreated = DateTime.Now,
+                //            CreatedBy = User.Identity.Name,
+                //            GLRecordJournal = journal,
+                //            AccountCode = i.AccountCode,
+                //            AccountDesc = i.AccountDesc,
+                //            Debit = i.Debit,
+                //            Credit = i.Credit,
+                //            AdditionalDescription = i.AdditionalDescription,
+                //        };
+                //        _db.GLRecordJournalDetails.Add(journalDetail);
+                //        _db.SaveChanges();
+                //        #endregion
+                //    }
 
-                    #region update record
+                //    #region update record
 
-                    record.IsOnlineTransferred = true;
-                    _db.Entry(record).State = EntityState.Modified;
-                    _db.SaveChanges();
+                //    record.IsOnlineTransferred = true;
+                //    _db.Entry(record).State = EntityState.Modified;
+                //    _db.SaveChanges();
 
-                    #endregion
-                    #region split journal
-                    var journaldetails = _db.GLRecordJournalDetails
-                        .Where(x => x.GlRecordJournalId == journal.GlRecordJournalId).ToList();
-                    foreach (var detail in journaldetails)
-                    {
-                        AccountHelper helper = new AccountHelper();
-                        helper.SplitJournal(detail.GlRecordJournalDetailId);
-                    }
-                    #endregion
+                //    #endregion
+                //    #region split journal
+                //    var journaldetails = _db.GLRecordJournalDetails
+                //        .Where(x => x.GlRecordJournalId == journal.GlRecordJournalId).ToList();
+                //    foreach (var detail in journaldetails)
+                //    {
+                //        AccountHelper helper = new AccountHelper();
+                //        helper.SplitJournal(detail.GlRecordJournalDetailId);
+                //    }
+                //    #endregion
 
-                    var formattedData = new
-                    {
-                        Message = "Successfully transfered.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //    var formattedData = new
+                //    {
+                //        Message = "Successfully transfered.",
+                //        Status = "OK"
+                //    };
+                //    return Json(formattedData, JsonRequestBehavior.AllowGet);
 
-                }
+                //}
                 #endregion
 
             }

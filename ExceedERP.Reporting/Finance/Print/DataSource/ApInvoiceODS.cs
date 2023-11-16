@@ -48,8 +48,17 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.WithholdTaxAmount = invoice.WithholdTaxAmount;
                 headerDs.NetPayable = invoice.NetPayable;
                 headerDs.AmountDue = invoice.AmountDue;
-                headerDs.PreparedBy = invoice.CreatedBy;
-                headerDs.ApprovedBy = invoice.OnlineApprovedBy;
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(invoice.CreatedBy));
+                headerDs.PreparedDate = invoice.DateCreated != null ? invoice.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(invoice.CreatedBy);
+
+                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(invoice.SendForApprovalBy));
+                headerDs.AccountantCheckedDate = invoice.SendForApprovalTime != null ? invoice.SendForApprovalTime : null;
+                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(invoice.SendForApprovalBy);
+
+                headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(invoice.OnlineApprovedBy));
+                headerDs.ApprovedDate = invoice.OnlineApprovedTime;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(invoice.OnlineApprovedBy);
             }
 
             if (organization != null)

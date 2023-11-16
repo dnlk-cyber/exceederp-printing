@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -30,6 +31,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
         public ActionResult Index()
         {
             PopulateViewData();
+            UpdateData();
             return View();
         }
 
@@ -60,10 +62,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
             ViewData["costCenters"] = selectedcostCenter;
 
             ViewData["Branches"] = branches;
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = _db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
             ViewData["Items"] = items;
             ViewData["Category"] = categories;
 
             ViewData["defaultCategory"] = categories.FirstOrDefault();
+        }
+        private void UpdateData()
+        {
+            var list = _db.ApTravelExpenseClaims.Where(x => x.CreatedAtOrgStructureId == 0).ToList();
+
+            foreach (var record in list)
+            {
+                record.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(record.CreatedBy);
+                _db.ApTravelExpenseClaims.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+            }
         }
         public string CheckStatus(int masterId)
         {
@@ -88,7 +108,26 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
 
         public ActionResult TravelExpenseClaims_Read([DataSourceRequest]DataSourceRequest request)
         {
+            List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
             IQueryable<ApTravelExpenseClaim> aptravelexpenseclaims = _db.ApTravelExpenseClaims;
+
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
+                 && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
+            {
+
+                aptravelexpenseclaims = aptravelexpenseclaims.Where(x => userworkunit.Contains(x.CreatedAtOrgStructureId)
+                || x.CreatedAtOrgStructureId == 0//if they are not vis
+                || x.ForwardedTo == User.Identity.Name
+                || x.ForwardedFrom == User.Identity.Name
+                || x.CreatedBy == User.Identity.Name);
+
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
+            {
+                aptravelexpenseclaims = aptravelexpenseclaims.Where(x => x.CreatedBy == User.Identity.Name);
+            }
+
+           
             DataSourceResult result = aptravelexpenseclaims.ToDataSourceResult(request, apTravelExpenseClaim => new
             {
                 ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
@@ -98,6 +137,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                 BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                 CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                 EmployeeId = apTravelExpenseClaim.EmployeeId,
                 IsForOther = apTravelExpenseClaim.IsForOther,
                 OrgStructureId = apTravelExpenseClaim.OrgStructureId,
@@ -168,6 +208,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
 
             apTravelExpenseClaim.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             apTravelExpenseClaim.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            apTravelExpenseClaim.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
             #endregion
 
             if (ModelState.IsValid)
@@ -182,6 +223,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
                     IsForOther = apTravelExpenseClaim.IsForOther,
                  
@@ -270,6 +312,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                     EmployeeId = apTravelExpenseClaim.EmployeeId,
                     IsForOther = apTravelExpenseClaim.IsForOther,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
@@ -334,12 +377,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                 var entity = new ApTravelExpenseClaim
                 {
                     ApTravelOrderId = apTravelExpenseClaim.ApTravelOrderId,
-                    ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,
-                    
+                    ApTravelExpenseClaimId = apTravelExpenseClaim.ApTravelExpenseClaimId,                    
                     BranchId = apTravelExpenseClaim.BranchId,
                     BusinessUnitId = apTravelExpenseClaim.BusinessUnitId,
                     CreatedAtBranchId = apTravelExpenseClaim.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelExpenseClaim.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelExpenseClaim.CreatedAtOrgStructureId,
                     EmployeeId = apTravelExpenseClaim.EmployeeId,
                     IsForOther = apTravelExpenseClaim.IsForOther,
                     OrgStructureId = apTravelExpenseClaim.OrgStructureId,
@@ -427,7 +470,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                 var validations = record.TravelExpenseDepartmentValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
                 if (validations.Any())
                     isNewRecord = false;
-                decimal docamount = record.Payments.Sum(x => x.Amount);
+                decimal docamount = record.Expenses.Sum(x => x.Total);
                 int docid = record.ApTravelExpenseClaimId;
                 int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
                 DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApTravelExpenseClaimSelfCare, isNewRecord,step);
@@ -444,61 +487,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
             return null;
         }
         
-        public ActionResult SendForApproval_1()
-        {
-            RequestesStatus requestesStatus;
-           // _db = new ExceedDbContext();
-            requestesStatus =
-                _db.RequestesStatus.FirstOrDefault(x => x.RequestId == HRMInputs.RequestId &&
-                        x.ReferenceType == HRMInputs.ReferenceType && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
-            //_db = new ExceedDbContext();
-            if (requestesStatus == null)
-            {
-                var entityy = new RequestesStatus
-                {
-                    RequestId = HRMInputs.RequestId,
-                    ReferenceType = HRMInputs.ReferenceType,
-                    Status = RequestStatus.WAITING_FOR_APPROVAL,
-                    Date = DateTime.Now,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                };
-
-                _db.RequestesStatus.Add(entityy);
-                _db.SaveChanges();
-            }
-            else
-            {
-                var entity = new RequestesStatus
-                {
-                    RequestStatusId = requestesStatus.RequestStatusId,
-                    RequestId = requestesStatus.RequestId,
-                    ReferenceType = requestesStatus.ReferenceType,
-                    Status = requestesStatus.Status,
-                    Date = requestesStatus.Date,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(requestesStatus.Date.Day, requestesStatus.Date.Month, requestesStatus.Date.Year),
-                    Remark = requestesStatus.Remark
-                };
-
-                //_db.RequestesStatus.Attach(entity);
-                _db.RequestesStatus.Remove(entity);
-                _db.SaveChanges();
-                //_db = new ExceedDbContext();
-
-                var entityy = new RequestesStatus
-                {
-                    RequestId = HRMInputs.RequestId,
-                    ReferenceType = HRMInputs.ReferenceType,
-                    Status = RequestStatus.WAITING_FOR_APPROVAL,
-                    Date = DateTime.Now,
-                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                };
-
-                _db.RequestesStatus.Add(entityy);
-                _db.SaveChanges();
-            }
-
-            return RedirectToAction("Index");
-        }
+       
 
         protected override void Dispose(bool disposing)
         {

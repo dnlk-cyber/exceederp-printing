@@ -78,6 +78,16 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Code = i.EmployeeId
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
+
+            var suppliers = _db.ProcurementSuppliers;
+
+            var selectedSuppliers = suppliers.Select(
+                i => new
+                {
+                    Name = i.SupplierId + "-" + i.Name,
+                    Code = i.SupplierId
+                }).AsQueryable();
+            ViewData["Suppliers"] = selectedSuppliers;
         }
 
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
@@ -112,6 +122,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 Status = issueFuel.Status,
                 GLPeriodId = issueFuel.GLPeriodId,
                 AssetRegistrationId = issueFuel.AssetRegistrationId,
+                SupplierId = issueFuel.SupplierId,
                 Remark = issueFuel.Remark,
                 IsVoid = issueFuel.IsVoid,
                 VoidBy = issueFuel.VoidBy,
@@ -243,6 +254,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Remark = issueFuel.Remark,
                     GLPeriodId = issueFuel.GLPeriodId,
                     AssetRegistrationId = issueFuel.AssetRegistrationId,
+                    SupplierId = issueFuel.SupplierId,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
                     LastModified = issueFuel.LastModified,
@@ -367,6 +379,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Remark = issueFuel.Remark,
                     GLPeriodId = issueFuel.GLPeriodId,
                     AssetRegistrationId = issueFuel.AssetRegistrationId,
+                    SupplierId = issueFuel.SupplierId,
                     IsVoid = issueFuel.IsVoid,
                     VoidBy = issueFuel.VoidBy,
                     VoidTime = issueFuel.VoidTime,
@@ -420,6 +433,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Reference = issueFuel.Reference,
                     IssueDate = issueFuel.IssueDate,
                     AssetRegistrationId = issueFuel.AssetRegistrationId,
+                    SupplierId = issueFuel.SupplierId,
                     Status = issueFuel.Status,
                     Remark = issueFuel.Remark,
                     IsVoid = issueFuel.IsVoid,

@@ -24,7 +24,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
             var purchaseRequisitions = db.PurchaseRequisitions
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Where(x => x.OnlineApprovedTime >= from && x.OnlineApprovedTime <= to)
+                .Where(x => x.RequestDate >= from && x.RequestDate <= to)
                 .AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(branchid))
@@ -112,7 +112,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             var purchaseOrders = db.PurchaseOrders
                 .Where(x => x.IsManual)
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Where(x => x.OnlineApprovedTime >= from && x.OnlineApprovedTime <= to)
+                .Where(x => x.OrderDate >= from && x.OrderDate <= to)
                 .AsQueryable();
 
            
@@ -168,7 +168,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             var purchaseOrders = db.PurchaseOrders
                 .Where(x => x.IsManual==false)
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Where(x => x.OnlineApprovedTime >= from && x.OnlineApprovedTime <= to)
+                .Where(x => x.OrderDate >= from && x.OrderDate <= to)
                 .AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(purchaser))
@@ -222,7 +222,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             var tenders = db.Tenders
                 .Where(x => x.TenderType == TenderType.Open)
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Where(x => x.OnlineApprovedTime >= from && x.OnlineApprovedTime <= to)
+                .Where(x => x.FloatDate >= from && x.FloatDate <= to)
                 .AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(purchaser))
@@ -287,7 +287,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             var tenders = db.Tenders
                 .Where(x => x.TenderType == TenderType.Selected)
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Where(x => x.OnlineApprovedTime >= from && x.OnlineApprovedTime <= to)
+                .Where(x => x.FloatDate >= from && x.FloatDate <= to)
                 .AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(purchaser))

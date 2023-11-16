@@ -17,7 +17,8 @@ namespace ExceedERP.Core.Domain.Procurement
         [Required]
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
-       
+        public int BusinessUnitId { get; set; }
+
         [Display(Name = "Receive Type")]
         public int ReceiveTypeId { get; set; }
         public virtual ReceiveType ReceiveType { get; set; }

@@ -115,14 +115,14 @@
                     @(Html.Kendo().DropDownListFor(model => model.RecipientId)
                           .ValuePrimitive(true)
                           .OptionLabel("Select Employee")
-                          .DataTextField("Name")
-                          .DataValueField("Code")
-                          .Filter("contains")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
-                                  .ServerFiltering(false);
-                          })
+                          .DataTextField("FullNameaEnglish")
+                            .DataValueField("EmployeeId")
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetAllEmployees", "GlobalDataProvider", new { area = "Common" }).Data("filterEmployees"))
+                                            .ServerFiltering(true);
+                            })
                           )
                     @Html.ValidationMessageFor(model => model.RecipientId, "", new { @class = "text-danger" })
                 </div>
@@ -133,8 +133,26 @@
         </div>
 
         <div class="col-md-3 ro1">
-           
-            
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.SupplierId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.SupplierId)
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select Supplier...")
+                                  .DataTextField("Name")
+                                  .DataValueField("SupplierId")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetSuppliersList", "ProcurementDataProvider", new { area = "Procurement" }))
+                                          .ServerFiltering(false);
+                                  })
+                    )
+                    @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
 
             <div class="form-group">
                 @Html.LabelFor(model => model.PlateNo, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -154,7 +172,7 @@
             </div>
             <div class="row"></div>
 
-            
+
 
         </div>
     </div>

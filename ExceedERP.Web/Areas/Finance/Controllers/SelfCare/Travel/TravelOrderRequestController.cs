@@ -25,12 +25,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
     [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class TravelOrderRequestController : Controller
     {
+       
 
         private ExceedDbContext _db = new ExceedDbContext();
         public ActionResult Index()
         {
             PopulateViewData();
-         
+            UpdateData();
+
             return View();
         }
 
@@ -47,26 +49,46 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
             var branches = _db.Branch;
             var structure = _db.MainCompanyStructures;
 
-            var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-            var subAccounts =_db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
-            var chartOfAccountSubAccounts = subAccounts;
-            var subaccounts = chartOfAccountSubAccounts.Select(
-                i => new
-                {
-                    Name = i.Description,
-                    Code = i.Values
-                }).AsQueryable();
+            //var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            //var subAccounts =_db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
+            //var chartOfAccountSubAccounts = subAccounts;
+            //var subaccounts = chartOfAccountSubAccounts.Select(
+            //    i => new
+            //    {
+            //        Name = i.Description,
+            //        Code = i.Values
+            //    }).AsQueryable();
 
 
-            ViewData["SubAccounts"] = subaccounts;
+            //ViewData["SubAccounts"] = subaccounts;
 
             ViewData["Structure"] = structure;
 
             ViewData["Branches"] = branches;
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = _db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
             var items = _db.ApSetupItems.ToList();
             ViewData["Items"] = items;
         }
 
+        private void UpdateData()
+        {
+            var list = _db.ApTravelOrders.Where(x => x.CreatedAtOrgStructureId == 0).ToList();
+
+            foreach (var record in list)
+            {
+                record.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(record.CreatedBy);
+                _db.ApTravelOrders.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+            }
+        }
         public ActionResult TravelOrderRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
@@ -76,7 +98,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                  && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
 
-                aptravelorders = aptravelorders.Where(x => userworkunit.Contains(x.OrgStructureId)
+                aptravelorders = aptravelorders.Where(x => userworkunit.Contains(x.CreatedAtOrgStructureId)
+                || x.CreatedAtOrgStructureId == 0//if they are not vis
                 || x.ForwardedTo == User.Identity.Name
                 || x.ForwardedFrom == User.Identity.Name
                 || x.CreatedBy == User.Identity.Name);
@@ -92,8 +115,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                 ApTravelOrderId = apTravelOrder.ApTravelOrderId,
                 BranchId = apTravelOrder.BranchId,
                 BusinessUnitId = apTravelOrder.BusinessUnitId,
+                FromBranchId = apTravelOrder.FromBranchId,
+                FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
                 CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
                 EmployeeId = apTravelOrder.EmployeeId,
                 IsForOther = apTravelOrder.IsForOther,
                 OrgStructureId = apTravelOrder.OrgStructureId,
@@ -103,6 +129,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                 TotalDuration = apTravelOrder.TotalDuration,
                 TransportReference = apTravelOrder.TransportReference,
                 Reference = apTravelOrder.Reference,
+                VehicleDistributionID = apTravelOrder.VehicleDistributionID,
 
                 IsDepartmentOnlineApproved = apTravelOrder.IsDepartmentOnlineApproved,
                 DepartmentOnlineApprovedBy = apTravelOrder.DepartmentOnlineApprovedBy,
@@ -168,6 +195,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
 
             apTravelOrder.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             apTravelOrder.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            apTravelOrder.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
             #endregion
 
             if (ModelState.IsValid)
@@ -179,8 +207,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                     EmployeeId = apTravelOrder.EmployeeId,
                     BranchId = apTravelOrder.BranchId,
                     BusinessUnitId = apTravelOrder.BusinessUnitId,
+                    FromBranchId = apTravelOrder.FromBranchId,
+                    FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
                     CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
                     OrgStructureId = apTravelOrder.OrgStructureId,
                     PurposeOfTravel = apTravelOrder.PurposeOfTravel,
                     RequestDate = apTravelOrder.RequestDate,
@@ -268,8 +299,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                     ApTravelOrderId = apTravelOrder.ApTravelOrderId,
                     BranchId = apTravelOrder.BranchId,
                     BusinessUnitId = apTravelOrder.BusinessUnitId,
+                    FromBranchId = apTravelOrder.FromBranchId,
+                    FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
                     CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
                     EmployeeId = apTravelOrder.EmployeeId,
                     IsForOther = apTravelOrder.IsForOther,
                     OrgStructureId = apTravelOrder.OrgStructureId,
@@ -338,8 +372,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.Travel
                     ApTravelOrderId = apTravelOrder.ApTravelOrderId,                  
                     BranchId = apTravelOrder.BranchId,
                     BusinessUnitId = apTravelOrder.BusinessUnitId,
+                    FromBranchId = apTravelOrder.FromBranchId,
+                    FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
                     CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
                     EmployeeId = apTravelOrder.EmployeeId,
                     IsForOther = apTravelOrder.IsForOther,
                     OrgStructureId = apTravelOrder.OrgStructureId,

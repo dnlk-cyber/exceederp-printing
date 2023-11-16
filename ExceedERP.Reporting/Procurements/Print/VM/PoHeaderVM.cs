@@ -30,4 +30,24 @@ namespace ExceedERP.Reporting.Procurements.Print.VM
         public Image ApproverSignature { get; set; }
         public decimal Total { get; set; }
     }
+
+    public class POItemVM
+    {       
+        public string CatCode { get; set; }
+        public string CategoryName { get; set; }
+        public string ItmCode { get; set; }
+        public string ItemName { get; set; }
+        public string PartNo { get; set; }
+        public decimal Quantity { get; set; }
+        public string ItemSpecification { get; set; }
+        public string Name { get; set; }
+        public string ModelNo { get; set; }
+        public string UoM { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TaxAmount { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal Total { get; set; }
+        public decimal Discount { get; set; }
+        public string Remark { get; set; }
+    }
 }

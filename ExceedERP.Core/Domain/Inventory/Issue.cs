@@ -68,6 +68,8 @@ namespace ExceedERP.Core.Domain.Inventory
         public bool IsManual { get; set; }
         [Display(Name = "Issue for Asset")]
         public int? AssetRegistrationId { get; set; }
+        [Display(Name = "For External")]
+        public string SupplierId { get; set; }
         public virtual ICollection<IssueItem> IssueItems { get; set; }
         public virtual ICollection<IssueValidation> IssueValidation { get; set; }
         public virtual ICollection<IssueDistribution> IssueDistribution { get; set; }

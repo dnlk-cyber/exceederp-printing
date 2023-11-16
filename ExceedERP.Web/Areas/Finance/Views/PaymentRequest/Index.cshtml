@@ -3,6 +3,7 @@
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Domain.HRM.EmployeeDetail
 @using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,6 +15,11 @@
       {
           columns.Bound(c => c.PaymentRequestId).Title("#").Width(100).ClientTemplate("#=appendZeros(PaymentRequestId)#");
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+          {
+              columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+          }
+          columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
           columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(100);
           columns.ForeignKey(c => c.OrgStuructureId, (IEnumerable)ViewData["OrgStructure"], "OrgStructureId", "Name").Width(200);
           //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
@@ -30,7 +36,7 @@
           columns.ForeignKey(c => c.Purchaser, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").Width(150).EditorTemplateName("PurchaserSelector");
           columns.Bound(c => c.ReasonOfPayment).Width(130);
           columns.Bound(c => c.RequestDate).Width(120);
-          
+
           //columns.Bound(c => c.RequestDateAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.InvoiceNo).Width(110);
           columns.Bound(c => c.PurchaseRequestNo).Width(100);
@@ -82,6 +88,7 @@
               model.Field(p => p.Paid).Editable(false);
               model.Field(p => p.CreatedAtBranchId).Editable(false);
               model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
 
               model.Field(p => p.BudgetApprovedBy).Editable(false);
               model.Field(p => p.IsBudgetApproved).Editable(false);
@@ -123,8 +130,8 @@
                                                                                             @<text>
                                                                                                 <p><b>Record Status :#= Status #</b></p>
                                                                                                 <a href='@Url.Action("ApPaymentRequest", "FinancePrint")/#=PaymentRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                                                <br />
-                                                                                                <a href='@Url.Action("ApPaymentRequestNew", "FinancePrint")/#=PaymentRequestId#' title="Print 2"><i class="fa fa-print fa-2x"></i></a>
+                                                                                                @*<br />
+                                                                                                <a href='@Url.Action("ApPaymentRequestNew", "FinancePrint")/#=PaymentRequestId#' title="Print 2"><i class="fa fa-print fa-2x"></i></a>*@
 
                                                                                                 # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
                                                                                                 {#
@@ -466,7 +473,7 @@
     var masterGrid;
 
     var codeid;
-  
+
     var isDeptapproved;
     var isDeptSendForApproval;
 
@@ -476,8 +483,8 @@
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.PaymentRequestId;
-        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;     
-        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;     
+        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
     }
     function onDataBoundMasterDepartment(e) {
         //this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -523,7 +530,7 @@
             }
         }
 
-      
+
     }
     function onDataBoundLineDepartment(e) {
 
@@ -535,8 +542,8 @@
             $(".k-grid-edit", detailGrid).hide();
         }
     }
-    function onDataBoundValidationDepartment(e) {       
-       
+    function onDataBoundValidationDepartment(e) {
+
 
         var detailGrid = "#" + e.sender.element[0].id;
 
@@ -547,7 +554,7 @@
             $(".k-grid-edit", detailGrid).hide();
         }
 
-      
+
 
         this.table.find(".k-grid-edit").hide();
     }

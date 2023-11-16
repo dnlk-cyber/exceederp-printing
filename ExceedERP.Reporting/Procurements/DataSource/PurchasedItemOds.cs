@@ -39,13 +39,14 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                 foreach (var receiveItem in inventoryData)
                 {
+                    var item = _db.InventoryItems.Find(receiveItem.ItemCode);
                     var goodReceiveItemRecord = new PurchasedItemVm
                     {
                         Id = receiveItem.GoodReceiveId.ToString(),
                         Supplier = receiveItem.GoodReceive.SupplierName,
                         Reference = !String.IsNullOrEmpty(receiveItem.GoodReceive.ReceiveRef) ? receiveItem.GoodReceive.ReceiveRef : receiveItem.GoodReceive.Reference,
                         ReceiveDate = receiveItem.GoodReceive.ReceiveDate,
-                        ItemDescription = receiveItem.ItemCode + "-" + receiveItem.InventoryItem.Name,
+                        ItemDescription = receiveItem.ItemCode + "-" + item?.Name,
                         Quantity = receiveItem.Quantity,
                         UnitPrice = receiveItem.UnitPrice,
                         SubTotal = receiveItem.SubTotal,
@@ -71,13 +72,15 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                 foreach (var receiveItem in fixedassetData)
                 {
+                    var subCategory = _db.FixedAssetSubCategories.Find(receiveItem.FixedAssetSubCategoryID);
+                   // var category = _db.FixedAssetSubCategories.Find(receiveItem.FixedAssetCategoryID);
                     var fixedRecord = new PurchasedItemVm
                     {
                         Id = receiveItem.FixedAssetReceiveId.ToString(),
                         Supplier = receiveItem.FixedAssetReceive.SupplierName,
                         Reference = !String.IsNullOrEmpty(receiveItem.FixedAssetReceive.ReceiveRef) ? receiveItem.FixedAssetReceive.ReceiveRef : receiveItem.FixedAssetReceive.Reference,
                         ReceiveDate = receiveItem.FixedAssetReceive.ReceiveDate,
-                        ItemDescription = receiveItem.FixedAssetSubCategory.SubCategoryCode + "-" + receiveItem.FixedAssetSubCategory.SubCategoryName + "-" + receiveItem.Name,
+                        ItemDescription = subCategory.SubCategoryCode + "-" + subCategory.SubCategoryName + "-" + receiveItem.Name,
                         Quantity = receiveItem.Quantity,
                         UnitPrice = receiveItem.UnitPrice,
                         SubTotal = receiveItem.SubTotal,

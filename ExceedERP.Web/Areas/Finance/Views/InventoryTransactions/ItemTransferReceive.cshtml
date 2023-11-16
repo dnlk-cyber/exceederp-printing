@@ -11,12 +11,12 @@
           columns.Bound(c => c.ItemTransferReceiveId).Title("Transfer No.").Width(110).ClientTemplate("#=appendZeros(ItemTransferReceiveId)#");
              
           columns.Bound(c => c.DocumentRef).Title("Doc Ref No.").Width(100);
-          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120);
-          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(120);
+          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.DriverType).EditorTemplateName("TransferType").Width(130);
-          columns.ForeignKey(p => p.DeliveredBy, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Driver Name").Width(140).EditorTemplateName("EmployeeSelector");
-          columns.ForeignKey(p => p.SupplierName, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier Name").Width(140).EditorTemplateName("SupplierSelector");
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.ForeignKey(p => p.DeliveredBy, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Driver Name").Width(140).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.SupplierName, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier Name").Width(140).EditorTemplateName("SupplierSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
             
           columns.Bound(c => c.PlateNo).Title("Plate No.").Width(110);
           columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(130);

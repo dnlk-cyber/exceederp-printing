@@ -11,10 +11,13 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
+using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Procurement;
 using ExceedERP.Web.Areas.Finance.Models;
 using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
@@ -112,8 +115,14 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult PurchaseOrderDirects_Read([DataSourceRequest]DataSourceRequest request)
         {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<PurchaseOrder> purchaseorders = _db.PurchaseOrders.Where(x => x.IsManual).Where(x => mybraches.Contains(x.BranchId));
 
-            IQueryable<PurchaseOrder> purchaseorders = _db.PurchaseOrders.Where(x=>x.IsManual);
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                purchaseorders = purchaseorders.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
 
             if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderApprover))
             {
@@ -186,7 +195,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
         {
 
             #region  validation
-            if(purchaseOrder.OrderDate>purchaseOrder.DeliveryDate)
+            if (String.IsNullOrEmpty(purchaseOrder.SupplierId) && purchaseOrder.PurchasePaymentType == PurchasePaymentType.Credit)
+                ModelState.AddModelError("supplierid", "Credit payment should have registered supplier.");
+
+            if (purchaseOrder.OrderDate>purchaseOrder.DeliveryDate)
                 ModelState.AddModelError("orderdate","Order Date shoul be before delivery date.");
 
             //if (purchaseOrder.PurchaseRequisitionID == 0 || purchaseOrder.PurchaseRequisitionID == null)
@@ -296,6 +308,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
         public ActionResult PurchaseOrderDirects_Update([DataSourceRequest]DataSourceRequest request, PurchaseOrder purchaseOrder)
         {
             #region  validation
+
+            if (String.IsNullOrEmpty(purchaseOrder.SupplierId) && purchaseOrder.PurchasePaymentType == PurchasePaymentType.Credit)
+                ModelState.AddModelError("supplierid", "Credit payment should have registered supplier.");
+            //only on send
+            //string error = PaymentHelper.ValidatePurchaseOrder(purchaseOrder.PurchaseOrderID);
+            //if(!string.IsNullOrEmpty(error))
+            //    ModelState.AddModelError("invalid", error);
+
+
             if (purchaseOrder.OrderDate > purchaseOrder.DeliveryDate)
                 ModelState.AddModelError("orderdate", "Order Date shoul be before delivery date.");
 
@@ -459,6 +480,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.PurchaseOrderItem.Count > 0)
             {
                 #region validate supplier
+                if (String.IsNullOrEmpty(record.SupplierId) && record.PurchasePaymentType == PurchasePaymentType.Credit)
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "Credit payment should have registered supplier.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+                   
 
                 if (String.IsNullOrEmpty(record.SupplierName))
                 {
@@ -486,17 +517,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 }
                 #endregion
                 #region validate payment schedule
-                var paymentSchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id);
-                if (!paymentSchedule.Any())
+                string error = PaymentHelper.ValidatePurchaseOrder(id);
+                if (!string.IsNullOrEmpty(error))
                 {
                     var formattedData3 = new
                     {
-                        Message = "Please add payment schedule first.",
+                        Message = error,
                         Status = "NOT_OK"
                     };
                     return Json(formattedData3, JsonRequestBehavior.AllowGet);
                 }
-
                 #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
@@ -593,21 +623,32 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             {
                 var formattedData = new
                 {
-                    Message = "Advance percentage should be more than zero.",
+                    Message = "Payment schedule should be more than zero.",
                     Status = "NOT_OK"
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
             if (po != null && !po.IsTransferredToPayment && po.IsOnlineApproved && !po.IsVoid && paymentSchedule.Any() && amount > 0)
-            {
-                decimal sumAdvancePercent = 0;
-                decimal sumPaymentPercent = 0;
+            {                
+              
                 var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).ToList();
                 var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).ToList();
                 if (advances.Any())
                 {
-                    sumAdvancePercent = advances.Sum(x => x.Percentage);
+                    decimal sumAdvancePercent = 0;
+                    decimal advanceByAmount = 0;
+                    decimal totalAdvance = 0;
+                    var advanceAmount = advances.Where(x => x.AmountType == AmountType.Amount);
+                    var advancePercentage = advances.Where(x => x.AmountType == AmountType.Percent);
+
+                    if(advancePercentage.Any())
+                        sumAdvancePercent = advancePercentage.Sum(x => x.Percentage);
+
+                    if (advanceAmount.Any())
+                        advanceByAmount = advanceAmount.Sum(x => x.Percentage);
+
+                    totalAdvance = (amount * (sumAdvancePercent / 100)) + advanceByAmount;
                     if (sumAdvancePercent > 0)
                     {
                         #region create payment request
@@ -619,11 +660,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                             SupplierName = po.SupplierName,
                             SupplierInvoice = "",
                             WithOutGRN = false,
-                            PaymentAmount = amount * (sumAdvancePercent / 100),
+                            PaymentAmount = totalAdvance,
                             ApplyPenality = false,
                             PenalityAmount = 0,
-                            NetPayable = amount * (sumAdvancePercent / 100),
-                            AmountDue = amount * (sumAdvancePercent / 100),
+                            NetPayable = totalAdvance,
+                            AmountDue = totalAdvance,
 
                             Type = "Purchase Order",
                             PaymentType = PaymentType.Advance,
@@ -641,57 +682,26 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         _db.PurchasePayments.Add(entity);
                         //_db.SaveChanges();
                         #endregion
-                        #region create advance payment
-                        //var entity = new ApPayment
-                        //{
-                        //    IsPrepayment = true,
-                        //    SupplierName = po.SupplierName,
-                        //    SupplierId = po.SupplierId,
-                        //    InvoiceNumber = "",
-                        //    InvoiceAmount = 0,
-                        //    PaymentAmount = 0,
-                        //    RemainingBalance = 0,
-                        //    HasPrepayment = false,
-                        //    PrepaymentAmount = amount * (sumAdvancePercent / 100),
-                        //    NetAmount = amount * (sumAdvancePercent / 100),
-                        //    PaymentMethod = "Na",
-                        //    PaymentReference = "NA",
-                        //    GLTaxRateID = 0,
-                        //    PaymentDate = DateTime.Today,
-                        //    PoTypeEnum = PurchaseType.PurchaseOrder,
-                        //    PoType = "Purchase Order",
-                        //    PurchaseReference = po.PurchaseOrderID.ToString(),
-                        //    CollectedByPurchaser = true,
-                        //    EmployeeId = po.ProcurementOfficer,
-                        //    Remark = po.Remark,
-                        //    OrgBranchName = po.OrgBranchName,
-                        //    DateCreated = DateTime.Now,
-                        //    LastModified = po.LastModified,
-                        //    CreatedBy = User.Identity.Name,
-                        //    ModifiedBy = po.ModifiedBy
-                        //};
-                        //_db.APPayments.Add(entity);
-                        //_db.SaveChanges();
-
-
-                        #endregion
-                        //record.Status = Enum.GetName(typeof(OperationStatuses), 14);
-                        //record.IsTransferredToPayment = true;
-                        //_db.PurchaseOrders.Attach(record);
-                        //_db.Entry(record).State = EntityState.Modified;
-                        //_db.SaveChanges();
-                        //var formattedData1 = new
-                        //{
-                        //    Message = "Successfully Sent for Payment.",
-                        //    Status = "OK"
-                        //};
-                        //return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                       
                         transferred = true;
                     }
                 }
                 if (payments.Any())
                 {
-                    sumPaymentPercent = payments.Sum(x => x.Percentage);
+                    decimal sumPaymentPercent = 0;
+                    decimal paymentByAmount = 0;
+                    decimal totalPayment = 0;
+                    var paymentAmount = payments.Where(x => x.AmountType == AmountType.Amount);
+                    var paymentPercentage = payments.Where(x => x.AmountType == AmountType.Percent);
+
+                    if (paymentPercentage.Any())
+                        sumPaymentPercent = paymentPercentage.Sum(x => x.Percentage);
+
+                    if (paymentAmount.Any())
+                        paymentByAmount = paymentAmount.Sum(x => x.Percentage);
+
+                    totalPayment = (amount * (sumPaymentPercent / 100)) + paymentByAmount;
+
                     if (sumPaymentPercent > 0)
                     {
 
@@ -704,11 +714,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                             SupplierName = po.SupplierName,
                             SupplierInvoice = "",
                             WithOutGRN = false,
-                            PaymentAmount = amount * (sumPaymentPercent / 100),
+                            PaymentAmount = totalPayment,
                             ApplyPenality = false,
                             PenalityAmount = 0,
-                            NetPayable = amount * (sumPaymentPercent / 100),
-                            AmountDue = amount * (sumPaymentPercent / 100),
+                            NetPayable = totalPayment,
+                            AmountDue = totalPayment,
 
                             Type = "Purchase Order",
                             PaymentType = PaymentType.Payment,
@@ -726,118 +736,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         _db.PurchasePayments.Add(entity);
                         //_db.SaveChanges();
                         #endregion
-                        #region create invoice
-                        //var apPaybleInvoice = new ApPaybleInvoices
-                        //{
-                        //    BranchId = purchaseOrder.BranchId,
-                        //    BusinessUnitId = purchaseOrder.BusinessUnitId,
-                        //    IsManual = false,
-                        //    SupplierName = purchaseOrder.SupplierName,
-                        //    SupplierId = purchaseOrder.SupplierId,
-                        //    EmployeeId = purchaseOrder.ProcurementOfficer,
-                        //    Type = ApInvoiceTransactionType.Invoice,
-                        //    PrNo = purchaseOrder.PurchaseRequisitionID.ToString(),
-                        //    PoNum = purchaseOrder.PurchaseOrderID.ToString(),
-                        //    PurposeOfPayment = "Supplier payment",
-                        //    InvoiceDate = DateTime.Today.Date,
-                        //    InvoiceNumber = "",
-                        //    PaymentTerms = 0,
-                        //    InvoiceAmount = amount * (sumPaymentPercent / 100),
-                        //    AdvanceAmount = 0,
-                        //    TaxAmount = 0,
-                        //    WithholdingAmount = 0,
-                        //    Subtotal = 0,
-                        //    WithholdTaxAmount = 0,
-                        //    NetPayable = amount * (sumPaymentPercent / 100),
-                        //    AmountDue = amount * (sumPaymentPercent / 100),
-                        //    InvoiceStatus = InvoiceStatus.New,
-
-                        //    Status = "",
-                        //    Source = GrnSource.StockGrn,
-                        //    Grn = "",
-
-                        //    DateCreated = DateTime.Now,
-                        //    CreatedBy = User.Identity.Name,
-                        //};
-
-                        //_db.APPaybleInvoices.Add(apPaybleInvoice);
-                        //_db.SaveChanges();
-                        //foreach(var item in items)
-                        //{
-                        //    var invoiceLine = new ApPaybleInvoicesLines
-                        //    {
-                        //        ApPaybleInvoicesId = id,
-                        //        Name = item.Name,
-                        //        Description = item.ItemName,
-                        //        AccountCode = "NA",
-                        //        AccountDesc = "",//_accountHelper.GetAccountDesc(aPPaybleInvoicesLines.AccountCode),
-                        //        InvoiceAmount = item.SubTotal,
-                        //        AdvanceAmount = 0,
-                        //        NetPayable = item.SubTotal,
-                        //        ReceiptNo = "",
-                        //        TaxType = item.GLTaxRateID.ToString(),
-                        //        TaxAmount = item.TaxAmount,
-                        //        WithholdingType = "",
-                        //        WithholdingAmount = 0,
-                        //        WithholdTax = false,
-                        //        WithholdTaxAmount =0,
-                        //        PoNo = purchaseOrder.PurchaseOrderID.ToString(),
-                        //        DateCreated = DateTime.Now,
-                        //        CreatedBy = User.Identity.Name,
-                        //    };
-
-                        //    _db.APPaybleInvoicesLines.Add(invoiceLine);
-                        //    _db.SaveChanges();
-
-                        //}
-                        //// _db.SaveChanges();
-
-                        #endregion
-                        #region create payment
-                        //var entity = new ApPayment
-                        //{
-                        //    IsPrepayment = false,
-                        //    SupplierName = purchaseOrder.SupplierName,
-                        //    SupplierId = purchaseOrder.SupplierId,
-                        //    InvoiceNumber = "",
-                        //    InvoiceAmount = 0,
-                        //    PaymentAmount = amount * (sumPaymentPercent / 100),
-                        //    RemainingBalance = 0,
-                        //    HasPrepayment = false,
-                        //    PrepaymentAmount = 0,
-                        //    NetAmount = amount * (sumPaymentPercent / 100),
-                        //    PaymentMethod = "Na",
-                        //    PaymentReference = "NA",
-                        //    GLTaxRateID = 0,
-                        //    PaymentDate = DateTime.Today,
-                        //    PoTypeEnum = PurchaseType.PurchaseOrder,
-                        //    PoType = "Purchase Order",
-                        //    PurchaseReference = purchaseOrder.PurchaseOrderID.ToString(),
-                        //    CollectedByPurchaser = true,
-                        //    EmployeeId = purchaseOrder.ProcurementOfficer,
-                        //    Remark = purchaseOrder.Remark,
-                        //    OrgBranchName = purchaseOrder.OrgBranchName,
-                        //    DateCreated = DateTime.Now,
-                        //    LastModified = purchaseOrder.LastModified,
-                        //    CreatedBy = User.Identity.Name,
-                        //    ModifiedBy = purchaseOrder.ModifiedBy
-                        //};
-                        //_db.APPayments.Add(entity);
-                        // _db.SaveChanges();
-
-                        #endregion
-                        //record.Status = Enum.GetName(typeof(OperationStatuses), 14);
-                        //record.IsTransferredToPayment = true;
-                        //_db.PurchaseOrders.Attach(record);
-                        //_db.Entry(record).State = EntityState.Modified;
-                        //_db.SaveChanges();
-
-                        //var formattedData1 = new
-                        //{
-                        //    Message = "Successfully Sent for Payment.",
-                        //    Status = "OK"
-                        //};
-                        //return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                       
                         transferred = true;
                     }
                 }

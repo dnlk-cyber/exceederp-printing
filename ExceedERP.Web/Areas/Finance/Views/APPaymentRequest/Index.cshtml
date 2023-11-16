@@ -3,6 +3,7 @@
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Domain.HRM.EmployeeDetail
 @using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,6 +15,11 @@
       {
           columns.Bound(c => c.PaymentRequestId).Title("#").Width(100).ClientTemplate("#=appendZeros(PaymentRequestId)#");
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+          {
+              columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+          }
+          columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
           columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(100);
           columns.ForeignKey(c => c.OrgStuructureId, (IEnumerable)ViewData["OrgStructure"], "OrgStructureId", "Name").Width(200);
           columns.Bound(c => c.SupplierId).Width(130).EditorTemplateName("SupplierSelector");
@@ -74,8 +80,11 @@
               model.Field(p => p.BranchId).Editable(false);
               model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.Paid).Editable(false);
+              model.Field(p => p.FromBusinessUnitId).Editable(false);
+              model.Field(p => p.FromBranchId).Editable(false);
               model.Field(p => p.CreatedAtBranchId).Editable(false);
               model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
 
               model.Field(p => p.BudgetApprovedBy).Editable(false);
               model.Field(p => p.IsBudgetApproved).Editable(false);
@@ -116,8 +125,8 @@
                                     # if (IsOnlineApproved)
                                     {#
                                     <a href='@Url.Action("ApPaymentRequest", "FinancePrint")/#=PaymentRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                    <br />
-                                     <a href='@Url.Action("ApPaymentRequestNew", "FinancePrint")/#=PaymentRequestId#' title="Print 2"><i class="fa fa-print fa-2x"></i></a>
+                                    @*<br />
+                                     <a href='@Url.Action("ApPaymentRequestNew", "FinancePrint")/#=PaymentRequestId#' title="Print 2"><i class="fa fa-print fa-2x"></i></a>*@
                                     # } #
 
                                     <div>
@@ -261,7 +270,7 @@
 
                                       items.Add().Text("Line Items").Content(
             @<text>
-               
+
                 @(Html.Kendo().Grid<PaymentRequestLine>()
                                   .Name("PaymentRequestLine_#=PaymentRequestId#")
                       .Columns(columns =>
@@ -320,7 +329,7 @@
             </text>
    );
 
-                        
+
 
                               items.Add().Text("Attachment").Content(@<text>
 

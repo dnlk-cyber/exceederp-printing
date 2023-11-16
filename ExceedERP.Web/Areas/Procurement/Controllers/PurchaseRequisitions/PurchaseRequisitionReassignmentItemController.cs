@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -54,6 +55,22 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionReassignmentItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionReassignmentItem purchaseRequisitionReassignmentItem , int id )
         {
+            #region data validation
+
+            var assignment = _db.PurchaseRequisitionAssignments.Find(id);
+            if(assignment!=null)
+            {
+                var pr=_db.PurchaseRequisitions.Find(assignment.PurchaseRequisitionID);
+                List<int> assignmentIds = _db.PurchaseRequisitionAssignments
+                    .Where(x=>x.PurchaseRequisitionID==pr.PurchaseRequisitionID)
+                    .Select(x=>x.PurchaseRequisitionAssignmentId).ToList();
+            }
+            else
+            {
+                ModelState.AddModelError("notfound","Assignment not found.");
+            }
+            #endregion 
+
             if (ModelState.IsValid)
             {
                 var entity = new PurchaseRequisitionReassignmentItem

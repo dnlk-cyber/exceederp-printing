@@ -193,15 +193,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
-
-                //case "BINCARD_SORT_ORDER":
-                //    attributes =
-                //          Enum.GetValues(typeof(BincardSortOrderAttributes))
-                //              .Cast<BincardSortOrderAttributes>()
-                //              .Select(v => v.ToString())
-                //              .ToList();
-                //    break;
+               
                 case "ENABLE_PR_BUDGET_CONTROL":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
+                case "ENABLE_PAYMENT_BUDGET_CONTROL":
                     attributes =
                           Enum.GetValues(typeof(BooleanTypeAttributes))
                               .Cast<BooleanTypeAttributes>()
@@ -229,34 +229,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
-                    //case "REPLACE_COSTCENTER_ON_ISSUE_DEBIT":
-                    //    attributes =
-                    //          Enum.GetValues(typeof(BooleanTypeAttributes))
-                    //              .Cast<BooleanTypeAttributes>()
-                    //              .Select(v => v.ToString())
-                    //              .ToList();
-                    //    break;
-                    //case "HIDE_PRICE_ON_PRINT":
-                    //    attributes =
-                    //          Enum.GetValues(typeof(BooleanTypeAttributes))
-                    //              .Cast<BooleanTypeAttributes>()
-                    //              .Select(v => v.ToString())
-                    //              .ToList();
-                    //    break;
-                    //case "APPLY_ELECTRONIC_SIGNATURE":
-                    //    attributes =
-                    //          Enum.GetValues(typeof(BooleanTypeAttributes))
-                    //              .Cast<BooleanTypeAttributes>()
-                    //              .Select(v => v.ToString())
-                    //              .ToList();
-                    //    break;
-                    //case "APPLY_BRANCH_SUBACCOUNT_FOR_STORE_TRANSACTION":
-                    //    attributes =
-                    //          Enum.GetValues(typeof(BooleanTypeAttributes))
-                    //              .Cast<BooleanTypeAttributes>()
-                    //              .Select(v => v.ToString())
-                    //              .ToList();
-                    //    break;
+                    
 
             }
 

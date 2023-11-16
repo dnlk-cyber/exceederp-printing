@@ -883,6 +883,7 @@
     <Compile Include="Finance\Print\DataSource\ApInvoiceODS.cs" />
     <Compile Include="Finance\Print\DataSource\ApMiscPaymentODS.cs" />
     <Compile Include="Finance\Print\DataSource\ApPaymentODS.cs" />
+    <Compile Include="Finance\Print\DataSource\ApPaymentRequestNewOds.cs" />
     <Compile Include="Finance\Print\DataSource\ApPaymentRequestOds.cs" />
     <Compile Include="Finance\Print\DataSource\ApPaymentSettlementOds.cs" />
     <Compile Include="Finance\Print\DataSource\ApPettyCashOds.cs" />
@@ -978,6 +979,12 @@
     </Compile>
     <Compile Include="Finance\Print\rptPaymentRequest.Designer.cs">
       <DependentUpon>rptPaymentRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Finance\Print\rptPaymentRequestNew.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\Print\rptPaymentRequestNew.designer.cs">
+      <DependentUpon>rptPaymentRequestNew.cs</DependentUpon>
     </Compile>
     <Compile Include="Finance\Print\rptPaymentSettlement.cs">
       <SubType>Component</SubType>
@@ -4765,6 +4772,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\Print\rptPaymentRequest.resx">
       <DependentUpon>rptPaymentRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Finance\Print\rptPaymentRequestNew.resx">
+      <DependentUpon>rptPaymentRequestNew.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\Print\rptPaymentSettlement.resx">
       <DependentUpon>rptPaymentSettlement.cs</DependentUpon>

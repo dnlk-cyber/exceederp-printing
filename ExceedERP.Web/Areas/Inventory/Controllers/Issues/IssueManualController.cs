@@ -13,6 +13,7 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
+using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -91,6 +92,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Code = i.ItemCode
                 }).AsQueryable();
             ViewData["WorkItem"] = selectedWorkitem;
+
+            var suppliers = _db.ProcurementSuppliers;
+            var selectedSuppliers = suppliers.Select(
+                i => new
+                {
+                    Name = i.SupplierId + "-" + i.Name,
+                    Code = i.SupplierId
+                }).AsQueryable();
+            ViewData["Suppliers"] = selectedSuppliers;
         }
 
        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
@@ -117,6 +127,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 PlateNo = issue.PlateNo,
                 Owner = issue.Owner,
                 Status = issue.Status,
+                SupplierId = issue.SupplierId,
                 Remark = issue.Remark,
                 GLPeriodId = issue.GLPeriodId,
                 IsVoid = issue.IsVoid,
@@ -217,6 +228,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssueDate = issue.IssueDate.Date,
                     PlateNo = issue.PlateNo,
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
+                    SupplierId = issue.SupplierId,
                     Remark = issue.Remark,
                     GLPeriodId = issue.GLPeriodId,
                     IsVoid = issue.IsVoid,
@@ -323,6 +335,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssueDate = issue.IssueDate,
                     PlateNo = issue.PlateNo,
                     Status = issue.Status,
+                    SupplierId = issue.SupplierId,
                     Remark = issue.Remark,
                     GLPeriodId = issue.GLPeriodId,
                     IsVoid = issue.IsVoid,
@@ -375,6 +388,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssueDate = issue.IssueDate,
                     PlateNo = issue.PlateNo,
                     Status = issue.Status,
+                    SupplierId = issue.SupplierId,
                     Remark = issue.Remark,
                     IsVoid = issue.IsVoid,
                     VoidBy = issue.VoidBy,
@@ -496,6 +510,22 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             var items = _db.IssueItems.Where(x => x.IssueID == id).ToList();
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
+
+                #region validate quantity
+
+                foreach (var item in record.IssueItems)
+                {
+                    if (item.IssuedQuantity <= 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill issued quantity for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;

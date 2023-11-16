@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DocumentFormat.OpenXml.Spreadsheet;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -155,7 +156,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     JobOrderNo = storeRequisition.JobOrderNo,
                     PlateNo = storeRequisition.PlateNo,
 
-                    Status = storeRequisition.Status,
+                PrevRequestDate = storeRequisition.PrevRequestDate,
+                PrevKm = storeRequisition.PrevKm,
+                PrevLT = storeRequisition.PrevLT,
+                CurrentKm = storeRequisition.CurrentKm,
+                DifferenceKm = storeRequisition.DifferenceKm,
+                Consumption = storeRequisition.Consumption,
+                StandardConsumption = storeRequisition.StandardConsumption,
+
+                Status = storeRequisition.Status,
                     Remark = storeRequisition.Remark,
                     GLPeriodId = storeRequisition.GLPeriodId,
 
@@ -644,6 +653,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             var record = _db.StoreRequisitions.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StoreRequisitionItem.Count > 0)
             {
+                #region validate qty,price and tax
+
+                foreach (var item in record.StoreRequisitionItem)
+                {
+                    if (item.RequestedQuantity <= 0 || item.ApprovedQuantity <= 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill quantity information for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;

@@ -8,11 +8,13 @@ namespace ExceedERP.Core.Domain.Finance.AP
 {
     public enum SettlemetSource
     {
+        NA,
         Prepayment,
-        Other
+        Payment,
+        DirectPayment,
     }
  
-    public class ApPaymentSettlement : Operations
+    public class ApPaymentSettlement : DepartmentOperations
     {
         public int ApPaymentSettlementId { get; set; }
         [Display(Name = "Supplier")]
@@ -27,11 +29,17 @@ namespace ExceedERP.Core.Domain.Finance.AP
         [Display(Name = "Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime PaymentDate { get; set; }       
-        
+        public DateTime PaymentDate { get; set; }
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
+        //for access or view
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
+
         public virtual ICollection<ApPaymentSettlementLine> ApPaymentSettlementLines { get; set; }
         public virtual ICollection<ApPaymentSettlementGrn> ApPaymentSettlementGrns { get; set; }
         public virtual ICollection<ApPaymentSettlementDistribution> ApPaymentSettlementDistributions { get; set; }
+        public virtual ICollection<ApPaymentSettlementDepartmentValidation> ApPaymentSettlementDepartmentValidations { get; set; }
         public virtual ICollection<ApPaymentSettlementValidation> ApPaymentSettlementValidations { get; set; }
     }
 
@@ -40,10 +48,10 @@ namespace ExceedERP.Core.Domain.Finance.AP
         public int ApPaymentSettlementLineId { get; set; }
         public int ApPaymentSettlementId { get; set; }
         public virtual ApPaymentSettlement ApPaymentSettlement { get; set; }
-        public SettlemetSource Source { get; set; }
+        public string Source { get; set; }
         
-        [Display(Name = "Source Id")]
-        public int SourceId { get; set; }
+        [Display(Name = "Source Ref.")]
+        public int ? SourceId { get; set; }
         public virtual ApDirectPayment ApDirectPayment { get; set; }
         [Required]
         [Display(Name = "Purpose of Payment")]
@@ -59,7 +67,7 @@ namespace ExceedERP.Core.Domain.Finance.AP
         public decimal TaxAmount { get; set; }
 
         [Display(Name = "Withholding Type")]
-        public string WithholdingType { get; set; }
+        public int? WithholdingType { get; set; }
         [Display(Name = "Withholding Amount")]
         public decimal WithholdingAmount { get; set; }
         [Display(Name = "Withhold Tax(VAT)")]

@@ -49,6 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 TaxAmount = purchaseOrderItem.TaxAmount,
                 SubTotal = purchaseOrderItem.SubTotal,
                 Total = purchaseOrderItem.Total,
+                Discount = purchaseOrderItem.Discount,
                 Remark = purchaseOrderItem.Remark,
                 FromPreviousPurchase = purchaseOrderItem.FromPreviousPurchase,
                 OrgBranchName = purchaseOrderItem.OrgBranchName,
@@ -91,6 +92,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     UoM = purchaseOrderItem.UoM,
                     ItemType = purchaseOrderItem.ItemType,
                     UnitPrice = purchaseOrderItem.UnitPrice,
+                    Discount = purchaseOrderItem.Discount,
                     GLTaxRateID = purchaseOrderItem.GLTaxRateID,
                     FromPreviousPurchase = purchaseOrderItem.FromPreviousPurchase,
                 };
@@ -98,8 +100,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 {
                     entity.TaxAmount = tax.CalculatedRate * purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice;
                     entity.SubTotal = purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice;
-                    entity.Total = (purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice) +
-                                   (tax.CalculatedRate * purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice);
+                    entity.Total = (purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice) 
+                                   +(tax.CalculatedRate * purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice)
+                                   - purchaseOrderItem.Discount; 
                 }
                 entity.Remark = purchaseOrderItem.Remark;
                 entity.OrgBranchName = purchaseOrderItem.OrgBranchName;
@@ -147,6 +150,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                         UoM = purchaseOrderItem.UoM,
                         ItemType = purchaseOrderItem.ItemType,
                         UnitPrice = purchaseOrderItem.UnitPrice,
+                        Discount = purchaseOrderItem.Discount,
                         GLTaxRateID = purchaseOrderItem.GLTaxRateID,
                         FromPreviousPurchase = purchaseOrderItem.FromPreviousPurchase,
                     };
@@ -155,8 +159,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 {
                     entity.TaxAmount = tax.CalculatedRate * purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice;
                     entity.SubTotal = purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice;
-                    entity.Total = (purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice) +
-                                   (tax.CalculatedRate * purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice);
+                    entity.Total = (purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice) 
+                                   + (tax.CalculatedRate * purchaseOrderItem.Quantity * purchaseOrderItem.UnitPrice)
+                                    -purchaseOrderItem.Discount;
                 }
                 entity.Remark = purchaseOrderItem.Remark;
                 entity.OrgBranchName = purchaseOrderItem.OrgBranchName;
@@ -198,6 +203,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     UoM = purchaseOrderItem.UoM,
                     ItemType = purchaseOrderItem.ItemType,
                     UnitPrice = purchaseOrderItem.UnitPrice,
+                    Discount = purchaseOrderItem.Discount,
                     GLTaxRateID = purchaseOrderItem.GLTaxRateID,
                     TaxAmount = purchaseOrderItem.TaxAmount,
                     SubTotal = purchaseOrderItem.SubTotal,

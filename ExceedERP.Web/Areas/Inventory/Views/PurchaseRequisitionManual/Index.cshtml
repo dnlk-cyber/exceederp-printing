@@ -15,10 +15,15 @@
           columns.Bound(c => c.RequestDate).Width(110);
           columns.Bound(c => c.ReferenceNo).Title("Reference").Width(130);
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
-          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(140).EditorTemplateName("EmployeeSelector");
           // columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Procurement Officer").Width(170).EditorTemplateName("EmployeeSelector");
+          if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+          {
+              columns.ForeignKey(c => c.ForBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+          }
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
           columns.Bound(c => c.ModelNo).Width(110);
           columns.Bound(c => c.PlateNo).Width(110);
           columns.Bound(c => c.Remark).Width(110);

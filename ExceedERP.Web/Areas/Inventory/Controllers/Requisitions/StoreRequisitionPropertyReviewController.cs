@@ -100,7 +100,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     ModelNo = storeRequisition.ModelNo,
                     PlateNo = storeRequisition.PlateNo,
 
-                    Status = storeRequisition.Status,
+                PrevRequestDate = storeRequisition.PrevRequestDate,
+                PrevKm = storeRequisition.PrevKm,
+                PrevLT = storeRequisition.PrevLT,
+                CurrentKm = storeRequisition.CurrentKm,
+                DifferenceKm = storeRequisition.DifferenceKm,
+                Consumption = storeRequisition.Consumption,
+                StandardConsumption = storeRequisition.StandardConsumption,
+
+                Status = storeRequisition.Status,
                     Remark = storeRequisition.Remark,
                     GLPeriodId = storeRequisition.GLPeriodId,
                     IsVoid = storeRequisition.IsVoid,

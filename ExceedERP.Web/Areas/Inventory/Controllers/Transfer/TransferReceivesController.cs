@@ -367,6 +367,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             var record = db.ItemTransferReceive.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.ItemTransferItemReceive.Count > 0)
             {
+                #region validate qty,price and tax
+
+                foreach (var item in record.ItemTransferItemReceive)
+                {
+                    if (item.ReceivedQuantity <= 0 || item.UPrice <= 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill quantity and unit price information for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;

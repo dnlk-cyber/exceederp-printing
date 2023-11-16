@@ -17,6 +17,7 @@ using Microsoft.Ajax.Utilities;
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
@@ -1098,7 +1099,81 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
-        public JsonResult GetPOandContractGrnsForSettlement(string id, string type)
+        public JsonResult GetPOandContractGrnsForSettlement(string id, string type,string text)
+        {
+            List<SelectorVm> list = new List<SelectorVm>();
+          
+            if (type == "0")
+            {
+                #region grn stock 
+
+                var stockReceives = db.GoodReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false).AsQueryable();
+                if (!string.IsNullOrEmpty(text))
+                    stockReceives = stockReceives.Where(x=>x.GoodReceiveId.ToString().Contains(text));
+
+                foreach (var goodReceive in stockReceives)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = PurchaseItemType.Stock + "_" + goodReceive.GoodReceiveId,
+                        Code = goodReceive.GoodReceiveId.ToString()
+                    };
+
+                    list.Add(record);
+                }
+
+                #endregion
+            }
+            else if (type == "2")
+            {
+                #region grn service 
+
+                var serviceReceives = db.ServiceReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false).AsQueryable();
+                if (!string.IsNullOrEmpty(text))
+                    serviceReceives = serviceReceives.Where(x => x.ServiceReceiveId.ToString().Contains(text));
+
+                foreach (var serviceReceive in serviceReceives)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = PurchaseItemType.Service + "_" + serviceReceive.ServiceReceiveId,
+                        Code = serviceReceive.ServiceReceiveId.ToString()
+                    };
+
+                    list.Add(record);
+                }
+
+                #endregion
+            }
+            else if (type == "1")
+            {
+                #region grn fixed asset 
+
+                var fixedAssetReceives = db.FixedAssetReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false).AsQueryable();
+                if (!string.IsNullOrEmpty(text))
+                    fixedAssetReceives = fixedAssetReceives.Where(x => x.FixedAssetReceiveId.ToString().Contains(text));
+
+                foreach (var fixedAssetReceive in fixedAssetReceives)
+                {
+                    var record = new SelectorVm
+                    {
+                        Name = PurchaseItemType.FixedAsset + "_" + fixedAssetReceive.FixedAssetReceiveId,
+                        Code = fixedAssetReceive.FixedAssetReceiveId.ToString()
+                    };
+
+                    list.Add(record);
+                }
+
+                #endregion
+            }
+            return Json(list.Select(c => new
+            {
+                Name = c.Name,
+                Code = c.Code
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetPOandContractGrnsForSettlement_1(string id, string type)
 
         {
             List<SelectorVm> list = new List<SelectorVm>();
@@ -1107,7 +1182,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             var settlement = db.ApPaymentSettlements.Find(did);
             var settlementLine = db.ApPaymentSettlementLines.Where(x => x.ApPaymentSettlementId == settlement.ApPaymentSettlementId).FirstOrDefault();
 
-            if (settlementLine!=null && settlementLine.Source == SettlemetSource.Prepayment)
+            if (settlementLine != null && settlementLine.Source == SettlemetSource.Prepayment.ToString())
             {
                 var prepayment = db.APPayments.Find(settlementLine.SourceId);
                 int purchasePayId = int.Parse(prepayment.PurchaseReference);
@@ -1260,7 +1335,6 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
-
         public JsonResult GetContractGrns(string id, string type)
 
         {
@@ -1344,6 +1418,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         public JsonResult GetPoContractData(string id,string type, string paymenttype)
         {
            
+            decimal totalAmount = 0;
             decimal amount = 0;
             string supplierId = "";
             string supplierName = "";
@@ -1360,33 +1435,67 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 }
 
                 if (paymentSchedule.Any())
-                {
-                    decimal sumAdvancePercent = 0;
-                    decimal sumPaymentPercent = 0;
-                    decimal sumCreditPercent = 0;
+                {                 
+                                     
                     var advances = paymentSchedule.Where(x => x.PaymentType == PaymentType.Advance).Where(x => x.PurchaseOrderID == did).ToList();
                     var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).Where(x => x.PurchaseOrderID == did).ToList();
                     var credits = paymentSchedule.Where(x => x.PaymentType == PaymentType.Credit).Where(x => x.PurchaseOrderID == did).ToList();
 
                     var items = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == did).ToList();
                     if (items.Any())
-                        amount = items.Sum(x => x.SubTotal);
+                        totalAmount = items.Sum(x => x.SubTotal);
 
                     if (advances.Any() && paymenttype == "0")
                     {
-                        sumAdvancePercent = advances.Sum(x => x.Percentage);
-                        amount = amount * (sumAdvancePercent / 100);
+                        decimal sumPercent = 0;
+                        decimal byAmount = 0;
+                        
+                        var listAmount = advances.Where(x => x.AmountType == AmountType.Amount);
+                        var listPercentage = advances.Where(x => x.AmountType == AmountType.Percent);
+
+                        if (listPercentage.Any())
+                            sumPercent = listPercentage.Sum(x => x.Percentage);
+
+                        if (listAmount.Any())
+                            byAmount = listAmount.Sum(x => x.Percentage);
+
+                        amount = (totalAmount * (sumPercent / 100)) + byAmount;
                     }
 
                     else if (payments.Any() && paymenttype == "1")
                     {
-                        sumPaymentPercent = payments.Sum(x => x.Percentage);
-                        amount = amount * (sumPaymentPercent / 100);
+                        decimal sumPercent = 0;
+                        decimal byAmount = 0;
+
+                        var listAmount = payments.Where(x => x.AmountType == AmountType.Amount);
+                        var listPercentage = payments.Where(x => x.AmountType == AmountType.Percent);
+
+                        if (listPercentage.Any())
+                            sumPercent = listPercentage.Sum(x => x.Percentage);
+
+                        if (listAmount.Any())
+                            byAmount = listAmount.Sum(x => x.Percentage);
+
+                        amount = (totalAmount * (sumPercent / 100)) + byAmount;
                     }
                     else if (credits.Any() && paymenttype == "2")
                     {
-                        sumCreditPercent = credits.Sum(x => x.Percentage);
-                        amount = amount * (sumCreditPercent / 100);
+
+                        //credit should come from GRN
+
+                        //decimal sumPercent = 0;
+                        //decimal byAmount = 0;
+
+                        //var listAmount = credits.Where(x => x.AmountType == AmountType.Amount);
+                        //var listPercentage = credits.Where(x => x.AmountType == AmountType.Percent);
+
+                        //if (listPercentage.Any())
+                        //    sumPercent = listPercentage.Sum(x => x.Percentage);
+
+                        //if (listAmount.Any())
+                        //    byAmount = listAmount.Sum(x => x.Percentage);
+
+                        //amount = (totalAmount * (sumPercent / 100)) + byAmount;
                     }
                     else
                         amount = 0;

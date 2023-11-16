@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using DocumentFormat.OpenXml.Spreadsheet;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
@@ -78,6 +79,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 }
             }
 
+            #endregion
+            #region validate qty,price and tax
+
+            foreach (var item in itemTransfer.ItemTransferItem)
+            {
+                if (item.ShippedQuantity <= 0 || item.UPrice <= 0)
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "Please fill quantity and unit price information for all items.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+            }
             #endregion
 
             if (ModelState.IsValid)

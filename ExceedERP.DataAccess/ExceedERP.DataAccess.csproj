@@ -350,6 +350,10 @@
     <Compile Include="Migrations\202310101502512_inventofixedprocfin.Designer.cs">
       <DependentUpon>202310101502512_inventofixedprocfin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202311160606249_upgradeprocinfinance.cs" />
+    <Compile Include="Migrations\202311160606249_upgradeprocinfinance.Designer.cs">
+      <DependentUpon>202311160606249_upgradeprocinfinance.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -569,6 +573,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202310101502512_inventofixedprocfin.resx">
       <DependentUpon>202310101502512_inventofixedprocfin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202311160606249_upgradeprocinfinance.resx">
+      <DependentUpon>202311160606249_upgradeprocinfinance.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

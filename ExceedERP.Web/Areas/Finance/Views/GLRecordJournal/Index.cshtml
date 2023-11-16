@@ -2,126 +2,126 @@
 @using System.Collections
 <legend>Journal</legend>
 @(Html.Kendo().Grid<GlRecordJournal>()
-          .Name("grid")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.GlRecordJournalId).Title("ID").Width(100).ClientTemplate("#=appendZeros(GlRecordJournalId)#");
-              columns.Bound(c => c.JournalName).Width(150);
-              columns.Bound(c => c.Description).Width(150);
-              columns.Bound(c => c.PeriodName).Width(130).EditorTemplateName("OpenGlPeriodSelector");
-              columns.Bound(c => c.CategoryName).Width(130).EditorTemplateName("GLCategory");
-              columns.Bound(c => c.JournalNumber).Title("Reference").Width(120);
-              columns.Bound(c => c.EffectiveDate).Title("Date").Width(130);
-              columns.Bound(c => c.IsVoidDoc).Width(100).Title("Is Void Doc").ClientTemplate(
-                  "<input type='checkbox' disabled = 'false' value='#= IsVoidDoc #' " +
-                  "# if (IsVoidDoc) { #" +
-                  "checked='checked'" +
-                  "# } #" +
-                  "/>"
-                  );
-              columns.Bound(c => c.DebitSum).Width(100).Format("{0:n}");
-              columns.Bound(c => c.CreatedBy).Width(120);
-              columns.Bound(c => c.PaymentReference).Width(100).Title("Pay. Ref.");
-              columns.Bound(c => c.InvoiceReferenceDoc).Width(100).Title("Invoice Ref");
-              columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Width(100).Title("Branch");
-              columns.Bound(c => c.Remark).Width(100);
-              columns.Bound(c => c.Status).Width(100);
+		  .Name("grid")
+		  .Columns(columns =>
+		  {
+			  columns.Bound(c => c.GlRecordJournalId).Title("ID").Width(100).ClientTemplate("#=appendZeros(GlRecordJournalId)#");
+			  columns.Bound(c => c.JournalName).Width(150);
+			  columns.Bound(c => c.Description).Width(150);
+			  columns.Bound(c => c.PeriodName).Width(130).EditorTemplateName("OpenGlPeriodSelector");
+			  columns.Bound(c => c.CategoryName).Width(130).EditorTemplateName("GLCategory");
+			  columns.Bound(c => c.JournalNumber).Title("Reference").Width(120);
+			  columns.Bound(c => c.EffectiveDate).Title("Date").Width(130);
+			  columns.Bound(c => c.IsVoidDoc).Width(100).Title("Is Void Doc").ClientTemplate(
+				  "<input type='checkbox' disabled = 'false' value='#= IsVoidDoc #' " +
+				  "# if (IsVoidDoc) { #" +
+				  "checked='checked'" +
+				  "# } #" +
+				  "/>"
+				  );
+			  columns.Bound(c => c.DebitSum).Width(100).Format("{0:n}");
+			  columns.Bound(c => c.CreatedBy).Width(120);
+			  columns.Bound(c => c.PaymentReference).Width(100).Title("Pay. Ref.");
+			  columns.Bound(c => c.InvoiceReferenceDoc).Width(100).Title("Invoice Ref");
+			  columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Width(100).Title("Branch");
+			  columns.Bound(c => c.Remark).Width(100);
+			  columns.Bound(c => c.Status).Width(100);
 
 
 
-              columns.Command(command =>
-              {
+			  columns.Command(command =>
+			  {
 
-                  command.Edit();
-                  command.Destroy();
-                  //command.Custom("Send").Click("SendforApproval");
-                  //command.Custom("Reverse").Click("Reverse");
-                  //command.Custom("Post").Click("PostrJournal");
-              }).Width(180);
-          })
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create();
-              toolbar.Excel();
-              // toolbar.Pdf();
-          })
+				  command.Edit();
+				  command.Destroy();
+				  //command.Custom("Send").Click("SendforApproval");
+				  //command.Custom("Reverse").Click("Reverse");
+				  //command.Custom("Post").Click("PostrJournal");
+			  }).Width(180);
+		  })
+		  .ToolBar(toolbar =>
+		  {
+			  toolbar.Create();
+			  //toolbar.Excel();
+			  // toolbar.Pdf();
+		  })
 
-          .Editable(editable => editable.Mode(GridEditMode.InLine))
-       .HtmlAttributes(new { style = "height: 550px;" })
-            .Pageable(pageable => pageable
-                        .Input(true)
-                        .Numeric(false)
-                        .Refresh(true)
-                        .PageSizes(true)
-                        .ButtonCount(20))
-            .Scrollable()
-                 .Selectable(selectable =>
-                 {
-                     selectable.Mode(GridSelectionMode.Single);
-                     selectable.Type(GridSelectionType.Row);
-                 })
-                            .Sortable(sortable =>
-                            {
-                                sortable.SortMode(GridSortMode.SingleColumn);
-                            })
-            .Filterable()
-            .ColumnMenu()
+		  .Editable(editable => editable.Mode(GridEditMode.InLine))
+	   .HtmlAttributes(new { style = "height: 550px;" })
+			.Pageable(pageable => pageable
+						.Input(true)
+						.Numeric(false)
+						.Refresh(true)
+						.PageSizes(true)
+						.ButtonCount(20))
+			.Scrollable()
+				 .Selectable(selectable =>
+				 {
+					 selectable.Mode(GridSelectionMode.Single);
+					 selectable.Type(GridSelectionType.Row);
+				 })
+							.Sortable(sortable =>
+							{
+								sortable.SortMode(GridSortMode.SingleColumn);
+							})
+			.Filterable()
+		   //.ColumnMenu()
 
-           .Events(ev => ev.DetailExpand("detailExpand"))
-           .Scrollable(h => h.Height(500))
-           .Events(x => x.DataBound("onDataBoundMaster"))
-            .ClientDetailTemplateId("templates")
-          .DataSource(dataSource => dataSource
-              .Ajax()
-                  .Sort(sort => sort.Add("GlRecordJournalId").Descending())
-              .Events(ev => ev
-                  .Error("error_handler(\"grid\")")
-                  .RequestStart("onRequestStart(\"grid\")")
-                  .RequestEnd("onRequestEnd(\"grid\")"))
-              .PageSize(20)
-            .Model(
-                model =>
-                {
-                    model.Id(p => p.GlRecordJournalId);
-                    model.Field(p => p.GlRecordJournalId).Editable(false);
-                    model.Field(p => p.VoidTime).Editable(false);
-                    model.Field(p => p.VoidBy).Editable(false);
-                    model.Field(p => p.isVoid).Editable(false);
-                    model.Field(p => p.OnlineApprovedTime).Editable(false);
-                    model.Field(p => p.OnlineApprovedBy).Editable(false);
-                    model.Field(p => p.IsOnlineApproved).Editable(false);
-                    model.Field(p => p.Status).Editable(false);
-                    model.Field(p => p.IsSendForApproval).Editable(false);
-                    model.Field(p => p.isPosted).Editable(false);
-                    model.Field(p => p.IsUnPosted).Editable(false);
-                    model.Field(p => p.isReversed).Editable(false);
-                    model.Field(p => p.Posting).Editable(false);
-                    model.Field(p => p.IsNonFuncCurrency).Editable(false);
+		   .Events(ev => ev.DetailExpand("detailExpand"))
+		   .Scrollable(h => h.Height(500))
+		   .Events(x => x.DataBound("onDataBoundMaster"))
+			.ClientDetailTemplateId("templates")
+		  .DataSource(dataSource => dataSource
+			  .Ajax()
+				  .Sort(sort => sort.Add("GlRecordJournalId").Descending())
+			  .Events(ev => ev
+				  .Error("error_handler(\"grid\")")
+				  .RequestStart("onRequestStart(\"grid\")")
+				  .RequestEnd("onRequestEnd(\"grid\")"))
+			  .PageSize(20)
+			.Model(
+				model =>
+				{
+					model.Id(p => p.GlRecordJournalId);
+					model.Field(p => p.GlRecordJournalId).Editable(false);
+					model.Field(p => p.VoidTime).Editable(false);
+					model.Field(p => p.VoidBy).Editable(false);
+					model.Field(p => p.isVoid).Editable(false);
+					model.Field(p => p.OnlineApprovedTime).Editable(false);
+					model.Field(p => p.OnlineApprovedBy).Editable(false);
+					model.Field(p => p.IsOnlineApproved).Editable(false);
+					model.Field(p => p.Status).Editable(false);
+					model.Field(p => p.IsSendForApproval).Editable(false);
+					model.Field(p => p.isPosted).Editable(false);
+					model.Field(p => p.IsUnPosted).Editable(false);
+					model.Field(p => p.isReversed).Editable(false);
+					model.Field(p => p.Posting).Editable(false);
+					model.Field(p => p.IsNonFuncCurrency).Editable(false);
 
-                    model.Field(p => p.SourcesName).Editable(false);
-                    model.Field(p => p.FiscalYear).Editable(false);
-                    model.Field(p => p.DebitSum).Editable(false);
+					model.Field(p => p.SourcesName).Editable(false);
+					model.Field(p => p.FiscalYear).Editable(false);
+					model.Field(p => p.DebitSum).Editable(false);
 
-                    model.Field(p => p.InvoiceReferenceDoc).Editable(false);
-                    model.Field(p => p.ReferenceDoc).Editable(false);
-                    model.Field(p => p.PaymentReference).Editable(false);
+					model.Field(p => p.InvoiceReferenceDoc).Editable(false);
+					model.Field(p => p.ReferenceDoc).Editable(false);
+					model.Field(p => p.PaymentReference).Editable(false);
 
-                    model.Field(p => p.BranchId).Editable(false);
-                    model.Field(p => p.BusinessUnitId).Editable(false);
-                    model.Field(p => p.OrgBranchName).Editable(false);
-                    model.Field(p => p.CreatedBy).Editable(false);
-                    model.Field(p => p.ModifiedBy).Editable(false);
-                    model.Field(p => p.LastModified).Editable(false);
-                    model.Field(p => p.DateCreated).Editable(false);
+					model.Field(p => p.BranchId).Editable(false);
+					model.Field(p => p.BusinessUnitId).Editable(false);
+					model.Field(p => p.OrgBranchName).Editable(false);
+					model.Field(p => p.CreatedBy).Editable(false);
+					model.Field(p => p.ModifiedBy).Editable(false);
+					model.Field(p => p.LastModified).Editable(false);
+					model.Field(p => p.DateCreated).Editable(false);
 
 
-                })
+				})
 
-              .Read(read => read.Action("GLRecordJournals_Read", "GLRecordJournal"))
-              .Create(create => create.Action("GLRecordJournals_Create", "GLRecordJournal"))
-              .Update(update => update.Action("GLRecordJournals_Update", "GLRecordJournal"))
-              .Destroy(destroy => destroy.Action("GLRecordJournals_Destroy", "GLRecordJournal"))
-          )
+			  .Read(read => read.Action("GLRecordJournals_Read", "GLRecordJournal"))
+			  .Create(create => create.Action("GLRecordJournals_Create", "GLRecordJournal"))
+			  .Update(update => update.Action("GLRecordJournals_Update", "GLRecordJournal"))
+			  .Destroy(destroy => destroy.Action("GLRecordJournals_Destroy", "GLRecordJournal"))
+		  )
 
 )
 

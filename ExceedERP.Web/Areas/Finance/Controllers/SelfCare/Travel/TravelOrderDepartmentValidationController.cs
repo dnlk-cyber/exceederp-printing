@@ -66,7 +66,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (!lines.Any())
                 ModelState.AddModelError("lines", "Please add line items");
 
-            if (record != null && record.IsOnlineApproved)
+            if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
 
             if (record != null && record.ForwardedTo != User.Identity.Name)
@@ -97,9 +97,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             NotifModels notif = new NotifModels
                             {
                                 UserId = record.ForwardedFrom,
-                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ApPaymentRequestSelfCare, record.ApTravelOrderId),
+                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ApTravelOrderSelfCare, record.ApTravelOrderId),
                                 Message =
-                                    $"Payment request document {record.ApTravelOrderId} is approved by User: {record.ForwardedTo} at {DateTime.Now}"
+                                    $"Travel payment document {record.ApTravelOrderId} is approved by User: {record.ForwardedTo} at {DateTime.Now}"
                             };
 
                             Notify.NotifyUser(notif);
@@ -123,7 +123,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                                 UserId = record.ForwardedFrom,
                                 URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ApTravelOrderSelfCare, record.ApTravelOrderId),
                                 Message =
-                                    $"Payment request document {record.ApTravelOrderId} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
+                                    $"Travel payment document {record.ApTravelOrderId} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
                             };
 
                             Notify.NotifyUser(notif);
@@ -165,7 +165,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     _db.SaveChanges();
                     ApTravelOrderDepartmentValidation.ApTravelOrderDepartmentValidationId = entity.ApTravelOrderDepartmentValidationId;
                     #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Self care payment request department approval", "Success", User.Identity.Name, $"approved request {entity.ApTravelOrderId} ", Modules.Finance);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Travel payment request department approval", "Success", User.Identity.Name, $"approved request {entity.ApTravelOrderId} ", Modules.Finance);
                     #endregion
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Finance.ViewModel.Print;
 using ExceedERP.Reporting.SharedDataSources;
@@ -25,8 +26,17 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
             if (payment != null)
             {
                 headerDs.VoucherId = payment.ApPaymentId.ToString();
-                var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == payment.SupplierId);
-                if (supplier != null) headerDs.SupplierName = supplier.Name;
+                if (!string.IsNullOrEmpty(payment.SupplierId))
+                {
+                    var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == payment.SupplierId);
+                    if (supplier != null && !string.IsNullOrEmpty(supplier.Name))
+                        headerDs.SupplierName = supplier.Name;
+                }
+                else
+                {
+                    headerDs.SupplierName = payment.SupplierName;
+                }
+
                 headerDs.SupplierId = payment.SupplierId;
                 headerDs.IsPrepayment = payment.IsPrepayment;
                 headerDs.InvoiceNumber = payment.InvoiceNumber;

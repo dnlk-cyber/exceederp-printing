@@ -10,8 +10,8 @@
           .Columns(columns =>
           {
               columns.Bound(c => c.Code).Width(120);
-              columns.Bound(c => c.Name).Width(200);
-              columns.Bound(c => c.AmharicName).Width(200);
+              columns.Bound(c => c.Name).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.AmharicName).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.BranchTypes).EditorTemplateName("Enum").Width(150);
               columns.Bound(c => c.Abbreviation).Width(150);
               columns.ForeignKey(c => c.ParentBranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("PayrollListOfEmployee").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));

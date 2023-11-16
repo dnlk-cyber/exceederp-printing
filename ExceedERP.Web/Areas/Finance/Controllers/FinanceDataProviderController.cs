@@ -26,21 +26,39 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         private readonly ExceedDbContext _db = new ExceedDbContext();
         AccountHelper _accountHelper = new AccountHelper();
 
-        public JsonResult GetDirectPaymentForSettlement()
+        //public JsonResult GetDirectPaymentForSettlement()
+        //{
+        //    var invoices = _db.ApDirectPayments
+        //        .Where(i => i.IsOnlineApproved)
+        //        .Where(i => i.IsVoid==false)
+        //        .AsQueryable();
+        //    return Json(invoices.Select(i => new
+        //    {
+        //        Name = i.ApDirectPaymentId+"_"+i.SupplierName + "_" +i.PaymentReference,
+        //        Code = i.ApDirectPaymentId
+
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
+
+        public JsonResult GetSettlementSources()
         {
-            var invoices = _db.ApDirectPayments
-                .Where(i => i.IsOnlineApproved)
-                .Where(i => i.IsVoid==false)
-                .AsQueryable();
-            return Json(invoices.Select(i => new
+            List<SettlemetSource> list = new List<SettlemetSource>
             {
-                Name = i.ApDirectPaymentId+"_"+i.SupplierName + "_" +i.PaymentReference,
-                Code = i.ApDirectPaymentId
+                SettlemetSource.NA,
+                SettlemetSource.Prepayment, 
+                SettlemetSource.Payment,
+                SettlemetSource.DirectPayment
+            };
+
+            return Json(list.Select(i => new
+            {
+                Name = i.ToString(),
+                Code = i.ToString() 
 
             }), JsonRequestBehavior.AllowGet);
         }
-
-        public JsonResult GetPrepaymentForSettlements(string id, string type)
+        //all payments
+        public JsonResult GetPaymentForSettlements(string id, string type)
 
         {
             List<SelectorVm> list = new List<SelectorVm>();
@@ -49,7 +67,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             var settlement = _db.ApPaymentSettlements.Find(did);
             if (settlement != null)
             {
-                if (type == "0")
+                if (type == SettlemetSource.Prepayment.ToString())
                 {
                     #region prepayment
 
@@ -67,7 +85,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                         var record = new SelectorVm
                         {
                             Name = "Prepayment" + "_" + p.ApPaymentId,
-                            Code =  p.ApPaymentId.ToString()
+                            Code =  p.ApPaymentId.ToString(),
                         };
 
                         list.Add(record);
@@ -75,10 +93,58 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                     #endregion
                 }
-                else
+                else if (type == SettlemetSource.Payment.ToString())
                 {
+                    #region payment
 
+                    var unsettledPayments = _db.APPayments.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                                                           .Where(x => x.IsPrepayment==false);//add settled false
+
+                    if (settlement.CollectedByPurchaser)
+                        unsettledPayments = unsettledPayments.Where(x => x.EmployeeId == settlement.EmployeeId);
+
+                    if (!settlement.CollectedByPurchaser)
+                        unsettledPayments = unsettledPayments.Where(x => x.SupplierId == settlement.SupplierId);
+
+                    foreach (var p in unsettledPayments)
+                    {
+                        var record = new SelectorVm
+                        {
+                            Name = "Payment" + "_" + p.ApPaymentId,
+                            Code = p.ApPaymentId.ToString() ,
+                        };
+
+                        list.Add(record);
+                    }
+
+                    #endregion
                 }
+                else if (type == SettlemetSource.DirectPayment.ToString())
+                {
+                    #region direct payment
+
+                    var unsettledPayments = _db.ApDirectPayments.Where(x => x.IsOnlineApproved && x.IsVoid == false);//add settled false
+
+                    if (settlement.CollectedByPurchaser)
+                        unsettledPayments = unsettledPayments.Where(x => x.Purchaser == settlement.EmployeeId);
+
+                    if (!settlement.CollectedByPurchaser)
+                        unsettledPayments = unsettledPayments.Where(x => x.SupplierId == settlement.SupplierId);
+
+                    foreach (var p in unsettledPayments)
+                    {
+                        var record = new SelectorVm
+                        {
+                            Name = "Direct Payment" + "_" + p.ApDirectPaymentId,
+                            Code = p.ApDirectPaymentId.ToString()
+                        };
+
+                        list.Add(record);
+                    }
+
+                    #endregion
+                }
+
             }
 
 
@@ -559,6 +625,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             var payments = _db.PaymentRequests
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
 
+            if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
+            {
+                payments = payments.Where(x => x.IsAuthorized);
+            }
+
             foreach (var c in payments)
             {
                 var record = new SelectorVm
@@ -616,6 +687,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 };
                 list.Add(record);
             }
+
+            #endregion
+            #region sales refund
+
+            //var refund = _db.SalesReturn
+            //    .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
+            //foreach (var c in refund)
+            //{
+            //    string name = _db.OrganizationCustomers.Where(x=>x.OrganizationCustomerID==c.CustomerId).FirstOrDefault()?.TradeName;
+            //    var record = new SelectorVm
+            //    {
+            //        Code = "SALES-RETURN_" + c.SalesReturnId.ToString(),
+            //        Name = "SALES-RETURN_" + name + "_" + c.Reason + "_" + c.SalesReturnId
+            //    };
+            //    list.Add(record);
+            //}
 
             #endregion
 
@@ -1779,8 +1866,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             {
                 var paymentRequests = _db.PurchasePayments
                                         .Where(x => x.IsFinanceApproved && x.IsVoid == false)
-                                        .Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
-                                        .Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
+                                         .Where(x => x.Paid == false && x.PaymentType != PaymentType.Credit)
+                                        //.Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
+                                        //.Where(x => x.Paid == false && x.PaymentType == PaymentType.Payment)
+                                        //.Where(x => x.PurchasePaymentType == PurchasePaymentType.Cash)
                                         .Select(x => new
                                         {
                                             x.PurchasePaymentId,

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,6 +26,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public virtual ICollection<StoreRequisitionPropertyValidation> StoreRequisitionPropertyValidation { get; set; }
         [JsonIgnore]
         public virtual ICollection<StoreRequisitionAttachment> StoreRequisitionAttachments { get; set; }
+        
     }
 
     public class StoreRequisitionItem : StoreRequisitionItemBase

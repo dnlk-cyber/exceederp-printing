@@ -54,12 +54,37 @@ namespace ExceedERP.Core.Domain.Inventory
         public bool IsForMaintenance { get; set; }
         [Display(Name = "Job Order No.")]
         public string JobOrderNo { get; set; }
+        [Display(Name = "Service Job Order No.")]
+        public string ServiceJobOrderNo { get; set; }
         [Display(Name = "Plate No")]
         public string PlateNo { get; set; }
         [Display(Name = "External ?")]
         public bool IsExternalDriver { get; set; }
         [Display(Name = "External Driver")]
         public string ExternalDriver { get; set; }
+        //for controll
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Prev. Request Date")]
+        public DateTime? PrevRequestDate { get; set; }
+        [Display(Name = "Prev. KM")]
+        public decimal PrevKm { get; set; }
+        [Display(Name = "Prev. LT")]
+        public decimal PrevLT { get; set; } //litre
+        [Display(Name = "Current KM")]
+        public decimal CurrentKm { get; set; }
+        [Display(Name = "Diff. KM")]
+        public decimal DifferenceKm { get; set; }
+        [Display(Name = "Consumption  KM/LT")]
+        public decimal Consumption { get; set; }
+        [Display(Name = "Standard Consumption  KM/LT")]
+        public decimal StandardConsumption { get; set; }
+        [Display(Name = "External")]
+        public bool External { get; set; }
+        [Display(Name = "Requester Name")]
+        public string ExternalRequesterName { get; set; }
+        public Guid? VehicleDistributionID { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
 
 
     }

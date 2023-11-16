@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
+using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
@@ -231,12 +232,62 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PurchaseOrderItem> PoItems(int id)
+        public List<POItemVM> PoItems(int id)
         {
-            List<PurchaseOrderItem> orderItems = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
-            foreach (var item in orderItems)
+            List<POItemVM> orderItems = new List<POItemVM>();
+            var items= _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
+
+            foreach (var item in items)
             {
-                item.ItemName = item.ItemName + "-" + item.Name;
+                var record = new POItemVM
+                {
+                    ItmCode = item.ItmCode,
+                    PartNo=item.PartNo,
+                    ItemName = item.ItemName + "-" + item.Name,
+                    Quantity =item.Quantity,
+                    UnitPrice=item.UnitPrice,
+                    TaxAmount=item.TaxAmount,
+                    Discount=item.Discount,
+                    SubTotal=item.SubTotal,
+                    Total=item.Total,
+                    Remark=item.Remark                    
+                
+                 };
+                orderItems.Add(record);
+            }
+
+            var additionalCharges = _db.PoAdditionalCharges.Where(x => x.PurchaseOrderID == id).ToList();
+            foreach(var a in additionalCharges)
+            {
+                decimal amount = 0;
+                decimal taxamount = 0;
+                var tax = _db.GLTaxRates.Find(a.GLTaxRateID);
+                if (tax != null)
+                {
+                    if(a.AmountType==AmountType.Percent)
+                    {
+                        amount = (a.Amount/100)* items.Sum(x => x.SubTotal);
+                    }
+                    else
+                    {
+                        amount = a.Amount;
+                    } 
+                   
+                    taxamount = tax.CalculatedRate * amount;
+                }
+
+                var record = new POItemVM
+                {
+                    ItmCode = a.Remark,
+                    UnitPrice = amount,
+                    Quantity=1,
+                    TaxAmount = taxamount,
+                    SubTotal = amount,
+                    Total=amount+taxamount,
+
+                };
+                orderItems.Add(record);
+
             }
             return orderItems;
         }

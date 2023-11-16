@@ -1,0 +1,16 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+     .ValuePrimitive(true)
+                  .CascadeFrom("Source")
+                  .OptionLabel("Select Payment...")
+                      .DataTextField("Name")
+                      .DataValueField("Code")
+                      .Filter("contains")
+
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPaymentForSettlements", "FinanceDataProvider", new { area = "Finance" }).Data("getParameters"))
+                       .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

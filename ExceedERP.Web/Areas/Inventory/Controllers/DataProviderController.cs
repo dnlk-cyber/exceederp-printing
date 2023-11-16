@@ -248,7 +248,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         {
             int did = int.Parse(id);
             var store = db.InventoryStores
-                //.Where(x => x.Enable) //they shall ask SR but no other transaction
+                .Where(x => x.Enable) //they shall ask SR but no other transaction
                 .Where(x => x.BranchId == did).AsQueryable();
 
             if (!string.IsNullOrEmpty(text))
@@ -659,7 +659,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         {
             var fuelCategoryCodes = new HashSet<string>( db.FuelItemSettings.Select(x => x.ItemCategoryCode));
             var itemCategory = db.ItemCategorys
-                .Where(x => x.HaveParent == false && fuelCategoryCodes.Contains(x.ItemCategoryCode) == false)
+                .Where(x => fuelCategoryCodes.Contains(x.ItemCategoryCode) == false)
                 .ToList();
             return Json(itemCategory.Select(p => new
             {
@@ -1694,17 +1694,39 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                         }), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetEmployees()
+        public JsonResult GetEmployees(string text)
         {
-            var employee = db.Person_Employee;
+            List<SelectorVm> list = new List<SelectorVm>();
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+               
+                var employees = db.Person_Employee
+                   .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                       x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                         x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                           x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+                   ).Select(p => new SelectorVm
+                   {
+                       Code = p.EmployeeId.ToString(),
+                       Name = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+                   }).ToList();
+
+                list = employees;
+            }
+
             return
-                Json(
-                    employee.Select(
-                        i => new
-                        {
-                            Name = i.EmployeeCode + " -" + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                            Code = i.EmployeeId
-                        }), JsonRequestBehavior.AllowGet);
+          Json(
+          list.Select(
+              i => new
+              {
+                  Name = i.Name,
+                  Code = i.Code
+              }), JsonRequestBehavior.AllowGet);
+
+
         }
 
         public JsonResult GetSelfEmployee()

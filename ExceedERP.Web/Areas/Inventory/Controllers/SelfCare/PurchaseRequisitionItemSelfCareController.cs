@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -13,18 +14,18 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
 {
-   
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PurchaseRequisitionItemSelfCareController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(InventoryConstants.UserDepartment, InventoryConstants.PropertyApprover,  InventoryConstants.PropertyRequistion)]
+       
         public ActionResult Index()
         {
             return View();
         }
  
-        [AuthorizeRoles(InventoryConstants.UserDepartment, InventoryConstants.PropertyApprover,  InventoryConstants.PropertyRequistion)]
+        
         public ActionResult PurchaseRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<PurchaseRequisitionItem> purchaserequisitionItems = db.PurchaseRequisitionItems.Where(pri => pri.PurchaseRequisitionID == id);
@@ -51,7 +52,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
             return Json(result);
         }
  
-        [AuthorizeRoles(InventoryConstants.UserDepartment, InventoryConstants.PropertyRequistion)]
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem , int id )
@@ -112,7 +113,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
         }
 
  
-        [AuthorizeRoles(InventoryConstants.UserDepartment,InventoryConstants.PropertyRequistion)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {

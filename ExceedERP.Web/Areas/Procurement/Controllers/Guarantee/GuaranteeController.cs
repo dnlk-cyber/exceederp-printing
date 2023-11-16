@@ -29,8 +29,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
         [AuthorizeRoles(ProcurementRoles.ProcurementAdvanceBondUser, ProcurementRoles.ProcurementAdvanceBondApprover)]
         public ActionResult Guarantees_Read([DataSourceRequest]DataSourceRequest request, bool isExpired, bool isSent)
         {
-            
-            IQueryable<Core.Domain.Procurement.Guarantee.Guarantee> guarantees = db.Guarantees.Where(x => x.GuaranteeType != GuaranteeTypes.AdvancePayment);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Core.Domain.Procurement.Guarantee.Guarantee> guarantees = db.Guarantees.Where(x => x.GuaranteeType != GuaranteeTypes.AdvancePayment).Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                guarantees = guarantees.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+        
             if (isExpired)
             {
                 List<int> expiredList = GuaranteeHelper.GetExpiredList();

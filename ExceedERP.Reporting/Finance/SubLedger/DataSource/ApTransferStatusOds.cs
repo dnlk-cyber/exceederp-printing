@@ -75,10 +75,10 @@ namespace ExceedERP.Reporting.Finance.SubLedger.DataSource
                 .Select(x => new { x.SupplierId, x.PaymentDate, x.ApMiscellaneousPaymentDistribution, x.ApMiscellaneousPaymentId,x.IsOnlineTransferred }).AsQueryable();
             var pettyCash= _db.ApPettyCash.Where(x => x.IsOnlineApproved && x.IsVoid == false)
                 .Select(x => new { x.ApPettyCashId,x.Date,x.PettyCashDistributions, x.IsOnlineTransferred }).AsQueryable();
-            var travelOrders = _db.ApTravelOrders.Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Select(x => new { x.ApTravelOrderId,x.ApTravelOrderDistributions,x.RequestDate, x.IsOnlineTransferred }).AsQueryable();
-            var expenseClaims = _db.ApTravelExpenseClaims.Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Select(x => new { x.Distributions, x.ApTravelExpenseClaimId, x.ClaimDate, x.IsOnlineTransferred }).AsQueryable();
+            //var travelOrders = _db.ApTravelOrders.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+            //    .Select(x => new { x.ApTravelOrderId,x.ApTravelOrderDistributions,x.RequestDate, x.IsOnlineTransferred }).AsQueryable();
+            //var expenseClaims = _db.ApTravelExpenseClaims.Where(x => x.IsOnlineApproved && x.IsVoid == false)
+            //    .Select(x => new { x.Distributions, x.ApTravelExpenseClaimId, x.ClaimDate, x.IsOnlineTransferred }).AsQueryable();
 
             if (!String.IsNullOrEmpty(dateFrom) && !String.IsNullOrEmpty(dateTo))
             {
@@ -306,37 +306,37 @@ namespace ExceedERP.Reporting.Finance.SubLedger.DataSource
                 {
                     #region Travel Order
 
-                    if (!String.IsNullOrEmpty(status))
-                    {
-                        if (status == "Transferred to GL")
-                        {
-                            travelOrders = travelOrders.Where(x => x.IsOnlineTransferred);
-                        }
-                        else if (status == "Not Transferred to GL")
-                        {
-                            travelOrders = travelOrders.Where(x => x.IsOnlineTransferred == false);
-                        }
-                    }
+                    //if (!String.IsNullOrEmpty(status))
+                    //{
+                    //    if (status == "Transferred to GL")
+                    //    {
+                    //        travelOrders = travelOrders.Where(x => x.IsOnlineTransferred);
+                    //    }
+                    //    else if (status == "Not Transferred to GL")
+                    //    {
+                    //        travelOrders = travelOrders.Where(x => x.IsOnlineTransferred == false);
+                    //    }
+                    //}
 
-                    var records = travelOrders.ToList();
-                    foreach (var record in records)
-                    {
-                        foreach (var distribution in record.ApTravelOrderDistributions)
-                        {
-                            var line = new ApGlTransferViewModel
-                            {
-                                TransactionNumber = record.ApTravelOrderId.ToString(),
-                                TransactionDate = record.RequestDate,
-                                AccountCode = distribution.AccountCode,
-                                Debit = distribution.Debit,
-                                Credit = distribution.Credit,
-                                Reference = distribution.TravelOrder.Reference
-                            };
-                            lines.Add(line);
+                    //var records = travelOrders.ToList();
+                    //foreach (var record in records)
+                    //{
+                    //    foreach (var distribution in record.ApTravelOrderDistributions)
+                    //    {
+                    //        var line = new ApGlTransferViewModel
+                    //        {
+                    //            TransactionNumber = record.ApTravelOrderId.ToString(),
+                    //            TransactionDate = record.RequestDate,
+                    //            AccountCode = distribution.AccountCode,
+                    //            Debit = distribution.Debit,
+                    //            Credit = distribution.Credit,
+                    //            Reference = distribution.TravelOrder.Reference
+                    //        };
+                    //        lines.Add(line);
 
-                        }
+                    //    }
 
-                    }
+                    //}
 
                     #endregion
                 }
@@ -344,37 +344,37 @@ namespace ExceedERP.Reporting.Finance.SubLedger.DataSource
                 {
                     #region Expense Claim
 
-                    if (!String.IsNullOrEmpty(status))
-                    {
-                        if (status == "Transferred to GL")
-                        {
-                            expenseClaims = expenseClaims.Where(x => x.IsOnlineTransferred);
-                        }
-                        else if (status == "Not Transferred to GL")
-                        {
-                            expenseClaims = expenseClaims.Where(x => x.IsOnlineTransferred == false);
-                        }
-                    }
+                    //if (!String.IsNullOrEmpty(status))
+                    //{
+                    //    if (status == "Transferred to GL")
+                    //    {
+                    //        expenseClaims = expenseClaims.Where(x => x.IsOnlineTransferred);
+                    //    }
+                    //    else if (status == "Not Transferred to GL")
+                    //    {
+                    //        expenseClaims = expenseClaims.Where(x => x.IsOnlineTransferred == false);
+                    //    }
+                    //}
 
-                    var records = expenseClaims.ToList();
-                    foreach (var record in records)
-                    {
-                        foreach (var distribution in record.Distributions)
-                        {
-                            var line = new ApGlTransferViewModel
-                            {
-                                TransactionNumber = record.ApTravelExpenseClaimId.ToString(),
-                                TransactionDate = record.ClaimDate,
-                                AccountCode = distribution.AccountCode,
-                                Debit = distribution.Debit,
-                                Credit = distribution.Credit,
-                                Reference = distribution.ApTravelExpenseClaim.Reference
-                            };
-                            lines.Add(line);
+                    //var records = expenseClaims.ToList();
+                    //foreach (var record in records)
+                    //{
+                    //    foreach (var distribution in record.Distributions)
+                    //    {
+                    //        var line = new ApGlTransferViewModel
+                    //        {
+                    //            TransactionNumber = record.ApTravelExpenseClaimId.ToString(),
+                    //            TransactionDate = record.ClaimDate,
+                    //            AccountCode = distribution.AccountCode,
+                    //            Debit = distribution.Debit,
+                    //            Credit = distribution.Credit,
+                    //            Reference = distribution.ApTravelExpenseClaim.Reference
+                    //        };
+                    //        lines.Add(line);
 
-                        }
+                    //    }
 
-                    }
+                    //}
 
                     #endregion
                 }

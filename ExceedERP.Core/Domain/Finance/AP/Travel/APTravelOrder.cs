@@ -46,18 +46,34 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         //budget controll
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
-        public DateTime? BudgetApprovedTime { get; set; }
-        [Required]
+        public DateTime? BudgetApprovedTime { get; set; }       
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
+
+        [Display(Name = "From Branch/Project")]
+        public int FromBranchId { get; set; }
+        [Display(Name = "From Business Unit")]
+        public int FromBusinessUnitId { get; set; }
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
         public virtual ICollection<ApTravelOrderAdvancePayment> ApTravelOrderAdvancePayments { get; set; }
         public virtual ICollection<ApTravelOrderDeparture> ApTravelOrderDepartures { get; set; }
         public virtual ICollection<ApTravelOrderValidation> ApTravelOrderValidations { get; set; }
         public virtual ICollection<ApTravelOrderDepartmentValidation> ApTravelOrderDepartmentValidations { get; set; }
         public virtual ICollection<ApTravelOrderBudgetValidation> ApTravelOrderBudgetValidations { get; set; }
-        public virtual ICollection<ApTravelOrderDistribution> ApTravelOrderDistributions { get; set; }
+        public virtual ICollection<ApTravelOrdertAttachment> Attachments { get; set; }
+        //public virtual ICollection<ApTravelOrderDistribution> ApTravelOrderDistributions { get; set; }
+        public Guid ? VehicleDistributionID { get; set; }
+    }
+
+    public class ApTravelOrdertAttachment
+    {
+        public int ApTravelOrdertAttachmentId { get; set; }
+        public int ApTravelOrderId { get; set; }
+        public virtual ApTravelOrder TravelOrder { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 }

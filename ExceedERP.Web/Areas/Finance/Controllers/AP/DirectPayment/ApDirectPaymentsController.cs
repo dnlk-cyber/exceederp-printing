@@ -88,6 +88,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				PaymentReference = aPDirectPayments.PaymentReference,
 				PaymentDate = aPDirectPayments.PaymentDate,
 				Remark = aPDirectPayments.Remark,
+				IsSettled = aPDirectPayments.IsSettled,
 				IsSendForApproval = aPDirectPayments.IsSendForApproval,
 				IsOnlineTransferred = aPDirectPayments.IsOnlineTransferred,
 				IsOnlineTransferredBy = aPDirectPayments.IsOnlineTransferredBy,
@@ -186,6 +187,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 							aPDirectPayments.BusinessUnitId = fund.BusinessUnitId;
 						}
 						break;
+					//case "SALES-RETURN":
+					//	var refund = _db.SalesReturn.Find(did);
+					//	if (refund != null)
+					//	{
+					//		aPDirectPayments.BranchId = refund.BranchId;
+					//		aPDirectPayments.BusinessUnitId = refund.BusinessUnitId;
+					//	}
+					//	break;
 
 				}
 
@@ -215,6 +224,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 					PaymentMethod = aPDirectPayments.PaymentMethod,
 					PaymentReference = aPDirectPayments.PaymentReference,
 					PaymentDate = aPDirectPayments.PaymentDate.Date,
+					IsSettled = aPDirectPayments.IsSettled,
 					Remark = aPDirectPayments.Remark,
 					IsSendForApproval = aPDirectPayments.IsSendForApproval,
 					IsOnlineTransferred = aPDirectPayments.IsOnlineTransferred,
@@ -329,6 +339,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 							aPDirectPayments.BusinessUnitId = fund.BusinessUnitId;
 						}
 						break;
+					//case "SALES-RETURN":
+					//	var refund = _db.SalesReturn.Find(did);
+					//	if (refund != null)
+					//	{
+					//		aPDirectPayments.BranchId = refund.BranchId;
+					//		aPDirectPayments.BusinessUnitId = refund.BusinessUnitId;
+					//	}
+					//	break;
 				}
 
 				#endregion
@@ -380,6 +398,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 					PaymentMethod = aPDirectPayments.PaymentMethod,
 					PaymentReference = aPDirectPayments.PaymentReference,
 					PaymentDate = aPDirectPayments.PaymentDate,
+					IsSettled = aPDirectPayments.IsSettled,
 					Remark = aPDirectPayments.Remark,
 					IsSendForApproval = aPDirectPayments.IsSendForApproval,
 					IsOnlineTransferred = aPDirectPayments.IsOnlineTransferred,
@@ -677,6 +696,46 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
 					#endregion
 					break;
+				//case "SALES-RETURN":
+				//	#region refund
+
+				//	var refundDetails = _db.SalesReturnLines.Where(x => x.SalesReturnId == did).ToList();
+				//	var refund = _db.SalesReturn.Find(did);
+				//	foreach (var detail in refundDetails)
+				//	{
+				//		string acc = "NA";
+
+				//		var entity = new ApDirectPaymentLine
+				//		{
+				//			ApDirectPaymentId = record.ApDirectPaymentId,
+				//			Purpose = refund.Reason,
+				//			Amount = detail.SubTotal,
+				//			ForexAmount = detail.SubTotal,
+				//			ExchangeRate = 1,
+				//			Currency = "NA",
+				//			AccountCode = acc,
+				//			GLTaxRateID = detail.TaxTypeId!=null? (int)detail.TaxTypeId:0,
+				//			TaxAmount = detail.TaxAmount,
+				//			WithholdingType = 0,
+				//			WithholdingAmount = 0,
+				//			WithholdTax = false,
+				//			WithholdTaxAmount = 0,
+				//			TotalAmount = detail.SubTotal+detail.TaxAmount,
+				//			NetPayable = detail.SubTotal + detail.TaxAmount,
+				//			Remark = "",
+				//			DateCreated = DateTime.Now,
+				//			LastModified = detail.LastModified,
+				//			CreatedBy = User.Identity.Name,
+				//			ModifiedBy = detail.ModifiedBy
+				//		};
+
+				//		_db.ApDirectPaymentLines.Add(entity);
+
+				//		_db.SaveChanges();
+				//	}
+
+				//	#endregion
+				//	break;
 			}
 			#region update distribution
 			_distributionHelper.UpdateApDirectPaymentDistribution(record.ApDirectPaymentId);
@@ -813,7 +872,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
 			if (sumTotalDisDebit == 0 || sumTotalDisCredit == 0)
 			{
-				errMsg = "Total balance should be more than 0.";
+				errMsg = "Distribution should be above 0.";
 				var formattedData = new
 				{
 					Message = errMsg,
@@ -1066,6 +1125,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						PaymentReference = record.PaymentReference,
 						ReferenceDoc = record.Remark,
 						InvoiceReferenceDoc = "",
+						DebitSum=debit,
 						IsOnlineApproved = true,
 						OnlineApprovedBy = User.Identity.Name,
 						OnlineApprovedTime = DateTime.Now
@@ -1151,18 +1211,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 			if (record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred )
 			{
 				record.Status = Enum.GetName(typeof(OperationStatuses), 10);
-				record.IsOnlineApproved = false;
-				record.IsSendForApproval = false;
 				record.VoidBy = User.Identity.Name;
 				record.VoidTime = DateTime.Now;
-				record.IsVoid = false;
-				record.VoidBy = User.Identity.Name;
-				record.VoidTime = DateTime.Now;
+				record.IsVoid = true;
 				_db.ApDirectPayments.Attach(record);
 				_db.Entry(record).State = EntityState.Modified;
 				//_db.SaveChanges();
 
-				#region update payment request
+				#region update payment request/invoice
 			 
 
 				int did = int.Parse(record.SourceId.Split('_')[1]);

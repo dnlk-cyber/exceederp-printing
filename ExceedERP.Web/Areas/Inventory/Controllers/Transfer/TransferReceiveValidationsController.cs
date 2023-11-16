@@ -117,6 +117,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             }
 
             #endregion
+            #region validate qty,price and tax
+
+            foreach (var item in transferReceive.ItemTransferItemReceive)
+            {
+                if (item.ReceivedQuantity <= 0 || item.UPrice <= 0)
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "Please fill quantity and unit price information for all items.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+            }
+            #endregion
 
             if (ModelState.IsValid)
             {

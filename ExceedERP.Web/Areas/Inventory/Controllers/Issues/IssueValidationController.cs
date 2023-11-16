@@ -67,7 +67,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     {
                         foreach (var i in items)
                         {
+                            #region qty validation
+                            if (i.IssuedQuantity <= 0)
+                                ModelState.AddModelError("store", "Please fill issued quantity for all items.");
 
+                            #endregion
                             #region stock
 
                             var storeItem = db.StoreItemAssignments.Where(x => x.ItemCode == i.ItemCode).FirstOrDefault(x => x.StoreCode == record.StoreCode);

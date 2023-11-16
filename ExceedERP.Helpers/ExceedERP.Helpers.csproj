@@ -141,6 +141,7 @@
     <Compile Include="CRM\CRMDistributionHelper.cs" />
     <Compile Include="CRM\CRMDynamicDistributionHelper.cs" />
     <Compile Include="CRM\CRMGenericHelper.cs" />
+    <Compile Include="CRM\CRMMaintenanceIntegrationHelper.cs" />
     <Compile Include="CRM\CRMPaymentDistibutionHelper.cs" />
     <Compile Include="CRM\CRMPOSHelper.cs" />
     <Compile Include="CRM\CRMSalesHelper.cs" />

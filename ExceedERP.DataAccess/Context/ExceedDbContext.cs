@@ -140,6 +140,10 @@ namespace ExceedERP.DataAccess.Context
             // other code 
             #region inventory
 
+            // unique con
+            //modelBuilder.Entity<StoreItemAssignment>().HasIndex(u => new { u.StoreCode, u.ItemCode }).IsUnique(true);
+            //modelBuilder.Entity<PropertyCountItem>().HasIndex(u => new { u.ItemCode, u.PropertyCountId }).IsUnique(true);
+
             modelBuilder.Entity<StoreRequisitionItem>().Property(e => e.RequestedQuantity).HasPrecision(18, 4);
 
             modelBuilder.Entity<StoreRequisitionItem>().Property(e => e.ApprovedQuantity).HasPrecision(18, 4);
@@ -3210,6 +3214,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<PurchaseOrderValidation> PurchaseOrderValidations { get; set; }
         public DbSet<PoPaymentSchedule> PoPaymentSchedules { get; set; }
+        public DbSet<PoAdditionalCharge> PoAdditionalCharges { get; set; }
 
         public DbSet<BankGuarantee> BankGuarantees { get; set; }
         public DbSet<Tender> Tenders { get; set; }
@@ -3342,6 +3347,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }
         public DbSet<PaymentRequestDepartmentValidation> PaymentRequestDepartmentValidations { get; set; }
         public DbSet<PaymentRequestBudgetValidation> PaymentRequestBudgetValidations { get; set; }
+        public DbSet<PaymentRequestAuthorizeValidation> PaymentRequestAuthorizeValidations { get; set; }
         public DbSet<PaymentRequestValidation> PaymentRequestValidations { get; set; }
         #endregion
         #region travel order
@@ -3349,6 +3355,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ApTravelOrderAdvancePayment> ApTravelOrderAdvancePayments { get; set; }
         public DbSet<ApTravelOrderDeparture> ApTravelOrderDepartures { get; set; }
         public DbSet<ApTravelOrderValidation> ApTravelOrderValidations { get; set; }
+        public DbSet<ApTravelOrdertAttachment> ApTravelOrdertAttachments { get; set; }
         public DbSet<ApTravelOrderDepartmentValidation> ApTravelOrderDepartmentValidations { get; set; }
         public DbSet<ApTravelOrderBudgetValidation> ApTravelOrderBudgetValidations { get; set; }
         #endregion
@@ -3357,10 +3364,11 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ApTravelExpenseExpense> ApTravelExpenseExpenses { get; set; }
         public DbSet<ApTravelExpensePayment> ApTravelExpensePayments { get; set; }
         public DbSet<ApTravelExpenseRefund> ApTravelExpenseRefunds { get; set; }
+        public DbSet<ApTravelExpenseClaimAttachment> ApTravelExpenseClaimAttachments { get; set; }
         public DbSet<ApTravelExpenseValidation> ApTravelExpenseValidations { get; set; }
         public DbSet<ApTravelExpenseDepartmentValidation> ApTravelExpenseDepartmentValidations { get; set; }
         public DbSet<ApTravelExpenseBudgetValidation> ApTravelExpenseBudgetValidations { get; set; }
-        public DbSet<ApTravelExpenseDistribution> ApTravelExpenseDistributions { get; set; }
+        //public DbSet<ApTravelExpenseDistribution> ApTravelExpenseDistributions { get; set; }
         #endregion
         public DbSet<ApCashierSetup> CashierSetups { get; set; }
         public DbSet<ApPettyCash> ApPettyCash { get; set; }
@@ -3386,6 +3394,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ApPaymentSettlementLine> ApPaymentSettlementLines { get; set; }
         public DbSet<ApPaymentSettlementGrn> ApPaymentSettlementGrns { get; set; }
         public DbSet<ApPaymentSettlementDistribution> ApPaymentSettlementDistributions { get; set; }
+        public DbSet<ApPaymentSettlementDepartmentValidation> ApPaymentSettlementDepartmentValidations { get; set; }
         public DbSet<ApPaymentSettlementValidation> ApPaymentSettlementValidations { get; set; }
 
         public DbSet<ApDirectPayment> ApDirectPayments { get; set; }

@@ -75,16 +75,21 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult ServiceReceives_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //IQueryable<ServiceReceive> ServiceReceives = db.ServiceReceives.Where(x => mybraches.Contains(x.OrgBranchName));
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-           // List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<ServiceReceive> serviceReceives = _db.ServiceReceives;//.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<ServiceReceive> serviceReceives = _db.ServiceReceives.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                serviceReceives = serviceReceives.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
 
             DataSourceResult result = serviceReceives.ToDataSourceResult(request, serviceReceive => new
             {
                 ReceiveRef = serviceReceive.ReceiveRef,
                 BranchId = serviceReceive.BranchId,
+                BusinessUnitId = serviceReceive.BusinessUnitId,
                 ReceiveTypeId = serviceReceive.ReceiveTypeId,
                 ServiceReceiveId = serviceReceive.ServiceReceiveId,
                 TenderLot = serviceReceive.TenderLot,
@@ -201,6 +206,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 var entity = new ServiceReceive
                     {
                         BranchId = serviceReceive.BranchId,
+                        BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         ReceiveRef = serviceReceive.ReceiveRef,
                         ReceiveTypeId = serviceReceive.ReceiveTypeId,
                         SupplierName = serviceReceive.SupplierName,
@@ -297,6 +303,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 var entity = new ServiceReceive
                 {
                     BranchId = serviceReceive.BranchId,
+                    BusinessUnitId = serviceReceive.BusinessUnitId,
                     ServiceReceiveId = serviceReceive.ServiceReceiveId,
                     ReceiveRef = serviceReceive.ReceiveRef,
                     SupplierName = serviceReceive.SupplierName,
@@ -342,6 +349,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 var entity = new ServiceReceive
                 {
                     BranchId = serviceReceive.BranchId,
+                    BusinessUnitId = serviceReceive.BusinessUnitId,
                     ServiceReceiveId = serviceReceive.ServiceReceiveId,
                     SupplierName = serviceReceive.SupplierName,
                     SupplierInvoiceNo = serviceReceive.SupplierInvoiceNo,

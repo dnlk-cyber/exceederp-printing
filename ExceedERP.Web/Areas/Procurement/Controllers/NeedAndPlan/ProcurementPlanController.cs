@@ -78,8 +78,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementApprover)]
         public ActionResult Plans_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var branch = UserHelper.GetUserDefaultBranch(User.Identity.Name);
-            IQueryable<ProcurementPlan> plans = db.ProcurementPlans;//.Where(x => x.OrgBranchName == branch);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<ProcurementPlan> plans = db.ProcurementPlans.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                plans = plans.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
             DataSourceResult result = plans.ToDataSourceResult(request, plan => new
             {
                 ProcurementPlanId = plan.ProcurementPlanId,

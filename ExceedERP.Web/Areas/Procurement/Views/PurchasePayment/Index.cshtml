@@ -10,10 +10,10 @@
                               {
                                   columns.Bound(c => c.PurchasePaymentId).Title("Payment No.").Width(120).ClientTemplate("#=appendZeros(PurchasePaymentId)#");
                                   columns.Bound(p => p.Date).Width(130);
-                                  columns.Bound(c => c.SupplierId).Width(100);
-                                  columns.Bound(c => c.SupplierName).Width(180);
+                                  columns.Bound(c => c.SupplierId).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                                  columns.Bound(c => c.SupplierName).Width(180).Filterable(ftb => ftb.Multi(true).Search(true));
                                   columns.Bound(p => p.SupplierInvoice).Width(130);
-                                  columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["Purchasers"], "EmployeeId", "FullNameEnglish").Width(130);
+                                  columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["Purchasers"], "EmployeeId", "FullNameEnglish").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
                                   //columns.Bound(c => c.WithOutGRN).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= WithOutGRN ? checked='checked' :'' # />");
                                   columns.Bound(c => c.Type).Width(110);
                                   //columns.Bound(c => c.PoOrContractNumber).Width(80).Title("Ref.");

@@ -446,6 +446,217 @@ namespace ExceedERP.Helpers.Inventory
                                 }
                             }
                             db.SaveChanges();
+
+                            #region updated related transaction
+                            if (InventoryConfigurationHelper.RecalculateSourceTransactionOnBincardUpdate())
+                            {
+                                int updatedPeriodId = 0;
+                                var card = cardLinesArray[i];
+                                #region incrementing operation
+
+                                if (card.ReferenceDoc.StartsWith("Receive"))
+                                {
+                                    #region grn 
+                                    string id = card.ReferenceDoc.Split('_')[1];
+                                    int recordid = int.Parse(id);
+
+                                    #region update record
+                                    var record = db.GoodReceives.Find(recordid);
+                                    if (record != null)
+                                    {
+                                        updatedPeriodId = InventoryHelper.GetInventoryPeriodFromDate(card.Date);
+
+                                        record.GLPeriodId = updatedPeriodId != 0 ? updatedPeriodId : record.GLPeriodId;
+                                        record.ReceiveDate = card.Date;
+                                        db.GoodReceives.Attach(record);
+                                        db.Entry(record).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                    #endregion
+
+                                    var item = db.GoodReceiveItems
+                                        .Where(x => x.ItemCode == storeitem.ItemCode)
+                                        .Where(x => x.GoodReceiveId == recordid).FirstOrDefault();
+
+                                    var tax = db.GLTaxRates.Find(item.GLTaxRateID);
+
+                                    if (item != null)
+                                    {
+                                        item.UnitPrice = card.ReceivedUPrice;
+                                        item.Quantity = card.ReceivedQTY;
+                                        item.SubTotal = card.ReceivedQTY * card.ReceivedUPrice;
+                                        item.TaxAmount = card.ReceivedUPrice * card.ReceivedQTY * tax.CalculatedRate;
+                                        item.Total = item.TaxAmount + item.SubTotal;
+
+                                        db.GoodReceiveItems.Attach(item);
+                                        db.Entry(item).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
+                                    #endregion
+                                }
+
+                                else if (card.ReferenceDoc.StartsWith("Transfer Receive"))
+                                {
+                                    #region Transfer Receive
+
+                                    string id = card.ReferenceDoc.Split('_')[1];
+                                    int recordid = int.Parse(id);
+                                    #region update record
+                                    var record = db.ItemTransferReceive.Find(recordid);
+                                    if (record != null)
+                                    {
+                                        updatedPeriodId = InventoryHelper.GetInventoryPeriodFromDate(card.Date);
+
+                                        record.GLPeriodId = updatedPeriodId != 0 ? updatedPeriodId : record.GLPeriodId;
+                                        record.ReceiveDate = card.Date;
+                                        db.ItemTransferReceive.Attach(record);
+                                        db.Entry(record).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                    #endregion
+                                    var item = db.ItemTransferItemReceive
+                                        .Where(x => x.ItemCode == storeitem.ItemCode)
+                                        .Where(x => x.ItemTransferReceiveId == recordid).FirstOrDefault();
+
+                                    if (item != null)
+                                    {
+                                        item.UPrice = card.ReceivedUPrice;
+                                        item.ReceivedQuantity = card.ReceivedQTY;
+                                        item.TPrice = card.ReceivedUPrice * card.ReceivedQTY;
+
+                                        db.ItemTransferItemReceive.Attach(item);
+                                        db.Entry(item).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
+                                    #endregion
+                                }
+
+                                if (card.ReferenceDoc.StartsWith("Return"))
+                                {
+                                    #region return 
+                                    string id = card.ReferenceDoc.Split('_')[1];
+                                    int recordid = int.Parse(id);
+
+                                    #region update record
+                                    var record = db.StoreReturns.Find(recordid);
+                                    if (record != null)
+                                    {
+                                        updatedPeriodId = InventoryHelper.GetInventoryPeriodFromDate(card.Date);
+
+                                        record.GLPeriodId = updatedPeriodId != 0 ? updatedPeriodId : record.GLPeriodId;
+                                        record.ReturnDate = card.Date;
+                                        db.StoreReturns.Attach(record);
+                                        db.Entry(record).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                    #endregion
+
+                                    var item = db.StoreReturnItemss
+                                        .Where(x => x.ItemCode == storeitem.ItemCode)
+                                        .Where(x => x.StoreReturnID == recordid).FirstOrDefault();
+
+
+
+                                    if (item != null)
+                                    {
+                                        item.UnitPrice = card.ReceivedUPrice;
+                                        item.Quantity = card.ReceivedQTY;
+
+                                        db.StoreReturnItemss.Attach(item);
+                                        db.Entry(item).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
+                                    #endregion
+                                }
+
+
+
+                                #endregion
+                                #region dencrementing operation
+
+                                else if (card.ReferenceDoc.StartsWith("Issue"))
+                                {
+                                    #region issue
+
+                                    string id = card.ReferenceDoc.Split(' ')[1];
+                                    int recordid = int.Parse(id);
+
+                                    #region update record
+                                    var record = db.Issues.Find(recordid);
+                                    if (record != null)
+                                    {
+                                        updatedPeriodId = InventoryHelper.GetInventoryPeriodFromDate(card.Date);
+
+                                        record.GLPeriodId = updatedPeriodId != 0 ? updatedPeriodId : record.GLPeriodId;
+                                        record.IssueDate = card.Date;
+                                        db.Issues.Attach(record);
+                                        db.Entry(record).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                    #endregion
+
+                                    var item = db.IssueItems
+                                        .Where(x => x.ItemCode == storeitem.ItemCode)
+                                        .Where(x => x.IssueID == recordid).FirstOrDefault();
+
+                                    if (item != null)
+                                    {
+                                        item.UnitPrice = card.IssuedUPrice;
+                                        item.IssuedQuantity = card.IssuedQTY;
+                                        item.Total = card.IssuedUPrice * card.IssuedQTY;
+
+                                        db.IssueItems.Attach(item);
+                                        db.Entry(item).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
+                                    #endregion
+                                }
+
+                                else if (card.ReferenceDoc.StartsWith("Transfer Send"))
+                                {
+                                    #region transfer send
+
+                                    string id = card.ReferenceDoc.Split(' ')[2];
+                                    int recordid = int.Parse(id);
+                                    #region update record
+                                    var record = db.ItemTransfers.Find(recordid);
+                                    if (record != null)
+                                    {
+                                        updatedPeriodId = InventoryHelper.GetInventoryPeriodFromDate(card.Date);
+
+                                        record.GLPeriodId = updatedPeriodId != 0 ? updatedPeriodId : record.GLPeriodId;
+                                        record.TransferDate = card.Date;
+                                        db.ItemTransfers.Attach(record);
+                                        db.Entry(record).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+                                    #endregion
+                                    var item = db.ItemTransferItems
+                                        .Where(x => x.ItemCode == storeitem.ItemCode)
+                                        .Where(x => x.ItemTransferID == recordid).FirstOrDefault();
+
+                                    if (item != null)
+                                    {
+                                        item.UPrice = card.IssuedUPrice;
+                                        item.ShippedQuantity = card.IssuedQTY;
+                                        item.TPrice = card.IssuedUPrice * card.IssuedQTY;
+
+                                        db.ItemTransferItems.Attach(item);
+                                        db.Entry(item).State = EntityState.Modified;
+                                        db.SaveChanges();
+                                    }
+
+                                    #endregion
+                                }
+
+
+                                #endregion
+                            }
+                            #endregion
                         }
 
                         #region find and update count table with the most recent bincard balance

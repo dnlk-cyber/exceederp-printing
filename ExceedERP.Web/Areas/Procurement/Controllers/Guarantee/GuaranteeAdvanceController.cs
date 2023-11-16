@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -29,8 +30,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Guarantee
         [AuthorizeRoles(ProcurementRoles.ProcurementBondUser, ProcurementRoles.ProcurementBondApprover)]
         public ActionResult Guarantees_Read([DataSourceRequest]DataSourceRequest request, bool isExpired, bool isSent)
         {
-            
-            IQueryable<Core.Domain.Procurement.Guarantee.Guarantee> guarantees = db.Guarantees.Where(x=>x.GuaranteeType==GuaranteeTypes.AdvancePayment);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Core.Domain.Procurement.Guarantee.Guarantee> guarantees = db.Guarantees.Where(x => x.GuaranteeType == GuaranteeTypes.AdvancePayment).Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                guarantees = guarantees.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+           
             if (isExpired)
             {
                 List<int> expiredList = GuaranteeHelper.GetExpiredList();

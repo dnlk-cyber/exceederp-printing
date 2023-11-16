@@ -345,7 +345,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
             var purchaseRequisitions = db.PurchaseRequisitions
                 .Where(x => x.IsOnlineApproved && x.IsVoid == false)
-                .Where(x => x.OnlineApprovedTime >= from && x.OnlineApprovedTime <= to).AsQueryable();
+                .Where(x => x.RequestDate >= from && x.RequestDate <= to).AsQueryable();
 
             if (!String.IsNullOrWhiteSpace(purchaser))
             {

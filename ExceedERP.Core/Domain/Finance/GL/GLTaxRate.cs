@@ -27,5 +27,7 @@ namespace ExceedERP.Core.Domain.Finance.GL
         [Display(Name = "Enable ?")]
         public bool Enable { get; set; }
         public decimal CalculatedRate { get; set; }
+        [Display(Name = "Is Cost ?")]
+        public bool IsCost { get; set; }
     }
 }

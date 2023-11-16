@@ -47,7 +47,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
             var branch = _db.Branch.ToList();
             ViewData["Branch"] = branch;
 
-            if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+            if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 var businessUnits = _db.BusinessUnits.ToList();
                 ViewData["BusinessUnits"] = businessUnits;
@@ -75,7 +75,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
                 .Where(x => mybraches.Contains(x.BranchId))
                 .Where(x => x.IsDepartmentOnlineApproved);
 
-            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            if (FinanceConfigurationHelper.IsPaymentBudgetControlEnabled())
             {
                 fundTransfers = fundTransfers.Where(x => x.IsBudgetApproved);
             }
@@ -94,6 +94,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
                 FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                 CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                 BankAccountId = fundTransfer.BankAccountId,
                 RequestDate = fundTransfer.RequestDate,
                 Paid = fundTransfer.Paid,
@@ -156,8 +157,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
                 var placemnt = _db.Placements.Where(x => x.EmployeeId == fundTransfer.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
                 if (placemnt != null)
                 {
-                    fundTransfer.CreatedAtBranchId = placemnt.BranchId;
-                    fundTransfer.CreatedAtBusinessUnitId = placemnt.BusinessUnitId;
+                    fundTransfer.BranchId = placemnt.BranchId;
+                    fundTransfer.BusinessUnitId = placemnt.BusinessUnitId;
                     fundTransfer.OrgStuructureId = placemnt.OrgStructureId;
                 }
                 else
@@ -168,9 +169,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
 
 
 
-            fundTransfer.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
-            fundTransfer.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
-            //fundTransfer.OrgStuructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+            fundTransfer.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            fundTransfer.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            fundTransfer.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
 
             #endregion
 
@@ -187,6 +188,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
                     FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                     CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                     BankAccountId = fundTransfer.BankAccountId,
                     Paid = fundTransfer.Paid,
                     ReasonOfTransfer = fundTransfer.ReasonOfTransfer,
@@ -255,18 +257,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
                 ModelState.AddModelError("requester", "Please select requestor");
             }
 
+            if (fundTransfer.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
             if (fundTransfer.EmployeeId != 0)
             {
-                var placemnt = _db.Placements.Where(x => x.EmployeeId == fundTransfer.EmployeeId).Where(x => x.isCurrent).FirstOrDefault();
+                var placemnt = _db.Placements.Where(x => x.EmployeeId == fundTransfer.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
                 if (placemnt != null)
                 {
-                    fundTransfer.CreatedAtBranchId = placemnt.BranchId;
-                    fundTransfer.CreatedAtBusinessUnitId = placemnt.BusinessUnitId;
+                    fundTransfer.BranchId = placemnt.BranchId;
+                    fundTransfer.BusinessUnitId = placemnt.BusinessUnitId;
                     fundTransfer.OrgStuructureId = placemnt.OrgStructureId;
                 }
                 else
                 {
-                    ModelState.AddModelError("placement", "Employee has no current placemnt");
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
                 }
             }
 
@@ -286,6 +292,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
                     FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                     CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                     BankAccountId = fundTransfer.BankAccountId,
                     Paid = fundTransfer.Paid,
                     ReasonOfTransfer = fundTransfer.ReasonOfTransfer,

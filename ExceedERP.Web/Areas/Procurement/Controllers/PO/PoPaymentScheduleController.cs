@@ -30,6 +30,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 PoPaymentScheduleId = poPaymentSchedule.PoPaymentScheduleId,
                 PurchaseOrderID = poPaymentSchedule.PurchaseOrderID,
                 PaymentType = poPaymentSchedule.PaymentType,
+                AmountType = poPaymentSchedule.AmountType,
                 Percentage = poPaymentSchedule.Percentage,
                 Remark = poPaymentSchedule.Remark,
                 OrgBranchName = poPaymentSchedule.OrgBranchName,
@@ -52,17 +53,43 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             if((po.PurchasePaymentType== PurchasePaymentType.Credit) &&(poPaymentSchedule.PaymentType==PaymentType.Advance))
                 ModelState.AddModelError("ilegitimate", "The PO is credit type hence can't allow Advance payment. ");
             
-            decimal prev = 0;
-
-            var previous = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
             
-            if(previous.Any())
-               prev= previous.Sum(x => x.Percentage);
+            var paySchedule= _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
+            var percentPaySche = paySchedule.Where(x => x.AmountType == AmountType.Percent);
+            var amountPaySche = paySchedule.Where(x => x.AmountType == AmountType.Amount);
 
-            if (prev + poPaymentSchedule.Percentage > 100)
+            if(percentPaySche.Any()&& amountPaySche.Any())
+                ModelState.AddModelError("either", "Please use either percent or amount, you can't mix both in the same PO. ");
+                      
+
+            if(poPaymentSchedule.AmountType==AmountType.Percent)
             {
-                ModelState.AddModelError("above100","The total percentage will be above 100,please check again. ");
+                decimal prev = 0;
+                if (percentPaySche.Any())
+                    prev = percentPaySche.Sum(x => x.Percentage);
+
+                if (prev + poPaymentSchedule.Percentage > 100)
+                    ModelState.AddModelError("above100", "The total percentage will be above 100,please check again. ");
+
+
             }
+            if (poPaymentSchedule.AmountType == AmountType.Amount)
+            {
+                var totalItem = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
+                decimal prev = 0;
+                decimal totalAmount = 0;
+                if (totalItem.Any())
+                    totalAmount = totalItem.Sum(x=>x.Total);
+
+                if (percentPaySche.Any())
+                    prev = amountPaySche.Sum(x => x.Percentage);
+
+                if (prev + poPaymentSchedule.Percentage > totalAmount)
+                    ModelState.AddModelError("above100", $"The total amount will be above {totalAmount},please check again. ");
+
+            }
+
+
             #endregion
             if (ModelState.IsValid)
             {
@@ -70,6 +97,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 {
                     PurchaseOrderID =id,
                     PaymentType = poPaymentSchedule.PaymentType,
+                    AmountType = poPaymentSchedule.AmountType,
                     Percentage = poPaymentSchedule.Percentage,
                     Remark = poPaymentSchedule.Remark,
                     OrgBranchName = poPaymentSchedule.OrgBranchName,
@@ -96,18 +124,43 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
         public ActionResult PoPaymentSchedules_Update(int id,[DataSourceRequest]DataSourceRequest request, PoPaymentSchedule poPaymentSchedule)
         {
             #region validation
+            var po = _db.PurchaseOrders.Find(id);
+            if ((po.PurchasePaymentType == PurchasePaymentType.Credit) && (poPaymentSchedule.PaymentType == PaymentType.Advance))
+                ModelState.AddModelError("ilegitimate", "The PO is credit type hence can't allow Advance payment. ");
 
-            decimal prev = 0;
+            var paySchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
+            var percentPaySche = paySchedule.Where(x => x.AmountType == AmountType.Percent);
+            var amountPaySche = paySchedule.Where(x => x.AmountType == AmountType.Amount);
 
-            var previous = _db.PoPaymentSchedules.Where(x => x.PoPaymentScheduleId != poPaymentSchedule.PoPaymentScheduleId)
-                                                      .Where(x => x.PurchaseOrderID == poPaymentSchedule.PurchaseOrderID).ToList();
+            if (percentPaySche.Any() && amountPaySche.Any())
+                ModelState.AddModelError("either", "Please use either percent or amount, you can't mix both in the same PO. ");
 
-            if (previous.Any())
-                prev = previous.Sum(x => x.Percentage);
 
-            if (prev + poPaymentSchedule.Percentage > 100)
+            if (poPaymentSchedule.AmountType == AmountType.Percent)
             {
-                ModelState.AddModelError("above100", "The total percentage will be above 100,please check again. ");
+                decimal prev = 0;
+                if (percentPaySche.Any())
+                    prev = percentPaySche.Sum(x => x.Percentage);
+
+                if (prev + poPaymentSchedule.Percentage > 100)
+                    ModelState.AddModelError("above100", "The total percentage will be above 100,please check again. ");
+
+
+            }
+            if (poPaymentSchedule.AmountType == AmountType.Amount)
+            {
+                var totalItem = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id).ToList();
+                decimal prev = 0;
+                decimal totalAmount = 0;
+                if (totalItem.Any())
+                    totalAmount = totalItem.Sum(x => x.Total);
+
+                if (percentPaySche.Any())
+                    prev = amountPaySche.Sum(x => x.Percentage);
+
+                if (prev + poPaymentSchedule.Percentage > totalAmount)
+                    ModelState.AddModelError("above100", $"The total amount will be above {totalAmount},please check again. ");
+
             }
             #endregion
             if (ModelState.IsValid)
@@ -117,6 +170,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                     PurchaseOrderID = poPaymentSchedule.PurchaseOrderID,
                     PoPaymentScheduleId = poPaymentSchedule.PoPaymentScheduleId,
                     PaymentType = poPaymentSchedule.PaymentType,
+                    AmountType = poPaymentSchedule.AmountType,
                     Percentage = poPaymentSchedule.Percentage,
                     Remark = poPaymentSchedule.Remark,
                     OrgBranchName = poPaymentSchedule.OrgBranchName,
@@ -149,6 +203,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 {
                     PoPaymentScheduleId = poPaymentSchedule.PoPaymentScheduleId,
                     PaymentType = poPaymentSchedule.PaymentType,
+                    AmountType = poPaymentSchedule.AmountType,
                     Percentage = poPaymentSchedule.Percentage,
                     Remark = poPaymentSchedule.Remark,
                     OrgBranchName = poPaymentSchedule.OrgBranchName,

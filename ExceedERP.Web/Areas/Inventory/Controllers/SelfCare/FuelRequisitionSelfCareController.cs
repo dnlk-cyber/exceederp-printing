@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -19,13 +20,13 @@ using EntityState = System.Data.Entity.EntityState;
 namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 {
 
-
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class FuelRequisitionSelfCareController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
         private readonly ApplicationDbContext _userdb = new ApplicationDbContext();
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+       
         public ActionResult Index()
         {
             
@@ -85,16 +86,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         }
 
 
-
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
-
         public ActionResult StoreRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
-            var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
+           // var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
             //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
-            List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+           // List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
 
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsFuel == false).Where(x => mybraches.Contains(x.OrgBranchName));
@@ -104,29 +102,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment)
             && System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
             {
-                if (!storekeepers.Any() && userworkunit.Any())
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
-                                                                     || x.CreatedBy == User.Identity.Name).ToList();
-                }
-                else
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode)
-                                                                     || x.CreatedBy == User.Identity.Name).ToList();
-                }
+                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
+                                                                   || x.CreatedBy == User.Identity.Name).ToList();
             }
 
             else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment))
             {
-                if (!storekeepers.Any() && userworkunit.Any())
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
                                                                      || x.CreatedBy == User.Identity.Name).ToList();
-                }
-                else
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
-                }
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
             {
@@ -156,7 +139,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     JobOrderNo = storeRequisition.JobOrderNo,
                     PlateNo = storeRequisition.PlateNo,
 
-                    Status = storeRequisition.Status,
+                PrevRequestDate = storeRequisition.PrevRequestDate,
+                PrevKm = storeRequisition.PrevKm,
+                PrevLT = storeRequisition.PrevLT,
+                CurrentKm = storeRequisition.CurrentKm,
+                DifferenceKm = storeRequisition.DifferenceKm,
+                Consumption = storeRequisition.Consumption,
+                StandardConsumption = storeRequisition.StandardConsumption,
+
+                Status = storeRequisition.Status,
                     Remark = storeRequisition.Remark,
                     GLPeriodId = storeRequisition.GLPeriodId,
 
@@ -193,7 +184,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(result);
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+        
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreRequisitions_Create([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
@@ -291,6 +282,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         JobOrderNo = storeRequisition.JobOrderNo,
                         PlateNo = storeRequisition.PlateNo,
 
+                        PrevRequestDate = storeRequisition.PrevRequestDate,
+                        PrevKm = storeRequisition.PrevKm,
+                        PrevLT = storeRequisition.PrevLT,
+                        CurrentKm = storeRequisition.CurrentKm,
+                        DifferenceKm = storeRequisition.DifferenceKm,
+                        Consumption = storeRequisition.Consumption,
+                        StandardConsumption = storeRequisition.StandardConsumption,
+
                         VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
                         IsOnlineApproved = storeRequisition.IsOnlineApproved,
@@ -320,7 +319,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreRequisitions_Update([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
@@ -414,6 +413,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         JobOrderNo = storeRequisition.JobOrderNo,
                         PlateNo = storeRequisition.PlateNo,
 
+                        PrevRequestDate = storeRequisition.PrevRequestDate,
+                        PrevKm = storeRequisition.PrevKm,
+                        PrevLT = storeRequisition.PrevLT,
+                        CurrentKm = storeRequisition.CurrentKm,
+                        DifferenceKm = storeRequisition.DifferenceKm,
+                        Consumption = storeRequisition.Consumption,
+                        StandardConsumption = storeRequisition.StandardConsumption,
+
                         IsVoid = storeRequisition.IsVoid,
                         VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
@@ -445,7 +452,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(ModelState.IsValid ? new object() : ModelState.ToDataSourceResult());
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
         {
@@ -470,7 +477,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         ModelNo = storeRequisition.ModelNo,
                         PlateNo = storeRequisition.PlateNo,
 
-                        VoidBy = storeRequisition.VoidBy,
+                    PrevRequestDate = storeRequisition.PrevRequestDate,
+                    PrevKm = storeRequisition.PrevKm,
+                    PrevLT = storeRequisition.PrevLT,
+                    CurrentKm = storeRequisition.CurrentKm,
+                    DifferenceKm = storeRequisition.DifferenceKm,
+                    Consumption = storeRequisition.Consumption,
+                    StandardConsumption = storeRequisition.StandardConsumption,
+
+                    VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
                         IsOnlineApproved = storeRequisition.IsOnlineApproved,
                         OnlineApprovedBy = storeRequisition.OnlineApprovedBy,
@@ -651,6 +666,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             var record = _db.StoreRequisitions.Find(id);
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StoreRequisitionItem.Count > 0)
             {
+                #region validate qty,price and tax
+
+                foreach (var item in record.StoreRequisitionItem)
+                {
+                    if (item.RequestedQuantity <= 0 || item.ApprovedQuantity <= 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill quantity information for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;

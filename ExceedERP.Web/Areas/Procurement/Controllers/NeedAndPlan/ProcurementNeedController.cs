@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -77,8 +78,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementApprover, ProcurementRoles.ProcurementUser)]
         public ActionResult AnnualNeedAssesments_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var branch = UserHelper.GetUserDefaultBranch(User.Identity.Name);
-            IQueryable<AnnualNeedAssesment> annualneedassesments = db.AnnualNeedAssesments;//.Where(x => x.Branch == branch);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<AnnualNeedAssesment> annualneedassesments = db.AnnualNeedAssesments.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                annualneedassesments = annualneedassesments.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+            
             DataSourceResult result = annualneedassesments.ToDataSourceResult(request, annualNeedAssesment => new
             {
                 AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,

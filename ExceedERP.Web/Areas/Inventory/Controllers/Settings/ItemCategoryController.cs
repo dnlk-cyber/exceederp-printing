@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
             DataSourceResult result = itemcategorys.ToDataSourceResult(request, itemCategory => new
             {
                 ItemCategoryCode = itemCategory.ItemCategoryCode,
-                Name = itemCategory.Name,
+                Name = XAPI.Common.RemoveSpecialChars(itemCategory.Name),
                 Abbreviation = itemCategory.Abbreviation,
                 Description = itemCategory.Description,
                 HaveParent = itemCategory.HaveParent,
@@ -118,7 +118,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     {
 
                         ItemCategoryCode = itemCategory.ItemCategoryCode,
-                        Name = itemCategory.Name,
+                        Name = XAPI.Common.RemoveSpecialChars(itemCategory.Name),
                         HaveParent = itemCategory.HaveParent,
                         Abbreviation = itemCategory.Abbreviation,
                         ParentName = itemCategory.ParentName,

@@ -65,3 +65,11 @@
           .Update(update => update.Action("Purchasers_Update", "Purchasers"))
           .Destroy(destroy => destroy.Action("Purchasers_Destroy", "Purchasers"))
       ))
+
+<script>
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>

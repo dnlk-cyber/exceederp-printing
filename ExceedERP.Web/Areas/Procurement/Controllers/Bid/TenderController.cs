@@ -136,8 +136,26 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public ActionResult Tenders_Read([DataSourceRequest]DataSourceRequest request)
         {
-            int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
-            IQueryable<Tender> tenders = _db.Tenders;//.Where(x => x.ProcurementOfficer == empid && empid != 0);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Tender> tenders = _db.Tenders.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                tenders = tenders.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderApprover))
+            {
+
+            }
+
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderUser))
+            {
+
+                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+                 tenders = _db.Tenders.Where(x => x.ProcurementOfficer == empid && empid != 0);
+            }
             DataSourceResult result = tenders.ToDataSourceResult(request, tender => new
             {
                 TenderID = tender.TenderID,
@@ -959,7 +977,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             }
 
                             evaluationResultItem.Financial =
-                                ComputeFinancial(participantsItem.ItemType, supplier.BidPParticipatingSuppliersID, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.ItemSpecification, participantsItem.ModelNo,
+                                ComputeFinancial(participantsItem.ItemType, supplier.BidPParticipatingSuppliersID, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.Name, participantsItem.ModelNo,
                                 criteriaid, allparticipantsItems, isPassFail);
                             #endregion
                             #region technical
@@ -1098,7 +1116,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             }
 
                             evaluationResultItem.Financial =
-                                ComputeFinancial(participantsItem.ItemType, supplier.BidPParticipatingSuppliersID, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.ItemSpecification, participantsItem.ModelNo,
+                                ComputeFinancial(participantsItem.ItemType, supplier.BidPParticipatingSuppliersID, participantsItem.ItmCode, participantsItem.ItemSpecification, participantsItem.Name, participantsItem.ModelNo,
                                 criteriaid, allparticipantsItems, isPassFail);
                             #endregion
                             #region technical
@@ -1492,19 +1510,23 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             .Where(x => winnerCantProvide.Contains(x.SupplierName) == false).ToList();
 
                     #region remove suppliers that don't provide all items
+                  
                     foreach (var s in tenderEvaluationResults)
                     {
                         bool canProvide = true;
-                        var supplierItems = _db.TenderEvaluationItemResults.Where(x =>
-                          x.TenderEvaluationResultID == s.TenderEvaluationResultID).ToList();
-
-                        foreach (var i in lotItems)
+                        if (tenderEvaluationResults.Count > 1) //one supplier will not checked
                         {
-                            var exist = supplierItems.Where(x => x.ItmCode == i.ItmCode).FirstOrDefault();
-                            if (exist == null)
+                            var supplierItems = _db.TenderEvaluationItemResults.Where(x =>
+                                x.TenderEvaluationResultID == s.TenderEvaluationResultID).ToList();
+
+                            foreach (var i in lotItems)
                             {
-                                canProvide = false;
-                                break;
+                                var exist = supplierItems.Where(x => x.ItmCode == i.ItmCode).FirstOrDefault();
+                                if (exist == null)
+                                {
+                                    canProvide = false;
+                                    break;
+                                }
                             }
                         }
 
@@ -1512,6 +1534,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             canProvideAllItems.Add(s);
 
                     }
+                    
                     #endregion
 
                     var topResult = canProvideAllItems//tenderEvaluationResults
@@ -1800,14 +1823,32 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             {
                 var participantsItem = participantsItems
                     .Where(x => x.ItmCode == itemcode)
-                    .Where(x => x.Name == name)
-                    .Where(x => x.ModelNo == model)
-                    .FirstOrDefault(x => x.BidPParticipatingSuppliersID == participantId);
-                var specificItems = participantsItems.Where(x => x.ItmCode == itemcode).Where(x => x.Name == name).Where(x => x.ModelNo == model).ToList();
-                float lowestPrice = specificItems.Any()? (float)specificItems.Min(x => x.Total):0;
-                if (participantsItem != null)
+                    .Where(x => x.BidPParticipatingSuppliersID == participantId);
+
+                if (!string.IsNullOrEmpty(name))
+                    participantsItem = participantsItem.Where(x => x.Name == name);
+                if (!string.IsNullOrEmpty(model))
+                    participantsItem = participantsItem.Where(x => x.ModelNo == model);
+                if (!string.IsNullOrEmpty(spec))
+                    participantsItem = participantsItem.Where(x => x.ItemSpecification == spec);
+
+
+                var specificItems = participantsItems.Where(x => x.ItmCode == itemcode)
+                    .ToList();                
+             
+                if (!string.IsNullOrEmpty(name))
+                    specificItems = specificItems.Where(x => x.Name == name).ToList();
+                if (!string.IsNullOrEmpty(model))
+                    specificItems = specificItems.Where(x => x.ModelNo == model).ToList();
+                if (!string.IsNullOrEmpty(spec))
+                    specificItems = specificItems.Where(x => x.ItemSpecification == spec).ToList();
+
+                float lowestPrice = specificItems.Any() ? (float)specificItems.Min(x => x.Total) : 0;
+
+                var myItem = participantsItem.FirstOrDefault();
+                if (myItem != null)
                 {
-                    float price = (float)participantsItem.Total;
+                    float price = (float)myItem.Total;
                     if (passfail)
                     {
                         result = lowestPrice * 100 / price;

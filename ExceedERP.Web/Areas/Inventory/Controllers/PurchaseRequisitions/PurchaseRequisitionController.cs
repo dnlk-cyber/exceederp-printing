@@ -73,6 +73,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             var branches = db.Branch;
             ViewData["Branches"] = branches;
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
         }
 
 
@@ -90,7 +96,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     ForBranchId = purchaseRequisition.ForBranchId,
-                    OrgStructureId = purchaseRequisition.OrgStructureId,
+                ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
                     ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
@@ -163,6 +170,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                         BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         ForBranchId = purchaseRequisition.ForBranchId,
+                        ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                         OrgStructureId = UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
                         EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -245,6 +253,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                         BranchId = purchaseRequisition.BranchId,
                         BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         ForBranchId = purchaseRequisition.ForBranchId,
+                        ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
@@ -302,7 +311,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     {
                         PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                        BranchId = purchaseRequisition.BranchId,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                    BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,

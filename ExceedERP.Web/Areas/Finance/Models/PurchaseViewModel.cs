@@ -101,7 +101,8 @@ namespace ExceedERP.Web.Areas.Finance.Models
         public int PurchasePaymentScheduleViewModelId { get; set; }
         [Display(Name = "Payment Type")]
         public PaymentType PaymentType { get; set; }
-        [Display(Name = "Percentage")]
+        public AmountType AmountType { get; set; }
+        [Display(Name = "Amount")]
         public decimal Percentage { get; set; }
         public string Remark { get; set; }
     }

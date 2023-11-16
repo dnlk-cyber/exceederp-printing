@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -29,10 +31,68 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
 
             if (payment != null)
             {
+                if (!string.IsNullOrEmpty(payment.SupplierId))
+                {
+                    var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == payment.SupplierId);
+                    if (supplier != null && !string.IsNullOrEmpty(supplier.Name))
+                        headerDs.SupplierName = supplier.Name;
+                }
+                else
+                {
+                    headerDs.SupplierName = payment.SupplierName;
+                }
+
+                if (!String.IsNullOrWhiteSpace(payment.SourceId))
+                {
+
+                    #region requestor/payee
+
+                    int did = int.Parse(payment.SourceId.Split('_')[1]);
+                    string sourceType = payment.SourceId.Split('_')[0];
+                    switch (sourceType)
+                    {
+                        case "LC":
+                            var purchaseCost = _db.ForeignPurchaseCosts.Find(did);
+                            if (purchaseCost != null)
+                                headerDs.RequestorName = purchaseCost.Payee;
+                            break;
+                        case "PAYMENT-REQUEST":
+                            var paymentRequest = _db.PaymentRequests.Find(did);
+                            if (paymentRequest != null)
+                            {
+                                headerDs.RequestorName = EmployeeHelper.GetEmployeeEnglishName(paymentRequest.EmployeeId);
+                            }
+                            break;
+                        case "TRAVEL-ORDER":
+                            var travelOrder = _db.ApTravelOrders.Find(did);
+                            if (travelOrder != null)
+                            {
+                                headerDs.RequestorName = EmployeeHelper.GetEmployeeEnglishName(travelOrder.EmployeeId);
+                            }
+                            break;
+                        case "EXPENSE-CLAIM":
+                            var claim = _db.ApTravelExpenseClaims.Find(did);
+                            if (claim != null)
+                            {
+                                headerDs.RequestorName = EmployeeHelper.GetEmployeeEnglishName(claim.EmployeeId);
+                            }
+                            break;
+                        case "FUND-TRANSFER":
+                            var fund = _db.FundTransfers.Find(did);
+                            if (fund != null)
+                            {
+                                headerDs.RequestorName = EmployeeHelper.GetEmployeeEnglishName(fund.EmployeeId);
+                            }
+                            break;
+
+                    }
+              #endregion
+
+                }
+
                 headerDs.VoucherId = payment.ApDirectPaymentId.ToString();
                 headerDs.PaymentRequest = payment.SourceId;
-                headerDs.DocTitile = "PAYMENT VOUCHER";
-                headerDs.SupplierName = payment.SupplierName;
+                headerDs.DocTitile = "PAYMENT VOUCHER (Direct)";
                 headerDs.NetPayable = netpayment;
                 headerDs.PaymentReference = payment.PaymentReference;
                 headerDs.PaymentMethod = payment.PaymentMethod;
@@ -82,7 +142,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 }
                 var logo =
                     _db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
-                            a.ReferenceType == AttachmentType.LOGO);
+                            a.ReferenceType == Core.Domain.Common.AttachmentType.LOGO);
                 if (logo != null)
                 {
                     headerDs.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);

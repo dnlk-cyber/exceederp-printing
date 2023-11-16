@@ -413,6 +413,38 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             }
 
         }
+        public JsonResult RecalculateAllStoreItemsFromBeginning(string id)
+        {
+            var storeitems = db.StoreItemAssignments
+                //.Where(x=>x.ItemCode=="14202-000-00044")
+                .Where(x => x.StoreCode == id)
+                .ToList();
+
+            DateTime beginningDate = db.BinCardLines.Where(x => x.ReferenceDoc.ToUpper() == "BEGINNING").Min(x => x.Date);
+
+            foreach (var item in storeitems)
+            {
+                int beginningBinCardId = db.BinCardLines
+                                        .Where(x => x.StoreItemAssignmentID == item.StoreItemAssignmentID)
+                                        .Where(x => x.ReferenceDoc.ToUpper() == "BEGINNING").Where(x => x.Date == beginningDate).Select(x => x.BinCardLineID).FirstOrDefault();
+
+                InventoryBalanceHelper.RecalculateTransactionBincardData(item.StoreItemAssignmentID, beginningBinCardId);
+
+                #region  log
+                UserHelper.OperationLog(Request.UserHostAddress, "Bin Card recalculation from beginning", "Success", User.Identity.Name, $"Bin Card recalculation done starting for item" +
+                   $" {item?.InventoryItem?.ItemCode} {item?.InventoryItem?.Name} from ID {beginningBinCardId}-count", Modules.Inventory);
+                #endregion     
+
+            }
+
+            var formattedData1 = new
+            {
+                Message = "Completed.",
+                Status = "OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
         public JsonResult LoadItemsInStore(string id)
         {
             var countRecord = db.PropertyCounts.Find(int.Parse(id));

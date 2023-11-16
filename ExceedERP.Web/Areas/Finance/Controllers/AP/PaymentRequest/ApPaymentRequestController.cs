@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.SelfCare;
@@ -42,6 +43,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
             var branch = _db.Branch.ToList();
             ViewData["Branch"] = branch;
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = _db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
             var structure = _db.MainCompanyStructures.ToList();
             ViewData["OrgStructure"] = structure;
 
@@ -68,15 +75,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 .Where(x=>mybraches.Contains(x.BranchId))
                 .Where(x => x.IsDepartmentOnlineApproved);
 
-            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            if (FinanceConfigurationHelper.IsPaymentBudgetControlEnabled())
             {
                 paymentRequests = paymentRequests.Where(x => x.IsBudgetApproved);
             }
-
-            if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
-            {
-                paymentRequests = paymentRequests.Where(x => x.IsAuthorized);
-            }
+            
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
@@ -91,8 +94,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 OrgStuructureId = paymentRequest.OrgStuructureId,
                 BranchId = paymentRequest.BranchId,
                 BusinessUnitId = paymentRequest.BusinessUnitId,
+                FromBranchId = paymentRequest.FromBranchId,
+                FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                 CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                 SupplierId = paymentRequest.SupplierId,
                 IsNewSupplier = paymentRequest.IsNewSupplier,
                 Supplier = paymentRequest.Supplier,
@@ -159,7 +165,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
         public ActionResult PaymentRequest_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
             #region data
+            paymentRequest.CurrentApprovalStep = 0;
 
+            if (paymentRequest.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
             if (paymentRequest.EmployeeId != 0)
             {
                 var placemnt = _db.Placements.Where(x => x.EmployeeId == paymentRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
@@ -175,12 +186,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 }
             }
 
+
             if (!String.IsNullOrWhiteSpace(paymentRequest.SupplierId))
             {
                 var supplier =
                     _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == paymentRequest.SupplierId);
                 if (supplier != null) paymentRequest.Supplier = supplier.Name;
             }
+
+            paymentRequest.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            paymentRequest.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            paymentRequest.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
 
             #endregion
 
@@ -191,9 +207,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     EmployeeId = paymentRequest.EmployeeId,
                     BranchId = paymentRequest.BranchId,
                     BusinessUnitId = paymentRequest.BusinessUnitId,
+                    FromBranchId = paymentRequest.FromBranchId,
+                    FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
                     Supplier = paymentRequest.Supplier,
@@ -301,8 +320,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     OrgStuructureId=paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
                     BusinessUnitId = paymentRequest.BusinessUnitId,
+                    FromBranchId = paymentRequest.FromBranchId,
+                    FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                     CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -372,20 +394,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PaymentRequest_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
-            ModelState.Clear();
+   
             if (ModelState.IsValid)
             {
-                var splitDate = paymentRequest.RequestDateAm.Split('/');
-                DateTime requestDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
+               
                 var entity = new Core.Domain.Finance.AP.PaymentRequest.PaymentRequest
                 {
                     EmployeeId = paymentRequest.EmployeeId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
                     BusinessUnitId = paymentRequest.BusinessUnitId,
+                    FromBranchId = paymentRequest.FromBranchId,
+                    FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                     CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -394,7 +417,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     ReasonOfPayment = paymentRequest.ReasonOfPayment,
                     RequestDateAm = paymentRequest.RequestDateAm,
                     InvoiceNo = paymentRequest.InvoiceNo,
-                    RequestDate = requestDate,
+                    RequestDate = paymentRequest.RequestDate,
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,

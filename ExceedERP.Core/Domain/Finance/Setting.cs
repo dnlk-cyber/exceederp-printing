@@ -8,10 +8,12 @@ namespace ExceedERP.Core.Domain.Finance
     public enum FinanceSettingCategories
     {
         ENABLE_PR_BUDGET_CONTROL,
+        ENABLE_PAYMENT_BUDGET_CONTROL,
         ENABLE_TELEBIRR_PAYMENT_METHOD,
         DISABLE_GRN_DISTRIBUTION,
         APPLY_CLEARING_ACCOUNT_GRN_DISTRIBUTION,
         ENABLE_PAYMENT_REQUEST_AUTHORIZATION,
+
     }
 
 

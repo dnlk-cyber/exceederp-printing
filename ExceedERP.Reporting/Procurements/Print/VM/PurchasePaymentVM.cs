@@ -23,8 +23,8 @@ namespace ExceedERP.Reporting.Procurements.Print.VM
         public string Type { get; set; }
         public string PurchasePaymentType { get; set; }
         public string PoOrContractNumber { get; set; }
-        public int? ProcurementOfficer { get; set; }
-        public int? ProcurementAnalyzer { get; set; }
+        public string ProcurementOfficer { get; set; }
+        public string ProcurementAnalyzer { get; set; }
         public string PurposeOfPayment { get; set; }
         public string PaymentType { get; set; }
         public string Branch { get; set; }

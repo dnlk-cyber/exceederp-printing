@@ -206,6 +206,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     invoice.Status = "Editing";
                     invoice.Grn = "";
                     invoice.ForBranchId = purchasePayment.ForBranchId;
+
+                    if (string.IsNullOrEmpty(purchasePayment.SupplierId))
+                        ModelState.AddModelError("supplierid", $"Supplier ID is required to register invoice");
                 }
                 else
                 {
@@ -675,6 +678,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     invoice.Status = "Editing";
                     invoice.Grn = "";
                     invoice.ForBranchId = purchasePayment.ForBranchId;
+
+                    if (string.IsNullOrEmpty(purchasePayment.SupplierId))
+                        ModelState.AddModelError("supplierid", $"Supplier ID is required to register invoice");
                 }
                 else
                 {
@@ -1569,6 +1575,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ReferenceDoc ="",
                         BranchId=0,//to change
                         InvoiceReferenceDoc =record.InvoiceNumber,
+                        DebitSum = debit,
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now
@@ -1659,13 +1666,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 }
                 #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 10);
-                record.IsOnlineApproved = false;
-                record.IsSendForApproval = false;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
-                record.IsVoid = false;
-                record.VoidBy = User.Identity.Name;
-                record.VoidTime = DateTime.Now;
+                record.IsVoid = true;
                 _db.APPaybleInvoices.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();

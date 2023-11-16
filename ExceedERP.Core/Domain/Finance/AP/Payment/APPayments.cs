@@ -86,7 +86,7 @@ namespace ExceedERP.Core.Domain.Finance.AP
         [NotMapped]
         public decimal OutstandingBalance { get; set; }//unpaid
         [Display(Name = "Is Settled?")]
-        public bool IsSettled { get; set; }//for prepayment only
+        public bool IsSettled { get; set; }
 
         public virtual ICollection<ApPaymentDistribution> ApPaymentDistribution { get; set; }
         public virtual ICollection<ApPaymentValidation> ApPaymentValidation { get; set; }

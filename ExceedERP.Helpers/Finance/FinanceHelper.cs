@@ -22,8 +22,7 @@ namespace ExceedERP.Helpers.Finance
         readonly AccountHelper _accountHelper = new AccountHelper();
         readonly DynamicAccountHelper _dynamicAccountHelper = new DynamicAccountHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
-        //lock
-        static object linksLock = new object();
+        
 
 
         public static bool CalculateProfitTax()

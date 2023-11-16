@@ -46,6 +46,7 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         public decimal SubTotal { get; set; }
         [Display(Name = "Total")]
         public decimal Total { get; set; }
+        public decimal Discount { get; set; }
         public string Remark { get; set; }
        public bool FromPreviousPurchase { get; set; }
     }

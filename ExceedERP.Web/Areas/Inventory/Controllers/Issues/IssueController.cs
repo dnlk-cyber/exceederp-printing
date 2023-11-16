@@ -91,6 +91,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Code = i.ItemCode
                 }).AsQueryable();
             ViewData["WorkItem"] = selectedWorkitem;
+
+            var suppliers = _db.ProcurementSuppliers;
+            var selectedSuppliers = suppliers.Select(
+                i => new
+                {
+                    Name = i.SupplierId + "-" + i.Name,
+                    Code = i.SupplierId
+                }).AsQueryable();
+            ViewData["Suppliers"] = selectedSuppliers;
         }
 
        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
@@ -120,6 +129,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 Remark = issue.Remark,
                 GLPeriodId = issue.GLPeriodId,
                 AssetRegistrationId = issue.AssetRegistrationId,
+                SupplierId = issue.SupplierId,
                 IsVoid = issue.IsVoid,
                 VoidBy = issue.VoidBy,
                 VoidTime = issue.VoidTime,
@@ -227,6 +237,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Remark = issue.Remark,
                     GLPeriodId = issue.GLPeriodId,
                     AssetRegistrationId = issue.AssetRegistrationId,
+                    SupplierId = issue.SupplierId,
                     IsVoid = issue.IsVoid,
                     VoidBy = issue.VoidBy,
                     VoidTime = issue.VoidTime,
@@ -342,7 +353,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Remark = issue.Remark,
                     GLPeriodId = issue.GLPeriodId,
                     AssetRegistrationId = issue.AssetRegistrationId,
-
+                    SupplierId = issue.SupplierId,
                     IsVoid = issue.IsVoid,
                     VoidBy = issue.VoidBy,
                     VoidTime = issue.VoidTime,
@@ -514,6 +525,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             var items = _db.IssueItems.Where(x => x.IssueID == id).ToList();
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
+                #region validate quantity
+
+                foreach (var item in record.IssueItems)
+                {
+                    if (item.IssuedQuantity <= 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill issued quantity for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
@@ -743,15 +769,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
                     Remark = record.Remark,
                     GLPeriodId = record.GLPeriodId,
-                    //IsVoid = record.IsVoid,
-                    //VoidBy = record.VoidBy,
-                    //VoidTime = record.VoidTime,
-                    //IsOnlineApproved = record.IsOnlineApproved,
-                    //OnlineApprovedBy = record.OnlineApprovedBy,
-                    //OnlineApprovedTime = record.OnlineApprovedTime,
-                    //IsOnlineTransferred = record.IsOnlineTransferred,
-                    //IsOnlineTransferredBy = record.IsOnlineTransferredBy,
-                    //OnlineTransferredTime = record.OnlineTransferredTime,
 
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,

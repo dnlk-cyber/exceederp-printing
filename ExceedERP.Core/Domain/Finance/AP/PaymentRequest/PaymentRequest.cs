@@ -39,6 +39,10 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         [Display(Name = "Employee")]
         public int EmployeeId { get; set; }
         public bool Paid { get; set; }
+        [Display(Name = "From Branch/Project")]
+        public int FromBranchId { get; set; }
+        [Display(Name = "From Business Unit")]
+        public int FromBusinessUnitId { get; set; }
         //budget controll
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
@@ -50,6 +54,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
         public virtual ICollection<PaymentRequestLine> PaymentRequestLines { get; set; }
         public virtual ICollection<FundTransferLine> FundTransferLines { get; set; }
         public virtual ICollection<PaymentRequestAttachment> PaymentRequestAttachments { get; set; }

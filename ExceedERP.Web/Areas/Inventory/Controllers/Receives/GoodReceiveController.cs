@@ -915,6 +915,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
             var items = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == id).ToList();
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && items.Any())
             {
+                #region validate qty,price and tax
+
+                foreach (var item in record.GoodReceiveItem)
+                {
+                    if (item.UnitPrice <= 0 || item.Quantity <= 0 || item.GLTaxRateID == 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill quantity, unit price and tax information for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
                 #region validate total receive
                 if (!record.IsManual)
                 {
@@ -1229,15 +1244,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                         Status = Enum.GetName(typeof(OperationStatuses), 5),
                         Remark = record.Remark,
                         GLPeriodId=record.GLPeriodId,
-                        //IsVoid = record.IsVoid,
-                        //VoidBy = record.VoidBy,
-                        //VoidTime = record.VoidTime,
-                        //IsOnlineApproved = record.IsOnlineApproved,
-                        //OnlineApprovedBy = record.OnlineApprovedBy,
-                        //OnlineApprovedTime = record.OnlineApprovedTime,
-                        //IsOnlineTransferred = record.IsOnlineTransferred,
-                        //IsOnlineTransferredBy = record.IsOnlineTransferredBy,
-                        //OnlineTransferredTime = record.OnlineTransferredTime,
                         CreatedBy = User.Identity.Name,
                         DateCreated = DateTime.Now,
                         ModifiedBy = record.ModifiedBy,

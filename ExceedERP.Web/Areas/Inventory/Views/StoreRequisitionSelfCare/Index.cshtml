@@ -113,6 +113,13 @@
               // model.Field(p => p.EmployeeId).Editable(false);
               model.Field(p => p.Status).Editable(false);
               //model.Field(p => p.RequestDate).Editable(false);
+              model.Field(p => p.PrevRequestDate).Editable(false);
+              model.Field(p => p.PrevKm).Editable(false);
+              model.Field(p => p.PrevLT).Editable(false);
+              model.Field(p => p.CurrentKm).Editable(false);
+              model.Field(p => p.DifferenceKm).Editable(false);
+              model.Field(p => p.Consumption).Editable(false);
+              model.Field(p => p.StandardConsumption).Editable(false);
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
               model.Field(p => p.ModifiedBy).Editable(false);
@@ -441,6 +448,13 @@
 
 
 <script>
+
+    function filterRequestors() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
     function isTransfer(obj) {
         if ($(obj).is(":checked")) {
             $("#tostoreDiv").show();
@@ -493,7 +507,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SendForApproval", "StoreRequisition", new { area = "Inventory" })',
+            url: '@Url.Action("SendForApproval", "StoreRequisitionSelfCare", new { area = "Inventory" })',
             data: { id: id },
             success: function(result) {
                 // toastr.warnning(result.Message);
@@ -543,7 +557,7 @@
         var recordStatus = "";
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetStatus", "StoreRequisition")',
+            url: '@Url.Action("GetStatus", "StoreRequisitionSelf")',
             data: { id: codeid },
             success: function (result) {
                 toastr.error(result.Message);

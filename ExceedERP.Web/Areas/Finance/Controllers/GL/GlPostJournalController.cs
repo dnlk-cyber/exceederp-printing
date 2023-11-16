@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
@@ -53,8 +54,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                    });
 
 
-            var users = _db.GLRecordJournals
-                            .Where(x => x.IsOnlineApproved && !x.isVoid && !x.isPosted).AsNoTracking().OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
+            var journals = _db.GLRecordJournals
+                            .Where(x => x.IsOnlineApproved && !x.isVoid && !x.isPosted);//.AsNoTracking().OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            journals = journals.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                journals = journals.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
+            var users = journals.AsNoTracking().OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
 
             ViewData["UserList"] = users
                     .Select(user => new
@@ -107,8 +120,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     .Where(x => x.PeriodName == period.Name)
                     .Where(x => x.isVoid == false)
                     .Where(x => x.isPosted == false)
-                    //.ToList();
-                        .AsQueryable();
+                    .AsQueryable();
+
+                List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+                unposted = unposted.Where(x => mybraches.Contains(x.BranchId));
+
+                if (GlobalHelper.IsMultipleBusinessUnit())
+                {
+                    List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                    unposted = unposted.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+                }
 
                 if (!string.IsNullOrEmpty(category))
                     unposted = unposted.Where(x => x.CategoryName == category).AsQueryable();
@@ -340,8 +361,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUnPostUser)]
         public JsonResult BatchUnPost(string category)
         {
-            var journals = _db.GLRecordJournals.Where(x => x.CategoryName == category).AsNoTracking().ToList();
+            var journals = _db.GLRecordJournals.Where(x => x.CategoryName == category);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            journals = journals.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                journals = journals.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
+            var journalList= journals.AsNoTracking().ToList();
             string userName = User.Identity.Name;
+
 
             foreach (var journal in journals)
             {

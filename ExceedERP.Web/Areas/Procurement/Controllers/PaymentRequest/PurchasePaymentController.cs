@@ -133,17 +133,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
             if(String.IsNullOrEmpty(purchasePayment.PoOrContractNumber))
                 ModelState.AddModelError("required", "Please select purchase order number");
 
-            var exist = _db.PurchasePayments.Where(x => x.Type == purchasePayment.Type).Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
+            var exist = _db.PurchasePayments
+                .Where(x => x.Type == purchasePayment.Type)//po
+                .Where(x => x.PaymentType != PaymentType.Credit) //credit has its own grn,can request on deliver..later will allow all
+                .Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
             if (exist != null)
                 ModelState.AddModelError("exisit","Payment request for this source ia already added");
 
             if(!IsItLegibleToAdd(purchasePayment))
                 ModelState.AddModelError("ilegitimate", "Please check if there  is correct payment schedule defined");
 
-            if (purchasePayment.PaymentType==PaymentType.Payment && purchasePayment.PurchasePaymentType == PurchasePaymentType.Credit && String.IsNullOrEmpty(purchasePayment.SupplierInvoice))
-            {
+            if (purchasePayment.PaymentType==PaymentType.Credit && String.IsNullOrEmpty(purchasePayment.SupplierInvoice))
                 ModelState.AddModelError("exisit", "Please fill supplier invoice number/reference");
-            }
+
 
             #endregion
             #region data
@@ -215,8 +217,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     ProcurementOfficer = purchasePayment.ProcurementOfficer,
                     ProcurementAnalyzer = purchasePayment.ProcurementAnalyzer,
 
-                    BranchId = purchasePayment.BranchId,
-                    BusinessUnitId = purchasePayment.BusinessUnitId,
+                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
 
                     Paid = purchasePayment.Paid,
 
@@ -256,7 +258,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
 
             var exist = _db.PurchasePayments
                 .Where(x=>x.PurchasePaymentId!=purchasePayment.PurchasePaymentId)
-                .Where(x => x.Type == purchasePayment.Type)
+                .Where(x => x.PaymentType != PaymentType.Credit) //credit has its own grn,can request on deliver..later will allow all
+                .Where(x => x.Type == purchasePayment.Type) //po
                 .Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
             if (exist != null)
                 ModelState.AddModelError("exisit", "Payment request for this source ia already added");
@@ -264,10 +267,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
             if (!IsItLegibleToAdd(purchasePayment))
                 ModelState.AddModelError("ilegitimate", "Please check if there  is correct payment schedule defined");
 
-            if (purchasePayment.PaymentType == PaymentType.Payment && purchasePayment.PurchasePaymentType == PurchasePaymentType.Credit && String.IsNullOrEmpty(purchasePayment.SupplierInvoice))
-            {
+            if (purchasePayment.PaymentType == PaymentType.Credit && String.IsNullOrEmpty(purchasePayment.SupplierInvoice))
                 ModelState.AddModelError("exisit", "Please fill supplier invoice number/reference");
-            }
+
 
             #endregion
             #region data
@@ -449,6 +451,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                     return Json(formattedData, JsonRequestBehavior.AllowGet);
                 }
 
+            }
+
+            if (record.NetPayable<=0)
+            {
+                var formattedData = new
+                {
+                    Message = "Net payable should be more than 0.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
             if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved)

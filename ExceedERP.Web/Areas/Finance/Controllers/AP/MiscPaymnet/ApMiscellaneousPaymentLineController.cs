@@ -66,7 +66,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             #region withholding calc
             var withholding = _db.GLTaxRates.Find(apMiscellaneousPaymentLine.WithholdingType);
             if (withholding != null)
-                apMiscellaneousPaymentLine.WithholdingAmount = apMiscellaneousPaymentLine.Amount * withholding.CalculatedRate;
+            {
+                if (tax != null && tax.IsCost)
+                {
+                    apMiscellaneousPaymentLine.WithholdingAmount = (apMiscellaneousPaymentLine.Amount+ apMiscellaneousPaymentLine.TaxAmount) * withholding.CalculatedRate;
+                }
+                else
+                {
+                    apMiscellaneousPaymentLine.WithholdingAmount = apMiscellaneousPaymentLine.Amount * withholding.CalculatedRate;
+                }
+            }
             #endregion
             #region withheld tax
 
@@ -149,7 +158,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             #region withholding calc
             var withholding = _db.GLTaxRates.Find(apMiscellaneousPaymentLine.WithholdingType);
             if (withholding != null)
-                apMiscellaneousPaymentLine.WithholdingAmount = apMiscellaneousPaymentLine.Amount * withholding.CalculatedRate;
+            {
+                if (tax != null && tax.IsCost)
+                {
+                    apMiscellaneousPaymentLine.WithholdingAmount = (apMiscellaneousPaymentLine.Amount + apMiscellaneousPaymentLine.TaxAmount) * withholding.CalculatedRate;
+                }
+                else
+                {
+                    apMiscellaneousPaymentLine.WithholdingAmount = apMiscellaneousPaymentLine.Amount * withholding.CalculatedRate;
+                }
+            }
             #endregion
             #region withheld tax
 

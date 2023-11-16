@@ -42,6 +42,8 @@ namespace ExceedERP.Core.Domain.Finance.AP
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
+        [Display(Name = "Is Settled?")]
+        public bool IsSettled { get; set; }
         public virtual ICollection<ApDirectPaymentLine> ApDirectPaymentLines { get; set; }
         public virtual ICollection<ApDirectPaymentDistribution> ApDirectPaymentDistribution { get; set; }
         public virtual ICollection<ApDirectPaymentValidation> ApDirectPaymentValidation { get; set; }
@@ -55,7 +57,7 @@ namespace ExceedERP.Core.Domain.Finance.AP
         [Required]
         [Display(Name = "Purpose of Payment")]
         public string Purpose { get; set; }
-        [Display(Name = "Functional Amount")]
+        [Display(Name = "Amount")]
         public decimal Amount { get; set; }
         [Display(Name = "Currency")]
         public string Currency { get; set; }

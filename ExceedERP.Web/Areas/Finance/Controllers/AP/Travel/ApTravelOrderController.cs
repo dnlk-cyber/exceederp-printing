@@ -47,6 +47,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 
 			ViewData["Branches"] = branches;
 
+			if (GlobalHelper.IsMultipleBusinessUnit())
+			{
+				var businessUnits = _db.BusinessUnits.ToList();
+				ViewData["BusinessUnits"] = businessUnits;
+			}
+
 			var items = _db.ApSetupItems.ToList();
 			ViewData["Items"] = items;
 		}
@@ -59,7 +65,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				.Where(x => mybraches.Contains(x.BranchId))
 				.Where(x => x.IsDepartmentOnlineApproved);
 
-			if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+			if (FinanceConfigurationHelper.IsPaymentBudgetControlEnabled())
 			{
 				aptravelorders = aptravelorders.Where(x => x.IsBudgetApproved);
 			}
@@ -73,8 +79,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				ApTravelOrderId = apTravelOrder.ApTravelOrderId,               
 				BranchId = apTravelOrder.BranchId,
 				BusinessUnitId = apTravelOrder.BusinessUnitId,
+				FromBranchId = apTravelOrder.FromBranchId,
+				FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
 				CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
 				CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+				CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
 				OrgStructureId = apTravelOrder.OrgStructureId,
 				PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 				RequestDate = apTravelOrder.RequestDate,
@@ -85,6 +94,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				Reference = apTravelOrder.Reference,
 				EmployeeId = apTravelOrder.EmployeeId,
 				IsForOther = apTravelOrder.IsForOther,
+				VehicleDistributionID = apTravelOrder.VehicleDistributionID,
+
+
 
 				ForwardedFrom = apTravelOrder.ForwardedFrom,
 				ForwardedTo = apTravelOrder.ForwardedTo,
@@ -137,6 +149,30 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				apTravelOrder.ForwardedTo = User.Identity.Name;
 
 			#endregion
+			#region data 
+			if (apTravelOrder.EmployeeId == 0)
+			{
+				ModelState.AddModelError("requester", "Please select requestor");
+			}
+			if (apTravelOrder.EmployeeId != 0)
+			{
+				var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
+				if (placement != null)
+				{
+					apTravelOrder.OrgStructureId = placement.OrgStructureId;
+					apTravelOrder.BranchId = placement.BranchId;
+					apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+				}
+				else
+				{
+					ModelState.AddModelError("placement", "Employee has not current placemnt");
+				}
+			}
+
+			apTravelOrder.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+			apTravelOrder.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+			apTravelOrder.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+			#endregion
 
 			if (ModelState.IsValid)
 			{
@@ -145,8 +181,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					
 					BranchId = apTravelOrder.BranchId,
 					BusinessUnitId = apTravelOrder.BusinessUnitId,
+					FromBranchId = apTravelOrder.FromBranchId,
+					FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
 					CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
 					CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+					CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
 					OrgStructureId = apTravelOrder.OrgStructureId,
 					PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 					RequestDate = apTravelOrder.RequestDate.Date,
@@ -206,6 +245,26 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult ApTravelOrders_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrder apTravelOrder)
 		{
+			#region data 
+			if (apTravelOrder.EmployeeId == 0)
+			{
+				ModelState.AddModelError("requester", "Please select requestor");
+			}
+			if (apTravelOrder.EmployeeId != 0)
+			{
+				var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apTravelOrder.EmployeeId && x.isCurrent);
+				if (placement != null)
+				{
+					apTravelOrder.OrgStructureId = placement.OrgStructureId;
+					apTravelOrder.BranchId = placement.BranchId;
+					apTravelOrder.BusinessUnitId = placement.BusinessUnitId;
+				}
+				else
+				{
+					ModelState.AddModelError("placement", "Employee has not current placemnt");
+				}
+			}
+			#endregion
 			if (ModelState.IsValid)
 			{
 				var entity = new ApTravelOrder
@@ -213,8 +272,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					ApTravelOrderId = apTravelOrder.ApTravelOrderId,				   
 					BranchId = apTravelOrder.BranchId,
 					BusinessUnitId = apTravelOrder.BusinessUnitId,
+					FromBranchId = apTravelOrder.FromBranchId,
+					FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
 					CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
 					CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+					CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
 					OrgStructureId = apTravelOrder.OrgStructureId,
 					PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 					RequestDate = apTravelOrder.RequestDate,
@@ -278,8 +340,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					ApTravelOrderId = apTravelOrder.ApTravelOrderId,				   
 					BranchId = apTravelOrder.BranchId,
 					BusinessUnitId = apTravelOrder.BusinessUnitId,
+					FromBranchId = apTravelOrder.FromBranchId,
+					FromBusinessUnitId = apTravelOrder.FromBusinessUnitId,
 					CreatedAtBranchId = apTravelOrder.CreatedAtBranchId,
 					CreatedAtBusinessUnitId = apTravelOrder.CreatedAtBusinessUnitId,
+					CreatedAtOrgStructureId = apTravelOrder.CreatedAtOrgStructureId,
 					OrgStructureId = apTravelOrder.OrgStructureId,
 					PurposeOfTravel = apTravelOrder.PurposeOfTravel,
 					RequestDate = apTravelOrder.RequestDate,

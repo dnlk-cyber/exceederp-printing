@@ -26,7 +26,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         private readonly ReportHelper _reportHelper = new ReportHelper();
         readonly AccountHelper _accountHelper = new AccountHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
-        private readonly object refreshLock = new object();
+        //private readonly object refreshLock = new object();
 
         public ActionResult Index()
         {
@@ -366,6 +366,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         }
         private void GetBookDataFromLedger(string naturalAcc,string subAcc)
         {
+            object refreshLock = naturalAcc + subAcc;
             lock (refreshLock)
             {
                 var ledgers = _db.GLLedgerPostings.Where(x => x.AccountSegment == naturalAcc)

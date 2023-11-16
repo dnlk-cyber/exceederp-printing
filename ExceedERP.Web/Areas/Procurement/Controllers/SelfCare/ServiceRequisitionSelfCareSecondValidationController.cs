@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -13,6 +14,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 {
+
     public class ServiceRequisitionSelfCareSecondValidationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -22,7 +24,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return View();
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
+        [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
         public ActionResult PurchaseRequisitionSecondValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchaseRequisitionSecondValidation> purchaserequisitionsecondvalidations = db.PurchaseRequisitionSecondValidations.Where(x=>x.PurchaseRequisitionID==id);

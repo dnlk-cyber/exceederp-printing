@@ -40,12 +40,23 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
         public virtual ICollection<ApTravelExpenseExpense> Expenses { get; set; }
         public virtual ICollection<ApTravelExpensePayment> Payments { get; set; }
         public virtual ICollection<ApTravelExpenseRefund> Refunds { get; set; }
+        public virtual ICollection<ApTravelExpenseClaimAttachment> Attachments { get; set; }
         public virtual ICollection<ApTravelExpenseValidation> Validations { get; set; }
         public virtual ICollection<ApTravelExpenseDepartmentValidation> TravelExpenseDepartmentValidations { get; set; }
         public virtual ICollection<ApTravelExpenseBudgetValidation> ApTravelExpenseBudgetValidations { get; set; }
-        public virtual ICollection<ApTravelExpenseDistribution> Distributions { get; set; }
+       // public virtual ICollection<ApTravelExpenseDistribution> Distributions { get; set; }
+    }
+
+    public class ApTravelExpenseClaimAttachment
+    {
+        public int ApTravelExpenseClaimAttachmentId { get; set; }
+        public int ApTravelExpenseClaimId { get; set; }
+        public virtual ApTravelExpenseClaim ApTravelExpenseClaim { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 }

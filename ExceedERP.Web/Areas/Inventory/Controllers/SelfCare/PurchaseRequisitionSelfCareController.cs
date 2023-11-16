@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -16,12 +17,13 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
 {
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PurchaseRequisitionSelfCareController : Controller
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
         private readonly ApplicationDbContext userdb = new ApplicationDbContext();
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+        
         public ActionResult Index()
         {
             PopulateViewData();
@@ -77,12 +79,17 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
             var branches = db.Branch;
             ViewData["Branches"] = branches;
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
-             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //var xb = System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion);
             var user = userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
            // var storekeepers = db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
@@ -113,6 +120,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                 BranchId = purchaseRequisition.BranchId,
                 BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                ForBranchId = purchaseRequisition.ForBranchId,
+                ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                 OrgStructureId = purchaseRequisition.OrgStructureId,
                 EmployeeId = purchaseRequisition.EmployeeId,
                 ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -124,7 +133,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 GLPeriodId = purchaseRequisition.GLPeriodId,
                 NextApprover = purchaseRequisition.NextApprover,
                 Status = purchaseRequisition.Status,
-                ForBranchId = purchaseRequisition.ForBranchId,
+               
                 PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
                 TenderType = purchaseRequisition.TenderType,
                 IsManual = purchaseRequisition.IsManual,
@@ -173,7 +182,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Create([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -208,6 +217,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = 0,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                     BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                     BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
@@ -221,7 +232,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                     IsManual = true,
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
                     NextApprover = purchaseRequisition.NextApprover,
-                    ForBranchId = purchaseRequisition.ForBranchId,
+                   
                     PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
                     TenderType = purchaseRequisition.TenderType,
                     PlateNo = purchaseRequisition.PlateNo,
@@ -255,7 +266,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+        
         public ActionResult PurchaseRequisitions_Update([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
             #region validation 
@@ -288,6 +299,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                     BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
@@ -300,7 +313,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
                     PurchaseCategory = purchaseRequisition.PurchaseCategory,
                     ItemType = purchaseRequisition.ItemType,
                     NextApprover = purchaseRequisition.NextApprover,
-                    ForBranchId = purchaseRequisition.ForBranchId,
+                    
                     PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
                     TenderType = purchaseRequisition.TenderType,
                     IsManual = purchaseRequisition.IsManual,
@@ -336,7 +349,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -385,7 +398,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+       
         public JsonResult SendForApproval(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);
@@ -450,7 +463,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
             return null;
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+        
         public JsonResult SendForSecondApproval(int id, string user)
         {
             var record = db.PurchaseRequisitions.Find(id);

@@ -60,7 +60,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
         public ActionResult PurchasePayments_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PurchasePayment> PurchasePayments = _db.PurchasePayments;
-            if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
+            if (FinanceConfigurationHelper.IsPaymentBudgetControlEnabled())
             {
                 PurchasePayments = PurchasePayments.Where(x => x.IsBudgetApproved);
             }

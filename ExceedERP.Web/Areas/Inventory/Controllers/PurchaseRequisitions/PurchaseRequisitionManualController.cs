@@ -77,6 +77,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             var branches = db.Branch;
             ViewData["Branches"] = branches;
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
         }
 
         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
@@ -130,6 +136,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
             {
                 PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                 StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                ForBranchId = purchaseRequisition.ForBranchId,
+                ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                 BranchId = purchaseRequisition.BranchId,
                 BusinessUnitId = purchaseRequisition.BusinessUnitId,
                 OrgStructureId = purchaseRequisition.OrgStructureId,
@@ -143,7 +151,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 GLPeriodId = purchaseRequisition.GLPeriodId,
                 NextApprover = purchaseRequisition.NextApprover,
                 Status = purchaseRequisition.Status,
-                ForBranchId = purchaseRequisition.ForBranchId,
+               
                 PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
                 TenderType = purchaseRequisition.TenderType,
                 IsManual = purchaseRequisition.IsManual,
@@ -230,7 +238,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = 0,
-                    BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -243,7 +254,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     IsManual = true,
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
                     NextApprover = purchaseRequisition.NextApprover,
-                    ForBranchId = purchaseRequisition.ForBranchId,
+                    
                     PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
                     TenderType = purchaseRequisition.TenderType,
                     PlateNo = purchaseRequisition.PlateNo,
@@ -318,7 +329,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                     BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
@@ -330,7 +344,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     PurchaseCategory = purchaseRequisition.PurchaseCategory,
                     ItemType = purchaseRequisition.ItemType,
                     NextApprover = purchaseRequisition.NextApprover,
-                    ForBranchId = purchaseRequisition.ForBranchId,
+                   
                     PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
                     TenderType = purchaseRequisition.TenderType,
                     IsManual = purchaseRequisition.IsManual,
@@ -380,6 +394,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 {
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                     BranchId = purchaseRequisition.BranchId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
@@ -390,7 +406,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     PurchaseCategory = purchaseRequisition.PurchaseCategory,
                     ItemType = purchaseRequisition.ItemType,
                     NextApprover = purchaseRequisition.NextApprover,
-                    ForBranchId = purchaseRequisition.ForBranchId,
                     PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
 
                     Status = purchaseRequisition.Status,

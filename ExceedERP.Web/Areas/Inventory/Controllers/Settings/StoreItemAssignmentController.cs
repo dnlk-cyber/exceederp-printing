@@ -292,10 +292,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                 #endregion
 
                 //job to update related inventory records
-                if (InventoryConfigurationHelper.RecalculateSourceTransactionOnBincardUpdate())
-                {
-                    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateInventoryRecordWithBincardData(assignmentid, binid));
-                }
+                //if (InventoryConfigurationHelper.RecalculateSourceTransactionOnBincardUpdate())
+                //{
+                //    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateInventoryRecordWithBincardData(assignmentid, binid));
+                //}
                 if (String.IsNullOrEmpty(errorMessage))
                 {
                     var formattedData = new

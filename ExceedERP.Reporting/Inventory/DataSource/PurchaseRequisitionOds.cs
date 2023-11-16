@@ -22,7 +22,8 @@ namespace ExceedERP.Reporting.Inventory.DataSource
             try
             {
 
-               var reportData = _db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisition.IsOnlineApproved)
+               var reportData = _db.PurchaseRequisitionItems
+                   .Where(x => x.PurchaseRequisition.IsOnlineApproved)
                    .Where(x => x.PurchaseRequisition.IsVoid == false)
                     .Where(x => x.PurchaseRequisition.RequestDate >= from)
                     .Where(x => x.PurchaseRequisition.RequestDate <= to).ToList();

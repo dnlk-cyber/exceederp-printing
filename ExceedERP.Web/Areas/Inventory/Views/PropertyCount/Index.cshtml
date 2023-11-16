@@ -80,7 +80,7 @@
                                       .Columns(columns =>
                                       {
                                           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(110).Editable("isEditable");
-                                          columns.Bound(c => c.ItemCode).Width(460).Title("Items").EditorTemplateName("ItemSelector").Width(260).Editable("isEditable");
+                                          columns.Bound(c => c.ItemCode).Width(600).Title("Items").EditorTemplateName("ItemSelector").Width(400).Editable("isEditable");
                                           columns.Bound(c => c.ItemCodeReadOnly).Width(100);
                                           columns.Bound(c => c.ItemName).Width(200);
                                           columns.Bound(c => c.Count).Width(80);

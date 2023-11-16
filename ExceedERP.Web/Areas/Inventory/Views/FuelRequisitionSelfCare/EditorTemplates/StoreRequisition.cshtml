@@ -20,24 +20,24 @@
             </div>
             <div class="row"></div>
 
-           
+
 
             <div class="form-group">
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @Html.Kendo().TextBoxFor(model => model.OrgStructureId).HtmlAttributes(new { @readonly = "readonly" })
                     @*@(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                    .ValuePrimitive(true)
-                    .OptionLabel("Select Work Unit")
-                    .DataTextField("Name")
-                    .DataValueField("OrgStructureId")
-                    .Filter("contains")
-                    .DataSource(dataSource =>
-                    {
-                        dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}))
-                            .ServerFiltering(false);
-                    })
-                    )*@
+                .ValuePrimitive(true)
+                .OptionLabel("Select Work Unit")
+                .DataTextField("Name")
+                .DataValueField("OrgStructureId")
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}))
+                        .ServerFiltering(false);
+                })
+                )*@
                 </div>
             </div>
             <div class="row"></div>
@@ -83,11 +83,38 @@
             </div>
             <div class="row"></div>
 
-            
+            <div class="form-group">
+                @Html.LabelFor(model => model.PrevRequestDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.PrevRequestDate)
+                    @Html.ValidationMessageFor(model => model.PrevRequestDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PrevKm, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.PrevKm).Events(e => e.Change("calcDifference"))
+                    @Html.ValidationMessageFor(model => model.PrevKm, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.DifferenceKm, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.DifferenceKm).HtmlAttributes(new { @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.DifferenceKm, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+
 
         </div>
         <div class="col-md-3 ro1">
-            
+
             <div class="form-group">
                 @Html.LabelFor(model => model.GLPeriodId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
@@ -122,8 +149,8 @@
             </div>
             <div class="row"></div>
 
-           
-            <br/>
+
+            <br />
             <div class="form-group">
                 @*@Html.LabelFor(model => model.IsTransfer, htmlAttributes: new { @class = "control-label col-md-8" })*@
                 <div class="col-md-6">
@@ -153,7 +180,7 @@
                 </div>
             </div>
             <div class="row"></div>
-            
+
             <div class="form-group">
                 @Html.LabelFor(model => model.PlateNo, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
@@ -170,6 +197,24 @@
                                   })
                     )
                     @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PrevLT, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.PrevLT).Events(e => e.Change("calcDifference"))
+                    @Html.ValidationMessageFor(model => model.PrevLT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CurrentKm, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.CurrentKm).Events(e => e.Change("calcDifference"))
+                    @Html.ValidationMessageFor(model => model.CurrentKm, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>
@@ -192,8 +237,8 @@
                                           .Filter("contains")
                                           .DataSource(dataSource =>
                                           {
-                                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
-                                                  .ServerFiltering(false);
+                                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("filterRequestors"))
+                                                  .ServerFiltering(true);
                                           })
                     )
                     @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
@@ -217,7 +262,7 @@
                     @Html.ValidationMessageFor(model => model.ExternalDriver, "", new { @class = "text-danger" })
                 </div>
             </div>
-            <div class="row"></div>           
+            <div class="row"></div>
 
             <br />
             <div class="form-group">
@@ -249,6 +294,24 @@
             </div>
             <div class="row"></div>
             <br />
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.StandardConsumption, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.StandardConsumption).HtmlAttributes(new { @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.StandardConsumption, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Consumption, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Consumption).HtmlAttributes(new { @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Consumption, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
             <div class="form-group">
                 @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">

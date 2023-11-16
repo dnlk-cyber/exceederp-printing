@@ -34,6 +34,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 SourceId = apPaymentSettlementLine.SourceId,
                 Purpose = apPaymentSettlementLine.Purpose,
                 Amount = apPaymentSettlementLine.Amount,
+                NetAmount = apPaymentSettlementLine.NetAmount,
                 AccountCode = apPaymentSettlementLine.AccountCode,
 
                 GLTaxRateID = apPaymentSettlementLine.GLTaxRateID,
@@ -57,7 +58,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public ActionResult ApPaymentSettlementLines_Create(int id,[DataSourceRequest]DataSourceRequest request, ApPaymentSettlementLine apPaymentSettlementLine)
         {
             #region validation
-            if(apPaymentSettlementLine.Source==SettlemetSource.Other)
+            if(apPaymentSettlementLine.Source==SettlemetSource.NA.ToString())
             {
                 if(apPaymentSettlementLine.Amount<=0)
                     ModelState.AddModelError("amount", "Please fill amount.");
@@ -65,7 +66,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     ModelState.AddModelError("account", "Please select account.");
             }
 
-            var exist = _db.ApPaymentSettlementLines.Where(x => x.Source !=SettlemetSource.Other)
+            if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
+            {
+                if (apPaymentSettlementLine.AccountCode == null)
+                    ModelState.AddModelError("sourceid", "Please select source document.");
+            }
+
+            var exist = _db.ApPaymentSettlementLines.Where(x => x.Source !=SettlemetSource.NA.ToString())
                                                     .Where(x => x.Source == apPaymentSettlementLine.Source)
                                                     .Where(x => x.SourceId == apPaymentSettlementLine.SourceId).FirstOrDefault();
             if(exist!=null)
@@ -73,12 +80,81 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             #endregion
             #region data
-            if (apPaymentSettlementLine.Source == SettlemetSource.Prepayment)
+            if (apPaymentSettlementLine.Source == SettlemetSource.Prepayment.ToString() && apPaymentSettlementLine.AccountCode != null)
             {
                 //get from related prepayment
                 var prepayment = _db.APPayments.Find(apPaymentSettlementLine.SourceId);
-                apPaymentSettlementLine.Amount = prepayment.PrepaymentAmount;
+                //apPaymentSettlementLine.Amount = prepayment.PrepaymentAmount;
+                apPaymentSettlementLine.NetAmount = prepayment.NetAmount;
             }
+            else if (apPaymentSettlementLine.Source == SettlemetSource.Payment.ToString() && apPaymentSettlementLine.AccountCode != null)
+            {
+                //get from related prepayment
+                var prepayment = _db.APPayments.Find(apPaymentSettlementLine.SourceId);
+                //apPaymentSettlementLine.Amount = prepayment.PaymentAmount;
+                apPaymentSettlementLine.NetAmount = prepayment.NetAmount;
+
+            }
+            else if (apPaymentSettlementLine.Source == SettlemetSource.DirectPayment.ToString() && apPaymentSettlementLine.AccountCode != null)
+            {
+                //get from related prepayment
+                var directLines = _db.ApDirectPaymentLines.Where(x => x.ApDirectPaymentLineId == apPaymentSettlementLine.SourceId).ToList();
+                if (directLines.Any())
+                    apPaymentSettlementLine.NetAmount = directLines.Sum(x => x.NetPayable);
+                else
+                    apPaymentSettlementLine.NetAmount = 0;
+            }
+            else if (apPaymentSettlementLine.Source == SettlemetSource.NA.ToString())
+            {
+                #region tax calc
+                var tax = _db.GLTaxRates.Find(apPaymentSettlementLine.GLTaxRateID);
+                if (tax != null)
+                {
+                    apPaymentSettlementLine.TaxAmount = apPaymentSettlementLine.Amount * tax.CalculatedRate;
+                }
+                #endregion
+                #region withholding calc
+                var withholding = _db.GLTaxRates.Find(apPaymentSettlementLine.WithholdingType);
+                if (withholding != null)
+                {
+                    if (tax != null && tax.IsCost)
+                    {
+                        apPaymentSettlementLine.WithholdingAmount = (apPaymentSettlementLine.Amount + apPaymentSettlementLine.TaxAmount) * withholding.CalculatedRate;
+                    }
+                    else
+                    {
+                        apPaymentSettlementLine.WithholdingAmount = apPaymentSettlementLine.Amount * withholding.CalculatedRate;
+                    }
+                }
+                #endregion
+                #region withheld tax
+
+                if (apPaymentSettlementLine.WithholdTax)
+                {
+                    //get the percentage
+                    var varwitholding = _db.GLVatWithholdings.FirstOrDefault();
+                    if (varwitholding != null)
+                    {
+                        apPaymentSettlementLine.WithholdTaxAmount = apPaymentSettlementLine.TaxAmount * (varwitholding.WithholdPercent / 100);
+                    }
+                    else
+                    {
+                        apPaymentSettlementLine.WithholdTaxAmount = apPaymentSettlementLine.TaxAmount;
+                    }
+                }
+                else
+                {
+                    apPaymentSettlementLine.WithholdTaxAmount = 0;
+                }
+                #endregion
+                #region net
+                apPaymentSettlementLine.NetAmount = apPaymentSettlementLine.Amount
+                                                        - apPaymentSettlementLine.WithholdingAmount
+                                                        + apPaymentSettlementLine.TaxAmount
+                                                        - apPaymentSettlementLine.WithholdTaxAmount;
+                #endregion
+            }
+
             #endregion
 
             if (ModelState.IsValid)
@@ -90,6 +166,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     SourceId = apPaymentSettlementLine.SourceId,
                     Purpose = apPaymentSettlementLine.Purpose,
                     Amount = apPaymentSettlementLine.Amount,
+                    NetAmount = apPaymentSettlementLine.NetAmount,
                     AccountCode = apPaymentSettlementLine.AccountCode,
 
                     GLTaxRateID = apPaymentSettlementLine.GLTaxRateID,
@@ -121,7 +198,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public ActionResult ApPaymentSettlementLines_Update([DataSourceRequest]DataSourceRequest request, ApPaymentSettlementLine apPaymentSettlementLine)
         {
             #region validation
-            if (apPaymentSettlementLine.Source == SettlemetSource.Other)
+            if (apPaymentSettlementLine.Source == SettlemetSource.NA.ToString())
             {
                 if (apPaymentSettlementLine.Amount <= 0)
                     ModelState.AddModelError("amount", "Please fill amount.");
@@ -129,7 +206,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     ModelState.AddModelError("account", "Please select account.");
             }
 
-            var exist = _db.ApPaymentSettlementLines.Where(x => x.Source != SettlemetSource.Other)
+            if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
+            {
+                if (apPaymentSettlementLine.AccountCode == null)
+                    ModelState.AddModelError("sourceid", "Please select source document.");
+            }
+
+            var exist = _db.ApPaymentSettlementLines.Where(x => x.Source != SettlemetSource.NA.ToString())
                                                     .Where(x => x.ApPaymentSettlementId != apPaymentSettlementLine.ApPaymentSettlementId)
                                                     .Where(x => x.Source == apPaymentSettlementLine.Source)
                                                     .Where(x => x.SourceId == apPaymentSettlementLine.SourceId).FirstOrDefault();
@@ -138,11 +221,79 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             #endregion
             #region data
-            if (apPaymentSettlementLine.Source == SettlemetSource.Prepayment)
+            if (apPaymentSettlementLine.Source == SettlemetSource.Prepayment.ToString() && apPaymentSettlementLine.AccountCode != null)
             {
                 //get from related prepayment
                 var prepayment = _db.APPayments.Find(apPaymentSettlementLine.SourceId);
-                apPaymentSettlementLine.Amount = prepayment.PrepaymentAmount;
+                //apPaymentSettlementLine.Amount = prepayment.PrepaymentAmount;
+                apPaymentSettlementLine.NetAmount = prepayment.NetAmount;
+            }
+            else if (apPaymentSettlementLine.Source == SettlemetSource.Payment.ToString() && apPaymentSettlementLine.AccountCode != null)
+            {
+                //get from related prepayment
+                var prepayment = _db.APPayments.Find(apPaymentSettlementLine.SourceId);
+                //apPaymentSettlementLine.Amount = prepayment.PaymentAmount;
+                apPaymentSettlementLine.NetAmount = prepayment.NetAmount;
+
+            }
+            else if (apPaymentSettlementLine.Source == SettlemetSource.DirectPayment.ToString() && apPaymentSettlementLine.AccountCode != null)
+            {
+                //get from related prepayment
+                var directLines = _db.ApDirectPaymentLines.Where(x => x.ApDirectPaymentLineId == apPaymentSettlementLine.SourceId).ToList();
+                if (directLines.Any())
+                    apPaymentSettlementLine.NetAmount = directLines.Sum(x => x.NetPayable);
+                else
+                    apPaymentSettlementLine.NetAmount = 0;
+            }
+            else if (apPaymentSettlementLine.Source == SettlemetSource.NA.ToString())
+            {
+                #region tax calc
+                var tax = _db.GLTaxRates.Find(apPaymentSettlementLine.GLTaxRateID);
+                if (tax != null)
+                {
+                    apPaymentSettlementLine.TaxAmount = apPaymentSettlementLine.Amount * tax.CalculatedRate;
+                }
+                #endregion
+                #region withholding calc
+                var withholding = _db.GLTaxRates.Find(apPaymentSettlementLine.WithholdingType);
+                if (withholding != null)
+                {
+                    if (tax != null && tax.IsCost)
+                    {
+                        apPaymentSettlementLine.WithholdingAmount = (apPaymentSettlementLine.Amount + apPaymentSettlementLine.TaxAmount) * withholding.CalculatedRate;
+                    }
+                    else
+                    {
+                        apPaymentSettlementLine.WithholdingAmount = apPaymentSettlementLine.Amount * withholding.CalculatedRate;
+                    }
+                }
+                #endregion
+                #region withheld tax
+
+                if (apPaymentSettlementLine.WithholdTax)
+                {
+                    //get the percentage
+                    var varwitholding = _db.GLVatWithholdings.FirstOrDefault();
+                    if (varwitholding != null)
+                    {
+                        apPaymentSettlementLine.WithholdTaxAmount = apPaymentSettlementLine.TaxAmount * (varwitholding.WithholdPercent / 100);
+                    }
+                    else
+                    {
+                        apPaymentSettlementLine.WithholdTaxAmount = apPaymentSettlementLine.TaxAmount;
+                    }
+                }
+                else
+                {
+                    apPaymentSettlementLine.WithholdTaxAmount = 0;
+                }
+                #endregion
+                #region net
+                apPaymentSettlementLine.NetAmount = apPaymentSettlementLine.Amount
+                                                        - apPaymentSettlementLine.WithholdingAmount
+                                                        + apPaymentSettlementLine.TaxAmount
+                                                        - apPaymentSettlementLine.WithholdTaxAmount;
+                #endregion
             }
             #endregion
             if (ModelState.IsValid)
@@ -155,6 +306,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     SourceId = apPaymentSettlementLine.SourceId,
                     Purpose = apPaymentSettlementLine.Purpose,
                     Amount = apPaymentSettlementLine.Amount,
+                    NetAmount = apPaymentSettlementLine.NetAmount,
                     AccountCode = apPaymentSettlementLine.AccountCode,
 
                     GLTaxRateID = apPaymentSettlementLine.GLTaxRateID,
@@ -195,6 +347,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     SourceId = apPaymentSettlementLine.SourceId,
                     Purpose = apPaymentSettlementLine.Purpose,
                     Amount = apPaymentSettlementLine.Amount,
+                    NetAmount = apPaymentSettlementLine.NetAmount,
                     AccountCode = apPaymentSettlementLine.AccountCode,
 
                     GLTaxRateID = apPaymentSettlementLine.GLTaxRateID,

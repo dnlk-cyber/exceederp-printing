@@ -100,6 +100,12 @@ namespace ExceedERP.Core.Domain.Procurement.Settings
         Credit
     }
 
+    public enum AmountType
+    {
+        Percent,
+        Amount
+    }
+
     public enum PurchaseStatus
     {
         New,

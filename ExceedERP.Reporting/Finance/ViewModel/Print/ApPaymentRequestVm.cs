@@ -42,6 +42,9 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedDate { get; set; }
         public Image BudgetSignature { get; set; }
+        public string AuthorizedBy { get; set; }
+        public DateTime? AuthorizedDate { get; set; }
+        public Image AuthorizedSignature { get; set; }
         public decimal Total { get; set; }
     }
 

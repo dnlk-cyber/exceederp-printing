@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
@@ -183,6 +184,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 OutstandingBalance = apPayment.OutstandingBalance,
                 ForBranchId = apPayment.ForBranchId,
 
+                IsSettled = apPayment.IsSettled,
+
                 Remark = apPayment.Remark,
                 IsSendForApproval = apPayment.IsSendForApproval,
                 IsOnlineTransferred = apPayment.IsOnlineTransferred,
@@ -243,6 +246,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ModelState.AddModelError("Payment amount", $"{apPayment.PaymentReference}  already exists in the system.\n total paid will be over payment request by {sumInPayment = apPayment.InvoiceAmount}");
                 }
             }
+
+            if (apPayment.CollectedByPurchaser && apPayment.EmployeeId == 0)
+                ModelState.AddModelError("zero", "System could not get purchaser information from purchase source.");
+
             #endregion
             #region data
             if (!String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
@@ -255,10 +262,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     if (paymentRequest != null)
                     {
                         apPayment.SupplierId = paymentRequest.SupplierId;
-                        apPayment.SupplierName = paymentRequest.SupplierName;
+                        apPayment.SupplierName = paymentRequest.SupplierName;                      
                         apPayment.BranchId = paymentRequest.BranchId;
                         apPayment.BusinessUnitId = paymentRequest.BusinessUnitId;
                         apPayment.ForBranchId = paymentRequest.ForBranchId;
+                        if (apPayment.EmployeeId == 0 || apPayment.EmployeeId == null)
+                            apPayment.EmployeeId = paymentRequest.ProcurementOfficer;
                     }
                 }
 
@@ -269,6 +278,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         apPayment.SupplierId = invoice.SupplierId;
                         apPayment.SupplierName = invoice.SupplierName;
+                        if (apPayment.EmployeeId == 0 || apPayment.EmployeeId == null)
+                            apPayment.EmployeeId = invoice.EmployeeId;
                     }
                 }
             }
@@ -287,7 +298,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             {
                 var withholdingtype = _db.GLTaxRates.Find(int.Parse(apPayment.WithholdingType));
                 if (withholdingtype != null)
-                    apPayment.WithholdingAmount = apPayment.PaymentAmount * withholdingtype.CalculatedRate;
+                {
+                    if (tax != null && tax.IsCost)
+                    {
+                        apPayment.WithholdingAmount = (apPayment.PaymentAmount+ apPayment.TaxAmount) * withholdingtype.CalculatedRate;
+                    }
+                    else
+                    {
+                        apPayment.WithholdingAmount = apPayment.PaymentAmount * withholdingtype.CalculatedRate;
+                    }
+                }
             }
 
             if (apPayment.WithholdTax)
@@ -328,6 +348,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     SupplierName = apPayment.SupplierName,
                     SupplierId = apPayment.SupplierId,
                     InvoiceNumber = apPayment.InvoiceNumber,
+                    EmployeeId = apPayment.EmployeeId,
                     InvoiceAmount = apPayment.InvoiceAmount,
                     PaymentAmount = apPayment.PaymentAmount,
                     RemainingBalance = apPayment.RemainingBalance,
@@ -341,7 +362,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     PoType = apPayment.PoType,
                     PurchaseReference = apPayment.PurchaseReference,
                     CollectedByPurchaser = apPayment.CollectedByPurchaser,
-                    EmployeeId = apPayment.EmployeeId,
                     GLTaxRateID = apPayment.GLTaxRateID,
                     TaxAmount = apPayment.TaxAmount,
                     WithholdingType = apPayment.WithholdingType,
@@ -351,6 +371,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     PrepaymentBalance = apPayment.PrepaymentBalance,
                     OutstandingBalance = apPayment.OutstandingBalance,
                     ForBranchId = apPayment.ForBranchId,
+                    IsSettled = apPayment.IsSettled,
                     Remark = apPayment.Remark,
                     IsSendForApproval = apPayment.IsSendForApproval,
                     IsOnlineTransferred = apPayment.IsOnlineTransferred,
@@ -429,6 +450,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ModelState.AddModelError("Payment amount", $"{apPayment.PaymentReference}  already exists in the system.\n total paid will be over payment request by {sumInPayment = apPayment.InvoiceAmount}");
                 }
             }
+
+            if (apPayment.CollectedByPurchaser && apPayment.EmployeeId == 0)
+                ModelState.AddModelError("zero", "System could not get purchaser information from purchase source.");
+
             #endregion
             #region data
             if (!String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
@@ -441,10 +466,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     if (paymentRequest != null)
                     {
                         apPayment.SupplierId = paymentRequest.SupplierId;
-                        apPayment.SupplierName = paymentRequest.SupplierName;
+                        apPayment.SupplierName = paymentRequest.SupplierName;                    
                         apPayment.BranchId = paymentRequest.BranchId;
                         apPayment.BusinessUnitId = paymentRequest.BusinessUnitId;
                         apPayment.ForBranchId = paymentRequest.ForBranchId;
+                        if (apPayment.EmployeeId == 0 || apPayment.EmployeeId == null)
+                            apPayment.EmployeeId = paymentRequest.ProcurementOfficer;
                     }
                 }
 
@@ -455,6 +482,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         apPayment.SupplierId = invoice.SupplierId;
                         apPayment.SupplierName = invoice.SupplierName;
+                        if (apPayment.EmployeeId == 0 || apPayment.EmployeeId == null)
+                            apPayment.EmployeeId = invoice.EmployeeId;
                     }
                 }
             }
@@ -471,7 +500,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             {
                 var withholdingtype = _db.GLTaxRates.Find(int.Parse(apPayment.WithholdingType));
                 if (withholdingtype != null)
-                    apPayment.WithholdingAmount = apPayment.PaymentAmount * withholdingtype.CalculatedRate;
+                {
+                    if (tax != null && tax.IsCost)
+                    {
+                        apPayment.WithholdingAmount = (apPayment.PaymentAmount + apPayment.TaxAmount) * withholdingtype.CalculatedRate;
+                    }
+                    else
+                    {
+                        apPayment.WithholdingAmount = apPayment.PaymentAmount * withholdingtype.CalculatedRate;
+                    }
+                }
             }
 
             if (apPayment.WithholdTax)
@@ -537,6 +575,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         SupplierName = apPayment.SupplierName,
                         SupplierId = apPayment.SupplierId,
                         InvoiceNumber = apPayment.InvoiceNumber,
+                        EmployeeId = apPayment.EmployeeId,
                         InvoiceAmount = apPayment.InvoiceAmount,
                         PaymentAmount = apPayment.PaymentAmount,
                         RemainingBalance = apPayment.RemainingBalance,
@@ -550,7 +589,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         PoType = apPayment.PoType,
                         PurchaseReference = apPayment.PurchaseReference,
                         CollectedByPurchaser = apPayment.CollectedByPurchaser,
-                        EmployeeId = apPayment.EmployeeId,
                         GLTaxRateID = apPayment.GLTaxRateID,
                         TaxAmount = apPayment.TaxAmount,
                         WithholdingType = apPayment.WithholdingType,
@@ -560,6 +598,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         PrepaymentBalance = apPayment.PrepaymentBalance,
                         OutstandingBalance = apPayment.OutstandingBalance,
                         ForBranchId = apPayment.ForBranchId,
+                        IsSettled = apPayment.IsSettled,
                         Remark = apPayment.Remark,
                         IsSendForApproval = apPayment.IsSendForApproval,
                         IsOnlineTransferred = apPayment.IsOnlineTransferred,
@@ -1096,7 +1135,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         InvoiceReferenceDoc = record.InvoiceNumber,
                         BranchId = record.CreatedAtBranchId,
                         BusinessUnitId = record.CreatedAtBusinessUnitId,
-                        Remark = record.Remark,                     
+                        Remark = record.Remark,
+                        DebitSum = debit,
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now
@@ -1173,18 +1213,42 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 10);
-                record.IsOnlineApproved = false;
-                record.IsSendForApproval = false;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
-                record.IsVoid = false;
-                record.VoidBy = User.Identity.Name;
-                record.VoidTime = DateTime.Now;
+                record.IsVoid = true;
                 _db.APPayments.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
+                //_db.SaveChanges();
+
+                #region update payment request
+                if (record.PoType == "Purchase Payment")
+                {
+                    int did = int.Parse(record.PurchaseReference);
+                    var paymentRequest = _db.PurchasePayments.Find(did);
+                    if (paymentRequest != null)
+                    {
+                        paymentRequest.Paid = false;
+                        _db.PurchasePayments.Attach(paymentRequest);
+                        _db.Entry(paymentRequest).State = EntityState.Modified;
+                    }
+                }
+
+                else if (record.PoType == "Invoice")
+                {
+                    int did = int.Parse(record.PurchaseReference);
+                    var invoice = _db.APPaybleInvoices.Find(did);
+                    if (invoice != null)
+                    {
+                        invoice.InvoiceStatus = InvoiceStatus.Open;
+                        _db.APPaybleInvoices.Attach(invoice);
+                        _db.Entry(invoice).State = EntityState.Modified;
+                    }
+                }
+
+
+                #endregion
+
                 _db.SaveChanges();
-
-
                 //copy
                 //CopyRecord(id);
                 #region operation log
@@ -1513,6 +1577,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     PurchasePaymentScheduleViewModel record = new PurchasePaymentScheduleViewModel
                     {
                         PaymentType = paymentSchedule.PaymentType,
+                        AmountType = paymentSchedule.AmountType,
                         Percentage = paymentSchedule.Percentage,
                         Remark = paymentSchedule.Remark,
                         OrgBranchName = paymentSchedule.OrgBranchName,

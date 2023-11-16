@@ -68,9 +68,23 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         public virtual ICollection<PurchaseOrderValidation> PurchaseOrderValidation { get; set; }
         public virtual ICollection<PurchaseOrderDistribution> PurchaseOrderDistribution { get; set; }
         public virtual ICollection<PoPaymentSchedule> PoPaymentSchedule { get; set; }
+        public virtual ICollection<PoAdditionalCharge> PoAdditionalCharges { get; set; }
         public virtual ICollection<PoPurchaseRequisition> PoPurchaseRequisitions { get; set; }
     }
 
+    public class PoAdditionalCharge : TrackUserOperation
+    {
+        public int PoAdditionalChargeId { get; set; }
+        public int PurchaseOrderID { get; set; }
+        public virtual PurchaseOrder PurchaseOrder { get; set; }
+        [Display(Name = "Amount Type")]
+        public AmountType AmountType { get; set; }
+        [Display(Name = "Amount")]
+        public decimal Amount { get; set; }
+        [Display(Name = "Tax Type")]
+        public int GLTaxRateID { get; set; }
+        public string Remark { get; set; }
+    }
     public class PoPaymentSchedule : TrackUserOperation
     {
         public int PoPaymentScheduleId { get; set; }
@@ -78,7 +92,9 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         public virtual PurchaseOrder PurchaseOrder { get; set; }
         [Display(Name = "Payment Type")]
         public PaymentType PaymentType { get; set; }
-        [Display(Name = "Percentage")]
+        [Display(Name = "Amount Type")]
+        public AmountType AmountType { get; set; }
+        [Display(Name = "Amount")]
         public decimal Percentage { get; set; }
         public string Remark { get; set; }
     }

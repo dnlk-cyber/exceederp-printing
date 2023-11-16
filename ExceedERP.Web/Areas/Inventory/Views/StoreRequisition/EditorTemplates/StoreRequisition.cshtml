@@ -180,8 +180,8 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
-                                  .ServerFiltering(false);
+                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("filterRequestors"))
+                                  .ServerFiltering(true);
                           })
                           )
                     @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })

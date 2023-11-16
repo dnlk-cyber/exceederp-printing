@@ -11,8 +11,8 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
-          columns.Bound(c => c.StoreCode).Width(130).EditorTemplateName("StoreSelectorByKeeper");
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.Bound(c => c.StoreCode).Width(130).EditorTemplateName("StoreSelectorByKeeper").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.ReturnDate).Width(150);
           columns.Bound(c => c.Reason).Width(120);
           columns.Bound(c => c.Remark).Width(120);

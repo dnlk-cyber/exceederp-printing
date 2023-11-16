@@ -12,6 +12,8 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Reporting.Finance.DataSource.Print;
+using ExceedERP.Reporting.Finance.Print;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -70,9 +72,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AuthorizeRoles(FinanceConstants.AccountPayableView ,FinanceConstants.AccountPayableApprover ,FinanceConstants.AccountPayableSettlement)]
         public ActionResult ApPaymentSettlements_Read([DataSourceRequest]DataSourceRequest request,bool isNotTransffered)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            IQueryable<ApPaymentSettlement> ApPaymentSettlements = _db.ApPaymentSettlements.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<ApPaymentSettlement> ApPaymentSettlements = _db.ApPaymentSettlements
+                .Where(x=>x.IsDepartmentOnlineApproved)
+                .Where(x => mybraches.Contains(x.CreatedAtBranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                ApPaymentSettlements = ApPaymentSettlements.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+            }
+
             if (isNotTransffered)
             {
                 List<int> transfferableList = FinanceTransferHelper.GetApPaymentSettlementTranferableList();
@@ -81,6 +92,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             }
             DataSourceResult result = ApPaymentSettlements.ToDataSourceResult(request, apPaymentsettlement => new {
                 ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
+                BranchId = apPaymentsettlement.BranchId,
+                BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
                 SupplierId = apPaymentsettlement.SupplierId,
                 CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
                 EmployeeId = apPaymentsettlement.EmployeeId,
@@ -94,13 +109,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 IsOnlineTransferredBy = apPaymentsettlement.IsOnlineTransferredBy,
                 OnlineTransferredTime = apPaymentsettlement.OnlineTransferredTime,
                 Status = apPaymentsettlement.Status,
+
                 IsOnlineApproved = apPaymentsettlement.IsOnlineApproved,
                 OnlineApprovedBy = apPaymentsettlement.OnlineApprovedBy,
                 OnlineApprovedTime = apPaymentsettlement.OnlineApprovedTime,
                 IsVoid = apPaymentsettlement.IsVoid,
                 VoidBy = apPaymentsettlement.VoidBy,
                 VoidTime = apPaymentsettlement.VoidTime,
-                OrgBranchName = apPaymentsettlement.OrgBranchName,
+
+                IsDepartmentOnlineApproved = apPaymentsettlement.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = apPaymentsettlement.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = apPaymentsettlement.DepartmentOnlineApprovedTime,
+                IsDepartmentSendForApproval = apPaymentsettlement.IsDepartmentSendForApproval,
+                DepartmentSendForApprovalBy = apPaymentsettlement.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = apPaymentsettlement.DepartmentSendForApprovalTime,
+
+               
                 DateCreated = apPaymentsettlement.DateCreated,
                 LastModified = apPaymentsettlement.LastModified,
                 CreatedBy = apPaymentsettlement.CreatedBy,
@@ -112,129 +136,188 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
          [AuthorizeRoles(FinanceConstants.AccountPayableSettlement)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApPaymentSettlements_Create([DataSourceRequest]DataSourceRequest request, ApPaymentSettlement ApPaymentSettlements)
+        public ActionResult ApPaymentSettlements_Create([DataSourceRequest]DataSourceRequest request, ApPaymentSettlement apPaymentsettlement)
         {
             #region  validation
             
-            if (!ApPaymentSettlements.CollectedByPurchaser)
+            if (!apPaymentsettlement.CollectedByPurchaser)
             {
-                if (String.IsNullOrEmpty(ApPaymentSettlements.SupplierId))
+                if (String.IsNullOrEmpty(apPaymentsettlement.SupplierId))
                 {
                     ModelState.AddModelError("supplierid", "Please select supplier.");
                 }
 
-                ApPaymentSettlements.EmployeeId = 0;
+                apPaymentsettlement.EmployeeId = 0;
             }
 
             else
             {
-                if (ApPaymentSettlements.EmployeeId==null)
+                if (apPaymentsettlement.EmployeeId==null)
                 {
                     ModelState.AddModelError("purchaser", "Please select Purchaser.");
                 }
-                ApPaymentSettlements.SupplierId = "";
+                apPaymentsettlement.SupplierId = "";
             }
 
+            #endregion
+            #region data
+            apPaymentsettlement.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            apPaymentsettlement.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            if (apPaymentsettlement.EmployeeId != 0)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apPaymentsettlement.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    apPaymentsettlement.BranchId = placement.BranchId;
+                    apPaymentsettlement.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    apPaymentsettlement.BranchId = apPaymentsettlement.CreatedAtBranchId;
+                    apPaymentsettlement.BusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId;
+                }
+            }
             #endregion
 
             if (ModelState.IsValid)
             {
                 var entity = new ApPaymentSettlement
                 {
-                    SupplierId = ApPaymentSettlements.SupplierId,
-                    CollectedByPurchaser = ApPaymentSettlements.CollectedByPurchaser,
-                    EmployeeId = ApPaymentSettlements.EmployeeId,
-                    Reference = ApPaymentSettlements.Reference,
+                    BranchId = apPaymentsettlement.BranchId,
+                    BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                    CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                    SupplierId = apPaymentsettlement.SupplierId,
+                    CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
+                    EmployeeId = apPaymentsettlement.EmployeeId,
+                    Reference = apPaymentsettlement.Reference,
                   
-                    PaymentDate = ApPaymentSettlements.PaymentDate.Date,
+                    PaymentDate = apPaymentsettlement.PaymentDate.Date,
                     
-                    Remark = ApPaymentSettlements.Remark,
-                    IsSendForApproval = ApPaymentSettlements.IsSendForApproval,
-                    IsOnlineTransferred = ApPaymentSettlements.IsOnlineTransferred,
-                    IsOnlineTransferredBy = ApPaymentSettlements.IsOnlineTransferredBy,
-                    OnlineTransferredTime = ApPaymentSettlements.OnlineTransferredTime,
-                    Status = ApPaymentSettlements.Status,
-                    IsOnlineApproved = ApPaymentSettlements.IsOnlineApproved,
-                    OnlineApprovedBy = ApPaymentSettlements.OnlineApprovedBy,
-                    OnlineApprovedTime = ApPaymentSettlements.OnlineApprovedTime,
-                    IsVoid = ApPaymentSettlements.IsVoid,
-                    VoidBy = ApPaymentSettlements.VoidBy,
-                    VoidTime = ApPaymentSettlements.VoidTime,
-                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    Remark = apPaymentsettlement.Remark,
+                    IsSendForApproval = apPaymentsettlement.IsSendForApproval,
+                    IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
+                    IsOnlineTransferredBy = apPaymentsettlement.IsOnlineTransferredBy,
+                    OnlineTransferredTime = apPaymentsettlement.OnlineTransferredTime,
+                    Status = apPaymentsettlement.Status,
+                    IsOnlineApproved = apPaymentsettlement.IsOnlineApproved,
+                    OnlineApprovedBy = apPaymentsettlement.OnlineApprovedBy,
+                    OnlineApprovedTime = apPaymentsettlement.OnlineApprovedTime,
+                    IsVoid = apPaymentsettlement.IsVoid,
+                    VoidBy = apPaymentsettlement.VoidBy,
+                    VoidTime = apPaymentsettlement.VoidTime,
+
+                    IsDepartmentOnlineApproved = apPaymentsettlement.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = apPaymentsettlement.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = apPaymentsettlement.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = apPaymentsettlement.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = apPaymentsettlement.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = apPaymentsettlement.DepartmentSendForApprovalTime,
+
+                   
                     DateCreated = DateTime.Now,
-                    LastModified = ApPaymentSettlements.LastModified,
+                    LastModified = apPaymentsettlement.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = ApPaymentSettlements.ModifiedBy
+                    ModifiedBy = apPaymentsettlement.ModifiedBy
                 };
 
                 _db.ApPaymentSettlements.Add(entity);
                 _db.SaveChanges();
-                ApPaymentSettlements.ApPaymentSettlementId = entity.ApPaymentSettlementId;
+                apPaymentsettlement.ApPaymentSettlementId = entity.ApPaymentSettlementId;
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "AP payment settlement", "Success", User.Identity.Name, $"created payment settlement {entity.ApPaymentSettlementId} ", Modules.Finance);
                 #endregion
 
             }
 
-            return Json(new[] { ApPaymentSettlements }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { apPaymentsettlement }.ToDataSourceResult(request, ModelState));
         }
 
          [AuthorizeRoles(FinanceConstants.AccountPayableSettlement)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApPaymentSettlements_Update([DataSourceRequest]DataSourceRequest request, ApPaymentSettlement ApPaymentSettlements)
+        public ActionResult ApPaymentSettlements_Update([DataSourceRequest]DataSourceRequest request, ApPaymentSettlement apPaymentsettlement)
         {
             #region  validation
 
-            if (!ApPaymentSettlements.CollectedByPurchaser)
+            if (!apPaymentsettlement.CollectedByPurchaser)
             {
-                if (String.IsNullOrEmpty(ApPaymentSettlements.SupplierId))
+                if (String.IsNullOrEmpty(apPaymentsettlement.SupplierId))
                 {
                     ModelState.AddModelError("supplierid", "Please select supplier.");
                 }
-                ApPaymentSettlements.EmployeeId = 0;
+                apPaymentsettlement.EmployeeId = 0;
             }
 
             else
             {
-                if (ApPaymentSettlements.EmployeeId == null)
+                if (apPaymentsettlement.EmployeeId == null)
                 {
                     ModelState.AddModelError("purchaser", "Please select Purchaser.");
                 }
 
-                ApPaymentSettlements.SupplierId = "";
+                apPaymentsettlement.SupplierId = "";
             }
 
             #endregion
-
+            #region data
+            apPaymentsettlement.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            apPaymentsettlement.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            if (apPaymentsettlement.EmployeeId != 0)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apPaymentsettlement.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    apPaymentsettlement.BranchId = placement.BranchId;
+                    apPaymentsettlement.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    apPaymentsettlement.BranchId = apPaymentsettlement.CreatedAtBranchId;
+                    apPaymentsettlement.BusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId;
+                }
+            }
+            #endregion
 
             if (ModelState.IsValid)
             {
                     var entity = new ApPaymentSettlement
                     {
-                        ApPaymentSettlementId = ApPaymentSettlements.ApPaymentSettlementId,
-                        SupplierId = ApPaymentSettlements.SupplierId,
-                        CollectedByPurchaser = ApPaymentSettlements.CollectedByPurchaser,
-                        EmployeeId = ApPaymentSettlements.EmployeeId,
-                        Reference = ApPaymentSettlements.Reference,
+                        ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
+                        BranchId = apPaymentsettlement.BranchId,
+                        BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                        CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                        SupplierId = apPaymentsettlement.SupplierId,
+                        CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
+                        EmployeeId = apPaymentsettlement.EmployeeId,
+                        Reference = apPaymentsettlement.Reference,
                        
-                        PaymentDate = ApPaymentSettlements.PaymentDate,
+                        PaymentDate = apPaymentsettlement.PaymentDate,
                         
-                        Remark = ApPaymentSettlements.Remark,
-                        IsSendForApproval = ApPaymentSettlements.IsSendForApproval,
-                        IsOnlineTransferred = ApPaymentSettlements.IsOnlineTransferred,
-                        IsOnlineTransferredBy = ApPaymentSettlements.IsOnlineTransferredBy,
-                        OnlineTransferredTime = ApPaymentSettlements.OnlineTransferredTime,
-                        Status = ApPaymentSettlements.Status,
-                        IsOnlineApproved = ApPaymentSettlements.IsOnlineApproved,
-                        OnlineApprovedBy = ApPaymentSettlements.OnlineApprovedBy,
-                        OnlineApprovedTime = ApPaymentSettlements.OnlineApprovedTime,
-                        IsVoid = ApPaymentSettlements.IsVoid,
-                        VoidBy = ApPaymentSettlements.VoidBy,
-                        VoidTime = ApPaymentSettlements.VoidTime,
-                        OrgBranchName = ApPaymentSettlements.OrgBranchName,
-                        DateCreated = ApPaymentSettlements.DateCreated,
+                        Remark = apPaymentsettlement.Remark,
+                        IsSendForApproval = apPaymentsettlement.IsSendForApproval,
+                        IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
+                        IsOnlineTransferredBy = apPaymentsettlement.IsOnlineTransferredBy,
+                        OnlineTransferredTime = apPaymentsettlement.OnlineTransferredTime,
+                        Status = apPaymentsettlement.Status,
+                        IsOnlineApproved = apPaymentsettlement.IsOnlineApproved,
+                        OnlineApprovedBy = apPaymentsettlement.OnlineApprovedBy,
+                        OnlineApprovedTime = apPaymentsettlement.OnlineApprovedTime,
+                        IsVoid = apPaymentsettlement.IsVoid,
+                        VoidBy = apPaymentsettlement.VoidBy,
+                        VoidTime = apPaymentsettlement.VoidTime,
+
+                        IsDepartmentOnlineApproved = apPaymentsettlement.IsDepartmentOnlineApproved,
+                        DepartmentOnlineApprovedBy = apPaymentsettlement.DepartmentOnlineApprovedBy,
+                        DepartmentOnlineApprovedTime = apPaymentsettlement.DepartmentOnlineApprovedTime,
+                        IsDepartmentSendForApproval = apPaymentsettlement.IsDepartmentSendForApproval,
+                        DepartmentSendForApprovalBy = apPaymentsettlement.DepartmentSendForApprovalBy,
+                        DepartmentSendForApprovalTime = apPaymentsettlement.DepartmentSendForApprovalTime,
+
+                       
+                        DateCreated = apPaymentsettlement.DateCreated,
                         LastModified = DateTime.Now,
-                        CreatedBy = ApPaymentSettlements.CreatedBy,
+                        CreatedBy = apPaymentsettlement.CreatedBy,
                         ModifiedBy = User.Identity.Name
                     };
 
@@ -246,12 +329,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 #endregion
 
             }
-            return Json(new[] { ApPaymentSettlements }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { apPaymentsettlement }.ToDataSourceResult(request, ModelState));
         }
 
          [AuthorizeRoles(FinanceConstants.AccountPayableSettlement)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApPaymentSettlements_Destroy([DataSourceRequest]DataSourceRequest request, ApPaymentSettlement ApPaymentSettlements)
+        public ActionResult ApPaymentSettlements_Destroy([DataSourceRequest]DataSourceRequest request, ApPaymentSettlement apPaymentsettlement)
         {
 
             
@@ -260,31 +343,35 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             {
                     var entity = new ApPaymentSettlement
                     {
-                        ApPaymentSettlementId = ApPaymentSettlements.ApPaymentSettlementId,
-                        SupplierId = ApPaymentSettlements.SupplierId,
-                        CollectedByPurchaser = ApPaymentSettlements.CollectedByPurchaser,
-                        EmployeeId = ApPaymentSettlements.EmployeeId,
-                        Reference = ApPaymentSettlements.Reference,
+                        ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
+                        BranchId = apPaymentsettlement.BranchId,
+                        BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                        CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                        SupplierId = apPaymentsettlement.SupplierId,
+                        CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
+                        EmployeeId = apPaymentsettlement.EmployeeId,
+                        Reference = apPaymentsettlement.Reference,
                        
-                        PaymentDate = ApPaymentSettlements.PaymentDate,
+                        PaymentDate = apPaymentsettlement.PaymentDate,
                         
-                        Remark = ApPaymentSettlements.Remark,
-                        IsSendForApproval = ApPaymentSettlements.IsSendForApproval,
-                        IsOnlineTransferred = ApPaymentSettlements.IsOnlineTransferred,
-                        IsOnlineTransferredBy = ApPaymentSettlements.IsOnlineTransferredBy,
-                        OnlineTransferredTime = ApPaymentSettlements.OnlineTransferredTime,
-                        Status = ApPaymentSettlements.Status,
-                        IsOnlineApproved = ApPaymentSettlements.IsOnlineApproved,
-                        OnlineApprovedBy = ApPaymentSettlements.OnlineApprovedBy,
-                        OnlineApprovedTime = ApPaymentSettlements.OnlineApprovedTime,
-                        IsVoid = ApPaymentSettlements.IsVoid,
-                        VoidBy = ApPaymentSettlements.VoidBy,
-                        VoidTime = ApPaymentSettlements.VoidTime,
-                        OrgBranchName = ApPaymentSettlements.OrgBranchName,
-                        DateCreated = ApPaymentSettlements.DateCreated,
-                        LastModified = ApPaymentSettlements.LastModified,
-                        CreatedBy = ApPaymentSettlements.CreatedBy,
-                        ModifiedBy = ApPaymentSettlements.ModifiedBy
+                        Remark = apPaymentsettlement.Remark,
+                        IsSendForApproval = apPaymentsettlement.IsSendForApproval,
+                        IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
+                        IsOnlineTransferredBy = apPaymentsettlement.IsOnlineTransferredBy,
+                        OnlineTransferredTime = apPaymentsettlement.OnlineTransferredTime,
+                        Status = apPaymentsettlement.Status,
+                        IsOnlineApproved = apPaymentsettlement.IsOnlineApproved,
+                        OnlineApprovedBy = apPaymentsettlement.OnlineApprovedBy,
+                        OnlineApprovedTime = apPaymentsettlement.OnlineApprovedTime,
+                        IsVoid = apPaymentsettlement.IsVoid,
+                        VoidBy = apPaymentsettlement.VoidBy,
+                        VoidTime = apPaymentsettlement.VoidTime,
+                       
+                        DateCreated = apPaymentsettlement.DateCreated,
+                        LastModified = apPaymentsettlement.LastModified,
+                        CreatedBy = apPaymentsettlement.CreatedBy,
+                        ModifiedBy = apPaymentsettlement.ModifiedBy
                     };
 
                     _db.ApPaymentSettlements.Attach(entity);
@@ -292,10 +379,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     _db.SaveChanges();
 
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted payment settlement number " + ApPaymentSettlements.ApPaymentSettlementId + " " + ApPaymentSettlements.Reference, Modules.Finance);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted payment settlement number " + apPaymentsettlement.ApPaymentSettlementId + " " + apPaymentsettlement.Reference, Modules.Finance);
                 #endregion
             }
-            return Json(new[] { ApPaymentSettlements }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { apPaymentsettlement }.ToDataSourceResult(request, ModelState));
         }
 
        
@@ -655,7 +742,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                          SourceId = record.ApPaymentSettlementId.ToString(),
                          Source = JournalSources.DirectPaymentSettlement.ToString(),
                          EffectiveDate = record.PaymentDate.Date,
-                         OrgBranchName = record.OrgBranchName,
+                         BranchId = record.BranchId,
                          Status = "Approved",
                          Remark = record.Reference,
                          PaymentReference = record.Reference,

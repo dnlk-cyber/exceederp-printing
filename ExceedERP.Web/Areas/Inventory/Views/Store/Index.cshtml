@@ -11,9 +11,9 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.StoreCode).Width(150);
-          columns.Bound(c => c.Name).Width(200);
-          columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Title("Business Unit").EditorTemplateName("BusinessUnitSelector").Width(200);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.Bound(c => c.Name).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Title("Business Unit").EditorTemplateName("BusinessUnitSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true)); 
           columns.Bound(c => c.Location).Width(150);
           columns.Bound(c => c.Enable).Width(100).Title("Enable").ClientTemplate(
                 "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
@@ -58,7 +58,7 @@
                                 sortable.SortMode(GridSortMode.SingleColumn);
                             })
                         .Filterable()
-                        
+
                         .Events(events => events.Edit("edit"))
       .Events(ev => ev.DetailExpand("detailExpand"))
       .ClientDetailTemplateId("periodtemplate")

@@ -41,6 +41,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.GRN = paymentRequest.GRN;
                 headerDs.Branch = _db.Branch.Find(paymentRequest.BranchId)?.Name;
                 headerDs.WorkUnit = _db.MainCompanyStructures.Find(paymentRequest.OrgStuructureId)?.Name;
+                var lines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == id).ToList();
+                if (lines.Any())
+                    headerDs.Total = lines.Sum(x => x.TotalAmount);
 
                 //department
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.CreatedBy));
@@ -56,11 +59,11 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(paymentRequest.SendForApprovalBy);
 
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.OnlineApprovedBy));
-                headerDs.ApprovedDate = paymentRequest.OnlineApprovedTime;
+                headerDs.ApprovedDate = paymentRequest.OnlineApprovedTime != null ? paymentRequest.OnlineApprovedTime : null;
                 headerDs.ApproverSignature = SignatureHelper.GetUserSignature(paymentRequest.OnlineApprovedBy);
                 //budget
                 headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.BudgetApprovedBy));
-                headerDs.BudgetApprovedDate = paymentRequest.BudgetApprovedTime;
+                headerDs.BudgetApprovedDate = paymentRequest.BudgetApprovedTime != null ? paymentRequest.BudgetApprovedTime : null;
                 headerDs.BudgetSignature = SignatureHelper.GetUserSignature(paymentRequest.BudgetApprovedBy);
 
                 #region prepared checker approver               

@@ -145,18 +145,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult APTBPayments_Create([DataSourceRequest]DataSourceRequest request, ApTPayment ApTPayment)
 		{
-			//ApTPayment.SupplierName = "";
-			//ApTPayment.SupplierId = "";
-
-			//if (!String.IsNullOrWhiteSpace(ApTPayment.InvoiceNumber))
-			//{
-			//    var invoice = _db.APPaybleInvoices.FirstOrDefault(a => a.InvoiceNumber == ApTPayment.InvoiceNumber);
-			//    if (invoice != null)
-			//    {
-			//        ApTPayment.SupplierId = invoice.SupplierId;
-			//        ApTPayment.SupplierName = invoice.SupplierName;
-			//    }
-			//}
+			
 
 
 			#region validation       
@@ -208,12 +197,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				_db.SaveChanges();
 				ApTPayment.ApTPaymentId = entity.ApTPaymentId;
 
-				//#region update and distribution
-
-				//UpdatePaymentTotals(entity.ApTPaymentId);
-				//_distributionHelper.UpdateApTPaymentDistribution(ApTPayment.ApTPaymentId);
-
-				//#endregion
+				
 
 				#region operation log
 				UserHelper.OperationLog(Request.UserHostAddress, "AP Telebirr payment", "Success", User.Identity.Name, $"created Telebirr payment {entity.ApTPaymentId} ", Modules.Finance);
@@ -226,18 +210,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult APTBPayments_Update([DataSourceRequest]DataSourceRequest request, ApTPayment ApTPayment)
 		{
-			//ApTPayment.SupplierName = "";
-			//ApTPayment.SupplierId = "";
-
-			//if (!String.IsNullOrWhiteSpace(ApTPayment.InvoiceNumber))
-			//{
-			//    var invoice = _db.APPaybleInvoices.FirstOrDefault(a => a.InvoiceNumber == ApTPayment.InvoiceNumber);
-			//    if (invoice != null)
-			//    {
-			//        ApTPayment.SupplierId = invoice.SupplierId;
-			//        ApTPayment.SupplierName = invoice.SupplierName;
-			//    }
-			//}
+			
 
 			#region validation
 
@@ -316,12 +289,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 					_db.SaveChanges();
 
 
-				//    #region update and distribution
-
-				//     UpdatePaymentTotals(entity.ApTPaymentId);
-				//    _distributionHelper.UpdateApTPaymentDistribution(ApTPayment.ApTPaymentId);
-
-				//#endregion
+			
 				#region operation log
 				UserHelper.OperationLog(Request.UserHostAddress, "AP payment", "Success", User.Identity.Name, $"updated payment {entity.ApTPaymentId} ", Modules.Finance);
 				#endregion
@@ -402,12 +370,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 					_db.SaveChanges();
 
 
-					//#region update and distribution
-
-					// UpdatePaymentTotals(entity.ApTPaymentId);
-					//_distributionHelper.UpdateApTPaymentDistribution(ApTPayment.ApTPaymentId);
-
-					//#endregion
+				
 					#region delete log
 					UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted payment " + ApTPayment.ApTPaymentId + " " + ApTPayment.PaymentReference, Modules.Finance);
 					#endregion

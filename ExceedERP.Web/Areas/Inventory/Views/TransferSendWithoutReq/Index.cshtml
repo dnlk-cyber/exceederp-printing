@@ -336,6 +336,20 @@
 </script>
 
 <script>
+
+    function filterEmployees() {
+        return {
+            text: $("#DeliveredBy").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterRequestors() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+
     function onSelectDriverType(e) {
 
         var grid = $("#grid").data("kendoGrid");

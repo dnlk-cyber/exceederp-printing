@@ -12,7 +12,7 @@
       {
           columns.Bound(c => c.GoodSellingAndLendingID).Title("No.").Width(120).ClientTemplate("#=appendZeros(GoodSellingAndLendingID)#");
           columns.Bound(c => c.SellOrLend).EditorTemplateName("SalesOrLend").Width(100);
-          columns.Bound(c => c.StoreCode).EditorTemplateName("Stores").Width(120);
+          columns.Bound(c => c.StoreCode).EditorTemplateName("Stores").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Buyer).Width(120);
           columns.Bound(c => c.BuyerAddress).Width(120);
           columns.Bound(c => c.Date).Width(120);

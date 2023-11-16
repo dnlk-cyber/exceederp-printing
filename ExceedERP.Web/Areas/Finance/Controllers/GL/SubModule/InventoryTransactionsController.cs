@@ -177,6 +177,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 .OrderBy(e => e.DateTo);
             var categories = _db.ItemCategorys;
             var items = _db.InventoryItems;
+            var stores = _db.InventoryStores;
 
             var branches = _db.Branch;
             var costCenter = _db.BranchCostCenter;
@@ -195,7 +196,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                     GLPeriodId = i.InventoryPeriodId
                 }).AsQueryable();
             ViewData["inventoryPeriods"] = selectedinventoryPeriods;
-
+            ViewData["stores"] = stores;
             ViewData["costCenters"] = selectedcostCenter;
             ViewData["Branches"] = branches;
             ViewData["Items"] = items;
@@ -314,7 +315,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             var items = _db.InventoryItems;
             var costCenter = _db.BranchCostCenter;
             var branches = _db.Branch;
-
+            var stores = _db.InventoryStores;
+            ViewData["stores"] = stores;
             ViewData["Branches"] = branches;
             ViewData["Items"] = items;
             ViewData["Category"] = categories;

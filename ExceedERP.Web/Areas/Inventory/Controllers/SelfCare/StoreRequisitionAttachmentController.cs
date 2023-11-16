@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
@@ -18,7 +19,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
 {
-   
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class StoreRequisitionAttachmentController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();        

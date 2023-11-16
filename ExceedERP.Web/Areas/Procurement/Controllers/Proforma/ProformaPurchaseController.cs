@@ -14,6 +14,7 @@ using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.DataAccess.Migrations;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 {
@@ -91,7 +92,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser, ProcurementRoles.ProcurementTenderApprover)]
         public ActionResult ProformaPurchases_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ProformaPurchase> proformapurchases = _db.ProformaPurchases;
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<ProformaPurchase> proformapurchases = _db.ProformaPurchases.Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                proformapurchases = proformapurchases.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
 
             if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementTenderApprover))
             {
@@ -188,6 +197,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 }
             }
 
+            else
+            {
+
+                proformaPurchase.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+                proformaPurchase.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+                proformaPurchase.ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+
+            }
+
             if (ModelState.IsValid)
             {
                
@@ -279,6 +297,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     proformaPurchase.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
                     proformaPurchase.ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 }
+            }
+
+            else
+            {
+
+                proformaPurchase.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+                proformaPurchase.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+                proformaPurchase.ProcurementOfficer = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+
             }
 
             if (ModelState.IsValid)

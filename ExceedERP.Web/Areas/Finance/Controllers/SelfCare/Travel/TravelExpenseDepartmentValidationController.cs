@@ -62,11 +62,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved","cannot manipulate this record,it is already approved");
 
-            var lines = _db.ApTravelExpensePayments.Where(x => x.ApTravelExpenseClaimId == id);
+            var lines = _db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == id);
             if (!lines.Any())
                 ModelState.AddModelError("lines", "Please add line items");
 
-            if (record != null && record.IsOnlineApproved)
+            if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
 
             if (record != null && record.ForwardedTo != User.Identity.Name)
@@ -97,9 +97,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                             NotifModels notif = new NotifModels
                             {
                                 UserId = record.ForwardedFrom,
-                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ApPaymentRequestSelfCare, record.ApTravelExpenseClaimId),
+                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ApTravelExpenseClaimSelfCare, record.ApTravelExpenseClaimId),
                                 Message =
-                                    $"Payment request document {record.ApTravelExpenseClaimId} is approved by User: {record.ForwardedTo} at {DateTime.Now}"
+                                    $"Expense claim document {record.ApTravelExpenseClaimId} is approved by User: {record.ForwardedTo} at {DateTime.Now}"
                             };
 
                             Notify.NotifyUser(notif);
@@ -123,7 +123,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                                 UserId = record.ForwardedFrom,
                                 URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ApTravelExpenseClaimSelfCare, record.ApTravelExpenseClaimId),
                                 Message =
-                                    $"Payment request document {record.ApTravelExpenseClaimId} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
+                                    $"Expense claim document {record.ApTravelExpenseClaimId} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
                             };
 
                             Notify.NotifyUser(notif);
@@ -132,7 +132,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
                             #region forward to next approver
 
-                            decimal docamount = record.Payments.Sum(x => x.Amount);
+                            decimal docamount = record.Expenses.Sum(x => x.Total);
                             int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
                             DocApprovalWorkflowHelper.ForwardToApprover(record.ApTravelExpenseClaimId, docamount, "",
                                 record.ForwardedTo, ApprovalDocumentType.ApTravelExpenseClaimSelfCare, false,step);
@@ -165,7 +165,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     _db.SaveChanges();
                     ApTravelExpenseDepartmentValidation.ApTravelExpenseDepartmentValidationId = entity.ApTravelExpenseDepartmentValidationId;
                     #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Self care payment request department approval", "Success", User.Identity.Name, $"approved request {entity.ApTravelExpenseClaimId} ", Modules.Finance);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Self care expense claim department approval", "Success", User.Identity.Name, $"approved request {entity.ApTravelExpenseClaimId} ", Modules.Finance);
                     #endregion
                 }
             }

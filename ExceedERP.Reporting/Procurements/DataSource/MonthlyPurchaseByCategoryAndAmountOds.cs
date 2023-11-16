@@ -29,6 +29,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
             var purchaseOrders = _db.PurchaseOrders
                 .Where(x => x.IsManual == false)
+                .Where(x => x.BidAwardedSupplierID == null ||x.BidAwardedSupplierID==0) //these are in tender already
                 .Where(x => x.OrderDate >= from && x.OrderDate <= to)
                 .Where(x => x.IsVoid == false && x.IsOnlineApproved).AsQueryable();
 

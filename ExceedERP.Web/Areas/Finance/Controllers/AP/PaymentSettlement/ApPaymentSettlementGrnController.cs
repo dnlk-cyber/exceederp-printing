@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
@@ -9,6 +10,7 @@ using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -19,8 +21,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
     {
 
         private ExceedDbContext _db = new ExceedDbContext();
-      
-       [AuthorizeRoles(FinanceConstants.AccountPayableSettlement , FinanceConstants.AccountPayableApprover)]
+        private readonly FinanceDistributionHelper _distributionHelper = new FinanceDistributionHelper();
+
+
+        [AuthorizeRoles(FinanceConstants.AccountPayableSettlement , FinanceConstants.AccountPayableApprover)]
         public ActionResult Index()
         {
             return View();
@@ -49,8 +53,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
        [AuthorizeRoles(FinanceConstants.AccountPayableSettlement)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApPaymentSettlementGrns_Create(int id, [DataSourceRequest]DataSourceRequest request, ApPaymentSettlementGrn ApPaymentSettlementGrn)
-        {
-           
+        {          
            
             if (ModelState.IsValid)
             {
@@ -70,7 +73,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 _db.SaveChanges();
                 ApPaymentSettlementGrn.ApPaymentSettlementGrnId = entity.ApPaymentSettlementGrnId;
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Purchase payment GRN", "Success", User.Identity.Name, $"created Purchase item {entity.GrnNo} under record {entity.ApPaymentSettlementGrnId} ", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Settlement GRN", "Success", User.Identity.Name, $"created GRN {entity.GrnNo} under record {entity.ApPaymentSettlementGrnId} ", Modules.Finance);
+                #endregion
+                #region update distribution
+                _distributionHelper.UpdateApPaymentSettlementDistribution(id);
                 #endregion
             }
             return Json(new[] { ApPaymentSettlementGrn }.ToDataSourceResult(request, ModelState));
@@ -99,7 +105,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Purchase payment GRN", "Success", User.Identity.Name, $"updated Purchase item {entity.GrnNo} under record {entity.ApPaymentSettlementGrnId} ", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Settlement GRN", "Success", User.Identity.Name, $"updated GRN {entity.GrnNo} under record {entity.ApPaymentSettlementGrnId} ", Modules.Finance);
+                #endregion
+                #region update distribution
+                _distributionHelper.UpdateApPaymentSettlementDistribution(ApPaymentSettlementGrn.ApPaymentSettlementId);
                 #endregion
             }
 
@@ -129,6 +138,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 _db.ApPaymentSettlementGrns.Attach(entity);
                 _db.ApPaymentSettlementGrns.Remove(entity);
                 _db.SaveChanges();
+                #region operation log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Settlement GRN ", "Success", User.Identity.Name, $"deleted GRN {ApPaymentSettlementGrn.GrnNo} under record {ApPaymentSettlementGrn.ApPaymentSettlementGrnId} ", Modules.Finance);
+                #endregion
+                #region update distribution
+                _distributionHelper.UpdateApPaymentSettlementDistribution(ApPaymentSettlementGrn.ApPaymentSettlementId);
+                #endregion
             }
 
             return Json(new[] { ApPaymentSettlementGrn }.ToDataSourceResult(request, ModelState));

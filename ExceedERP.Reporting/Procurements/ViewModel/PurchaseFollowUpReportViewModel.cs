@@ -15,8 +15,8 @@ namespace ExceedERP.Reporting.Procurements.ViewModel
         public DateTime StartingDate { get; set; }
         public string PurchaserName { get; set; }
         public string ProcurementMethod { get; set; }
-        public DateTime TechnicalOpen { get; set; }
-        public DateTime FinancialOpen { get; set; }
+        public DateTime? TechnicalOpen { get; set; }
+        public DateTime? FinancialOpen { get; set; }
         public string ContractOngoing { get; set; }
         public string NotComplated { get; set; }
         public string Remark { get; set; }

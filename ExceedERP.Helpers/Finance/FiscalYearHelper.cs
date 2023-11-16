@@ -338,13 +338,9 @@ namespace ExceedERP.Helpers.Finance
         {
             ExceedDbContext Db = new ExceedDbContext();
             int glPeriodId = 0;
-            var glPeriod = Db.GLPeriods.Where(x => x.DateFrom <= date.Date).FirstOrDefault(x => x.DateTo >= date.Date);
+            var glPeriod = Db.GLPeriods.Where(x => x.DateFrom <= date.Date && x.DateTo >= date.Date).FirstOrDefault();
             if (glPeriod != null)
-            {
-
                 glPeriodId = glPeriod.GLPeriodId;
-
-            }
 
             return glPeriodId;
         }

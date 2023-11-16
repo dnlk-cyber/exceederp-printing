@@ -695,8 +695,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 string glyear = "";
                 string glperiod = "";
                 #region get period
-                var period = _db.GLPeriods.Where(x => x.DateFrom <= record.PaymentDate.Date)
+                var period = _db.GLPeriods
+                    .Where(x => x.DateFrom <= record.PaymentDate.Date)
                     .Where(x => x.DateTo >= record.PaymentDate.Date).ToList();
+
                 if (period.Any())
                 {
 
@@ -733,7 +735,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         var formattedData = new
                         {
-                            Message = "There are multiple periods defined that contain the Invoice date.",
+                            Message = "There are multiple periods defined that contain the payment date.",
                             Status = "NOT_OK"
                         };
                         return Json(formattedData, JsonRequestBehavior.AllowGet);
@@ -777,7 +779,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         BranchId = record.BranchId,
                         BusinessUnitId = record.BusinessUnitId,
                         InvoiceReferenceDoc = "",
-                         IsOnlineApproved = true,
+                        DebitSum = debit,
+                        IsOnlineApproved = true,
                          OnlineApprovedBy = User.Identity.Name,
                          OnlineApprovedTime = DateTime.Now
                      };
@@ -852,13 +855,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 10);
-                record.IsOnlineApproved = false;
-                record.IsSendForApproval = false;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
-                record.IsVoid = false;
-                record.VoidBy = User.Identity.Name;
-                record.VoidTime = DateTime.Now;
+                record.IsVoid = true;
                 _db.APMiscellaneousPayments.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();

@@ -34,7 +34,7 @@
 
       //.Editable(editable => editable.Mode(GridEditMode.InLine))
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PurchaseRequisition").Window(w => w.Title("Purchase Requisition Review")))
-      .HtmlAttributes(new { style = "height: 550px;" })
+      .HtmlAttributes(new { style = "height: 650px;" })
       .Pageable(pageable => pageable
           .Input(true)
           .Numeric(false)
@@ -355,8 +355,8 @@
                                                                                                                       if(HttpContext.Current.User.IsInRole("Procurement_TeamLeader"))
                                                                                                                       { toolbar.Create();}
                                                                                                                   })
-
-
+                                                                                                                  .HtmlAttributes(new { style = "height: 500px;" })
+                                                                                                                  
                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                                                   .Scrollable()
                                                                                                                   .Events(x=>x.DetailExpand("detailExpandPurchaseAssignment")
@@ -418,7 +418,14 @@
                                   })
 
                                   //.Events(x => x.DataBound("onDataBoundPurchaseLines"))
+                                  .Pageable(pageable => pageable
+                                                  .Input(true)
+                                                  .Numeric(false)
+                                                  .Refresh(true)
+                                                  .PageSizes(true)
+                                                  .ButtonCount(20))
                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Filterable()
                                   .Scrollable()
                                   .DataSource(dataSource => dataSource
                                       .Ajax()

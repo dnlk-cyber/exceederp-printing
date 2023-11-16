@@ -12,8 +12,8 @@
       {
           columns.Bound(c => c.IssueID).Title("Issue No.").Width(110).ClientTemplate("#=appendZeros(IssueID)#");
           columns.Bound(c => c.StoreRequisitionID).Title("SR No.").EditorTemplateName("FuelRequisitionSelector").Width(160);
-          columns.Bound(c => c.StoreCode).Width(130).EditorTemplateName("StoreReadOnly");
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(130).EditorTemplateName("StoreReadOnly").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(130);
           columns.Bound(c => c.Owner).Width(130).EditorTemplateName("InternalOrExternal");
           columns.Bound(c => c.PlateNo).Title("Plate No.").Width(130);

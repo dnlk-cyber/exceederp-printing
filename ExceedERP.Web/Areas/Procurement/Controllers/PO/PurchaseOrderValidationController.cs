@@ -9,6 +9,7 @@ using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Procurement;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
@@ -101,6 +102,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 var paymentSchedule = db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id);
                 if (!paymentSchedule.Any())
                     ModelState.AddModelError("nopayment", "Please add payment schedule first.");
+
+                string error = PaymentHelper.ValidatePurchaseOrder(record.PurchaseOrderID);
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("invalid", error);
             }
 
             if (ModelState.IsValid)

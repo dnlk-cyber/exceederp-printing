@@ -22,6 +22,13 @@
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
           columns.Bound(c => c.ModelNo).Width(100);
           columns.Bound(c => c.PlateNo).Width(100);
+          columns.Bound(c => c.PrevRequestDate).Width(100);
+          columns.Bound(c => c.PrevKm).Width(100);
+          columns.Bound(c => c.CurrentKm).Width(100);
+          columns.Bound(c => c.DifferenceKm).Width(100);
+          columns.Bound(c => c.PrevLT).Width(100);
+          columns.Bound(c => c.Consumption).Width(130);
+          columns.Bound(c => c.StandardConsumption).Width(130);
           columns.Bound(c => c.Remark).Width(100);
           columns.Bound(c => c.Status).Width(80);
 
@@ -87,6 +94,14 @@
               model.Field(p => p.ModelNo).Editable(false);
               model.Field(p => p.Reference).Editable(false);
               model.Field(p => p.Remark).Editable(false);
+
+              model.Field(p => p.PrevRequestDate).Editable(false);
+              model.Field(p => p.PrevKm).Editable(false);
+              model.Field(p => p.PrevLT).Editable(false);
+              model.Field(p => p.CurrentKm).Editable(false);
+              model.Field(p => p.DifferenceKm).Editable(false);
+              model.Field(p => p.Consumption).Editable(false);
+              model.Field(p => p.StandardConsumption).Editable(false);
 
 
               model.Field(p => p.BranchId).Editable(false);

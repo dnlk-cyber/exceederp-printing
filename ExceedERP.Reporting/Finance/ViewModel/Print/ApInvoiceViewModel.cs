@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
@@ -32,9 +33,16 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public decimal WithholdTaxAmount { get; set; }
         public decimal NetPayable { get; set; }
         public decimal AmountDue { get; set; }
-        //
+        //\\
         public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedBySignature { get; set; }
+        public string AccountantCheckedBy { get; set; }
+        public DateTime? AccountantCheckedDate { get; set; }
+        public Image AccountantCheckerSignature { get; set; }
         public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApproverSignature { get; set; }
     }
 
     public class ApInvoiceLinesViewModel 

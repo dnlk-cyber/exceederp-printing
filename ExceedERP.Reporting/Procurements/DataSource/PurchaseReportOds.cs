@@ -143,7 +143,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                     }
                                     else if (poItem.ItemType == PurchaseItemType.FixedAsset)
                                     {
-                                        #region check stock status
+                                        #region check fixed status
 
                                         var goodReceive = _db.FixedAssetReceives
                                             .Where(x => x.IsOnlineApproved && x.IsVoid == false)
@@ -197,7 +197,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                     }
                                     else if (poItem.ItemType == PurchaseItemType.Service)
                                     {
-                                        #region check stock status
+                                        #region check service status
 
                                         var goodReceive = _db.ServiceReceives
                                             .Where(x => x.IsOnlineApproved && x.IsVoid == false)
@@ -396,7 +396,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                                     else if (poItem.ItemType == PurchaseItemType.Service)
                                     {
-                                        #region check fixed status
+                                        #region check sevice status
 
                                         var goodReceive = _db.ServiceReceives
                                             .Where(x => x.IsOnlineApproved && x.IsVoid == false)
@@ -466,6 +466,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     }
                     else if ((assignment.ProcurementMethod == ProcurementMethod.Tender) && (purchasetype == "Tender" || purchasetype == "All"))
                     {
+                        #region tender
                         var lotpurchase = _db.LotPurchaseRequisitions.FirstOrDefault(x => x.PurchaseRequisitionID == assignment.PurchaseRequisitionID);
                         if (lotpurchase != null)
                         {
@@ -713,6 +714,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                
                             }
                         }
+                        #endregion
                     }
 
                 }

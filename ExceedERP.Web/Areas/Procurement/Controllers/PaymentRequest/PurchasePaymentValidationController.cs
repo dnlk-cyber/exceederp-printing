@@ -51,6 +51,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
         public ActionResult PurchasePaymentValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, PurchasePaymentValidation PurchasePaymentValidation)
         {
             var record = _db.PurchasePayments.Find(id);
+
+            if (record != null && record.NetPayable<=0)
+                ModelState.AddModelError("payable", "Net payable should be more than 0.");
+            
             if (record.PaymentType ==PaymentType.Credit) //PaymentType.Payment && record.PurchasePaymentType == PurchasePaymentType.Credit && PurchasePaymentValidation.Status==ApprovalStatuses.Approve)
             {
                 //check if there is grn
@@ -145,6 +149,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
                     {
 
                         record.Status = Enum.GetName(typeof(OperationStatuses), 8);
+                        record.IsOnlineApproved = false;
+                        record.IsSendForApproval = false;
                         record.OnlineApprovedBy = User.Identity.Name;
                         record.OnlineApprovedTime = DateTime.Now.Date;
                         _db.PurchasePayments.Attach(record);

@@ -16,8 +16,9 @@
           //    "/>"
           //    );
           //columns.ForeignKey(c => c.SupplierId, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier").Width(200);
-          columns.Bound(c => c.SupplierId).Width(110);
-          columns.Bound(c => c.SupplierName).Width(150);
+          columns.Bound(c => c.SupplierId).Width(110).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.SupplierName).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           //columns.Bound(c => c.InvoiceNumber).EditorTemplateName("Invoices").Width(110);
           columns.Bound(c => c.PoType).Width(90);
           columns.Bound(c => c.PurchaseReference).Width(110).Title("Invoice or Payment Request");
@@ -91,6 +92,7 @@
                         model.Id(p => p.ApPaymentId);
 
                         model.Field(p => p.RemainingBalance).Editable(false);
+                        model.Field(p => p.IsSettled).Editable(false);
                         model.Field(p => p.BranchId).Editable(false);
                         model.Field(p => p.BusinessUnitId).Editable(false);
                         model.Field(p => p.CreatedAtBranchId).Editable(false);
@@ -111,6 +113,7 @@
                         model.Field(p => p.IsOnlineTransferredBy).Editable(false);
                         model.Field(p => p.OnlineTransferredTime).Editable(false);
 
+         
                         model.Field(p => p.ForBranchId).Editable(false);
                         model.Field(p => p.BranchId).Editable(false);
                         model.Field(p => p.BusinessUnitId).Editable(false);

@@ -27,9 +27,18 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
 
 			if (payment != null)
 			{
+				if (!string.IsNullOrEmpty(payment.SupplierId))
+				{
+					var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == payment.SupplierId);
+					if (supplier != null && !string.IsNullOrEmpty(supplier.Name))
+						headerDs.SupplierName = supplier.Name;
+				}
+				else
+				{
+					headerDs.SupplierName = payment.SupplierName;
+				}
 				headerDs.VoucherId = payment.ApMiscellaneousPaymentId.ToString();
 				headerDs.DocTitile = payment.IsDirectPayment ? "PAYMENT VOUCHER" : "MISCELLANEOUS PAYMENT VOUCHER";
-				headerDs.SupplierName = payment.SupplierName;
 				headerDs.NetPayable = netpayment;
 				headerDs.PaymentReference = payment.PaymentReference;
 				headerDs.PaymentMethod = payment.PaymentMethod;
@@ -38,16 +47,16 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
 
 				headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.CreatedBy));
 				headerDs.PreparedDate = payment.DateCreated != null ? payment.DateCreated : null;
-                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(payment.CreatedBy);
+				headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(payment.CreatedBy);
 
-                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.SendForApprovalBy));
+				headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.SendForApprovalBy));
 				headerDs.AccountantCheckedDate = payment.SendForApprovalTime != null ? payment.SendForApprovalTime : null;
-                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(payment.SendForApprovalBy);
+				headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(payment.SendForApprovalBy);
 
-                headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.OnlineApprovedBy));
+				headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.OnlineApprovedBy));
 				headerDs.ApprovedDate = payment.OnlineApprovedTime;
-                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(payment.OnlineApprovedBy);
-            }
+				headerDs.ApproverSignature = SignatureHelper.GetUserSignature(payment.OnlineApprovedBy);
+			}
 
 			if (organization != null)
 			{

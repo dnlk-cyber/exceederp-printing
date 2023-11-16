@@ -11,9 +11,11 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string VoucherId { get; set; }
         public string DocTitile { get; set; }
         public string SupplierName { get; set; }
+        public string RequestorName { get; set; }
         public decimal Amount { get; set; }
         public decimal NetPayable { get; set; }
         public string PaymentReference { get; set; }
+        public string Reference { get; set; }
         public DateTime PaymentDate { get; set; }
         public string PaymentMethod { get; set; }
         public string PaymentRequest { get; set; }

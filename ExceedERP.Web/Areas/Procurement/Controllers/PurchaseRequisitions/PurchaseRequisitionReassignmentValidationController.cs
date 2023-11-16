@@ -223,6 +223,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                             SroreRequisition = sr,
                             ProcurementOfficer = assignment.ProcurementOfficer,
                             BranchId= EmployeeHelper.GetEmployeePlacementBranch(assignment.ProcurementOfficer),
+                            BusinessUnitId=pr.BusinessUnitId,
                             IsManual = false,
                             SupplierName =po.SupplierName,
                             SupplierId = po.SupplierId,
@@ -322,6 +323,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         var purchaseOrder = new PurchaseOrder
                         {
                             PurchaseRequisitionID = purchaseReq.PurchaseRequisitionID,
+                            BranchId=purchaseReq.BranchId,
+                            BusinessUnitId=purchaseReq.BusinessUnitId,
                             SroreRequisition = sr,
                             ProcurementOfficer = assignment.ProcurementOfficer,
                             IsManual = false,
@@ -420,6 +423,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         var purchaseOrder = new PurchaseOrder
                         {
                             PurchaseRequisitionID = purchaseReq.PurchaseRequisitionID,
+                            BranchId=purchaseReq.BranchId,
+                            BusinessUnitId=purchaseReq.BusinessUnitId,
                             SroreRequisition = sr,
                             ProcurementOfficer = assignment.ProcurementOfficer,
                             IsManual = false,
@@ -544,6 +549,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         var purchaseOrder = new PurchaseOrder
                         {
                             PurchaseRequisitionID = purchaseReq.PurchaseRequisitionID,
+                            BusinessUnitId = purchaseReq.BusinessUnitId,
                             SroreRequisition = sr,
                             ProcurementOfficer = assignment.ProcurementOfficer,
                             BranchId = EmployeeHelper.GetEmployeePlacementBranch(assignment.ProcurementOfficer),
@@ -733,6 +739,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     {
 
                         StoreRequisitionID = sr,
+                        BusinessUnitId= purchaseReq.BusinessUnitId,
                         Description="NA",
                         ProformaReference = String.IsNullOrEmpty(purchaseReq.ReferenceNo)?"NA": purchaseReq.ReferenceNo,
                         ProcurementOfficer = assignment.ProcurementOfficer,
@@ -853,6 +860,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     {
 
                         ProcurementOfficer =purchaseReq.ProcurementOfficer,
+                        BusinessUnitId=purchaseReq.BusinessUnitId,
                         BranchId = EmployeeHelper.GetEmployeePlacementBranch(assignment.ProcurementOfficer),
                         TenderReference = "NA",
                         Description = "NA",

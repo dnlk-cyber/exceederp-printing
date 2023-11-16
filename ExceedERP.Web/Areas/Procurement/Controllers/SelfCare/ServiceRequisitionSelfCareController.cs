@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -16,11 +17,12 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 {
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class ServiceRequisitionSelfCareController : Controller
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
+        
         public ActionResult Index()
         {
             PopulateViewData();
@@ -78,7 +80,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover, ProcurementRoles.ProcurementServiceRequisitionSecondApprover)]
+        
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
@@ -189,7 +191,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Create([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -270,7 +272,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+        
         public ActionResult PurchaseRequisitions_Update([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
             #region validation 
@@ -352,7 +354,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -401,7 +403,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+        
         public JsonResult SendForApproval(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);
@@ -462,7 +464,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return null;
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+        
         public JsonResult SendForSecondApproval(int id, string user)
         {
             var record = db.PurchaseRequisitions.Find(id);

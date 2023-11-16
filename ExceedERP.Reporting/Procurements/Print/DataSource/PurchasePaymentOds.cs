@@ -37,14 +37,17 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                 headerDs.PaymentAmount = purchasePayment.PaymentAmount;
                 headerDs.ApplyPenality = purchasePayment.ApplyPenality;
                 headerDs.PenalityAmount = purchasePayment.PenalityAmount;
+                headerDs.NetPayable = purchasePayment.NetPayable;
                 headerDs.AmountDue = purchasePayment.AmountDue;
                 headerDs.Paid = purchasePayment.Paid? "Yes": "No";
                 headerDs.WithOutGRN = purchasePayment.WithOutGRN;
                 headerDs.PurchasePaymentType = purchasePayment.PurchasePaymentType.ToString();
                 headerDs.Type = purchasePayment.Type;
                 headerDs.PoOrContractNumber = purchasePayment.PoOrContractNumber;
-                headerDs.ProcurementOfficer = purchasePayment.ProcurementOfficer;
-                headerDs.ProcurementAnalyzer = purchasePayment.ProcurementAnalyzer;
+                if (purchasePayment.ProcurementOfficer != null)
+                    headerDs.ProcurementOfficer = EmployeeHelper.GetEmployeeEnglishName((int)purchasePayment.ProcurementOfficer);
+                if (purchasePayment.ProcurementAnalyzer != null)
+                    headerDs.ProcurementAnalyzer = EmployeeHelper.GetEmployeeEnglishName((int)purchasePayment.ProcurementAnalyzer);
                 headerDs.PurposeOfPayment = purchasePayment.PurposeOfPayment;              
                 headerDs.PaymentType = purchasePayment.PaymentType.ToString();
                 headerDs.Branch = _db.Branch.Find(branchid)?.Name;
@@ -81,7 +84,7 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(checker.CreatedBy));
                             headerDs.CheckedDate = checker.DateCreated != null ? checker.DateCreated.ToString() : "";
-                            headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
+                            headerDs.CheckerSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
                         }
                         else
                         {
@@ -89,7 +92,7 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(purchasePayment.SendForApprovalBy));
                             headerDs.CheckedDate = purchasePayment.SendForApprovalTime != null ? purchasePayment.SendForApprovalTime.ToString() : "";
-                            headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(purchasePayment.SendForApprovalBy);
+                            headerDs.CheckerSignature = SignatureHelper.GetUserSignature(purchasePayment.SendForApprovalBy);
                         }
                     }
 

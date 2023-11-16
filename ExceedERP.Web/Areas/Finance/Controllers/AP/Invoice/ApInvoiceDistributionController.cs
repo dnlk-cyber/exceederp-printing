@@ -57,7 +57,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             var parent =
                 _db.APPaybleInvoices.FirstOrDefault(
                     x => x.ApPaybleInvoicesId == id);
-            if (parent != null && !parent.IsOnlineTransferred)
+            if (parent != null && parent.IsOnlineTransferred)
                 ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
 
 
@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             var parent =
                 _db.APPaybleInvoices.FirstOrDefault(
                     x => x.ApPaybleInvoicesId == aPPaybleInvoiceDistribution.ApPaybleInvoicesId);
-            if (parent != null && !parent.IsOnlineTransferred)
+            if (parent != null && parent.IsOnlineTransferred)
                 ModelState.AddModelError("approved", "You cannot manipulate this record, it is already transferred");
 
 

@@ -10,7 +10,7 @@
                      .CascadeFrom("ItemType")
                   .DataSource(dataSource =>
                   {
-                      dataSource.Read(read => read.Action("GetPOandContractGrns", "ProcurementDataProvider", new { area = "Procurement" }).Data("getPurchaseId"))
+                      dataSource.Read(read => read.Action("GetPOandContractGrnsForSettlement", "ProcurementDataProvider", new { area = "Procurement" }).Data("getPurchaseId"))
                        .ServerFiltering(true);
                   })
 )

@@ -98,7 +98,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
 
 
             #endregion
-           
+            #region validate qty,price and tax
+
+            foreach (var item in items)
+            {
+                if (item.UnitPrice <= 0 || item.Quantity <= 0 || item.GLTaxRateID == 0)
+                    ModelState.AddModelError("qty", "Please fill quantity, unit price and tax information for all items.");                
+            }
+            #endregion
+
             if (ModelState.IsValid)
             {
                 if (record != null)

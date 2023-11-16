@@ -1,7 +1,7 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Finance.AP.Travel
 <legend>Travel Expense Claim</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelExpenseClaim>()
+@(Html.Kendo().Grid<ApTravelExpenseClaim>()
                   .Name("grid")
                   .Columns(columns =>
                   {
@@ -63,6 +63,7 @@
                                       model.Field(p => p.IsForOther).Editable(false);
                                       model.Field(p => p.CreatedAtBranchId).Editable(false);
                                       model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+                                      model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
                                       model.Field(p => p.Status).Editable(false);
                                       model.Field(p => p.CreatedBy).Editable(false);
                                       model.Field(p => p.DateCreated).Editable(false);
@@ -399,49 +400,7 @@
 
                                 </text>
                                 );
-            items.Add().Text("Distribution").Content(
-@<text>
-@(Html.Kendo().Grid<ApTravelExpenseDistribution>()
-                    .Name("ApTravelExpenseDistribution#=ApTravelExpenseClaimId#")
-                    .Columns(columns =>
-                    {
-                         columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
-                        columns.Bound(c => c.AccountDesc).Width(200);
-                        columns.Bound(c => c.Debit).Width(100);
-                        columns.Bound(c => c.Credit).Width(100);
-                        columns.Command(command =>
-                        {
-                            command.Edit();
-                            command.Destroy();
-                        }).Width(380);
-                    })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      })
-
-                    .Editable(editable => editable.Mode(GridEditMode.InLine))
-                    .Pageable()
-                    .Scrollable()
-                    .Events(ev => ev.DataBound("onDataBoundDistributionNew"))
-                    .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .Model(model =>
-                            {
-                                model.Id(p => p.ApTravelExpenseDistributionId);
-                                model.Field(p => p.AccountDesc).Editable(false);
-                            })
-                        .Read(read => read.Action("ApTravelExpenseDistributions_Read", "ApTravelExpenseDistribution", new { id = "#=ApTravelExpenseClaimId#" }))
-                        .Create(create => create.Action("ApTravelExpenseDistributions_Create", "ApTravelExpenseDistribution", new { id = "#=ApTravelExpenseClaimId#" }))
-                        .Update(update => update.Action("ApTravelExpenseDistributions_Update", "ApTravelExpenseDistribution"))
-                        .Destroy(destroy => destroy.Action("ApTravelExpenseDistributions_Destroy", "ApTravelExpenseDistribution"))
-                    ).ToClientTemplate()
-
-
-)
-
-
-</text>);
+            
 
                                             items.Add().Text("Validation").Content(
                                         @<text>

@@ -82,31 +82,28 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
         [AuthorizeRoles(ProcurementRoles.ProcurementUser, ProcurementRoles.ProcurementTeamLeader, ProcurementRoles.ProcurementApprover)]
         public ActionResult PurchaseRequisitionReviews_Read([DataSourceRequest] DataSourceRequest request)
         {
-            //IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions
-            //    .Where(x => x.IsOnlineApproved&& x.ItemType!=PurchaseItemType.Service ||
-            //                x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
-            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions;
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => mybraches.Contains(x.BranchId));
+
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
                 purchaserequisitions = purchaserequisitions.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
             }
-           
+
+            purchaserequisitions = db.PurchaseRequisitions
+                   .Where(x => x.IsOnlineApproved && x.IsManual == false && x.ItemType != PurchaseItemType.Service ||
+                               x.IsMiddleOnlineApproved && x.IsManual && x.ItemType != PurchaseItemType.Service ||
+                               x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
 
             if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
             {
                 purchaserequisitions = db.PurchaseRequisitions.Where(x=>x.IsBudgetApproved);
             }
-            else
-            {
-                purchaserequisitions = db.PurchaseRequisitions
-                   .Where(x => x.IsOnlineApproved && x.IsManual == false && x.ItemType != PurchaseItemType.Service ||
-                               x.IsMiddleOnlineApproved && x.IsManual && x.ItemType != PurchaseItemType.Service ||
-                               x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
-            }
+            
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementApprover) ||
-                     System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementApprover))
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementApprover))
             {
 
             }

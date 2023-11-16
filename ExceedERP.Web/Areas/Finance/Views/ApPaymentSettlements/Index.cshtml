@@ -6,7 +6,7 @@
           .Columns(columns =>
           {
               columns.Bound(c => c.ApPaymentSettlementId).Title("ID").Width(100).ClientTemplate("#=appendZeros(ApPaymentSettlementId)#");
-              columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["suppliers"], "Code", "Name").Width(150);
+              columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["suppliers"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.CollectedByPurchaser).Width(120).Title("By Purchaser ?").ClientTemplate(
                "<input type='checkbox' disabled = 'true' value='#= CollectedByPurchaser #' " +
                "# if (CollectedByPurchaser) { #" +
@@ -14,7 +14,7 @@
                "# } #" +
                "/>"
                );
-              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["employees"], "Code", "Name").Width(150);
+              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["employees"], "Code", "Name").Width(250).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.PaymentDate).Width(130).Format("{0:dd/MM/yyyy}");
               columns.Bound(c => c.Reference).Width(160);
               columns.Bound(c => c.Remark).Width(120);
@@ -39,10 +39,10 @@
 
 
                     </text>);
-               })
+          })
 
                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApPaymnetSettlement").Window(w => w.Title("Payment Settlement")))
-               
+
                .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
                .Scrollable(h => h.Height(500))
                .Events(x => x.DataBound("onDataBoundMasterNew"))
@@ -67,7 +67,7 @@
                {
                    sortable.SortMode(GridSortMode.SingleColumn);
                })
-               
+
 
                .DataSource(dataSource => dataSource
                    .Ajax()
@@ -77,8 +77,12 @@
                        {
                            model.Id(p => p.ApPaymentSettlementId);
                            model.Field(p => p.ApPaymentSettlementId).Editable(false);
+                           model.Field(p => p.BranchId).Editable(false);
+                           model.Field(p => p.BusinessUnitId).Editable(false);
+                           model.Field(p => p.CreatedAtBranchId).Editable(false);
+                           model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
 
-                           
+
 
                            model.Field(p => p.VoidTime).Editable(false);
                            model.Field(p => p.VoidBy).Editable(false);
@@ -189,7 +193,6 @@
                                                                             {
                                                                     <a onclick='return voidRecord("#=ApPaymentSettlementId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                                                             }
-                                                                /**/
 
                                                                 # } #
 
@@ -202,44 +205,44 @@
                                                                               .Columns(columns =>
                                                                               {
 
-                                                                                          columns.Bound(c => c.Source).Width(140).EditorTemplateName("PrepaymentSourceSelector");
-                                                                                          columns.Bound(c => c.SourceId).Width(140).EditorTemplateName("PrepaymentSelector");
-                                                                                          columns.Bound(c => c.Purpose).Width(140);
-                                                                                          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
-                                                                                          columns.Bound(c => c.Amount).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
-                                                                                          columns.Bound(c => c.GLTaxRateID).Width(110).EditorTemplateName("TaxType");
-                                                                                          columns.Bound(c => c.WithholdingType).Width(140).EditorTemplateName("WithholdingType");
-                                                                                          columns.Bound(c => c.WithholdTax).Title("Withold VAT ?").Width(130).ClientTemplate(
-                                                                                              "<input type='checkbox' disabled = 'true' value='\\#= WithholdTax\\#' " +
-                                                                                              "\\# if (WithholdTax) { \\#" +
-                                                                                              "checked='checked'" +
-                                                                                              "\\# } \\#" +
-                                                                                              "/>"
-                                                                                              );
+                                                                                  columns.Bound(c => c.Source).Width(140).EditorTemplateName("SourceTypeSelector");
+                                                                                  columns.Bound(c => c.SourceId).Width(140).EditorTemplateName("PaymentSelector");
+                                                                                  columns.Bound(c => c.Purpose).Width(140);
+                                                                                  columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+                                                                                  columns.Bound(c => c.Amount).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                                  columns.ForeignKey(p => p.GLTaxRateID, (System.Collections.IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelectorAP").Width(120);
+                                                                                  columns.ForeignKey(p => p.WithholdingType, (System.Collections.IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(130).EditorTemplateName("TaxSelectorWithholding");
+                                                                                  columns.Bound(c => c.WithholdTax).Title("Withold VAT ?").Width(130).ClientTemplate(
+                                                                                      "<input type='checkbox' disabled = 'true' value='\\#= WithholdTax\\#' " +
+                                                                                      "\\# if (WithholdTax) { \\#" +
+                                                                                      "checked='checked'" +
+                                                                                      "\\# } \\#" +
+                                                                                      "/>"
+                                                                                      );
 
-                                                                                          columns.Bound(c => c.TaxAmount).Width(120).ClientFooterTemplate(" \\#=sum\\# ");
-                                                                                          columns.Bound(c => c.NetAmount).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
-                                                                                          columns.Bound(c => c.Remark).Width(90);
+                                                                                  columns.Bound(c => c.TaxAmount).Width(120).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                                  columns.Bound(c => c.NetAmount).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                                  columns.Bound(c => c.Remark).Width(90);
 
-                                                                                          columns.Command(command =>
-                                                                                          {
+                                                                                  columns.Command(command =>
+                                                                                  {
 
-                                                                                              command.Edit();
-                                                                                              command.Destroy();
+                                                                                      command.Edit();
+                                                                                      command.Destroy();
 
-                                                                                          }).Width(280);
+                                                                                  }).Width(280);
 
-                                                                                      })
+                                                                              })
                                                                               .ToolBar(toolbar =>
                                                                               {
-                                                                                          toolbar.Create();
-                                                                                      })
+                                                                                  toolbar.Create();
+                                                                              })
                                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
 
                                                                               .Sortable(sortable =>
                                                                               {
-                                                                                          sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                      })
+                                                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                                                              })
 
                                                                               .Scrollable()
                                                                              .Events(x => x.DataBound("onDataBoundLineNew"))
@@ -247,22 +250,23 @@
                                                                                   .Ajax()
                                                                                    .Aggregates(aggregates =>
                                                                                    {
-                                                                                               aggregates.Add(p => p.Amount).Sum();
-                                                                                               aggregates.Add(p => p.TaxAmount).Sum();
-                                                                                               aggregates.Add(p => p.NetAmount).Sum();
-                                                                                               aggregates.Add(p => p.WithholdTaxAmount).Sum();
-                                                                                               aggregates.Add(p => p.WithholdingAmount).Sum();
-                                                                                           })
+                                                                                       aggregates.Add(p => p.Amount).Sum();
+                                                                                       aggregates.Add(p => p.TaxAmount).Sum();
+                                                                                       aggregates.Add(p => p.NetAmount).Sum();
+                                                                                       aggregates.Add(p => p.WithholdTaxAmount).Sum();
+                                                                                       aggregates.Add(p => p.WithholdingAmount).Sum();
+                                                                                   })
                                                                                   .Model(
                                                                                       model =>
                                                                                       {
-                                                                                                  model.Id(p => p.ApPaymentSettlementLineId);
-                                                                                                  model.Field(p => p.NetAmount).Editable(false);
-                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                  model.Field(p => p.LastModified).Editable(false);
-                                                                                                  model.Field(p => p.DateCreated).Editable(false);
-                                                                                              })
+                                                                                          model.Id(p => p.ApPaymentSettlementLineId);
+                                                                                          model.Field(p => p.TaxAmount).Editable(false);
+                                                                                          model.Field(p => p.NetAmount).Editable(false);
+                                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                          model.Field(p => p.LastModified).Editable(false);
+                                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                                      })
                                                                                   .Events(ev => ev
                                                                                       .Error("error_handler(\"ApPaymentSettlementLine#=ApPaymentSettlementId#\")")
                                                                                       .RequestStart("onRequestStart(\"ApPaymentSettlementLine#=ApPaymentSettlementId#\")")
@@ -711,7 +715,8 @@
         //alert(codeid);
         return {
             id: codeid,
-            type: $("#ItemType").data("kendoDropDownList").value()
+            type: $("#ItemType").data("kendoDropDownList").value(),
+            text: $("#GrnNo").data("kendoDropDownList").filterInput.val()
         }
 
     }

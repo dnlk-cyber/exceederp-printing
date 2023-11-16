@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -14,18 +15,18 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 {
-   
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class ServiceRequisitionItemSelfCareController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
+        
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
+        
         public ActionResult ServiceRequisitionItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionItem> purchaserequisitionItems = db.PurchaseRequisitionItems.Where(pri => pri.PurchaseRequisitionID == id);
@@ -49,7 +50,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem, int id)
         {
@@ -98,7 +99,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {
@@ -149,7 +150,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceRequisitionItems_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {

@@ -1,0 +1,16 @@
+﻿
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+    
+                  .OptionLabel("Select Type...")
+                      .DataTextField("Name")
+                      .DataValueField("Code")
+                      .Filter("contains")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetSettlementSources", "FinanceDataProvider", new { area = "Finance" }))
+                       .ServerFiltering(false);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

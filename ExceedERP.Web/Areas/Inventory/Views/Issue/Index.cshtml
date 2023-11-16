@@ -13,14 +13,15 @@
       {
           columns.Bound(c => c.IssueID).Title("Issue No.").Width(120).ClientTemplate("#=appendZeros(IssueID)#");
           columns.Bound(c => c.StoreRequisitionID).Title("SR No.").EditorTemplateName("StoreRequisitionSelector").Width(160);
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly");
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(100);
           columns.Bound(c => c.PlateNo).Title("Plate No.").Width(100);
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["Suppliers"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Reference).Title("Issue Reference").Width(90);
           columns.Bound(c => c.Remark).Width(90);
           columns.Bound(c => c.Status).Width(90);
@@ -78,7 +79,7 @@
       {
           sortable.SortMode(GridSortMode.SingleColumn);
       })
-      
+
       .Events(ev => ev.Edit("onMasterEdit"))
       .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
@@ -398,6 +399,12 @@
 
 <script type="text/javascript">
 
+
+    function filterEmployees() {
+        return {
+            text: $("#RecipientId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function voidRecord(id) {
         var recordStatus = "";

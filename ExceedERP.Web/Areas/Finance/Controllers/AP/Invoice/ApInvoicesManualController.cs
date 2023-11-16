@@ -879,6 +879,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ReferenceDoc = "",
                         BranchId = 0,//to change
                         InvoiceReferenceDoc = record.InvoiceNumber,
+                        DebitSum = debit,
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now
@@ -967,10 +968,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 }
                 #endregion
                 record.Status = Enum.GetName(typeof(OperationStatuses), 10);
-                record.IsOnlineApproved = false;
-                record.IsSendForApproval = false;
-                record.VoidBy = User.Identity.Name;
-                record.VoidTime = DateTime.Now;
                 record.IsVoid = false;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;

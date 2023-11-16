@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -411,6 +412,168 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 }
               
             }
+        }
+        public JsonResult ReloadPRItems(string id)
+        {
+            if (id != null)
+            {
+                int did = int.Parse(id);
+                var lotPR = _db.LotPurchaseRequisitions.Find(did);
+                var prItems = _db.PurchaseRequisitionReassignmentItems
+                    .Where(x=>x.PurchaseRequisitionAssignmentId== lotPR.PurchaseRequisitionAssignmentId).ToList();
+
+                var participatingSuppliers = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lotPR.LotID).ToList();
+                foreach (var item in prItems)
+                {
+                    if (item.ItemType == PurchaseItemType.FixedAsset)
+                    {
+                        #region fixed asset
+
+                        var existingLotItem = _db.LotItems
+                            .Where(x => x.LotID == lotPR.LotID)
+                            .Where(x => x.Name == item.Name)
+                            .Where(x => x.ItmCode == item.ItmCode)
+                            .FirstOrDefault(x => x.ModelNo == item.ModelNo);
+                        if (existingLotItem == null)
+                        {
+
+                            var lotItem = new LotItems
+                            {
+                                LotID = lotPR.LotID,
+                                CatCode = item.CatCode,
+                                CategoryName = item.CategoryName,
+                                ItmCode = item.ItmCode,
+                                ItemName = item.ItemName,
+                                Name = item.Name,
+                                ModelNo = item.ModelNo,
+                                PartNo = item.PartNo,
+                                Quantity = item.Quantity,
+                                ItemSpecification = item.ItemSpecification,
+                                UoM = item.UoM,
+                                ItemType = item.ItemType,
+                            };
+
+                            _db.LotItems.Add(lotItem);
+                            _db.SaveChanges();
+
+                            foreach (var supp in participatingSuppliers)
+                            {
+                                #region add participant item
+                                var entity = new BidParticipatingSupplierItem
+                                {
+                                    BidPParticipatingSuppliersID = supp.BidPParticipatingSuppliersID,
+                                    LotItemID = lotItem.LotItemsID,
+                                    CatCode = lotItem.CatCode,
+                                    CategoryName = lotItem.CategoryName,
+                                    ItmCode = lotItem.ItmCode,
+                                    ItemName = lotItem.ItemName,
+                                    PartNo = lotItem.PartNo,
+                                    Name = lotItem.Name,
+                                    ItemSpecification = lotItem.ItemSpecification,
+                                    UoM = lotItem.UoM,
+                                    ItemType = lotItem.ItemType,
+                                    GLTaxRateID = 0,
+                                    TaxAmount = 0,
+                                    Quantity = lotItem.Quantity,
+                                    SubTotal = 0,
+                                    UnitPrice = 0,
+                                    Total = 0,
+
+                                    IsOutOfStock = false
+                                };
+
+                                _db.BidParticipatingSupplierItems.Add(entity);
+                                _db.SaveChanges();
+                                #endregion
+                            }
+
+                           
+                        }
+                       
+
+                        #endregion
+                    }
+
+                    else
+                    {
+                        #region sock and service
+
+                        var existingLotItem = _db.LotItems
+                            .Where(x => x.LotID == lotPR.LotID)
+                            .Where(x => x.ItemSpecification == item.ItemSpecification)//added
+                            .FirstOrDefault(x => x.ItmCode == item.ItmCode);
+                        if (existingLotItem == null)
+                        {
+
+                            LotItems lotItem = new LotItems
+                            {
+                                LotID = lotPR.LotID,
+                                CatCode = item.CatCode,
+                                CategoryName = item.CategoryName,
+                                ItmCode = item.ItmCode,
+                                ItemName = item.ItemName,
+                                PartNo = item.PartNo,
+                                Quantity = item.Quantity,
+                                ItemSpecification = item.ItemSpecification,
+                                UoM = item.UoM,
+                                ItemType = item.ItemType,
+                            };
+
+
+                            _db.LotItems.Add(lotItem);
+                            _db.SaveChanges();
+
+                            foreach (var supp in participatingSuppliers)
+                            {
+                                #region add participant item
+                                var entity = new BidParticipatingSupplierItem
+                                {
+                                    BidPParticipatingSuppliersID = supp.BidPParticipatingSuppliersID,
+                                    LotItemID = lotItem.LotItemsID,
+                                    CatCode = lotItem.CatCode,
+                                    CategoryName = lotItem.CategoryName,
+                                    ItmCode = lotItem.ItmCode,
+                                    ItemName = lotItem.ItemName,
+                                    PartNo = lotItem.PartNo,
+                                    Name = lotItem.Name,
+                                    ItemSpecification = lotItem.ItemSpecification,
+                                    UoM = lotItem.UoM,
+                                    ItemType = lotItem.ItemType,
+                                    GLTaxRateID = 0,
+                                    TaxAmount = 0,
+                                    Quantity = lotItem.Quantity,
+                                    SubTotal = 0,
+                                    UnitPrice = 0,
+                                    Total = 0,
+
+                                    IsOutOfStock = false
+                                };
+
+                                _db.BidParticipatingSupplierItems.Add(entity);
+                                _db.SaveChanges();
+                                #endregion
+                            }
+                        }
+                       
+                        #endregion
+                    }
+                }
+
+                var formattedData1 = new
+                {
+                    Message = "Operation completed.",
+                    Status = "OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+
+            var formattedData = new
+            {
+                Message = "Please select PR for reload.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
         }
         protected override void Dispose(bool disposing)
         {

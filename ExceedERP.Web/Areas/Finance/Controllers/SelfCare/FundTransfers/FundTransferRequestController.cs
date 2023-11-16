@@ -30,6 +30,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
         {
             
             PopulateViewData();
+            UpdateData();
 
             return View();
         }
@@ -44,7 +45,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
             var branch = _db.Branch.ToList();
             ViewData["Branch"] = branch;
 
-            if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+            if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 var businessUnits = _db.BusinessUnits.ToList();
                 ViewData["BusinessUnits"] = businessUnits;
@@ -62,7 +63,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 
         }
 
-     
+        private void UpdateData()
+        {
+            var list = _db.FundTransfers.Where(x => x.CreatedAtOrgStructureId == 0).ToList();
+
+            foreach (var record in list)
+            {
+                record.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(record.CreatedBy);
+                _db.FundTransfers.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+            }
+        }
 
         public ActionResult FundTransfer_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -72,7 +85,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                  && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
 
-                fundTransfers = fundTransfers.Where(x => userworkunit.Contains(x.OrgStuructureId)
+                fundTransfers = fundTransfers.Where(x => userworkunit.Contains(x.CreatedAtOrgStructureId)
+                || x.CreatedAtOrgStructureId == 0//if they are not vis
                 || x.ForwardedTo == User.Identity.Name
                 || x.ForwardedFrom == User.Identity.Name
                 || x.CreatedBy == User.Identity.Name);
@@ -98,6 +112,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                 FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                 CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                 BankAccountId = fundTransfer.BankAccountId,
                 RequestDate = fundTransfer.RequestDate,
                 Paid = fundTransfer.Paid,
@@ -172,7 +187,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 
             fundTransfer.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             fundTransfer.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
-            
+            fundTransfer.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+
             #endregion
 
             if (ModelState.IsValid)
@@ -188,6 +204,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                     FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                     CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                     BankAccountId = fundTransfer.BankAccountId,
                     Paid = fundTransfer.Paid,
                     ReasonOfTransfer = fundTransfer.ReasonOfTransfer,
@@ -255,18 +272,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                 ModelState.AddModelError("requester", "Please select requestor");
             }
 
+            if (fundTransfer.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
             if (fundTransfer.EmployeeId != 0)
             {
-                var placemnt = _db.Placements.Where(x => x.EmployeeId == fundTransfer.EmployeeId).Where(x => x.isCurrent).FirstOrDefault();
+                var placemnt = _db.Placements.Where(x => x.EmployeeId == fundTransfer.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
                 if (placemnt != null)
                 {
-                    fundTransfer.CreatedAtBranchId = placemnt.BranchId;
-                    fundTransfer.CreatedAtBusinessUnitId = placemnt.BusinessUnitId;
+                    fundTransfer.BranchId = placemnt.BranchId;
+                    fundTransfer.BusinessUnitId = placemnt.BusinessUnitId;
                     fundTransfer.OrgStuructureId = placemnt.OrgStructureId;
                 }
                 else
                 {
-                    ModelState.AddModelError("placement", "Employee has no current placemnt");
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
                 }
             }
 
@@ -286,6 +307,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                     FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                     CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                     BankAccountId = fundTransfer.BankAccountId,
                     Paid = fundTransfer.Paid,
                     ReasonOfTransfer = fundTransfer.ReasonOfTransfer,
@@ -361,6 +383,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                     FromBusinessUnitId = fundTransfer.FromBusinessUnitId,
                     CreatedAtBranchId = fundTransfer.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = fundTransfer.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fundTransfer.CreatedAtOrgStructureId,
                     BankAccountId = fundTransfer.BankAccountId,
                     Paid = fundTransfer.Paid,
                     ReasonOfTransfer = fundTransfer.ReasonOfTransfer,

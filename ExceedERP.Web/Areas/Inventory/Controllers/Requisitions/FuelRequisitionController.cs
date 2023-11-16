@@ -163,7 +163,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     Status = storeRequisition.Status,
                     Remark = storeRequisition.Remark,
 
-                    CreatedBy = storeRequisition.CreatedBy,
+                PrevRequestDate = storeRequisition.PrevRequestDate,
+                PrevKm = storeRequisition.PrevKm,
+                PrevLT = storeRequisition.PrevLT,
+                CurrentKm = storeRequisition.CurrentKm,
+                DifferenceKm = storeRequisition.DifferenceKm,
+                Consumption = storeRequisition.Consumption,
+                StandardConsumption = storeRequisition.StandardConsumption,
+
+                CreatedBy = storeRequisition.CreatedBy,
                     DateCreated = storeRequisition.DateCreated,
                     ModifiedBy = storeRequisition.ModifiedBy,
                     LastModified = storeRequisition.LastModified,
@@ -190,8 +198,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IsOnlineTransferred = storeRequisition.IsOnlineTransferred,
                     IsOnlineTransferredBy = storeRequisition.IsOnlineTransferredBy,
                     OnlineTransferredTime = storeRequisition.OnlineTransferredTime,
-                    IsFuel = storeRequisition.IsFuel
-                });
+                    IsFuel = storeRequisition.IsFuel,
+                VehicleDistributionID = storeRequisition.VehicleDistributionID
+            });
 
             return Json(result);
         }
@@ -286,6 +295,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
                         ModelNo = storeRequisition.ModelNo,
+
+                        PrevRequestDate = storeRequisition.PrevRequestDate,
+                        PrevKm = storeRequisition.PrevKm,
+                        PrevLT = storeRequisition.PrevLT,
+                        CurrentKm = storeRequisition.CurrentKm,
+                        DifferenceKm = storeRequisition.DifferenceKm,
+                        Consumption = storeRequisition.Consumption,
+                        StandardConsumption = storeRequisition.StandardConsumption,
 
                         VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
@@ -410,6 +427,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         ForBranchId = storeRequisition.ForBranchId,
                         ModelNo = storeRequisition.ModelNo,
 
+                        PrevRequestDate = storeRequisition.PrevRequestDate,
+                        PrevKm = storeRequisition.PrevKm,
+                        PrevLT = storeRequisition.PrevLT,
+                        CurrentKm = storeRequisition.CurrentKm,
+                        DifferenceKm = storeRequisition.DifferenceKm,
+                        Consumption = storeRequisition.Consumption,
+                        StandardConsumption = storeRequisition.StandardConsumption,
+
                         IsVoid = storeRequisition.IsVoid,
                         VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
@@ -470,7 +495,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         ForBranchId = storeRequisition.ForBranchId,
                         ModelNo = storeRequisition.ModelNo,
 
-                       VoidBy = storeRequisition.VoidBy,
+                    PrevRequestDate = storeRequisition.PrevRequestDate,
+                    PrevKm = storeRequisition.PrevKm,
+                    PrevLT = storeRequisition.PrevLT,
+                    CurrentKm = storeRequisition.CurrentKm,
+                    DifferenceKm = storeRequisition.DifferenceKm,
+                    Consumption = storeRequisition.Consumption,
+                    StandardConsumption = storeRequisition.StandardConsumption,
+
+                    VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
                         IsOnlineApproved = storeRequisition.IsOnlineApproved,
                         OnlineApprovedBy = storeRequisition.OnlineApprovedBy,

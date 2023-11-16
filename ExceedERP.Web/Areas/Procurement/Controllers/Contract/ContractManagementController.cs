@@ -87,12 +87,22 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
         [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractManager, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult ContractManagements_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ContractManagement> contractmanagements = _db.ContractManagements;
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<ContractManagement> contractmanagements = _db.ContractManagements.Where(x => mybraches.Contains(x.BranchId));
 
-            bool isContractAdmin =User.IsInRole(ProcurementRoles.ProcurementContractManager);
-            bool isContractApprover =User.IsInRole(ProcurementRoles.ProcurementContractApprover);
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                contractmanagements = contractmanagements.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
 
-            if (!(isContractApprover||isContractAdmin))
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementContractManager) ||
+                System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementContractApprover))
+            {
+
+            }
+
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementContractUser))
             {
                 int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
                 contractmanagements = contractmanagements.Where(x => x.ProcurementOfficer == empid && empid != 0);
@@ -198,8 +208,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
             {
                 var entity = new ContractManagement
                 {
-                    BranchId = contractManagement.BranchId,
-                    BusinessUnitId = contractManagement.BusinessUnitId,
+                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     SupplierName = contractManagement.SupplierName,
                     IsNewSupplier = contractManagement.IsNewSupplier,
                     SupplierId = contractManagement.SupplierId,

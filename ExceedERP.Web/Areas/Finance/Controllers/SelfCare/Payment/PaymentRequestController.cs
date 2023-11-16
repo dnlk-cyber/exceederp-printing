@@ -19,6 +19,9 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
+using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.Web.Areas.Inventory.Controllers.Settings;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 {
@@ -31,6 +34,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
 
             PopulateViewData();
+            UpdateData();
 
             return View();
         }
@@ -44,6 +48,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
             var branch = _db.Branch.ToList();
             ViewData["Branch"] = branch;
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = _db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
 
             var structure = _db.MainCompanyStructures.ToList();
             ViewData["OrgStructure"] = structure;
@@ -59,7 +69,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             return Json((periodList ?? throw new InvalidOperationException()).Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
      
+        private void UpdateData()
+        {
+            var list = _db.PaymentRequests.Where(x => x.CreatedAtOrgStructureId == 0).ToList();
 
+            foreach (var record in list)
+            {
+                record.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(record.CreatedBy);
+                _db.PaymentRequests.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+            }
+        }
         public ActionResult PaymentRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
@@ -68,7 +90,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                  && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
 
-                paymentRequests = paymentRequests.Where(x => userworkunit.Contains(x.OrgStuructureId)
+                paymentRequests = paymentRequests.Where(x => userworkunit.Contains(x.CreatedAtOrgStructureId)
+                || x.CreatedAtOrgStructureId == 0//if they are not vis
                 || x.ForwardedTo == User.Identity.Name
                 || x.ForwardedFrom == User.Identity.Name
                 || x.CreatedBy == User.Identity.Name);
@@ -87,8 +110,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 OrgStuructureId = paymentRequest.OrgStuructureId,
                 BranchId = paymentRequest.BranchId,
                 BusinessUnitId = paymentRequest.BusinessUnitId,
+                FromBranchId = paymentRequest.FromBranchId,
+                FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                 CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                 PaymentRequestId = paymentRequest.PaymentRequestId,
                 SupplierId = paymentRequest.SupplierId,
                 IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -183,7 +209,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
             paymentRequest.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             paymentRequest.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
-         
+            paymentRequest.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+
             #endregion
 
             if (ModelState.IsValid)
@@ -194,8 +221,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     EmployeeId = paymentRequest.EmployeeId,
                     BranchId = paymentRequest.BranchId,
                     BusinessUnitId = paymentRequest.BusinessUnitId,
+                    FromBranchId = paymentRequest.FromBranchId,
+                    FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                     CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -265,7 +295,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         public ActionResult PaymentRequest_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Finance.AP.PaymentRequest.PaymentRequest paymentRequest)
         {
 
-
             #region data
             if (paymentRequest.EmployeeId == 0)
             {
@@ -304,8 +333,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     OrgStuructureId=paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
                     BusinessUnitId = paymentRequest.BusinessUnitId,
+                    FromBranchId = paymentRequest.FromBranchId,
+                    FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                     CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,
@@ -385,8 +417,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     OrgStuructureId = paymentRequest.OrgStuructureId,
                     BranchId = paymentRequest.BranchId,
                     BusinessUnitId = paymentRequest.BusinessUnitId,
+                    FromBranchId = paymentRequest.FromBranchId,
+                    FromBusinessUnitId = paymentRequest.FromBusinessUnitId,
                     CreatedAtBranchId = paymentRequest.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = paymentRequest.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = paymentRequest.CreatedAtOrgStructureId,
                     PaymentRequestId = paymentRequest.PaymentRequestId,
                     SupplierId = paymentRequest.SupplierId,
                     IsNewSupplier = paymentRequest.IsNewSupplier,

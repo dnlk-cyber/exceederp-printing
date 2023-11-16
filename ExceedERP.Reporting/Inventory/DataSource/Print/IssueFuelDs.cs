@@ -46,6 +46,12 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                 headerDs.ODOMeter = issue.ReadingKM;
                 headerDs.PlateNo = issue.PlateNo; 
                 headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(issue.StoreRequisitionID);
+                if (string.IsNullOrWhiteSpace(issue.SupplierId))
+                {
+                    var supplier = dbContext.ProcurementSuppliers.Where(x => x.SupplierId.ToUpper() == issue.SupplierId.ToUpper()).FirstOrDefault();
+                    if (supplier != null)
+                        headerDs.ExternalSupplier = supplier.SupplierId + "-" + supplier.Name;
+                }
             }
 
             headerDs.NoOfCopy = InventoryHelper.GetDocumentCopy(PrintCopyAttributes.STORE_ISSUE_VOUCHER);

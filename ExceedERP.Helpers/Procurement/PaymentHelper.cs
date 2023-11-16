@@ -13,6 +13,35 @@ namespace ExceedERP.Helpers.Procurement
 {
     public  class PaymentHelper
     {
+        public static string ValidatePurchaseOrder(int id)
+        {
+            string error=string.Empty;
+            ExceedDbContext db = new ExceedDbContext();
+            var purchaseOrder=db.PurchaseOrders.Find(id); 
+
+            var schedule=db.PoPaymentSchedules
+                    .Where(x => x.PurchaseOrderID == purchaseOrder.PurchaseOrderID).ToList();
+            if (!schedule.Any())
+                return "Please add payment schedule first.";
+
+            if (purchaseOrder.PurchasePaymentType == PurchasePaymentType.Credit)
+            {
+                var creditPaymentSchedule = db.PoPaymentSchedules
+                    .Where(x => x.PurchaseOrderID == purchaseOrder.PurchaseOrderID)
+                    .Where(x => x.PaymentType == PaymentType.Credit).ToList();
+                if (!creditPaymentSchedule.Any())
+                    return "There is no credit payment schedule defined hence can't use credit payment type.";
+            }
+            if (purchaseOrder.PurchasePaymentType == PurchasePaymentType.Cash)
+            {
+                var cashPaymentSchedule = db.PoPaymentSchedules
+                    .Where(x => x.PurchaseOrderID == purchaseOrder.PurchaseOrderID)
+                    .Where(x => x.PaymentType != PaymentType.Credit).ToList();
+                if (!cashPaymentSchedule.Any())
+                   return "There is no payment or advance payment schedule defined hence can't use cash payment type.";
+            }
+            return error;
+        }
         public static void UpdatePurchasePaymentTotals(int id)
         {
             ExceedDbContext db = new ExceedDbContext();
