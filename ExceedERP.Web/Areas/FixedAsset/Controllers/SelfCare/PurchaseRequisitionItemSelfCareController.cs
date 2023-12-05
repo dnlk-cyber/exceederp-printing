@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -15,18 +16,16 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 {
-
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PurchaseRequisitionItemSelfCareController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistion)]
-        public ActionResult Index()
+         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistion)]
         public ActionResult PurchaseRequisitionItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionItem> purchaserequisitionItems = db.PurchaseRequisitionItems.Where(pri => pri.PurchaseRequisitionID == id);
@@ -54,7 +53,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+      
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem, int id)
@@ -114,7 +113,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {
@@ -176,7 +175,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionItems_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionItem purchaseRequisitionItem)
         {

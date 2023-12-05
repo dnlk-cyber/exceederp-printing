@@ -62,6 +62,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
 
             var branches = db.Branch;
             ViewData["Branches"] = branches;
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
 
         }
 
@@ -80,6 +85,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 BranchId = purchaseRequisition.BranchId,
                 BusinessUnitId = purchaseRequisition.BusinessUnitId,
                 ForBranchId = purchaseRequisition.ForBranchId,
+                ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                 OrgStructureId = purchaseRequisition.OrgStructureId,
                 EmployeeId = purchaseRequisition.EmployeeId,
                 ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -152,6 +158,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                         BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                         BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         ForBranchId = purchaseRequisition.ForBranchId,
+                        ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                         OrgStructureId = UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
                         EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -234,6 +241,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                         BranchId = purchaseRequisition.BranchId,
                         BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         ForBranchId = purchaseRequisition.ForBranchId,
+                        ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                         OrgStructureId = purchaseRequisition.OrgStructureId,
                         EmployeeId = purchaseRequisition.EmployeeId,
 

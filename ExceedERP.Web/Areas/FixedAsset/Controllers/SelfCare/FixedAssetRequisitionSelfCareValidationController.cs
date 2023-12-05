@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
@@ -15,20 +16,18 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
 {
-    [Authorize]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
 
     public class FixedAssetRequisitionSelfCareValidationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
+       
         public ActionResult Index()
         {
             return View();
         }
 
-
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover,FixedAssetConstants.FixedAssetRequistionSecondApprover, FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult FixedAssetRequisitionValidations_Read([DataSourceRequest]DataSourceRequest request , int id)
         {
             IQueryable<FixedAssetRequisitionValidation> storerequisitionvalidations = _db.FixedAssetRequisitionValidations.Where(sr => sr.FixedAssetRequisitionId == id);
@@ -41,8 +40,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return Json(result);
         }
 
-        //FixedAsset Requisition First Validation
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover)]
+
+        [AuthorizeRoles( HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitionValidations_Create([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionValidation storeRequisitionValidation, int id)
         {
@@ -91,7 +90,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover)]
+        [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
          public ActionResult FixedAssetRequisitionValidations_Update([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionValidation storeRequisitionValidation)
         {
@@ -115,7 +114,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return Json(new[] { storeRequisitionValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover)]
+        [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
        public ActionResult FixedAssetRequisitionValidations_Destroy([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionValidation storeRequisitionValidation)
         {

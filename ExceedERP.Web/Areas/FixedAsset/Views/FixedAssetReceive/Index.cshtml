@@ -11,13 +11,14 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.FixedAssetReceiveId).Title("Receive No.").Width(120).ClientTemplate("#=appendZeros(FixedAssetReceiveId)#");
-          columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
+          columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(p => p.ReceiveRef).EditorTemplateName("ReceiveReferenceSelector").Width(150);
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(p => p.SupplierName).EditorTemplateName("ReceiveSupplierSelector").Width(150);
           columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["fixedassetPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("FixedAssetPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(150);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Remark).Width(150);
           columns.Bound(c => c.Status).Width(150);
           columns.Command(command =>
@@ -50,7 +51,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      
+
       .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
       .Events(x => x.DataBound("onDataBoundMaster").Edit("onMasterEdit"))

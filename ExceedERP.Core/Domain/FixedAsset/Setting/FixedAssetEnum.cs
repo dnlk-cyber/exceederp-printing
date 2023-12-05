@@ -41,7 +41,8 @@
         BranchOrSector,
         Location,
         Category,
-        SubCategory
+        SubCategory,
+        NonFixedAsset
     }
    
     public enum TransferBy

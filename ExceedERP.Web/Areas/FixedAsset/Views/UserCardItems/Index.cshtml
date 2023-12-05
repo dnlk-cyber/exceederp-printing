@@ -134,7 +134,14 @@
 
 
 <script>
-    
+
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
     var Active;
 
     function userCardMasterGrid(e) {

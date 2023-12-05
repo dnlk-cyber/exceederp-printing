@@ -38,6 +38,7 @@
           columns.Bound(c => c.GroupCode).Width(95);
           columns.Bound(c => c.Quanity).Width(95);
           columns.Bound(p => p.PurchasePrice).Width(90);
+          columns.Bound(p => p.BookValue).Width(90);
           columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable) ViewData["personEmployees"], "Code", "Name").Title("Employee").Filterable(f => f.Multi(true).Search(true)).Width(190);
@@ -605,7 +606,11 @@
 
 <script>
 
-    
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function isGroup(obj) {
         if ($(obj).is(":checked")) {

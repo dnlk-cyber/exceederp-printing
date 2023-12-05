@@ -1,0 +1,15 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+                
+                      .OptionLabel("Select Employee")
+                          .DataTextField("FullNameaEnglish")
+                          .DataValueField("EmployeeId")
+                              .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAllEmployeesForSelfCare", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                            .ServerFiltering(true);
+                          })
+                                   
+)
+@Html.ValidationMessageFor(m => m)

@@ -241,7 +241,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
 
                     var record = db.FixedAssetReceives.Find(id);
                     if (record != null)
-                        _distributionHelper.UpdateGoodReceiveDistribution(record);
+                        _distributionHelper.UpdateFixedAssetReceiveDistribution(record);
                 }
             }
 
@@ -333,7 +333,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 //FixedAssetReceive record = db.FixedAssetReceives.FirstOrDefault(gi => gi.FixedAssetReceiveId == id);
                 var record = db.FixedAssetReceives.Find(id);
                 if (record != null)
-                    _distributionHelper.UpdateGoodReceiveDistribution(record);
+                    _distributionHelper.UpdateFixedAssetReceiveDistribution(record);
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "FixedAssetReceiveItem", "Success", User.Identity.Name, $"updated FixedAssetReceiveItem {entity.FixedAssetReceiveItemID} Tag {entity.TagNo}", Modules.FixedAsset);
                 #endregion
@@ -401,7 +401,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
 
                 var record = db.FixedAssetReceives.Find(fixedAssetReceiveItem.FixedAssetReceiveId);
                 if (record != null)
-                    _distributionHelper.UpdateGoodReceiveDistribution(record);
+                    _distributionHelper.UpdateFixedAssetReceiveDistribution(record);
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted FixedAssetReceiveItem {fixedAssetReceiveItem.FixedAssetReceiveItemID} Tag {fixedAssetReceiveItem.TagNo}", Modules.FixedAsset);
                 #endregion

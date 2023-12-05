@@ -1,0 +1,136 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.FixedAsset.Returns.FixedAssetReturnItem
+
+@Html.HiddenFor(model => model.FixedAssetReturnItemId)
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FixedAssetCategoryId, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.FixedAssetCategoryId)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select category...")
+                                        .DataTextField("Name")
+                                                .DataValueField("FixedAssetCategoryID")
+                                                 .Filter("contains")
+                                        .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                                .ServerFiltering(false);
+                                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.FixedAssetCategoryId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FixedAssetSubCategoryId, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.FixedAssetSubCategoryId)
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select Sub Category...")
+                                  .DataTextField("Name")
+                                          .DataValueField("FixedAssetSubCategoryID")
+                                           .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategory"))
+                                          .ServerFiltering(true);
+                                  })
+                                          .CascadeFrom("FixedAssetCategoryId")
+                    )
+                    @Html.ValidationMessageFor(model => model.FixedAssetSubCategoryId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AssetRegistrationId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.AssetRegistrationId)
+                                  .ValuePrimitive(true)
+                                  .AutoBind(false)
+                                  .OptionLabel("Select Asset...")
+                                  .DataTextField("Name")
+                                  .DataValueField("AssetRegistrationId")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetFixedAssetForReturn", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterAssetsForReturn"))
+                                          .ServerFiltering(true);
+                                  })
+                                  .CascadeFrom("FixedAssetSubCategoryId")
+                                  .Events(e =>
+                                  {
+                                      e.Change("onSelectFixedAssetId");
+                                  })
+                    )
+                    @Html.ValidationMessageFor(model => model.AssetRegistrationId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+        </div>
+        <div class="col-md-3 ro1">
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ItemName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.ItemName).HtmlAttributes(new { disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.ItemName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TagNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.TagNo).HtmlAttributes(new { disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.TagNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+
+
+
+
+
+
+
+
+        </div>
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            
+
+        </div>
+    </div>
+</div>

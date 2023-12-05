@@ -2907,16 +2907,14 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<FixedAssetIssue> FixedAssetIssues { get; set; }
         public DbSet<FixedAssetIssueItem> FixedAssetIssueItems { get; set; }
-        //public DbSet<FixedAssetIssueDistribution> FixedAssetIssueDistributions { get; set; }
+
         public DbSet<FixedAssetIssueValidation> FixedAssetIssueValidations { get; set; }
 
         public DbSet<FixedAssetReturn> FixedAssetReturns { get; set; }
         public DbSet<FixedAssetReturnItem> FixedAssetReturnItems { get; set; }
         public DbSet<FixedAssetReturnValidation> FixedAssetReturnValidations { get; set; }
-        // public DbSet<FixedAssetReturnDistribution> FixedAssetReturnDistributions { get; set; }
+        public DbSet<FixedAssetReturnDepartmentValidation> FixedAssetReturnDepartmentValidations { get; set; }
 
-        // public DbSet<DepreciationPeriod> DepreciationPeriods { get; set; }
-        // public DbSet<DeprciationReverse> DeprciationReverses { get; set; }
         public DbSet<FixedAssetSubCategory> FixedAssetSubCategories { get; set; }
         public DbSet<FixedAssetSubCategoryName> FixedAssetSubCategoryNames { get; set; }
         public DbSet<FixedAssetCategory> FixedAssetCategories { get; set; }

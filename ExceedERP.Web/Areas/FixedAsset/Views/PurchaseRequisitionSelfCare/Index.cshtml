@@ -18,6 +18,11 @@
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(160).EditorTemplateName("EmployeeSelector");
           // columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Procurement Officer").Width(170).EditorTemplateName("EmployeeSelector");
+          if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+          {
+              columns.ForeignKey(c => c.ForBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+          }
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
           columns.Bound(c => c.Remark).Width(110);
           columns.Bound(c => c.Status).Width(110);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -47,7 +52,7 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-            
+
 
            .Events(x => x.DataBound("onDataBoundMasterFixedRequisition"))
       .DataSource(dataSource => dataSource
@@ -414,7 +419,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SendForApproval", "PurchaseRequisition", new { area = "FixedAsset" })',
+            url: '@Url.Action("SendForApproval", "PurchaseRequisitionSelfCare", new { area = "FixedAsset" })',
             data: { id: id },
             success: function (result) {
                 // toastr.warnning(result.Message);
@@ -644,5 +649,11 @@
         $("#ProcurementOfficer").val(code);
 
 
+    }
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
     }
 </script>

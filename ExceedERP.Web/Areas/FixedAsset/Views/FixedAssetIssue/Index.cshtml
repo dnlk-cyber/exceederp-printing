@@ -14,12 +14,12 @@
           columns.Bound(c => c.FixedAssetIssueID).Title("Issue No.").Width(120).ClientTemplate("#=appendZeros(FixedAssetIssueID)#");
           columns.Bound(c => c.FixedAssetRequisitionId).Title("SR No.").EditorTemplateName("FixedAssetRequisitionSelector").Width(160);
           columns.Bound(c => c.StoreCode).Width(130).EditorTemplateName("StoreReadOnly");
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["fixedassetPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("FixedAssetPeriodSelector");
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["fixedassetPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("FixedAssetPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(130);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(160);
-          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
-          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(150).EditorTemplateName("EmployeeSelector");
-          columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(150).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(160).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(150).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(150).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.GatePass).Width(90);
           columns.Bound(c => c.Reference).Width(90);
           columns.Bound(c => c.Remark).Width(90);
@@ -74,6 +74,7 @@
               model.Field(p => p.Status).Editable(false);
               //model.Field(p => p.EmployeeId).Editable(false);
               model.Field(p => p.FixedAssetIssueID).Editable(false);
+
           })
           .Read(read => read.Action("FixedAssetIssues_Read", "FixedAssetIssue"))
           .Create(create => create.Action("FixedAssetIssues_Create", "FixedAssetIssue"))

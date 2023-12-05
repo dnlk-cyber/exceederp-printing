@@ -65,6 +65,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
             var branches = db.Branch;
             ViewData["Branches"] = branches;
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistion)]
@@ -117,7 +123,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 {
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                    BranchId = purchaseRequisition.BranchId,
+                ForBranchId = purchaseRequisition.ForBranchId,
+                ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
@@ -212,8 +220,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                     var entity = new PurchaseRequisition
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                        IsManual=true,
-                        BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                        ForBranchId = purchaseRequisition.ForBranchId,
+                        ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                        IsManual =true,
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
+                        BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         OrgStructureId = EmployeeHelper.GetEmployeeWorkUnitId(purchaseRequisition.EmployeeId),
                         EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -297,7 +308,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.PurchaseRequisitions
                 var entity = new PurchaseRequisition
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                    BranchId = purchaseRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                    BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                    //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         OrgStructureId = EmployeeHelper.GetEmployeeWorkUnitId(purchaseRequisition.EmployeeId),
                         EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
 

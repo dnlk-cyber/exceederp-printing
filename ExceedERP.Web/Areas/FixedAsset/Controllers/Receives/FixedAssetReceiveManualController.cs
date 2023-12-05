@@ -74,6 +74,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
 
+            var fixedAssetPeriods = db.FixedAssetPeriods;
+            var selectedfixedAssetPeriods = fixedAssetPeriods.Select(
+                i => new
+                {
+                    Name = i.Name,
+                    GLPeriodId = i.FixedAssetPeriodId
+                }).AsQueryable();
+            ViewData["fixedassetPeriods"] = selectedfixedAssetPeriods;
+
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetStoreKeeper, FixedAssetConstants.FixedAssetApprover, FixedAssetConstants.FixedAssetInspector)]

@@ -30,7 +30,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             var selectedEmployee = employee.Select(
                 i => new
                 {
-                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Name = i.EmployeeCode + " " +i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
                     Code = i.EmployeeId
                 }).AsQueryable();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
@@ -18,7 +19,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 {
-
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PurchaseRequisitionSelfCareController : Controller
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
@@ -64,12 +65,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             var branches = db.Branch;
             ViewData["Branches"] = branches;
 
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
+
         }
 
-
-
-
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistion)]
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
@@ -78,7 +81,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 {
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                ForBranchId = purchaseRequisition.ForBranchId,
+                ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     BranchId = purchaseRequisition.BranchId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
@@ -138,7 +143,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Create([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -171,6 +176,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     {
                         StoreRequisitionID = 0,
                         IsManual=true,
+                        ForBranchId = purchaseRequisition.ForBranchId,
+                        ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
                         BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                         BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         OrgStructureId =EmployeeHelper.GetEmployeeWorkUnitId(purchaseRequisition.EmployeeId),
@@ -214,7 +221,6 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistion)]
         public ActionResult PurchaseRequisitions_Update([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
             #region validation 
@@ -248,7 +254,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 var entity = new PurchaseRequisition
                     {
                         StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                        BranchId = purchaseRequisition.BranchId,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    ForBusinessUnitId = purchaseRequisition.ForBusinessUnitId,
+                    BranchId = purchaseRequisition.BranchId,
                         BusinessUnitId = purchaseRequisition.BusinessUnitId,
                         OrgStructureId = EmployeeHelper.GetEmployeeWorkUnitId(purchaseRequisition.EmployeeId),
                         EmployeeId = purchaseRequisition.EmployeeId,
@@ -294,7 +302,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
@@ -366,7 +374,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             }
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+       
         public JsonResult SendForApproval(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);

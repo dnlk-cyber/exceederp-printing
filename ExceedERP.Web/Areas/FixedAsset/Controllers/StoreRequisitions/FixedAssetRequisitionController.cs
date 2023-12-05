@@ -15,8 +15,6 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Inventory.Models;
-//using ExceedERP.Helpers.Inventory;
-//using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;

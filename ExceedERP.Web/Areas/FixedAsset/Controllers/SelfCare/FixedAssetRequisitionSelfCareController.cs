@@ -5,6 +5,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
@@ -24,13 +25,13 @@ using EntityState = System.Data.Entity.EntityState;
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 {
 
-
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class FixedAssetRequisitionSelfCareController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
         private readonly ApplicationDbContext _userdb = new ApplicationDbContext();
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistionSecondApprover, FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
+        
         public ActionResult Index()
         {
             PopulateViewData();
@@ -85,7 +86,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistionSecondApprover, FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
+       
         public ActionResult FixedAssetRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
@@ -96,64 +97,81 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 
             var storeRequisitions = _db.FixedAssetRequisitions.ToList();
 
-            if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead)
+           && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
-               
-                if (!storekeepers.Any())
-                {
-                    storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name).ToList();
-                }
-                else
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
-                }
+                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
+                                                                    || x.CreatedBy == User.Identity.Name).ToList();
             }
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
-                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name).ToList();
-            }
-            else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
-            {
-                storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name).ToList();
-            }
-            else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover))
-            {
-                if (!storekeepers.Any())
-                {
-                    storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name).ToList();
-                }
-                else
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
-                }
-            }
-
-            else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover))
-            {
-                storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name).ToList();
-            }
-            else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover))
-            {
-                if (!storekeepers.Any())
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
                                                                      || x.CreatedBy == User.Identity.Name).ToList();
-                }
-                else
-                {
-                    storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
-                }
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
                 storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name).ToList();
             }
+
+            //if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover)
+            //    && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover)
+            //    && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            //{
+
+            //    if (!storekeepers.Any())
+            //    {
+            //        storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name).ToList();
+            //    }
+            //    else
+            //    {
+            //        storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
+            //    }
+            //}
+
+            //else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover)
+            //    && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            //{
+            //    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name).ToList();
+            //}
+            //else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover)
+            //    && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            //{
+            //    storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name).ToList();
+            //}
+            //else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover)
+            //    && System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover))
+            //{
+            //    if (!storekeepers.Any())
+            //    {
+            //        storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name).ToList();
+            //    }
+            //    else
+            //    {
+            //        storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
+            //    }
+            //}
+
+            //else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionSecondApprover))
+            //{
+            //    storeRequisitions = storeRequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name).ToList();
+            //}
+            //else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistionApprover))
+            //{
+            //    if (!storekeepers.Any())
+            //    {
+            //        storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+            //                                                         || x.CreatedBy == User.Identity.Name).ToList();
+            //    }
+            //    else
+            //    {
+            //        storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name).ToList();
+            //    }
+            //}
+            //else if (System.Web.HttpContext.Current.User.IsInRole(FixedAssetConstants.FixedAssetRequistion))
+            //{
+            //    storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name).ToList();
+            //}
             var result = storeRequisitions.ToDataSourceResult(request, storeRequisition => new
                 {
                     FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
@@ -210,7 +228,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitions_Create([DataSourceRequest] DataSourceRequest request, FixedAssetRequisition storeRequisition)
@@ -298,7 +316,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+    
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitions_Update([DataSourceRequest] DataSourceRequest request, FixedAssetRequisition storeRequisition)
@@ -395,7 +413,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(ModelState.IsValid ? new object() : ModelState.ToDataSourceResult());
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, FixedAssetRequisition storeRequisition)
         {
@@ -445,7 +463,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return Json(new[] { storeRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetImport)]
+        
         public ActionResult StoreRequistion_Import([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file)
         {
             DataSet ds = new DataSet();
@@ -594,7 +612,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
         //First Send For Approval
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetUser)]
+       
         public JsonResult SendForApproval(int id)
         {
             var record = _db.FixedAssetRequisitions.Find(id);
@@ -660,7 +678,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
         //Middle Send For Approval 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetUser)]
+       
         public JsonResult SendForSecondApproval(int id,string user)
         {
             var record = _db.FixedAssetRequisitions.Find(id);
@@ -725,7 +743,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return null;
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetVoid)]
+        [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
         public JsonResult Void(int id)
         {
             var record = _db.FixedAssetRequisitions.Find(id);

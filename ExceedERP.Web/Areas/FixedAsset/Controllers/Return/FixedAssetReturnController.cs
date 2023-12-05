@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Returns;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
@@ -11,6 +12,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -68,21 +70,39 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
             ViewData["Branches"] = branches;
             ViewData["SubCategory"] = assetSubCategories;
             ViewData["Category"] = assetCategories;
-            ViewData["FixedAsset"] = fixedAsset;
+            ViewData["FixedAsset"] = selectedAsset;
             ViewData["defaultCategory"] = assetCategories.FirstOrDefault();
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetStoreKeeper, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult FixedAssetReturns_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<FixedAssetReturn> fixedAssetReturns = _db.FixedAssetReturns.Where(x => userStores.Contains(x.StoreCode));
-            
+            //List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+           // IQueryable<FixedAssetReturn> fixedAssetReturns = _db.FixedAssetReturns.Where(x => userStores.Contains(x.StoreCode));
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<FixedAssetReturn> fixedAssetReturns = _db.FixedAssetReturns
+                .Where(x => mybraches.Contains(x.BranchId))
+                .Where(x => x.IsDepartmentOnlineApproved);
+
+           
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                fixedAssetReturns = fixedAssetReturns.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
+
             DataSourceResult result = fixedAssetReturns.ToDataSourceResult(request, fixedAssetReturn => new
             {
                 FixedAssetReturnId = fixedAssetReturn.FixedAssetReturnId,
                 OrgStructureId = fixedAssetReturn.OrgStructureId,
                 BranchId = fixedAssetReturn.BranchId,
+                BusinessUnitId = fixedAssetReturn.BusinessUnitId,
+                CreatedAtBranchId = fixedAssetReturn.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = fixedAssetReturn.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = fixedAssetReturn.CreatedAtOrgStructureId,
                 EmployeeId = fixedAssetReturn.EmployeeId,
                 StoreCode = fixedAssetReturn.StoreCode,
                 Reference = fixedAssetReturn.Reference,
@@ -104,6 +124,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 IsOnlineTransferredBy = fixedAssetReturn.IsOnlineTransferredBy,
                 OnlineTransferredTime = fixedAssetReturn.OnlineTransferredTime,
 
+                IsDepartmentOnlineApproved = fixedAssetReturn.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = fixedAssetReturn.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = fixedAssetReturn.DepartmentOnlineApprovedTime,
+                IsDepartmentSendForApproval = fixedAssetReturn.IsDepartmentSendForApproval,
+                DepartmentSendForApprovalBy = fixedAssetReturn.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = fixedAssetReturn.DepartmentSendForApprovalTime,
+
                 DateCreated = fixedAssetReturn.DateCreated,
                 CreatedBy = fixedAssetReturn.CreatedBy,
                 LastModified = fixedAssetReturn.LastModified,
@@ -117,12 +144,40 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetReturns_Create([DataSourceRequest]DataSourceRequest request, FixedAssetReturn fixedAssetReturn)
         {
+            #region data 
+            if (fixedAssetReturn.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (fixedAssetReturn.EmployeeId != 0)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == fixedAssetReturn.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    fixedAssetReturn.OrgStructureId = placement.OrgStructureId;
+                    fixedAssetReturn.BranchId = placement.BranchId;
+                    fixedAssetReturn.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+
+            fixedAssetReturn.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            fixedAssetReturn.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            fixedAssetReturn.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetReturn
                 {
-                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(fixedAssetReturn.EmployeeId),
+                    OrgStructureId = fixedAssetReturn.OrgStructureId,
                     BranchId = fixedAssetReturn.BranchId,
+                    BusinessUnitId = fixedAssetReturn.BusinessUnitId,
+                    CreatedAtBranchId = fixedAssetReturn.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = fixedAssetReturn.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fixedAssetReturn.CreatedAtOrgStructureId,
                     EmployeeId = fixedAssetReturn.EmployeeId,
                     StoreCode = fixedAssetReturn.StoreCode,
                     Reference = fixedAssetReturn.Reference,
@@ -140,6 +195,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                     IsOnlineTransferred = fixedAssetReturn.IsOnlineTransferred,
                     IsOnlineTransferredBy = fixedAssetReturn.IsOnlineTransferredBy,
                     OnlineTransferredTime = fixedAssetReturn.OnlineTransferredTime,
+
+                    IsDepartmentOnlineApproved = true,//to make it display
+                    DepartmentOnlineApprovedBy = fixedAssetReturn.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = fixedAssetReturn.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = fixedAssetReturn.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = fixedAssetReturn.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = fixedAssetReturn.DepartmentSendForApprovalTime,
 
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
@@ -164,7 +226,30 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetReturns_Update([DataSourceRequest]DataSourceRequest request, FixedAssetReturn fixedAssetReturn)
         {
-           
+            #region data 
+            if (fixedAssetReturn.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (fixedAssetReturn.EmployeeId != 0)
+            {
+                var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == fixedAssetReturn.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    fixedAssetReturn.OrgStructureId = placement.OrgStructureId;
+                    fixedAssetReturn.BranchId = placement.BranchId;
+                    fixedAssetReturn.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+
+            fixedAssetReturn.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            fixedAssetReturn.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            fixedAssetReturn.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
+            #endregion
 
             if (ModelState.IsValid)
             {
@@ -172,6 +257,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 {
                     OrgStructureId = fixedAssetReturn.OrgStructureId,
                     BranchId = fixedAssetReturn.BranchId,
+                    BusinessUnitId = fixedAssetReturn.BusinessUnitId,
+                    CreatedAtBranchId = fixedAssetReturn.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = fixedAssetReturn.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fixedAssetReturn.CreatedAtOrgStructureId,
                     EmployeeId = fixedAssetReturn.EmployeeId,
                     StoreCode = fixedAssetReturn.StoreCode,
                     Reference = fixedAssetReturn.Reference,
@@ -189,6 +278,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                     IsOnlineTransferred = fixedAssetReturn.IsOnlineTransferred,
                     IsOnlineTransferredBy = fixedAssetReturn.IsOnlineTransferredBy,
                     OnlineTransferredTime = fixedAssetReturn.OnlineTransferredTime,
+
+                    IsDepartmentOnlineApproved = fixedAssetReturn.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = fixedAssetReturn.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = fixedAssetReturn.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = fixedAssetReturn.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = fixedAssetReturn.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = fixedAssetReturn.DepartmentSendForApprovalTime,
 
                     DateCreated = fixedAssetReturn.DateCreated,
                     CreatedBy = fixedAssetReturn.CreatedBy,
@@ -218,6 +314,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 {
                     OrgStructureId = fixedAssetReturn.OrgStructureId,
                     BranchId = fixedAssetReturn.BranchId,
+                    BusinessUnitId = fixedAssetReturn.BusinessUnitId,
+                    CreatedAtBranchId = fixedAssetReturn.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = fixedAssetReturn.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = fixedAssetReturn.CreatedAtOrgStructureId,
                     EmployeeId = fixedAssetReturn.EmployeeId,
                     FixedAssetReturnId = fixedAssetReturn.FixedAssetReturnId,
                     StoreCode = fixedAssetReturn.StoreCode,
@@ -234,6 +334,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                     IsOnlineTransferred = fixedAssetReturn.IsOnlineTransferred,
                     IsOnlineTransferredBy = fixedAssetReturn.IsOnlineTransferredBy,
                     OnlineTransferredTime = fixedAssetReturn.OnlineTransferredTime,
+
+                    IsDepartmentOnlineApproved = fixedAssetReturn.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = fixedAssetReturn.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = fixedAssetReturn.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = fixedAssetReturn.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = fixedAssetReturn.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = fixedAssetReturn.DepartmentSendForApprovalTime,
 
                     DateCreated = fixedAssetReturn.DateCreated,
                     CreatedBy = fixedAssetReturn.CreatedBy,

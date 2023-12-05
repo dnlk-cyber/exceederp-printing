@@ -60,6 +60,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
                 ModelState.AddModelError("doesnotexist", "Please select an asset.");
             else
             {
+                fixedAssetReturnItem.Quantity = asset.Quanity;
                 fixedAssetReturnItem.ItemName = asset.Name;
                 fixedAssetReturnItem.TagNo = asset.Tag;
                 fixedAssetReturnItem.UnitPrice = asset.BookValue;
@@ -104,11 +105,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
         public ActionResult FixedAssetReturnItems_Update([DataSourceRequest]DataSourceRequest request, FixedAssetReturnItem fixedAssetReturnItem, int id)
         {
             var asset = _db.AssetRegistrations.Find(fixedAssetReturnItem.AssetRegistrationId);
+            
 
             if (asset == null)
                 ModelState.AddModelError("doesnotexist", "Please select an asset.");
             else
             {
+                fixedAssetReturnItem.Quantity = asset.Quanity;
                 fixedAssetReturnItem.ItemName = asset.Name;
                 fixedAssetReturnItem.TagNo = asset.Tag;
                 fixedAssetReturnItem.UnitPrice = asset.BookValue;

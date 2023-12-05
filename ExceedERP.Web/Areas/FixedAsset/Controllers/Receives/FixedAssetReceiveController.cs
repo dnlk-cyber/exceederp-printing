@@ -73,6 +73,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
 
+            var fixedAssetPeriods = _db.FixedAssetPeriods;
+            var selectedfixedAssetPeriods = fixedAssetPeriods.Select(
+                i => new
+                {
+                    Name = i.Name,
+                    GLPeriodId = i.FixedAssetPeriodId
+                }).AsQueryable();
+            ViewData["fixedassetPeriods"] = selectedfixedAssetPeriods;
+
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetStoreKeeper, FixedAssetConstants.FixedAssetApprover)]
@@ -1435,7 +1444,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
             var record = _db.FixedAssetReceives.Find(id);
             if (record != null && !record.IsOnlineTransferred)
             {
-                _distributionHelper.UpdateGoodReceiveDistribution(record);
+                _distributionHelper.UpdateFixedAssetReceiveDistribution(record);
                 var formattedData1 = new
                 {
                     Message = "Complete.",

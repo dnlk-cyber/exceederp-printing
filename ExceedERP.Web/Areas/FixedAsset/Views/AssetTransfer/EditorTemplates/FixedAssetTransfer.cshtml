@@ -219,8 +219,8 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
-                                  .ServerFiltering(false);
+                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("filterEmployees"))
+                                  .ServerFiltering(true);
                           })
                     )
                     @Html.ValidationMessageFor(model => model.DeliveredBy, "", new { @class = "text-danger" })
@@ -261,8 +261,8 @@
                                                   .Filter("contains")
                                                   .DataSource(dataSource =>
                                                   {
-                                                      dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }))
-                                                          .ServerFiltering(false);
+                                                      dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("filterRecipients"))
+                                                          .ServerFiltering(true);
                                                   })
                     )
                     @Html.ValidationMessageFor(model => model.RecipientEmployee, "", new { @class = "text-danger" })

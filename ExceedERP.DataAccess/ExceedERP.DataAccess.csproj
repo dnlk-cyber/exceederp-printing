@@ -354,6 +354,10 @@
     <Compile Include="Migrations\202311160606249_upgradeprocinfinance.Designer.cs">
       <DependentUpon>202311160606249_upgradeprocinfinance.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202312050715546_fixedassetupgradebe.cs" />
+    <Compile Include="Migrations\202312050715546_fixedassetupgradebe.Designer.cs">
+      <DependentUpon>202312050715546_fixedassetupgradebe.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -576,6 +580,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202311160606249_upgradeprocinfinance.resx">
       <DependentUpon>202311160606249_upgradeprocinfinance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312050715546_fixedassetupgradebe.resx">
+      <DependentUpon>202312050715546_fixedassetupgradebe.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

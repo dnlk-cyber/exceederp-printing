@@ -72,6 +72,13 @@
               model.Field(p => p.Status).Editable(false);
               //model.Field(p => p.IssueDate).Editable(false);
               model.Field(p => p.FixedAssetReturnId).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
+              model.Field(p => p.CreatedAtBranchId).Editable(false);
+              model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
           })
           .Read(read => read.Action("FixedAssetReturns_Read", "FixedAssetReturn"))
           .Create(create => create.Action("FixedAssetReturns_Create", "FixedAssetReturn"))
@@ -305,6 +312,13 @@
 
 
 <script type="text/javascript">
+
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function sendForApproval(id) {
         var recordStatus = "";

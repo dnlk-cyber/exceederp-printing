@@ -159,6 +159,7 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         //[Required]
         public string Unit { get; set; }
         public string Remark { get; set; }
+        public bool Disable { get; set; }
 
         public virtual ICollection<Location> Locations { get; set; }
         public virtual ICollection<Appreciation> Appreciations { get; set; }

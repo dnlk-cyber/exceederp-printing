@@ -43,6 +43,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     Count = fixedAssetCountItem.Count,
                     PreviousBalance = fixedAssetCountItem.PreviousBalance,
                     Value = fixedAssetCountItem.Value,
+                    AssetStatus = fixedAssetCountItem.AssetStatus,
                     Status = fixedAssetCountItem.Status
                 });
 
@@ -77,6 +78,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                         AssetRegistrationId = fixedAssetCountItem.AssetRegistrationId,
                         Count = fixedAssetCountItem.Count,
                         Value = fixedAssetCountItem.Value,
+                        AssetStatus = fixedAssetCountItem.AssetStatus,
                         CreatedBy = User.Identity.Name,
                         Status = true,
                      
@@ -113,7 +115,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     Count = fixedAssetCountItem.Count,
                     FixedAssetCountId = fixedAssetCountItem.FixedAssetCountId,
                     Status = true,
-                   
+                    AssetStatus = fixedAssetCountItem.AssetStatus,
+
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
                 };
@@ -141,7 +144,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     FixedAssetCategoryId = fixedAssetCountItem.FixedAssetCategoryId,
                     FixedAssetSubCategoryId = fixedAssetCountItem.FixedAssetSubCategoryId,
                     Count = fixedAssetCountItem.Count,
-                    Status = fixedAssetCountItem.Status
+                    Status = fixedAssetCountItem.Status,
+                    AssetStatus = fixedAssetCountItem.AssetStatus,
                 };
 
                 _db.FixedAssetCountItems.Attach(entity);

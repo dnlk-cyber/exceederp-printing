@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
@@ -14,19 +15,19 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 {
-    [Authorize]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
 
     public class FixedAssetRequisitionItemSelfCareController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistionSecondApprover)]
+     
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetRequistionSecondApprover)]
+       
         public ActionResult FixedAssetRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<FixedAssetRequisitionItem> storerequisitionItems = _db.FixedAssetRequisitionItems.Where(p => p.FixedAssetRequisitionId == id);
@@ -55,7 +56,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionItem storeRequisitionItem, int id)
         {
@@ -117,7 +118,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionItem storeRequisitionItem)
         {
@@ -178,7 +179,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
         }
 
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
        public ActionResult FixedAssetRequisitionItems_Destroy([DataSourceRequest]DataSourceRequest request, FixedAssetRequisitionItem storeRequisitionItem)
         {

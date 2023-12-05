@@ -302,6 +302,18 @@
 
     }
 
+    function filterEmployees() {
+        return {
+            text: $("#DeliveredBy").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterRecipients() {
+        return {
+            text: $("#RecipientEmployee").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
     function sendForApproval(id) {
         var recordStatus = "";
 

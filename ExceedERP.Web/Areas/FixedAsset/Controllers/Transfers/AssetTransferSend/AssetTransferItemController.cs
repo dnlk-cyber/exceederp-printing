@@ -60,12 +60,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         {
             var asset = _db.AssetRegistrations.Find(assetTransferItem.AssetRegistrationId);
 
-            assetTransferItem.Quantity = 1; // comment 143 not sure ??
+            if(!asset.IsGroup)
+             assetTransferItem.Quantity = 1; 
 
             //added validation for duplicate entry
-            var item = _db.AssetTransferItems.ToList();//.Where(x => x.AssetRegistrationId == assetTransferItem.AssetTransferId).ToList();
+            var exist = _db.AssetTransferItems.ToList()
+                .Where(x => x.AssetRegistrationId == assetTransferItem.AssetRegistrationId)
+                .Where(x => x.AssetTransferId == id).FirstOrDefault();
 
-            if (item.Exists(x => x.AssetRegistrationId == assetTransferItem.AssetRegistrationId))
+            if (exist !=null)
             {
                 var tagNo = asset?.Tag;
                 ModelState.AddModelError("Item exists", "Item with tag number " + tagNo + " already added!");
@@ -144,6 +147,23 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         {
 
             var asset = _db.AssetRegistrations.Find(assetTransferItem.AssetRegistrationId);
+
+
+            if (!asset.IsGroup)
+                assetTransferItem.Quantity = 1;
+
+            //added validation for duplicate entry
+            var exist = _db.AssetTransferItems.ToList()
+                 .Where(x => x.AssetTransferItemId != assetTransferItem.AssetTransferItemId)
+                .Where(x => x.AssetRegistrationId == assetTransferItem.AssetRegistrationId)
+                .Where(x => x.AssetTransferId == assetTransferItem.AssetTransferId).FirstOrDefault();
+
+            if (exist != null)
+            {
+                var tagNo = asset?.Tag;
+                ModelState.AddModelError("Item exists", "Item with tag number " + tagNo + " already added!");
+            }
+
             if (asset != null)
             {
                 assetTransferItem.TagNo = asset.Tag;

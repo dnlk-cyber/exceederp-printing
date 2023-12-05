@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
@@ -14,7 +15,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
 {
-    [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead,  FixedAssetConstants.FixedAssetRequistionSecondApprover)]
     public class FixedAssetRequisitionSecondSelfCareValidationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -24,7 +25,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
             return View();
         }
 
-        [AuthorizeRoles(FixedAssetConstants.FixedAssetRequistion, FixedAssetConstants.FixedAssetRequistionApprover, FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
+       
         public ActionResult FixedAssetRequisitionSecondValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FixedAssetRequisitionSecondValidation> fixedassetrequisitionsecondvalidations = _db.FixedAssetRequisitionSecondValidations.Where(x=>x.FixedAssetRequisitionId==id);

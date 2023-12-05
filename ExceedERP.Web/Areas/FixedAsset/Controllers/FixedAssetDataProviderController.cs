@@ -152,7 +152,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
 
         public JsonResult GetFixedAssetForTransferNew(string subCategoryCode, string custodianBeforeTransfer, string fromStoreCode, string text)
         {
-            List<AssetRegistration> assetsToTransfer = new List<AssetRegistration>();
+           // List<AssetRegistration> assetsToTransfer = new List<AssetRegistration>();
             var assetRegistrations = db.AssetRegistrations.AsQueryable();
             int id = 0;
             int custodianBeforeTransferId = 0;
@@ -169,36 +169,38 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
             //    assetRegistrations = assetRegistrations.Where(i => i.EmployeeId == custodianBeforeTransferId.ToString()).AsQueryable();
             //}
 
-            if (string.IsNullOrWhiteSpace(fromStoreCode))
-            {
-                assetsToTransfer = assetRegistrations.Where(x => x.StoreCode == fromStoreCode).ToList();
-            }
+            //commented for time being
 
-            if (!string.IsNullOrWhiteSpace(custodianBeforeTransfer))
-            {
-                var userCards = db.UserCardItems
-                    .Where(x => x.EmployeeId == custodianBeforeTransferId && x.Active == true).ToList();
-                foreach (var userCard in userCards)
-                {
-                    foreach (var asset in assetRegistrations)
-                    {
-                        if (userCard.AssetRegistrationId == asset.AssetRegistrationId)
-                        {
-                            assetsToTransfer.Add(asset);
-                        }
-                    }
-                }
-            }
+            //if (string.IsNullOrWhiteSpace(fromStoreCode))
+            //{
+            //    assetsToTransfer = assetRegistrations.Where(x => x.StoreCode == fromStoreCode).ToList();
+            //}
+
+            //if (!string.IsNullOrWhiteSpace(custodianBeforeTransfer))
+            //{
+            //    var userCards = db.UserCardItems
+            //        .Where(x => x.EmployeeId == custodianBeforeTransferId && x.Active == true).ToList();
+            //    foreach (var userCard in userCards)
+            //    {
+            //        foreach (var asset in assetRegistrations)
+            //        {
+            //            if (userCard.AssetRegistrationId == asset.AssetRegistrationId)
+            //            {
+            //                assetsToTransfer.Add(asset);
+            //            }
+            //        }
+            //    }
+            //}
 
             
 
             if (!String.IsNullOrEmpty(text))
-                assetsToTransfer = assetsToTransfer.Where(x => x.Tag.ToUpper().Contains(text.ToUpper())
+                assetRegistrations = assetRegistrations.Where(x => x.Tag.ToUpper().Contains(text.ToUpper())
                                                                || x.Name.ToUpper().Contains(text.ToUpper()))
-                    .ToList();
+                    .AsQueryable() ;
 
 
-            return Json(assetsToTransfer.Select(i => new
+            return Json(assetRegistrations.Select(i => new
             {
                 Name = i.Tag + "-" + i.Name,
                 AssetRegistrationId = i.AssetRegistrationId

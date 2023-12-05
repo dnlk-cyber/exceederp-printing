@@ -1088,6 +1088,9 @@
     <Compile Include="Areas\FixedAsset\Controllers\SelfCare\FixedAssetRequisitionSecondSelfCareValidationController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\SelfCare\FixedAssetRequisitionSelfCareController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\SelfCare\FixedAssetRequisitionSelfCareValidationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\SelfCare\Return\FixedAssetReturnSelfCareController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\SelfCare\Return\FixedAssetReturnSelfCareValidationController.cs" />
+    <Compile Include="Areas\FixedAsset\Controllers\SelfCare\Return\FixedAssetReturntemSelfCareController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Settings\FixedAssetSettingController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Transfers\AssetTransferReceive\AssetTransferReceiveController.cs" />
     <Compile Include="Areas\FixedAsset\Controllers\Transfers\AssetTransferReceive\AssetTransferReceiveItemController.cs" />
@@ -6032,6 +6035,15 @@
     <Content Include="Areas\Procurement\Views\PaymentSettlementRequest\EditorTemplates\WithholdingType.cshtml" />
     <Content Include="Areas\Procurement\Views\PaymentSettlementRequest\Index.cshtml" />
     <Content Include="Areas\Procurement\Views\Shared\EditorTemplates\EmployeeSelector.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\ddStoreRequistion.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\FixedAssetIssueSelector.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\FixedAssetReturnItem.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\fromStore.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\Issue.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\IssueItem.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\EditorTemplates\ValidationStatus.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\FixedAssetReturnSelfCare\Index.cshtml" />
+    <Content Include="Areas\FixedAsset\Views\Shared\EditorTemplates\EmployeeSelector.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -8105,7 +8117,6 @@
     <Folder Include="Areas\Finance\Views\BankAccount\EditorTemplates\" />
     <Folder Include="Areas\Finance\Views\GLVatWithholding\EditorTemplates\" />
     <Folder Include="Areas\FixedAsset\Models\" />
-    <Folder Include="Areas\FixedAsset\Views\Shared\EditorTemplates\" />
     <Folder Include="Areas\FleetManagement\Views\AdministrativeJobApproval\" />
     <Folder Include="Areas\FleetManagement\Views\AnnualInventoryInspectionApproval\" />
     <Folder Include="Areas\FleetManagement\Views\AssignedEquipment\" />

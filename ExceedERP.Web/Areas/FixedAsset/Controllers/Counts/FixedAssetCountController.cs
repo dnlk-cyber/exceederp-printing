@@ -295,6 +295,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                             EmployeeId= empId,
                             StoreCode=item.StoreCode,
 
+
+
                             CreatedBy = User.Identity.Name,
                             DateCreated = DateTime.Now
                         };
