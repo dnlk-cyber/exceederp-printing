@@ -1,164 +1,93 @@
 ﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
 @model ExceedERP.Core.Domain.CRM.Price
-<form>
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.Variety)
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.Variety)
-                        .Name("Variety")
-                      .AutoBind(false)
-                              .OptionLabel("Select Variety")
-                              .DataTextField("Name")
-                              .DataValueField("Name")
-                      .DataSource(d =>
-                          {
-                              d.Read(r =>
-                                  {
-                                      r.Action("VarietyByProductIDDDBind", "Variety").Data("filterVariety");
-                                  })
-                                  .ServerFiltering(true);
-                          })
-                      .Enable(true)
-                      .AutoBind(false)
 
-                    )
-
-
-                </div>
+<form method="post">
+    <div class="k-edit-form-container">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Variety)
             </div>
-        </div>
-
-
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.Class)
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.Class).Name("Class")
-                      .AutoBind(false)
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.Variety)
+                    .Name("Variety")
+                    .AutoBind(false)
+                    .HtmlAttributes(new { style = "width:100%;" })
+                    .OptionLabel("Select Variety")
+                    .DataTextField("Name")
+                    .DataValueField("Name")
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("VarietyByProductIDDDBind", "Variety").Data("filterVariety");
+                        });
+                    })
+                )
+            </div>
+           
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Class)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.Class)
+                    .AutoBind(false)
                       .OptionLabel("Select Class...")
                       .DataTextField("Name")
+                      .HtmlAttributes(new { style = "width:100%;" })
                       .DataValueField("Name")
                        .DataSource(d =>
-                          {
-                              d.Read(r =>
-                                  {
-                                      r.Action("ClassByProductIDDDBind", "Variety").Data("filterclass");
-                                  })
-                                  .ServerFiltering(false);
-                          })
-                          //.CascadeFrom("Variety")
+                       {
+                           d.Read(r =>
+                           {
+                               r.Action("ClassByProductIDDDBind", "Variety").Data("filterclass");
+                           })
+                               .ServerFiltering(false);
+                       })
+                      //.CascadeFrom("Variety")
                       .Enable(true)
                       .AutoBind(false)
                     )
 
-                </div>
             </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.ReferenceType)
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.ReferenceType)
-                    .DataTextField("Text")
-                             .DataValueField("Text")
-                    .Name("ReferenceType")
-                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.Price_Types)))
-                    .ValuePrimitive(true)
-                    )
-                </div>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ReferenceType)
             </div>
-        </div>
-        </div>
-    <div class="row">
-        <div class="col-md-1">
-        </div>
-        @*<div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.Reference)
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.Reference)
-                   .AutoBind(false)
-                   .OptionLabel("Select Reference...")
-                   .DataTextField("Description")
-                     .DataValueField("Description")
-                   .Name("Reference")
-                  .DataSource(datasource =>
-                  {
-                      datasource.Read(read =>
-                      {
-                          read.Action("GetPriceTagDetailList", "CRMDataProvider")
-                         .Data("filterReference");
-
-                      })
-            .ServerFiltering(true);
-                  })
-                  .CascadeFrom("ReferenceType")
-
-                    )
-                </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.ReferenceType)
+                            .DataTextField("Text")
+                            .DataValueField("Text")
+                            .HtmlAttributes(new { style = "width:100%;" })
+                            .Name("ReferenceType")
+                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.Price_Types)))
+                            .ValuePrimitive(true)
+                )
             </div>
-        </div>*@
-
-
-
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.Value)
-                </div>
-                <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.Value).Decimals(4)
-                    )
-
-                </div>
-            </div>
+           
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Value)
         </div>
-
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.Priority)
-                </div>
-                <div>
-                    @(Html.Kendo().IntegerTextBoxFor(model => model.Priority)
-                    )
-
-                </div>
-            </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(model => model.Value).Decimals(4)
+                .HtmlAttributes(new { style = "width:100%;" })
+            )
         </div>
-</div>
-    <div class="row">
-        <div class="col-md-1">
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Priority)
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.IsDefault)
-                </div>
-                <div>
-                    @(Html.Kendo().CheckBoxFor(model => model.IsDefault)
-                    )
-
-                </div>
-            </div>
+        <div class="editor-field">
+            @(Html.Kendo().IntegerTextBoxFor(model => model.Priority)
+                .HtmlAttributes(new { style = "width:100%;" })
+            )
+        </div>
+        
+        <div class="editor-label">
+            @Html.LabelFor(model => model.IsDefault)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().CheckBoxFor(m => m.IsDefault).Label(" "))
         </div>
     </div>
-
-
-
-
-
 </form>
+

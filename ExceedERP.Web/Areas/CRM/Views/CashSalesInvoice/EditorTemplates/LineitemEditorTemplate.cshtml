@@ -23,7 +23,7 @@
                               .DataSource(datasource =>
                                   {
                                       datasource.Read(read => read.Action("GetStoreList", "CRMDataProvider").Data("getHeaderStoreId"))
-                                          .ServerFiltering(true);
+                                          .ServerFiltering(false);
                                   }).Events(e => e.Select("ClearValMsg"))
 
                     )

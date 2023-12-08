@@ -61,6 +61,7 @@ namespace ExceedERP.Reporting.CRM.Printing.ViewModel
         public decimal TotalTax { get; internal set; }
         public decimal TotalWithholding { get; internal set; }
         public decimal NetPay { get; internal set; }
+        public string ReceiptReference { get; set; }
         public List<SalesOrderPrintLineItemViewModel> LineItemList { get; set; } = new List<SalesOrderPrintLineItemViewModel>();
         public List<SalesOrderPrintServiceLineItemViewModel> ServiceLineItemList { get; set; } = new List<SalesOrderPrintServiceLineItemViewModel>();
         public object TotalVATWithholdingAmount { get; internal set; }

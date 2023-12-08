@@ -30,7 +30,7 @@ namespace ExceedERP.Core.Domain.CRM
 
         public decimal Quantity { get; set; }
 
-        [DisplayName("Unit Amount")]
+        [DisplayName("Unit Price")]
         public decimal UnitAmount { get; set; }
 
         [Display(Name ="Sub Total")]

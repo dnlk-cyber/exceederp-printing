@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+    .DataTextField("TradeName")
+    .DataValueField("OrganizationCustomerID")
+    .OptionLabel("Select ")
+    .Filter(FilterType.Contains)
+    .DataSource(d => d.Read(r => r.Action("GetActiveCustomers", "CRMDataProvider")))
+    .Events(e =>
+    {
+        e.Change("onCustomerChange");
+    })
+    )
+

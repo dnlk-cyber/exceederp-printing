@@ -79,6 +79,10 @@ namespace ExceedERP.Core.Domain.CRM
 
         [Display(Name = "Bank Account")]
         public int? BankAccountId { get; set; }
+        public int BusinessUnitId { get; set; }
+        public int OrgStructureId { get; set; }
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
     }
 
 }

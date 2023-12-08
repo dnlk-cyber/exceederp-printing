@@ -18,8 +18,6 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Construction;
 using ExceedERP.Web.Hubs;
-using System.Web;
-using Microsoft.AspNet.Identity.Owin;
 using ExceedERP.Web.Models;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
@@ -171,6 +169,10 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     QuotationTermId = vou.QuotationTermId,
                     IsVoid = vou.IsVoid,
                     BranchId = vou.BranchId,
+                    BusinessUnitId = vou.BusinessUnitId,
+                    OrgStructureId = vou.OrgStructureId,
+                    CreatedAtBranchId = vou.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = vou.CreatedAtBusinessUnitId,
                     StoreID = vou.StoreID,
                     CRMPeriodId = vou.CRMPeriodId,
                     SubTotal = 0,
@@ -1144,12 +1146,18 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 //}
                 //else
                 //{
-                    return Json(new
-                    {
-                        Message ="" /*result.ErrorMessage*/,
-                        Status = "Error"
-                    }, JsonRequestBehavior.AllowGet);
+                //    return Json(new
+                //    {
+                //        Message = result.ErrorMessage,
+                //        Status = "Error"
+                //    }, JsonRequestBehavior.AllowGet);
                 //}
+
+                return Json(new
+                {
+                    Message = "Error",
+                    Status = "Error"
+                }, JsonRequestBehavior.AllowGet);
             }
             else
             {

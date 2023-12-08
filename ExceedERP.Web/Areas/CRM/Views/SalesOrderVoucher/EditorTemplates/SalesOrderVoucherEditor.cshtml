@@ -6,8 +6,8 @@
 
 <form  method="post">
     <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-3">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.OrganizationCustomerId)
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="k-label">
                 @Html.LabelFor(model => model.Source)
             </div>
@@ -41,7 +41,7 @@
                                 .BindTo(EnumExtension.EnumToSelectList(typeof(SalesOrderSource))))
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="k-label">
                 @Html.LabelFor(model => model.References)
             </div>
@@ -70,9 +70,9 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-1">
+        <div class="col-sm-1">
         </div>
-        <div class="col-md-3" id="NewCustomerArea">
+        <div class="col-sm-3" id="NewCustomerArea">
             <div class="form-group">
                 @*<div class="k-label">
                     @Html.LabelFor(model => model.NewCustomer)
@@ -104,10 +104,10 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-1">
+        <div class="col-sm-1">
         </div>
 
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.CRMPeriodId)
@@ -135,7 +135,7 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.Date)
@@ -147,7 +147,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.BranchId)
@@ -179,7 +179,7 @@
     </div>
     
     <div class="row">
-        <div class="col-md-1">
+        <div class="col-sm-1">
         </div>
         <div class="col-sm-3">
             <div class="form-group">
@@ -211,7 +211,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.PaymentMethod)
@@ -234,7 +234,20 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ReceiptReference)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.ReceiptReference))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-3">
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.Remark)
@@ -245,6 +258,5 @@
             </div>
         </div>
     </div>
-    
 </form>
 

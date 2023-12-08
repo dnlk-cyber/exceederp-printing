@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Reporting.CRM.ViewModel
+﻿namespace ExceedERP.Reporting.CRM.ViewModel
 {
-   public  class SalesPlanAndActualReportViewModel
+    public  class SalesPlanAndActualReportViewModel
     {
         public string ItemType { get; set; }
         public string UoM { get; set; }

@@ -1,28 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
+﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.CRM;
-using ExceedERP.DataAccess.Context;
-using System.Data.Entity.Core.Objects;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Web.Areas.CRM.Models;
-using Price_Types = ExceedERP.Core.Domain.CRM.Price_Types;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Inventory;
+
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.CRM;
+using ExceedERP.Web.Areas.CRM.Models;
+using ExceedERP.Web.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
+using System.Linq;
 using System.Threading.Tasks;
-using ExceedERP.Reporting.Fleet.ViewModel;
+using System.Web.Mvc;
+using Price_Types = ExceedERP.Core.Domain.CRM.Price_Types;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
     [AllowAnonymous]
     public class CRMDataProviderController : Controller
     {
-        ExceedDbContext db = new ExceedDbContext();
-        ApplicationDbContext UserDb = new ApplicationDbContext();
+        private ExceedDbContext db = new ExceedDbContext();
+        private ApplicationDbContext UserDb = new ApplicationDbContext();
         public static string EmployeeId
         {
             get;
@@ -381,15 +381,19 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             var categories = db.ProductCategories.Where(c => c.Parent == null).ToList();
             return Json(categories.Select(c => new { c.ProductCategoryId, c.Description }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetProductSubCategory(int categoryId)
+        public JsonResult GetProductSubCategory(int categoryId, string filterText)
         {
             var categories = db.ProductCategories.Where(c => c.Parent == categoryId.ToString()).ToList();
+            if (!string.IsNullOrEmpty(filterText))
+            {
+                categories = categories.Where(c => c.Description.ToLower().Contains(filterText.ToLower())).ToList();
+            }
             return Json(categories.Select(c => new { c.ProductCategoryId, c.Description }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetItemCategory()
         {
             var CategoryList = db.ItemCategorys.ToList();
-            List<ItemCategory> referenceList = CategoryList.Select(tcategory => new ItemCategory() { ItemCategoryCode = tcategory.ItemCategoryCode.ToString(), Description = tcategory.Name }).ToList();
+            List<ItemCategory> referenceList = CategoryList.Select(c => new ItemCategory() { ItemCategoryCode = c.ItemCategoryCode, Description = c.ItemCategoryCode + " " + c.Name }).ToList();
             return Json(referenceList, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetItemByCategory(int Category)
@@ -422,11 +426,11 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 if (string.IsNullOrEmpty(filterText) == false)
                 {
                     items = items
-                        .Where(i => i.Name.ToLower().Contains(filterText.ToLower()) || 
+                        .Where(i => i.Name.ToLower().Contains(filterText.ToLower()) ||
                             i.ItemCode.Contains(filterText)
                         ).ToList();
                 }
-                return Json(items.Select(i => new { ProductId = i.ProductID, Name= i.Name + " " + i.ItemCode }), JsonRequestBehavior.AllowGet);
+                return Json(items.Select(i => new { ProductId = i.ProductID, Name = i.Name + " " + i.ItemCode }), JsonRequestBehavior.AllowGet);
             }
 
         }
@@ -452,7 +456,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 {
                     inventoryItems = inventoryItems.Where(i => i.Name.ToLower().Contains(filterText.ToLower())).ToList();
                 }
-                return Json(inventoryItems.Select(i => new { i.ItemCode, Name = i.Name + " " +i.ItemCode }), JsonRequestBehavior.AllowGet);
+                return Json(inventoryItems.Select(i => new { i.ItemCode, Name = i.Name + " " + i.ItemCode }), JsonRequestBehavior.AllowGet);
             }
 
         }
@@ -550,7 +554,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             { return Json(0.0, JsonRequestBehavior.AllowGet); }
             return Json(0.0, JsonRequestBehavior.AllowGet);
         }
@@ -914,11 +918,15 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 b.Abbreviation
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetStoreInBranch(int branchId)
+        public JsonResult GetStoreInBranch(int branchId, string storeName)
         {
             //var userBranches = new ApplicationBranchManager().GetUsersBranchByName(User.Identity.Name);
 
             var stores = db.SalesStores.Where(s => s.InventoryStore.BranchId == branchId);
+            if (!string.IsNullOrEmpty(storeName))
+            {
+                stores = stores.Where(s => s.Description.ToLower().Contains(storeName.ToLower()));
+            }
             return Json(stores.Select(b => new
             {
                 b.Description,
@@ -1042,9 +1050,9 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 var invoices =
                     db.CashSalesInvoices.Where(s => /*s.OrganizationCustomerId == customerId &&*/
                     //s.IsVoid == false &&
-                    s.IsShipped == false &&
+                    !s.IsShipped &&
                     s.ShipmentGenerationMethod == ShipmentGenerationMethod.Manual &&
-                    s.PaymentMethod == CRMConstants.CashPaymentMethod &&
+                    //s.PaymentMethod == CRMConstants.CashPaymentMethod &&
                     s.IsOnlineApproved
                     //(s.LastObjectState == CRMConstants.Forwarded || s.LastObjectState == CRMConstants.PaymentReceived || s.LastObjectState == CRMConstants.HoldSalesInvoiceStatus || s.LastObjectState == CRMConstants.PrintedSalesInvoiceStatus)
                     );
@@ -1703,7 +1711,13 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
 
         public JsonResult GetAllProducts()
         {
-            return Json(db.Products.Select(p => new { Name = p.Name + " [" + p.ItemCode + "]", ProductId = p.ProductID }), JsonRequestBehavior.AllowGet);
+            return Json(
+                db.Products
+                .Select(p => new
+                {
+                    Name = "[" + p.ItemCode + "] " + p.Name,
+                    ProductId = p.ProductID
+                }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetAllProductsByCategory(int categoryId, string filterText)
         {
@@ -1808,9 +1822,13 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         //        {
         //            Code = s.RepairTypeID.ToString(),
         //            Name = s.Code + "-" + s.Name
+
         //        })
         //        .ToList();
+
+
         //    return Json(enumCategories, JsonRequestBehavior.AllowGet);
+
         //}
         public JsonResult GetAllInventoryCategoryies()
         {
@@ -1874,11 +1892,74 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         {
             var existingNumbers = new HashSet<string>(db.SalesQuoteVouchers.Where(sq => sq.Source == SalesQuoteSource.Maintenance && !string.IsNullOrEmpty(sq.JobOrderNumber)).Select(sq => sq.JobOrderNumber));
             var data = db.JobOrder
-                .Where(j => !existingNumbers.Contains(j.Num.ToString()) 
-                && j.IsSecondOnlineApproved 
-                && j.Status == MaintenanceConst.Closed).OrderByDescending(j => j.Num);
+                .Where(j => !existingNumbers.Contains(j.Num.ToString())
+                && j.IsSecondOnlineApproved
+                && j.Status == "Closed").OrderByDescending(j => j.Num);
 
-            return Json(data.Select(d => new { JobOrderNumber = d.Num}), JsonRequestBehavior.AllowGet);
+            return Json(data.Select(d => new { JobOrderNumber = d.Num }), JsonRequestBehavior.AllowGet);
+        }
+        public string GetCustomerTin(int customerId)
+        {
+            return db.OrganizationCustomers.Find(customerId)?.TinNo;
+        }
+        public JsonResult GetActiveCustomers()
+        {
+            var data = db.OrganizationCustomers.Where(c => !c.IsTemporary && c.IsActive);
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetInvoicesByCustomer(int customerId, int? paymentType = 0)
+        {
+            var invoices = new List<CashSalesInvoice>();
+            if ((SalesReturnPaymentType)paymentType == SalesReturnPaymentType.SalesInvoice)
+            {
+                invoices = db.CashSalesInvoices
+                .Where(i => i.OrganizationCustomerId == customerId)
+                .ToList();
+            }
+            
+            return Json(invoices.Select(i => new
+            {
+                i.InvoiceNumber,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetShipmentsByInvoiceNumber(string invoiceNumber)
+        {
+            var invoice = db.CashSalesInvoices
+                .FirstOrDefault(i => i.InvoiceNumber == invoiceNumber);
+            var invoiceId = invoice?.CashSalesInvoiceID;
+            var shipments = db.SalesShipments
+                 .Where(s => s.Source == ShipmentSource.SalesInvoice && s.CashSalesInvoiceID == invoiceId);
+
+            return Json(shipments.Select(i => new
+            {
+                i.SalesShipmentId,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetProductsByInvoiceNumberAndShipmentId(string invoiceNumber, int? shipmentId)
+        {
+            var invoice = db.CashSalesInvoices
+                .FirstOrDefault(i => i.InvoiceNumber == invoiceNumber);
+            var invoiceId = invoice?.CashSalesInvoiceID ?? 0;
+            var productIds = db.LineItems
+                .Where(l => l.VoucherDefinitionID == "2" && l.Voucher == invoiceId.ToString())
+                .Select(l => l.ThingID)
+                .ToList();
+            if (shipmentId.HasValue)
+            {
+                var lineIdsInShipment = db.SalesShipmentLineItem
+                    .Where(l => l.SalesShipmentId == shipmentId.Value)
+                    .Select(l => l.ProductId)
+                    .ToList();
+                productIds = productIds
+                    .Where(i => lineIdsInShipment.Contains(i))
+                    .ToList();
+            }
+            var products = db.Products.Where(p => productIds.Contains(p.ProductID));
+            return Json(products.Select(p => new
+            {
+                Name = "[" + p.ItemCode + "] " + p.Name,
+                ProductId = p.ProductID
+            }), JsonRequestBehavior.AllowGet);
         }
         #region enum related 
         public JsonResult GetTenderFollowupStatus()

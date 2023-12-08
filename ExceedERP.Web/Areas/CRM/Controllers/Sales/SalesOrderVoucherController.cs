@@ -166,6 +166,9 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     CRMPeriodId = vou.CRMPeriodId,
                     JobOrderNumber = vou.JobOrderNumber,
                     PlateNo=vou.PlateNo,
+                    ReceiptReference = vou.ReceiptReference,
+                    IsShipped = vou.IsShipped,
+                    
                     //IsFromMaintenance = vou.IsFromMaintenance,
                     ModifiedBy = vou.ModifiedBy,
                     LastModified = vou.LastModified,
@@ -240,6 +243,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                         Period = salesOrderVoucher.Period,
                         JobOrderNumber = salesOrderVoucher.JobOrderNumber,
                         PlateNo = salesOrderVoucher.PlateNo,
+                        ReceiptReference = salesOrderVoucher.ReceiptReference,
                         //IsFromMaintenance = salesOrderVoucher.IsFromMaintenance,
                         LastObjectState = CRMVoucherStatusConstatns.Editing,
                         PaymentMethod = Payment,
@@ -335,6 +339,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     CRMPeriodId = salesOrderVoucher.CRMPeriodId,
                     JobOrderNumber = salesOrderVoucher.JobOrderNumber,
                     PlateNo = salesOrderVoucher.PlateNo,
+                     ReceiptReference = salesOrderVoucher.ReceiptReference,
                     //IsFromMaintenance = salesOrderVoucher.IsFromMaintenance,
 
                     LastModified = DateTime.Now,
@@ -376,6 +381,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     LastObjectState = salesOrderVoucher.LastObjectState,
                     JobOrderNumber = salesOrderVoucher.JobOrderNumber,
                     PlateNo = salesOrderVoucher.PlateNo,
+                    ReceiptReference = salesOrderVoucher.ReceiptReference,
                     //IsFromMaintenance = salesOrderVoucher.IsFromMaintenance,
                     PaymentMethod = salesOrderVoucher.PaymentMethod,
                     Remark = salesOrderVoucher.Remark,

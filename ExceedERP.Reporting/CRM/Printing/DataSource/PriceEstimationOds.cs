@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.CRM.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                 var currentQuote = db.PriceEstimationQuoteVouchers.Find(id);
                 if (currentQuote == null)
                 {
-                    return null;
+                    return list;
                 }
                 var lineItems =
                      db.PriceEstimationQuoteVoucherLines.Where(li => li.PriceEstimationQuoteVoucherId == id).ToList();
@@ -84,7 +85,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                     totalAmountInwords += " and " + NumberExtensions.toWords(roundedAfterDecimal) + " cents";
                 }
                 #region create sales quote
-                //var equipmentInfo = db.EquipmentInformation.FirstOrDefault(e => e.CustomerId == currentQuote.OrganizationCustomerId && e.LicensePlate == currentQuote.PlateNo);
+               // var equipmentInfo = db.EquipmentInformation.FirstOrDefault(e => e.CustomerId == currentQuote.OrganizationCustomerId && e.LicensePlate == currentQuote.PlateNo);
                 var acc = db.BankAccounts.Find(currentQuote.BankAccountId);
                 string accNo = acc != null ? $"{acc.AccountNumber} { acc.AccountName} {acc.BankBranch} Branch" : "";
                 var record = new PriceEstimationPrintViewModel
@@ -104,10 +105,10 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                     NetPay = totalAmount - totalVatWithholdingAmount - totalWithholding,
                     QuoteNumber = currentQuote.PriceEstimationQuoteVoucherId.ToString("D8"),
 
-                    PreparedBy = currentQuote.CreatedBy,
-                    CheckedBy = currentQuote.MiddleOnlineApprovedBy,
-                    ApprovedBy = currentQuote.OnlineApprovedBy
-                };
+                    PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentQuote.CreatedBy)),
+                    CheckedBy =  EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentQuote.MiddleOnlineApprovedBy)),
+                    ApprovedBy =  EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentQuote.OnlineApprovedBy))
+				};
                 string netPayDisplay = "Net Pay";
                 if (totalWithholding > 0 && totalVatWithholdingAmount > 0)
                 {

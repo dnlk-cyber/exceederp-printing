@@ -12,7 +12,7 @@ namespace ExceedERP.Core.Domain.CRM
         public string Variety { get; set; }
 
         [Required]
-        [Display(Name ="Reference Type")]
+        [Display(Name ="Price Type")]
         public string ReferenceType { get; set; }
 
         public string Reference { get; set; }

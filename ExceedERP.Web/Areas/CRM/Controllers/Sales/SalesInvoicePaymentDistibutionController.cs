@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.CRM;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Web.Helpers;
@@ -45,11 +46,12 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         public ActionResult Distribution_Create([DataSourceRequest]DataSourceRequest request, SalesInvoicePaymentDistibution distribution, int Id)
         {
             DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
+            bool isReplacingBranchDisabled = CRMConfigurationHelper.IsReplacingBranchSegmentInDistributionDisabled();
 
             int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
             var headerInvoice = db.CashSalesInvoices.Find(Id);
             string branchSeg = HrHelper.GetBranchLocationAccount(headerInvoice != null ? headerInvoice.BranchId : 0);
-            string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, branchAccountIndex, branchSeg);
+            string newacc = isReplacingBranchDisabled? distribution.AccountCode : _dynamicAccount.ReplaceSegment(distribution.AccountCode, branchAccountIndex, branchSeg);
 
 
             if (ModelState.IsValid)
@@ -80,11 +82,12 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         public ActionResult Distribution_Update([DataSourceRequest]DataSourceRequest request, SalesInvoicePaymentDistibution distribution)
         {
             DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
+            bool isReplacingBranchDisabled = CRMConfigurationHelper.IsReplacingBranchSegmentInDistributionDisabled();
 
             int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
             var headerInvoice = db.CashSalesInvoices.Find(distribution.CashSalesInvoiceId);
             string branchSeg = HrHelper.GetBranchLocationAccount(headerInvoice != null ? headerInvoice.BranchId : 0);
-            string newacc = _dynamicAccount.ReplaceSegment(distribution.AccountCode, branchAccountIndex, branchSeg);
+            string newacc = isReplacingBranchDisabled ? distribution.AccountCode : _dynamicAccount.ReplaceSegment(distribution.AccountCode, branchAccountIndex, branchSeg);
 
             if (ModelState.IsValid)
             {

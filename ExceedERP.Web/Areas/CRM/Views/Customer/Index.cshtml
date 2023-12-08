@@ -64,7 +64,7 @@
     .SelectedIndex(0)
     .Items(items =>
     {
-    @*items.Add().Text("Customer Equipments").Content(@<text>
+    items.Add().Text("Customer Equipments").Content(@<text>
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.EquipmentInformation>()
                 .Name("equipments_grid_#=OrganizationCustomerID#")
                 .Columns(columns =>
@@ -130,7 +130,7 @@
                             .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation"))
                 ).ToClientTemplate()
             )
-        </text>);*@
+        </text>);
 
         items.Add().Text("Beginning").Content(
             @<text>

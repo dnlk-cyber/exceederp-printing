@@ -36,6 +36,9 @@
             || HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin)
 
             || HttpContext.Current.User.IsInRole(CRMRoles.CRMTenderFollowup)
+            
+            || HttpContext.Current.User.IsInRole(CRMRoles.SalesReturnUser)
+            || HttpContext.Current.User.IsInRole(CRMRoles.SalesReturnApprover)
             )
 {
 
@@ -74,6 +77,9 @@
                 || HttpContext.Current.User.IsInRole(CRMRoles.SalesPlanApprover)
                 || HttpContext.Current.User.IsInRole(CRMRoles.SalesPlanUser)
                 || HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin)
+                
+                || HttpContext.Current.User.IsInRole(CRMRoles.SalesReturnUser)
+                || HttpContext.Current.User.IsInRole(CRMRoles.SalesReturnApprover)
 
                 )
             {
@@ -110,10 +116,10 @@
                             <li id="crm-sales-06" class="actionlinlk">@Html.ActionLink("Cash Sales Invoice", "Index", "CashSalesInvoice", new { area = "CRM" }, null)<b class="arrow"></b></li>
                         }
                         @*@if (HttpContext.Current.User.IsInRole("Inventory_Issue_User")
-                                || HttpContext.Current.User.IsInRole("Inventory_Issue_Approver"))
-                            {
-                                <li id="crm08923" class="actionlinlk">@Html.ActionLink("Sales Inventory ", "Index", "SalesInventory", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                            }*@
+            || HttpContext.Current.User.IsInRole("Inventory_Issue_Approver"))
+        {
+            <li id="crm08923" class="actionlinlk">@Html.ActionLink("Sales Inventory ", "Index", "SalesInventory", new { area = "CRM" }, null)<b class="arrow"></b></li>
+        }*@
                         @if (HttpContext.Current.User.IsInRole(CRMRoles.ShipmentUser)
                            || HttpContext.Current.User.IsInRole(CRMRoles.ShipmentApprover)
                            || HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin))
@@ -121,10 +127,10 @@
                             <li id="crm-sales-07" class="actionlinlk">@Html.ActionLink("Shipments ", "Index", "Shipments", new { area = "CRM" }, null)<b class="arrow"></b></li>
                         }
                         @*@if (HttpContext.Current.User.IsInRole("Customer_Service_User")
-                                || HttpContext.Current.User.IsInRole("Customer_Service_Approver"))
-                            {
-                                <li id="crm0922" class="actionlinlk">@Html.ActionLink("Service Usage", "Index", "ServiceUsage", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                            }*@
+            || HttpContext.Current.User.IsInRole("Customer_Service_Approver"))
+        {
+            <li id="crm0922" class="actionlinlk">@Html.ActionLink("Service Usage", "Index", "ServiceUsage", new { area = "CRM" }, null)<b class="arrow"></b></li>
+        }*@
                         @if (HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin))
                         {
                             <li id="crm-sales-12" class="actionlinlk">@Html.ActionLink("Incomplete Shipments ", "IncompleteShipments", "Shipments", new { area = "CRM" }, null)<b class="arrow"></b></li>
@@ -148,7 +154,11 @@
                         {
                             <li id="crm-sales-10" class="actionlinlk">@Html.ActionLink("Sales Plan", "Index", "AnnualSalesPlan", new { area = "CRM" }, null)<b class="arrow"></b></li>
                         }
-
+                        @if (User.IsInRole(CRMRoles.SalesReturnUser)
+                            || User.IsInRole(CRMRoles.SalesReturnApprover))
+                        {
+                            <li id="crm-sales-11" class="actionlinlk">@Html.ActionLink("Sales Return", "Index", "SalesReturn", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                        }
                     </ul>
                 </li>
             }
@@ -305,6 +315,7 @@
                             <b class="arrow"></b>
 
                             <ul class="submenu">
+                                <li id="crm-setting-15" class="actionlinlk">@Html.ActionLink("CRM Setting ", "Index", "CRMSetting", new { area = "CRM" }, null)<b class="arrow"></b></li>
                                 <li id="crm-setting-09" class="actionlinlk">@Html.ActionLink("Payment Method ", "Index", "ReceiveMethod", new { area = "CRM" }, null)<b class="arrow"></b></li>
                                 <li id="crm-setting-10" class="actionlinlk">@Html.ActionLink("Payment Terms ", "Index", "ReceiveMethod", new { area = "CRM" }, null)<b class="arrow"></b></li>
                                 <li id="crm-setting-11" class="actionlinlk">@Html.ActionLink("Quotation Terms ", "Index", "QuotationTerms", new { area = "CRM" }, null)<b class="arrow"></b></li>

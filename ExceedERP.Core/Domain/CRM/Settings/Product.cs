@@ -25,7 +25,6 @@ namespace ExceedERP.Core.Domain.CRM
         [Required]
         public string UOM { get; set; }
         public bool IsActive { get; set; }
-        public string Remark { get; set; }
         public string ItemCategoryCode { get; set; }
 
         [Display(Name="Inventory Item")]

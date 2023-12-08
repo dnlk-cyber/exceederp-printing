@@ -1,0 +1,20 @@
+﻿@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+.Name( "Values")
+.OptionLabel( "Select Values..")
+    .ValuePrimitive(true)
+        .DataTextField("Text")
+            .DataValueField("Text")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetCascadeCurrentValue", " InventorySetting")
+                            .Data("filterAttributes");
+                    })
+                    .ServerFiltering(true);
+                })
+            .AutoBind( false)
+                    .CascadeFrom("Attribute")
+)
+@Html.ValidationMessageFor(m => m)

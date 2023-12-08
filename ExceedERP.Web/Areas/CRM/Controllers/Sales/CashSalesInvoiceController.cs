@@ -1765,23 +1765,20 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         }
         public ActionResult GetCustomerInvoiceDDBind(string Customer)
         {
-
             var invoices =
                 db.CashSalesInvoices
                 .Where(
                     x => x.OrganizationCustomerId.ToString() == Customer &&
                     x.AmountDue > 0 &&
                     x.PaymentMethod == "CREDIT" &&
-                    (x.LastObjectState == CRMConstants.PaymentReceived || x.LastObjectState == CRMConstants.ProductIssued || x.LastObjectState == CRMConstants.Forwarded)
+                    (x.LastObjectState == CRMConstants.PaymentReceived || x.LastObjectState == CRMConstants.ProductIssued || x.LastObjectState == CRMConstants.Forwarded|| x.LastObjectState == CRMConstants.Approved)
                     ).ToList();
             List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> paymentMethod = new List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject>();
 
             if (invoices.Any())
             {
-
                 foreach (var invoice in invoices)
                 {
-
                     var lines =
                         db.LineItems.Where(
                             x => x.Voucher == invoice.CashSalesInvoiceID.ToString() && x.VoucherDefinitionID == "2")
@@ -1791,16 +1788,10 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                         if (lines.Sum(x => x.TotalAmount) > 0)
                         {
                             paymentMethod.Add(new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject { Name = invoice.CashSalesInvoiceID.ToString(), Id = invoice.CashSalesInvoiceID });
-
                         }
-
                     }
                 }
-
-
             }
-
-
             return Json(paymentMethod, JsonRequestBehavior.AllowGet);
         }
         public ActionResult GetCustomerInvoiceBalanceDDBind(string Voucher)
@@ -2182,8 +2173,8 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                         Status = "Approved",
                         Remark = record.ReceiptReference,
                         PaymentReference = record.ReceiptReference,
-                        ReferenceDoc = "",
-                        InvoiceReferenceDoc = "",
+                        ReferenceDoc = $"FS No. {record.FsInvoiceNo}",
+                        InvoiceReferenceDoc = $"Invoice No. {record.InvoiceNumber}",
                         IsOnlineApproved = true,
                         OnlineApprovedBy = User.Identity.Name,
                         OnlineApprovedTime = DateTime.Now

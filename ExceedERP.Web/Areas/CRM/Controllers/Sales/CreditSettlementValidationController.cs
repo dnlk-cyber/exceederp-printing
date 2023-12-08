@@ -1,7 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.CRM;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;

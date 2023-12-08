@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.CRM.Printing.ViewModel;
 //using ExceedERP.Reporting.CRM.ViewModel;
 using System;
@@ -39,9 +40,9 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                             
 
 
-                            PreparedBy = currentRecord.CreatedBy,
-                            ApprovedBy = currentRecord.OnlineApprovedBy,
-                            CheckedBy = currentRecord.SendForApprovalBy,
+                            PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentRecord.CreatedBy)),
+                            ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentRecord.OnlineApprovedBy)),
+                            CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentRecord.SendForApprovalBy)),
                         };
 
                         var lineItems = db.LineCreditSettlements.Where(l => l.CreditSettlementId == currentRecord.CreditSettlementId).ToList();

@@ -7,8 +7,6 @@ using System.ComponentModel;
 using System.Linq;
 
 using ExceedERP.Helpers.Common;
-using ExceedERP.Reporting.SharedDataSources;
-using System.Drawing;
 
 namespace ExceedERP.Reporting.CRM.DataSource
 {

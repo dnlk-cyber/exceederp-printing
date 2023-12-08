@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.CRM.Printing.ViewModel;
 using ExceedERP.Reporting.CRM.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -137,13 +138,13 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                     SalesOrderViewModel.QuoteNumber = sov.References;
                     SalesOrderViewModel.Status = sov.LastObjectState;
                     SalesOrderViewModel.Consignee = sov.OrganizationCustomer.TradeName;
-                    SalesOrderViewModel.SalesPerson = sov.CreatedBy;
+                    SalesOrderViewModel.SalesPerson = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.CreatedBy));
                     SalesOrderViewModel.PaymentMethod = sov.PaymentMethod;
-                    SalesOrderViewModel.OnlineApprovedBy = sov.OnlineApprovedBy;
-                    SalesOrderViewModel.SendForApprovalBy = sov.SendForApprovalBy;
+                    SalesOrderViewModel.OnlineApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
+                    SalesOrderViewModel.SendForApprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.SendForApprovalBy));
                     SalesOrderViewModel.SendForApprovalTime = sov.SendForApprovalTime;
                     SalesOrderViewModel.OnlineApprovedTime = sov.OnlineApprovedTime;
-
+                    SalesOrderViewModel.ReceiptReference = sov.ReceiptReference;
 
                     SalesOrderViewModel.AmharicName = AmharicName;
                     SalesOrderViewModel.Name = Name;
@@ -151,9 +152,9 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                     SalesOrderViewModel.LogoFileName = LogoFileName;
 
 
-                    SalesOrderViewModel.RequestedBy = sov.CreatedBy;
-                    SalesOrderViewModel.CheckedBy = sov.OnlineApprovedBy;
-                    SalesOrderViewModel.ApprovedBy = sov.OnlineApprovedBy;
+                    SalesOrderViewModel.RequestedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.CreatedBy));
+                    SalesOrderViewModel.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
+                    SalesOrderViewModel.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
 
                     SalesOrderViewModel.TotalAmountInWords = totalAmountInwords;
                     SalesOrderViewModel.GrandTotal = totalAmount;

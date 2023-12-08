@@ -1260,8 +1260,10 @@
     //}
 
     function getSelectedBranch() {
+        var ddl = $("#StoreID").data("kendoDropDownList");
         return {
-            branchId: $("#BranchId").data("kendoDropDownList").value()
+            branchId: $("#BranchId").data("kendoDropDownList").value(),
+            storeName: ddl.filterInput.val()
         };
     }
     function filterVariety() {

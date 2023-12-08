@@ -41,6 +41,9 @@ namespace ExceedERP.Core.Domain.CRM
         public const string AdvancePaymentUser = "Advance_Payment_User";
         public const string AdvancePaymentApprover = "Advance_Payment_Approver";
 
+        public const string SalesReturnUser = "Sales_Return_User";
+        public const string SalesReturnApprover = "Sales_Return_Approver";
+
         // Not Added
         public const string CustomerServiceUser = "Customer_Service_User";
         public const string CustomerServiceApprover = "Customer_Service_Approver";

@@ -1,0 +1,11 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+    .DataTextField("Description")
+    .DataValueField("ItemCategoryCode")
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select ")
+    .Events(e =>
+    {
+        e.Change("onInventoryCategoryChange");
+    })
+    .DataSource(d => d.Read(r => r.Action("GetItemCategory", "CRMDataProvider"))))
+

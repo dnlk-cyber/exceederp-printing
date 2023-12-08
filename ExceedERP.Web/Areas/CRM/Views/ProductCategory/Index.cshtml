@@ -3,10 +3,9 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Index).Width(50).Filterable(false);
+          columns.ForeignKey(c => c.InventoryCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("InventoryItemCategorySelector").Width(150);
           columns.Bound(c => c.Description).Width(120);
           columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["CategoryList"], "ProductCategoryId", "Description").EditorTemplateName("Parent").Width(100);
-          columns.ForeignKey(c => c.InventoryCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(120);
 
           columns.Bound(c => c.SalesAccountCode).EditorTemplateName("AccountCode").Width(220);
           columns.Bound(c => c.InventoryAccountCode).EditorTemplateName("AccountCode").Width(220);
@@ -65,5 +64,15 @@
                 $(this).find(".k-grid-delete").remove();
             }
         });
-    }
+     }
+     function onInventoryCategoryChange(e) {
+         var ddl = this;
+         var concatName = ddl.text();
+         var nameOnly = concatName.replace(ddl.value(), "");
+         var inptTxt = $("#Description").val();
+         if (!inptTxt && ddl.value()) {
+             $("#Description").val(nameOnly.trim());
+             $("#Description").trigger("change");
+         }
+     }
  </script>

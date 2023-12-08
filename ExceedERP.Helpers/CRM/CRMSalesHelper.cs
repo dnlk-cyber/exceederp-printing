@@ -1,10 +1,7 @@
 ﻿using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.Inventory;
 using System;
 using System.Collections.Generic;

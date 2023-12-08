@@ -998,6 +998,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region CRM
+
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdvancePaymentLogEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.AdvancePaymentDistibutionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.CashSalesPartialItemEntityTypeConfiguration());
@@ -1162,6 +1163,10 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TenderFollowupEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.TenderFollowupLineItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.ProductPriceLogEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesReturnEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesReturnLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesReturnValidationEntityTypeConfiguration());
             #endregion
 
             #region Construction
@@ -2618,7 +2623,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<AdvancePaymentLine> AdvancePaymentLines { get; set; }
 
         public DbSet<VoucherTerm> VoucherTerms { get; set; }
-        public DbSet<ExceedERP.Core.Domain.CRM.Tax> Taxs { get; set; }
+        public DbSet<Core.Domain.CRM.Tax> Taxs { get; set; }
         public DbSet<TaxTransaction> TaxTransactions { get; set; }
         public DbSet<Price> Prices { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
@@ -2797,6 +2802,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<QueueStatus> QueueStatus { get; set; }
         public DbSet<QueueValidation> QueueValidation { get; set; }
         public DbSet<QueueStatusValidation> QueueStatusValidation { get; set; }
+        public DbSet<SalesReturn> SalesReturn { get; set; }
+        public DbSet<SalesReturnLine> SalesReturnLines { get; set; }
+        public DbSet<SalesReturnValidation> SalesReturnValidation { get; set; }
         #endregion
 
         #region Budget

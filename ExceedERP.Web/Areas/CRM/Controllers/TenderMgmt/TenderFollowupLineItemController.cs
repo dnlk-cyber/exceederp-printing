@@ -8,7 +8,6 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {

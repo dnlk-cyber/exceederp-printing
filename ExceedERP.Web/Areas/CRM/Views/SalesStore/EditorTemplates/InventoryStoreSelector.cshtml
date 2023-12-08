@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel("--Select Store--")
+    .DataTextField("Name")
+    .DataValueField("StoreCode")
+    .Filter(FilterType.Contains)
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetInventoryStoreList", "CRMDataProvider"));
+    })
+    .Events(e =>
+    {
+        e.Change("onInventoryStoreChange");
+    })
+)
+@Html.ValidationMessageFor(m => m)

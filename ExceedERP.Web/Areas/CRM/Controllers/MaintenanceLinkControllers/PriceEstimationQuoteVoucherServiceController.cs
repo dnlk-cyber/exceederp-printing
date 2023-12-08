@@ -1,12 +1,8 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.CRM;
-using ExceedERP.Web.Areas.CRM.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -26,7 +22,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 PriceEstimationQuoteVoucherId = PriceEstimationQuoteVoucherService.PriceEstimationQuoteVoucherId,
                 CategoryCode = PriceEstimationQuoteVoucherService.CategoryCode,
                 SubCategoryCode = PriceEstimationQuoteVoucherService.SubCategoryCode,
-                //ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
+                ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
                 ServiceTypeId = PriceEstimationQuoteVoucherService.ServiceTypeId,
                 Quantity = PriceEstimationQuoteVoucherService.Quantity,
                 UnitAmount = PriceEstimationQuoteVoucherService.UnitAmount,
@@ -57,7 +53,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     PriceEstimationQuoteVoucherId = id,
                     CategoryCode = PriceEstimationQuoteVoucherService.CategoryCode,
                     SubCategoryCode = PriceEstimationQuoteVoucherService.SubCategoryCode,
-                    //ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
+                    ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
                     ServiceTypeId = PriceEstimationQuoteVoucherService.ServiceTypeId,
                     Quantity = PriceEstimationQuoteVoucherService.Quantity,
                     UnitAmount = PriceEstimationQuoteVoucherService.UnitAmount,
@@ -103,7 +99,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 PriceEstimationQuoteVoucherId = PriceEstimationQuoteVoucherService.PriceEstimationQuoteVoucherId,
                 CategoryCode = PriceEstimationQuoteVoucherService.CategoryCode,
                 SubCategoryCode = PriceEstimationQuoteVoucherService.SubCategoryCode,
-                //ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
+                ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
                 ServiceTypeId = PriceEstimationQuoteVoucherService.ServiceTypeId,
                 Quantity = PriceEstimationQuoteVoucherService.Quantity,
                 UnitAmount = PriceEstimationQuoteVoucherService.UnitAmount,
@@ -148,7 +144,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     PriceEstimationQuoteVoucherId = PriceEstimationQuoteVoucherService.PriceEstimationQuoteVoucherId,
                     CategoryCode = PriceEstimationQuoteVoucherService.CategoryCode,
                     SubCategoryCode = PriceEstimationQuoteVoucherService.SubCategoryCode,
-                    //ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
+                    ServiceGroup = PriceEstimationQuoteVoucherService.ServiceGroup,
                     ServiceTypeId = PriceEstimationQuoteVoucherService.ServiceTypeId,
                     Quantity = PriceEstimationQuoteVoucherService.Quantity,
                     UnitAmount = PriceEstimationQuoteVoucherService.UnitAmount,

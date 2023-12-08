@@ -228,7 +228,9 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                                            db.LineItems.Where(
                                                l => l.Voucher == invoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == "2")
                                                .ToList();
-            if (InvoiceItems.Any())
+            List<ServiceLineItem> services = db.ServiceLineItems.Where(s => s.VoucherId == invoice.CashSalesInvoiceID && s.VoucherType == CRMVoucherType.SalesInvoice).ToList();
+
+            if (InvoiceItems.Any() || services.Any())
             {
                 foreach (var InvoiceItem in InvoiceItems)
                 {
@@ -325,8 +327,8 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                                 db.LineItems.Where(
                                     l => l.Voucher == currentInvoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == "2")
                                     .ToList();
-
-                            if (InvoiceItems != null)
+                            List<ServiceLineItem> services = db.ServiceLineItems.Where(s => s.VoucherId == currentInvoice.CashSalesInvoiceID && s.VoucherType == CRMVoucherType.SalesInvoice).ToList();
+                            if (InvoiceItems.Any() || services.Any())
                             {
                                 foreach (var InvoiceItem in InvoiceItems)
                                 {

@@ -83,7 +83,7 @@ namespace ExceedERP.Reporting.CRM.DataSource
                     {
                         var record = new SalesQuoteDetailViewModel
                         {
-                            Customer = sq.OrganizationCustomer.TradeName,
+                            Customer = _db.OrganizationCustomers.Find(sq.OrganizationCustomerId)?.TradeName,
                             OrderType = sq.PaymentMethod,
                             QuoteNumber = sq.SalesQuoteVoucherID,
                             QuoteReference = "",

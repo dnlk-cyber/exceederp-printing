@@ -47,7 +47,7 @@ namespace ExceedERP.Reporting.CRM.ViewModel
         public string UOM { get; set; }
         public string CustomerType { get; set; }
         public string Status { get; set; }
-
+        public string ReceiptReference { get; set; }
 
     }
 }

@@ -1,5 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.CRM;
+﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
@@ -73,7 +72,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 VoidBy = shipment.VoidBy,
                 VoidTime = shipment.VoidTime,
 
-                //IsJobOrderClosed = shipment.Source== ShipmentSource.MaintenanceStoreRequisition ?  CRMMaintenanceIntegrationHelper.IsJobOrderClosed(shipment.JobOrderNumber) : false,
+               // IsJobOrderClosed = shipment.Source== ShipmentSource.MaintenanceStoreRequisition ?  CRMMaintenanceIntegrationHelper.IsJobOrderClosed(shipment.JobOrderNumber) : false,
 
                 CreatedBy = shipment.CreatedBy,
                 DateCreated = shipment.DateCreated,

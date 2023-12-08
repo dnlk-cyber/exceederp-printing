@@ -45,7 +45,7 @@ namespace ExceedERP.Core.Domain.CRM
         [DisplayName("Grand Total")]
         public string PaymentMethod { get; set; }
         public string Remark { get; set; }
-        public virtual OrganizationCustomer OrganizationCustomer { get; set; }
+        //public virtual OrganizationCustomer OrganizationCustomer { get; set; }
 
         [Display(Name ="Quotation Term")]
         public int QuotationTermId { get; set; }
@@ -72,6 +72,10 @@ namespace ExceedERP.Core.Domain.CRM
 
         [Display(Name = "Bank Account")]
         public int? BankAccountId { get; set; }
+        public int BusinessUnitId { get; set; }
+        public int OrgStructureId { get; set; }
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
 
     }
 

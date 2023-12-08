@@ -118,7 +118,7 @@ namespace ExceedERP.Reporting.CRM.DataSource
                         salesQuoteViewModel.QuoteNumber = sov.SalesQuoteVoucherID;
                         salesQuoteViewModel.Quantity = l.CalculatedCost / l.UnitAmount;
                         salesQuoteViewModel.Status = sov.LastObjectState;
-                        salesQuoteViewModel.Consignee = sov.OrganizationCustomer.TradeName ;
+                        salesQuoteViewModel.Consignee = db.OrganizationCustomers.Find(sov.OrganizationCustomerId)?.TradeName;
                         salesQuoteViewModel.ProductName = l.Product.Name;
                         salesQuoteViewModel.UOM = uOM;
                         salesQuoteViewModel.Store = l.SalesStore.Description;

@@ -1,16 +1,5 @@
-﻿using ExceedERP.Web.Helpers;
-using System.Collections.Generic;
-
-using System.Data.Entity;
-using System.Linq;
-using System.Web.Mvc;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.CRM;
+﻿using System.Web.Mvc;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Helpers.CRM;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {

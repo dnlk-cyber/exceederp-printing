@@ -108,4 +108,22 @@ namespace ExceedERP.Core.Domain.CRM
         SalesOrder = 11,
         SalesInvoice = 12
     }
+
+    public enum CRMSettingCategories
+    {
+        /// <summary>
+        /// disable replacing branch segment in crm distributions
+        /// </summary>
+        DISABLE_REPLACING_BRANCH_SEGMENT,
+    }
+    public enum DisableReplacingBranchSegment
+    {
+        TRUE
+    }
+    public enum SalesReturnPaymentType
+    {
+        Advance = 10,
+        SalesInvoice = 11,
+        Other = 12
+    }
 }

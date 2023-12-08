@@ -1,15 +1,14 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.CRM;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
@@ -17,13 +16,13 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
     [AuthorizeRoles(CRMRoles.CRMAdmin)]
     public class ProductCategoryController : Controller
     {
-        private ExceedDbContext db = new ExceedDbContext();
+        private readonly ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            var thingCategoryList = db.ProductCategories.Select(c => new { c.ProductCategoryId, c.Description}).ToList();
+            var thingCategoryList = db.ProductCategories.Select(c => new { c.ProductCategoryId, c.Description }).ToList();
             ViewData["CategoryList"] = thingCategoryList;
-            ViewData["ItemCategorys"] = db.ItemCategorys.Select(c => new { c.ItemCategoryCode, c.Name}).ToList();
+            ViewData["ItemCategorys"] = db.ItemCategorys.Select(c => new { c.ItemCategoryCode, Name = c.ItemCategoryCode + " " +  c.Name }).ToList();
 
             CheckAndUpdateEmptyCategoryCodes();
             return View();
@@ -35,7 +34,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             foreach (var category in emptyCode)
             {
                 var catMapping = db.InventoryCateoryMaps.FirstOrDefault(cm => cm.Category == category.Description);
-                if(catMapping != null)
+                if (catMapping != null)
                 {
                     category.InventoryCategoryCode = catMapping.InventoryCategoryId;
 
@@ -60,7 +59,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             {
                 ProductCategoryId = thingCategory.ProductCategoryId,
                 Description = thingCategory.Description,
-                Index = thingCategory.Index,
+                //Index = thingCategory.Index,
                 Parent = thingCategory.Parent,
                 InventoryCategoryCode = thingCategory.InventoryCategoryCode,
                 HasTransaction = thingCategory.HasTransaction,
@@ -82,41 +81,40 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductCategories_Create([DataSourceRequest]DataSourceRequest request, ProductCategory thingCategory)
         {
-            List<ProductCategory> thingCategoryList = db.ProductCategories.Where(tc => tc.Index == thingCategory.Index).ToList();
+            //List<ProductCategory> thingCategoryList = db.ProductCategories.Where(tc => tc.Index == thingCategory.Index).ToList();
             List<ProductCategory> thingCategoryLists = db.ProductCategories.Where(tc => tc.Description == thingCategory.Description).ToList();
-            if (thingCategoryList.Any())
-            {
-                ModelState.AddModelError("DuplicateIndexEntry", "Please readjust index value!");
-            }
-            else if (thingCategoryLists.Any())
+            //if (thingCategoryList.Any())
+            //{
+            //    ModelState.AddModelError("DuplicateIndexEntry", "Please readjust index value!");
+            //}
+            if (thingCategoryLists.Any())
             {
                 ModelState.AddModelError("DuplicateIndexEntry", "Category already exist!");
             }
-            else
+
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                var entity = new ProductCategory
                 {
-                    var entity = new ProductCategory
-                    {
-                        Description = thingCategory.Description,
+                    Description = thingCategory.Description,
 
-                        Index = thingCategory.Index,
-                        Parent = thingCategory.Parent,
-                        IsActive = thingCategory.IsActive,
-                        InventoryAccountCode = thingCategory.InventoryAccountCode,
-                        InventoryCategoryCode = thingCategory.InventoryCategoryCode,
-                        UnEarnedAccountCode = thingCategory.UnEarnedAccountCode,
-                        SalesAccountCode = thingCategory.SalesAccountCode,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now,
-                        Remark = thingCategory.Remark
-                    };
+                    //Index = thingCategory.Index,
+                    Parent = thingCategory.Parent,
+                    IsActive = thingCategory.IsActive,
+                    InventoryAccountCode = thingCategory.InventoryAccountCode,
+                    InventoryCategoryCode = thingCategory.InventoryCategoryCode,
+                    UnEarnedAccountCode = thingCategory.UnEarnedAccountCode,
+                    SalesAccountCode = thingCategory.SalesAccountCode,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    Remark = thingCategory.Remark
+                };
 
-                    db.ProductCategories.Add(entity);
-                    db.SaveChanges();
-                    thingCategory.ProductCategoryId = entity.ProductCategoryId;
-                }
+                db.ProductCategories.Add(entity);
+                db.SaveChanges();
+                thingCategory.ProductCategoryId = entity.ProductCategoryId;
             }
+            //}
 
             return Json(new[] { thingCategory }.ToDataSourceResult(request, ModelState));
         }
@@ -124,38 +122,37 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductCategories_Update([DataSourceRequest]DataSourceRequest request, ProductCategory thingCategory)
         {
-            List<ProductCategory> thingCategoryList = db.ProductCategories.Where(tc => tc.Index == thingCategory.Index).ToList();
+            //List<ProductCategory> thingCategoryList = db.ProductCategories.Where(tc => tc.Index == thingCategory.Index).ToList();
             List<ProductCategory> thingCategoryLists = db.ProductCategories.Where(tc => tc.Description == thingCategory.Description && tc.ProductCategoryId != thingCategory.ProductCategoryId).ToList();
-            if (thingCategoryList.Count > 1)
-            {
-                ModelState.AddModelError("DuplicateIndexEntry", "Please readjust index value!");
-            }
-            else if (thingCategoryLists.Any())
+            //if (thingCategoryList.Count > 1)
+            //{
+            //    ModelState.AddModelError("DuplicateIndexEntry", "Please readjust index value!");
+            //}
+            if (thingCategoryLists.Any())
             {
                 ModelState.AddModelError("DuplicateIndexEntry", "Category already exist!");
             }
-            else
+
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    var ProductCategory = db.ProductCategories.Where(x => x.ProductCategoryId == thingCategory.ProductCategoryId).FirstOrDefault();
+                var ProductCategory = db.ProductCategories.Where(x => x.ProductCategoryId == thingCategory.ProductCategoryId).FirstOrDefault();
 
-                    ProductCategory.Description = thingCategory.Description;
-                    ProductCategory.Index = thingCategory.Index;
-                    ProductCategory.Parent = thingCategory.Parent;
-                    ProductCategory.InventoryAccountCode = thingCategory.InventoryAccountCode;
-                    ProductCategory.InventoryCategoryCode = thingCategory.InventoryCategoryCode;
-                    ProductCategory.SalesAccountCode = thingCategory.SalesAccountCode;
-                    ProductCategory.UnEarnedAccountCode = thingCategory.UnEarnedAccountCode;
-                    ProductCategory.IsActive = thingCategory.IsActive;
-                    ProductCategory.Remark = thingCategory.Remark;
+                ProductCategory.Description = thingCategory.Description;
+                //ProductCategory.Index = thingCategory.Index;
+                ProductCategory.Parent = thingCategory.Parent;
+                ProductCategory.InventoryAccountCode = thingCategory.InventoryAccountCode;
+                ProductCategory.InventoryCategoryCode = thingCategory.InventoryCategoryCode;
+                ProductCategory.SalesAccountCode = thingCategory.SalesAccountCode;
+                ProductCategory.UnEarnedAccountCode = thingCategory.UnEarnedAccountCode;
+                ProductCategory.IsActive = thingCategory.IsActive;
+                ProductCategory.Remark = thingCategory.Remark;
 
-                    db.ProductCategories.Attach(ProductCategory);
-                    db.Entry(ProductCategory).State = EntityState.Modified;
+                db.ProductCategories.Attach(ProductCategory);
+                db.Entry(ProductCategory).State = EntityState.Modified;
 
-                    db.SaveChanges();
-                }
+                db.SaveChanges();
             }
+
 
             return Json(new[] { thingCategory }.ToDataSourceResult(request, ModelState));
         }
@@ -169,7 +166,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 {
                     ProductCategoryId = thingCategory.ProductCategoryId,
                     Description = thingCategory.Description,
-                    Index = thingCategory.Index,
+                    //Index = thingCategory.Index,
                     Parent = thingCategory.Parent,
                     InventoryAccountCode = thingCategory.InventoryAccountCode,
                     InventoryCategoryCode = thingCategory.InventoryCategoryCode,

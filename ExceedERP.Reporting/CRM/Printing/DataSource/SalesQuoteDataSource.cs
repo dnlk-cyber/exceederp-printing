@@ -1,7 +1,7 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.CRM.Printing.ViewModel;
-using ExceedERP.Reporting.CRM.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System;
 using System.Collections.Generic;
@@ -98,7 +98,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
             }
             if (SalesQuoteVouchers.Count > 0)
 
-                tradeName = SalesQuoteVouchers.FirstOrDefault().OrganizationCustomer.TradeName;
+                tradeName = "";// SalesQuoteVouchers.FirstOrDefault().OrganizationCustomer.TradeName;
 
             var OrgCustomer = orgCustomer.Where(x => x.TradeName == tradeName).FirstOrDefault();
             if (OrgCustomer != null)
@@ -108,7 +108,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
             }
             foreach (SalesQuoteVoucher sov in SalesQuoteVouchers)
             {
-                //var equipmentInfo = db.EquipmentInformation.FirstOrDefault(e => e.CustomerId == sov.OrganizationCustomerId && e.LicensePlate == sov.PlateNo);
+               // var equipmentInfo = db.EquipmentInformation.FirstOrDefault(e => e.CustomerId == sov.OrganizationCustomerId && e.LicensePlate == sov.PlateNo);
                 var acc = db.BankAccounts.Find(sov.BankAccountId);
                 string accNo = acc != null ? $"{acc.AccountNumber} { acc.AccountName} {acc.BankBranch} Branch" : "";
 
@@ -153,7 +153,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                 string CustomerType = "CASH";
                 var Store = db.SalesStores.Where(x => x.SalesStoreId == sov.StoreID).FirstOrDefault();
 
-                if (OrgCustomer.IsCredit)
+                if (OrgCustomer != null && OrgCustomer.IsCredit)
                 {
                     CustomerType = "CREDIT";
                 }
@@ -162,7 +162,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
 
                 salesQuoteViewModel.BanckAccount = accNo;
                 salesQuoteViewModel.PlateNo = sov.PlateNo;
-                //salesQuoteViewModel.Equipment = equipmentInfo?.GroupName;
+               // salesQuoteViewModel.Equipment = equipmentInfo?.GroupName;
                 salesQuoteViewModel.TINNo = tin;
                 salesQuoteViewModel.VATNo = vat;
 
@@ -172,8 +172,8 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
 
                 salesQuoteViewModel.QuoteNumber = sov.SalesQuoteVoucherID;
                 salesQuoteViewModel.Status = sov.LastObjectState;
-                salesQuoteViewModel.Consignee = sov.OrganizationCustomer.TradeName;
-                salesQuoteViewModel.SalesPerson = sov.CreatedBy;
+                salesQuoteViewModel.Consignee = db.OrganizationCustomers.Find(sov.OrganizationCustomerId)?.TradeName;
+                salesQuoteViewModel.SalesPerson = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.CreatedBy));
                 salesQuoteViewModel.PaymentMethod = sov.PaymentMethod;
                 salesQuoteViewModel.QuoteDate = sov.IssuedDate;
                 salesQuoteViewModel.Store = Store.Description;
@@ -184,16 +184,16 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                 salesQuoteViewModel.Address = Address;
                 salesQuoteViewModel.LogoFileName = LogoFileName;
 
-                salesQuoteViewModel.OnlineApprovedBy = sov.OnlineApprovedBy;
-                salesQuoteViewModel.SendForApprovalBy = sov.SendForApprovalBy;
+                salesQuoteViewModel.OnlineApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
+                salesQuoteViewModel.SendForApprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.SendForApprovalBy));
                 salesQuoteViewModel.SendForApprovalTime = sov.SendForApprovalTime;
                 salesQuoteViewModel.OnlineApprovedTime = sov.OnlineApprovedTime;
 
                 salesQuoteViewModel.CheckedTime = sov.MiddleOnlineApprovedTime;
 
-                salesQuoteViewModel.RequestedBy = sov.CreatedBy;
-                salesQuoteViewModel.CheckedBy = sov.MiddleOnlineApprovedBy;
-                salesQuoteViewModel.ApprovedBy = sov.OnlineApprovedBy;
+                salesQuoteViewModel.RequestedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.MiddleSendForApprovalBy));
+                salesQuoteViewModel.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.MiddleOnlineApprovedBy));
+                salesQuoteViewModel.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
 
 
                 salesQuoteViewModel.SubTotal = subTotal;

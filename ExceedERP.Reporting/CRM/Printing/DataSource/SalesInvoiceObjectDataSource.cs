@@ -4,12 +4,12 @@ using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Reporting.CRM.ViewModel;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Reporting.SharedDataSources;
 using System.Drawing;
 using XAPI;
 using ExceedERP.Reporting.CRM.Printing.ViewModel;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Reporting.CRM.Printing.DataSource
 {
@@ -236,7 +236,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                 SalesInvoiceViewModel.OrderNumber = sov.Source == SalesInvoiceSource.SalesOrder ? "Sales Order # " + sov.References : sov.References;
                 SalesInvoiceViewModel.ReceiptReference = sov.ReceiptReference;
                 SalesInvoiceViewModel.FsInvoiceNumber = sov.FsInvoiceNo;
-                SalesInvoiceViewModel.SalesPerson = sov.CreatedBy;
+                SalesInvoiceViewModel.SalesPerson = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.CreatedBy));
                 SalesInvoiceViewModel.PaymentMethod = sov.PaymentMethod;
                 SalesInvoiceViewModel.InvoiceDate = sov.IssuedDate.ToString("dd/MM/yyyy");
                 SalesInvoiceViewModel.Status = sov.LastObjectState;
@@ -247,8 +247,8 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                 SalesInvoiceViewModel.TotalWithholding = totalWithholding;
                 SalesInvoiceViewModel.NetPay = totalAmount - totalTax - totalWithholding;
                 SalesInvoiceViewModel.TotalAmountInWords = totalAmountInwords;
-                SalesInvoiceViewModel.OnlineApprovedBy = sov.OnlineApprovedBy;
-                SalesInvoiceViewModel.SendForApprovalBy = sov.SendForApprovalBy;
+                SalesInvoiceViewModel.OnlineApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
+                SalesInvoiceViewModel.SendForApprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.SendForApprovalBy));
                 SalesInvoiceViewModel.SendForApprovalTime = sov.SendForApprovalTime;
                 SalesInvoiceViewModel.OnlineApprovedTime = sov.OnlineApprovedTime;
                 SalesInvoiceViewModel.PrintStatus = sov.IsReceiptPrinted ? "Printed" : "Not Printed";
@@ -265,9 +265,9 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                 SalesInvoiceViewModel.VatRegNumber = vatRegNumber;
                 SalesInvoiceViewModel.TinNumber = tinNumber;
 
-                SalesInvoiceViewModel.RequestedBy = sov.CreatedBy;
-                SalesInvoiceViewModel.CheckedBy = sov.SendForApprovalBy;
-                SalesInvoiceViewModel.ApprovedBy = sov.OnlineApprovedBy;
+                SalesInvoiceViewModel.RequestedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.CreatedBy));
+                SalesInvoiceViewModel.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.SendForApprovalBy));
+                SalesInvoiceViewModel.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(sov.OnlineApprovedBy));
 
                 SalesInvoiceViewModel.TotalAmount = totalAmount;
                 SalesInvoiceViewModel.TotalTax = totalTax;

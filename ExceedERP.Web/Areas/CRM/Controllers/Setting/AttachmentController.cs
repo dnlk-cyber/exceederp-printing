@@ -9,7 +9,6 @@ using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using AttachmentType = ExceedERP.Core.Domain.CRM.AttachmentType;
 using ExceedERP.Helpers.Common;

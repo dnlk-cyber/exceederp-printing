@@ -14,7 +14,7 @@ namespace ExceedERP.Core.Domain.CRM
         public string TradeName { get; set; }
         [Required]
         public string BrandName { get; set; }
-        [DisplayName(" TIN Number ")]
+        [DisplayName(" TIN ")]
         public string TinNo { get; set; }
         [DisplayName(" Location Type ")]
         public CustomerType CustomerType { get; set; }

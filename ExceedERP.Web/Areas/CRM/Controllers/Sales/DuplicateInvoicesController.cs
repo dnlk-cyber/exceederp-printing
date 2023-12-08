@@ -1,5 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
+﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;

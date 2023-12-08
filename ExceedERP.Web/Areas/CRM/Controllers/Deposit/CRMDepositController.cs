@@ -13,7 +13,6 @@ using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Helpers.CRM;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Construction;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers

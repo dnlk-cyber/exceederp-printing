@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.CRM.Models
 
         public string Variety { get; set; }
         [Required]
-        [DisplayName("Unit Amount")]
+        [DisplayName("Unit Price")]
         [ExclusiveRange(0, ErrorMessage ="Unit Amount (Price) should be greater than 0")]
         public decimal UnitAmount { get; set; }
         [Required]

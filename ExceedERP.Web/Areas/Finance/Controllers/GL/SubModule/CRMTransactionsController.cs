@@ -424,7 +424,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 VoidBy = shipment.VoidBy,
                 VoidTime = shipment.VoidTime,
 
-                IsJobOrderClosed = shipment.Source == ShipmentSource.MaintenanceStoreRequisition ? CRMMaintenanceIntegrationHelper.IsJobOrderClosed(shipment.JobOrderNumber) : false,
+               // IsJobOrderClosed = shipment.Source == ShipmentSource.MaintenanceStoreRequisition ? CRMMaintenanceIntegrationHelper.IsJobOrderClosed(shipment.JobOrderNumber) : false,
 
                 CreatedBy = shipment.CreatedBy,
                 DateCreated = shipment.DateCreated,

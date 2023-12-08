@@ -206,15 +206,15 @@ namespace ExceedERP.Reporting.CRM.DataSource
         public List<object> GetJobOrdersNumbers()
         {
             List<object> list = new List<object>();
-            //var numbers = new HashSet<string>(db.StoreRequisitions.Where(sr => sr.IsForMaintenance && sr.IsOnlineApproved).Select(sr => sr.JobOrderNo));
-            //foreach (var num in numbers)
-            //{
-            //    list.Add(new
-            //    {
-            //        Id = num,
-            //        Name = num
-            //    });
-            //}
+            var numbers = new HashSet<string>(db.StoreRequisitions.Where(sr => sr.IsForMaintenance && sr.IsOnlineApproved).Select(sr => sr.JobOrderNo));
+            foreach (var num in numbers)
+            {
+                list.Add(new
+                {
+                    Id = num,
+                    Name = num
+                });
+            }
             return list;
         }
     }

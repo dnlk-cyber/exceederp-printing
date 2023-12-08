@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ExceedERP.Reporting.CRM.ViewModel
+﻿namespace ExceedERP.Reporting.CRM.ViewModel
 {
     public class SalesSummaryByBranchReportViewModel
     {

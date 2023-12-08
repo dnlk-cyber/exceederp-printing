@@ -8,11 +8,7 @@ using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.CRM.Models;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers

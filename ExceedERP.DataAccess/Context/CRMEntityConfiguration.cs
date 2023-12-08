@@ -814,15 +814,14 @@ namespace ExceedERP.DataAccess.Context
 
             public ThingCategoryEntityTypeConfiguration()
             {
-
-                this.Property(p => p.Index)
-                .HasColumnAnnotation(
-           IndexAnnotation.AnnotationName,
-           new IndexAnnotation(
-               new IndexAttribute("IX_ThingCategory", 1) { IsUnique = true })
-               )
-               .HasColumnOrder(1)
-               .IsRequired();
+               // this.Property(p => p.Index)
+               // .HasColumnAnnotation(
+               //IndexAnnotation.AnnotationName,
+               //     new IndexAnnotation(
+               //         new IndexAttribute("IX_ThingCategory", 1) { IsUnique = true })
+               //)
+               //.HasColumnOrder(1)
+               //.IsRequired();
                 this.HasKey<int>(o => o.ProductCategoryId);
             }
         }
@@ -1492,6 +1491,41 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.HasKey<int>(f => f.TenderFollowupLineItemId);
                 this.ToTable("TenderFollowupLineItem", "CRM");
+            }
+        }
+        #endregion
+
+        #region sales return
+        public class SalesReturnEntityTypeConfiguration : EntityTypeConfiguration<SalesReturn>
+        {
+            public SalesReturnEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesReturnId);
+                this.ToTable("SalesReturn", "CRM");
+
+				this.Property(p => p.TotalAmount).HasPrecision(18, 4);
+				this.Property(p => p.AmountDue).HasPrecision(18, 4);
+            }
+        }
+        public class SalesReturnLineEntityTypeConfiguration : EntityTypeConfiguration<SalesReturnLine>
+        {
+            public SalesReturnLineEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesReturnLineId);
+                this.ToTable("SalesReturnLines", "CRM");
+                this.Property(p => p.UnitPrice).HasPrecision(20, 4);
+                this.Property(p => p.Quantity).HasPrecision(20, 4);
+                this.Property(p => p.SubTotal).HasPrecision(20, 4);
+                this.Property(p => p.TaxAmount).HasPrecision(20, 4);
+                this.Property(p => p.TotalAmount).HasPrecision(20, 4);
+            }
+        }
+        public class SalesReturnValidationEntityTypeConfiguration : EntityTypeConfiguration<SalesReturnValidation>
+        {
+            public SalesReturnValidationEntityTypeConfiguration()
+            {
+                this.HasKey<int>(f => f.SalesReturnValidationId);
+                this.ToTable("SalesReturnValidation", "CRM");
             }
         }
         #endregion

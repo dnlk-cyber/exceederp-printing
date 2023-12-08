@@ -517,7 +517,7 @@
                     {
                         columns.ForeignKey(c => c.CategoryCode, (System.Collections.IEnumerable)ViewData["InventoryCategories"], "ItemCategoryCode", "Name").Width(120);
                         columns.ForeignKey(e => e.SubCategoryCode, (System.Collections.IEnumerable)ViewData["InventoryCategories"], "ItemCategoryCode", "Name").Width(120);
-                        //columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                        columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
                         columns.ForeignKey(e => e.ServiceTypeId, (System.Collections.IEnumerable)ViewData["RepairTypes"], "RepairTypeId", "Name").Width(120);
                         columns.Bound(c => c.UnitAmount).Format("{0:N2}").Width(80);
                         columns.Bound(c => c.SubTotal).Title("Sub Total").Format("{0:N2}").Width(80);
@@ -588,7 +588,7 @@
                     {
                         columns.ForeignKey(c => c.CategoryCode, (System.Collections.IEnumerable)ViewData["InventoryCategories"], "ItemCategoryCode", "Name").Width(120);
                         columns.ForeignKey(e => e.SubCategoryCode, (System.Collections.IEnumerable)ViewData["InventoryCategories"], "ItemCategoryCode", "Name").Width(120);
-                        //columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                        columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
                         columns.ForeignKey(e => e.ServiceTypeId, (System.Collections.IEnumerable)ViewData["RepairTypes"], "RepairTypeId", "Name").Width(120);
                         columns.Bound(c => c.UnitAmount).Format("{0:N2}").Width(80);
                         columns.Bound(c => c.SubTotal).Title("Sub Total").Format("{0:N2}").Width(80);

@@ -1,0 +1,105 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM
+@using ExceedERP.Helpers.Common
+@using System.Collections
+@model ExceedERP.Core.Domain.CRM.SalesReturnLine
+<div class="k-edit-form-container">
+    <div class="editor-label">
+        @Html.LabelFor(model => model.PaymentType)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.PaymentType)
+            .OptionLabel("Select...")
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .HtmlAttributes(new { style = "width: 100%;" })
+            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(SalesReturnPaymentType)))
+            .Filter(FilterType.Contains)
+            .ValuePrimitive(true)
+            .Events(e =>
+            {
+                e.Change("onPaymentTypeChange");
+            })
+        )
+    </div>
+              
+    <div class="editor-label">
+        @Html.LabelFor(model => model.SalesReference)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.SalesReference)
+                .ValuePrimitive(true)
+                .HtmlAttributes(new { style = "width: 100%;" })
+                .OptionLabel("Select...")
+                .DataTextField("InvoiceNumber")
+                .DataValueField("InvoiceNumber")
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetInvoicesByCustomer", "CRMDataProvider", new { area = "CRM" })
+                    .Data("getSalesReturnHeaderInfo"));
+                })
+                .Events(e =>
+                {
+                    e.Change("onSalesReferenceChange");
+                })
+        )
+    </div> 
+    
+    <div class="editor-label">
+        @Html.LabelFor(model => model.ShipmentReference)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.ShipmentReference)
+                .ValuePrimitive(true)
+                .HtmlAttributes(new { style = "width: 100%;" })
+                .OptionLabel("Select...")
+                .DataTextField("SalesShipmentId")
+                .DataValueField("SalesShipmentId")
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetShipmentsByInvoiceNumber", "CRMDataProvider", new { area = "CRM" })
+                    .Data("getInvoiceReference"));
+                })
+                
+        )
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.ProductId)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().DropDownListFor(model => model.ProductId)
+                .ValuePrimitive(true)
+                .HtmlAttributes(new { style = "width: 100%;" })
+                .OptionLabel("Select...")
+                .DataTextField("Name")
+                .DataValueField("ProductId")
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetProductsByInvoiceNumberAndShipmentId", "CRMDataProvider", new { area = "CRM" })
+                    .Data("getSalesAndShipmentReference"));
+                })
+        )
+    </div>
+    <div class="editor-label">
+        @Html.LabelFor(model => model.UnitPrice)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
+                .HtmlAttributes(new { style = "width: 100%;" })
+        )
+    </div>       
+    <div class="editor-label">
+        @Html.LabelFor(model => model.Quantity)
+    </div>
+    <div class="editor-field">
+        @(Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                    .HtmlAttributes(new { style = "width: 100%;" })
+        )
+            
+    </div>
+</div>
+

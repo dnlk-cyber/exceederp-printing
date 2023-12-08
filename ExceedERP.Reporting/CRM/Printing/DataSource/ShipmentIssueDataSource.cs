@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.CRM.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System;
@@ -108,9 +109,9 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                         }
                         var branch = db.Branch.Find(currentShipment.BranchId);
                         var customer = db.OrganizationCustomers.Find(currentShipment.OrganizationCustomerId);
-                        var assignmentRecord = db.SalesPersonAssignments
-                                        .FirstOrDefault(sa => sa.SalesStoreId == currentShipment.StoreID &&
-                                        sa.UserName == currentShipment.OnlineApprovedBy);
+                        //var assignmentRecord = db.SalesPersonAssignments
+                        //                .FirstOrDefault(sa => sa.SalesStoreId == currentShipment.StoreID &&
+                        //                sa.UserName == currentShipment.OnlineApprovedBy);
                         var shipmentRecordToAdd = new ShipmentReportViewModel
                         {
                             Id = currentShipment.SalesShipmentId,
@@ -127,10 +128,10 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
                             ShipmentStatus = currentShipment.Status,
                             TrailerPlateNumber = currentShipment.TrailerPlateNo,
 
-                            RequestedBy = currentShipment.CreatedBy,
+                            RequestedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentShipment.CreatedBy)),
                             DateOfRequest = currentShipment.DateCreated?.ToString("dd/MM/yyyy"),
-                            ApprovedBy = currentShipment.OnlineApprovedBy,
-                            IssuedBy = assignmentRecord != null ? assignmentRecord.FullName : currentShipment.OnlineApprovedBy,
+                            ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentShipment.OnlineApprovedBy)),
+                            IssuedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(currentShipment.OnlineApprovedBy)),
                             DateOfApproval = currentShipment.OnlineApprovedTime != null ? currentShipment.OnlineApprovedTime.Value.ToString("dd/MM/yyyy") : "",
                             DateOfReceive = currentShipment.OnlineApprovedTime != null ? currentShipment.OnlineApprovedTime.Value.ToString("dd/MM/yyyy") : ""
                         };

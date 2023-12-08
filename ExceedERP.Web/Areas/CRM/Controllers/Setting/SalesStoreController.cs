@@ -16,7 +16,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
     [AuthorizeRoles(CRMRoles.CRMAdmin)]
     public class SalesStoreController : Controller
     {
-        private ExceedDbContext db = new ExceedDbContext();
+        private readonly ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {

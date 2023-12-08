@@ -5,15 +5,15 @@
       {
           //columns.Bound(c => c.SalesStoreId).Width(100);
           columns.ForeignKey(c => c.StoreCode, (System.Collections.IEnumerable)ViewData["InventoryStore"], "StoreCode", "Name")
-          .EditorTemplateName("StoreObject")
+          .EditorTemplateName("InventoryStoreSelector")
           .Title("Inventory Store")
           .Filterable(f =>
           {
               f.Multi(true);
               f.Search(true);
-              
-          })
-          .Width(150);
+
+          });
+          //.Width(150);
           columns.Bound(c => c.Description);
           columns.Bound(c => c.Type).EditorTemplateName("StoreTypeSelector");
           columns.Bound(c => c.Location);
@@ -85,5 +85,13 @@
                 $(this).find(".k-grid-delete").remove();
             }
         });
+    }
+    function onInventoryStoreChange(e) {
+        var ddl = this;
+        var inptTxt = $("#Description").val();
+        if (!inptTxt) {
+            $("#Description").val(ddl.text());
+            $("#Description").trigger("change");
+        }
     }
 </script>

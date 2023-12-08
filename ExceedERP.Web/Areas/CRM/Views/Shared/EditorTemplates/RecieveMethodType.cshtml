@@ -2,7 +2,9 @@
 @(Html.Kendo().DropDownListFor(model => model)
     .HtmlAttributes(new { @class = "form-control"  })
     .DataTextField("Name")
-    .DataValueField("Id").OptionLabel(" Select") 
+    .Filter(FilterType.Contains)
+    .DataValueField("Id")
+    .OptionLabel(" Select") 
     .DataSource(d => d.Read(r => r.Action("ReceiveMethodDDBind", "CRMDataProvider")))
     .ValuePrimitive(true))
 

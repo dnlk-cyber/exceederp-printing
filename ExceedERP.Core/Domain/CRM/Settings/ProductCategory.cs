@@ -10,16 +10,16 @@ namespace ExceedERP.Core.Domain.CRM
     {
         public int ProductCategoryId { get; set; }
 
-        [Display(Name ="Category Name")]
+        [Display(Name ="Sales Category Name")]
         [Required]
         public string Description { get; set; }
 
         [Display(Name ="Inventory Category")]
         public string InventoryCategoryCode { get; set; }
 
-        [Required]
-        public int Index { get; set; }
-
+        //[Required]
+        //public int Index { get; set; }
+        [Display(Name =("Parent"))]
         public string Parent { get; set; }
         [Required]
         public string SalesAccountCode { get; set; }

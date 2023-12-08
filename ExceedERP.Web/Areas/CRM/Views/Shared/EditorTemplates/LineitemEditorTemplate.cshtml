@@ -26,7 +26,7 @@
                               .DataSource(datasource =>
                               {
                                   datasource.Read(read => read.Action("GetStoreList", "CRMDataProvider").Data("getHeaderStoreId"))
-                                      .ServerFiltering(true);
+                                      .ServerFiltering(false);
                               })//.Events(e => e.Select("ClearValMsg"))
                     )
                     <div class="   alert-dismissable   alert-warning" id="StoreVal"></div>

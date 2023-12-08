@@ -38,11 +38,11 @@ namespace ExceedERP.Reporting.CRM.DataSource
                 int cId = int.Parse(customerId);
                 shipments = shipments.Where(o => o.OrganizationCustomerId == cId).ToList();
             }
-            //if(jobOrderNo != null)
-            //{
-            //    var reqNumbers = new HashSet<string>(_db.StoreRequisitions.Where(s => s.IsForMaintenance && s.JobOrderNo == jobOrderNo).Select(s => s.StoreRequisitionID.ToString()));
-            //    shipments = shipments.Where(s => s.Source == ShipmentSource.MaintenanceStoreRequisition && reqNumbers.Contains(s.StoreRequisitionNumber)).ToList();
-            //}
+            if(jobOrderNo != null)
+            {
+                var reqNumbers = new HashSet<string>(_db.StoreRequisitions.Where(s => s.IsForMaintenance && s.JobOrderNo == jobOrderNo).Select(s => s.StoreRequisitionID.ToString()));
+                shipments = shipments.Where(s => s.Source == ShipmentSource.MaintenanceStoreRequisition && reqNumbers.Contains(s.StoreRequisitionNumber)).ToList();
+            }
             var tempList = new List<SalesShipment>();
             tempList.AddRange(shipments);
             if (!string.IsNullOrEmpty(storeId))

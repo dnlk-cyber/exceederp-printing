@@ -5,10 +5,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
 using System;
 using System.Data.Entity;
-using System.IO;
 using System.Linq;
-using System.Web;
-using System.Web.Hosting;
 
 namespace ExceedERP.Helpers.CRM
 {

@@ -271,6 +271,9 @@
     <Compile Include="Domain\CRM\CustomerQueue\QueueType.cs" />
     <Compile Include="Domain\CRM\EquipmentInformation.cs" />
     <Compile Include="Domain\CRM\POS Integration View Models\PosItemViewModel.cs" />
+    <Compile Include="Domain\CRM\Refund\SalesReturn.cs" />
+    <Compile Include="Domain\CRM\Refund\SalesReturnLine.cs" />
+    <Compile Include="Domain\CRM\Refund\SalesReturnValidation.cs" />
     <Compile Include="Domain\CRM\SalesInvoiceOperationBase.cs" />
     <Compile Include="Domain\CRM\SalesPlanning\AnnualSalesPlan.cs" />
     <Compile Include="Domain\CRM\Sales\AdvancePayment.cs" />

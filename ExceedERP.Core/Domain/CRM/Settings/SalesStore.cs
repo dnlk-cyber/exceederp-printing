@@ -13,6 +13,8 @@ namespace ExceedERP.Core.Domain.CRM
 
         public string StoreCode { get; set; }
         public string Location { get; set; }
+
+        [Display(Name ="Sales Store Name")]
         public string Description { get; set; }
 
        
