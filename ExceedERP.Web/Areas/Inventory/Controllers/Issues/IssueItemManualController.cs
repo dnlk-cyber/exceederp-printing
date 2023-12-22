@@ -43,6 +43,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 UnitPrice = issueItem.UnitPrice,
                 Total = issueItem.Total,
                 WorkItemCode = issueItem.WorkItemCode,
+                ProductionJobNo = issueItem.ProductionJobNo,
                 AdditionalCost = issueItem.AdditionalCost,
 
 
@@ -95,6 +96,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ItemCategoryCode = issueItem.ItemCategoryCode,
                     ItemCode = issueItem.ItemCode,
                     WorkItemCode = issueItem.WorkItemCode,
+                    ProductionJobNo = issueItem.ProductionJobNo,
                     AdditionalCost = issueItem.AdditionalCost,
                     RequestedQuantity = issueItem.RequestedQuantity,
                     ApprovedQuantity = issueItem.ApprovedQuantity,
@@ -165,6 +167,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ItemCategoryCode = issueItem.ItemCategoryCode,
                     ItemCode = issueItem.ItemCode,
                     WorkItemCode = issueItem.WorkItemCode,
+                    ProductionJobNo = issueItem.ProductionJobNo,
                     AdditionalCost = issueItem.AdditionalCost,
                     RequestedQuantity = issueItem.RequestedQuantity,
                     ApprovedQuantity = issueItem.ApprovedQuantity,
