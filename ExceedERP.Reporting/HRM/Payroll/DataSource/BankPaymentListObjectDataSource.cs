@@ -80,18 +80,36 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                         {
                             var id =
                                 personEmployee
-                                    .EmployeeCode;
-                            var paymentAccount =
-                                payrolldatas.FirstOrDefault(x => x.EmployeeId == payrolldata.EmployeeId);
+                                    .EmployeeCode;                           
                             EmployeeInfo = new BankPaymentList();
                             EmployeeInfo.EmpID = id;
                             EmployeeInfo.EmpFullName = payrolldata.FullName;
                             EmployeeInfo.NetEarning = payrolldata.NetEarning;
 
-                            if (paymentAccount != null && paymentAccount.BankAccount != null)
+                            if (type == "BANK" && !string.IsNullOrEmpty(bank))
                             {
-                                EmployeeInfo.BankAccount = paymentAccount.BankAccount;
+                                int bankid = int.Parse(bank);
 
+                                var employeeBank = db.BankReferences
+                                                      .Where(x => x.BankId == bankid)
+                                                      .Where(x => x.Reference == payrolldata.EmployeeId.ToString())
+                                                      .Where(x => x.Type == BankAccountType.PAYROLL).FirstOrDefault();
+                                if (employeeBank != null)
+                                {
+                                    EmployeeInfo.BankAccount = employeeBank.AccountNumber;
+
+                                }
+                            }
+                            else
+                            {
+                                var paymentAccount =
+                                 payrolldatas.FirstOrDefault(x => x.EmployeeId == payrolldata.EmployeeId);
+
+                                if (paymentAccount != null && paymentAccount.BankAccount != null)
+                                {
+                                    EmployeeInfo.BankAccount = paymentAccount.BankAccount;
+
+                                }
                             }
                             var check = list.FirstOrDefault(x => x.EmpID == EmployeeInfo.EmpID);
 
