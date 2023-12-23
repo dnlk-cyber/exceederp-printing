@@ -158,13 +158,14 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                             + payrolldata.TotalFixedContribution
 
                             + payrolldata.TotalPenality
-                            + EmployeeInfo.Advance;
+                            //+ EmployeeInfo.Advance
+                            ;
 
 
 
                         EmployeeInfo.TotalDeduction = EmployeeInfo.OtherDeduction + EmployeeInfo.IncomeTax +
                                                       EmployeeInfo.Pension + EmployeeInfo.Provident +
-                                                      EmployeeInfo.TotalAbsent + EmployeeInfo.Loan +
+                                                      EmployeeInfo.TotalAbsent + EmployeeInfo.Loan + EmployeeInfo.Advance +
                                                       EmployeeInfo.SportFee + EmployeeInfo.SavingCredit +
                                                       EmployeeInfo.LabourUnion;
                         EmployeeInfo.NetPay = payrolldata.NetEarning;
