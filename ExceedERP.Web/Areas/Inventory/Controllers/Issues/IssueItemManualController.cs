@@ -67,7 +67,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             var exist = db.IssueItems.Where(x => x.IssueID == id)
              .Where(x => x.ItemCode == issueItem.ItemCode)
              .Where(x => x.ProductionJobNo == issueItem.ProductionJobNo)
-             .AsQueryable();
+             .ToList();
             if (exist.Any())
             {
                 ModelState.AddModelError("exist", "Item " + issueItem.ItemCode + " already exists");
@@ -130,11 +130,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         public ActionResult IssueItems_Update([DataSourceRequest]DataSourceRequest request, IssueItem issueItem, int id)
         {
 
-            var exist = db.IssueItems.Where(x => x.IssueID == id)
+            var exist = db.IssueItems.Where(x => x.IssueID == issueItem.IssueID)
                 .Where(x => x.IssueItemID != issueItem.IssueItemID)
           .Where(x => x.ItemCode == issueItem.ItemCode)
           .Where(x => x.ProductionJobNo == issueItem.ProductionJobNo)
-          .AsQueryable();
+          .ToList();
             if (exist.Any())
             {
                 ModelState.AddModelError("exist", "Item " + issueItem.ItemCode + " already exists");
