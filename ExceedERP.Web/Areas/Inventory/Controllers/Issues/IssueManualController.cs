@@ -611,7 +611,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     InventoryItem stockItem = _db.InventoryItems.Find(itemCode);
                     int storeBranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storecode);
                     #region stock
-                    var branchItem = _db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId).FirstOrDefault(x => x.ItemCode == i.ItemCode);
+                    //var branchItem = _db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId).FirstOrDefault(x => x.ItemCode == i.ItemCode);
                     var storeItem = _db.StoreItemAssignments.FirstOrDefault(x => x.StoreCode == storecode && x.ItemCode == itemCode);
 
                     if (storeItem != null)
@@ -649,13 +649,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                         #endregion
 
                     }
-                    if (branchItem != null)
-                    {
-                        branchItem.Balance = branchItem.Balance + i.IssuedQuantity;
-                        _db.Entry(branchItem).State = EntityState.Modified;
-                        //_db.SaveChanges();
+                    //if (branchItem != null)
+                    //{
+                    //    branchItem.Balance = branchItem.Balance + i.IssuedQuantity;
+                    //    _db.Entry(branchItem).State = EntityState.Modified;
+                    //    //_db.SaveChanges();
 
-                    }
+                    //}
                     if (stockItem != null)
                     {
                         stockItem.Balance = stockItem.Balance + i.IssuedQuantity;
