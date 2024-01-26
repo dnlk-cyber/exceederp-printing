@@ -166,7 +166,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             GetNationality();
             var skillTypes = db.Lookups.Where(l => l.LookupType == LookUpTypes.SKILL_TYPE);
             ViewData["SkillTypes"] = skillTypes;
-            CheckEmployeeRetirment();
+            //CheckEmployeeRetirment();
         }
         public void CheckEmployeeRetirment()
         {
