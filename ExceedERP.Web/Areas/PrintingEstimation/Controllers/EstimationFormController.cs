@@ -73,6 +73,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             
             IQueryable<EstimationForm> estimationforms = db.EstimationForms;
             DataSourceResult result = estimationforms.ToDataSourceResult(request, estimationForm => new {
+                
                 EstimationFormId = estimationForm.EstimationFormId,
                 CustomerId = estimationForm.CustomerId,
                 Date = estimationForm.Date,
@@ -120,7 +121,9 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 db.EstimationForms.Add(entity);
                 db.SaveChanges();
                 estimationForm.EstimationFormId = entity.EstimationFormId;
-
+                entity.JobNumber = entity.EstimationFormId.ToString();
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
             }
 
             return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));

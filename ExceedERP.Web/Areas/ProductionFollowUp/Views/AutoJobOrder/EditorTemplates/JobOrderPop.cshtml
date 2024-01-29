@@ -36,7 +36,7 @@
                                         @Html.LabelFor(model => model.JobNo, htmlAttributes: new { @class = "control-label col-sm-8" })
                                         <div>
 
-                                            @(Html.Kendo().TextBoxFor(model => model.JobNo).Enable(false))
+                                            @(Html.Kendo().TextBoxFor(model => model.JobNo)@*.Enable(false)*@)
                                             @Html.ValidationMessageFor(model => model.JobNo, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
@@ -46,13 +46,13 @@
                                         @Html.LabelFor(model => model.JT, htmlAttributes: new { @class = "control-label col-sm-8" })
                                         <div>
 
-                                            @(Html.Kendo().DropDownTreeFor(model => model.JT).Enable(false)
+                                            @(Html.Kendo().DropDownTreeFor(model => model.JT)@*.Enable(false)*@
 
-                                                                                                                                                                        .ValuePrimitive(true)
-                                                                                                                                                                        .Placeholder("--select--")
-                                                                                                                                                                        .Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+                                                    .ValuePrimitive(true)
+                                                    .Placeholder("--select--")
+                                                    .Events(ev => ev.Change("onSelectLoading").Change("onChange"))
                                                                                                                                                                         
-                                                                                                                                                                        .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
+                                                    .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
                                             @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
                                         </div>
@@ -139,17 +139,17 @@
 
                                         <div id="Mega">
 
-                                            @(Html.Kendo().DropDownListFor(model => model.MachineId)
-                                                                                                                                                                        .ValuePrimitive(true)
-                                                                                                                                                                        .OptionLabel("Select Machines...")
-                                                                                                                                                                        .DataTextField("Name")
-                                                                                                                                                                        .DataValueField("Code")
-                                                                                                                                                                        .Filter("contains")
-                                                                                                                                                                        .DataSource(dataSource =>
-                                                                                                                                                                        {
-                                                                                                                                                                            dataSource.Read(read => read.Action("GetAllFixedAssets", "ProductionDataProvider", new { area = "ProductionFollowUp" }))
-                                                                                                                                                                            .ServerFiltering(false);
-                                                                                                                                                                        }))
+                                            @(Html.Kendo().DropDownListFor(model => model.MachineId)@*.Enable(false)*@
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select Machines...")
+                                                    .DataTextField("Name")
+                                                    .DataValueField("Code")
+                                                    .Filter("contains")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetAllFixedAssets", "ProductionDataProvider", new { area = "ProductionFollowUp" }))
+                                                        .ServerFiltering(false);
+                                                    }))
                                             @Html.ValidationMessageFor(model => model.MachineId, "", new { @class = "text-danger" })
                                         </div>
                                     </div>

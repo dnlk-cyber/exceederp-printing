@@ -21,6 +21,6 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
 
         public string Name { get; set; }
 
-        public String Description { get; set; }
+        public string Description { get; set; }
     }
 }

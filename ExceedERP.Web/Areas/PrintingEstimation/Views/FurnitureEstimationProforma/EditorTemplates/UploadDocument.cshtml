@@ -1,0 +1,45 @@
+﻿@using TradeMarketSystem.Core.Model.InformalTrade.InformalTradeCommon 
+
+@using (Html.BeginForm("UploadDocument", "MerchantProfiles", FormMethod.Post,   new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+    <fieldset>
+       
+        <div class="row" style="margin-left:10px;margin-right:50px;">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    @Html.TextBox("file", "", new { type = "file", accept = ".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf", onchange = "validateDocFileType()", required = "true" })
+
+                    <br />
+                    @*@Html.DropDownList("FileType",
+        EnumHelper.GetSelectList(typeof(TradeMarketSystem.Core.Model.InformalTrade.InformalTradeCommon.FileType)),
+        "--Select File Type--",
+        new { @class = "form-control", required = "true" })*@
+
+                    @Html.DropDownList("FileType",ViewBag.FileType as SelectList,"--Select--", new { @class = "form-control", required = "true" })
+
+
+                </div>
+                <div class="col-md-2"></div>
+         </div>
+            <br />
+     
+        <div style="float:right" class="col-md-10">
+            <input id="uploadBut" type="submit" class="fa fa-upload btn btn-primary" value="Upload" />
+        </div>
+
+    </fieldset>
+}
+
+
+<style>
+
+    .k-grid-update {
+        display: none;
+    }
+
+    .k-grid-cancel {
+        display: none;
+    }
+</style>

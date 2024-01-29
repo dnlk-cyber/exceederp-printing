@@ -20,7 +20,7 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Display(Name ="Job Type")]
         public int  JobTypeId { get; set; }
         public string  JT { get; set; }
-        [Required]
+        [Display(Name = "Job Number")]
         public string JobNumber { get; set; }
         [Required]
         public decimal Quantity { get; set; }

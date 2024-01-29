@@ -67,7 +67,8 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                         finishedQuantity = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.TotalPrice);
                     }
                         var jobCardItems = new List<JobOrderCardItem>();
-                        var materialCosts =db.IssueItems.Where(q => q.ProductionJobNo == jobOrder.JobNo).ToList();
+                      //  var materialCosts =db.IssueItems.Where(q => q.ProductionJobNo == jobOrder.JobNo).ToList();
+                        var materialCosts =db.IssueItems/*.Where(q => q.ProductionJobNo == jobOrder.JobNo)*/.ToList();
                     decimal accTotal = 0;
                         foreach(var material in materialCosts)
                         {
@@ -82,7 +83,7 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                             jobCardItem.Month = issueReq.IssueDate.ToString("MMMM");
                         }
                            
-                            jobCardItem.Reference = material.ProductionJobNo;
+                            //jobCardItem.Reference = material.ProductionJobNo;
                             jobCardItem.MaterialQty = material.IssuedQuantity;
                             jobCardItem.Date = issueReq.IssueDate.Day.ToString();
                             jobCardItem.WorkingHour = 0;
@@ -99,9 +100,9 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
                             var jobCardItem = new JobOrderCardItem();
                             jobCardItem.CostCenter = db.GLChartOfAccountCostCenters.Find(labour.CostCenter)?.Values;
                             jobCardItem.Year = db.GLFiscalYears.Find(labour.GlFiscalYearId)?.Name;
-                        year = jobCardItem.Year;
+                            year = jobCardItem.Year;
 
-                        jobCardItem.Month = db.GLPeriods.Find(labour.GLPeriodId)?.Name;
+                            jobCardItem.Month = db.GLPeriods.Find(labour.GLPeriodId)?.Name;
                             jobCardItem.Reference = labour.Reference;
                             jobCardItem.MaterialQty = 0;
                             jobCardItem.WorkingHour = 0;

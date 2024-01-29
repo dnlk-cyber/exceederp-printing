@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.PrintingEstimation;
+using ExceedERP.Core.Domain.Furniture;
+using ExceedERP.Core.Domain.PrintingEstimation;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    #region printing Estimation
     class OverallCostEntityConfiguration : EntityTypeConfiguration<OverallCost>
     {
         public OverallCostEntityConfiguration()
@@ -50,5 +52,48 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(t => t.PrintingStepId);
         }
     }
-    
+    #endregion
+    #region Furniture Estimations
+        class FurnitureCategoryEntityConfiguration : EntityTypeConfiguration<FurnitureCategory>
+        {
+            public FurnitureCategoryEntityConfiguration()
+            {
+                this.ToTable("FurnitureCategories", "PrintingEstimation");
+                this.HasKey<int>(t => t.FurnitureCategoryId);
+            }
+        }
+        class FurnitureCostEstimationEntityConfiguration : EntityTypeConfiguration<FurnitureCostEstimation>
+        {
+            public FurnitureCostEstimationEntityConfiguration()
+            {
+                this.ToTable("FurnitureCostEstimations", "PrintingEstimation");
+                this.HasKey<int>(t => t.FurnitureCostEstimationId);
+            }
+        }
+        class FurnitureMaterialCostEntityConfiguration : EntityTypeConfiguration<FurnitureMaterialCost>
+        {
+            public FurnitureMaterialCostEntityConfiguration()
+            {
+                this.ToTable("FurnitureMaterialCosts", "PrintingEstimation");
+                this.HasKey<int>(t => t.FurnitureMaterialCostId);
+            }
+        }
+        class DirectLaborCostEntityConfiguration : EntityTypeConfiguration<DirectLaborCost>
+        {
+            public DirectLaborCostEntityConfiguration()
+            {
+                this.ToTable("DirectLaborCosts", "PrintingEstimation");
+                this.HasKey<int>(t => t.DirectLaborCostId);
+            }
+        }
+        class FurnitureOverallCostEntityConfiguration : EntityTypeConfiguration<FurnitureOverallCost>
+        {
+            public FurnitureOverallCostEntityConfiguration()
+            {
+                this.ToTable("FurnitureOverallCosts", "PrintingEstimation");
+                this.HasKey<int>(t => t.FurnitureOverallCostId);
+            }
+        }
+    #endregion
+
 }

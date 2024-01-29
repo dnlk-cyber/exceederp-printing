@@ -44,8 +44,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         }
         public ActionResult MaterialJobOrders_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
-            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q => q.EstimationFormId == estId);
+            //var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
+            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q => q.JobId == id);
             DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
                 MaterialCostId = materialCost.MaterialCostId,
                 EstimationFormId = materialCost.EstimationFormId,
@@ -68,7 +68,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             if (ModelState.IsValid)
             {
-                var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId&&q.EstimationFormId==parentId).ToList();
+                var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId&&q.JobId==parentId).ToList();
                 if (invs.Any())
                 {
                     ModelState.AddModelError("403", "Inventory already available");
@@ -76,8 +76,9 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
                 var entity = new MaterialCost
                 {
-                    //MaterialCostId = materialCost.MaterialCostId,
+                    MaterialCostId = materialCost.MaterialCostId,
                     EstimationFormId = parentId,
+                    JobId = parentId,
                     InventoryCategoryId = materialCost.InventoryCategoryId,
                     InventoryId = materialCost.InventoryId,
                     Quantity = materialCost.Quantity,
@@ -101,12 +102,23 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             if (ModelState.IsValid)
             {
-                var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
-                var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId&&q.EstimationFormId== estId).ToList();
-                if (invs.Any())
+                int estId = 0;
+                var job = db.Jobs.Find(id);
+                if(job != null)
                 {
-                    ModelState.AddModelError("403", "Inventory already available");
+                    var performa = db.Proformas.Find(job.ProformaId);
+                    if(performa != null)
+                    {
+                        estId = (int)performa.EstimationFormId;
+                       // var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
+                        var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId && q.EstimationFormId == performa.EstimationFormId).ToList();
+                        if (invs.Any())
+                        {
+                            ModelState.AddModelError("403", "Inventory already available");
+                        }
+                    }
                 }
+                
                 materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
                 var entity = new MaterialCost
                 {

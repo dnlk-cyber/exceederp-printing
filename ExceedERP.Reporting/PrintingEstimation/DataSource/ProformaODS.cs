@@ -34,9 +34,9 @@ namespace ExceedERP.Reporting.PrintingEstimation.DataSource
                     pro.TermsOfPayment = proforma.PaymentTerm.ToString() ;
                     pro.ValidityDate = proforma.ValidityDate?.ToString("MM-dd-yyyy");
                     pro.DeliveryDate = proforma.ValidityDate?.ToString("MM-dd-yyyy");
-                    pro.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CreatedBy));
-                    pro.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CheckedBy));
-                    pro.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.ApprovedBy));
+                    //pro.CreatedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CreatedBy));
+                    //pro.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.CheckedBy));
+                    //pro.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proforma.ApprovedBy));
                     var custDetail = db.OrganizationCustomers.Find(proforma.CustomerId);
 
                     if(custDetail!=null)

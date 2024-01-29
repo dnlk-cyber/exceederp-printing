@@ -1,5 +1,4 @@
-﻿using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using System;

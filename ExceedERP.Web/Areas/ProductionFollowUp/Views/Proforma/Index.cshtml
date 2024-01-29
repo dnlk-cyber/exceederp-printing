@@ -1,85 +1,86 @@
 ﻿
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.Proforma>()
-                                  .Name("ProformaGrid")
-                                  .Columns(columns =>
-                                  {
-                                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
-                                            .EditorTemplateName("CustomerEditor")
-                                           .Width("110px")
-                                           .Title("Customer");
-                                      columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
-                                      columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "EstimationFormId", "JobNumber")
-                                                // .EditorTemplateName("PaymentTermForeignKey")
-                                                .Title("Est. No").Width(100);
-                                      columns.Bound(c => c.InvoiceNo).Width(100).Title("Invoice No");
-                                      columns.Bound(c => c.InvoiceDate).Width(110).EditorTemplateName("Date").Title("Invoice Date").Format("{0:yyyy-MM-dd}");
-                                      columns.Bound(c => c.DeliveryDate).Width(110).EditorTemplateName("Date").Title("Delivery Date").Format("{0:yyyy-MM-dd}");
-                                      columns.Bound(c => c.ValidityDate).Width(110).EditorTemplateName("Date").Title("Validity Date").Format("{0:yyyy-MM-dd}");
-                                      //  columns.Bound(c => c.CustomerName).Width(90).Title("Customer Name");
-                                      // columns.Bound(c => c.ContactName).Width(90).Title("Contact Name");
-                                      //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
-                                      columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
-                                      columns.Command(command =>
-                                      {
-                                          command.Edit();
-                                          command.Destroy();
-                                      }).Width(200);
-                                  })
-                                  .ToolBar(toolbar =>
-                                  {
-                                      toolbar.Create();
-                                  })
-                                  .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                  .TemplateName("ProformaTemplate")
-                                  .Window(w=>w.Width(900).Title("Proforma Form")))
-                                 .Pageable(pageable => pageable
-                                                     .Input(true)
-                                                     .Numeric(false)
-                                                     .Refresh(true)
-                                                     .PageSizes(true)
-                                                     .ButtonCount(5))
-                              .Filterable()
-                               .Scrollable(h => h.Height(500))
-                               .Events(ev=>ev.Edit("EnableDisableEstimation").Save("onSave").Save("onSave"))
-                                  .DataSource(dataSource => dataSource
-                                      .Ajax()
-                                      .ServerOperation(true)
-                                           .Events(events =>
-                                           {
-                                               events.Error("error_handler(\"ProformaGrid\")");
-                                               events.RequestStart("onRequestStart(\"ProformaGrid\")");
-                                               events.RequestEnd("onRequestEnd(\"ProformaGrid\")");
-                                           })
+        .Name("ProformaGrid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+                  .EditorTemplateName("CustomerEditor")
+                 .Width("110px")
+                 .Title("Customer");
+            columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
+            columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "EstimationFormId", "JobNumber")
+                      // .EditorTemplateName("PaymentTermForeignKey")
+                      .Title("Est. No").Width(100);
+            columns.Bound(c => c.InvoiceNo).Width(100).Title("Invoice No");
+            columns.Bound(c => c.InvoiceDate).Width(110).EditorTemplateName("Date").Title("Invoice Date").Format("{0:yyyy-MM-dd}");
+            columns.Bound(c => c.DeliveryDate).Width(110).EditorTemplateName("Date").Title("Delivery Date").Format("{0:yyyy-MM-dd}");
+            columns.Bound(c => c.ValidityDate).Width(110).EditorTemplateName("Date").Title("Validity Date").Format("{0:yyyy-MM-dd}");
+            //  columns.Bound(c => c.CustomerName).Width(90).Title("Customer Name");
+            // columns.Bound(c => c.ContactName).Width(90).Title("Contact Name");
+            //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
+            columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
+            columns.Command(command =>
+            {
+                command.Edit();
+                command.Destroy();
+            }).Width(200);
 
-                                      .Model(model => model.Id(p => p.ProformaId))
-                                      .Read(read => read.Action("Proformas_Read", "Proforma"))
-                                      .Create(create => create.Action("Proformas_Create", "Proforma"))
-                                      .Update(update => update.Action("Proformas_Update", "Proforma"))
-                                      .Destroy(destroy => destroy.Action("Proformas_Destroy", "Proforma"))
-                                  .Sort(sort =>
-                                        {
-                                            sort.Add(e => e.ProformaId).Descending();
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+        .TemplateName("ProformaTemplate")
+        .Window(w=>w.Width(900).Title("Proforma Form")))
+        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+    .Filterable()
+    .Scrollable(h => h.Height(500))
+    .Events(ev=>ev.Edit("EnableDisableEstimation").Save("onSave").Save("onSave"))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(true)
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"ProformaGrid\")");
+                    events.RequestStart("onRequestStart(\"ProformaGrid\")");
+                    events.RequestEnd("onRequestEnd(\"ProformaGrid\")");
+                })
 
-                                        })
-                                      )
-                                  .ClientDetailTemplateId("Detail")
+                .Model(model => model.Id(p => p.ProformaId))
+                .Read(read => read.Action("Proformas_Read", "Proforma"))
+                .Create(create => create.Action("Proformas_Create", "Proforma"))
+                .Update(update => update.Action("Proformas_Update", "Proforma"))
+                .Destroy(destroy => destroy.Action("Proformas_Destroy", "Proforma"))
+            .Sort(sort =>
+            {
+                sort.Add(e => e.ProformaId).Descending();
+
+            })
+                )
+            .ClientDetailTemplateId("Detail")
 )
 
 
 <script id="Detail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                           .Name("tabstrip2_#=ProformaId#")
-                                          .SelectedIndex(0)
-                                          .Items(items =>
-                                          {
+            .Name("tabstrip2_#=ProformaId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
 
-                                              items.Add().Text("Items").Content(
+               items.Add().Text("Items").Content(
                             @<text>
 
-                                <a href='@Url.Action("ProformaPrint", "ReportProductionFollowUp")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
+                                <a href='@Url.Action("ProformaPrint", "ProductionFollowUpReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
 
                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
-                                                                       .Name("ProformaItems#=ProformaId#")
+                                                           .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>
                                                            {
                                                               // columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(100);

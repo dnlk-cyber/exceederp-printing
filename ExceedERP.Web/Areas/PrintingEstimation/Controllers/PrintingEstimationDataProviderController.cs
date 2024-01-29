@@ -53,6 +53,17 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             });
             return Json(stores, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetFurnitureCategory()
+        {
+            var category = _db.FurnitureCategories.ToList().Select(s => new
+            {
+
+                s.FurnitureCategoryId,
+                s.Name
+
+            });
+            return Json(category, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetItemDetail(string itemCode, string storeCode)
         {
             var item = _db.StoreItemAssignments.FirstOrDefault(q => q.StoreCode == storeCode && q.ItemCode == itemCode);

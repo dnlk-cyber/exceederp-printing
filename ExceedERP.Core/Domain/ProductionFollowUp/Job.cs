@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
     public class Job : TrackUserSettingOperation
@@ -17,7 +18,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Recived Date")]
         public DateTime Time { get; set; }
-
         public bool hv { get; set; }
         public bool IsExistingCustomer { get; set; }
         [Display(Name = "Proforma ")]
@@ -114,8 +114,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Finishing Workflow")]
         public string FinishingWorkflow { get; set; }
         [Display(Name = "Machine")]
-        public int? MachineId { get; set; }
-       
+        public int? MachineId { get; set; }      
         [Display(Name = "Approved By")]
         public string ApprovedBy { get; set; }
         public string CheckedBy { get; set; }

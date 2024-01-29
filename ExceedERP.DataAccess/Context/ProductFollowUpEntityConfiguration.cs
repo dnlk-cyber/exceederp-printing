@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;

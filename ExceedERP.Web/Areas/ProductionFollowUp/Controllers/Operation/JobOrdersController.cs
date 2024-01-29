@@ -46,7 +46,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
            
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
-            var costCenter = db.BranchCostCenter;
+            //var costCenter = db.BranchCostCenter;
             var branches = db.Branch;
 
             var inventoryPeriods = db.InventoryPeriods;
@@ -81,14 +81,14 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
 
-            var selectedcostCenter = costCenter.Select(
-                i => new
-                {
-                    Name = i.MainCompanyStructure.Name,
-                    Code = i.OrgStructureId
-                }).AsQueryable();
+            //var selectedcostCenter = costCenter.Select(
+            //    i => new
+            //    {
+            //        Name = i.MainCompanyStructure.Name,
+            //        Code = i.OrgStructureId
+            //    }).AsQueryable();
 
-            ViewData["costCenters"] = selectedcostCenter;
+            //ViewData["costCenters"] = selectedcostCenter;
             
             ViewBag.data = GetData();
 
@@ -102,18 +102,18 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var items = db.InventoryItems;
             var stores = db.InventoryStores;
             var branches = db.Branch;
-            var costCenter = db.BranchCostCenter;
-            var selectedcostCenter = costCenter.Select(
-              i => new
-              {
-                  Name = i.MainCompanyStructure.Name,
-                  Code = i.OrgStructureId
-              }).AsQueryable();
+           // var costCenter = db.BranchCostCenter;
+            //var selectedcostCenter = costCenter.Select(
+            //  i => new
+            //  {
+            //      Name = i.MainCompanyStructure.Name,
+            //      Code = i.OrgStructureId
+            //  }).AsQueryable();
 
             var inventoryPeriods = db.InventoryPeriods;
             
 
-            ViewData["costCenters"] = selectedcostCenter;
+            //ViewData["costCenters"] = selectedcostCenter;
             ViewData["stores"] = stores;
             ViewData["Branches"] = branches;
             var selecteditems = items.Select(

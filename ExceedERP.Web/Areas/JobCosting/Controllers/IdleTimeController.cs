@@ -22,8 +22,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
         public ActionResult Index()
         {
-            var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
-            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
+            var glsegmentId = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter)?.GLSegmentSetupId ?? 0;
+
+            var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegmentId).AsQueryable();
             ViewData["CostCenters"] = costcenters.ToList();
 
             ViewData["ControllableIdleTimeCategories"] = db.IdleTimeCategories.Where(q=>q.IsControllable ==true).ToList();

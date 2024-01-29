@@ -119,6 +119,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StoreReturns_Create([DataSourceRequest]DataSourceRequest request, StoreReturn storeReturn,int id)
         {
+
             if (storeReturn.GLPeriodId != 0)
             {
                 var inventoryPeriod = db.InventoryPeriods.Find(storeReturn.GLPeriodId);

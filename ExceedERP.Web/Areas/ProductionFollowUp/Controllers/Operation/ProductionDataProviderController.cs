@@ -20,12 +20,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             return View();
         }
-        
-              public ActionResult GetAllFixedAssets()
-                    {
-                        var data = db.FixedAssetSubCategoryNames.ToList();
-                        return Json(data.Select(s => new { Code = s.FixedAssetSubCategoryNameId, Name = s.Name }), JsonRequestBehavior.AllowGet);
-                    }
+
+        public ActionResult GetAllFixedAssets()
+        {
+            var data = db.FixedAssetSubCategoryNames.ToList();
+            return Json(data.Select(s => new { Code = s.FixedAssetSubCategoryNameId, Name = s.Name }), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetAllProductionCustomerTypes()
         {
             var data = db.ProductionCustomerTypes;

@@ -362,6 +362,10 @@
     <Compile Include="Migrations\202312080750565_crmupgradingmig.Designer.cs">
       <DependentUpon>202312080750565_crmupgradingmig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202401291229474_prodestimationupgrade.cs" />
+    <Compile Include="Migrations\202401291229474_prodestimationupgrade.Designer.cs">
+      <DependentUpon>202401291229474_prodestimationupgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -590,6 +594,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202312080750565_crmupgradingmig.resx">
       <DependentUpon>202312080750565_crmupgradingmig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202401291229474_prodestimationupgrade.resx">
+      <DependentUpon>202401291229474_prodestimationupgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

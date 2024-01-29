@@ -98,6 +98,7 @@ using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
+using ExceedERP.Core.Domain.Furniture;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1520,12 +1521,23 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
 
+            #region  Estimation
             #region Printing Estimation
             modelBuilder.Configurations.Add(new Context.PrintingStepEntityConfiguration());
             modelBuilder.Configurations.Add(new Context.EstimationFormEntityConfiguration());
             modelBuilder.Configurations.Add(new Context.MaterialCostEntityConfiguration());
             modelBuilder.Configurations.Add(new Context.LaborCostEntityConfiguration());
             modelBuilder.Configurations.Add(new Context.OverallCostEntityConfiguration());
+            #endregion
+            #region Furniture
+            modelBuilder.Configurations.Add(new Context.FurnitureCategoryEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.FurnitureCostEstimationEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.FurnitureMaterialCostEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.DirectLaborCostEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.FurnitureOverallCostEntityConfiguration());
+            //modelBuilder.Configurations.Add(new Context.OverallCostEntityConfiguration());
+
+            #endregion
             #endregion
 
             #region Production Follow UP Entity Configuration
@@ -3556,12 +3568,22 @@ namespace ExceedERP.DataAccess.Context
 
         #endregion
 
+        #region  Estimation
         #region Printimg Estimation
         public DbSet<PrintingStep> PrintingSteps { get; set; }
         public DbSet<EstimationForm> EstimationForms { get; set; }
         public DbSet<MaterialCost> MaterialCosts { get; set; }
         public DbSet<LaborCost> LaborCosts { get; set; }
         public DbSet<OverallCost> OverallCosts { get; set; }
+        #endregion
+        #region Furniture Estimation
+        public DbSet<FurnitureCategory> FurnitureCategories { get; set; }
+        public DbSet<FurnitureCostEstimation> FurnitureCostEstimations { get; set; }
+        public DbSet<DirectLaborCost> DirectLaborCosts { get; set; }
+        public DbSet<FurnitureMaterialCost> FurnitureMaterialCosts { get; set; }
+        public DbSet<FurnitureOverallCost> FurnitureOverallCosts { get; set; }
+
+        #endregion
         #endregion
         #region Production Follow UP
         public DbSet<YearlyProductionPlan> YearlyProductionPlans { get; set; }

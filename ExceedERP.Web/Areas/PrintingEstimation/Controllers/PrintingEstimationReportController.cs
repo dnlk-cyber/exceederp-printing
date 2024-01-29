@@ -14,7 +14,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             ViewBag.Id = id;
             return View();
         }
-        public ActionResult ProformaPrint(int id)
+        public ActionResult ProformaPrint(int id=5)
         {
             ViewBag.id = id;
             return View();

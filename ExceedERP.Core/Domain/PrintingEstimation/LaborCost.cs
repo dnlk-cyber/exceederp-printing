@@ -22,8 +22,6 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         public int EstimationFormId { get; set; }
         public EstimationForm EstimationForm { get; set; }
         public int PrintingStepId { get; set; }
-
-
         public PrintingStep PrintingStep { get; set; }
         [Required]
         public decimal WorkingTime { get; set; }

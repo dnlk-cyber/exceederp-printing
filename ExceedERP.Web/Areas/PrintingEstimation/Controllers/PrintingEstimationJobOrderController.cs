@@ -25,19 +25,29 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
         public ActionResult Index()
         {
-            ViewData["Proforma"] = db.Proformas.ToList();
-            ViewData["JobType"] = db.JobCategories.Select(s => new {
-                JobTypeId = s.JobCategoryId,
-                type = s.HaveParent ? db.JobCategories.Where(q => q.JobCategoryId == s.ParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            
+            ViewBag.Proforma = db.Proformas.Select(s => new
+            {
+                Text = s.BrandName,
+                Value = s.ProformaId
             }).ToList();
+
+            ViewData["JobType"] = db.JobCategories.Select(s => new
+            {
+                Value = s.JobCategoryId,
+                Text = s.HaveParent ? db.JobCategories.Where(q => q.JobCategoryId == s.ParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            }).ToList();
+
             ViewData["CustomerTypes"] = db.ProductionCustomerTypes.Select(s => new {
                 Code = s.ProductionCustomerTypeId,
                 Name = s.Name
             }).ToList();
+
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
             }).ToList();
+
             ViewData["Machines"] = db.Machines.Select(s => new {
                 Code = s.MachineId,
                 Name = s.MachineName
@@ -46,7 +56,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
-            var costCenter = db.BranchCostCenter;
+            var costCenter = db.OrgBranchUserMappings;
             var branches = db.Branch;
 
             var inventoryPeriods = db.InventoryPeriods;
@@ -81,14 +91,14 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
 
-            var selectedcostCenter = costCenter.Select(
-                i => new
-                {
-                    Name = i.MainCompanyStructure.Name,
-                    Code = i.OrgStructureId
-                }).AsQueryable();
+            //var selectedcostCenter = costCenter.Select(
+            //    i => new
+            //    {
+            //        Name = i.MainCompanyStructure.Name,
+            //        Code = i.OrgStructureId
+            //    }).AsQueryable();
 
-            ViewData["costCenters"] = selectedcostCenter;
+            //ViewData["costCenters"] = selectedcostCenter;
 
             ViewBag.data = GetData();
 
@@ -102,18 +112,18 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
             var items = db.InventoryItems;
             var stores = db.InventoryStores;
             var branches = db.Branch;
-            var costCenter = db.BranchCostCenter;
-            var selectedcostCenter = costCenter.Select(
-              i => new
-              {
-                  Name = i.MainCompanyStructure.Name,
-                  Code = i.OrgStructureId
-              }).AsQueryable();
+            //var costCenter = db.BranchCostCenter;
+            //var selectedcostCenter = costCenter.Select(
+            //  i => new
+            //  {
+            //      Name = i.MainCompanyStructure.Name,
+            //      Code = i.OrgStructureId
+            //  }).AsQueryable();
 
             var inventoryPeriods = db.InventoryPeriods;
             
 
-            ViewData["costCenters"] = selectedcostCenter;
+            //ViewData["costCenters"] = selectedcostCenter;
             ViewData["stores"] = stores;
             ViewData["Branches"] = branches;
             var selecteditems = items.Select(

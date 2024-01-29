@@ -1,4 +1,4 @@
-﻿@using ExceedERP.Core.Domain.ProductionFollowUp
+@using ExceedERP.Core.Domain.ProductionFollowUp
 @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser)
@@ -31,30 +31,31 @@
             <ul class="submenu">
                 @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser))
                 {
-                <li id="productionFollowUp00100100871" class="actionlinlk">
-                    @Html.ActionLink("Proforma", "Index", "Proforma", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                </li>
+                    <li id="productionFollowUp00100100871" class="actionlinlk">
+                        @Html.ActionLink("Proforma", "Index", "Proforma", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    </li>
                 }
                 @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser))
                 {
-                <li id="productdfionFollowUp00100100871" class="actionlinlk">
-                    @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                </li>
-                <li id="productdfionFollowUp00100100871" class="actionlinlk">
-                    @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                </li>
+                    <li id="productdfionFollowUp00100100871" class="actionlinlk">
+                        @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="productdfionFollowUp00100100871" class="actionlinlk">
+                        @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    </li>
                 }
                 @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser))
                 {
-                <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
-                    @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                </li>
+                    <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
+                        @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    </li>
                 }
                 @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser))
                 {
-                <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
-                    @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                </li>
+                    <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
+                        @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    </li>
+                    
                 }
             </ul>
         </li>
@@ -143,7 +144,7 @@
                     @Html.ActionLink("Production Plan", "Index", "ProductionYearlyPlan", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">
-                    @Html.ActionLink("Yearly Production Plan", "Index", "YearlyProductionPlan", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Yearly Production Plan", "Index", "YearlyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">
                     @Html.ActionLink("Monthly Production Plan", "Index", "MonthlyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>

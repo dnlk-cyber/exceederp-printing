@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace ExceedERP.Core.Domain.PrintingEstimation
 {
   public class MaterialCost: TrackUserSettingOperation
@@ -30,7 +31,7 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         public decimal Quantity { get; set; }
         [Required]
         public decimal UnitPrice { get; set; }
-     [ReadOnly(true)]
+        [ReadOnly(true)]
         public decimal TotalPrice { get; set; }
         [NotMapped]
         public decimal Balance { get; set; }

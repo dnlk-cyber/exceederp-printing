@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -159,7 +158,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Job> jobs = db.Jobs.Where(q=>q.IsApproved==true&&q.hv);
+            IQueryable<Job> jobs = db.Jobs/*.Where(q=>q.IsApproved==true&&q.hv)*/;
             DataSourceResult result = jobs.ToDataSourceResult(request, job => new
             {
                 JobId = job.JobId,
@@ -249,21 +248,26 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 //job.CreatedBy = User.Identity.Name;
                 //job.DateCreated = DateTime.Now;
                 var proforma = new Proforma();
-                var customer = new OrganizationCustomer();
-                if (!job.hv && !job.IsExistingCustomer)
-                {
-                    customer = AddNewCustomer.Add(job);
-                    db.OrganizationCustomers.Add(customer);
-                    db.SaveChanges();
-                    Index();
+                //var customer = new OrganizationCustomer();
+                //if (!job.hv && !job.IsExistingCustomer)
+                //{
+                //    customer = AddNewCustomer.Add(job);
+                //    db.OrganizationCustomers.Add(customer);
+                //    db.SaveChanges();
+                //    Index();
 
-                }
-                else if (job.hv)
+                //}
+                //else if (job.hv)
+                //{
+                //    proforma = db.Proformas.Find(job.ProformaId);
+
+                //} 
+                 if (job.hv)
                 {
                     proforma = db.Proformas.Find(job.ProformaId);
 
                 }
-                job.CustomerId = job.hv ? proforma.CustomerId : customer.OrganizationCustomerID| job.CustomerId;
+                job.CustomerId = job.hv ? proforma.CustomerId :/* customer.OrganizationCustomerID|*/ job.CustomerId;
                 var entity = (Job)this.GetObject(job);
 
                 db.Jobs.Add(entity);

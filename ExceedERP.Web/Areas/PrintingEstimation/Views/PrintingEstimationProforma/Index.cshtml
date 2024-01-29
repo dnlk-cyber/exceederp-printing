@@ -3,11 +3,12 @@
                                   .Name("grid")
                                   .Columns(columns =>
                                   {
+                                      columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
                                       columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                             .EditorTemplateName("CustomerEditor")
                                            .Width("110px")
                                            .Title("Customer");
-                                      columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
+                                      
                                       columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "EstimationFormId", "JobNumber")
                                                 // .EditorTemplateName("PaymentTermForeignKey")
                                                 .Title("Est. No").Width(100);
@@ -17,7 +18,7 @@
                                       columns.Bound(c => c.ValidityDate).Width(110).EditorTemplateName("Date").Title("Validity Date").Format("{0:yyyy-MM-dd}");
                                       //  columns.Bound(c => c.CustomerName).Width(90).Title("Customer Name");
                                       // columns.Bound(c => c.ContactName).Width(90).Title("Contact Name");
-                                      //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
+                                       //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
                                       columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
                                       columns.Command(command =>
                                       {

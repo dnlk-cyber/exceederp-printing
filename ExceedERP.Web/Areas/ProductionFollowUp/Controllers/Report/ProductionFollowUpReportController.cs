@@ -85,5 +85,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
         {
             return View();
         }
+        public ActionResult ProformaPrint(int id)
+        {
+            ViewBag.id = id;
+            return View();
+        }
     }
 }

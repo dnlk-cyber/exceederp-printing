@@ -1,4 +1,4 @@
-﻿@using ExceedERP.Core.Domain.PrintingEstimation;
+@using ExceedERP.Core.Domain.PrintingEstimation;
 @{
     ViewBag.Title = "_PrintingEstimation";
 }
@@ -11,7 +11,7 @@
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-print"></i>
             <span class="menu-text">
-                Printing Estimation
+                Printing 
             </span>
             <b class="arrow fa fa-angle-down"></b>
         </a>
@@ -32,6 +32,7 @@
                         <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
                         <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Proforma", "Index", "PrintingEstimationProforma", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
                         <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "EstimationForm", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+                        
                     </ul>
                 </li>
                 }
@@ -46,7 +47,8 @@
                 </a>
                 <b class="arrow"></b>
                 <ul class="submenu">
-                    <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("PrintingStep", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+                    <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("Printing Step", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+                    <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("Furniture Categories", "Index", "FurnitureCategories", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
                 </ul>
 
 

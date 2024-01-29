@@ -3696,6 +3696,7 @@
       <DependentUpon>EstimationFormReporting.cs</DependentUpon>
     </Compile>
     <Compile Include="PrintingEstimation\ViewModel\ApprovalPropertyVM.cs" />
+    <Compile Include="PrintingEstimation\ViewModel\ExecutiveSummaryVM.cs" />
     <Compile Include="PrintingEstimation\ViewModel\PrintingEstimationFormVieModel.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
