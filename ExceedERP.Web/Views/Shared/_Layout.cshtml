@@ -2,358 +2,358 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EXCEED ERP SYSTEM</title>
-    <link href="~/Content/ace/css/ace.min.css" rel="stylesheet" />
-
-    <link rel="stylesheet" href="~/Scripts/etp/css/jquery.calendars.picker.css" />
-
-    @*@Styles.Render("~/Content/css")
-        @Scripts.Render("~/bundles/modernizr")*@
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta charset="utf-8" />
-
-    <meta name="description" content="overview &amp; stats" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-
-    <!-- bootstrap & fontawesome -->
-    <link rel="stylesheet" href="~/Content/ace/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/Content/ace/font-awesome/4.2.0/css/font-awesome.min.css" />
-    <link href="~/Content/ExceedKendos.css" rel="stylesheet" />
-    <link href="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.css" rel="stylesheet" />
-    <!-- page specific plugin styles -->
-    <!-- text fonts -->
-    <link rel="stylesheet" href="~/Content/ace/fonts/fonts.googleapis.com.css" />
-
-    <!-- ace styles -->
-    <link rel="stylesheet" href="~/Content/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
-
-    <!--[if lte IE 9]>
-        <link rel="stylesheet" href="~/Content/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
-    <![endif]-->
-    <!--[if lte IE 9]>
-        <link rel="stylesheet" href="~/Content/ace/css/ace-ie.min.css" />
-    <![endif]-->
-    <!-- inline styles related to this page -->
-    <!-- ace settings handler -->
-    <script src="~/Content/ace/js/ace-extra.min.js"></script>
-
-    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
-    <!--[if lte IE 8]>
-        <script src="~/Content/ace/js/html5shiv.min.js"></script>
-        <script src="~/Content/ace/js/respond.min.js"></script>
-    <![endif]-->
-
-    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
-    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
-    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/jquery.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/jszip.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.all.min.js")"></script>
-    @*<script src="~/Scripts/kendo/2016.1.112/Culture/kendo.culture.en-GB.min.js"></script>*@
-    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/KendoErrorAndSyncs.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/KendoGridApproval.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/KendoGridApprovalNew.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/AccountSelector.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/AccountSelectorWindow.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/inventoryItemCascadeFilter.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/cascadeFilters.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/fixedAssetCascadeFilter.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/KendoReport.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/GridValidation.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/exceed.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/itemVirtualizations.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/Virtualization/ValueMappers.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/Virtualization/subaccountMapper.js")"></script>
-    <script src="@Url.Content("~/Scripts/exceed/perioddatepickervalidation.js")"></script>
-    <script src="~/Scripts/Exceed/ValueMapper/_valueMapper.js"></script>
-
-    <script src="~/Scripts/etp/jquery.plugin.js"></script>
-    <script src="~/Scripts/etp/jquery.calendars.js"></script>
-    <script src="~/Scripts/etp/jquery.calendars.plus.js"></script>
-    <script src="~/Scripts/etp/jquery.calendars.picker.js"></script>
-    <script src="~/Scripts/etp/jquery.calendars.ethiopian.js"></script>
-    <script src="~/Scripts/etp/jquery.calendars.ethiopian-am.js"></script>
-
-    <script src="~/Scripts/Exceed/DateSelectorWindow.js"></script>
-
-    <link href="~/Content/toast/toastr.css" rel="stylesheet" />
-    <script src="~/Content/toast/toastr.js"></script>
-    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
-
-    <script src="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
-
-    @*<script src="~/signalr/hubs"></script>*@
-
-    @*<script type="text/javascript">
-            $(document).ready(function () {
-                //set current to the "en-GB" culture script
-                kendo.culture("en-GB");
-            });
-
-        </script>*@
-
-    <link rel="stylesheet" href="~/Content/orgChart/css/jquery.orgchart.css">
-    <link rel="stylesheet" href="~/Content/orgChart/css/style.css">
-
-    <link href="~/Content/ExceedStyle.css" rel="stylesheet" />
-    <link href="~/Content/exceedKendoChart.css" rel="stylesheet" />
-    <link href="~/Content/custom/cms-custom-styles.css" rel="stylesheet" />
-
-
-    <style>
-
-
-        li.actionlinlk a:hover {
-            color: red;
-            text-decoration: underline;
-        }
-
-        li.actionlinlk:active {
-            background: red !important;
-        }
-
-        li.actionlinlk:hover {
-            background: #438eb9;
-        }
-
-        .paragraphRight {
-            align-content: flex-end;
-        }
-
-        ul.login a {
-            color: #ffffff;
-        }
-
-        ul#notification.dropdown-menu-right.dropdown-navbar.navbar-pink.dropdown-menu.dropdown-caret.dropdown-close {
-            width: 500px !important;
-        }
-
-        .dialog_css {
-            border: 0px none !important;
-            -moz-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
-            -webkit-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
-            box-shadow: 3px 6px 8px rgb(136, 136, 136);
-        }
-
-        legend {
-            font-size: 14px;
-        }
-
-        table {
-            font-size: 11px;
-        }
-
-        /* Hide the Grid header and pager during export */
-        .k-pdf-export .k-grid-toolbar,
-        .k-pdf-export .k-pager-wrap,
-        .k-pdf-export .k-button-icontext,
-        .k-pdf-export .k-grid-edit,
-        .k-pdf-export .k-grouping-header,
-        .k-pdf-export .k-grid-delete,
-        .k-pdf-export .k-plus,
-        .k-pdf-export .k-filter {
-            display: none;
-        }
-
-        .k-pdf-export {
-            font-family: "Nyala", "DejaVu Sans";
-        }
-
-        .k-widget {
-            font-family: "Nyala", "DejaVu Sans"
-        }
-
-        .k-grid tbody tr {
-            height: 18px;
-        }
-
-        .k-header h1 {
-            margin: 0;
-            padding: 30px 15px;
-            font-size: 32px;
-            font-weight: lighter;
-        }
-
-        /* Sticky footer styles
-        -------------------------------------------------- */
-        html {
-            position: relative;
-            min-height: 100%;
-        }
-
-        body {
-            /* Margin bottom by footer height */
-            margin-bottom: 60px;
-        }
-
-        .footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            /* Set the fixed height of the footer here */
-            height: 60px;
-            background-color: #f5f5f5;
-        }
-
-        .container-fluid .text-muted {
-            margin: 20px 0;
-        }
-
-        .placeholders {
-            margin: 30px auto;
-        }
-
-        .placeholder img {
-            display: inline-block;
-        }
-
-        p .k-button {
-            margin: 0 15px 0 0;
-        }
-
-        .btn-toggle {
-            position: absolute;
-            top: 0;
-            left: 0;
-            box-shadow: none;
-            height: 48px;
-        }
-
-            .btn-toggle .k-icon {
-                opacity: 1;
-            }
-
-            .btn-toggle,
-            .k-primary.btn-toggle:hover,
-            .btn-toggle:focus:active:not(.k-state-disabled):not([disabled]),
-            .btn-toggle:focus:not(.k-state-disabled):not([disabled]) {
-                box-shadow: none;
-                border-radius: 0;
-            }
-
-                .btn-toggle .k-i-hbars,
-                .k-primary.btn-toggle:hover .k-i-hbars,
-                .btn-toggle:focus:active:not(.k-state-disabled):not([disabled]) .k-i-hbars,
-                .btn-toggle:focus:not(.k-state-disabled):not([disabled]) .k-i-hbars {
-                    background-position: -80px -32px;
-                }
-
-        @@media (max-width: 768px) {
-            .k-item {
-                display: block;
-                clear: both;
-                float: none;
-                width: 100%;
-            }
-
-            .k-header h1 {
-                margin: 0;
-                padding: 16px 15px 14px 60px;
-                font-size: 18px;
-                font-weight: lighter;
-            }
-        }
-        .trv-parameters-area-preview-button {
-            position: absolute !important;
-            top: 10px;
-        }
-
-        .trv-parameters-area-footer {
-            position: relative !important;
-        }
-
-        .trv-parameters-area-content {
-            position: relative !important;
-        }
-    </style>
-
-
-
-
-    <style>
-
-
-        /*change grid table row*/
-        /*.k-grid tr {
-               background-color: #dda0dd; /* specify the background-color
-            }
-        */
-        #reportViewer1 {
-            position: relative;
-            width: 100%;
-            height: 900px;
-            font-family: Nyala, Verdana, Arial;
-        }
-
-        /*a.dropdown-toggle {
-            background-color: #4d394b !important;
-            color: white !important;
-        }*/
-
-        .no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li.active > a {
-            background-color: #438eb9 !important;
-            color: white !important;
-        }
-
-        .no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li > a:hover {
-            background-color: lime !important;
-        }
-
-        /* pop up
-        */
-
-        div.k-edit-form-container {
-            width: 700px;
-        }
-
-        .k-grid-content {
-            width: auto;
-        }
-    </style>
-
-
-
-    <style>
-        div.k-edit-form-container {
-            width: 800px;
-            height: auto;
-        }
-
-        div.k-content {
-            overflow: hidden;
-            height: auto;
-        }
-
-        span.k-icon.k-i-close {
-            background-color: darkgray;
-        }
-
-        .k-grid .k-grid-header .k-header .k-link {
-            height: auto;
-        }
-
-        .k-grid .k-grid-header .k-header {
-            white-space: normal;
-        }
-
-        .k-checkbox:checked + .k-checkbox-label:before + #checkDanger {
-            background-color: red;
-            color: white;
-        }
-
-        .k-checkbox #checkDanger {
-            background-color: red;
-            color: white;
-        }
-    </style>
-
-
-    <script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>EXCEED ERP SYSTEM</title>
+	<link href="~/Content/ace/css/ace.min.css" rel="stylesheet" />
+
+	<link rel="stylesheet" href="~/Scripts/etp/css/jquery.calendars.picker.css" />
+
+	@*@Styles.Render("~/Content/css")
+		@Scripts.Render("~/bundles/modernizr")*@
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta charset="utf-8" />
+
+	<meta name="description" content="overview &amp; stats" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+	<!-- bootstrap & fontawesome -->
+	<link rel="stylesheet" href="~/Content/ace/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/Content/ace/font-awesome/4.2.0/css/font-awesome.min.css" />
+	<link href="~/Content/ExceedKendos.css" rel="stylesheet" />
+	<link href="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.css" rel="stylesheet" />
+	<!-- page specific plugin styles -->
+	<!-- text fonts -->
+	<link rel="stylesheet" href="~/Content/ace/fonts/fonts.googleapis.com.css" />
+
+	<!-- ace styles -->
+	<link rel="stylesheet" href="~/Content/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
+
+	<!--[if lte IE 9]>
+		<link rel="stylesheet" href="~/Content/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
+	<![endif]-->
+	<!--[if lte IE 9]>
+		<link rel="stylesheet" href="~/Content/ace/css/ace-ie.min.css" />
+	<![endif]-->
+	<!-- inline styles related to this page -->
+	<!-- ace settings handler -->
+	<script src="~/Content/ace/js/ace-extra.min.js"></script>
+
+	<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+	<!--[if lte IE 8]>
+		<script src="~/Content/ace/js/html5shiv.min.js"></script>
+		<script src="~/Content/ace/js/respond.min.js"></script>
+	<![endif]-->
+
+	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/jquery.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/jszip.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.all.min.js")"></script>
+	@*<script src="~/Scripts/kendo/2016.1.112/Culture/kendo.culture.en-GB.min.js"></script>*@
+	<script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/KendoErrorAndSyncs.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/KendoGridApproval.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/KendoGridApprovalNew.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/AccountSelector.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/AccountSelectorWindow.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/inventoryItemCascadeFilter.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/cascadeFilters.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/fixedAssetCascadeFilter.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/KendoReport.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/GridValidation.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/exceed.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/itemVirtualizations.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/Virtualization/ValueMappers.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/Virtualization/subaccountMapper.js")"></script>
+	<script src="@Url.Content("~/Scripts/exceed/perioddatepickervalidation.js")"></script>
+	<script src="~/Scripts/Exceed/ValueMapper/_valueMapper.js"></script>
+
+	<script src="~/Scripts/etp/jquery.plugin.js"></script>
+	<script src="~/Scripts/etp/jquery.calendars.js"></script>
+	<script src="~/Scripts/etp/jquery.calendars.plus.js"></script>
+	<script src="~/Scripts/etp/jquery.calendars.picker.js"></script>
+	<script src="~/Scripts/etp/jquery.calendars.ethiopian.js"></script>
+	<script src="~/Scripts/etp/jquery.calendars.ethiopian-am.js"></script>
+
+	<script src="~/Scripts/Exceed/DateSelectorWindow.js"></script>
+
+	<link href="~/Content/toast/toastr.css" rel="stylesheet" />
+	<script src="~/Content/toast/toastr.js"></script>
+	<script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+
+	<script src="~/Content/custom/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
+
+	@*<script src="~/signalr/hubs"></script>*@
+
+	@*<script type="text/javascript">
+			$(document).ready(function () {
+				//set current to the "en-GB" culture script
+				kendo.culture("en-GB");
+			});
+
+		</script>*@
+
+	<link rel="stylesheet" href="~/Content/orgChart/css/jquery.orgchart.css">
+	<link rel="stylesheet" href="~/Content/orgChart/css/style.css">
+
+	<link href="~/Content/ExceedStyle.css" rel="stylesheet" />
+	<link href="~/Content/exceedKendoChart.css" rel="stylesheet" />
+	<link href="~/Content/custom/cms-custom-styles.css" rel="stylesheet" />
+
+
+	<style>
+
+
+		li.actionlinlk a:hover {
+			color: red;
+			text-decoration: underline;
+		}
+
+		li.actionlinlk:active {
+			background: red !important;
+		}
+
+		li.actionlinlk:hover {
+			background: #438eb9;
+		}
+
+		.paragraphRight {
+			align-content: flex-end;
+		}
+
+		ul.login a {
+			color: #ffffff;
+		}
+
+		ul#notification.dropdown-menu-right.dropdown-navbar.navbar-pink.dropdown-menu.dropdown-caret.dropdown-close {
+			width: 500px !important;
+		}
+
+		.dialog_css {
+			border: 0px none !important;
+			-moz-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
+			-webkit-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
+			box-shadow: 3px 6px 8px rgb(136, 136, 136);
+		}
+
+		legend {
+			font-size: 14px;
+		}
+
+		table {
+			font-size: 11px;
+		}
+
+		/* Hide the Grid header and pager during export */
+		.k-pdf-export .k-grid-toolbar,
+		.k-pdf-export .k-pager-wrap,
+		.k-pdf-export .k-button-icontext,
+		.k-pdf-export .k-grid-edit,
+		.k-pdf-export .k-grouping-header,
+		.k-pdf-export .k-grid-delete,
+		.k-pdf-export .k-plus,
+		.k-pdf-export .k-filter {
+			display: none;
+		}
+
+		.k-pdf-export {
+			font-family: "Nyala", "DejaVu Sans";
+		}
+
+		.k-widget {
+			font-family: "Nyala", "DejaVu Sans"
+		}
+
+		.k-grid tbody tr {
+			height: 18px;
+		}
+
+		.k-header h1 {
+			margin: 0;
+			padding: 30px 15px;
+			font-size: 32px;
+			font-weight: lighter;
+		}
+
+		/* Sticky footer styles
+		-------------------------------------------------- */
+		html {
+			position: relative;
+			min-height: 100%;
+		}
+
+		body {
+			/* Margin bottom by footer height */
+			margin-bottom: 60px;
+		}
+
+		.footer {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			/* Set the fixed height of the footer here */
+			height: 60px;
+			background-color: #f5f5f5;
+		}
+
+		.container-fluid .text-muted {
+			margin: 20px 0;
+		}
+
+		.placeholders {
+			margin: 30px auto;
+		}
+
+		.placeholder img {
+			display: inline-block;
+		}
+
+		p .k-button {
+			margin: 0 15px 0 0;
+		}
+
+		.btn-toggle {
+			position: absolute;
+			top: 0;
+			left: 0;
+			box-shadow: none;
+			height: 48px;
+		}
+
+			.btn-toggle .k-icon {
+				opacity: 1;
+			}
+
+			.btn-toggle,
+			.k-primary.btn-toggle:hover,
+			.btn-toggle:focus:active:not(.k-state-disabled):not([disabled]),
+			.btn-toggle:focus:not(.k-state-disabled):not([disabled]) {
+				box-shadow: none;
+				border-radius: 0;
+			}
+
+				.btn-toggle .k-i-hbars,
+				.k-primary.btn-toggle:hover .k-i-hbars,
+				.btn-toggle:focus:active:not(.k-state-disabled):not([disabled]) .k-i-hbars,
+				.btn-toggle:focus:not(.k-state-disabled):not([disabled]) .k-i-hbars {
+					background-position: -80px -32px;
+				}
+
+		@@media (max-width: 768px) {
+			.k-item {
+				display: block;
+				clear: both;
+				float: none;
+				width: 100%;
+			}
+
+			.k-header h1 {
+				margin: 0;
+				padding: 16px 15px 14px 60px;
+				font-size: 18px;
+				font-weight: lighter;
+			}
+		}
+		.trv-parameters-area-preview-button {
+			position: absolute !important;
+			top: 10px;
+		}
+
+		.trv-parameters-area-footer {
+			position: relative !important;
+		}
+
+		.trv-parameters-area-content {
+			position: relative !important;
+		}
+	</style>
+
+
+
+
+	<style>
+
+
+		/*change grid table row*/
+		/*.k-grid tr {
+			   background-color: #dda0dd; /* specify the background-color
+			}
+		*/
+		#reportViewer1 {
+			position: relative;
+			width: 100%;
+			height: 900px;
+			font-family: Nyala, Verdana, Arial;
+		}
+
+		/*a.dropdown-toggle {
+			background-color: #4d394b !important;
+			color: white !important;
+		}*/
+
+		.no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li.active > a {
+			background-color: #438eb9 !important;
+			color: white !important;
+		}
+
+		.no-skin .nav-list > li > .submenu li > .submenu li.open > a, .no-skin .nav-list > li > .submenu li > .submenu li > a:hover {
+			background-color: lime !important;
+		}
+
+		/* pop up
+		*/
+
+		div.k-edit-form-container {
+			width: 700px;
+		}
+
+		.k-grid-content {
+			width: auto;
+		}
+	</style>
+
+
+
+	<style>
+		div.k-edit-form-container {
+			width: 800px;
+			height: auto;
+		}
+
+		div.k-content {
+			overflow: hidden;
+			height: auto;
+		}
+
+		span.k-icon.k-i-close {
+			background-color: darkgray;
+		}
+
+		.k-grid .k-grid-header .k-header .k-link {
+			height: auto;
+		}
+
+		.k-grid .k-grid-header .k-header {
+			white-space: normal;
+		}
+
+		.k-checkbox:checked + .k-checkbox-label:before + #checkDanger {
+			background-color: red;
+			color: white;
+		}
+
+		.k-checkbox #checkDanger {
+			background-color: red;
+			color: white;
+		}
+	</style>
+
+
+	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
 </head>
 
 <body class="no-skin">
@@ -559,193 +559,193 @@
 
 
 <ul class="nav nav-list">
-    @*<li id="link300" class="actionlinlk">
-            <a href="~/UserProfile/MyBranches">
-                <i class="menu-icon fa fa-key"></i>
-                <span class="menu-text"> User Profile </span>
-            </a>
+	@*<li id="link300" class="actionlinlk">
+			<a href="~/UserProfile/MyBranches">
+				<i class="menu-icon fa fa-key"></i>
+				<span class="menu-text"> User Profile </span>
+			</a>
 
-            <b class="arrow"></b>
-        </li>*@
-
-
-    @Html.Partial("_Dashboard")
+			<b class="arrow"></b>
+		</li>*@
 
 
-
-
-    @if (HttpContext.Current.User.IsInRole("HR_Admin") ||
-         HttpContext.Current.User.IsInRole("Health_User") ||
-         HttpContext.Current.User.IsInRole("Health_Admin") ||
-         HttpContext.Current.User.IsInRole("Health_Approver") ||
-         HttpContext.Current.User.IsInRole("HR_Attendance_User") ||
-         HttpContext.Current.User.IsInRole("HR_Benefit_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Benefit_User") ||
-         HttpContext.Current.User.IsInRole("HR_Company_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Company_User") ||
-         HttpContext.Current.User.IsInRole("HR_Discipline_User") ||
-         HttpContext.Current.User.IsInRole("HR_Employee_SelfService") ||
-         HttpContext.Current.User.IsInRole("HR_Leave_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Leave_Approver") ||
-         HttpContext.Current.User.IsInRole("HR_Leave_Report") ||
-         HttpContext.Current.User.IsInRole("HR_Leave_User") ||
-         HttpContext.Current.User.IsInRole("HR_Letters_User") ||
-         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
-         HttpContext.Current.User.IsInRole("HR_Performance_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Performance_Report") ||
-         HttpContext.Current.User.IsInRole("HR_Performance_User") ||
-         HttpContext.Current.User.IsInRole("HR_Placement_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Placement_User") ||
-         HttpContext.Current.User.IsInRole("HR_PrintableDocuments_User") ||
-         HttpContext.Current.User.IsInRole("HR_Profile_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Profile_User") ||
-         HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") ||
-         HttpContext.Current.User.IsInRole("HR_Recruitment_Approver") ||
-         HttpContext.Current.User.IsInRole("HR_Recruitment_Report") ||
-         HttpContext.Current.User.IsInRole("HR_Recruitment_User") ||
-         HttpContext.Current.User.IsInRole("HR_Report") ||
-         HttpContext.Current.User.IsInRole("HR_Termination_User") ||
-         HttpContext.Current.User.IsInRole("HR_Training_Approver") ||
-         HttpContext.Current.User.IsInRole("HR_Training_User") ||
-         HttpContext.Current.User.IsInRole("Archive_Report") ||
-         HttpContext.Current.User.IsInRole("Archive_Admin") ||
-         HttpContext.Current.User.IsInRole("Archive_User"))
-    {
-
-        @Html.Partial("_HRM")
-    }
-
-
-    @if (HttpContext.Current.User.IsInRole("APTS_Despensary") ||
-         HttpContext.Current.User.IsInRole("APTS_Admin") ||
-         HttpContext.Current.User.IsInRole("APTS_DrugStore") ||
-         HttpContext.Current.User.IsInRole("APTS_Accountant") ||
-         HttpContext.Current.User.IsInRole("APTS_User"))
-    {
-        @Html.Partial("_APTS")
-    }
-    @*@Html.Partial("_Production")*@
-
-
-
-    @if (HttpContext.Current.User.IsInRole("Health_User") ||
-         HttpContext.Current.User.IsInRole("Health_Admin") ||
-         HttpContext.Current.User.IsInRole("Health_Approver") ||
-         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
-         HttpContext.Current.User.IsInRole("Insurance_Admin") ||
-         HttpContext.Current.User.IsInRole("Insurance_User")
-        )
-    {
-        @Html.Partial("_HealtInsurance")
-    }
-
-    @if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
-         HttpContext.Current.User.IsInRole("Archive_Report") ||
-         HttpContext.Current.User.IsInRole("Archive_User"))
-    {
-        @Html.Partial("_Archive")
-    }
-
-    @if (HttpContext.Current.User.IsInRole("Payroll_Input") ||
-         HttpContext.Current.User.IsInRole("Payroll_Admin") ||
-         HttpContext.Current.User.IsInRole("Payroll_Process") ||
-         HttpContext.Current.User.IsInRole("Payroll_Approver") ||
-         HttpContext.Current.User.IsInRole("Payroll_Report") ||
-         HttpContext.Current.User.IsInRole("Payroll_View"))
-    {
-        @Html.Partial("_Payroll")
-    }
-    @if (HttpContext.Current.User.IsInRole("Project_Admin") ||
-         HttpContext.Current.User.IsInRole("Construction_Project_Estimation") ||
-         HttpContext.Current.User.IsInRole("Construction_Costing") ||
-         HttpContext.Current.User.IsInRole("Construction_Billing") ||
-         HttpContext.Current.User.IsInRole("Construction_Contract_Management") ||
-         HttpContext.Current.User.IsInRole("Construction_Scheduling") ||
-         HttpContext.Current.User.IsInRole("Construction_Document") ||
-         HttpContext.Current.User.IsInRole("Project_Report"))
-    {
-
-    }
-
-    @if (HttpContext.Current.User.IsInRole("Construction_Admin"))
-    {
-        @Html.Partial("_Construction")
-    }
-
-    @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin") ||
-         HttpContext.Current.User.IsInRole("Account_Payable_Approver") ||
-         HttpContext.Current.User.IsInRole("Account_Payable_Invoice") ||
-         HttpContext.Current.User.IsInRole("Account_Payable_Payment") ||
-         HttpContext.Current.User.IsInRole("Account_Payable_Report") ||
-         HttpContext.Current.User.IsInRole("Account_Payable_View") ||
-         HttpContext.Current.User.IsInRole("Account_Receivable_Admin") ||
-         HttpContext.Current.User.IsInRole("Account_Receivable_Collection") ||
-         HttpContext.Current.User.IsInRole("Account_Receivable_Invoice") ||
-         HttpContext.Current.User.IsInRole("Account_Receivable_Report") ||
-         HttpContext.Current.User.IsInRole("Account_Receivable_view") ||
-         HttpContext.Current.User.IsInRole("Account_Receivable_Approver") ||
-         HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin") ||
-         HttpContext.Current.User.IsInRole("Bank_Reconciliation_report") ||
-         HttpContext.Current.User.IsInRole("Bank_Reconciliation_User") ||
-         HttpContext.Current.User.IsInRole("Bank_Reconciliation_View") ||
-         HttpContext.Current.User.IsInRole("General_Ledger_Admin") ||
-         HttpContext.Current.User.IsInRole("GeneralLedgerApprover") ||
-         HttpContext.Current.User.IsInRole("General_Ledger_Report") ||
-         HttpContext.Current.User.IsInRole("General_Ledger_User") ||
-         HttpContext.Current.User.IsInRole("GeneralLedgerView") ||
-         HttpContext.Current.User.IsInRole("General_SubLedger_Transfer") ||
-         HttpContext.Current.User.IsInRole("Finance_Admin") ||
-         HttpContext.Current.User.IsInRole("Finance_Report") ||
-         HttpContext.Current.User.IsInRole("Finance_Checker"))
-
-    {
-        @Html.Partial("_Finance")
-    }
-
-
-    @if (HttpContext.Current.User.IsInRole("Budget") ||
-         HttpContext.Current.User.IsInRole("Budget_Admin") ||
-         HttpContext.Current.User.IsInRole("Budget_Report")
-        )
-    {
-        @*@Html.Partial("_Budget")*@
-    }
-
-    @*@if (HttpContext.Current.User.IsInRole("Purchase") ||
-        HttpContext.Current.User.IsInRole("Purchase_Report") ||
-        HttpContext.Current.User.IsInRole("Purchase_Admin")
-        )*@
-
-    @Html.Partial("_Procurement")
-
-    @Html.Partial("_Inventory")
-
-    @Html.Partial("_FixedAsset")
-    @Html.Partial("_Budget")
-    @Html.Partial("_CRM")
-    @Html.Partial("_Fleet")
-    @Html.Partial("_Maintenance")
-    @Html.Partial("_PrintingEstimation")
-    @*@Html.Partial("_ProductionFollowUp")
-        @Html.Partial("_JobCosting")
-        @Html.Partial("_SelfService")
-        @Html.Partial("_CMS")
-        @Html.Partial("_InformationDesk")*@
-    @Html.Partial("_Printing")
-    @Html.Partial("_Manfucturing")
+	@Html.Partial("_Dashboard")
 
 
 
 
+	@if (HttpContext.Current.User.IsInRole("HR_Admin") ||
+		 HttpContext.Current.User.IsInRole("Health_User") ||
+		 HttpContext.Current.User.IsInRole("Health_Admin") ||
+		 HttpContext.Current.User.IsInRole("Health_Approver") ||
+		 HttpContext.Current.User.IsInRole("HR_Attendance_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Benefit_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Benefit_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Company_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Company_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Discipline_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Employee_SelfService") ||
+		 HttpContext.Current.User.IsInRole("HR_Leave_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Leave_Approver") ||
+		 HttpContext.Current.User.IsInRole("HR_Leave_Report") ||
+		 HttpContext.Current.User.IsInRole("HR_Leave_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Letters_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
+		 HttpContext.Current.User.IsInRole("HR_Performance_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Performance_Report") ||
+		 HttpContext.Current.User.IsInRole("HR_Performance_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Placement_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Placement_User") ||
+		 HttpContext.Current.User.IsInRole("HR_PrintableDocuments_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Profile_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Profile_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") ||
+		 HttpContext.Current.User.IsInRole("HR_Recruitment_Approver") ||
+		 HttpContext.Current.User.IsInRole("HR_Recruitment_Report") ||
+		 HttpContext.Current.User.IsInRole("HR_Recruitment_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Report") ||
+		 HttpContext.Current.User.IsInRole("HR_Termination_User") ||
+		 HttpContext.Current.User.IsInRole("HR_Training_Approver") ||
+		 HttpContext.Current.User.IsInRole("HR_Training_User") ||
+		 HttpContext.Current.User.IsInRole("Archive_Report") ||
+		 HttpContext.Current.User.IsInRole("Archive_Admin") ||
+		 HttpContext.Current.User.IsInRole("Archive_User"))
+	{
 
-    @*@Html.Partial("_Project")*@
+		@Html.Partial("_HRM")
+	}
 
-    @if (HttpContext.Current.User.IsInRole("Admin") ||
-         HttpContext.Current.User.IsInRole("Admin_Regional") ||
-         HttpContext.Current.User.IsInRole("Admin_Module"))
-    {
-        @Html.Partial("_Settings")
-    }
+
+	@if (HttpContext.Current.User.IsInRole("APTS_Despensary") ||
+		 HttpContext.Current.User.IsInRole("APTS_Admin") ||
+		 HttpContext.Current.User.IsInRole("APTS_DrugStore") ||
+		 HttpContext.Current.User.IsInRole("APTS_Accountant") ||
+		 HttpContext.Current.User.IsInRole("APTS_User"))
+	{
+		@Html.Partial("_APTS")
+	}
+	@*@Html.Partial("_Production")*@
+
+
+
+	@if (HttpContext.Current.User.IsInRole("Health_User") ||
+		 HttpContext.Current.User.IsInRole("Health_Admin") ||
+		 HttpContext.Current.User.IsInRole("Health_Approver") ||
+		 HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
+		 HttpContext.Current.User.IsInRole("Insurance_Admin") ||
+		 HttpContext.Current.User.IsInRole("Insurance_User")
+		)
+	{
+		@Html.Partial("_HealtInsurance")
+	}
+
+	@if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
+		 HttpContext.Current.User.IsInRole("Archive_Report") ||
+		 HttpContext.Current.User.IsInRole("Archive_User"))
+	{
+		@Html.Partial("_Archive")
+	}
+
+	@if (HttpContext.Current.User.IsInRole("Payroll_Input") ||
+		 HttpContext.Current.User.IsInRole("Payroll_Admin") ||
+		 HttpContext.Current.User.IsInRole("Payroll_Process") ||
+		 HttpContext.Current.User.IsInRole("Payroll_Approver") ||
+		 HttpContext.Current.User.IsInRole("Payroll_Report") ||
+		 HttpContext.Current.User.IsInRole("Payroll_View"))
+	{
+		@Html.Partial("_Payroll")
+	}
+	@if (HttpContext.Current.User.IsInRole("Project_Admin") ||
+		 HttpContext.Current.User.IsInRole("Construction_Project_Estimation") ||
+		 HttpContext.Current.User.IsInRole("Construction_Costing") ||
+		 HttpContext.Current.User.IsInRole("Construction_Billing") ||
+		 HttpContext.Current.User.IsInRole("Construction_Contract_Management") ||
+		 HttpContext.Current.User.IsInRole("Construction_Scheduling") ||
+		 HttpContext.Current.User.IsInRole("Construction_Document") ||
+		 HttpContext.Current.User.IsInRole("Project_Report"))
+	{
+
+	}
+
+	@if (HttpContext.Current.User.IsInRole("Construction_Admin"))
+	{
+		@Html.Partial("_Construction")
+	}
+
+	@if (HttpContext.Current.User.IsInRole("Account_Payable_Admin") ||
+		 HttpContext.Current.User.IsInRole("Account_Payable_Approver") ||
+		 HttpContext.Current.User.IsInRole("Account_Payable_Invoice") ||
+		 HttpContext.Current.User.IsInRole("Account_Payable_Payment") ||
+		 HttpContext.Current.User.IsInRole("Account_Payable_Report") ||
+		 HttpContext.Current.User.IsInRole("Account_Payable_View") ||
+		 HttpContext.Current.User.IsInRole("Account_Receivable_Admin") ||
+		 HttpContext.Current.User.IsInRole("Account_Receivable_Collection") ||
+		 HttpContext.Current.User.IsInRole("Account_Receivable_Invoice") ||
+		 HttpContext.Current.User.IsInRole("Account_Receivable_Report") ||
+		 HttpContext.Current.User.IsInRole("Account_Receivable_view") ||
+		 HttpContext.Current.User.IsInRole("Account_Receivable_Approver") ||
+		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin") ||
+		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_report") ||
+		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_User") ||
+		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_View") ||
+		 HttpContext.Current.User.IsInRole("General_Ledger_Admin") ||
+		 HttpContext.Current.User.IsInRole("GeneralLedgerApprover") ||
+		 HttpContext.Current.User.IsInRole("General_Ledger_Report") ||
+		 HttpContext.Current.User.IsInRole("General_Ledger_User") ||
+		 HttpContext.Current.User.IsInRole("GeneralLedgerView") ||
+		 HttpContext.Current.User.IsInRole("General_SubLedger_Transfer") ||
+		 HttpContext.Current.User.IsInRole("Finance_Admin") ||
+		 HttpContext.Current.User.IsInRole("Finance_Report") ||
+		 HttpContext.Current.User.IsInRole("Finance_Checker"))
+
+	{
+		@Html.Partial("_Finance")
+	}
+
+
+	@if (HttpContext.Current.User.IsInRole("Budget") ||
+		 HttpContext.Current.User.IsInRole("Budget_Admin") ||
+		 HttpContext.Current.User.IsInRole("Budget_Report")
+		)
+	{
+		@*@Html.Partial("_Budget")*@
+	}
+
+	@*@if (HttpContext.Current.User.IsInRole("Purchase") ||
+		HttpContext.Current.User.IsInRole("Purchase_Report") ||
+		HttpContext.Current.User.IsInRole("Purchase_Admin")
+		)*@
+
+	@Html.Partial("_Procurement")
+
+	@Html.Partial("_Inventory")
+
+	@Html.Partial("_FixedAsset")
+	@Html.Partial("_Budget")
+	@Html.Partial("_CRM")
+	@Html.Partial("_Fleet")
+	@Html.Partial("_Maintenance")
+	@Html.Partial("_PrintingEstimation")
+	@*@Html.Partial("_ProductionFollowUp")
+		@Html.Partial("_JobCosting")
+		@Html.Partial("_SelfService")
+		@Html.Partial("_CMS")
+		@Html.Partial("_InformationDesk")*@
+	@Html.Partial("_Printing")
+	@Html.Partial("_Manfucturing")
+
+
+
+
+
+	@*@Html.Partial("_Project")*@
+
+	@if (HttpContext.Current.User.IsInRole("Admin") ||
+		 HttpContext.Current.User.IsInRole("Admin_Regional") ||
+		 HttpContext.Current.User.IsInRole("Admin_Module"))
+	{
+		@Html.Partial("_Settings")
+	}
 
 </ul>
 	   

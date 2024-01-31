@@ -7768,6 +7768,8 @@
     <Content Include="Views\Shared\_JobCosting.cshtml" />
     <Content Include="Views\Shared\_ProductionFollowUp.cshtml" />
     <Content Include="Views\Shared\_PrintingEstimation.cshtml" />
+    <Content Include="Views\Shared\_Manfucturing.cshtml" />
+    <Content Include="Views\Shared\_Printing.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />
