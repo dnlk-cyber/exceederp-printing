@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobTypeItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobTypeId);
+        columns.Bound(c => c.Name);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.JobTypeItemId))
+          .Read(read => read.Action("JobTypeItems_Read", "JobTypeItems"))
+          .Create(create => create.Action("JobTypeItems_Create", "JobTypeItems"))
+          .Update(update => update.Action("JobTypeItems_Update", "JobTypeItems"))
+          .Destroy(destroy => destroy.Action("JobTypeItems_Destroy", "JobTypeItems"))
+      )
+)

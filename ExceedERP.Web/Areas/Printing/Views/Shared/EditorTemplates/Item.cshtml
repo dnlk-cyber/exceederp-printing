@@ -1,0 +1,20 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+            .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("ItemCode")
+            //    .BindTo((IEnumerable)ViewData["Items"])
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetItemsUnderCategory", "ProductionDataProvider").Data("filterCategories"))
+                .ServerFiltering(true);
+            })
+            .CascadeFrom("ItemCategoryCode")
+            //.Events(ev => {
+            //    ev.Change("materialChanged");
+            //})
+            .Filter("contains")
+            .MinLength(2)
+            .ValuePrimitive(true)
+)

@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+             .OptionLabel( "--Select--")
+                            .DataTextField("RequestNo")
+                                    .DataValueField("ReplacementApplicationLetterId")
+                                     .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetApprovedandNotClosedApplications", "InformalTradeDataProvider", new { area = "InformalTrade" }).Data("filterReplacementRequest"))
+              .ServerFiltering(false);
+      })
+                    .ValuePrimitive( true)
+)

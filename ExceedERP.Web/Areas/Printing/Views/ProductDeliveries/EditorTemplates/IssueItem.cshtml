@@ -1,0 +1,239 @@
+﻿@using Foolproof
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Inventory.IssueItem
+
+
+ 
+
+<div id="tabstrip">
+    <ul>
+        <li class="k-state-active">
+            Detail
+        </li>
+        <li >Machinary</li>
+      
+    </ul>
+
+    <div>
+            <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ItemCode)
+
+                    </div>
+                    <div>
+                         @Html.Kendo().TextBoxFor(model => model.ItemCode).Enable(false)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Quantity)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Quantity)
+                        @Html.ValidationMessageFor(model => model.Quantity)
+                    </div>
+                </div>
+                </div>
+
+                
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.UnitPrice)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.UnitPrice).Enable(false)
+                        @Html.ValidationMessageFor(model => model.UnitPrice)
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="row">
+            <div class="col-md-1">
+
+            </div>
+           
+          
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            
+
+          
+            <div class="col-md-3">
+                 
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.IsMachinery)
+                    </div>
+                    <div>
+                        <div data-container-for="IsMachinary" class="k-edit-field">
+                            <input id="IsMachinarytem" name="IsMachinarytem" type="checkbox" data-bind="checked:IsMachinary" onclick="checkboxClicked(this)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+         
+    </div>
+
+    <div>
+        <div class="row">
+            <div class="col-md-1">
+
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.BatchNo)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.BatchNo)
+                        @Html.ValidationMessageFor(model => model.BatchNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Condition)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Condition)
+                        @Html.ValidationMessageFor(model => model.Condition)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PlateNo)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.PlateNo)
+                        @Html.ValidationMessageFor(model => model.PlateNo)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+
+            </div>
+            <div class="col-md-3">
+
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ChassisNo)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.ChassisNo)
+                        @Html.ValidationMessageFor(model => model.ChassisNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EngineNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.EngineNo)
+                        @Html.ValidationMessageFor(model => model.EngineElectricalModelNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EngineModelNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.EngineModelNo)
+                        @Html.ValidationMessageFor(model => model.EngineModelNo)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EngineElectricalNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.EngineElectricalNo)
+                        @Html.ValidationMessageFor(model => model.EngineElectricalNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EngineElectricalModelNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.EngineElectricalModelNo)
+                        @Html.ValidationMessageFor(model => model.EngineElectricalModelNo)
+                    </div>
+                </div>
+            </div>
+            @*<div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ExpireDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DateTimePickerFor(model => model.ExpireDate)
+                        @Html.ValidationMessageFor(model => model.ExpireDate)
+                    </div>
+                </div>
+            </div>*@
+        </div>
+      
+    </div>
+
+<div>
+
+</div>
+</div>
+
+<script>
+    $(function () { $("\\#tabstrip").kendoTabStrip(); });
+</script>
+
+
+ 
+
+ 
+ 
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.ChangeOrder>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobId);
+        columns.Bound(c => c.Reason);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Size);
+        columns.Bound(c => c.Price);
+        columns.Bound(c => c.Tax);
+        columns.Bound(c => c.Total);
+        columns.Bound(c => c.InvoiceNo);
+        columns.Bound(c => c.OrderNo);
+        columns.Bound(c => c.PreparedBy);
+        columns.Bound(c => c.TypeAndQuantityOfMaterialNeeded);
+        columns.Bound(c => c.Checked);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders"))
+      )
+)

@@ -1,0 +1,46 @@
+﻿
+<legend>Furniture Category</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Furniture.FurnitureCategory>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name).Width(120);
+              columns.Bound(c => c.Value).Width(100);
+              columns.Bound(c => c.WorkingTime).Width(100);
+              columns.Bound(c => c.CostPerHour).Width(100);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(200);
+
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+              toolbar.Excel();
+              toolbar.Pdf();
+
+
+
+
+          })
+
+          .Scrollable(s => s.Height(400))
+          .Sortable()
+          .Filterable()
+          .Pageable(pageable => pageable
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.FurnitureCategoryId))
+              .Read(read => read.Action("FurnitureCategories_Read", "FurnitureCategories"))
+              .Create(create => create.Action("FurnitureCategories_Create", "FurnitureCategories"))
+              .Update(update => update.Action("FurnitureCategories_Update", "FurnitureCategories"))
+              .Destroy(destroy => destroy.Action("FurnitureCategories_Destroy", "FurnitureCategories"))
+               .PageSize(20)
+              )
+            )

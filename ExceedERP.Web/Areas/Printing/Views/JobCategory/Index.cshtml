@@ -1,0 +1,75 @@
+﻿@using System.Collections;
+<legend> Job Category Setup</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.JobName);
+          columns.Bound(c => c.JobCode);
+          columns.Bound(c => c.HaveParent).EditorTemplateName("HaveParentMapping")
+                                          .ClientTemplate("<input type='checkbox' #= HaveParent ? checked='checked': '' # class='chkbx' />");
+
+          columns.ForeignKey(c => c.ParentId, (IEnumerable)ViewData["Parents"], "JobCategoryId", "JobName").Title("Parent");
+          columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Code", "Name").Title("Tax Type");
+          columns.Bound(c => c.AccountNumber);
+          columns.Bound(c => c.Description);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Events(ev=>ev.Edit("onEdit"))
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable(pageable => pageable
+                                     .Input(true)
+                                     .Numeric(false)
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
+                               .Filterable()
+                               .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.JobCategoryId))
+        .Read(read => read.Action("JobCategories_Read", "JobCategory"))
+        .Create(create => create.Action("JobCategories_Create", "JobCategory"))
+        .Update(update => update.Action("JobCategories_Update", "JobCategory"))
+        .Destroy(destroy => destroy.Action("JobCategories_Destroy", "JobCategory"))
+          )
+)
+
+<script type="text/javascript">
+    function onEdit() {
+        var ddl = $('#ParentId').data('kendoDropDownList');
+        var condition = $('#HaveParent').is(':checked');
+
+        if (condition) {
+            ddl.enable(true);
+            console.log(true);
+        }
+        else {
+            console.log(false);
+            ddl.enable(false);
+        }
+        
+    }
+    function onChange() {
+        var ddl = $('#ParentId').data('kendoDropDownList');
+        var condition = $('#HaveParent').is(':checked');
+
+        if (condition) {
+            ddl.enable(true);
+            console.log(true);
+        }
+        else {
+            console.log(false);
+            ddl.enable(false);
+      }
+    }
+
+</script>

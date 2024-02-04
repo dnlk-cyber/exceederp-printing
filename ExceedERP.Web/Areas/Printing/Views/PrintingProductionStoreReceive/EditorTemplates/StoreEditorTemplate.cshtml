@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                                                                                                                          .ValuePrimitive(true)
+                                                                                                                                          .OptionLabel("Select Store...")
+                                                                                                                                          .DataTextField("Name")
+                                                                                                                                          .DataValueField("StoreCode")
+                                                                                                                                          .Filter("contains")
+                                                                                                                                          .DataSource(dataSource =>
+                                                                                                                                          {
+                                                                                                                                              dataSource.Read(read => read.Action("GetAllStores", "ProductionDataProvider"))
+                                                                                                                                                  .ServerFiltering(false);
+                                                                                                                                          })
+)

@@ -1,0 +1,8 @@
+﻿
+@(Html.Kendo().TextBoxFor(m => m)
+    
+                   .HtmlAttributes(new { onChange = "onChangeOC();" })
+
+)
+@Html.ValidationMessageFor(m => m)
+

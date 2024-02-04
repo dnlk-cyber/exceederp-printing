@@ -1,0 +1,29 @@
+﻿
+@using (Html.BeginForm("UploadDocument", "MerchantProfiles", FormMethod.Post  ,
+    new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <input type="hidden" name="id" id="id">
+
+        <div class="editor-field">
+            @Html.TextBox("file", "", new { type = "file", @id = "file" })
+        </div>
+        <br />
+        <div class="editor-field">
+            <input type="submit" class="fa fa-upload btn btn-primary" value=" Upload " id="btn_upload_profile"/>
+        </div>
+
+    </fieldset>
+}
+
+<style>
+   
+    .k-grid-update{
+        display:none;
+    }
+    .k-grid-cancel{
+        display:none;
+    }
+</style>

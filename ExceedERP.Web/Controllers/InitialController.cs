@@ -20,9 +20,6 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.CMS;
-using ExceedERP.Core.Domain.ProductionFollowUp;
-using ExceedERP.Core.Domain.PrintingEstimation;
-using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.Core.Domain.CRM;
 
 namespace ExceedERP.Web.Controllers
@@ -483,25 +480,7 @@ namespace ExceedERP.Web.Controllers
 			new ApplicationRole("HelpDesk_Report", "View Report", "HelpDesk"),
 			new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk")
 			#endregion
-				#region Printing Estimation
-				 ,new ApplicationRole(PrintingEstimationRoles.PrintingEstimationAdmin, "Printing Estimation Administrator", "PrintingEstimation"),
-				 new ApplicationRole(PrintingEstimationRoles.PrintingEstimationFormUser, "Printing Estimation Form User", "PrintingEstimation"),
-				#endregion
-				   #region Production FollowUp
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpAdmin, "Production FollowUp Administrator", "ProductionFollowUp"),
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpSetting, "Production FollowUp Setting", "ProductionFollowUp"),
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpReport, "Production FollowUp Report", "ProductionFollowUp"),
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser, "Production FollowUp Proforma User", "ProductionFollowUp"),
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser, "Production FollowUp Job Order User", "ProductionFollowUp"),
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser, "Production FollowUp Finished Good User", "ProductionFollowUp"),
-				 new ApplicationRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser, "Production FollowUp Delivery User", "ProductionFollowUp"),
-				#endregion
-				 #region Job Costing FollowUp
-				 new ApplicationRole(JobCostingRoles.JobCostingAdmin, "Job Costing Administrator", "JobCosting"),
-				 new ApplicationRole(JobCostingRoles.JobCostingJobCostUser, "Job Costing Job Cost User", "JobCosting"),
-				 new ApplicationRole(JobCostingRoles.JobCostingDailyLaborRateUser, "Job Costing Daily Labor RateUser", "JobCosting"),
-				 new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "JobCosting"),
-				#endregion
+				
 			};
 
 			foreach (ApplicationRole role in applicationRoles)

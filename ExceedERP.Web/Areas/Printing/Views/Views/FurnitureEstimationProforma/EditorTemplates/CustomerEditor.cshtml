@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+             .OptionLabel( "--Select--")
+                            .DataTextField("Name")
+                                    .DataValueField("Code")
+                                     .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetCustomers", "ProductionDataDataProvider"))
+              .ServerFiltering(false);
+      })
+                    .ValuePrimitive( true)
+)

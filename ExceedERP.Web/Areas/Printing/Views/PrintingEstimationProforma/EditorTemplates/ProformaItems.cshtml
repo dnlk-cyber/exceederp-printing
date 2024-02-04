@@ -1,0 +1,130 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.ProductionFollowUp.PFProformaItems 
+
+<form id="lineForm" method="post">
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().DropDownTreeFor(model => model.JT)
+
+                                                                                                                        .ValuePrimitive(true)
+                                                                                                                        .Placeholder("--select--")
+                                                                                                                        .Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+                                                                                                                        .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
+
+                    @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Size, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.Size)
+                    )
+                    @Html.ValidationMessageFor(model => model.Size, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                                                                                                                            .Events(e =>
+                                                                                                                            {
+                                                                                                                                e.Change("onChange");
+                                                                                                                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
+                                                                                                                            .Events(e =>
+                                                                                                                            {
+                                                                                                                                e.Change("onChange");
+                                                                                                                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BeforeTax, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.BeforeTax).HtmlAttributes(new { style = "color:red;", @readonly = "readonly" })
+                    )
+                    @Html.ValidationMessageFor(model => model.BeforeTax, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Tax, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.Tax).HtmlAttributes(new { style = "color:red;", @readonly = "readonly" })
+                    )
+                    @Html.ValidationMessageFor(model => model.Tax, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TotalPrice, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.TotalPrice).Name("TotalPrice").HtmlAttributes(new { style = "color:red;", @readonly = "readonly" })
+                    )
+                    @Html.ValidationMessageFor(model => model.TotalPrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.Description)
+                    )
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</form>
+
+
+

@@ -76,9 +76,7 @@
     <Compile Include="Context\HRMEntityConfiguration.cs" />
     <Compile Include="Context\InfoDeskEntityConfiguration.cs" />
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
-    <Compile Include="Context\JobCostingEntityConfiguration.cs" />
-    <Compile Include="Context\PrintingEstimationEntityConfiguration.cs" />
-    <Compile Include="Context\ProductFollowUpEntityConfiguration.cs" />
+    <Compile Include="Context\PrintingEntityConfiguration.cs" />
     <Compile Include="Context\ProductionEntityConfiguration.cs" />
     <Compile Include="Context\ReligionEntityTypeConfiguration.cs" />
     <Compile Include="Context\ValueFactorDefinitionEntityTypeConfiguration.cs" />
@@ -366,6 +364,10 @@
     <Compile Include="Migrations\202401291229474_prodestimationupgrade.Designer.cs">
       <DependentUpon>202401291229474_prodestimationupgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202402040820220_restructuringprinting.cs" />
+    <Compile Include="Migrations\202402040820220_restructuringprinting.Designer.cs">
+      <DependentUpon>202402040820220_restructuringprinting.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -597,6 +599,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202401291229474_prodestimationupgrade.resx">
       <DependentUpon>202401291229474_prodestimationupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402040820220_restructuringprinting.resx">
+      <DependentUpon>202402040820220_restructuringprinting.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

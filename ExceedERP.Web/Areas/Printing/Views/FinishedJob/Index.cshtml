@@ -1,0 +1,20 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.JobCosting.FinishedJob>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobCostId);
+        columns.Bound(c => c.FgrNo);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("FinishedJobs_Read", "FinishedJob"))
+      )
+)

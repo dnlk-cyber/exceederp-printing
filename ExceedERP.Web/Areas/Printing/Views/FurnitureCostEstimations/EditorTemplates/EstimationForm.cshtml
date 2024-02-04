@@ -1,0 +1,98 @@
+﻿@model ExceedERP.Core.Domain.Furniture.FurnitureCostEstimation
+
+<form id="lineForm" method="post">
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+                @Html.HiddenFor(model => model.FurnitureCostEstimationId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-sm-8" })
+                <div>
+
+                    @(Html.Kendo().DropDownTreeFor(model => model.JT)
+
+                                            .ValuePrimitive(true)
+                                            .Placeholder("--select--")
+                                            //.Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+
+                                            .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
+
+                    @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Customer">Customer</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                                                                        .Name("CustomerId")
+                                                                        .ValuePrimitive(true)
+                                                                        .OptionLabel("Select Customer...")
+                                                                        .DataTextField("Name")
+                                                                        .DataValueField("Code")
+                                                                        .Filter("contains")
+                                                                        .DataSource(dataSource =>
+                                                                        {
+                                                                            dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm"))
+                                                                                .ServerFiltering(false);
+                                                                        }))
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+    <div class=" row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="JobNumber">Job Number</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.JobNumber))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Quantity">Quantity</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Quantity))
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+    
+    
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Others">Others</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Others))
+                </div>
+            </div>
+        </div>
+
+    </div>
+       
+
+</form>
+

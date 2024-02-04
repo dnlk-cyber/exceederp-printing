@@ -1,0 +1,79 @@
+﻿@model ExceedERP.Core.Domain.PrintingEstimation.LaborCost
+
+<form id="lineForm" method="post">
+
+    <div class="row form-group">
+        
+                    <label for="PrintingCategory" class="control-label control-label col-sm-3 text-right text-right">Printing Category:</label>
+                <div  class="col-sm-6">
+                    @(Html.Kendo().DropDownListFor(model => model.PrintingSteps)
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.PrintingEstimation.PrintingSteps))
+                                    )
+                    )
+                </div>
+            </div>
+
+
+    <div class="row">
+      
+
+                <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Printing Category Value</label>
+            <div class="col-sm-6">
+                @(Html.Kendo().DropDownListFor(model => model.PrintingStepId)
+                                                                        .Name("PrintingStepId")
+                                                                        .ValuePrimitive(true)
+                                                                        .OptionLabel("Select Materials...")
+                                                                        .DataTextField("Name")
+                                                                        .OptionLabel("Select Printing Step Values...")
+                                                                        .DataTextField("Name")
+                                                                        .DataValueField("PrintingStepId")
+                                                                        .Filter("contains")
+                                                                        .DataSource(dataSource =>
+                                                                        {
+                                                                            dataSource.Read(read => read.Action("GetAllPrintingStepValues", "PrintingStep", new { area = "PrintingEstimation" })
+                                                                            .Data("filterPrintingSteps"))
+                                                                            .ServerFiltering(true);
+                                                                        })
+                                                                        .CascadeFrom("PrintingSteps")
+                                                                        .AutoBind(false)
+                                                                        .Enable(false))
+            </div>
+        </div>
+     
+    <div class="row">
+        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Work Hour:</label>
+
+                <div class="col-sm-6">
+                    @(Html.Kendo().NumericTextBoxFor(model => model.WorkingTime))
+                </div>
+            </div>
+
+    <div class="row">
+
+
+        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Cost PerHour:</label>
+
+        <div class="col-sm-6">
+
+            @(Html.Kendo().NumericTextBoxFor(model => model.CostPerHour))
+        </div>
+    </div>
+
+    @*<div class="row">
+            <div class="col-sm-1"> </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div class="k-label">
+                        <label for="TotalCost">Total Cost</label>
+                    </div>
+                    <div>
+                        @(Html.Kendo().TextBoxFor(model => model.TotalCost))
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+</form>
+

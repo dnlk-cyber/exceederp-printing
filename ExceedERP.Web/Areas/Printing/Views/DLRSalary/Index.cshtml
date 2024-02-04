@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.JobCosting.DLRSalary>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.DailyLaborRateId);
+        columns.Bound(c => c.BasicSalary);
+        columns.Bound(c => c.LessIndirectLabor);
+        columns.Bound(c => c.NetSalary);
+        columns.Bound(c => c.LessAbsence);
+        columns.Bound(c => c.Total);
+        columns.Bound(c => c.Pension);
+        columns.Bound(c => c.TotalSalary);
+        columns.Bound(c => c.NoOfDay);
+        columns.Bound(c => c.RatePerDay);
+        columns.Bound(c => c.NoOfEmployee);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("DLRSalaries_Read", "DLRSalary"))
+      )
+)

@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.FinishedGoods>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FinishedGoodReceivingId);
+        columns.Bound(c => c.CodeNo);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Unit);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FinishedGoodsId))
+          .Read(read => read.Action("FinishedGoods_Read", "FinishedGoods"))
+          .Create(create => create.Action("FinishedGoods_Create", "FinishedGoods"))
+          .Update(update => update.Action("FinishedGoods_Update", "FinishedGoods"))
+          .Destroy(destroy => destroy.Action("FinishedGoods_Destroy", "FinishedGoods"))
+      )
+)

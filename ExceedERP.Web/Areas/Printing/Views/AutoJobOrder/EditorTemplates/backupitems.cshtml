@@ -1,0 +1,491 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@model  ExceedERP.Core.Domain.Printing.ProductionFollowUp
+
+<style>
+    #popupContainerStyle{
+        width:850px;
+        padding:10px;
+    }
+</style>
+
+<div class="form">
+
+    <div class="container demo" id="popupContainerStyle">
+
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                           Contact Information
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+
+                        <p>test</p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                            Basic Information
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+
+
+                        <div class="row fullrow">
+                            <div class="col-md-2 ro1">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DropDownListFor(model => model.JobTypeId)
+
+                                                    .OptionLabel("--Select--")
+                                                           .DataTextField("Type")
+                                                                   .DataValueField("JobTypeId")
+                                                                    .Filter("contains")
+                                                               .DataSource(dataSource =>
+                                                               {
+                                                                   dataSource.Read(read => read.Action("GetJobTypes", "MegaDataProvider", new { area = "ProductionFollowUp" }))
+                                                                       .ServerFiltering(false);
+                                                               })
+                                                   .ValuePrimitive(true))
+                                        @Html.ValidationMessageFor(model => model.JobTypeId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.JobTypeItemId, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DropDownListFor(model => model.JobTypeItemId)
+
+                                                  .OptionLabel("--Select--")
+                                                         .DataTextField("Name")
+                                                                 .DataValueField("JobTypeItemId")
+                                                                  .CascadeFrom("JobTypeId")
+                                                                  .Filter("contains")
+                                                             .DataSource(dataSource =>
+                                                             {
+                                                                 dataSource.Read(read => read.Action("GetJobTypeItems", "MegaDataProvider", new { area = "ProductionFollowUp" }).Data("filterJobTypeItem"))
+                                                                     .ServerFiltering(true);
+                                                             })
+                                                 .ValuePrimitive(true))
+                                        @Html.ValidationMessageFor(model => model.JobTypeItemId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.Quantity)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Copies, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.Copies)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Copies, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-md-2 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TextWeight, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.TextWeight)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.TextWeight, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CoverWeight, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.CoverWeight)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.CoverWeight, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ColorText, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.ColorText)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.ColorText, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Colorcover, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.Colorcover)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Colorcover, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 ro1">
+
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.FinishingSize, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.FinishingSize)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.FinishingSize, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PrintingLine, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.PrintingLine)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.PrintingLine, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PrintingMachine, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.PrintingMachine)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.PrintingMachine, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TotalImpression, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.TotalImpression)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.TotalImpression, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 ro1">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Pages, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.Pages)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Pages, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.TotalPrice, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().TextBoxFor(model => model.TotalPrice)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.TotalPrice, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DeliveryDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DatePickerFor(model => model.DeliveryDate)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.DeliveryDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                            Type
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                    <div class="panel-body">
+
+
+                        <div class="row fullrow">
+                            <div class="col-md-2 ro1">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Fold, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Fold)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Fold, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Stich, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Stich)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Stich, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Sewing, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Sewing)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Sewing, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.OneKnife, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.OneKnife)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.OneKnife, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 ro1">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Glue, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Glue)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Glue, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Packing, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Packing)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Packing, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.OneKnife, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.OneKnife)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.OneKnife, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ThreeKnife, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.ThreeKnife)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.ThreeKnife, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2 ro1">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Collates, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Collates)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Collates, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Perforate, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.Perforate)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Perforate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.HardCover, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.HardCover)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.HardCover, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CameraReady, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.CameraReady)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.CameraReady, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.GraphicDesignExpectedCompletetion, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DatePickerFor(model => model.GraphicDesignExpectedCompletetion)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.GraphicDesignExpectedCompletetion, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.PrintingExpectedCompletetion, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DatePickerFor(model => model.PrintingExpectedCompletetion)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.PrintingExpectedCompletetion, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.FinishExpectedCompletetion, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DatePickerFor(model => model.FinishExpectedCompletetion)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.FinishExpectedCompletetion, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div><!-- panel-group -->
+
+
+    </div><!-- container -->
+
+</div>
+
+
+
+
+
+<style>
+
+    /*******************************
+* Does not work properly if "in" is added after "collapse".
+* Get free snippets on bootpen.com
+*******************************/
+    .panel-group .panel {
+        border-radius: 0;
+        box-shadow: none;
+        border-color: #EEEEEE;
+    }
+
+    .panel-default > .panel-heading {
+        padding: 0;
+        border-radius: 0;
+        color: #212121;
+        background-color: #FAFAFA;
+        border-color: #EEEEEE;
+    }
+
+    .panel-title {
+        font-size: 14px;
+    }
+
+        .panel-title > a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+        }
+
+    .more-less {
+        float: right;
+        color: #212121;
+    }
+
+    .panel-default > .panel-heading + .panel-collapse > .panel-body {
+        border-top-color: #EEEEEE;
+    }
+
+    /* ----- v CAN BE DELETED v ----- */
+    body {
+        background-color: #26a69a;
+    }
+
+    .demo {
+        padding-top: 60px;
+        padding-bottom: 60px;
+    }
+
+</style>
+
+
+
+<script>
+
+    function toggleIcon(e) {
+        $(e.target)
+            .prev('.panel-heading')
+            .find(".more-less")
+            .toggleClass('glyphicon-plus glyphicon-minus');
+    }
+    $('.panel-group').on('hidden.bs.collapse', toggleIcon);
+    $('.panel-group').on('shown.bs.collapse', toggleIcon);
+
+</script>

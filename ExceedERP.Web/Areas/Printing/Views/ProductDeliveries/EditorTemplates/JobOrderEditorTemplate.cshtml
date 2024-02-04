@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+             .OptionLabel( "--Select--")
+                            .DataTextField("JobNo")
+                            
+                                    .DataValueField("JobId")
+                                    .Events(ev=>ev.Change("onChangeJobOrder"))
+                                     .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetJobOrders", "ProductionDataProvider", new { area = "ProductionFollowUp" })
+          .Data("filterJobOrders"))
+              .ServerFiltering(true);
+      })
+                    .ValuePrimitive( true)
+)

@@ -1,0 +1,69 @@
+﻿@using System.Collections;
+<legend> Job Category Setup</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.Machine>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.MachineName);
+          columns.Bound(c => c.Category).EditorTemplateName("CategoryMappingTemplate");
+          columns.Bound(c => c.SubCategory).EditorTemplateName("SubcategoryMappingTemplate");
+          columns.Bound(c => c.Description);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable(pageable => pageable
+                                     .Input(true)
+                                     .Numeric(false)
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
+                               .Filterable()
+                               .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.MachineId))
+        .Read(read => read.Action("Machines_Read", "Machine"))
+        .Create(create => create.Action("Machines_Create", "Machine"))
+        .Update(update => update.Action("Machines_Update", "Machine"))
+        .Destroy(destroy => destroy.Action("Machines_Destroy", "Machine"))
+          )
+)
+
+<script type="text/javascript">
+    function onEdit() {
+        var ddl = $('#ParentId').data('kendoDropDownList');
+        var condition = $('#HaveParent').is(':checked');
+
+        if (condition) {
+            ddl.enable(true);
+            console.log(true);
+        }
+        else {
+            console.log(false);
+            ddl.enable(false);
+        }
+        
+    }
+    function onChange() {
+        var ddl = $('#ParentId').data('kendoDropDownList');
+        var condition = $('#HaveParent').is(':checked');
+
+        if (condition) {
+            ddl.enable(true);
+            console.log(true);
+        }
+        else {
+            console.log(false);
+            ddl.enable(false);
+      }
+    }
+
+</script>
