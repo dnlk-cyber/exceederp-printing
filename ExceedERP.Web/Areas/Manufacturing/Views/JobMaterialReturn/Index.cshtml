@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobMaterialReturn>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.FurnitureJobCostId);
+          //columns.Bound(c => c.CostCenterId);
+          //columns.Bound(c => c.GlFiscalYearId);
+          //columns.Bound(c => c.GLPeriodId);
+          //columns.Bound(c => c.Date);
+          //columns.Bound(c => c.Reference);
+          //columns.Bound(c => c.Quantity);
+          //columns.Bound(c => c.UnitPrice);
+          //columns.Bound(c => c.Cost);
+          //columns.Bound(c => c.ItemDescription);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("JobMaterialReturns_Read", "JobMaterialReturn"))
+      )
+)

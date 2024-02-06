@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.JobCosting
         {
             IQueryable<PrintingIdleTimeNonProductiveNonControllable> idletimenonproductivenoncontrollables = db.PrintingIdleTimeNonProductiveNonControllables;
             DataSourceResult result = idletimenonproductivenoncontrollables.ToDataSourceResult(request, idleTimeNonProductiveNonControllable => new {
-                IdleTimeNonProductiveNonControllableID = idleTimeNonProductiveNonControllable.IdleTimeNonProductiveNonControllableID,
+                IdleTimeNonProductiveNonControllableID = idleTimeNonProductiveNonControllable.PrintingIdleTimeNonProductiveNonControllableID,
                 IdleTimeID = idleTimeNonProductiveNonControllable.IdleTimeID,
                 IdleTimeCategoryId = idleTimeNonProductiveNonControllable.IdleTimeCategoryId,
                 CostCenterId = idleTimeNonProductiveNonControllable.CostCenterId,
@@ -48,7 +48,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.JobCosting
                 var entity = (PrintingIdleTimeNonProductiveNonControllable)this.GetObject(idleTimeNonProductiveNonControllable, true, id);
                 db.PrintingIdleTimeNonProductiveNonControllables.Add(entity);
                 db.SaveChanges();
-                idleTimeNonProductiveNonControllable.IdleTimeNonProductiveNonControllableID = entity.IdleTimeNonProductiveNonControllableID;
+                idleTimeNonProductiveNonControllable.PrintingIdleTimeNonProductiveNonControllableID = entity.PrintingIdleTimeNonProductiveNonControllableID;
             }
 
             return Json(new[] { idleTimeNonProductiveNonControllable }.ToDataSourceResult(request, ModelState));
@@ -93,7 +93,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.JobCosting
             }
             var entity = new PrintingIdleTimeNonProductiveNonControllable
             {
-                IdleTimeNonProductiveNonControllableID = idleTimeNonProductiveNonControllable.IdleTimeNonProductiveNonControllableID,
+                PrintingIdleTimeNonProductiveNonControllableID = idleTimeNonProductiveNonControllable.PrintingIdleTimeNonProductiveNonControllableID,
                 IdleTimeID = idleTimeNonProductiveNonControllable.IdleTimeID,
                 IdleTimeCategoryId = idleTimeNonProductiveNonControllable.IdleTimeCategoryId,
                 CostCenterId = idleTimeNonProductiveNonControllable.CostCenterId,

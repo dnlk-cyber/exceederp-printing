@@ -1,0 +1,21 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureJobStatusLineItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FurnitureJobStatusId);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.Quantiy);
+        columns.Bound(c => c.TotalPrice);
+        columns.Bound(c => c.Invoice);
+        columns.Bound(c => c.SalesVoucherNo);
+        columns.Bound(c => c.Cash);
+        columns.Bound(c => c.Credit);
+        columns.Bound(c => c.CashCreditInvoice);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("JobStatusLineItems_Read", "JobStatusLineItem"))
+      )
+)

@@ -1,0 +1,21 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProforma>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Time);
+          columns.Bound(c => c.InvoiceDate);
+          columns.Bound(c => c.DeliveryDate);
+          columns.Bound(c => c.ValidityDate);
+          columns.Bound(c => c.InvoiceNo);
+          columns.Bound(c => c.CustomerName);
+          //columns.Bound(c => c.ContactName);
+          //columns.Bound(c => c.ContactPhone);
+          columns.Bound(c => c.ProformaNo);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("Proformas_Read", "po"))
+      )
+)

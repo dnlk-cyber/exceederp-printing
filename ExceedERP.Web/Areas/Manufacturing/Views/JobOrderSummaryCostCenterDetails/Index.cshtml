@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobOrderSummaryCostCenterDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FurnitureJobOrderSummaryCostCenterId);
+        columns.Bound(c => c.CostCenter);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.DirectLaborTotalHour);
+        columns.Bound(c => c.Rate);
+        columns.Bound(c => c.DirectLaborAmount);
+        columns.Bound(c => c.DirectMachineTotalHour);
+        columns.Bound(c => c.OverHeadRate);
+        columns.Bound(c => c.OverHeadAmount);
+        columns.Bound(c => c.TotalCostOfTheCenter);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureJobOrderSummaryCostCenterDetailId))
+          .Read(read => read.Action("JobOrderSummaryCostCenterDetails_Read", "JobOrderSummaryCostCenterDetails"))
+          .Create(create => create.Action("JobOrderSummaryCostCenterDetails_Create", "JobOrderSummaryCostCenterDetails"))
+          .Update(update => update.Action("JobOrderSummaryCostCenterDetails_Update", "JobOrderSummaryCostCenterDetails"))
+          .Destroy(destroy => destroy.Action("JobOrderSummaryCostCenterDetails_Destroy", "JobOrderSummaryCostCenterDetails"))
+      )
+)

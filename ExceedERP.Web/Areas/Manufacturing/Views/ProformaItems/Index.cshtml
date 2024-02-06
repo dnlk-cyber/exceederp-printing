@@ -1,0 +1,37 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurniturePFProformaItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FurnitureProformaId);
+          columns.Bound(c => c.FurnitureJobTypeId);
+          //columns.Bound(c => c.SubCategory);
+          columns.Bound(c => c.Quantity);
+          //columns.Bound(c => c.Page);
+          columns.Bound(c => c.Size);
+          columns.Bound(c => c.UnitPrice);
+          columns.Bound(c => c.Tax);
+          columns.Bound(c => c.TotalPrice);
+          columns.Bound(c => c.Description);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurniturePFProformaItemsId))
+          .Read(read => read.Action("ProformaItems_Read", "ProformaItems"))
+          .Create(create => create.Action("ProformaItems_Create", "ProformaItems"))
+          .Update(update => update.Action("ProformaItems_Update", "ProformaItems"))
+          .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "ProformaItems"))
+      )
+)

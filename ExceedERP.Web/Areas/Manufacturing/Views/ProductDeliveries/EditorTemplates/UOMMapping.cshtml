@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+             .OptionLabel( "--Select--")
+                            .DataTextField("UOM")
+                                    .DataValueField("UnitId")
+                                     .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetAllUnits", "Unit", new { area = "JobCosting" }))
+              .ServerFiltering(false);
+      })
+                    .ValuePrimitive( true)
+)

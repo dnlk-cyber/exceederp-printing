@@ -1,0 +1,19 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureOverallCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.OverHeadCost);
+        columns.Bound(c => c.T);
+        columns.Bound(c => c.MarginalCost);
+        columns.Bound(c => c.TInpercent);
+        columns.Bound(c => c.GT);
+        columns.Bound(c => c.Graphic);
+        columns.Bound(c => c.EstimatedNetPrice);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("OverallCosts_Read", "Overall"))
+      )
+)

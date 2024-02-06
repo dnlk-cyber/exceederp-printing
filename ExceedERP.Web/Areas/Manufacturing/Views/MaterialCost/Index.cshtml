@@ -1,0 +1,15 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureMaterialCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPrice);
+        columns.Bound(c => c.TotalPrice);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("MaterialCosts_Read", "MaterialCost"))
+      )
+)

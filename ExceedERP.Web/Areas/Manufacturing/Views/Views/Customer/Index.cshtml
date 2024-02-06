@@ -1,0 +1,41 @@
+﻿
+<legend>Customer Setup</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.Customer>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name);
+              columns.Bound(c => c.Phone);
+              columns.Bound(c => c.VAT);
+              columns.Bound(c => c.Margin);
+              columns.Bound(c => c.OverHead);
+              columns.Bound(c => c.Description);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+              toolbar.Excel();
+              toolbar.Pdf();
+          })
+
+            .Scrollable(s => s.Height(400))
+            .Sortable()
+            .Filterable()
+
+            .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.CustomerId))
+              .Read(read => read.Action("Customers_Read", "Customer"))
+              .Create(create => create.Action("Customers_Create", "Customer"))
+              .Update(update => update.Action("Customers_Update", "Customer"))
+              .Destroy(destroy => destroy.Action("Customers_Destroy", "Customer"))
+               .PageSize(20)
+          )
+)

@@ -1,0 +1,18 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureJobStatus>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FurnitureJobId);
+          columns.Bound(c => c.FurnitureUserId);
+          columns.Bound(c => c.Time);
+          //columns.Bound(c => c.Date);
+          columns.Bound(c => c.JobPhase);
+          columns.Bound(c => c.Status);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("JobStatuses_Read", "JobStatus"))
+      )
+)

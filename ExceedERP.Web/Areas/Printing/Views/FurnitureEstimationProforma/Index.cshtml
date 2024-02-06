@@ -1,5 +1,5 @@
 ﻿
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.Proforma>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProforma>()
                                   .Name("grid")
                                   .Columns(columns =>
                                   {
@@ -58,14 +58,14 @@
                                                events.RequestEnd("onRequestEnd(\"grid\")");
                                            })
 
-                                      .Model(model => model.Id(p => p.ProformaId))
+                                      .Model(model => model.Id(p => p.FurnitureProformaId))
                                       .Read(read => read.Action("Proformas_Read", "PrintingEstimationProforma"))
                                       .Create(create => create.Action("Proformas_Create", "PrintingEstimationProforma"))
                                       .Update(update => update.Action("Proformas_Update", "PrintingEstimationProforma"))
                                       .Destroy(destroy => destroy.Action("Proformas_Destroy", "PrintingEstimationProforma"))
                                   .Sort(sort =>
                                   {
-                                      sort.Add(e => e.ProformaId).Descending();
+                                      sort.Add(e => e.FurnitureProformaId).Descending();
 
                                   })
                                       )
@@ -86,11 +86,11 @@
 
                                 <a href='@Url.Action("ProformaPrint", "PrintingEstimationReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
     #}#
-                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurniturePFProformaItems>()
                                                                        .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>
                                                            {
-                                                               columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "Code", "Name").Width(100);
+                                                               columns.ForeignKey(c => c.FurnitureJobTypeId, (IEnumerable)ViewData["JobTypes"], "Code", "Name").Width(100);
                                                                columns.Bound(c => c.Quantity);
                                                                columns.Bound(c => c.Size);
                                                                columns.Bound(c => c.UnitPrice);
@@ -141,7 +141,7 @@
                                                                           }
                                                                                                     )
 
-                                                                           .Model(model => model.Id(p => p.PFProformaItemsId))
+                                                                           .Model(model => model.Id(p => p.FurniturePFProformaItemsId))
 
 
                                                                                           .Read(read => read.Action("ProformaItems_Read", "PrintingEstimationProformaItems", new { id = "#=ProformaId#" }))

@@ -1,0 +1,3 @@
+﻿@model DateTime?
+@Html.TextBoxFor(m => m, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" })
+<img src="~/Scripts/etp/images/calendar-blue.gif" onchange="dataOnChange(this)" onclick="SelectDate(this)" />

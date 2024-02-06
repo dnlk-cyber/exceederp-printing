@@ -1,0 +1,9 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                        .OptionLabel("Select Print Category...")
+            .DataTextField("Text")
+                    .DataValueField("Value")
+
+                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureSteps))
+                )
+)
+

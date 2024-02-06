@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeOT>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              //columns.Bound(c => c.OTManualHour);
+              //columns.Bound(c => c.OTManualPercentage);
+              //columns.Bound(c => c.OTMechanicalHour);
+              //columns.Bound(c => c.OTMechanicalPercentage);
+              //columns.Bound(c => c.OTCameraHour);
+              //columns.Bound(c => c.OTCameraPercentage);
+              //columns.Bound(c => c.OTOffsetHour);
+              //columns.Bound(c => c.OTOffsetPercentage);
+              //columns.Bound(c => c.OTLetterPressHour);
+              //columns.Bound(c => c.OTLetterPressPercentage);
+              //columns.Bound(c => c.OTBindingHour);
+              //columns.Bound(c => c.OTBindingPercentage);
+              //columns.Bound(c => c.OTComputerHour);
+              //columns.Bound(c => c.OTComputerPercentage);
+              //columns.Bound(c => c.OTWebHour);
+              //columns.Bound(c => c.OTWebPercentage);
+              //columns.Bound(c => c.OTTotalHour);
+              //columns.Bound(c => c.OTTotalPercentage);
+          })
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Read(read => read.Action("IdleTimeOTs_Read", "IdleTimeOT"))
+          )
+)

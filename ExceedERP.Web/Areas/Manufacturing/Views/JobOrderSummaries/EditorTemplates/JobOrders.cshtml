@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+             .OptionLabel( "--Select--")
+                   .DataTextField("JobNo")
+                        .DataValueField("JobId")
+                          .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetJobOrders", "JobCostingDataProvider", new { area = "JobCosting" }))
+              .ServerFiltering(false);
+      })
+                    .ValuePrimitive( true)
+)

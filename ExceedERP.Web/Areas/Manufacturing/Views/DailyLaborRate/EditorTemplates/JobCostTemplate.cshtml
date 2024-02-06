@@ -1,0 +1,120 @@
+﻿@model ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobCost
+
+<form id="lineForm" method="post">
+
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+                @Html.HiddenFor(model => model.JobCostId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="JobId">Job No</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.JobId)
+                                                                                .Name("JobId")
+                                                                                .ValuePrimitive(true)
+                                                                                .OptionLabel("Select Jobs...")
+                                                                                .DataTextField("JobNo")
+                                                                                .DataValueField("JobId")
+                                                                                .Filter("contains")
+                                                                                .DataSource(dataSource =>
+                                                                                {
+                                                                                    dataSource.Read(read => read.Action("GetAllJobOrders", "JobOrders", new { area = "ProductionFollowUp" }))
+                                                                                    .ServerFiltering(false);
+                                                                                }))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="JobReceivedDate">Job Recieved Date</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.JobReceivedDate))
+                                                        @*.Name("Quantity").Events(ev => ev.Change("onChange")))*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Quantity">Quantity</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Quantity))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="SellingPrice">Selling Price</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.SellingPrice))
+                                                @*.Name("UnitPrice").Events(ev => ev.Change("onChange")))*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="UnitPrice">Recipt No</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.ReciptNo))
+                    @*.Name("TotalPrice"))*@
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Description">Description</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Description))
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Description">Void</label>
+                </div>
+                <div>
+                    @(Html.Kendo().CheckBoxFor(model => model.Void))
+
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+</form>
+
+

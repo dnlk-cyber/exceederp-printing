@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobLaborCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FurnitureJobCostId);
+        columns.Bound(c => c.FurnitureJobLaborCostId);
+        columns.Bound(c => c.GlFiscalYearId);
+        columns.Bound(c => c.GLPeriodId);
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.PermanetNormalHour);
+        columns.Bound(c => c.PermanetOTHour);
+        columns.Bound(c => c.ContractOTHour);
+        columns.Bound(c => c.ContractNormalHour);
+        columns.Bound(c => c.Beginning);
+        columns.Bound(c => c.BeginningHour);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("JobLaborCosts_Read", "JobLaborCost"))
+      )
+)

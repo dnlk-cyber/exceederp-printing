@@ -1,0 +1,16 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureLaborCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FurnitureSteps);
+        columns.Bound(c => c.WorkingTime);
+        columns.Bound(c => c.CostPerHour);
+        columns.Bound(c => c.TotalCost);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("LaborCosts_Read", "LaborCost"))
+      )
+)

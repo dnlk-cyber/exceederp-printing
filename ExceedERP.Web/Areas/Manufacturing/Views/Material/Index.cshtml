@@ -1,0 +1,36 @@
+﻿
+<legend>Material Setup</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name);
+              columns.Bound(c => c.Description);
+           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+})
+.ToolBar(toolbar =>
+{
+    toolbar.Create();
+    toolbar.Excel();
+    toolbar.Pdf();
+})
+
+.Scrollable(s => s.Height(400))
+.Sortable()
+    .Filterable()
+
+.Pageable(pageable => pageable
+    .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+.DataSource(dataSource => dataSource
+  .Ajax()
+  .Model(model => model.Id(p => p.InventoryId))
+  .Read(read => read.Action("Materials_Read", "Material"))
+  .Create(create => create.Action("Materials_Create", "Material"))
+  .Update(update => update.Action("Materials_Update", "Material"))
+  .Destroy(destroy => destroy.Action("Materials_Destroy", "Material"))
+   .PageSize(20)
+  )
+)

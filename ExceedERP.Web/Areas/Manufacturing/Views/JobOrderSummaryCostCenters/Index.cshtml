@@ -1,0 +1,123 @@
+﻿@using System.Collections
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobOrderSummaryCostCenter>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders");
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      });
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                  .Filterable()
+                                  .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.FurnitureJobOrderSummaryCostCenterId))
+                      .Read(read => read.Action("JobOrderSummaryCostCenters_Read", "JobOrderSummaryCostCenters"))
+                      .Create(create => create.Action("JobOrderSummaryCostCenters_Create", "JobOrderSummaryCostCenters"))
+                      .Update(update => update.Action("JobOrderSummaryCostCenters_Update", "JobOrderSummaryCostCenters"))
+                      .Destroy(destroy => destroy.Action("JobOrderSummaryCostCenters_Destroy", "JobOrderSummaryCostCenters"))
+                  ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                .Name("tabstrip2_#=JobOrderSummaryCostCenterId#")
+                               .SelectedIndex(0)
+                               .Items(items =>
+                               {
+
+                                   items.Add().Text("Cost Centers").Content(
+                                @<text>
+                                    @*<a href='@Url.Action("JobOrderTimeSheet", "ReportJobCosting")/?id=#=JobOrderTimeRegistrationId#' target="_blank" title="Print Job Order Time Sheet"><i class="fa fa-print fa-2x"></i></a>*@
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobOrderSummaryCostCenterDetail>()
+                                                             .Name("JobOrderSummaryCostCenterDetail#=JobOrderSummaryCostCenterId#")
+                                                         .Columns(columns =>
+                                                         {
+                                                             columns.Bound(c => c.CostCenter);
+                                                             columns.Bound(c => c.Date);
+                                                             columns.Bound(c => c.DirectLaborTotalHour);
+                                                             columns.Bound(c => c.Rate);
+                                                             columns.Bound(c => c.DirectLaborAmount);
+                                                             columns.Bound(c => c.DirectMachineTotalHour);
+                                                             columns.Bound(c => c.OverHeadRate);
+                                                             columns.Bound(c => c.OverHeadAmount);
+                                                             columns.Bound(c => c.TotalCostOfTheCenter);
+
+                                                             columns.Command(command =>
+                                                             {
+                                                                 command.Edit();
+                                                                 command.Destroy();
+                                                             }).Width(250);
+                                                         })
+                                                                        .ToolBar(toolbar =>
+                                                                        {
+                                                                            toolbar.Create();
+                                                                        })
+                                                .NoRecords("No Data Registered")
+                                             .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+                                             {
+
+                                                 window.Scrollable(false);
+                                                 window.Title("Cost Center");
+                                             }))
+                                             .Pageable(pageable => pageable
+                                               .Refresh(true)
+                                               )
+
+                                                       .Scrollable(h => h.Height(250))
+
+                                                       .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                              //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                              .Events(events =>
+                                              {
+                                                  events.Error("error_handler(\"JobOrderSummaryCostCenterDetail#=JobOrderSummaryCostCenterId#\")");
+                                                  events.RequestStart("onRequestStart(\"JobOrderSummaryCostCenterDetail#=JobOrderSummaryCostCenterId#\")");
+                                                  events.RequestEnd("onRequestEnd(\"JobOrderSummaryCostCenterDetail#=JobOrderSummaryCostCenterId#\")");
+                                              }
+                                                 )
+
+                                                 .Model(model =>
+                                                 {
+                                                     model.Id(p => p.FurnitureJobOrderSummaryCostCenterDetailId);
+                                                     model.Field(p => p.DirectLaborAmount).Editable(false);
+                                                     model.Field(p => p.OverHeadAmount).Editable(false);
+                                                     model.Field(p => p.TotalCostOfTheCenter).Editable(false);
+                                                 })
+
+
+                                                .Read(read => read.Action("JobOrderSummaryCostCenterDetails_Read", "JobOrderSummaryCostCenterDetails", new { id = "#=JobOrderSummaryCostCenterId#" }))
+                                               .Create(create => create.Action("JobOrderSummaryCostCenterDetails_Create", "JobOrderSummaryCostCenterDetails", new { id = "#=JobOrderSummaryCostCenterId#" }))
+                                               .Update(update => update.Action("JobOrderSummaryCostCenterDetails_Update", "JobOrderSummaryCostCenterDetails"))
+                                               .Destroy(destroy => destroy.Action("JobOrderSummaryCostCenterDetails_Destroy", "JobOrderSummaryCostCenterDetails"))
+
+                                                    ).ToClientTemplate()
+                                    )
+                                </text>
+                                              );
+
+                                       }).ToClientTemplate())
+</script>
+
+
+script>

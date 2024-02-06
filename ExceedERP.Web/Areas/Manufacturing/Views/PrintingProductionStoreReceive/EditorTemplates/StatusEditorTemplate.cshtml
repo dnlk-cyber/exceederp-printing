@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+
+@(Html.Kendo().DropDownListFor(m => m)
+
+                       .OptionLabel("--Select--")
+                                .DataTextField("Text")
+                                        .DataValueField("Value")
+                   .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.ApprovalStatuses)))
+)

@@ -1,0 +1,1605 @@
+﻿
+
+
+--@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="form-horizontal">
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @if (TempData["Error"] != null)
+    {
+        @*<div class="btn-danger">
+                <p style="text-align:center;font-size:20px;font-weight:bold;"> @TempData["Error"].ToString()</p>
+            </div>*@
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            @TempData["Error"].ToString()
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        @*<div class="btn-success" style="padding:10px;">
+                <p style="text-align:center"> @TempData["Success"].ToString()</p>
+            </div>*@
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">x</button>
+            @TempData["Success"].ToString()
+        </div>
+    }
+</div>
+<br />
+<script>
+    $(".alert-dismissible").fadeTo(2000, 500).slideUp(500, function () {
+        $(".alert-dismissible").alert('close');
+    });
+</script>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureJob>()
+            .Name("JobGrid")
+            .Columns(columns =>
+            {
+                //columns.Bound(c => c.Time);
+                columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
+                columns.ForeignKey(c => c.ProductionCustomertypeId, (IEnumerable)ViewData["CustomerTypes"], "Code", "Name").Width(100);
+                columns.ForeignKey(c => c.FurnitureProformaId, (IEnumerable)ViewBag.Proforma, "Value", "Text").Width(100);
+                columns.ForeignKey(c => c.FurnitureJobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
+                columns.ForeignKey(c => c.FurnitureCustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+                                                            .Width(110)
+                                                            .Title("Customer");
+                columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
+                                                            .Width(110);
+                columns.Bound(c => c.ReceivedDate).Width(90).Format("{0:MM-dd-yyyy}");
+                columns.Bound(c => c.Quantity).Width(90).ClientFooterTemplate("T Q: #=sum# ");
+                columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
+                columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");
+                columns.Bound(c => c.TotalPrice).Width(90).ClientFooterTemplate("T P: #=sum# ");
+                columns.Bound(c => c.Status).Width(110);
+
+                columns.Command(command =>
+                {
+                    command.Edit().IconClass("fa fa-pencil").Text(" ").HtmlAttributes(new { @class = "normal-edit",title= "Edit"});
+                    command.Edit().Text(" ").IconClass("fa fa-refresh").HtmlAttributes(new { onclick = "change(this);", title = "ReOrder",  @class = "reorder" });
+                    command.Custom("change-order").Text(" ").IconClass("fa fa-pencil-square-o").Click("forReOrder").HtmlAttributes(new { @class = "reorder", id = "btnStyle", style = "padding:2px;", title = "Change Order" });
+                    command.Custom("check").Text(" ").IconClass("fa fa-check").Click("checkJobOrder").HtmlAttributes(new { @class = "check", title = "Check" });
+                    command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").Click("approveJobOrder").HtmlAttributes(new { @class = "approve", title = "Approve" });
+                    command.Custom("reject").Text(" ").IconClass("fa fa-remove").Click("rejectJobOrder").HtmlAttributes(new { @class = "reject", title = "Reject" });
+                    command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new {  title = "Delete" });
+
+                }).Width(400);
+            })
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Create();
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderPop").Window(window =>
+                    {
+                        window.Scrollable(false);
+                        window.Title("Job Order");
+                    }))
+
+                                        .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound").Save("onSave").Save("onSave").Edit("onJobEdit"))
+
+                    .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+                        //  .Events(ev => ev.BeforeEdit("EnableDisableProforma"))
+
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .ServerOperation(true)
+                            .Aggregates(ag=> {
+                                ag.Add(a=>a.Quantity).Sum();
+                                ag.Add(a=>a.UnitPrice).Sum();
+                                ag.Add(a=>a.BeforeTax).Sum();
+                                ag.Add(a=>a.TotalPrice).Sum();
+
+                            })
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"JobGrid\")");
+                            events.RequestStart("onRequestStart(\"JobGrid\")");
+                            events.RequestEnd("onRequestEnd(\"JobGrid\")");
+                        })
+                            .Model(model => model.Id(p => p.FurnitureJobId))
+                            .Read(read => read.Action("Jobs_Read", "PrintingEstimationJobOrder"))
+                            .Create(create => create.Action("Jobs_Create", "PrintingEstimationJobOrder"))
+                            .Update(update => update.Action("Jobs_Update", "PrintingEstimationJobOrder"))
+                            .Destroy(destroy => destroy.Action("Jobs_Destroy", "PrintingEstimationJobOrder"))
+                            .Sort(sort =>
+                            {
+                                sort.Add(l => l.FurnitureJobId).Descending();
+                            })).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+@(Html.Kendo().TabStrip()
+        .Name("tabstrip2_#=JobId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+                
+            items.Add().Text("Details").Content(
+            @<text>
+            <a href='@Url.Action("JobOrder", "PrintingEstimationReport")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
+            <div class='row'>
+                <div class='col-sm-4' id='detailone'>
+                    <ul>
+                        <li id=detailList><label>Pages:</label>#= Pages #</li>
+                        <li id=detailList><label>Copies:</label>#= Copies #</li>
+                        <li id=detailList><label>Text Weight:</label>#= TextWeight #</li>
+                        <li id=detailList><label>Cover Weight:</label>#= CoverWeight #</li>
+                        <li id=detailList><label>Color Text:</label>#= ColorText #</li>
+                        <li id=detailList><label>Color Cover :</label>#= Colorcover #</li>
+                        <li id=detailList><label>Finishing Size:</label>#= FinishingSize #</li>
+                        <li id=detailList><label>Printing Line:</label>#= PrintingLine #</li>
+
+                    </ul>
+                </div>
+                <div class='col-sm-4' id='detailone'>
+                    <ul>
+
+                        <li id=detailList><label>Total Impression:</label>#= TotalImpression #</li>
+                        <li id=detailList><label>Printing Machine:</label>#= PrintingMachine #</li>
+                        <li id=detailList><label>Estimated By:</label>#= EstimatedBy #</li>
+                        <li id=detailList><label>Approved By:</label>#= ApprovedBy #</li>
+                        <li id=detailList><label>Received Date:</label>#= ReceivedDate #</li>
+                        <li id=detailList><label>Delivery Date:</label>#= DeliveryDate #</li>
+                        <li id=detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>
+                        <li id=detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>
+                        <li id=detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>
+
+                    </ul>
+                </div>
+            </div>
+        </text>);
+        items.Add().Text("Change Of Order").Content(
+        @<text>
+
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureChangeOrder>()
+                    .Name("ChangeOrder#=JobId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Quantity);
+                        columns.Bound(c => c.Price).Title("Unit Price");
+                        columns.Bound(c => c.Total);
+                        columns.Bound(c => c.Size);
+                        columns.Bound(c => c.Reason);
+                        columns.Template(c => @Html.ActionLink("ChangeOfOrder", "PrintingEstimationReport", new { id = c.FurnitureChangeOrderId, }));
+                        columns.Bound(p => p.FurnitureChangeOrderId).ClientTemplate("<a href='" + @Url.Action("ChangeOfOrder", "PrintingEstimationReport", new { id = "\\#=ChangeOrderId\\#" }) + "' class='btn-primary' style='padding:10px;'><i class='fa fa-print'></i>  Print</a>");
+                        columns.Command(command =>
+                        {
+                            //command.Custom("changeOfOrder").Action("ChangeOfOrder", "ReportProductionFollowUp");
+                        }).Width(100);
+
+                    }).ToolBar(toolbar =>
+                    {
+                    })
+                    .NoRecords("No Data Registered")
+                    .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
+                    {
+
+                        window.Scrollable(false);
+                        window.Title("Change Of Order");
+                    }))
+                    .Pageable(pageable => pageable
+                    .Refresh(true)
+                    )
+
+                    .Scrollable(h => h.Height(250))
+
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"ChangeOrder#=JobId#\")");
+                        events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
+                        events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
+                    })
+
+                    .Model(model =>
+                    {
+                        model.Id(p => p.FurnitureChangeOrderId);
+                    })
+
+                    .Read(read => read.Action("ChangeOrders_Read", "PrintingEstimationJobOrder", new { id = "#=JobId#" }))
+
+                    ).ToClientTemplate()
+                    )
+        </text>);
+
+
+            items.Add().Text("Estimated Materials").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureMaterialCost>()
+
+                .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
+                    columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name")
+                .Width(90);
+                    columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Items"], "ItemCode", "Name")
+                .Width(90);
+                    columns.Bound(c => c.Quantity).Width(80);
+                    columns.Bound(c => c.UnitPrice).Width(80);
+                    columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                    // escaped template expression, to be evaluated in the child/detail context
+                    // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+
+
+                })
+                //.Events(ev => ev.DataBound("onChildDataBound"))
+                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                    .TemplateName("MaterialCost")
+                .Window(w => w.Title("Material Cost Form").Width(500)))
+                .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    //   .ServerOperation(false)
+                    .Events(ev => ev.Error("error_handler(\"material_costs_#=JobId#\")")
+                    .RequestStart("onRequestStart(\"material_costs_#=JobId#\")")
+                    .RequestEnd("onRequestEnd(\"material_costs_#=JobId#\")"))
+                    .Aggregates(aggregates =>
+
+                    {
+                        aggregates.Add(c => c.TotalPrice).Sum();
+                    })
+                    .Model(model => model.Id(p => p.FurnitureMaterialCostId))
+                    .Read(read => read.Action("MaterialJobOrders_Read", "MaterialCost", new { id = "#=JobId #" }))
+                    .Create(create => create.Action("JobMaterialCosts_Create", "MaterialCost", new {area= "PrintingEstimation", id = "#=JobId #" }))
+                    .Update(update => update.Action("MaterialCosts_Update", "MaterialCost"))
+                    .Destroy(destroy => destroy.Action("MaterialCosts_Destroy", "MaterialCost"))
+                    .Sort(sort =>
+                    {
+                        sort.Add(m => m.LastModified).Descending();
+
+
+                    })
+                    .PageSize(5))
+                    .ToClientTemplate())
+                                                                                                                                                                      
+          </text>);
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }).ToClientTemplate())
+</script>
+
+
+
+@(Html.Kendo().Window().Name("ChangeOfOrder")
+    .Title("Change Of Order")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(600).Content(@<text>
+        <div class="form-group">
+            <form action="@Url.Action("ChangeOrder", "PrintingEstimationJobOrder", new { })" method="post" , new { enctype="multipart/form-data" }>
+                <input type="hidden" name="id" id="id">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    @Html.TextBox("JobId", "", new { type = "text", hidden = "hidden" })
+
+                    <div class="col-md-4">
+
+                        @Html.Label("Quantity")
+
+                        @Html.TextBox("ChangedQuantity", "", new { type = "text", onchange = "onChangeOfOrder()" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.Label("Unit Price")
+
+                        @Html.TextBox("Price", "", new { type = "text", onchange = "onChangeOfOrder()" })
+                    </div>
+                                                                           
+
+                </div>
+                <div class="row">
+                    <div class="col-md-1"></div>
+
+
+                    <div class="col-md-4">
+                        @Html.Label("Size")
+
+                        @Html.TextBox("Size", "", new { type = "text" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.Label("Tax")
+
+                        @Html.TextBox("Tax", "", new { type = "text", @readonly = "readonly" })
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-4">
+                        @Html.Label("Total")
+
+                        @Html.TextBox("Total", "", new { type = "text", @readonly = "readonly" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.Label("Reason")
+
+                        @Html.TextBox("Reason", "", new { type = "text" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-10">
+
+                        @Html.Label("Type & Quantity of Material Needed")<br />
+                        <textarea name="TypeAndQuantityOfMaterialNeeded"></textarea>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <br />
+                    <div class="col-md-9">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="submit" class="btn-primary k-button" value=" Submit " />
+                        </div>
+                    
+                </div>
+                                                                          
+
+</form>
+            <div class="pull-right">
+                                               
+            </div>
+        </div>
+    </text>))
+
+
+<script id="JobStatusLineItem" type="text/Kendo-tmpl">
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureJobStatusLineItem>()
+              .Name("JobStatusLineItem#=JobStatusId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Date);
+                  columns.Bound(c => c.Quantiy).EditorTemplateName("QuantityEditorTemplate");
+                  columns.Bound(c => c.RemainigQuantiy);
+                  columns.Bound(c => c.TotalPrice);
+                  columns.Bound(c => c.Invoice);
+                  columns.Bound(c => c.SalesVoucherNo);
+                  columns.Bound(c => c.Cash);
+                  columns.Bound(c => c.Credit);
+                  columns.Bound(c => c.CashCreditInvoice);
+
+                  columns.Command(command =>
+                  {
+                      command.Edit();
+                      command.Destroy();
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+
+              })
+              .NoRecords("No Data Registered")
+              .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+              {
+
+                  window.Scrollable(false);
+
+              }))
+              .Pageable(pageable => pageable
+              .Refresh(true))
+
+            .Scrollable(h => h.Height(250))
+            .Events(ev=>ev.DataBound("jobStatusLineItemDataBound").Edit("jobStatusLineItemEdit"))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"JobStatusLineItem#=JobStatusId#\")");
+                    events.RequestStart("onRequestStart(\"JobStatusLineItem#=JobStatusId#\")");
+                    events.RequestEnd("onRequestEnd(\"JobStatusLineItem#=JobStatusId#\")");
+
+
+                })
+                .Sort(sort=>sort.Add(s=>s.FurnitureJobStatusLineItemId).Descending())
+                .Model(model =>
+                {
+                    model.Id(p => p.FurnitureJobStatusLineItemId);
+                    model.Field(p => p.RemainigQuantiy).Editable(false);
+
+
+
+                })
+
+                .Read(read => read.Action("JobStatusLineItems_Read", "JobStatusLineItem", new { id = "#=JobStatusId#" }))
+                .Create(create => create.Action("JobStatusLineItems_Create", "JobStatusLineItem", new { id = "#=JobStatusId#" }))
+                .Update(update => update.Action("JobStatusLineItems_Update", "JobStatusLineItem"))
+                .Destroy(destroy => destroy.Action("JobStatusLineItems_Destroy", "JobStatusLineItem"))
+
+                ).ToClientTemplate()
+    )
+</script>
+<script>
+    var codeid;
+    var unitPrice;
+    var jobStatusId;
+    var jobPhase;
+    var jobState;
+
+    function jobDataBound(e) {
+    //this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.Status == 1) {
+                $(this).css("background-color", "#7FFFD4");
+            }
+
+            if (dataItem.IsApproved == true) {
+                $(this).find(".k-grid-reorder").show();
+                $(this).find(".k-grid-change-order").show();
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-show").hide();
+                $(this).find(".reorder").show();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-check").hide();
+
+            }
+            else if (dataItem.IsChecked == true) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-change-order").hide();
+                $(this).find(".reorder").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-change-order").hide();
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-reorder").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-check").show();
+                $(this).find(".reorder").hide();
+                $(this).find(".k-grid-delete").show();
+            }
+
+
+        });
+
+    }
+     function approveJobOrder(e) {
+        if (confirm("Are you sure to approve the this job?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("ApproveJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            data: { id: dataItem.JobId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#JobGrid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+
+    }
+
+    function checkJobOrder(e) {
+        if (confirm("Are you sure to this job is going to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("CheckJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            data: { id: dataItem.JobId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#JobGrid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+
+    }
+    function rejectJobOrder(e) {
+        if (confirm("Are you sure to reject this job order?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("RejectJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            data: { id: dataItem.JobId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#JobGrid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+
+        }
+    function onSave() {
+        var masterGrid = $("#JobGrid").data("kendoGrid");
+        masterGrid.dataSource.read();
+        masterGrid.refresh();
+        location.reload();
+
+        masterGrid.dataSource.read();
+        masterGrid.refresh();
+        location.reload();
+    }
+        function onGridEdit(e) {
+            e.sender.one("dataBound", function (e) {
+                e.sender.dataSource.read();
+            });
+        }
+
+        function bindDataAndRefresh(e) {
+            var grid = $("#JobGrid").data("kendoGrid");
+            grid.bind("dataBound", onGridEdit(e));
+        }
+
+        $(document).ready(function () {
+            var grid = $("#JobGrid").data("kendoGrid");
+            grid.bind("save", bindDataAndRefresh);
+        });    
+    function MasterOnExpand(e) {
+
+    var masterRow = e.masterRow;
+
+    var masterGrid = $("#JobGrid").data("kendoGrid");
+
+    var masterDataItem = masterGrid.dataItem(masterRow);
+    codeid = masterDataItem.JobId;
+    unitPrice = masterDataItem.UnitPrice;
+    }
+
+    function jobStatusExpand(e) {
+    var childMasterRow = e.masterRow;
+
+    var childMasterGrid = $("#JobStatus"+codeid).data("kendoGrid");
+
+    var childMasterDataItem = childMasterGrid.dataItem(childMasterRow);
+    jobStatusId = childMasterDataItem.JobStatusId;
+    jobPhase = childMasterDataItem.JobPhase;
+        jobState = childMasterDataItem.Status;
+        if (jobState == 1) {
+            $(".k-grid-top", $("#JobStatusLineItem" + jobStatusId)).hide();
+
+        }
+    }
+
+    function jobStatusDataBound(e) {
+        var dataSource = this.dataSource;
+       
+    this.element.find('tr.k-master-row').each(function () {
+        var row = $(this);
+
+        var data = dataSource.getByUid(row.data('uid'));
+        if (data.Status == 1) {
+            row.find(".k-grid-delete").hide();
+            row.find(".k-grid-edit").hide();
+        }
+        if (data.JobPhase == 1) {
+    row.find('.k-hierarchy-cell a').css({ opacity: 0.0, cursor: 'default' }).click(function (e) { e.stopImmediatePropagation(); return false; });
+    }
+    });
+    }
+
+
+    function jobStatusLineItemDataBound()
+    {
+        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+
+    if(jobPhase==3)
+    {
+    grid.hideColumn('SalesVoucherNo');
+    grid.hideColumn('Cash');
+    grid.hideColumn('Credit');
+    grid.hideColumn('CashCreditInvoice');
+    grid.showColumn('Invoice');
+    }
+    else if(jobPhase==4)
+    {
+    grid.hideColumn('Invoice');
+    grid.showColumn('SalesVoucherNo');
+    grid.showColumn('Cash');
+    grid.showColumn('Credit');
+    grid.showColumn('CashCreditInvoice');
+    }
+    else
+    {
+    grid.hideColumn('SalesVoucherNo');
+    grid.hideColumn('Cash');
+    grid.hideColumn('Credit');
+    grid.hideColumn('CashCreditInvoice');
+    grid.hideColumn('Invoice');
+        }
+
+
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            if (jobState == 1) {
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove();
+            }
+        });
+    }
+    function jobStatusLineItemEdit()
+    {
+        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        $("#TotalPrice").prop("readonly", true);
+
+        if (jobPhase == 3) {
+            grid.hideColumn('SalesVoucherNo');
+            grid.hideColumn('Cash');
+            grid.hideColumn('Credit');
+            grid.hideColumn('CashCreditInvoice');
+            grid.showColumn('Invoice');
+        }
+        else if (jobPhase == 4) {
+            grid.hideColumn('Invoice');
+            grid.showColumn('SalesVoucherNo');
+            grid.showColumn('Cash');
+            grid.showColumn('Credit');
+            grid.showColumn('CashCreditInvoice');
+        }
+        else {
+            grid.hideColumn('SalesVoucherNo');
+            grid.hideColumn('Cash');
+            grid.hideColumn('Credit');
+            grid.hideColumn('CashCreditInvoice');
+            grid.hideColumn('Invoice');
+        }
+    }
+    function onChangeQuantity() {
+        var quantity = $("#Quantiy").val();
+        console.log(quantity);
+
+        var totalPrice = $("#TotalPrice").val((quantity * unitPrice).toFixed(2));
+        totalPrice.trigger("change");
+
+    }
+    function onChangeOfOrder() {
+
+    var unitPrice = $("#Price").val();
+        var quantity = $("#ChangedQuantity").val();
+    var jobId = $("#JobId").val();
+
+    if (quantity !== "" && unitPrice !== "" && jobId !== "") {
+
+    $.ajax({
+    url: '@Url.Action("GetTaxAndTotalPriceChangeOfOrder", "JobOrders")',
+
+    data: { jobId: jobId, quantity: quantity, unitPrice: unitPrice },
+    type: 'POST',
+    cache: false,
+    success: function (result) {
+    r = result;
+
+    $("#Tax").val(r.Tax).trigger("change");
+    $("#Total").val(r.Total).trigger("change");
+
+    }
+
+    });
+    }
+
+    }
+
+    function onMasterEdit(e) {
+
+    //var grid = $("#grid").data("kendoGrid");
+    //grid.hideColumn("ToStoreCode");
+
+
+    //if (e.model.isNew() === false) {
+    //    $("#dropdownlist").kendoDropDownList({
+    //        enable: false
+    //    });
+
+    //}
+    }
+    function onChange() {
+
+        var unitPricenumerictextbox = $("#UnitPrice");
+        var quantitynumerictextbox = $("#Quantity");
+        var totalPricenumerictextbox = $("#TotalPrice");
+        console.log(1000000);
+        var unitPrice = unitPricenumerictextbox.val();
+        var quantity = quantitynumerictextbox.val();
+        var totalPrice = unitPrice * quantity;
+        totalPrice = totalPrice.toFixed(3);
+        totalPricenumerictextbox.val(totalPrice);
+        totalPricenumerictextbox.trigger("change");
+    }
+    function filterCategories() {
+        //
+        // summary:
+        // send the filtering text along with the parent widget's value
+        var dropdownlist = $("#InventoryId").data("kendoDropDownList");
+
+        var filterInput = dropdownlist.filterInput.val();
+
+
+        return {
+            ItemCategoryCode: $("#InventoryCategoryId").val(),
+            text: filterInput
+        };
+    }
+    function onItemEdit(e) {
+    var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+    var masterGrid = $("#grid").data("kendoGrid");
+    var masterGrid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+    var masterDataItem = masterGrid.dataItem(masterRow);
+    storeCode = masterDataItem.StoreCode;
+    storeReqId = masterDataItem.StoreRequisitionID;
+
+    if (e.model.isNew() === true) {
+    $("#ApprovedQuantity").attr("readonly", true);
+    }
+    //edit
+    if (e.model.isNew() !== true) {
+
+    //$("#RequestedQuantity").attr("readonly", true);
+    //$("#ItemCategoryCode").attr("readonly", true);
+    }
+
+
+
+    }
+    function onDataBoundLines(e) {
+
+    var detailGrid = "#" + e.sender.element[0].id;// "#ProductionStoreRequisitionItem_" + codeid;
+    if (isapproved) {
+
+    $(".k-grid-add", detailGrid).hide();
+    $(".k-grid-delete", detailGrid).hide();
+    $(".k-grid-edit", detailGrid).hide();
+    }
+    }
+    let quantity = 0;
+    function onChangeQuan() {
+        var value = this.value();
+        quantity = value;
+    var unitPrice = $("#UnitPrice").val();
+        quantity = $("#Quantity").val();
+    var jobTypeId = $("#JT").val();
+        console.log(unitPrice);
+        console.log(jobTypeId);
+        console.log(quantity);
+        if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
+        console.log(unitPrice);
+    $.ajax({
+    url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationJobOrder")',
+
+        data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
+    type: 'POST',
+    cache: false,
+    success: function (result) {
+    r = result;
+
+    $("#BeforeTax").val(r.BeforeTax).trigger("change");
+    $("#TotalPrice").val(r.TotalPrice).trigger("change");
+
+    }
+
+    });
+    }
+       
+
+    }
+
+    function filterJobTypeItem() {
+    return {
+    JobTypeId: $("#JobTypeId").val()
+    };
+    }
+
+    //function filterJobTypeByProforma() {
+    //    return {
+    //        JobTypeId: $("#JobTypeId").val()
+    //    };
+    //}
+
+    function onChangeProforma() {
+
+    var proformaId = this.dataItem().ProformaId;
+
+    //$("#JobTypeId").data("kendoDropDownList").dataSource.read();
+
+
+    $.ajax({
+    url: '@Url.Action("GetCustomer", "JobOrders")',
+
+    data: { proformaId: proformaId },
+    type: 'POST',
+    cache: false,
+    success: function (result) {
+    r = result;
+
+    $("#CustomerName").val(r.CustomerName).trigger("change");
+    $("#ContactName").val(r.ContactName).trigger("change");
+    $("#ContactPhone").val(r.ContactPhone).trigger("change");
+    // $("#CustomerName").trigger("change");
+
+    }
+
+    });
+
+    }
+    //function onChange() {
+
+    //    var unitPricenumerictextbox = $("#UnitPrice");
+    //    var quantitynumerictextbox = $("#Quantity");
+    //    var totalPricenumerictextbox = $("#TotalPrice");
+
+    //    var unitPrice = unitPricenumerictextbox.val();
+    //    var quantity = quantitynumerictextbox.val();
+    //    var totalPrice = unitPrice * quantity;
+    //    totalPricenumerictextbox.val(totalPrice).trigger("change");
+    //    //totalPricenumerictextbox.trigger("change");
+    //}
+    //function filterCategories() {
+    ////
+    //// summary:
+    ////      send the filtering text along with the parent widget's value
+    ////var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+    //return {
+    //ItemCategoryCode: $("#ItemCategoryCode").val()
+    //};
+   // }
+    function filterJobTypeByProforma() {
+    return {
+    proformaId: $("#ProformaId").val()
+    };
+    }
+
+
+    function pro() {
+    var x = $('#hv').is(':checked');
+    console.log(x);
+    }
+    var jobid = 1;
+    function change() {
+    jobid = 0;
+
+    }
+    function EnableDisableProforma(e) {
+    console.log(jobid);
+    var uid = $(".k-edit-form-container").closest("[data-role=window]").data("uid");
+    model = $("#JobGrid").data("kendoGrid").dataSource.getByUid(uid);
+    if (jobid == 0) {
+    model.set("JobId", jobid);
+
+    }
+    var x = $('#hv').is(':checked');
+    console.log(x);
+    if (x == true) {
+
+    $("#ProformaId").data("kendoDropDownList").enable(true);
+    $("#CustomerId").data("kendoDropDownList").enable(false);
+    $("#IsExistingCustomer").attr("disabled", true);
+    $("#CustomerName").prop("readonly", true);
+    $("#BrandName").prop("readonly", true);
+    $("#TinNo").prop("readonly", true);
+    }
+    else {
+    $("#IsExistingCustomer").attr("disabled", false);
+    $("#ProformaId").data("kendoDropDownList").enable(false);
+
+    var y = $('#IsExistingCustomer').is(':checked');
+    if (y == true) {
+    console.log(100);
+    $("#CustomerId").data("kendoDropDownList").enable(true);
+    $("#hv").attr("disabled", true);
+    $("#CustomerName").prop("readonly", true);
+    $("#BrandName").prop("readonly", true);
+    $("#TinNo").prop("readonly", true);
+    }
+    else {
+    console.log(200);
+
+    $("#CustomerId").data("kendoDropDownList").enable(false);
+    $("#hv").attr("disabled", false);
+    $("#CustomerName").prop("readonly", false);
+    $("#BrandName").prop("readonly", false);
+    $("#TinNo").prop("readonly", false);
+
+    $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+    $("#CustomerName").val("");
+    $("#ContactName").val("");
+    $("#ContactPhone").val("");
+    }
+
+
+
+    }
+    }
+    var storeReqId;
+    function detailExpand(e) {
+
+    masterRow = e.masterRow;
+    var masterGrid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+    masterDataItem = masterGrid.dataItem(masterRow);
+    storeReqId = masterDataItem.StoreRequisitionID;
+    isapproved = masterDataItem.IsOnlineApproved;
+
+    }
+    function EnableDisableCustomer(e) {
+    var x = $('#IsExistingCustomer').is(':checked');;
+    if (x == true) {
+
+    $("#CustomerId").data("kendoDropDownList").enable(true);
+    $("#hv").attr("disabled", true);
+    $("#CustomerName").prop("readonly", true);
+    $("#BrandName").prop("readonly", true);
+    $("#TinNo").prop("readonly", true);
+    }
+    else {
+
+    $("#CustomerId").data("kendoDropDownList").enable(false);
+    $("#hv").attr("disabled", false);
+    $("#CustomerName").prop("readonly", false);
+    $("#BrandName").prop("readonly", false);
+    $("#TinNo").prop("readonly", false);
+
+    $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+    $("#CustomerName").val("");
+    $("#ContactName").val("");
+    $("#ContactPhone").val("");
+    }
+
+
+
+    }
+    function onSelectedPeriod() {
+    @*var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "ProductionDataProvider")',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#ReturnDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+           });
+           }*@
+
+    }
+    function filterStoresByBranch() {
+    return {
+    BranchId: $("#BranchId").val()
+    };
+    }
+    function filterPeriodsByStore() {
+    return {
+    store: $("#StoreCode").val()
+    };
+    }
+    function selectProduct() {
+    var productId = $("#Type").val()
+    console.log(productId);
+    $.ajax({
+    type: 'POST',
+    url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+    data: {
+    itemCode: productId,
+
+    },
+    async: false,
+    success: function (result) {
+    data = result;
+    console.log(data.AvgPrice);
+    var up = $("#UnitPrice").val(data.AvgPrice).trigger("change");
+    //up.value(data.AvgPrice);
+    //up.trigger("change");
+
+
+
+
+    }
+    });
+    }
+     function selectInventory() {
+        var productId = $("#InventoryId").val()
+        var storeCode = $("#StoreCode").val()
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+            data: {
+                itemCode: productId, storeCode: storeCode
+
+            },
+            async: false,
+            success: function (result) {
+                data = result;
+
+                var up = $("#UnitPrice").val(data.AvgPrice);
+                var ba = $("#Balance").val(data.Balance);
+                up.trigger("change");
+                ba.trigger("change");
+
+
+
+
+            }
+        });
+    }
+
+    function forReOrder(e) {
+
+    var row = $(e.target).closest("tr");
+    var grid = $("#JobGrid").data("kendoGrid");
+    var dataItem = grid.dataItem(row);
+    var id = dataItem.JobId;
+
+    $("#JobId").val(id);
+
+    var wnd = $("#ChangeOfOrder").data("kendoWindow");
+
+    wnd.center().open();
+    }
+    function onDataBoundMaster() {
+    this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+    //approved
+    var grid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+    var gridData = grid.dataSource.view();
+
+    for (var i = 0; i < gridData.length; i++) {
+    var currentUid = gridData[i].uid;
+    if (gridData[i].IsOnlineApproved) {
+    var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+    var editButton = $(currenRow).find(".k-grid-edit");
+    var deleteButton = $(currenRow).find(".k-grid-delete");
+    editButton.hide();
+    deleteButton.hide();
+    }
+    }
+    }
+    function onSelectLoading() {
+    var dropdowntree = $("#JT").data("kendoDropDownTree");
+    var treeviewSelect = function (e) {
+    //if (e.sender.dataItem(e.node).hasChildren) {
+    //e.preventDefault()
+    //}
+    };
+
+    dropdowntree.treeview.bind("select", treeviewSelect);
+
+    }
+</script>
+<script>
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ProductionStoreReturn")',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApprovalProductionStoreReturn(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ProductionStoreReturn")',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+   
+
+    function isForOther(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#forbranchDiv").show();
+
+        } else {
+            $("#forbranchDiv").hide();
+        }
+
+    }
+
+    function bidSuccess() {
+
+    }
+
+
+    var storeCode;
+    var codeid;
+
+    function onEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#storn_return_" + codeid).data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        //    codeid = masterDataItem.GoodSellingAndLendingID;
+    }
+
+
+//}
+
+
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+    var popup;
+    var aCode;
+
+
+    function SelectItemCode() {
+
+        // codeid = masterDataItem.GoodSellingAndLendingID;
+        popup = window.open('/Inventory/DataProvider/ItemFiltering', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(ItemCode) {
+        aCode = ItemCode;
+        $("#ItemCode").val(aCode).trigger("change");
+    }
+
+    function getItems() {
+        return {
+            storeCode: storeCode
+        }
+    }
+</script>
+<script>
+   function refresh()
+   {
+       var masterGrid = $("#ProductionStoreRequisitionValidation_" + codeid).data("kendoGrid");
+       masterGrid.dataSource.read();
+    }
+    function isTransfer(obj) {
+        if ($(obj).is(":checked")) {
+            $("#tostoreDiv").show();
+            $('#IsForOther').attr('checked', false);
+            $("#forbranchDiv").hide();
+            $("#IsForOther").prop("disabled", true);
+
+        } else {
+            $("#tostoreDiv").hide();
+            $("#IsForOther").prop("disabled", false);
+
+        }
+
+    }
+
+    function isForOther(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#forbranchDiv").show();
+
+        } else {
+            $("#forbranchDiv").hide();
+        }
+
+    }
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ProductionStoreRequisition", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApprovalStoreRequisition(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ProductionStoreRequisition")',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function onSelectedPeriod(flag) {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "ProductionDataProvider")',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                //if (flag == 0) {
+                //    var datepicker = $("#RequestDate").data("kendoDatePicker");
+
+                //}
+                //else {
+                    var datepicker = $("#ReturnDate").data("kendoDatePicker");
+
+                //}
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+           });
+           }
+
+    }
+
+    function test() {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetStatus", "ProductionStoreRequisition")',
+            data: { id: codeid },
+            success: function (result) {
+                toastr.error(result.Message);
+                recordStatus = result.Status;
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+
+
+
+
+    var storeCode;
+    var storeid;
+    var isapproved;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        storeid = masterDataItem.StoreRequisitionID;
+
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+        }
+        //edit
+        if (e.model.isNew() !== true) {
+
+            //$("#RequestedQuantity").attr("readonly", true);
+            //$("#ItemCategoryCode").attr("readonly", true);
+        }
+
+
+
+    }
+
+
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        }
+
+    }
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+        var masterGrid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        storeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+
+    }
+    function onDataBoundMaster() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+    function onJobStatusEdit(e) {
+        var statusOption = e.sender.editable.options.model.Status;
+        var statusInput = $('[data-role="editable"] input#Status');
+        if (!e.model.isNew()) {
+            if (statusOption == 0) {
+                $("#Status").data("kendoDropDownList").enable(true);
+                console.log(statusOption);
+            } else {
+                console.log(statusOption);
+                $("#Status").data("kendoDropDownList").enable(false);
+            }
+        }
+        else {
+            $("#Status").data("kendoDropDownList").enable(false);
+            console.log(10000);
+
+        }
+    }
+    function onDataBoundLines(e) {
+
+        var detailGrid = "#"+e.sender.element[0].id;// "#ProductionStoreRequisitionItem_" + codeid;
+        if (isapproved) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function filterStoresByBranch() {
+        return {
+            BranchId: $("#BranchId").val()
+        };
+    }
+    function filterPeriodsByStore() {
+        return {
+            store: $("#StoreCode").val()
+        };
+    }
+    var i = 0;
+    function onDataBoundFisrtValidation(e) {
+        i++;
+        var detailGrid = "#" + e.sender.element[0].id;// "#ProductionStoreRequisitionValidation_" + codeid;
+
+        if (isapproved) {
+
+           // $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+        var masterGrid = $("#ProductionStoreRequisitionValidation_" + storeid).data("kendoGrid");
+
+    }
+    function onDataBoundSecondValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;// "#ProductionStoreRequisitionPropertyValidation_" + codeid;
+
+        if (isapproved) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onJobEdit(e) {
+        var mega = $("#IsMega").val();
+        console.log(mega);
+        if (mega) {
+            $("#Branna").hide();
+        }
+        else {
+            $("#Mega").hide();
+
+        }
+
+    }
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+  
+    .row {
+        margin: 10px;
+    }
+
+        .row .col-sm-3 {
+            margin: 10px;
+        }
+
+    /*.row .col-sm-3 {
+        width: 250px;
+    }*/
+
+    /*.row .col-md-3 {
+        margin: 40px;
+    }*/
+
+    .row {
+        margin-bottom: 10px;
+    }
+    .k-textbox,
+    .k-numerictextbox,
+    .k-dropdown,
+    .k-dropdowntree,
+    .k-datepicker,
+    .k-upload {
+        width: 80%;
+    }
+    .k-grid tbody .k-button {
+        min-width: 30px;
+        min-height: 30px;
+    }
+    textarea {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 100%;
+        height:100px;
+        border-color: lightgrey;
+    }
+    .check {
+        background-color: #e68a00;
+        color: white;
+    }
+
+    .approve {
+        background-color: #077d01;
+        color: white;
+    }
+
+    .reject {
+        color: white;
+        background-color: #fc0000;
+    }
+</style>

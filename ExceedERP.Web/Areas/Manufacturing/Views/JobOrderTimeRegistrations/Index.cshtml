@@ -1,0 +1,125 @@
+﻿@using System.Collections
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobOrderTimeRegistration>()
+              .Name("JobOrderTimeRegistrationGrid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.FurnitureJobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders");
+                  columns.Bound(c => c.Remark);
+                  columns.Command(command =>
+                  {
+                      command.Edit();
+                      command.Destroy();
+                  });
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                              .Filterable()
+                              .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"JobOrderTimeRegistrationGrid\")");
+                                  events.RequestStart("onRequestStart(\"JobOrderTimeRegistrationGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"JobOrderTimeRegistrationGrid\")");
+                              })
+                  .Model(model => model.Id(p => p.FurnitureJobOrderTimeRegistrationId))
+                  .Read(read => read.Action("JobOrderTimeRegistrations_Read", "JobOrderTimeRegistrations"))
+                  .Create(create => create.Action("JobOrderTimeRegistrations_Create", "JobOrderTimeRegistrations"))
+                  .Update(update => update.Action("JobOrderTimeRegistrations_Update", "JobOrderTimeRegistrations"))
+                  .Destroy(destroy => destroy.Action("JobOrderTimeRegistrations_Destroy", "JobOrderTimeRegistrations"))
+               ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip2_#=JobOrderTimeRegistrationId#")
+                         .SelectedIndex(0)
+                         .Items(items =>
+                         {
+
+                             items.Add().Text("Time Sheet").Content(
+                @<text>
+                    <a href='@Url.Action("JobOrderTimeSheet", "ReportJobCosting")/?id=#=JobOrderTimeRegistrationId#' target="_blank" title="Print Job Order Time Sheet"><i class="fa fa-print fa-2x"></i></a>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobOrderTimeSheet>()
+                                     .Name("JobOrderTimeSheet#=JobOrderTimeRegistrationId#")
+                                 .Columns(columns =>
+                                 {
+                                             columns.Bound(c => c.Date);
+                                             columns.Bound(c => c.Work);
+                                             columns.Bound(c => c.StartTime);
+                                             columns.Bound(c => c.ComplationTime);
+                                             columns.Bound(c => c.TotalTime);
+                                             columns.Bound(c => c.NoOfEmployee);
+                                             columns.Bound(c => c.Remark);
+
+                                             columns.Command(command =>
+                                             {
+                                                 command.Edit();
+                                                 command.Destroy();
+                                             }).Width(250);
+                                         })
+                                                .ToolBar(toolbar =>
+                                                {
+                                                            toolbar.Create();
+                                                        })
+                                                       .NoRecords("No Data Registered")
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+                                                    {
+
+                                                                window.Scrollable(false);
+                                                                window.Title("Time Sheet");
+                                                            }))
+                               .Pageable(pageable => pageable
+                                 .Refresh(true)
+                                 )
+
+                                         .Scrollable(h => h.Height(250))
+
+                                         .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                                    //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                    .Events(events =>
+                                                    {
+                                                                events.Error("error_handler(\"JobOrderTimeSheet#=JobOrderTimeRegistrationId#\")");
+                                                                events.RequestStart("onRequestStart(\"JobOrderTimeSheet#=JobOrderTimeRegistrationId#\")");
+                                                                events.RequestEnd("onRequestEnd(\"JobOrderTimeSheet#=JobOrderTimeRegistrationId#\")");
+                                                            }
+                                                       )
+
+                                                       .Model(model =>
+                                                       {
+                                                                   model.Id(p => p.FurnitureJobOrderTimeSheetId);
+                                                               })
+
+
+                                                      .Read(read => read.Action("JobOrderTimeSheets_Read", "JobOrderTimeSheets", new { id = "#=JobOrderTimeRegistrationId#" }))
+                                                     .Create(create => create.Action("JobOrderTimeSheets_Create", "JobOrderTimeSheets", new { id = "#=JobOrderTimeRegistrationId#" }))
+                                                     .Update(update => update.Action("JobOrderTimeSheets_Update", "JobOrderTimeSheets"))
+                                                     .Destroy(destroy => destroy.Action("JobOrderTimeSheets_Destroy", "JobOrderTimeSheets"))
+
+                                                                              ).ToClientTemplate()
+                    )
+                </text>
+                              );
+
+
+
+                         }).ToClientTemplate())
+</script>
+
+

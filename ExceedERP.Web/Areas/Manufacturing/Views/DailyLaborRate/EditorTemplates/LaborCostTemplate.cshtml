@@ -1,0 +1,197 @@
+﻿@model ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobLaborCost
+
+<form id="lineForm" method="post">
+
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+                @Html.HiddenFor(model => model.JobLaborCostId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="GlFiscalYearId">Fiscal Year</label>
+                </div>
+                <div>
+<<<<<<< HEAD:ExceedERP.Web/Areas/JobCosting/Views/DailyLaborRate/EditorTemplates/LaborCostTemplate.cshtml
+                    @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+                                                                                .Name("GlFiscalYearId")
+                                                                                .ValuePrimitive(true)
+                                                                                .OptionLabel("---Years---")
+                                                                                .DataTextField("Name")
+                                                                                .DataValueField("GlFiscalYearId")
+                                                                                .Filter("contains")
+                                                                                .DataSource(dataSource =>
+                                                                                {
+                                                                                    dataSource.Read(read => read.Action("GetAllFiscalYears", "GlFiscalYear", new { area = "Finance" }))
+                                                                                    .ServerFiltering(false);
+                                                                                }))
+=======
+                    @(Html.Kendo().DropDownListFor(model => model.DriverId)
+                                                                                                                                .Name("DriverId")
+                                                                                                                                .ValuePrimitive(true)
+                                                                                                                                .OptionLabel("Select Drivers...")
+                                                                                                                                .DataTextField("FullName")
+                                                                                                                                .DataValueField("TraderId")
+                                                                                                                                .Filter("contains")
+                                                                                                                                .DataSource(dataSource =>
+                                                                                                                                {
+                                                                                                                                    dataSource.Read(read => read.Action("GetAllTraders", "Trader", new { area = "ImportExport" }))
+                                                                                                                                        .ServerFiltering(false);
+                                                                                                                                }))
+>>>>>>> 03a634ed9d130568d09e9abe10d8be7eae61664f:ExceedERP.Web/Areas/TransportManagement/Views/DriverAdvancePayment/EditorTemplates/DriverAdvancePaymentTemplate.cshtml
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="GLPeriodId">Month</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
+                                        .Name("GLPeriodId")
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("--Months--")
+                                        .DataTextField("Name")
+                                        .DataValueField("GLPeriodId")
+                                        .CascadeFrom("GlFiscalYearId")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetAllPeriods", "GlPeriod", new { area = "Finance" })
+                                            .Data("filterPeriods"))
+
+                                            .ServerFiltering(true);
+                                        })
+                                        .AutoBind(false)
+                                        .Enable(false)
+
+                                        )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="CostCenterId">Cost Center</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.CostCenterId)
+                                                                                        .Name("CostCenterId")
+                                                                                        .ValuePrimitive(true)
+                                                                                        .OptionLabel("---Cost centers---")
+                                                                                        .DataTextField("Values")
+                                                                                        .DataValueField("CostCenterID")
+                                                                                        .Filter("contains")
+                                                                                        .DataSource(dataSource =>
+                                                                                        {
+                                                                                            dataSource.Read(read => read.Action("GetAllCostCenters", "GLChartOfAccountCostCenter", new { area = "Finance" }))
+                                                                                            .ServerFiltering(false);
+                                                                                        }))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Reference">Reference</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Reference))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="PermanetNormalHour">Permanet Normal Hour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.PermanetNormalHour))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="PermanetOTHour">Permanet OT Hour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.PermanetOTHour))
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="ContractNormalHour">Contract Normal Hour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ContractNormalHour))
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="ContractOTHour">Contract OT Hour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ContractOTHour))
+
+                </div>
+            </div>
+        </div>    
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Beginning">Beginning</label>
+                </div>
+                <div>
+                    @(Html.Kendo().CheckBoxFor(model => model.Beginning))
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="BeginningHour">Beginning Hour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.BeginningHour))
+
+                </div>
+            </div>
+        </div>    
+    </div>
+
+</form>
+
+

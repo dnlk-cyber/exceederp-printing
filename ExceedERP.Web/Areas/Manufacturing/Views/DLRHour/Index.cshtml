@@ -1,0 +1,21 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureDLRHour>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.DailyLaborRateId);
+        columns.Bound(c => c.NoOfDay);
+        columns.Bound(c => c.NoOfWorkingHour);
+        columns.Bound(c => c.NoOfEmployee);
+        columns.Bound(c => c.ExpectedTime);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("DLRHours_Read", "DLRHour"))
+      )
+)

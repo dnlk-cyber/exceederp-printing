@@ -1,0 +1,37 @@
+﻿@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureCommertialItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Job_Type).EditorTemplateName("Enum");
+          columns.Bound(c => c.SubCategory);
+          columns.Bound(c => c.Description);
+          columns.Command(command => {
+              command.Edit();
+              command.Destroy();
+          }).Width(250);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable(pageable => pageable
+                             .Input(true)
+                             .Numeric(false)
+                             .Refresh(true)
+                             .PageSizes(true)
+                             .ButtonCount(5))
+      .Filterable()
+       .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureCommertialItemsId))
+          .Read(read => read.Action("CommertialItems_Read", "CommertialItems"))
+          .Create(create => create.Action("CommertialItems_Create", "CommertialItems"))
+          .Update(update => update.Action("CommertialItems_Update", "CommertialItems"))
+          .Destroy(destroy => destroy.Action("CommertialItems_Destroy", "CommertialItems"))
+      )
+)

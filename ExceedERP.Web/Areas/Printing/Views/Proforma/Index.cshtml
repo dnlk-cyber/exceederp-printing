@@ -1,5 +1,5 @@
 ﻿
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.Proforma>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.Proforma>()
         .Name("ProformaGrid")
         .Columns(columns =>
         {
@@ -79,7 +79,7 @@
 
                                 <a href='@Url.Action("ProformaPrint", "ProductionFollowUpReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
 
-                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PFProformaItems>()
                                                            .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>
                                                            {

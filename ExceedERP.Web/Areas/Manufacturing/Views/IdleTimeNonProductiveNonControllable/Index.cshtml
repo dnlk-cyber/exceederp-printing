@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeNonProductiveNonControllable>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.IdleTimeCategoryId);
+          //columns.Bound(c => c.NPNCManualHour);
+          //columns.Bound(c => c.NPNCManualPercentage);
+          //columns.Bound(c => c.NPNCMechanicalHour);
+          //columns.Bound(c => c.NPNCMechanicalPercentage);
+          //columns.Bound(c => c.NPNCCameraHour);
+          //columns.Bound(c => c.NPNCCameraPercentage);
+          //columns.Bound(c => c.NPNCOffsetHour);
+          //columns.Bound(c => c.NPNCOffsetPercentage);
+          //columns.Bound(c => c.NPNCLetterPressHour);
+          //columns.Bound(c => c.NPNCLetterPressPercentage);
+          //columns.Bound(c => c.NPNCBindingHour);
+          //columns.Bound(c => c.NPNCBindingPercentage);
+          //columns.Bound(c => c.NPNCComputerHour);
+          //columns.Bound(c => c.NPNCComputerPercentage);
+          //columns.Bound(c => c.NPNCWebHour);
+          //columns.Bound(c => c.NPNCWebPercentage);
+          //columns.Bound(c => c.NPNCTotalHour);
+          //columns.Bound(c => c.NPNCTotalPercentage);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("IdleTimeNonProductiveNonControllables_Read", "IdleTimeNonProductiveNonControllable"))
+      )
+)

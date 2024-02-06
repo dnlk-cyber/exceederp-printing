@@ -1,0 +1,57 @@
+﻿@using System.Collections
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+} 
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobOrderSummary>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders");
+                  columns.Bound(c => c.Product);
+                  columns.Bound(c => c.Quantity);
+                  columns.Bound(c => c.Page);
+                  columns.Bound(c => c.SellingPrice);
+                  columns.Bound(c => c.DirectMaterial);
+                  columns.Bound(c => c.DirectLabor);
+                  columns.Bound(c => c.ManufacturingOverHead);
+                  columns.Bound(c => c.SellingAndDistribution);
+                  columns.Bound(c => c.AdminAndGeneralExpense);
+                  columns.Bound(c => c.TotalCost);
+                  columns.Bound(c => c.ProfitOrLoss);
+                  columns.Bound(c => c.Percentage);
+                  columns.Command(command =>
+                  {
+                      command.Edit();
+                      command.Destroy();
+                  }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+               .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model =>
+                  {
+                      model.Id(p => p.JobOrderSummaryId);
+                      model.Field(p => p.TotalCost).Editable(false);
+                      model.Field(p => p.ProfitOrLoss).Editable(false);
+                      model.Field(p => p.Percentage).Editable(false);
+                  })
+                  .Read(read => read.Action("JobOrderSummarys_Read", "JobOrderSummaries"))
+                  .Create(create => create.Action("JobOrderSummarys_Create", "JobOrderSummaries"))
+                  .Update(update => update.Action("JobOrderSummarys_Update", "JobOrderSummaries"))
+                  .Destroy(destroy => destroy.Action("JobOrderSummarys_Destroy", "JobOrderSummaries"))
+              )
+)

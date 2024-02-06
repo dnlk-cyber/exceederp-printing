@@ -21,6 +21,12 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.CMS;
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
+using ExceedERP.Core.Domain.printing.JobCosting;
+using ExceedERP.Core.Domain.printing.PrintingEstimation;
+using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
+using ExceedERP.Core.Domain.Manufacturing.JobCosting;
+using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -480,7 +486,48 @@ namespace ExceedERP.Web.Controllers
 			new ApplicationRole("HelpDesk_Report", "View Report", "HelpDesk"),
 			new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk")
 			#endregion
-				
+				#region Printing
+				#region Printing Estimation
+					 ,new ApplicationRole(PrintingEstimationRoles.PrintingEstimationAdmin, "Printing Estimation Administrator", "Printing"),
+					 new ApplicationRole(PrintingEstimationRoles.PrintingEstimationFormUser, "Printing Estimation Form User", "Printing"),
+					#endregion
+				#region Production FollowUp
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionAdmin, "Production FollowUp Administrator", "Printing"),
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionSetting, "Production FollowUp Setting", "Printing"),
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionReport, "Production FollowUp Report", "Printing"),
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionProformaUser, "Production FollowUp Proforma User", "Printing"),
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionJobOrderUser, "Production FollowUp Job Order User", "Printing"),
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionFinishedGoodUser, "Production FollowUp Finished Good User", "Printing"),
+					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser, "Production FollowUp Delivery User", "Printing"),
+					#endregion
+				#region Job Costing FollowUp
+					 new ApplicationRole(JobCostingRoles.JobCostingAdmin, "Job Costing Administrator", "Printing"),
+					 new ApplicationRole(JobCostingRoles.JobCostingJobCostUser, "Job Costing Job Cost User", "Printing"),
+					 new ApplicationRole(JobCostingRoles.JobCostingDailyLaborRateUser, "Job Costing Daily Labor RateUser", "Printing"),
+					 new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "Printing")
+				#endregion
+			 #endregion
+			   #region Manufucturing
+				#region Furniture Estimation
+					 ,new ApplicationRole(FurnitureEstimationRoles.FurnitureEstimationAdmin, "Furniture Estimation Administrator", "Manufucturing"),
+					 new ApplicationRole(FurnitureEstimationRoles.FurnitureEstimationUser, "Furniture Estimation Form User", "Manufucturing"),
+					#endregion
+				#region Production FollowUp
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin, "Production FollowUp Administrator", "Manufucturing"),
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionSetting, "Production FollowUp Setting", "Manufucturing"),
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionReport, "Production FollowUp Report", "Manufucturing"),
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionProformaUser, "Production FollowUp Proforma User", "Manufucturing"),
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionJobOrderUser, "Production FollowUp Job Order User", "Manufucturing"),
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFinishedGoodUser, "Production FollowUp Finished Good User", "Manufucturing"),
+					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser, "Production FollowUp Delivery User", "Manufucturing"),
+					#endregion
+				#region Job Costing FollowUp
+					 new ApplicationRole(ManufacturingJobCostingRoles.ManufacturingJobCostingAdmin, "JobCosting_Admin", "Manufucturing"),
+					 new ApplicationRole(ManufacturingJobCostingRoles.ManufacturingJobCostingJobCostUser, "JobCosting_JobCost_User", "Manufucturing"),
+					 new ApplicationRole(ManufacturingJobCostingRoles.ManufacturingJobCostingIdleTimeUser, "JobCosting_IdleTime_User", "Manufucturing"),
+					 new ApplicationRole(ManufacturingJobCostingRoles.ManufacturingJobCostingDailyLaborRateUser, "JobCosting_DailyLaborRate_User", "Manufucturing"),
+				#endregion
+			 #endregion
 			};
 
 			foreach (ApplicationRole role in applicationRoles)

@@ -17,7 +17,7 @@ namespace ExceedERP.Core.Domain.printing.JobCosting
         public virtual ICollection<IdleTimeOT> IdleTimeOT { get; set; }
         public virtual ICollection<IdleTimeProductive> IdleTimeProductive { get; set; }
         public virtual ICollection<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllable { get; set; }
-        public virtual ICollection<PrintingIdleTimeNonProductiveNonControllable> IdleTimeNonProductiveNonControllable { get; set; } 
+        public virtual ICollection<PrintingIdleTimeNonProductiveNonControllable> PrintingIdleTimeNonProductiveNonControllables { get; set; } 
     }
 
     public class IdleTimeOT
@@ -161,7 +161,7 @@ namespace ExceedERP.Core.Domain.printing.JobCosting
     public class PrintingIdleTimeNonProductiveNonControllable
     {
         [Key]
-        public int IdleTimeNonProductiveNonControllableID { get; set; }
+        public int PrintingIdleTimeNonProductiveNonControllableID { get; set; }
         public int IdleTimeID { get; set; }
         public virtual IdleTime IdleTime { get; set; }
         [Required]

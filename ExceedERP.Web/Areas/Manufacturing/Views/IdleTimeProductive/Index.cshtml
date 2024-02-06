@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeProductive>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.ProductiveManualHour);
+          //columns.Bound(c => c.ProductiveManualPercentage);
+          //columns.Bound(c => c.ProductiveMechanicalHour);
+          //columns.Bound(c => c.ProductiveMechanicalPercentage);
+          //columns.Bound(c => c.ProductiveCameraHour);
+          //columns.Bound(c => c.ProductiveCameraPercentage);
+          //columns.Bound(c => c.ProductiveOffsetHour);
+          //columns.Bound(c => c.ProductiveOffsetPercentage);
+          //columns.Bound(c => c.ProductiveLetterPressHour);
+          //columns.Bound(c => c.ProductiveLetterPressPercentage);
+          //columns.Bound(c => c.ProductiveBindingHour);
+          //columns.Bound(c => c.ProductiveBindingPercentage);
+          //columns.Bound(c => c.ProductiveComputerHour);
+          //columns.Bound(c => c.ProductiveComputerPercentage);
+          //columns.Bound(c => c.ProductiveWebHour);
+          //columns.Bound(c => c.ProductiveWebPercentage);
+          //columns.Bound(c => c.ProductiveTotalHour);
+          //columns.Bound(c => c.ProductiveTotalPercentage);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("IdleTimeProductives_Read", "IdleTimeProductive"))
+      )
+)

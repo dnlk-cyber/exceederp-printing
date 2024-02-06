@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductDeliveryItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FurnitureProductDeliveryId);
+        columns.Bound(c => c.ItemCode);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.UnitId);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitCost);
+        columns.Bound(c => c.TotalCost);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProductDeliveryItemsId))
+          .Read(read => read.Action("ProductDeliveryItems_Read", "ProductDeliveryItems"))
+          .Create(create => create.Action("ProductDeliveryItems_Create", "ProductDeliveryItems"))
+          .Update(update => update.Action("ProductDeliveryItems_Update", "ProductDeliveryItems"))
+          .Destroy(destroy => destroy.Action("ProductDeliveryItems_Destroy", "ProductDeliveryItems"))
+      )
+)

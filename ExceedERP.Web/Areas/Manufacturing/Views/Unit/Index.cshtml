@@ -1,0 +1,36 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting.FurnitureUnit>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.UOM);
+              columns.Bound(c => c.Description);
+              columns.Bound(c => c.DateCreated);
+              columns.Command(command =>
+{
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+          })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+                                       .Filterable()
+                                       .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.FurnitureUnitId))
+                      .Read(read => read.Action("Units_Read", "Unit"))
+                      .Create(create => create.Action("Units_Create", "Unit"))
+                      .Update(update => update.Action("Units_Update", "Unit"))
+                      .Destroy(destroy => destroy.Action("Units_Destroy", "Unit"))
+                  )
+)

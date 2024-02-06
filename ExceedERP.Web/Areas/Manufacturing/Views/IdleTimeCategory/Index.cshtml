@@ -1,0 +1,45 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting.FurnitureIdleTimeCategory>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.CategoryName).Title("Idle Time Name");
+                  columns.Bound(c => c.IsControllable)
+                                    .ClientTemplate("<input type='checkbox' #= IsControllable ? checked='checked': '' # class='chkbx' />");
+                  columns.Bound(c => c.CategoryDescription).Title("Description");
+
+                  columns.Command(command =>
+            {
+                command.Edit();
+                command.Destroy();
+            }).Width(180);
+              })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+                                       .Filterable()
+                                       .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Id(p => p.FurnitureIdleTimeCategoryId))
+                .Read(read => read.Action("IdleTimeCategories_Read", "IdleTimeCategory"))
+                .Create(create => create.Action("IdleTimeCategories_Create", "IdleTimeCategory"))
+                .Update(update => update.Action("IdleTimeCategories_Update", "IdleTimeCategory"))
+                .Destroy(destroy => destroy.Action("IdleTimeCategories_Destroy", "IdleTimeCategory"))
+                  )
+)
+
+<style>
+    .chkbx {
+        pointer-events: none;
+        opacity: 1;
+    }
+</style>

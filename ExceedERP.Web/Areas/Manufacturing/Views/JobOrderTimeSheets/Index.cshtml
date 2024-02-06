@@ -1,0 +1,46 @@
+﻿@using System.Collections
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobOrderTimeSheet>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Date);
+              columns.Bound(c => c.Work);
+              columns.Bound(c => c.StartTime);
+              columns.Bound(c => c.ComplationTime);
+              columns.Bound(c => c.TotalTime);
+              columns.Bound(c => c.NoOfEmployee);
+              columns.Bound(c => c.Remark);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable(pageable => pageable
+                                     .Input(true)
+                                     .Numeric(false)
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
+                               .Filterable()
+                               .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.FurnitureJobOrderTimeSheetId))
+              .Read(read => read.Action("JobOrderTimeSheets_Read", "JobOrderTimeSheets"))
+              .Create(create => create.Action("JobOrderTimeSheets_Create", "JobOrderTimeSheets"))
+              .Update(update => update.Action("JobOrderTimeSheets_Update", "JobOrderTimeSheets"))
+              .Destroy(destroy => destroy.Action("JobOrderTimeSheets_Destroy", "JobOrderTimeSheets"))
+          )
+)

@@ -1,0 +1,178 @@
+﻿@using System.Collections;
+<legend>Yearly Production Plan Setup</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductionYearlyPlan>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Width(150);
+              columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: #=sum# ").Width(150);
+              columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: #=sum# ").Width(150);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(250);
+          })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(ev => ev.Error("error_handler(\"grid\")")
+                               .RequestStart("onRequestStart(\"grid\")")
+                               .RequestEnd("onRequestEnd(\"grid\")"))
+                               .Aggregates(ag=> {
+                                   ag.Add(a => a.TotalProduct).Sum();
+                                   ag.Add(a => a.TotalPrice).Sum();
+                               })
+            .Model(model => model.Id(p => p.FurnitureProductionYearlyPlanId))
+            .Read(read => read.Action("ProductionYearlyPlans_Read", "ProductionYearlyPlan"))
+            .Create(create => create.Action("ProductionYearlyPlans_Create", "ProductionYearlyPlan"))
+            .Update(update => update.Action("ProductionYearlyPlans_Update", "ProductionYearlyPlan"))
+            .Destroy(destroy => destroy.Action("ProductionYearlyPlans_Destroy", "ProductionYearlyPlan"))
+              ).ClientDetailTemplateId("monthlyPlan")
+)
+
+<script id="monthlyPlan" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                        .Name("monthly_plan#=ProductionYearlyPlanId#")
+                        .SelectedIndex(0)
+                        .Items(items =>
+                        {
+
+                            items.Add().Text("Monthly Production Plan").Content(
+            @<text>
+                @MonthlyProductionPlan()
+            </text>
+                 );
+                      }).ToClientTemplate())
+
+
+
+
+</script>
+
+@helper MonthlyProductionPlan()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductionMonthlyPlan>()
+          .Name("production_month_plan_#=ProductionYearlyPlanId#")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GlPeriods"], "GLPeriodId", "Name").Width(150);
+              columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: \\#=sum\\# ").Width(150);
+              columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
+
+          })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Save();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InCell))
+              .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+            .Ajax()
+            .Batch(true)
+            .Events(ev => ev.Error("error_handler(\"production_month_plan_#=ProductionYearlyPlanId#\")")
+                               .RequestStart("onRequestStart(\"production_month_plan_#=ProductionYearlyPlanId#\")")
+                               .RequestEnd("onRequestEnd(\"production_month_plan_#=ProductionYearlyPlanId#\")"))
+            .Aggregates(ag =>
+            {
+                ag.Add(a => a.TotalProduct).Sum();
+                ag.Add(a => a.TotalPrice).Sum();
+            })
+                               .Model(model =>
+                               {
+                                   model.Id(p => p.FurnitureProductionMonthlyPlanId);
+                                   model.Field(p => p.GLPeriodId).Editable(false);
+                               })
+            .Read(read => read.Action("ProductionMonthlyPlans_Read", "ProductionMonthlyPlan", new { id = "#=ProductionYearlyPlanId#" }))
+            .Create(create => create.Action("ProductionMonthlyPlans_Create", "ProductionMonthlyPlan"))
+            .Update(update => update.Action("ProductionMonthlyPlans_Update", "ProductionMonthlyPlan", new { id = "#=ProductionYearlyPlanId#" }))
+            .Destroy(destroy => destroy.Action("ProductionMonthlyPlans_Destroy", "ProductionMonthlyPlan"))
+              ).ClientDetailTemplateId("monthlyJobTypePlan")
+              .ToClientTemplate()
+    )
+}
+<script id="monthlyJobTypePlan" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                .Name("monthly_job_type_plan#=ProductionMonthlyPlanId#")
+                                .SelectedIndex(0)
+                                .Items(items =>
+                                {
+
+                                    items.Add().Text("Monthly Job Type Production Plan").Content(
+                    @<text>
+                        @MonthlyJobTypeProductionPlan()
+                    </text>
+                                 );
+                                        }).ToClientTemplate())
+
+
+
+
+</script>
+@helper MonthlyJobTypeProductionPlan()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductionMonthlyJobTypePlan>()
+          .Name("production_month_job_type_plan_#=ProductionMonthlyPlanId#")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "JobCategoryId", "JobName").Width(150);
+              columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: \\#=sum\\# ").Width(150);
+              columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
+
+          })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Save();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InCell))
+              .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .Batch(true)
+            .Events(ev => ev.Error("error_handler(\"production_month_job_type_plan_#=ProductionMonthlyPlanId#\")")
+                               .RequestStart("onRequestStart(\"production_month_job_type_plan_#=ProductionMonthlyPlanId#\")")
+                               .RequestEnd("onRequestEnd(\"production_month_job_type_plan_#=ProductionMonthlyPlanId#\")"))
+            .Aggregates(ag =>
+            {
+                ag.Add(a => a.TotalProduct).Sum();
+                ag.Add(a => a.TotalPrice).Sum();
+            })
+                               .Model(model => {
+                                   model.Id(p => p.FurnitureProductionMonthlyJobTypePlanId);
+                                   model.Field(p => p.JobTypeId).Editable(false);
+                               })
+            .Read(read => read.Action("ProductionMonthlyJobTypePlans_Read", "ProductionMonthlyJobTypePlan", new { id = "#=ProductionMonthlyPlanId#" }))
+            .Create(create => create.Action("ProductionMonthlyJobTypePlans_Create", "ProductionMonthlyJobTypePlan", new { id = "#=ProductionMonthlyPlanId#" }))
+            .Update(update => update.Action("ProductionMonthlyJobTypePlans_Update", "ProductionMonthlyJobTypePlan", new { id = "#=ProductionMonthlyPlanId#" }))
+            .Destroy(destroy => destroy.Action("ProductionMonthlyJobTypePlans_Destroy", "ProductionMonthlyJobTypePlan"))
+              ).ToClientTemplate()
+    )
+}

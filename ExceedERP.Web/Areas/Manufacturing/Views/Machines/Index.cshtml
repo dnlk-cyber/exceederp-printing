@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using ExceedERP.Core.Domain.Manufacturing
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureMachine>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.MachineName);
+                  columns.Bound(c => c.Category).EditorTemplateName("Enum");
+                  columns.Bound(c => c.SubCategory).EditorTemplateName("Enum");
+                  columns.Bound(c => c.Description);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Pageable(pageable => pageable
+                                 .Input(true)
+                                 .Numeric(false)
+                                 .Refresh(true)
+                                 .PageSizes(true)
+                                 .ButtonCount(5))
+          .Filterable()
+           .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.FurnitureMachineId))
+                  .Read(read => read.Action("Machines_Read", "Machines"))
+                  .Create(create => create.Action("Machines_Create", "Machines"))
+                  .Update(update => update.Action("Machines_Update", "Machines"))
+                  .Destroy(destroy => destroy.Action("Machines_Destroy", "Machines"))
+              )
+)

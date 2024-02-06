@@ -1,0 +1,233 @@
+﻿@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductDelivery>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FurnitureProductDeliveryId).Title("Do. No.").Width(100);
+
+                      columns.ForeignKey(c => c.FurnitureCustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+                                               .EditorTemplateName("CustomerEditor")
+                                               .Width(150)
+                                               .Title("Customer");
+                      columns.Bound(c => c.CreditSaleNo).Width(100);
+                      columns.Bound(c => c.Credit).Width(100);
+                      columns.Bound(c => c.CashSaleNo).Width(100);
+                      columns.Bound(c => c.Cash).Width(100);
+                      columns.Bound(c => c.DeliveryDate).Format("{0:MMMM d,yyyy}").Width(100);
+
+                      //columns.Bound(c => c.PreparedBy).Width(100);
+                      // columns.Bound(c => c.ApprovedBy).Width(100);
+                      //columns.Bound(c => c.IdentificationNo);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Custom("cmd-void-request").Text("Void").Click("voidDelivery");
+                          command.Destroy();
+                      }).Width(250);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Events(ev=>ev.DetailExpand("onMasterExpand"))
+                  //       .Events(ev => ev.Save("showColumn"))
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+                                       .Filterable()
+                                       .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.FurnitureProductDeliveryId))
+                      .Read(read => read.Action("ProductDeliveries_Read", "ProductDeliveries"))
+                      .Create(create => create.Action("ProductDeliveries_Create", "ProductDeliveries"))
+                      .Update(update => update.Action("ProductDeliveries_Update", "ProductDeliveries"))
+                      .Destroy(destroy => destroy.Action("ProductDeliveries_Destroy", "ProductDeliveries"))
+                   ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                         .Name("tabstrip2_#=ProductDeliveryId#")
+                        .SelectedIndex(0)
+                        .Items(items =>
+                        {
+
+                            items.Add().Text("Delivery Items").Content(
+                @<text>
+                    <a href='@Url.Action("GetDeliveryNote", "ProductionFollowUpReport")/?id=#=ProductDeliveryId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductDeliveryItems>()
+                                .Name("ProductDeliveryItems#=ProductDeliveryId#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.ForeignKey(c => c.FurnitureJobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No").Width(100);
+                                            
+                                            columns.Bound(c => c.Quantity).ClientFooterTemplate("T Q: \\#=sum\\# ").Width(70).EditorTemplateName("NumericTextBox");
+                                            columns.Bound(c => c.Amount).ClientFooterTemplate("T A: \\#=sum\\# ").Width(100);
+                                            columns.Bound(c => c.VAT).ClientFooterTemplate("T V: \\#=sum\\# ").Width(100);
+                                              columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
+                                            columns.Bound(c => c.TotalCost).ClientFooterTemplate("Total: \\#=sum\\# ").Width(100);
+
+                                            columns.Command(command =>
+                                            {
+                                                command.Edit();
+                                                command.Destroy();
+                                            }).Width(250);
+                                        })
+                                                   .ToolBar(toolbar =>
+                                                   {
+                                                       toolbar.Create();
+                                                   })
+                                                          .NoRecords("No Data Registered")
+                                                 .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+                                                 {
+
+                                                     window.Scrollable(false);
+                                                     window.Title("Finished Goods");
+                                                 }))
+                                                 .Pageable(pageable => pageable
+                                                   .Refresh(true)
+                                                   )
+
+                                             .Scrollable(h => h.Height(250))
+
+                                             .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Aggregates(ag=> {
+                                                    ag.Add(a => a.Quantity).Sum();
+                                                    ag.Add(a => a.Amount).Sum();
+                                                    ag.Add(a => a.VAT).Sum();
+                                                    ag.Add(a => a.TotalCost).Sum();
+                                                })
+                                                        //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                        .Events(events =>
+                                                        {
+                                                            events.Error("error_handler(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                                            events.RequestStart("onRequestStart(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                                            events.RequestEnd("onRequestEnd(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                                        }
+                                                           )
+
+                                                           .Model(model =>
+                                                           {
+                                                               model.Id(p => p.FurnitureProductDeliveryItemsId);
+                                                           })
+
+                                           .Read(read => read.Action("ProductDeliveryItems_Read", "ProductDeliveryItems", new { id = "#=ProductDeliveryId#" }))
+                                          .Create(create => create.Action("ProductDeliveryItems_Create", "ProductDeliveryItems", new { id = "#=ProductDeliveryId#" }))
+                                          .Update(update => update.Action("ProductDeliveryItems_Update", "ProductDeliveryItems"))
+                                          .Destroy(destroy => destroy.Action("ProductDeliveryItems_Destroy", "ProductDeliveryItems"))
+
+                                          ).ToClientTemplate()
+                    )
+                </text>
+                                                      );
+
+                                }).ToClientTemplate())
+</script>
+<script>
+    var customerId;
+    function onMasterExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        customerId = masterDataItem.CustomerId;
+        console.log(customerId);
+    }
+    function voidDelivery(e) {
+        var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+           url: '@Url.Action("VoidDelivery", "ProductDeliveries", new { area = "ProductionFollowUp" })',
+            data: { id: dataItem.ProductDeliveryId },
+           success: function(result) {
+                alert(result);
+                location.reload(true);
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+
+    }
+   function filterJobOrders()
+    {
+        return {
+            customerId: customerId
+        };
+    }
+    function onChangeJobOrder() {
+
+     
+        $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalCost", "ProductionDataProvider")',
+
+            data: { jobId: this.value() },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                  
+                    $("#UnitCost").val(r.Unit).trigger("change");
+                }
+
+        });
+        $("#UnitCost").attr('readonly', true);
+        $("#TotalCost").attr('readonly', true);
+        $("#VAT").attr('readonly', true);
+        $("#Amount").attr('readonly', true);
+
+    }
+    function onChange() {
+        var unitCost = $("#UnitCost").val();
+        var quantity = $("#Quantity").val();
+        var job = $("#JobId").val();
+        console.log(unitCost);
+        //$("#TotalCost").val(unitCost * quantity).trigger("change");
+
+
+        console.log(quantity);
+        if (quantity !== "" && unitCost !== "" && job != "") {
+            $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalCost", "ProductionDataProvider")',
+
+                data: { jobId: job, quant: quantity, unitPrice: unitCost },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#TotalCost").val(r.Total).trigger("change");
+                    $("#Amount").val(r.Amount).trigger("change");
+                    $("#VAT").val(r.VAT).trigger("change");
+                }
+
+            });
+        }
+        $("#UnitCost").attr('readonly', true);
+        $("#TotalCost").attr('readonly', true);
+        $("#VAT").attr('readonly', true);
+        $("#Amount").attr('readonly', true);
+       }
+
+    function hideColumn() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.hideColumn('CustomerId');
+    }
+    function showColumn() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.showColumn('CustomerId');
+    }
+</script>

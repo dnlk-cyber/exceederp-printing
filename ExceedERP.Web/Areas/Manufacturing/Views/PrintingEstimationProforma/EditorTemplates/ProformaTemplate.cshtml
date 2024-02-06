@@ -1,0 +1,330 @@
+﻿
+@model ExceedERP.Core.Domain.ProductionFollowUp.Proforma 
+
+<div class="form">
+    <div class="row">
+        
+            <div class="col-sm-1">
+                </div>
+            <div class="col-sm-2">
+
+                <div class="form-group">
+                    <label>Have Estimation ?</label>
+                    <div>
+
+                        @(Html.Kendo().CheckBoxFor(model => model.HaveEstimation).HtmlAttributes(new { onchange = "EnableDisableEstimation(this);" }) )
+                        @Html.ValidationMessageFor(model => model.HaveEstimation, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label>Estimation No.</label>
+                    <div>
+
+                        @(Html.Kendo().DropDownListFor(model => model.EstimationFormId)
+
+                                                                     .OptionLabel("--Select--")
+                                                                            .DataTextField("EstimationFormId")
+                                                                                    .DataValueField("EstimationFormId")
+                                                                                     .Filter("contains")
+                                                                                   
+                                                                                     .Enable(false)
+                                                                             .DataSource(dataSource =>
+                                                                             {
+                                                                                 dataSource.Read(read => read.Action("GetAllEstimationForms", "EstimationForm", new { area = "PrintingEstimation" }))
+                                                                                          .ServerFiltering(false);
+                                                                             })
+                                                                          .ValuePrimitive(true))
+                        @Html.ValidationMessageFor(model => model.ProformaId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+
+                <div class="form-group">
+                    <label>Is Existing Customer ?</label>
+                    <div>
+
+                        @(Html.Kendo().CheckBoxFor(model => model.IsExistingCustomer).HtmlAttributes(new { onchange = "EnableDisableEstimation(this);" }) )
+                        @Html.ValidationMessageFor(model => model.IsExistingCustomer, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label>Customers</label>
+                    <div>
+
+                        @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+
+                                                                             .OptionLabel("--Select--")
+                                                                                    .DataTextField("Name")
+                                                                                            .Name("CustomerId")
+                                                                                .ValuePrimitive(true)
+                                                                                .OptionLabel("Select Customer...")
+                                                                                .DataTextField("Name")
+                                                                                .DataValueField("Code")
+                                                                                .Filter("contains")
+                                                                                .DataSource(dataSource =>
+                                                                                {
+                                                                                    dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm", new { Area = "PrintingEstimation"}))
+                                                                                        .ServerFiltering(false);
+                                                                                }))
+                        @Html.ValidationMessageFor(model => model.ProformaId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container demo" id="popupContainerStyle">
+
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="more-less glyphicon glyphicon-plus"></i>
+                                Customer Details
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+
+                            <div class="row ">
+                                <div class="col-sm-3">
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-8" })
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.CustomerName)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.BrandName, htmlAttributes: new { @class = "control-label col-md-8" })
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.BrandName)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.BrandName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.TinNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.TinNo)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.TinNo, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="row ">
+                                <div class="col-sm-3">
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-8" })
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.City)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.SubCity, htmlAttributes: new { @class = "control-label col-md-8" })
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.SubCity)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.SubCity, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Woreda, htmlAttributes: new { @class = "control-label col-md-8" })
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.Woreda)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.Woreda, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>VAT(%)</label>
+                                        <div>
+
+                                            @(Html.Kendo().NumericTextBoxFor(model => model.CustomerVAT)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.CustomerVAT, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Margin(%)</label>
+
+                                        <div>
+
+                                            @(Html.Kendo().NumericTextBoxFor(model => model.CustomerMargin)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.CustomerMargin, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>OverHead(%)</label>
+                                        <div>
+
+                                            @(Html.Kendo().NumericTextBoxFor(model => model.CustomerOverHead)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.CustomerOverHead, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>PO.Box</label>
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.POBox)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.POBox, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <div>
+
+                                            @(Html.Kendo().TextBoxFor(model => model.CustomerDescription)
+                                            )
+                                            @Html.ValidationMessageFor(model => model.CustomerDescription, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                            Proforma Details
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Proforma No.</label>
+                                    <div>
+
+                                        @(Html.Kendo().TextBoxFor(model => model.ProformaNo))
+                                        @Html.ValidationMessageFor(model => model.ProformaNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Invoice No.</label>
+                                    <div>
+
+                                        @(Html.Kendo().TextBoxFor(model => model.InvoiceNo)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.InvoiceNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Invoice Date</label>
+                                    <div>
+
+                                        @(Html.Kendo().DatePickerFor(model => model.InvoiceDate)
+                                        )
+                                        @Html.ValidationMessageFor(model => model.InvoiceDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Delivery Date</label>
+                                    <div>
+
+                                        @(Html.Kendo().DatePickerFor(model => model.DeliveryDate))
+                                        @Html.ValidationMessageFor(model => model.DeliveryDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Validity Date</label>
+                                    <div>
+
+                                        @(Html.Kendo().DatePickerFor(model => model.ValidityDate))
+                                        @Html.ValidationMessageFor(model => model.ValidityDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Payment Term</label>
+                                    <div>
+
+                                        @(Html.Kendo().DropDownListFor(model => model.PaymentTerm)
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+                                                                .ValuePrimitive(true)
+                                              .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.PrintingEstimation.Setting.PaymentTer))
+                                                ))
+
+                                        @Html.ValidationMessageFor(model => model.PaymentTerm, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>

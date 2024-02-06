@@ -76,6 +76,7 @@
     <Compile Include="Context\HRMEntityConfiguration.cs" />
     <Compile Include="Context\InfoDeskEntityConfiguration.cs" />
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
+    <Compile Include="Context\ManufacturingEntityConfiguration.cs" />
     <Compile Include="Context\PrintingEntityConfiguration.cs" />
     <Compile Include="Context\ProductionEntityConfiguration.cs" />
     <Compile Include="Context\ReligionEntityTypeConfiguration.cs" />
@@ -368,6 +369,10 @@
     <Compile Include="Migrations\202402040820220_restructuringprinting.Designer.cs">
       <DependentUpon>202402040820220_restructuringprinting.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202402061357359_printfurniture.cs" />
+    <Compile Include="Migrations\202402061357359_printfurniture.Designer.cs">
+      <DependentUpon>202402061357359_printfurniture.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -602,6 +607,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202402040820220_restructuringprinting.resx">
       <DependentUpon>202402040820220_restructuringprinting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402061357359_printfurniture.resx">
+      <DependentUpon>202402061357359_printfurniture.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

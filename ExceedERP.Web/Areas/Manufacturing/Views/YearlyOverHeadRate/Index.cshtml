@@ -1,0 +1,40 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting.FurnitureYearlyOverHeadRate>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name")
+                                    .Title("Fiscal Year").Width(200);
+              columns.ForeignKey(c => c.Values, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
+                                                  .Title("Cost Center").Width(200);
+              columns.Bound(c => c.Rate);
+              columns.Bound(c => c.Description);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.FurnitureYearlyOverHeadRateId))
+            .Read(read => read.Action("YearlyOverHeadRates_Read", "YearlyOverHeadRate"))
+            .Create(create => create.Action("YearlyOverHeadRates_Create", "YearlyOverHeadRate"))
+            .Update(update => update.Action("YearlyOverHeadRates_Update", "YearlyOverHeadRate"))
+            .Destroy(destroy => destroy.Action("YearlyOverHeadRates_Destroy", "YearlyOverHeadRate"))
+              )
+)

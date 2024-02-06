@@ -1,0 +1,21 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobChangeOfOrder>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FurnitureJobCostId);
+        columns.Bound(c => c.FurnitureChangeOrderId);
+        columns.Bound(c => c.AdditionalChange);
+        columns.Bound(c => c.ChargeAmount);
+        columns.Bound(c => c.Reason);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("JobChangeOfOrders_Read", "JobChangeOrder"))
+      )
+)

@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+      .AutoBind(false)
+      .Filter(FilterType.Contains)
+      .OptionLabel("Select FixedAsset...")
+      .DataTextField("Name")
+      .DataValueField("receivedId")
+      .ValuePrimitive(true)
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetFixedAsset", "DataProvider").Data("fixedAssetItemCode"))
+              .ServerFiltering(false);
+      }))
+@Html.ValidationMessageFor(m => m)

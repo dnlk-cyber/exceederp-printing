@@ -1,7 +1,9 @@
-
+using ExceedERP.Core.Domain.Manufacturing;
+using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.printing.JobCosting;
 using ExceedERP.Core.Domain.printing.JobCosting.Setting;
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
+using ExceedERP.Core.Domain.Printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
 using System;
 using System.Collections.Generic;
@@ -53,6 +55,14 @@ namespace ExceedERP.DataAccess.Context
         {
             this.ToTable("PrintingSteps", "Printing");
             this.HasKey<int>(t => t.PrintingStepId);
+        }
+    }
+    public class PrintingCriteriaCatagoryEntityTypeConfiguration : EntityTypeConfiguration<PrintingCriteriaCategory>
+    {
+        public PrintingCriteriaCatagoryEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingCriteriaCatagory", "Printing");
+            this.HasKey<int>(t => t.PrintingCriteriaCategoryId);
         }
     }
     #endregion
@@ -175,7 +185,7 @@ namespace ExceedERP.DataAccess.Context
         public IdleTimeNonProductiveNonControllableEntityTypeConfiguration()
         {
             this.ToTable("IdleTimeNonProductiveNonControllables", "Printing");
-            this.HasKey<int>(t => t.IdleTimeNonProductiveNonControllableID);
+            this.HasKey<int>(t => t.PrintingIdleTimeNonProductiveNonControllableID);
         }
     }
     public class YearlyOverHeadRateEntityTypeConfiguration : EntityTypeConfiguration<YearlyOverHeadRate>
@@ -506,6 +516,7 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(t => t.ProductDeliveryItemsId);
         }
     }
+  
     #endregion
 
 

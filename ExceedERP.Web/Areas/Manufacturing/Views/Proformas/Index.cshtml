@@ -1,0 +1,182 @@
+﻿@using System.Collections
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProforma>()
+                                  .Name("ProformaGrid")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.ProformaNo);
+                                      columns.Bound(c => c.CustomerName);
+                                      //columns.Bound(c => c.ContactName);
+                                      //columns.Bound(c => c.ContactPhone);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+                                          command.Destroy();
+                                      }).Width(200);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                 .Pageable(pageable => pageable
+                                                     .Input(true)
+                                                     .Numeric(false)
+                                                     .Refresh(true)
+                                                     .PageSizes(true)
+                                                     .ButtonCount(5))
+                              .Filterable()
+                               .Scrollable(h => h.Height(500))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                           .Events(events =>
+                                           {
+                                               events.Error("error_handler(\"ProformaGrid\")");
+                                               events.RequestStart("onRequestStart(\"ProformaGrid\")");
+                                               events.RequestEnd("onRequestEnd(\"ProformaGrid\")");
+                                           })
+                                      .Model(model => model.Id(p => p.FurnitureProformaId))
+                                      .Read(read => read.Action("Proformas_Read", "Proformas"))
+                                      .Create(create => create.Action("Proformas_Create", "Proformas"))
+                                      .Update(update => update.Action("Proformas_Update", "Proformas"))
+                                      .Destroy(destroy => destroy.Action("Proformas_Destroy", "Proformas"))
+                                  ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                           .Name("tabstrip2_#=ProformaId#")
+                                          .SelectedIndex(0)
+                                          .Items(items =>
+                                          {
+
+                                              items.Add().Text("Items").Content(
+                            @<text>
+
+                                <a href='@Url.Action("ProformaPrint", "ReportProductionFollowUp")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
+
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurniturePFProformaItems>()
+                                                                       .Name("ProformaItems#=ProformaId#")
+                                                           .Columns(columns =>
+                                                           {
+                                                               columns.ForeignKey(c => c.FurnitureJobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(100);
+                                                               //columns.ForeignKey(c => c.JobTypeItemId, (IEnumerable)ViewData["JobTypeItem"], "JobTypeItemId", "Name").Width(100);
+                                                               //  columns.Bound(c => c.SubCategory);
+                                                               columns.Bound(c => c.Quantity);
+                                                               columns.Bound(c => c.Size);
+                                                               columns.Bound(c => c.UnitPrice);
+                                                               columns.Bound(c => c.BeforeTax);
+                                                               columns.Bound(c => c.Tax);
+                                                               columns.Bound(c => c.TotalPrice);
+                                                               columns.Bound(c => c.Description);
+
+                                                               columns.Command(command =>
+                                                               {
+
+                                                                   command.Edit();
+
+                                                                   command.Destroy();
+
+
+                                                               }).Width(250);
+                                                           })
+                                                           .ToolBar(toolbar =>
+                                                           {
+
+                                                               toolbar.Create();
+
+                                                           })
+                                                                  .NoRecords("No Data Registered")
+                                                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProformaItems").Window(window =>
+                                                               {
+
+                                                                   window.Scrollable(false);
+                                                                   window.Title("Proformas");
+                                                               }))
+                                                                   .Pageable(pageable => pageable
+                                                                     .Refresh(true)
+                                                                     )
+
+                                                              .Scrollable(h => h.Height(250))
+
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                          //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                                          .Events(events =>
+                                                                          {
+                                                                              events.Error("error_handler(\"ProformaItems#=ProformaId#\")");
+                                                                              events.RequestStart("onRequestStart(\"ProformaItems#=ProformaId#\")");
+                                                                              events.RequestEnd("onRequestEnd(\"ProformaItems#=ProformaId#\")");
+                                                                          }
+                                                                                                    )
+
+                                                                                          .Model(model =>
+                                                                                          {
+                                                                                              model.Id(p => p.FurniturePFProformaItemsId);
+                                                                                              model.Field(p => p.TotalPrice).Editable(false);
+                                                                                          })
+
+                                                                                          .Read(read => read.Action("ProformaItems_Read", "ProformaItems", new { id = "#=ProformaId#" }))
+                                                                                          .Create(create => create.Action("ProformaItems_Create", "ProformaItems", new { idCreate = "#=ProformaId#" }))
+                                                                                          .Update(update => update.Action("ProformaItems_Update", "ProformaItems"))
+                                                                                          .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "ProformaItems"))
+                                                                              ).ToClientTemplate()
+                                )
+                            </text>
+                                                                              );
+
+
+
+                                                  }).ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function filterJobTypeItem() {
+        return {
+            JobTypeId: $("#JobTypeId").val()
+        };
+    }
+</script>
+
+
+
+<script>
+    function onChange() {
+
+        var unitPrice = $("#UnitPrice").val();
+        var quantity = $("#Quantity").val();
+        var jobTypeId = $("#JobTypeId").val();
+
+        if (quantity !== "" && unitPrice !== "" && jobTypeId !== "") {
+
+            $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalPerice", "ProformaItems")',
+
+                data: { jobTypeId: jobTypeId, quantity: quantity, unitPrice: unitPrice },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                    $("#Tax").val(r.Tax).trigger("change");
+                    $("#BeforeTax").val(r.BeforeTax).trigger("change");
+                    $("#TotalPrice").val(r.TotalPrice).trigger("change");
+                  
+                }
+
+            });
+        }
+
+    }
+</script>
+

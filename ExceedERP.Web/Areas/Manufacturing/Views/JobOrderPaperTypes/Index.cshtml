@@ -1,0 +1,32 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureJobOrderPaperType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobId);
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.Gram);
+        columns.Bound(c => c.Size);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPrice);
+        columns.Bound(c => c.TotalPrice);
+        columns.Bound(c => c.SIVNo);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.JobOrderPaperTypeId))
+          .Read(read => read.Action("JobOrderPaperTypes_Read", "JobOrderPaperTypes"))
+          .Create(create => create.Action("JobOrderPaperTypes_Create", "JobOrderPaperTypes"))
+          .Update(update => update.Action("JobOrderPaperTypes_Update", "JobOrderPaperTypes"))
+          .Destroy(destroy => destroy.Action("JobOrderPaperTypes_Destroy", "JobOrderPaperTypes"))
+      )
+)
