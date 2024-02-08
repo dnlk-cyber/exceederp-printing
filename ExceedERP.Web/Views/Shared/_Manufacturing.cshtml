@@ -8,12 +8,12 @@
 
 @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationAdmin)
      || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationUser)
-     || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpAdmin)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpProformaUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpJobOrderUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpDeliveryUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpDeliveryUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpDeliveryUser)
+     || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin)
+         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionProformaUser)
+         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionJobOrderUser)
+         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser)
+         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser)
+         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser)
          || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingAdmin)
          || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingDailyLaborRateUser)
          || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingIdleTimeUser)
@@ -31,9 +31,9 @@
         <b class="arrow"></b>
         <ul class="submenu">
 
-            @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationAdmin) 
+            @*@if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationAdmin) 
                 ||HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationUser))
-            {
+            {*@
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
@@ -44,11 +44,11 @@
                     <ul class="submenu">
                         <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "FurnitureEstimationJobOrder", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                         <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Proforma", "Index", "FurnitureEstimationProforma", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "EstimationForm", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                         
                     </ul>
                 </li>
-            }
+            @*}*@
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-tasks"></i>
@@ -71,34 +71,34 @@
                         </a>
                         <b class="arrow"></b>
                         <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpProformaUser))
-                            {
+                            @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionProformaUser))
+                            {*@
                                 <li id="productionFollowUp00100100871" class="actionlinlk">
                                     @Html.ActionLink("Proforma", "Index", "Proforma", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpJobOrderUser))
-                            {
+                            @*}*@
+                            @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionJobOrderUser))
+                            {*@
                                 <li id="productdfionFollowUp00100100871" class="actionlinlk">
                                     @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
                                 <li id="productdfionFollowUp00100100871" class="actionlinlk">
                                     @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpFinishedGoodUser))
-                            {
+                            @*}
+                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFinishedGoodUser))
+                            {*@
                                 <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
                                     @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpDeliveryUser))
-                            {
+                            @*}
+                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser))
+                            {*@
                                 <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
                                     @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
 
-                            }
+                            @*}*@
                         </ul>
                     </li>
 
@@ -112,9 +112,9 @@
                         <b class="arrow"></b>
 
                         <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpAdmin) ||
-                        HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpReport))
-                            {
+                            @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin) ||
+                        HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionReport))
+                            {*@
                                 @*<li id="productionFollowUp001001001" class="actionlinlk">
                                         @Html.ActionLink("Job Supplies and Sales", "GetJobSupplyandSales", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
                                         <b class="arrow"></b>
@@ -157,7 +157,7 @@
                                     <b class="arrow"></b>
                                 </li>
 
-                            }
+                            @*}*@
                         </ul>
                     </li>
                     <li class="">
@@ -170,9 +170,9 @@
                         <b class="arrow"></b>
 
                         <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpAdmin) ||
-                        HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFollowUpSetting))
-                            {
+                            @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin) ||
+                        HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionSetting))
+                            {*@
                                 <li id="productionFollowUp001001001" class="actionlinlk">
                                     @Html.ActionLink("Job Type", "Index", "JobCategory", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
@@ -194,7 +194,7 @@
                                 <li id="productionFollowUp001001001" class="actionlinlk">
                                     @Html.ActionLink("Weekly Production Plan", "Index", "WeeklyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
+                            @*}*@
                         </ul>
                     </li>
 

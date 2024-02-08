@@ -10,12 +10,12 @@
 
 @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
      || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser)
-     || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin)
-         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser)
-         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser)
-         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser)
-         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser)
-         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser)
+     || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionAdmin)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionProformaUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionJobOrderUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionFinishedGoodUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser)
          || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
          || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
          || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
@@ -39,7 +39,7 @@
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
-                        Estimation Form
+                        Estimation 
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
                     <b class="arrow"></b>
@@ -69,38 +69,40 @@
                         <a href="#" class="dropdown-toggle">
                             <i class="menu-icon fa fa-caret-right"></i>
                             Operation
+
                             <b class="arrow fa fa-angle-down"></b>
                         </a>
                         <b class="arrow"></b>
                         <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser))
-                            {
+                            @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionProformaUser))
+                            {*@
+                          
                                 <li id="productionFollowUp00100100871" class="actionlinlk">
                                     @Html.ActionLink("Proforma", "Index", "Proforma", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser))
-                            {
+                            @*}
+                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionJobOrderUser))
+                            {*@
                                 <li id="productdfionFollowUp00100100871" class="actionlinlk">
                                     @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
                                 <li id="productdfionFollowUp00100100871" class="actionlinlk">
                                     @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser))
-                            {
+                            @*}
+                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionFinishedGoodUser))
+                            {*@
                                 <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
                                     @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser))
-                            {
+                            @*}
+                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser))
+                            {*@
                                 <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
                                     @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
 
-                            }
+                            @*}*@
                         </ul>
                     </li>
 
@@ -114,9 +116,9 @@
                         <b class="arrow"></b>
 
                         <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin) ||
-                        HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpReport))
-                            {
+                            @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionAdmin) ||
+                        HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionReport))
+                            {*@
                                 @*<li id="productionFollowUp001001001" class="actionlinlk">
                                 @Html.ActionLink("Job Supplies and Sales", "GetJobSupplyandSales", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
                                 <b class="arrow"></b>
@@ -159,7 +161,7 @@
                                     <b class="arrow"></b>
                                 </li>
 
-                            }
+                            @*}*@
                         </ul>
                     </li>
                     <li class="">
@@ -172,9 +174,9 @@
                         <b class="arrow"></b>
 
                         <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin) ||
-                        HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpSetting))
-                            {
+                            @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionAdmin) ||
+                        HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionSetting))
+                            {*@
                                 <li id="productionFollowUp001001001" class="actionlinlk">
                                     @Html.ActionLink("Job Type", "Index", "JobCategory", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
@@ -196,7 +198,7 @@
                                 <li id="productionFollowUp001001001" class="actionlinlk">
                                     @Html.ActionLink("Weekly Production Plan", "Index", "WeeklyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                                 </li>
-                            }
+                            @*}*@
                         </ul>
                     </li>
 
