@@ -3,7 +3,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobOrderTimeRegistration>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobOrderTimeRegistration>()
               .Name("JobOrderTimeRegistrationGrid")
               .Columns(columns =>
               {
@@ -55,7 +55,7 @@
                              items.Add().Text("Time Sheet").Content(
                 @<text>
                     <a href='@Url.Action("JobOrderTimeSheet", "ReportJobCosting")/?id=#=JobOrderTimeRegistrationId#' target="_blank" title="Print Job Order Time Sheet"><i class="fa fa-print fa-2x"></i></a>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobOrderTimeSheet>()
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobOrderTimeSheet>()
                                      .Name("JobOrderTimeSheet#=JobOrderTimeRegistrationId#")
                                  .Columns(columns =>
                                  {

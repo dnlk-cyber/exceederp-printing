@@ -1,5 +1,5 @@
 ﻿
-@model ExceedERP.Core.Domain.ProductionFollowUp.Proforma 
+@model ExceedERP.Core.Domain.Printing.ProductionFollowUp.Proforma 
 
 <div class="form">
     <div class="row">
@@ -311,7 +311,7 @@
                                                                 .DataTextField("Text")
                                                                 .DataValueField("Value")
                                                                 .ValuePrimitive(true)
-                                              .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.PrintingEstimation.Setting.PaymentTer))
+                                              .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.printing.PrintingEstimation.Setting.PaymentTer))
                                                 ))
 
                                         @Html.ValidationMessageFor(model => model.PaymentTerm, "", new { @class = "text-danger" })

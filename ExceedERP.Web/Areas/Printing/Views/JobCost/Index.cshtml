@@ -1,5 +1,5 @@
 ﻿<legend>Job Cost</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobCost>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobCost>()
           .Name("grid")
           .Columns(columns =>
           {
@@ -79,7 +79,7 @@
          itemn.Add().Text("Change Of Orders").Content(
          @<text>
 
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobChangeOfOrder>()
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobChangeOfOrder>()
             .Name("ChangeOfOrder#=JobCostId#")
             .Columns(columns =>
             {
@@ -129,7 +129,7 @@
          </text>);
 
          itemn.Add().Text("Labor Cost ").Content(@<text>                                                                                                            
-           @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobLaborCost>()
+           @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobLaborCost>()
                     .Name("LaborCost#=JobCostId#")
                     .Columns(columns =>
                     {
@@ -189,7 +189,7 @@
     </text>);
 
     itemn.Add().Text("Material Cost ").Content(@<text>                                                                                                                  
-       @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobMaterialCost>()
+       @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobMaterialCost>()
             .Name("MaterialCost#=JobCostId#")
             .Columns(columns =>
             {
@@ -243,7 +243,7 @@
 
         itemn.Add().Text("Material Return ").Content(@<text>
 
-        @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobMaterialReturn>()
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.JobMaterialReturn>()
             .Name("MaterialReturn#=JobCostId#")
             .Columns(columns =>
             {
@@ -297,7 +297,7 @@
             </text>);
             itemn.Add().Text("Finished Jobs").Content(@<text>
 
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.FinishedJob>()
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.FinishedJob>()
             .Name("FinishedJob#=JobCostId#")
             .Columns(columns =>
             {
@@ -346,7 +346,7 @@
 
             itemn.Add().Text("Delivered Job ").Content(@<text>
 
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.DeliveredJob>()
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.DeliveredJob>()
             .Name("DeliveredJob#=JobCostId#")
             .Columns(columns =>
             {

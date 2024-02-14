@@ -1,6 +1,6 @@
 ﻿@using System.Collections;
 <legend>Yearly Production Plan Setup</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductionYearlyPlan>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.ProductionYearlyPlan>()
           .Name("grid")
           .Columns(columns =>
           {
@@ -65,7 +65,7 @@
 @helper MonthlyProductionPlan()
 {
 
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductionMonthlyPlan>()
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.ProductionMonthlyPlan>()
           .Name("production_month_plan_#=ProductionYearlyPlanId#")
           .Columns(columns =>
           {
@@ -132,7 +132,7 @@
 @helper MonthlyJobTypeProductionPlan()
 {
 
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductionMonthlyJobTypePlan>()
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.ProductionMonthlyJobTypePlan>()
           .Name("production_month_job_type_plan_#=ProductionMonthlyPlanId#")
           .Columns(columns =>
           {

@@ -1,5 +1,5 @@
 ﻿
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.IdleTime>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.IdleTime>()
               .Name("grid")
               .Columns(columns =>
               {
@@ -41,7 +41,7 @@
                                                                                         {
                                                                                             itemn.Add().Text("OT").Content(@<text>
 
-                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.IdleTimeOT>()
+                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.IdleTimeOT>()
                                                                                                                                        .Name("OTgrid#=IdleTimeID#")
                                                                                                                                        .Columns(columns =>
                                                                                                                                        {
@@ -97,7 +97,7 @@
                                                                                             </text>);
                                                                                                     itemn.Add().Text("Productive").Content(@<text>
 
-                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.IdleTimeProductive>()
+                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.IdleTimeProductive>()
                                                                                                                                                     .Name("ProductiveGrid#=IdleTimeID#")
                                                                                                                                                     .Columns(columns =>
                                                                                                                                                     {
@@ -160,7 +160,7 @@
 
                                                                                                             itemn.Add().Text(" Non Productive Controllable").Content(@<text>
 
-                                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.IdleTimeNonProductiveControllable>()
+                                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.IdleTimeNonProductiveControllable>()
                                                                                                                                                             .Name("NPCGrid#=IdleTimeID#")
                                                                                                                                                             .Columns(columns =>
                                                                                                                                                             {
@@ -223,7 +223,7 @@
                                                                                                             </text>);
                                                                                                                     itemn.Add().Text(" Non Productive Non Controllable").Content(@<text>
 
-                                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.IdleTimeNonProductiveNonControllable>()
+                                                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.PrintingIdleTimeNonProductiveNonControllable>()
                                                                                                                                                                     .Name("NPNCGrid_#=IdleTimeID#")
                                                                                                                                                                     .Columns(columns =>
                                                                                                                                                                     {
@@ -277,7 +277,7 @@
                                                                                                                                                                                 {
                                                                                                                                                                                     ag.Add(a => a.Value).Sum();
                                                                                                                                                                                 })
-                                                                                                                                                                                .Model(model => model.Id(p => p.IdleTimeNonProductiveNonControllableID))
+                                                                                                                                                                                .Model(model => model.Id(p => p.PrintingIdleTimeNonProductiveNonControllableID))
                                                                                                                                                                                 .Read(read => read.Action("IdleTimeNonProductiveNonControllables_Read", "IdleTimeNonProductiveNonControllable", new { id = "#=IdleTimeID #" }))
                                                                                                                                                                                 .Create(create => create.Action("IdleTimeNonProductiveNonControllables_Create", "IdleTimeNonProductiveNonControllable", new { id = "#=IdleTimeID #" }))
                                                                                                                                                                                 .Update(update => update.Action("IdleTimeNonProductiveNonControllables_Update", "IdleTimeNonProductiveNonControllable"))

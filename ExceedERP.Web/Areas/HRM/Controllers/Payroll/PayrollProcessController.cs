@@ -46,7 +46,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             lookups = db.Lookups.ToList();
             GetPeriod();
             GetBranch();
-            PrepareEmployeeAccount();
+           // PrepareEmployeeAccount();
 
             return View();
 

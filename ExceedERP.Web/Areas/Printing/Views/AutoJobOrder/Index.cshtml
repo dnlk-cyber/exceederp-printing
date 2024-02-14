@@ -514,7 +514,7 @@
                         )#}#
                         </text>);
                     @*items.Add().Text("Estimated Raw Materials").Content(@<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.MaterialCost>()
                             .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
                             .Columns(columns =>
                             {

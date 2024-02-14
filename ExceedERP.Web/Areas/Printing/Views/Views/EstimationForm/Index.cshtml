@@ -3,7 +3,7 @@
 <script src="~/Content/toast/toastr.js"></script>
 
 <legend>Estimation Form</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.EstimationForm>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.EstimationForm>()
                 .Name("grid")
                 .Columns(columns =>
                 {
@@ -76,7 +76,7 @@
 
              itemn.Add().Text("Material Costs")
             .Content(@<text>
-               @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
+               @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.MaterialCost>()
                     .Name("material_costs_#=EstimationFormId#") // template expression, to be evaluated in the master context
                     .Columns(columns =>
                     {
@@ -129,7 +129,7 @@
                         .ToClientTemplate())
                             </text>);
              itemn.Add().Text("Labor Costs").Content(@<text>
-                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.LaborCost>()
+                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.LaborCost>()
                           .Name("labor_costs_#=EstimationFormId#")
                           .Columns(columns =>
                           {
@@ -193,7 +193,7 @@
             #if(IsApproved){#
               <a href='@Url.Action("PrintingEstimationForms", "PrintingEstimationReport")/#=EstimationFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
             #}#
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.OverallCost>()
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.OverallCost>()
                 .Name("overall_costs_#=EstimationFormId#")
                 .Columns(columns =>
                 {

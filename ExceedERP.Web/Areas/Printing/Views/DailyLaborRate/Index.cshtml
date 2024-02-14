@@ -1,5 +1,5 @@
 ﻿
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.JobCosting.DailyLaborRate>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.DailyLaborRate>()
           .Name("grid")
           .Columns(columns =>
           {
@@ -60,7 +60,7 @@
                                                                       {
                                                                           itemn.Add().Text("Salaries ").Content(@<text>
 
-                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.DLRSalary>()
+                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.DLRSalary>()
                                                                                                           .Name("DLRSalary#=DailyLaborRateId#")
                                                                                                              .Columns(columns =>
                                                                                                              {
@@ -124,7 +124,7 @@
 
                                                                                 itemn.Add().Text("Hours ").Content(@<text>
 
-                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.DLRHour>()
+                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.JobCosting.DLRHour>()
                                                                                                                   .Name("DLRHour#=DailyLaborRateId#")
                                                                                                                      .Columns(columns =>
                                                                                                                      {

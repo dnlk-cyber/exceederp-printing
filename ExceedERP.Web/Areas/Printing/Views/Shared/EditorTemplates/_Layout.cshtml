@@ -562,9 +562,9 @@
             <b class="arrow"></b>
         </li>*@
 
-    @using ExceedERP.Core.Domain.PrintingEstimation;
-    @using ExceedERP.Core.Domain.ProductionFollowUp
-    @using ExceedERP.Core.Domain.JobCosting
+    @using ExceedERP.Core.Domain.printing.PrintingEstimation;
+    @using ExceedERP.Core.Domain.Printing.ProductionFollowUp
+    @using ExceedERP.Core.Domain.printing.JobCosting
 
     @Html.Partial("_Dashboard")
     @if (HttpContext.Current.User.IsInRole("HR_Admin") ||

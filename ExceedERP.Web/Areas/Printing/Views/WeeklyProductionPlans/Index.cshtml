@@ -1,5 +1,5 @@
 ﻿@using ExceedERP.Core.Localization
-@using ExceedERP.Core.Domain.ProductionFollowUp
+@using ExceedERP.Core.Domain.Printing.ProductionFollowUp
 @using Kendo.Mvc.Extensions
 
 <div class="content-wrapper">
@@ -217,7 +217,7 @@
 {
 
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductionJobTypePlan>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.ProductionJobTypePlan>()
               .Name("production_month_job_type_plan_#=WeeklyProductionPlanId#")
                   .Columns(columns =>
               {
