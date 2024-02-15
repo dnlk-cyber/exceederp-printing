@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceive>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceive>()
                       .Name("grid")
                       .Columns(columns =>
                       {
@@ -68,7 +68,7 @@
                         @<text>
                             <a href='@Url.Action("FinishedGoodReceival", "ReportProductionFollowUp")/?id=#=FinishedGoodsStoreReceiveId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
 
-                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoods>()
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.FinishedGoods>()
                                                    .Name("FinishedGoods#=FinishedGoodsStoreReceiveId#")
                                                            .Columns(columns =>
                                                            {

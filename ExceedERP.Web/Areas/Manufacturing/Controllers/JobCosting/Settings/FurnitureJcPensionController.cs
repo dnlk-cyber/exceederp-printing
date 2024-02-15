@@ -1,10 +1,6 @@
-﻿﻿using System;
-using System.Collections.Generic;
-
+﻿
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -12,7 +8,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers.JobCosting.Settings
-{ 
+{
     public class FurnitureJcPensionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

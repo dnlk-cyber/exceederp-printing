@@ -3,7 +3,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobType>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.JobType>()
                   .Name("grid")
                   .Columns(columns =>
                   {
@@ -54,7 +54,7 @@
                           items.Add().Text("Items").Content(
                     @<text>
 
-                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobTypeItem>()
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.JobTypeItem>()
                                                 .Name("JobTypeItem#=JobTypeId#")
                                     .Columns(columns =>
                                     {

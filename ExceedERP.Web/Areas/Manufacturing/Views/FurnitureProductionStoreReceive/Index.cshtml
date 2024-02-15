@@ -6,7 +6,7 @@
 }
 <legend>Production | Store Receive </legend>
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceive>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceive>()
                           .Name("productionStoreReceiveGrid")
                           .Columns(columns =>
                           {
@@ -115,7 +115,7 @@
                 );
             items.Add().Text("Items").Content(
                 @<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveItem>()
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveItem>()
                                 .Name("items_#=FinishedGoodsStoreReceiveId#")
                                 .Columns(columns =>
                                 {
@@ -192,7 +192,7 @@
                 );
                 items.Add().Text("Validation").Content(
                     @<text>
-                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveValidation>()
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveValidation>()
                           .Name("validation_#=FinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
@@ -256,7 +256,7 @@
                 );
                 items.Add().Text("Distribution").Content(
                 @<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveDistribution>()
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveDistribution>()
                           .Name("distribtion_#=FinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
@@ -491,7 +491,7 @@
                 );
                 items.Add().Text("Distribution").Content(
                 @<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveDistribution>()
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveDistribution>()
                           .Name("distribtion_#=FinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {

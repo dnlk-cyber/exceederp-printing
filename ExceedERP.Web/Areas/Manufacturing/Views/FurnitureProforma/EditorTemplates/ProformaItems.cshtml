@@ -7,18 +7,18 @@
         </div>
         <div class="col-sm-3">
             <div class="form-group">
-                @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.FurnitureJobTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div>
 
-                    @(Html.Kendo().DropDownTreeFor(model => model.JobTypeId)
+                    @(Html.Kendo().DropDownTreeFor(model => model.FurnitureJobTypeId)
 
-                                                                                                                        .Name("JobTypeId")
+                                                                                                                        .Name("FurnitureJobTypeId")
                                                                                                                         .ValuePrimitive(true)
                                                                                                                         .Placeholder("--select--")
                                                                                                                         //.Events(ev => ev.Change("onSelectLoading"))
                                                                                                                         .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
-                    @Html.ValidationMessageFor(model => model.JobTypeId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.FurnitureJobTypeId, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

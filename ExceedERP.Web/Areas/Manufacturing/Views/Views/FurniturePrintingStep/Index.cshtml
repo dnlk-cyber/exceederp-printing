@@ -1,0 +1,37 @@
+﻿<legend>Printing Category SetUp</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.PrintingStep>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.PrintingSteps).EditorTemplateName("PrintingCategory").Title("Printing Category");
+              columns.Bound(c => c.Name);
+              columns.Bound(c => c.Description);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+          })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+                  toolbar.Excel();
+                  toolbar.Pdf();
+              })
+
+                .Scrollable(s => s.Height(400))
+                .Sortable()
+                .Filterable()
+
+                .Pageable(pageable => pageable
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.PrintingStepId))
+                  .Read(read => read.Action("PrintingSteps_Read", "PrintingStep"))
+                  .Create(create => create.Action("PrintingSteps_Create", "PrintingStep"))
+                  .Update(update => update.Action("PrintingSteps_Update", "PrintingStep"))
+                  .Destroy(destroy => destroy.Action("PrintingSteps_Destroy", "PrintingStep"))
+                   .PageSize(20)
+              )
+)
+

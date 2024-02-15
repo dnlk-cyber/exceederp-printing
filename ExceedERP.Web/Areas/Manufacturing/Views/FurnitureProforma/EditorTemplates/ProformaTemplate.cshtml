@@ -37,7 +37,7 @@
                                                                                           .ServerFiltering(false);
                                                                              })
                                                                           .ValuePrimitive(true))
-                        @Html.ValidationMessageFor(model => model.ProformaId, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(model => model.FurnitureProformaId, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
@@ -73,7 +73,7 @@
                                                                                     dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm", new { Area = "PrintingEstimation"}))
                                                                                         .ServerFiltering(false);
                                                                                 }))
-                        @Html.ValidationMessageFor(model => model.ProformaId, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(model => model.FurnitureProformaId, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
@@ -311,7 +311,7 @@
                                                                 .DataTextField("Text")
                                                                 .DataValueField("Value")
                                                                 .ValuePrimitive(true)
-                                              .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.Setting.PaymentTer))
+                                              .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.Setting.FurniturePaymentTer))
                                                 ))
 
                                         @Html.ValidationMessageFor(model => model.PaymentTerm, "", new { @class = "text-danger" })

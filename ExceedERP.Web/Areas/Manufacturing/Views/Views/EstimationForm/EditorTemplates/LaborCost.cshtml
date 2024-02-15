@@ -1,4 +1,4 @@
-﻿@model ExceedERP.Core.Domain.PrintingEstimation.LaborCost
+﻿@model ExceedERP.Core.Domain.printing.PrintingEstimation.LaborCost
 
 <form id="lineForm" method="post">
 
@@ -9,7 +9,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.PrintingSteps)
                                                                 .DataTextField("Text")
                                                                 .DataValueField("Value")
-                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.PrintingEstimation.PrintingSteps))
+                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.printing.PrintingEstimation.PrintingSteps))
                                     )
                     )
                 </div>

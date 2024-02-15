@@ -43,7 +43,7 @@
     });
 </script>
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.Job>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.Job>()
             .Name("JobGrid")
             .Columns(columns =>
             {
@@ -170,7 +170,7 @@
         items.Add().Text("Change Of Order").Content(
         @<text>
 
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder>()
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.ChangeOrder>()
                     .Name("ChangeOrder#=JobId#")
                     .Columns(columns =>
                     {
@@ -225,7 +225,7 @@
 
 
             items.Add().Text("Estimated Materials").Content(@<text>
-            @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.printing.PrintingEstimation.MaterialCost>()
 
                 .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
                 .Columns(columns =>
@@ -388,7 +388,7 @@
 
 
 <script id="JobStatusLineItem" type="text/Kendo-tmpl">
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobStatusLineItem>()
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.JobStatusLineItem>()
               .Name("JobStatusLineItem#=JobStatusId#")
               .Columns(columns =>
               {

@@ -42,9 +42,9 @@
                     </a>
                     <b class="arrow"></b>
                     <ul class="submenu">
-                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "FurnitureEstimationJobOrder", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Proforma", "Index", "FurnitureEstimationProforma", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "FurnitureEstimationJobOrder", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-002" class="actionlinlk">@Html.ActionLink("Proforma", "Index", "FurnitureEstimationProforma", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                         
                     </ul>
                 </li>
@@ -73,29 +73,29 @@
                         <ul class="submenu">
                             @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionProformaUser))
                             {*@
-                                <li id="productionFollowUp00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Proforma", "Index", "Proforma", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingOp1" class="actionlinlk">
+                                    @Html.ActionLink("Proforma", "Index", "FurnitureProforma", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
                             @*}*@
                             @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionJobOrderUser))
                             {*@
-                                <li id="productdfionFollowUp00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingOp2" class="actionlinlk">
+                                    @Html.ActionLink("Job Order", "Index", "FurnitureAutoJobOrder", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
-                                <li id="productdfionFollowUp00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingOp3" class="actionlinlk">
+                                    @Html.ActionLink("Manual Order", "Index", "FurnitureManualJobOrder", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
                             @*}
                             @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionFinishedGoodUser))
                             {*@
-                                <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
-                                    @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingOp4" class="actionlinlk">
+                                    @Html.ActionLink("Finished Good Receival", "Index", "FurnitureProductionStoreReceive", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
                             @*}
                             @if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser))
                             {*@
-                                <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
-                                    @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingOp5" class="actionlinlk">
+                                    @Html.ActionLink("Product Delivery", "Index", "FurnitureProductDeliveries", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
 
                             @*}*@
@@ -116,44 +116,44 @@
                         HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionReport))
                             {*@
                                 @*<li id="productionFollowUp001001001" class="actionlinlk">
-                                        @Html.ActionLink("Job Supplies and Sales", "GetJobSupplyandSales", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                        @Html.ActionLink("Job Supplies and Sales", "GetJobSupplyandSales", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                         <b class="arrow"></b>
                                     </li>*@
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Job Supplies and Sales Performance", "GetJobSupplyandSalesWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt1" class="actionlinlk">
+                                    @Html.ActionLink("Job Supplies and Sales Performance", "GetJobSupplyandSalesWp", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Job Supplies", "GetJobSupply", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt2" class="actionlinlk">
+                                    @Html.ActionLink("Job Supplies", "GetJobSupply", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Job Orders", "GetJobOrders", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt13" class="actionlinlk">
+                                    @Html.ActionLink("Job Orders", "GetJobOrders", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Delivery FollowUp Sheet", "GetDeliveryFollowUpSheet", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt4" class="actionlinlk">
+                                    @Html.ActionLink("Delivery FollowUp Sheet", "GetDeliveryFollowUpSheet", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Finished Products Receiving Note", "GetFinishedProductsReceivingNote", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt5" class="actionlinlk">
+                                    @Html.ActionLink("Finished Products Receiving Note", "GetFinishedProductsReceivingNote", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
                                 @*<li id="productionFollowUp001001001" class="actionlinlk">
-                                        @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformance", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                        @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformance", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                         <b class="arrow"></b>
                                     </li>*@
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformanceWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt6" class="actionlinlk">
+                                    @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformanceWp", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
                                 @*<li id="productionFollowUp001001001" class="actionlinlk">
-                                        @Html.ActionLink("Delivery Team Performance", "GetDeliveryTeamPerformance", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                        @Html.ActionLink("Delivery Team Performance", "GetDeliveryTeamPerformance", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                         <b class="arrow"></b>
                                     </li>*@
 
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Delivery  Performance", "GetDeliveryTeamPerformanceWp", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                                <li id="ManufacturingRrt7" class="actionlinlk">
+                                    @Html.ActionLink("Delivery  Performance", "GetDeliveryTeamPerformanceWp", "ProductionFollowUpReport", new { area = "Manufacturing" }, null)
                                     <b class="arrow"></b>
                                 </li>
 
@@ -173,26 +173,26 @@
                             @*@if (HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin) ||
                         HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionSetting))
                             {*@
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Job Type", "Index", "JobCategory", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingStg1" class="actionlinlk">
+                                    @Html.ActionLink("Job Type", "Index", "FurnitureJobCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="ManufacturingStg2" class="actionlinlk">
+                                    @Html.ActionLink("Customer Type", "Index", "FurnitureProductionCustomerType", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
                                 <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Customer Type", "Index", "ProductionCustomerType", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                    @Html.ActionLink("Machine Type", "Index", "FurnitureMachine", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Machine Type", "Index", "Machine", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingStg3" class="actionlinlk">
+                                    @Html.ActionLink("Production Plan", "Index", "FurnitureProductionYearlyPlan", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Production Plan", "Index", "ProductionYearlyPlan", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingStg4" class="actionlinlk">
+                                    @Html.ActionLink("Yearly Production Plan", "Index", "FurnitureYearlyProductionPlans", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Yearly Production Plan", "Index", "YearlyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingStg5" class="actionlinlk">
+                                    @Html.ActionLink("Monthly Production Plan", "Index", "FurnitureMonthlyProductionPlans", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Monthly Production Plan", "Index", "MonthlyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="productionFollowUp001001001" class="actionlinlk">
-                                    @Html.ActionLink("Weekly Production Plan", "Index", "WeeklyProductionPlans", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingStg6" class="actionlinlk">
+                                    @Html.ActionLink("Weekly Production Plan", "Index", "FurnitureWeeklyProductionPlans", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
                             @*}*@
                         </ul>
@@ -228,8 +228,8 @@
                                     </a>
                                     <b class="arrow"></b>
                                     <ul class="submenu">
-                                        <li id="JobCosting00100100871" class="actionlinlk">
-                                            @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                        <li id="ManufacturingJct1" class="actionlinlk">
+                                            @Html.ActionLink("Job Cost", "Index", "FurnitureJobCost", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                         </li>
                                     </ul>
                                 </li>
@@ -244,8 +244,8 @@
                                     </a>
                                     <b class="arrow"></b>
                                     <ul class="submenu">
-                                        <li id="JobCosting00100100871" class="actionlinlk">
-                                            @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                        <li id="ManufacturingJct2" class="actionlinlk">
+                                            @Html.ActionLink("Idle Time", "Index", "FurnitureIdleTime", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                         </li>
                                     </ul>
                                 </li>
@@ -261,8 +261,8 @@
                                     <b class="arrow"></b>
                                     <ul class="submenu">
 
-                                        <li id="JobCosting00100100871" class="actionlinlk">
-                                            @Html.ActionLink("Daily Labor Rate", "Index", "DailyLaborRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                        <li id="ManufacturingJct3" class="actionlinlk">
+                                            @Html.ActionLink("Daily Labor Rate", "Index", "FurnitureDailyLaborRate", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                         </li>
 
                                     </ul>
@@ -278,8 +278,8 @@
                         </a>
                         <b class="arrow"></b>
                         <ul class="submenu">
-                            <li id="JobCosting00100100831" class="actionlinlk">
-                                @Html.ActionLink("Job Order Card", "GetJobOrderCard", "JobCostingReport", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            <li id="ManufacturingJct4" class="actionlinlk">
+                                @Html.ActionLink("Job Order Card", "GetJobOrderCard", "JobCostingReport", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                             </li>
                         </ul>
                     </li>
@@ -298,15 +298,15 @@
                                 HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingJobCostUser))
                             {
 
-                                <li id="JobCosting00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Idle Time Setup", "Index", "IdleTimeCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingJct5" class="actionlinlk">
+                                    @Html.ActionLink("Idle Time Setup", "Index", "FurnitureIdleTimeCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
 
-                                <li id="JobCosting00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Yearly Overhead Rate", "Index", "YearlyOverHeadRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingJct6" class="actionlinlk">
+                                    @Html.ActionLink("Yearly Overhead Rate", "Index", "FurnitureYearlyOverHeadRate", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
-                                <li id="JobCosting00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Pension", "Index", "JcPension", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                <li id="ManufacturingJct7" class="actionlinlk">
+                                    @Html.ActionLink("Pension", "Index", "FurnitureJcPension", new { area = "Manufacturing" }, null)<b class="arrow"></b>
                                 </li>
                             }
 
@@ -325,8 +325,8 @@
                     </a>
                     <b class="arrow"></b>
                     <ul class="submenu">
-                        <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("Printing Step", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-                        <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("Furniture Categories", "Index", "FurnitureCategories", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+                        <li id="setting001" class="actionlinlk">@Html.ActionLink("Printing Step", "Index", "FurniturePrintingStep", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Furniture Categories", "Index", "FurnitureCategories", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                     </ul>
 
 
