@@ -97,7 +97,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.Estimation
         {
             if (ModelState.IsValid)
             {
-
+                int.TryParse(estimationForm.JT, out int typeId);
                 var entity = new EstimationForm
                 {
                     EstimationFormId = estimationForm.EstimationFormId,
@@ -105,7 +105,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.Estimation
                     Date = DateTime.Now,
                     JobNumber = estimationForm.JobNumber,
                     Quantity = estimationForm.Quantity,
-                    JobTypeId = int.Parse(estimationForm.JT),
+                    JobTypeId = typeId,/*int.Parse(estimationForm.JT),*/
                     Size = estimationForm.Size,
                     TextPaper = estimationForm.TextPaper,
                     TextPrint = estimationForm.TextPrint,

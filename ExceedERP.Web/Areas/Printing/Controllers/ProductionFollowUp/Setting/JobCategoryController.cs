@@ -23,9 +23,13 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.ProductionFollowUp.Setting
         public ActionResult Index()
         {
             ViewData["Parents"] = db.JobCategories.Where(q=>q.HaveParent== false).ToList();
-            ViewData["Taxes"] = db.GLTaxRates.Select(s=>new {
-            Code = s.GLTaxRateID,
-            Name = s.TaxName}).ToList();
+
+            ViewData["Taxes"] = db.GLTaxRates.Select(s => new
+            {
+                Code = s.GLTaxRateID,
+                Name = s.TaxName
+            }).ToList();
+
             return View();
         }
 

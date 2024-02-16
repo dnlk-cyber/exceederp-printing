@@ -258,7 +258,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.Estimation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Jobs_Create([DataSourceRequest]DataSourceRequest request, Job job)
         {
-            job.JobTypeId = Int16.Parse(job.JT);
+            int.TryParse(job.JT, out int jt);
+            job.JobTypeId = jt;
+            //job.JobTypeId = Int16.Parse(job.JT);
             if (ModelState.IsValid)
             {
                 //job.CreatedBy = User.Identity.Name;

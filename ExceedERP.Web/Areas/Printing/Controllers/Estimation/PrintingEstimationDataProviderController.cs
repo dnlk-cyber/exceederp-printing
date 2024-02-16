@@ -15,6 +15,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.Estimation
         {
             return View();
         }
+        public JsonResult GetIC()
+        {
+            return Json(_db.ItemCategorys.Select(s => new
+            {
+                Name = s.ItemCategoryCode,
+                ItemCategoryCode = s.ItemCategoryCode
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetItemCategory()
         {
             var itemCategory = _db.ItemCategorys
@@ -46,10 +54,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.Estimation
         {
             var stores = _db.InventoryStores.ToList().Select(s => new
             {
-
                 s.StoreCode,
                 s.Name
-
             });
             return Json(stores, JsonRequestBehavior.AllowGet);
         }

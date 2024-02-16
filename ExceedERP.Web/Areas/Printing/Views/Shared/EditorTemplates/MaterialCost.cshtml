@@ -11,21 +11,21 @@
 
         <div class="col-sm-8">
             @(Html.Kendo().DropDownListFor(m => m.StoreCode)
-                                                                  .OptionLabel(Resources.Select)
-                                                                  .DataTextField("Name")
-                                                                  .DataValueField("StoreCode")
-                                                                    .Events(ev =>
-                                                                    {
-                                                                        ev.Change("selectInventory").DataBound("selectInventory");
+                .OptionLabel(Resources.Select)
+                .DataTextField("Name")
+                .DataValueField("StoreCode")
+                .Events(ev =>
+                {
+                    ev.Change("selectInventory").DataBound("selectInventory");
 
-                                                                    }).DataSource(dataSource =>
-                                                                    {
-                                                                        dataSource.Read(read => read.Action("GetAllStores", "PrintingEstimationDataProvider"));
-                                                                    //.ServerFiltering(true);
-                                                                })
-                                                                  .Filter("contains")
-                                                                  .MinLength(2)
-                                                                  .ValuePrimitive(true)
+                }).DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetAllStores", "PrintingEstimationDataProvider"));
+                //.ServerFiltering(true);
+            })
+                .Filter("contains")
+                .MinLength(2)
+                .ValuePrimitive(true)
             )
         </div>
     </div>
@@ -34,18 +34,18 @@
         <label for="cat" class="control-label control-label col-sm-2 text-right text-right">Category:</label>
         <div class="col-sm-8">
             @(Html.Kendo().DropDownListFor(m => m.InventoryCategoryId)
-                                                          .OptionLabel(Resources.Select)
-                                                              .DataTextField("Name")
-                                                              .DataValueField("ItemCategoryCode")
-                                                              //    .BindTo((IEnumerable)ViewData["Items"])
-                                                              .DataSource(dataSource =>
-                                                              {
-                                                                  dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" }));
-                                                                  //.ServerFiltering(true);
-                                                              })
-                                                              .Filter("contains")
-                                                              .MinLength(2)
-                                                              .ValuePrimitive(true)
+                .OptionLabel(Resources.Select)
+                .DataTextField("Name")
+                .DataValueField("ItemCategoryCode")
+                //    .BindTo((IEnumerable)ViewData["Items"])
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider", new { Area = "Printing" }));
+                    //.ServerFiltering(true);
+                })
+                .Filter("contains")
+                .MinLength(2)
+                .ValuePrimitive(true)
             )
         </div>
     </div>
@@ -55,26 +55,26 @@
         <label for="Product" class="control-label col-sm-2 text-right">Item:</label>
         <div class="col-sm-8">
             @(Html.Kendo().DropDownListFor(model => model.InventoryId)
-                                                                                                                                .DataTextField("Name")
-                                                                                                                               .DataValueField("ItemCode")
-                                                                                                                               .Events(ev =>
-                                                                                                                               {
-                                                                                                                                   ev.Change("selectInventory").DataBound("selectInventory");
+                .DataTextField("Name")
+                .DataValueField("ItemCode")
+                .Events(ev =>
+                {
+                    ev.Change("selectInventory").DataBound("selectInventory");
 
-                                                                                                                               })
-                                                                                                                                                                                                                                                                          .CascadeFrom("InventoryCategoryId")
+                })
+                .CascadeFrom("InventoryCategoryId")
 
-                                                                                                                                               //    .BindTo((IEnumerable)ViewData["Items"])
-                                                                                                                                               .DataSource(dataSource =>
-                                                                                                                                               {
-                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" })
-                                                                                                                                                   .Data("filterCategories"))
-                                                                                                                                                   .ServerFiltering(true);
-                                                                                                                                               })
+                //    .BindTo((IEnumerable)ViewData["Items"])
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "Printing" })
+                    .Data("filterCategories"))
+                    .ServerFiltering(true);
+                })
 
-                                                                                                                                               .Filter("contains")
-                                                                                                                                               .MinLength(2)
-                                                                                                                                               .ValuePrimitive(true)
+                .Filter("contains")
+                .MinLength(2)
+                .ValuePrimitive(true)
             )
         </div>
     </div>
@@ -83,8 +83,8 @@
         <label for="Balance" class="control-label col-sm-2 text-right col-form-label">Balance:</label>
         <div class="col-sm-8">
             @(Html.Kendo().TextBoxFor(model => model.Balance)
-                                        .HtmlAttributes(new
-                                        { style = "color:red;", @readonly = "readonly" }))
+                .HtmlAttributes(new
+                { style = "color:red;", @readonly = "readonly" }))
         </div>
     </div> 
     
@@ -92,8 +92,8 @@
         <label for="Quantity" class="control-label col-sm-2 text-right col-form-label">Quantity:</label>
         <div class="col-sm-8">
             @(Html.Kendo().TextBoxFor(model => model.Quantity)
-                                .HtmlAttributes(new
-                                { onchange = "onChange(this)" }))
+                .HtmlAttributes(new
+                { onchange = "onChange(this)" }))
         </div>
     </div>
 

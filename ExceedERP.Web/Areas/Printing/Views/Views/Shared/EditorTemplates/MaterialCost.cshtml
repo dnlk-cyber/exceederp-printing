@@ -34,18 +34,18 @@
         <label for="cat" class="control-label control-label col-sm-2 text-right text-right">Category:</label>
         <div class="col-sm-8">
             @(Html.Kendo().DropDownListFor(m => m.InventoryCategoryId)
-                                                          .OptionLabel(Resources.Select)
-                                                              .DataTextField("Name")
-                                                              .DataValueField("ItemCategoryCode")
-                                                              //    .BindTo((IEnumerable)ViewData["Items"])
-                                                              .DataSource(dataSource =>
-                                                              {
-                                                                  dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" }));
-                                                                  //.ServerFiltering(true);
-                                                              })
-                                                              .Filter("contains")
-                                                              .MinLength(2)
-                                                              .ValuePrimitive(true)
+               .OptionLabel(Resources.Select)
+               .DataTextField("Name")
+               .DataValueField("ItemCategoryCode")
+               //    .BindTo((IEnumerable)ViewData["Items"])
+               .DataSource(dataSource =>
+               {
+                   dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider"));
+                   //.ServerFiltering(true);
+               })
+               .Filter("contains")
+               .MinLength(2)
+               .ValuePrimitive(true)
             )
         </div>
     </div>
@@ -67,7 +67,7 @@
                                                                                                                                                //    .BindTo((IEnumerable)ViewData["Items"])
                                                                                                                                                .DataSource(dataSource =>
                                                                                                                                                {
-                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" })
+                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "Printing" })
                                                                                                                                                    .Data("filterCategories"))
                                                                                                                                                    .ServerFiltering(true);
                                                                                                                                                })

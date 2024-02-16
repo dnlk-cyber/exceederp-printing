@@ -33,7 +33,7 @@
                                                                                      .Enable(false)
                                                                              .DataSource(dataSource =>
                                                                              {
-                                                                                 dataSource.Read(read => read.Action("GetAllEstimationForms", "EstimationForm", new { area = "PrintingEstimation" }))
+                                                                                 dataSource.Read(read => read.Action("GetAllEstimationForms", "EstimationForm", new { Area = "Printing" }))
                                                                                           .ServerFiltering(false);
                                                                              })
                                                                           .ValuePrimitive(true))

@@ -46,8 +46,8 @@
                     .Name("JobGrid")
                     .Columns(columns =>
                     {
-            //columns.Bound(c => c.Time);
-            columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
+                        //columns.Bound(c => c.Time);
+                        columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
                         columns.ForeignKey(c => c.ProductionCustomertypeId, (IEnumerable)ViewData["CustomerTypes"], "Code", "Name").Width(100);
                         columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewBag.Proforma, "Value", "Text").Width(100);
                         columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
@@ -513,7 +513,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("ApproveJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("ApproveJobOrder", "PrintingEstimationJobOrder", new { Area = "Printing" })',
             data: { id: dataItem.JobId },
             success: function (result) {
                 if (result.Success) {
@@ -539,7 +539,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("CheckJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("CheckJobOrder", "PrintingEstimationJobOrder", new { Area = "Printing" })',
             data: { id: dataItem.JobId },
             success: function (result) {
                 if (result.Success) {
@@ -564,7 +564,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("RejectJobOrder", "PrintingEstimationJobOrder", new { Area = "Printing" })',
             data: { id: dataItem.JobId },
             success: function (result) {
                 if (result.Success) {
@@ -1063,7 +1063,7 @@
     console.log(productId);
     $.ajax({
     type: 'POST',
-    url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+    url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { Area = "Printing" })',
     data: {
     itemCode: productId,
 
@@ -1088,7 +1088,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { Area = "Printing" })',
             data: {
                 itemCode: productId, storeCode: storeCode
 

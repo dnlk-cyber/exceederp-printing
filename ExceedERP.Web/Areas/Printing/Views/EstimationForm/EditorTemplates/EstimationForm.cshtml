@@ -14,12 +14,10 @@
                 <div>
 
                     @(Html.Kendo().DropDownTreeFor(model => model.JT)
-
-                                                                                                                                                        .ValuePrimitive(true)
-                                                                                                                                                        .Placeholder("--select--")
-                                                                                                                                                        //.Events(ev => ev.Change("onSelectLoading").Change("onChange"))
-
-                                                                                                                                                        .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
+                        .ValuePrimitive(true)
+                        .Placeholder("--select--")
+                        //.Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+                        .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
                     @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
                 </div>

@@ -7,7 +7,7 @@
           columns.Bound(c => c.JobName);
           columns.Bound(c => c.JobCode);
           columns.Bound(c => c.HaveParent).EditorTemplateName("HaveParentMapping")
-                                          .ClientTemplate("<input type='checkbox' #= HaveParent ? checked='checked': '' # class='chkbx' />");
+            .ClientTemplate("<input type='checkbox' #= HaveParent ? checked='checked': '' # class='chkbx' />");
 
           columns.ForeignKey(c => c.ParentId, (IEnumerable)ViewData["Parents"], "JobCategoryId", "JobName").Title("Parent");
           columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Code", "Name").Title("Tax Type");

@@ -319,7 +319,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { Area = "Printing" })',
             data: {
                 itemCode: productId, storeCode: storeCode
 
@@ -345,7 +345,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("CheckEstimation", "EstimationForm", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("CheckEstimation", "EstimationForm", new { Area = "Printing" })',
             data: { id: dataItem.EstimationFormId },
             success: function (result) {
                 if (result.Success) {
@@ -371,7 +371,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("ApproveEstimation", "EstimationForm", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("ApproveEstimation", "EstimationForm", new { Area = "Printing" })',
             data: { id: dataItem.EstimationFormId },
             success: function (result) {
                 if (result.Success) {
@@ -395,7 +395,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectEstimation", "EstimationForm", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("RejectEstimation", "EstimationForm", new { Area = "Printing" })',
             data: { id: dataItem.EstimationFormId },
             success: function (result) {
                 if (result.Success) {

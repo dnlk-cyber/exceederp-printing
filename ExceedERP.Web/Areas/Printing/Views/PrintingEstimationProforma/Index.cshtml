@@ -362,7 +362,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("CheckProforma", "PrintingEstimationProforma", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("CheckProforma", "PrintingEstimationProforma", new { Area = "Printing" })',
             data: { id: dataItem.ProformaId },
             success: function (result) {
                 if (result.Success) {
@@ -388,7 +388,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("ApproveProforma", "PrintingEstimationProforma", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("ApproveProforma", "PrintingEstimationProforma", new { Area = "Printing" })',
             data: { id: dataItem.ProformaId },
             success: function (result) {
                 if (result.Success) {
@@ -412,7 +412,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectProforma", "PrintingEstimationProforma", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("RejectProforma", "PrintingEstimationProforma", new { Area = "Printing" })',
             data: { id: dataItem.ProformaId },
             success: function (result) {
                 if (result.Success) {
