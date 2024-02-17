@@ -1,7 +1,7 @@
 ﻿
 
 
---@using System.Collections
+@using System.Collections
 @using ExceedERP.Core.Domain.Inventory
 
 
@@ -115,10 +115,10 @@
                             events.RequestEnd("onRequestEnd(\"JobGrid\")");
                         })
                             .Model(model => model.Id(p => p.FurnitureJobId))
-                            .Read(read => read.Action("Jobs_Read", "PrintingEstimationJobOrder"))
-                            .Create(create => create.Action("Jobs_Create", "PrintingEstimationJobOrder"))
-                            .Update(update => update.Action("Jobs_Update", "PrintingEstimationJobOrder"))
-                            .Destroy(destroy => destroy.Action("Jobs_Destroy", "PrintingEstimationJobOrder"))
+                            .Read(read => read.Action("Jobs_Read", "FurnitureEstimationJobOrder"))
+                            .Create(create => create.Action("Jobs_Create", "FurnitureEstimationJobOrder"))
+                            .Update(update => update.Action("Jobs_Update", "FurnitureEstimationJobOrder"))
+                            .Destroy(destroy => destroy.Action("Jobs_Destroy", "FurnitureEstimationJobOrder"))
                             .Sort(sort =>
                             {
                                 sort.Add(l => l.FurnitureJobId).Descending();
@@ -128,14 +128,14 @@
 
 <script id="Detail" type="text/kendo-tmpl">
 @(Html.Kendo().TabStrip()
-        .Name("tabstrip2_#=JobId#")
+        .Name("tabstrip2_#=FurnitureJobId#")
         .SelectedIndex(0)
         .Items(items =>
         {
                 
             items.Add().Text("Details").Content(
             @<text>
-            <a href='@Url.Action("JobOrder", "PrintingEstimationReport")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
+            <a href='@Url.Action("JobOrder", "PrintingEstimationReport")/?id=#=FurnitureJobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
             <div class='row'>
                 <div class='col-sm-4' id='detailone'>
                     <ul>
@@ -171,7 +171,7 @@
         @<text>
 
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureChangeOrder>()
-                    .Name("ChangeOrder#=JobId#")
+                    .Name("ChangeOrder#=FurnitureJobId#")
                     .Columns(columns =>
                     {
                         columns.Bound(c => c.Quantity);
@@ -207,9 +207,9 @@
                     //  .Sort(s => s.Add(x => x.ProformaId).Descending())
                     .Events(events =>
                     {
-                        events.Error("error_handler(\"ChangeOrder#=JobId#\")");
-                        events.RequestStart("onRequestStart(\"ChangeOrder#=JobId#\")");
-                        events.RequestEnd("onRequestEnd(\"ChangeOrder#=JobId#\")");
+                        events.Error("error_handler(\"ChangeOrder#=FurnitureJobId#\")");
+                        events.RequestStart("onRequestStart(\"ChangeOrder#=FurnitureJobId#\")");
+                        events.RequestEnd("onRequestEnd(\"ChangeOrder#=FurnitureJobId#\")");
                     })
 
                     .Model(model =>
@@ -217,7 +217,7 @@
                         model.Id(p => p.FurnitureChangeOrderId);
                     })
 
-                    .Read(read => read.Action("ChangeOrders_Read", "PrintingEstimationJobOrder", new { id = "#=JobId#" }))
+                    .Read(read => read.Action("ChangeOrders_Read", "FurnitureEstimationJobOrder", new { id = "#=FurnitureJobId#" }))
 
                     ).ToClientTemplate()
                     )
@@ -227,7 +227,7 @@
             items.Add().Text("Estimated Materials").Content(@<text>
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureMaterialCost>()
 
-                .Name("material_costs_#=JobId#") // template expression, to be evaluated in the master context
+                .Name("material_costs_#=FurnitureJobId#") // template expression, to be evaluated in the master context
                 .Columns(columns =>
                 {
                     columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
@@ -250,7 +250,7 @@
                 })
                 //.Events(ev => ev.DataBound("onChildDataBound"))
                 .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                    .TemplateName("MaterialCost")
+                    .TemplateName("FurnitureMaterialCosts")
                 .Window(w => w.Title("Material Cost Form").Width(500)))
                 .Pageable(pageable => pageable
                 .Refresh(true)
@@ -259,19 +259,19 @@
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     //   .ServerOperation(false)
-                    .Events(ev => ev.Error("error_handler(\"material_costs_#=JobId#\")")
-                    .RequestStart("onRequestStart(\"material_costs_#=JobId#\")")
-                    .RequestEnd("onRequestEnd(\"material_costs_#=JobId#\")"))
+                    .Events(ev => ev.Error("error_handler(\"material_costs_#=FurnitureJobId#\")")
+                    .RequestStart("onRequestStart(\"material_costs_#=FurnitureJobId#\")")
+                    .RequestEnd("onRequestEnd(\"material_costs_#=FurnitureJobId#\")"))
                     .Aggregates(aggregates =>
 
                     {
                         aggregates.Add(c => c.TotalPrice).Sum();
                     })
                     .Model(model => model.Id(p => p.FurnitureMaterialCostId))
-                    .Read(read => read.Action("MaterialJobOrders_Read", "MaterialCost", new { id = "#=JobId #" }))
-                    .Create(create => create.Action("JobMaterialCosts_Create", "MaterialCost", new {area= "PrintingEstimation", id = "#=JobId #" }))
-                    .Update(update => update.Action("MaterialCosts_Update", "MaterialCost"))
-                    .Destroy(destroy => destroy.Action("MaterialCosts_Destroy", "MaterialCost"))
+                    .Read(read => read.Action("MaterialJobOrders_Read", "FurnitureMaterialCosts", new { id = "#=FurnitureJobId #" }))
+                    .Create(create => create.Action("JobMaterialCosts_Create", "FurnitureMaterialCosts", new {area= "PrintingEstimation", id = "#=FurnitureJobId #" }))
+                    .Update(update => update.Action("MaterialCosts_Update", "FurnitureMaterialCosts"))
+                    .Destroy(destroy => destroy.Action("MaterialCosts_Destroy", "FurnitureMaterialCosts"))
                     .Sort(sort =>
                     {
                         sort.Add(m => m.LastModified).Descending();
@@ -307,11 +307,11 @@
     .Draggable(true)
     .Width(600).Content(@<text>
         <div class="form-group">
-            <form action="@Url.Action("ChangeOrder", "PrintingEstimationJobOrder", new { })" method="post" , new { enctype="multipart/form-data" }>
+            <form action="@Url.Action("ChangeOrder", "FurnitureEstimationJobOrder", new { })" method="post" , new { enctype="multipart/form-data" }>
                 <input type="hidden" name="id" id="id">
                 <div class="row">
                     <div class="col-md-1"></div>
-                    @Html.TextBox("JobId", "", new { type = "text", hidden = "hidden" })
+                    @Html.TextBox("FurnitureJobId", "", new { type = "text", hidden = "hidden" })
 
                     <div class="col-md-4">
 
@@ -387,9 +387,9 @@
     </text>))
 
 
-<script id="JobStatusLineItem" type="text/Kendo-tmpl">
+<script id="FurnitureJobStatusLineItem" type="text/Kendo-tmpl">
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureJobStatusLineItem>()
-              .Name("JobStatusLineItem#=JobStatusId#")
+              .Name("FurnitureJobStatusLineItem#=JobStatusId#")
               .Columns(columns =>
               {
                   columns.Bound(c => c.Date);
@@ -430,9 +430,9 @@
                 //  .Sort(s => s.Add(x => x.ProformaId).Descending())
                 .Events(events =>
                 {
-                    events.Error("error_handler(\"JobStatusLineItem#=JobStatusId#\")");
-                    events.RequestStart("onRequestStart(\"JobStatusLineItem#=JobStatusId#\")");
-                    events.RequestEnd("onRequestEnd(\"JobStatusLineItem#=JobStatusId#\")");
+                    events.Error("error_handler(\"FurnitureJobStatusLineItem#=JobStatusId#\")");
+                    events.RequestStart("onRequestStart(\"FurnitureJobStatusLineItem#=JobStatusId#\")");
+                    events.RequestEnd("onRequestEnd(\"FurnitureJobStatusLineItem#=JobStatusId#\")");
 
 
                 })
@@ -446,10 +446,10 @@
 
                 })
 
-                .Read(read => read.Action("JobStatusLineItems_Read", "JobStatusLineItem", new { id = "#=JobStatusId#" }))
-                .Create(create => create.Action("JobStatusLineItems_Create", "JobStatusLineItem", new { id = "#=JobStatusId#" }))
-                .Update(update => update.Action("JobStatusLineItems_Update", "JobStatusLineItem"))
-                .Destroy(destroy => destroy.Action("JobStatusLineItems_Destroy", "JobStatusLineItem"))
+                .Read(read => read.Action("JobStatusLineItems_Read", "FurnitureJobStatusLineItem", new { id = "#=JobStatusId#" }))
+                .Create(create => create.Action("JobStatusLineItems_Create", "FurnitureJobStatusLineItem", new { id = "#=JobStatusId#" }))
+                .Update(update => update.Action("JobStatusLineItems_Update", "FurnitureJobStatusLineItem"))
+                .Destroy(destroy => destroy.Action("JobStatusLineItems_Destroy", "FurnitureJobStatusLineItem"))
 
                 ).ToClientTemplate()
     )
@@ -513,8 +513,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("ApproveJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
-            data: { id: dataItem.JobId },
+            url: '@Url.Action("ApproveJobOrder", "FurnitureEstimationJobOrder", new { Area = "Printing" })',
+            data: { id: dataItem.FurnitureJobId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -539,8 +539,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("CheckJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
-            data: { id: dataItem.JobId },
+            url: '@Url.Action("CheckJobOrder", "FurnitureEstimationJobOrder", new { Area = "Printing" })',
+            data: { id: dataItem.FurnitureJobId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -564,8 +564,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectJobOrder", "PrintingEstimationJobOrder", new { area = "PrintingEstimation" })',
-            data: { id: dataItem.JobId },
+            url: '@Url.Action("RejectJobOrder", "FurnitureEstimationJobOrder", new { Area = "Printing" })',
+            data: { id: dataItem.FurnitureJobId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -615,7 +615,7 @@
     var masterGrid = $("#JobGrid").data("kendoGrid");
 
     var masterDataItem = masterGrid.dataItem(masterRow);
-    codeid = masterDataItem.JobId;
+    codeid = masterDataItem.FurnitureJobId;
     unitPrice = masterDataItem.UnitPrice;
     }
 
@@ -629,7 +629,7 @@
     jobPhase = childMasterDataItem.JobPhase;
         jobState = childMasterDataItem.Status;
         if (jobState == 1) {
-            $(".k-grid-top", $("#JobStatusLineItem" + jobStatusId)).hide();
+            $(".k-grid-top", $("#FurnitureJobStatusLineItem" + jobStatusId)).hide();
 
         }
     }
@@ -654,7 +654,7 @@
 
     function jobStatusLineItemDataBound()
     {
-        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        var grid = $('#FurnitureJobStatusLineItem' + jobStatusId).data('kendoGrid');
 
     if(jobPhase==3)
     {
@@ -692,7 +692,7 @@
     }
     function jobStatusLineItemEdit()
     {
-        var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
+        var grid = $('#FurnitureJobStatusLineItem' + jobStatusId).data('kendoGrid');
         $("#TotalPrice").prop("readonly", true);
 
         if (jobPhase == 3) {
@@ -729,14 +729,14 @@
 
     var unitPrice = $("#Price").val();
         var quantity = $("#ChangedQuantity").val();
-    var jobId = $("#JobId").val();
+    var FurnitureJobId = $("#FurnitureJobId").val();
 
-    if (quantity !== "" && unitPrice !== "" && jobId !== "") {
+    if (quantity !== "" && unitPrice !== "" && FurnitureJobId !== "") {
 
     $.ajax({
     url: '@Url.Action("GetTaxAndTotalPriceChangeOfOrder", "JobOrders")',
 
-    data: { jobId: jobId, quantity: quantity, unitPrice: unitPrice },
+    data: { FurnitureJobId: FurnitureJobId, quantity: quantity, unitPrice: unitPrice },
     type: 'POST',
     cache: false,
     success: function (result) {
@@ -836,7 +836,7 @@
         if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
         console.log(unitPrice);
     $.ajax({
-    url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationJobOrder")',
+    url: '@Url.Action("GetBeforeVatAndTotalPerice", "FurnitureEstimationJobOrder")',
 
         data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
     type: 'POST',
@@ -925,17 +925,17 @@
     var x = $('#hv').is(':checked');
     console.log(x);
     }
-    var jobid = 1;
+    var FurnitureJobId = 1;
     function change() {
-    jobid = 0;
+    FurnitureJobId = 0;
 
     }
     function EnableDisableProforma(e) {
-    console.log(jobid);
+    console.log(FurnitureJobId);
     var uid = $(".k-edit-form-container").closest("[data-role=window]").data("uid");
     model = $("#JobGrid").data("kendoGrid").dataSource.getByUid(uid);
-    if (jobid == 0) {
-    model.set("JobId", jobid);
+    if (FurnitureJobId == 0) {
+    model.set("FurnitureJobId", FurnitureJobId);
 
     }
     var x = $('#hv').is(':checked');
@@ -1063,7 +1063,7 @@
     console.log(productId);
     $.ajax({
     type: 'POST',
-    url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+    url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { Area = "Printing" })',
     data: {
     itemCode: productId,
 
@@ -1088,7 +1088,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { area = "PrintingEstimation" })',
+            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { Area = "Printing" })',
             data: {
                 itemCode: productId, storeCode: storeCode
 
@@ -1114,9 +1114,9 @@
     var row = $(e.target).closest("tr");
     var grid = $("#JobGrid").data("kendoGrid");
     var dataItem = grid.dataItem(row);
-    var id = dataItem.JobId;
+    var id = dataItem.FurnitureJobId;
 
-    $("#JobId").val(id);
+    $("#FurnitureJobId").val(id);
 
     var wnd = $("#ChangeOfOrder").data("kendoWindow");
 

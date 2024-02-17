@@ -32,7 +32,7 @@
                                                                         .Filter("contains")
                                                                         .DataSource(dataSource =>
                                                                         {
-                                                                            dataSource.Read(read => read.Action("GetAllPrintingStepValues", "PrintingStep", new { area = "PrintingEstimation" })
+                                                                            dataSource.Read(read => read.Action("GetAllPrintingStepValues", "PrintingStep", new { Area = "Printing" })
                                                                             .Data("filterPrintingSteps"))
                                                                             .ServerFiltering(true);
                                                                         })

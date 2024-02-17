@@ -40,7 +40,7 @@
                                                               //    .BindTo((IEnumerable)ViewData["Items"])
                                                               .DataSource(dataSource =>
                                                               {
-                                                                  dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" }));
+                                                                  dataSource.Read(read => read.Action("GetItemCategory", "PrintingEstimationDataProvider", new { Area = "Printing" }));
                                                                   //.ServerFiltering(true);
                                                               })
                                                               .Filter("contains")
@@ -67,7 +67,7 @@
                                                                                                                                                //    .BindTo((IEnumerable)ViewData["Items"])
                                                                                                                                                .DataSource(dataSource =>
                                                                                                                                                {
-                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "PrintingEstimation" })
+                                                                                                                                                   dataSource.Read(read => read.Action("GetItems1", "PrintingEstimationDataProvider", new { Area = "Printing" })
                                                                                                                                                    .Data("filterCategories"))
                                                                                                                                                    .ServerFiltering(true);
                                                                                                                                                })

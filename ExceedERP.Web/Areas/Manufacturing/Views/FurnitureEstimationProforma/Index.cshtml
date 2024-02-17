@@ -8,7 +8,7 @@
                                             .EditorTemplateName("CustomerEditor")
                                            .Width("110px")
                                            .Title("Customer");
-                                      
+
                                       columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "EstimationFormId", "JobNumber")
                                                 // .EditorTemplateName("PaymentTermForeignKey")
                                                 .Title("Est. No").Width(100);
@@ -18,7 +18,7 @@
                                       columns.Bound(c => c.ValidityDate).Width(110).EditorTemplateName("Date").Title("Validity Date").Format("{0:yyyy-MM-dd}");
                                       //  columns.Bound(c => c.CustomerName).Width(90).Title("Customer Name");
                                       // columns.Bound(c => c.ContactName).Width(90).Title("Contact Name");
-                                       //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
+                                      //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
                                       columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
                                       columns.Command(command =>
                                       {
@@ -59,10 +59,10 @@
                                            })
 
                                       .Model(model => model.Id(p => p.FurnitureProformaId))
-                                      .Read(read => read.Action("Proformas_Read", "PrintingEstimationProforma"))
-                                      .Create(create => create.Action("Proformas_Create", "PrintingEstimationProforma"))
-                                      .Update(update => update.Action("Proformas_Update", "PrintingEstimationProforma"))
-                                      .Destroy(destroy => destroy.Action("Proformas_Destroy", "PrintingEstimationProforma"))
+                                      .Read(read => read.Action("Proformas_Read", "FurnitureEstimationProforma", new { area = "Manufacturing" }))
+                                      .Create(create => create.Action("Proformas_Create", "FurnitureEstimationProforma", new { area = "Manufacturing" }))
+                                      .Update(update => update.Action("Proformas_Update", "FurnitureEstimationProforma", new { area = "Manufacturing" }))
+                                      .Destroy(destroy => destroy.Action("Proformas_Destroy", "FurnitureEstimationProforma", new { area = "Manufacturing" }))
                                   .Sort(sort =>
                                   {
                                       sort.Add(e => e.FurnitureProformaId).Descending();
@@ -75,7 +75,7 @@
 
 <script id="Detail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                           .Name("tabstrip2_#=ProformaId#")
+                                           .Name("tabstrip2_#=FurnitureProformaId#")
                                           .SelectedIndex(0)
                                           .Items(items =>
                                           {
@@ -84,10 +84,10 @@
                             @<text>
     #if(IsApproved){#
 
-                                <a href='@Url.Action("ProformaPrint", "PrintingEstimationReport")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
+                                <a href='@Url.Action("ProformaPrint", "PrintingEstimationReport")/?id=#=FurnitureProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
     #}#
                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurniturePFProformaItems>()
-                                                                       .Name("ProformaItems#=ProformaId#")
+                                                                       .Name("ProformaItems#=FurnitureProformaId#")
                                                            .Columns(columns =>
                                                            {
                                                                columns.ForeignKey(c => c.FurnitureJobTypeId, (IEnumerable)ViewData["JobTypes"], "Code", "Name").Width(100);
@@ -132,22 +132,22 @@
                                                               .DataSource(dataSource => dataSource
                                                                   .Ajax()
                                                                   .ServerOperation(false)
-                                                                          //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                                          //  .Sort(s => s.Add(x => x.FurnitureProformaId).Descending())
                                                                           .Events(events =>
                                                                           {
-                                                                              events.Error("error_handler(\"ProformaItems#=ProformaId#\")");
-                                                                              events.RequestStart("onRequestStart(\"ProformaItems#=ProformaId#\")");
-                                                                              events.RequestEnd("onRequestEnd(\"ProformaItems#=ProformaId#\")");
+                                                                              events.Error("error_handler(\"ProformaItems#=FurnitureProformaId#\")");
+                                                                              events.RequestStart("onRequestStart(\"ProformaItems#=FurnitureProformaId#\")");
+                                                                              events.RequestEnd("onRequestEnd(\"ProformaItems#=FurnitureProformaId#\")");
                                                                           }
                                                                                                     )
 
                                                                            .Model(model => model.Id(p => p.FurniturePFProformaItemsId))
 
 
-                                                                                          .Read(read => read.Action("ProformaItems_Read", "PrintingEstimationProformaItems", new { id = "#=ProformaId#" }))
-                                                                                          .Create(create => create.Action("ProformaItems_Create", "PrintingEstimationProformaItems", new { id = "#=ProformaId#" }))
-                                                                                          .Update(update => update.Action("ProformaItems_Update", "PrintingEstimationProformaItems"))
-                                                                                          .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "PrintingEstimationProformaItems"))
+                                                                                          .Read(read => read.Action("ProformaItems_Read", "FurnitureEstimationProformaItems", new { id = "#=FurnitureProformaId#" }))
+                                                                                          .Create(create => create.Action("ProformaItems_Create", "FurnitureEstimationProformaItems", new { id = "#=FurnitureProformaId#" }))
+                                                                                          .Update(update => update.Action("ProformaItems_Update", "FurnitureEstimationProformaItems"))
+                                                                                          .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "FurnitureEstimationProformaItems"))
                                                                               ).ToClientTemplate()
                                 )
                             </text>
@@ -168,7 +168,7 @@
         masterRow = e.masterRow;
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
-        codeid = masterDataItem.ProformaId;
+        codeid = masterDataItem.FurnitureProformaId;
         isApproved = masterDataItem.IsApproved;
         isChecked = masterDataItem.IsChecked;
 
@@ -227,7 +227,7 @@
     }
     function onChangeEstimation() {
 
-        var proformaId = this.dataItem().ProformaId;
+        var FurnitureProformaId = this.dataItem().FurnitureProformaId;
 
         $("#JobTypeId").data("kendoDropDownList").dataSource.read();
 
@@ -235,7 +235,7 @@
           $.ajax({
             url: '@Url.Action("GetCustomer", "JobOrders")',
 
-              data: { proformaId: proformaId },
+              data: { FurnitureProformaId: FurnitureProformaId },
             type: 'POST',
             cache: false,
             success: function (result) {
@@ -254,7 +254,7 @@
 
     function filterJobTypeByProforma() {
         return {
-            proformaId: $("#ProformaId").val()
+            FurnitureProformaId: $("#FurnitureProformaId").val()
         };
     }
 </script>
@@ -361,8 +361,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("CheckProforma", "PrintingEstimationProforma", new { area = "PrintingEstimation" })',
-            data: { id: dataItem.ProformaId },
+            url: '@Url.Action("CheckProforma", "FurnitureEstimationProforma", new { Area = "Printing" })',
+            data: { id: dataItem.FurnitureProformaId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -387,8 +387,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("ApproveProforma", "PrintingEstimationProforma", new { area = "PrintingEstimation" })',
-            data: { id: dataItem.ProformaId },
+            url: '@Url.Action("ApproveProforma", "FurnitureEstimationProforma", new { Area = "Printing" })',
+            data: { id: dataItem.FurnitureProformaId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -411,8 +411,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectProforma", "PrintingEstimationProforma", new { area = "PrintingEstimation" })',
-            data: { id: dataItem.ProformaId },
+            url: '@Url.Action("RejectProforma", "FurnitureEstimationProforma", new { Area = "Printing" })',
+            data: { id: dataItem.FurnitureProformaId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -438,7 +438,7 @@
         if (quantity != 0 && unitPrice != 0 && jobTypeId !== "") {
 
             $.ajax({
-                url: '@Url.Action("GetBeforeVatAndTotalPerice", "PrintingEstimationProformaItems")',
+                url: '@Url.Action("GetBeforeVatAndTotalPerice", "FurnitureEstimationProformaItems")',
 
                 data: { jobTypeId: jobTypeId, quantity: quantity, unitPrice: unitPrice },
                 type: 'POST',

@@ -40,7 +40,7 @@
                                                                         .Filter("contains")
                                                                         .DataSource(dataSource =>
                                                                         {
-                                                                            dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm"))
+                                                                            dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm", new { area = "Printing"}))
                                                                                 .ServerFiltering(false);
                                                                         }))
                 </div>
