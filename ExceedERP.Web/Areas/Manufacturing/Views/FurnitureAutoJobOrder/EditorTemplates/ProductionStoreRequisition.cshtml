@@ -51,7 +51,7 @@
                                             .Filter("contains")
                                             .DataSource(dataSource =>
                                             {
-                                                dataSource.Read(read => read.Action("GetAllBranches", "ProductionDataProvider"))
+                                                dataSource.Read(read => read.Action("GetAllBranches", "FurnitureProductionDataProvider"))
                                                     .ServerFiltering(false);
                                             })
                             )
@@ -77,7 +77,7 @@
                             .CascadeFrom("BranchId")
                             .DataSource(dataSource =>
                             {
-                                dataSource.Read(read => read.Action("GetAllStoresByBranch", "ProductionDataProvider").Data("filterStoresByBranch"))
+                                dataSource.Read(read => read.Action("GetAllStoresByBranch", "FurnitureProductionDataProvider").Data("filterStoresByBranch"))
                                     .ServerFiltering(true);
                             })
                     )
@@ -106,7 +106,7 @@
                             })
                             .DataSource(dataSource =>
                             {
-                                dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "ProductionDataProvider").Data("filterPeriodsByStore"))
+                                dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "FurnitureProductionDataProvider").Data("filterPeriodsByStore"))
                                     .ServerFiltering(true);
                             })
                     )
@@ -153,7 +153,7 @@
                             .Filter("contains")
                             .DataSource(dataSource =>
                             {
-                                dataSource.Read(read => read.Action("GetEmployes", "ProductionDataProvider"))
+                                dataSource.Read(read => read.Action("GetEmployes", "FurnitureProductionDataProvider"))
                                         .ServerFiltering(false);
                             }))
                     @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })

@@ -108,10 +108,10 @@
                 events.RequestEnd("onRequestEnd(\"JobGrid\")");
             })
             .Model(model => model.Id(p => p.FurnitureJobId))
-            .Read(read => read.Action("Jobs_Read", "ManualJobOrder"))
-            .Create(create => create.Action("Jobs_Create", "ManualJobOrder"))
-            .Update(update => update.Action("Jobs_Update", "ManualJobOrder"))
-            .Destroy(destroy => destroy.Action("Jobs_Destroy", "ManualJobOrder"))
+            .Read(read => read.Action("Jobs_Read", "FurnitureManualJobOrder"))
+            .Create(create => create.Action("Jobs_Create", "FurnitureManualJobOrder"))
+            .Update(update => update.Action("Jobs_Update", "FurnitureManualJobOrder"))
+            .Destroy(destroy => destroy.Action("Jobs_Destroy", "FurnitureManualJobOrder"))
            ).ClientDetailTemplateId("Detail")
 )
 
@@ -276,7 +276,7 @@
                                                 ag.Add(a => a.Price).Sum();
                                                 ag.Add(a => a.Total).Sum();
                                             })
-                                    .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders", new { id = "#=JobId#" }))
+                                    .Read(read => read.Action("ChangeOrders_Read", "FurnitureChangeOfOrders", new { id = "#=JobId#" }))
 
                                     ).ToClientTemplate()
                         )
@@ -1628,7 +1628,7 @@
         if (periodId) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetPeriodDateRangeById", "ProductionDataProvider")',
+                url: '@Url.Action("GetPeriodDateRangeById", "FurnitureProductionDataProvider")',
             data: { id: periodId },
             success: function (result) {
                 min = result.Min;

@@ -8,7 +8,7 @@
                  .Width("110px")
                  .Title("Customer");
             columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
-            columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "EstimationFormId", "JobNumber")
+            columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "Value", "Text")
                       // .EditorTemplateName("PaymentTermForeignKey")
                       .Title("Est. No").Width(100);
             columns.Bound(c => c.InvoiceNo).Width(100).Title("Invoice No");
@@ -53,10 +53,10 @@
                 })
 
                 .Model(model => model.Id(p => p.FurnitureProformaId))
-                .Read(read => read.Action("Proformas_Read", "Proforma"))
-                .Create(create => create.Action("Proformas_Create", "Proforma"))
-                .Update(update => update.Action("Proformas_Update", "Proforma"))
-                .Destroy(destroy => destroy.Action("Proformas_Destroy", "Proforma"))
+                .Read(read => read.Action("Proformas_Read", "FurnitureProforma"))
+                .Create(create => create.Action("Proformas_Create", "FurnitureProforma"))
+                .Update(update => update.Action("Proformas_Update", "FurnitureProforma"))
+                .Destroy(destroy => destroy.Action("Proformas_Destroy", "FurnitureProforma"))
             .Sort(sort =>
             {
                 sort.Add(e => e.FurnitureProformaId).Descending();

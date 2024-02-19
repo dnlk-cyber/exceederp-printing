@@ -35,7 +35,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByKeeper", "ProductionDataProvider"))
+                              dataSource.Read(read => read.Action("GetStoreByKeeper", "FurnitureProductionDataProvider"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -55,7 +55,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "ProductionDataProvider"))
+                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "FurnitureProductionDataProvider"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -82,7 +82,7 @@
                                   })
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "ProductionDataProvider").Data("filterPeriodsByStore"))
+                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "FurnitureProductionDataProvider").Data("filterPeriodsByStore"))
                                           .ServerFiltering(true);
                                   })
                     )
@@ -135,7 +135,7 @@
                                         .Filter("contains")
                                         .DataSource(dataSource =>
                                         {
-                                            dataSource.Read(read => read.Action("GetAllBranches", "ProductionDataProvider", new { area = "Production" }))
+                                            dataSource.Read(read => read.Action("GetAllBranches", "FurnitureProductionDataProvider", new { area = "Production" }))
                                                 .ServerFiltering(false);
                                         })
                     )

@@ -114,10 +114,10 @@
                 events.RequestEnd("onRequestEnd(\"JobGrid\")");
             })
                 .Model(model => model.Id(p => p.FurnitureJobId))
-                .Read(read => read.Action("Jobs_Read", "AutoJobOrder"))
-                .Create(create => create.Action("Jobs_Create", "AutoJobOrder"))
-                .Update(update => update.Action("Jobs_Update", "AutoJobOrder"))
-                .Destroy(destroy => destroy.Action("Jobs_Destroy", "AutoJobOrder"))
+                .Read(read => read.Action("Jobs_Read", "FurnitureAutoJobOrder"))
+                .Create(create => create.Action("Jobs_Create", "FurnitureAutoJobOrder"))
+                .Update(update => update.Action("Jobs_Update", "FurnitureAutoJobOrder"))
+                .Destroy(destroy => destroy.Action("Jobs_Destroy", "FurnitureAutoJobOrder"))
                 .Sort(sort =>
                 {
                     sort.Add(l => l.FurnitureJobId).Descending();
@@ -344,7 +344,7 @@
 
                             })
 
-                            .Read(read => read.Action("ChangeOrders_Read", "ChangeOfOrders", new { id = "#=JobId#" }))
+                            .Read(read => read.Action("ChangeOrders_Read", "FurnitureChangeOfOrders", new { id = "#=JobId#" }))
 
                                         
                             ).ToClientTemplate()
@@ -1490,7 +1490,7 @@
         if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
         console.log(unitPrice);
     $.ajax({
-    url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
+    url: '@Url.Action("GetBeforeVatAndTotalPerice", "FurnitureJobOrders")',
 
         data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
     type: 'POST',
@@ -1676,7 +1676,7 @@
         if (periodId) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetPeriodDateRangeById", "ProductionDataProvider")',
+                url: '@Url.Action("GetPeriodDateRangeById", "FurnitureProductionDataProvider")',
             data: { id: periodId },
             success: function (result) {
                 min = result.Min;
@@ -1963,7 +1963,7 @@
         if (periodId) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("GetPeriodDateRangeById", "ProductionDataProvider")',
+                url: '@Url.Action("GetPeriodDateRangeById", "FurnitureProductionDataProvider")',
             data: { id: periodId },
             success: function (result) {
                 min = result.Min;

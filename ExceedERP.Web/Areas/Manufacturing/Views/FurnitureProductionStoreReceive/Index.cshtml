@@ -6,13 +6,13 @@
 }
 <legend>Production | Store Receive </legend>
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceive>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductionFinishedGoodsStoreReceive>()
                           .Name("productionStoreReceiveGrid")
                           .Columns(columns =>
                           {
-                              columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
+                              columns.ForeignKey(c => c.FurnitureJobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
                               columns.ForeignKey(c => c.StoreCode, (IEnumerable)ViewData["InventoryStores"], "StoreCode", "Name").EditorTemplateName("StoreEditorTemplate");
-                              columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "GLPeriodId", "Name").EditorTemplateName("ProductionPeriodEditorTemplate");
+                              columns.ForeignKey(c => c.FurnitureProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "GLPeriodId", "Name").EditorTemplateName("ProductionPeriodEditorTemplate");
                               columns.Bound(c => c.ReceiveDate);
                               columns.Bound(c => c.DeliveredBy);
                               columns.Bound(c => c.ReceivedBy);
@@ -64,16 +64,16 @@
                               })
                               .Model(model =>
                               {
-                                  model.Id(f => f.FinishedGoodsStoreReceiveId);
+                                  model.Id(f => f.FurnitureFinishedGoodsStoreReceiveId);
                               })
                               .Sort(sort =>
                                     {
-                                        sort.Add(l => l.FinishedGoodsStoreReceiveId).Descending();
+                                        sort.Add(l => l.FurnitureFinishedGoodsStoreReceiveId).Descending();
                                     })
-                              .Read(read => read.Action("StoreReceives_Read", "PrintingProductionStoreReceive"))
-                              .Create(create => create.Action("StoreReceive_Create", "PrintingProductionStoreReceive"))
-                              .Update(update => update.Action("StoreReceive_Update", "PrintingProductionStoreReceive"))
-                              .Destroy(destroy => destroy.Action("StoreReceive_Destroy", "PrintingProductionStoreReceive"))
+                              .Read(read => read.Action("StoreReceives_Read", "FurnitureProductionStoreReceive"))
+                              .Create(create => create.Action("StoreReceive_Create", "FurnitureProductionStoreReceive"))
+                              .Update(update => update.Action("StoreReceive_Update", "FurnitureProductionStoreReceive"))
+                              .Destroy(destroy => destroy.Action("StoreReceive_Destroy", "FurnitureProductionStoreReceive"))
 
                           ).ClientDetailTemplateId("template_receive_items")
 )
@@ -947,7 +947,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SendForApproval", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" })',
+            url: '@Url.Action("SendForApproval", "FurnitureProductionStoreReceive", new { area = "ProductionFollowUp" })',
             data: { id: id },
             success: function (result) {
                 // toastr.warnning(result.Message);
@@ -968,7 +968,7 @@
         
         $.ajax({
             type: "POST",
-            url: '@Url.Action("GetPeriodRanges", "ProductionDataProvider", new { area = "Production" })',
+            url: '@Url.Action("GetPeriodRanges", "FurnitureProductionDataProvider", new { area = "Manufacturing" })',
             data: { periodId: id},
             success: function (result) {
                 if (result) {
