@@ -1979,6 +1979,7 @@
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurniturePrintingStepController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureStepController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\Common\FurnitureJobCostingDataProviderController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\JobCosting\Common\JobCostingDataProviderController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDailyLaborRateController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDeliveredJobController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDLRHourController.cs" />
@@ -2041,7 +2042,10 @@
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\FurnitureQuarterlyProductionPlansController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\FurnitureWeeklyProductionPlansController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\FurnitureYearlyProductionPlansController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\HalfYearlyProductionPlansController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\ProductionJobTypePlansController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\ProductionPlanController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Plan\QuarterlyProductionPlansController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Report\ProductionFollowUpReportController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Setting\FurnitureJobCategoryController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Setting\FurnitureMachineController.cs" />

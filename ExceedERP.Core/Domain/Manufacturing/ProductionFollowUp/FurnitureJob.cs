@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using System;
 using System.Collections.Generic;
@@ -84,10 +84,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp
         [StringLength(15)]
         [Display(Name = "Finishing Size")]
         public string FinishingSize { get; set; }
-        [Display(Name = "Printing Line")]
+        [Display(Name = "Line")]
         [StringLength(15)]
         public string PrintingLine { get; set; }
-        [Display(Name = "Printing Machine")]
+        [Display(Name = "Machine")]
         [StringLength(15)]
         public string PrintingMachine { get; set; }
         public bool Sewing { get; set; }
@@ -102,7 +102,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? GraphicDesignExpectedCompletetion { get; set; }
-        [Display(Name = "Printing Expected Completetion")]
+        [Display(Name = "Expected Completetion")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? PrintingExpectedCompletetion { get; set; }

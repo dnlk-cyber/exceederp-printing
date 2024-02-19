@@ -79,7 +79,7 @@
 )
 <script id="template_receive_items" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-            .Name("tab_str_#=FinishedGoodsStoreReceiveId#")
+            .Name("tab_str_#=FurnitureFinishedGoodsStoreReceiveId#")
             .SelectedIndex(0)
             .Items(items =>
             {
@@ -87,11 +87,11 @@
                 @<text>
                      # if (!IsOnlineApproved&&!IsSendForApproval)
                      {#
-                     <a onclick='return sendForApproval("#=FinishedGoodsStoreReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                     <a onclick='return sendForApproval("#=FurnitureFinishedGoodsStoreReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
                      <br />
                      # } #
                      @(Html.Kendo().PanelBar()
-                                .Name("panelbar_#=FinishedGoodsStoreReceiveId#")
+                                .Name("panelbar_#=FurnitureFinishedGoodsStoreReceiveId#")
                                 .ExpandMode(PanelBarExpandMode.Single)
                                 .Items(panelbar =>
                                 {
@@ -116,7 +116,7 @@
             items.Add().Text("Items").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveItem>()
-                                .Name("items_#=FinishedGoodsStoreReceiveId#")
+                                .Name("items_#=FurnitureFinishedGoodsStoreReceiveId#")
                                 .Columns(columns =>
                                 {
                                     //columns.ForeignKey(c => c.SeedProductionOrderItemId, (IEnumerable)ViewData["SeedProductionItems"], "SeedProductionOrderItemId", "ProductionCode").EditorTemplateName("SeedProductionItems");
@@ -162,9 +162,9 @@
                                     .Ajax()
                                     .Events(events =>
                                     {
-                                        events.Error("error_handler(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestStart("onRequestStart(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestEnd("onRequestEnd(\"items_#=FinishedGoodsStoreReceiveId#\")");
+                                        events.Error("error_handler(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                                     })
                                     .Model(model =>
                                     {
@@ -181,10 +181,10 @@
 
 
                                     })
-                                    .Read(read => read.Action("ReceiveItems_Read", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#"}))
-                                    .Create(create => create.Action("ReceiveItem_Create", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                                    .Update(update => update.Action("ReceiveItem_Update", "PrintingProductionStoreReceiveItem"))
-                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "PrintingProductionStoreReceiveItem"))
+                                    .Read(read => read.Action("ReceiveItems_Read", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#"}))
+                                    .Create(create => create.Action("ReceiveItem_Create", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "FurnitureProductionStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "FurnitureProductionStoreReceiveItem"))
                                     )
                                     .ToClientTemplate()
                     )
@@ -193,7 +193,7 @@
                 items.Add().Text("Validation").Content(
                     @<text>
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveValidation>()
-                          .Name("validation_#=FinishedGoodsStoreReceiveId#")
+                          .Name("validation_#=FurnitureFinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
 
@@ -235,9 +235,9 @@
 
                               .Events(events =>
                               {
-                                  events.Error("error_handler(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestStart("onRequestStart(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestEnd("onRequestEnd(\"validation_#=FinishedGoodsStoreReceiveId#\")");
+                                  events.Error("error_handler(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                               })
                               .Model(model =>
                               {
@@ -245,10 +245,10 @@
 
                               })
 
-                              .Read(read => read.Action("ReceiveValidations_Read", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Create(create => create.Action("ReceiveValidations_Create", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Update(update => update.Action("ReceiveValidations_Update", "PrintingProductionStoreReceiveValidation"))
-                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "PrintingProductionStoreReceiveValidation"))
+                              .Read(read => read.Action("ReceiveValidations_Read", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("ReceiveValidations_Create", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("ReceiveValidations_Update", "FurnitureProductionStoreReceiveValidation"))
+                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "FurnitureProductionStoreReceiveValidation"))
                           ) //.ClientDetailTemplateId("template_wip_detail")
                           .ToClientTemplate()
                         )
@@ -257,7 +257,7 @@
                 items.Add().Text("Distribution").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveDistribution>()
-                          .Name("distribtion_#=FinishedGoodsStoreReceiveId#")
+                          .Name("distribtion_#=FurnitureFinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
                               columns.Bound(c => c.AccountCode)
@@ -328,18 +328,18 @@
                               //})
                               .Events(events =>
                               {
-                                  events.Error("error_handler(\"distribtion_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestStart("onRequestStart(\"distribtion_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestEnd("onRequestEnd(\"distribtion_#=FinishedGoodsStoreReceiveId#\")");
+                                  events.Error("error_handler(\"distribtion_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"distribtion_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"distribtion_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                               })
                               .Model(model =>
                               {
                                   model.Id(f => f.FinishedGoodsStoreReceiveDistributionId);
                               })
-                              .Read(read => read.Action("Distribution_Read", "PrintingProductionStoreReceiveDistribution", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Create(create => create.Action("Distribution_Create", "PrintingProductionStoreReceiveDistribution", new { i = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Update(update => update.Action("Distribution_Update", "PrintingProductionStoreReceiveDistribution"))
-                              .Destroy(destroy => destroy.Action("Distribution_Destroy", "PrintingProductionStoreReceiveDistribution"))
+                              .Read(read => read.Action("Distribution_Read", "FurnitureProductionStoreReceiveDistribution", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("Distribution_Create", "FurnitureProductionStoreReceiveDistribution", new { i = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("Distribution_Update", "FurnitureProductionStoreReceiveDistribution"))
+                              .Destroy(destroy => destroy.Action("Distribution_Destroy", "FurnitureProductionStoreReceiveDistribution"))
                           )
                           .ToClientTemplate()
                     )
@@ -351,7 +351,7 @@
             @*items.Add().Text("Items").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionStoreReceiveItem>()
-                                .Name("items_#=FinishedGoodsStoreReceiveId#")
+                                .Name("items_#=FurnitureFinishedGoodsStoreReceiveId#")
                                 .Columns(columns =>
                                 {
                                     columns.ForeignKey(c => c.SeedProductionOrderItemId, (IEnumerable)ViewData["SeedProductionItems"], "SeedProductionOrderItemId", "ProductionCode").EditorTemplateName("SeedProductionItems");
@@ -397,9 +397,9 @@
                                     .Ajax()
                                     .Events(events =>
                                     {
-                                        events.Error("error_handler(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestStart("onRequestStart(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestEnd("onRequestEnd(\"items_#=FinishedGoodsStoreReceiveId#\")");
+                                        events.Error("error_handler(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                                     })
                                     .Model(model =>
                                     {
@@ -416,10 +416,10 @@
                                         //model.Field(f => f.ItemCode).DefaultValue("00000-0000-0000");
 
                                     })
-                                    .Read(read => read.Action("ReceiveItems_Read", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#"}))
-                                    .Create(create => create.Action("ReceiveItem_Create", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                                    .Update(update => update.Action("ReceiveItem_Update", "PrintingProductionStoreReceiveItem"))
-                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "PrintingProductionStoreReceiveItem"))
+                                    .Read(read => read.Action("ReceiveItems_Read", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#"}))
+                                    .Create(create => create.Action("ReceiveItem_Create", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "FurnitureProductionStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "FurnitureProductionStoreReceiveItem"))
                                     )
                                     .ToClientTemplate()
                     )
@@ -428,7 +428,7 @@
                 items.Add().Text("Validation").Content(
                     @<text>
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkInProgressValidation>()
-                          .Name("validation_#=FinishedGoodsStoreReceiveId#")
+                          .Name("validation_#=FurnitureFinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
 
@@ -470,9 +470,9 @@
 
                               .Events(events =>
                               {
-                                  events.Error("error_handler(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestStart("onRequestStart(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestEnd("onRequestEnd(\"validation_#=FinishedGoodsStoreReceiveId#\")");
+                                  events.Error("error_handler(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                               })
                               .Model(model =>
                               {
@@ -480,10 +480,10 @@
 
                               })
 
-                              .Read(read => read.Action("ReceiveValidations_Read", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Create(create => create.Action("ReceiveValidations_Create", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Update(update => update.Action("ReceiveValidations_Update", "PrintingProductionStoreReceiveValidation"))
-                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "PrintingProductionStoreReceiveValidation"))
+                              .Read(read => read.Action("ReceiveValidations_Read", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("ReceiveValidations_Create", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("ReceiveValidations_Update", "FurnitureProductionStoreReceiveValidation"))
+                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "FurnitureProductionStoreReceiveValidation"))
                           ) //.ClientDetailTemplateId("template_wip_detail")
                           .ToClientTemplate()
                         )
@@ -492,7 +492,7 @@
                 items.Add().Text("Distribution").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceiveDistribution>()
-                          .Name("distribtion_#=FinishedGoodsStoreReceiveId#")
+                          .Name("distribtion_#=FurnitureFinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
                               columns.Bound(c => c.AccountCode)
@@ -563,18 +563,18 @@
                               //})
                               .Events(events =>
                               {
-                                  events.Error("error_handler(\"distribtion_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestStart("onRequestStart(\"distribtion_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestEnd("onRequestEnd(\"distribtion_#=FinishedGoodsStoreReceiveId#\")");
+                                  events.Error("error_handler(\"distribtion_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"distribtion_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"distribtion_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                               })
                               .Model(model =>
                               {
                                   model.Id(f => f.FinishedGoodsStoreReceiveDistributionId);
                               })
-                              .Read(read => read.Action("Distribution_Read", "PrintingProductionStoreReceiveDistribution", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Create(create => create.Action("Distribution_Create", "PrintingProductionStoreReceiveDistribution", new { i = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Update(update => update.Action("Distribution_Update", "PrintingProductionStoreReceiveDistribution"))
-                              .Destroy(destroy => destroy.Action("Distribution_Destroy", "PrintingProductionStoreReceiveDistribution"))
+                              .Read(read => read.Action("Distribution_Read", "FurnitureProductionStoreReceiveDistribution", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("Distribution_Create", "FurnitureProductionStoreReceiveDistribution", new { i = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("Distribution_Update", "FurnitureProductionStoreReceiveDistribution"))
+                              .Destroy(destroy => destroy.Action("Distribution_Destroy", "FurnitureProductionStoreReceiveDistribution"))
                           )
                           .ToClientTemplate()
                     )
@@ -583,7 +583,7 @@
             }).ToClientTemplate())
     #} else if(ProductType == 1 && !IsOnlineApproved){#
         @(Html.Kendo().TabStrip()
-            .Name("tab_str_#=FinishedGoodsStoreReceiveId#")
+            .Name("tab_str_#=FurnitureFinishedGoodsStoreReceiveId#")
             .SelectedIndex(0)
             .Items(items =>
             {
@@ -591,11 +591,11 @@
                 @<text>
                      # if (!IsOnlineApproved&&!IsSendForApproval)
                      {#
-                     <a onclick='return sendForApproval("#=FinishedGoodsStoreReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                     <a onclick='return sendForApproval("#=FurnitureFinishedGoodsStoreReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
                      <br />
                      # } #
                      @(Html.Kendo().PanelBar()
-                                          .Name("panelbar_#=FinishedGoodsStoreReceiveId#")
+                                          .Name("panelbar_#=FurnitureFinishedGoodsStoreReceiveId#")
                                           .ExpandMode(PanelBarExpandMode.Single)
                                           .Items(panelbar =>
                                           {
@@ -620,7 +620,7 @@
             items.Add().Text("Items").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionStoreReceiveItem>()
-                                .Name("items_#=FinishedGoodsStoreReceiveId#")
+                                .Name("items_#=FurnitureFinishedGoodsStoreReceiveId#")
                                 .Columns(columns =>
                                 {
                                     columns.ForeignKey(c => c.GumProductionOrderItemId, (IEnumerable)ViewData["GumProductionItems"], "GumProductionOrderItemId", "ProductionCode").EditorTemplateName("GumProductionItems");
@@ -666,9 +666,9 @@
                                     .Ajax()
                                     .Events(events =>
                                     {
-                                        events.Error("error_handler(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestStart("onRequestStart(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestEnd("onRequestEnd(\"items_#=FinishedGoodsStoreReceiveId#\")");
+                                        events.Error("error_handler(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                                     })
                                     .Model(model =>
                                     {
@@ -682,10 +682,10 @@
                                         model.Field(f => f.SubTotal).Editable(false);
 
                                     })
-                                     .Read(read => read.Action("ReceiveItems_Read", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                                    .Create(create => create.Action("ReceiveItem_Create", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                                    .Update(update => update.Action("ReceiveItem_Update", "PrintingProductionStoreReceiveItem"))
-                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "PrintingProductionStoreReceiveItem"))
+                                     .Read(read => read.Action("ReceiveItems_Read", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                                    .Create(create => create.Action("ReceiveItem_Create", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "FurnitureProductionStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "FurnitureProductionStoreReceiveItem"))
                                     )
                                     .ToClientTemplate()
                     )
@@ -694,7 +694,7 @@
                 items.Add().Text("Validation").Content(
                     @<text>
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkInProgressValidation>()
-                          .Name("validation_#=FinishedGoodsStoreReceiveId#")
+                          .Name("validation_#=FurnitureFinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
 
@@ -736,9 +736,9 @@
 
                               .Events(events =>
                               {
-                                  events.Error("error_handler(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestStart("onRequestStart(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestEnd("onRequestEnd(\"validation_#=FinishedGoodsStoreReceiveId#\")");
+                                  events.Error("error_handler(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                               })
                               .Model(model =>
                               {
@@ -746,10 +746,10 @@
 
                               })
 
-                              .Read(read => read.Action("ReceiveValidations_Read", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Create(create => create.Action("ReceiveValidations_Create", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                              .Update(update => update.Action("ReceiveValidations_Update", "PrintingProductionStoreReceiveValidation"))
-                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "PrintingProductionStoreReceiveValidation"))
+                              .Read(read => read.Action("ReceiveValidations_Read", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("ReceiveValidations_Create", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("ReceiveValidations_Update", "FurnitureProductionStoreReceiveValidation"))
+                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "FurnitureProductionStoreReceiveValidation"))
                           ) //.ClientDetailTemplateId("template_wip_detail")
                           .ToClientTemplate()
                         )
@@ -758,14 +758,14 @@
             }).ToClientTemplate())
     #} else if(ProductType == 1 && IsOnlineApproved){#
     @(Html.Kendo().TabStrip()
-            .Name("tab_str_#=FinishedGoodsStoreReceiveId#")
+            .Name("tab_str_#=FurnitureFinishedGoodsStoreReceiveId#")
             .SelectedIndex(0)
             .Items(items =>
             {
             items.Add().Text("Detail").Content(
                 @<text>
                      @(Html.Kendo().PanelBar()
-                                          .Name("panelbar_#=FinishedGoodsStoreReceiveId#")
+                                          .Name("panelbar_#=FurnitureFinishedGoodsStoreReceiveId#")
                                           .ExpandMode(PanelBarExpandMode.Single)
                                           .Items(panelbar =>
                                           {
@@ -790,7 +790,7 @@
             items.Add().Text("Items").Content(
                 @<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionStoreReceiveItem>()
-                                .Name("items_#=FinishedGoodsStoreReceiveId#")
+                                .Name("items_#=FurnitureFinishedGoodsStoreReceiveId#")
                                 .Columns(columns =>
                                 {
                                     columns.ForeignKey(c => c.GumProductionOrderItemId, (IEnumerable)ViewData["GumProductionItems"], "GumProductionOrderItemId", "ProductionCode").EditorTemplateName("GumProductionItems");
@@ -836,9 +836,9 @@
                                     .Ajax()
                                     .Events(events =>
                                     {
-                                        events.Error("error_handler(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestStart("onRequestStart(\"items_#=FinishedGoodsStoreReceiveId#\")");
-                                        events.RequestEnd("onRequestEnd(\"items_#=FinishedGoodsStoreReceiveId#\")");
+                                        events.Error("error_handler(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                                     })
                                     .Model(model =>
                                     {
@@ -852,10 +852,10 @@
                                         model.Field(f => f.SubTotal).Editable(false);
 
                                     })
-                                     .Read(read => read.Action("ReceiveItems_Read", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                                    .Create(create => create.Action("ReceiveItem_Create", "PrintingProductionStoreReceiveItem", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                                    .Update(update => update.Action("ReceiveItem_Update", "PrintingProductionStoreReceiveItem"))
-                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "PrintingProductionStoreReceiveItem"))
+                                     .Read(read => read.Action("ReceiveItems_Read", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                                    .Create(create => create.Action("ReceiveItem_Create", "FurnitureProductionStoreReceiveItem", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "FurnitureProductionStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "FurnitureProductionStoreReceiveItem"))
                                     )
                                     .ToClientTemplate()
                     )
@@ -864,7 +864,7 @@
                 items.Add().Text("Validation").Content(
                     @<text>
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkInProgressValidation>()
-                          .Name("validation_#=FinishedGoodsStoreReceiveId#")
+                          .Name("validation_#=FurnitureFinishedGoodsStoreReceiveId#")
                           .Columns(columns =>
                           {
 
@@ -906,9 +906,9 @@
 
                               .Events(events =>
                               {
-                                  events.Error("error_handler(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestStart("onRequestStart(\"validation_#=FinishedGoodsStoreReceiveId#\")");
-                                  events.RequestEnd("onRequestEnd(\"validation_#=FinishedGoodsStoreReceiveId#\")");
+                                  events.Error("error_handler(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=FurnitureFinishedGoodsStoreReceiveId#\")");
                               })
                               .Model(model =>
                               {
@@ -916,10 +916,10 @@
 
                               })
 
-                              .Read(read => read.Action("ReceiveValidations_Read", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                          //.Create(create => create.Action("ReceiveValidations_Create", "PrintingProductionStoreReceiveValidation", new { id = "#=FinishedGoodsStoreReceiveId#" }))
-                          //.Update(update => update.Action("ReceiveValidations_Update", "PrintingProductionStoreReceiveValidation"))
-                          //.Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "PrintingProductionStoreReceiveValidation"))
+                              .Read(read => read.Action("ReceiveValidations_Read", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                          //.Create(create => create.Action("ReceiveValidations_Create", "FurnitureProductionStoreReceiveValidation", new { id = "#=FurnitureFinishedGoodsStoreReceiveId#" }))
+                          //.Update(update => update.Action("ReceiveValidations_Update", "FurnitureProductionStoreReceiveValidation"))
+                          //.Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "FurnitureProductionStoreReceiveValidation"))
                           ) //.ClientDetailTemplateId("template_wip_detail")
                           .ToClientTemplate()
                         )
