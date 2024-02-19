@@ -36,16 +36,16 @@
                                    ag.Add(a => a.TotalPrice).Sum();
                                })
             .Model(model => model.Id(p => p.FurnitureProductionYearlyPlanId))
-            .Read(read => read.Action("ProductionYearlyPlans_Read", "ProductionYearlyPlan"))
-            .Create(create => create.Action("ProductionYearlyPlans_Create", "ProductionYearlyPlan"))
-            .Update(update => update.Action("ProductionYearlyPlans_Update", "ProductionYearlyPlan"))
-            .Destroy(destroy => destroy.Action("ProductionYearlyPlans_Destroy", "ProductionYearlyPlan"))
+            .Read(read => read.Action("ProductionYearlyPlans_Read", "FurnitureProductionYearlyPlan"))
+            .Create(create => create.Action("ProductionYearlyPlans_Create", "FurnitureProductionYearlyPlan"))
+            .Update(update => update.Action("ProductionYearlyPlans_Update", "FurnitureProductionYearlyPlan"))
+            .Destroy(destroy => destroy.Action("ProductionYearlyPlans_Destroy", "FurnitureProductionYearlyPlan"))
               ).ClientDetailTemplateId("monthlyPlan")
 )
 
 <script id="monthlyPlan" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                        .Name("monthly_plan#=ProductionYearlyPlanId#")
+                        .Name("monthly_plan#=FurnitureProductionYearlyPlanId#")
                         .SelectedIndex(0)
                         .Items(items =>
                         {
@@ -66,7 +66,7 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductionMonthlyPlan>()
-          .Name("production_month_plan_#=ProductionYearlyPlanId#")
+          .Name("production_month_plan_#=FurnitureProductionYearlyPlanId#")
           .Columns(columns =>
           {
               columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GlPeriods"], "GLPeriodId", "Name").Width(150);
@@ -90,9 +90,9 @@
               .DataSource(dataSource => dataSource
             .Ajax()
             .Batch(true)
-            .Events(ev => ev.Error("error_handler(\"production_month_plan_#=ProductionYearlyPlanId#\")")
-                               .RequestStart("onRequestStart(\"production_month_plan_#=ProductionYearlyPlanId#\")")
-                               .RequestEnd("onRequestEnd(\"production_month_plan_#=ProductionYearlyPlanId#\")"))
+            .Events(ev => ev.Error("error_handler(\"production_month_plan_#=FurnitureProductionYearlyPlanId#\")")
+                               .RequestStart("onRequestStart(\"production_month_plan_#=FurnitureProductionYearlyPlanId#\")")
+                               .RequestEnd("onRequestEnd(\"production_month_plan_#=FurnitureProductionYearlyPlanId#\")"))
             .Aggregates(ag =>
             {
                 ag.Add(a => a.TotalProduct).Sum();
@@ -103,10 +103,10 @@
                                    model.Id(p => p.FurnitureProductionMonthlyPlanId);
                                    model.Field(p => p.GLPeriodId).Editable(false);
                                })
-            .Read(read => read.Action("ProductionMonthlyPlans_Read", "ProductionMonthlyPlan", new { id = "#=ProductionYearlyPlanId#" }))
-            .Create(create => create.Action("ProductionMonthlyPlans_Create", "ProductionMonthlyPlan"))
-            .Update(update => update.Action("ProductionMonthlyPlans_Update", "ProductionMonthlyPlan", new { id = "#=ProductionYearlyPlanId#" }))
-            .Destroy(destroy => destroy.Action("ProductionMonthlyPlans_Destroy", "ProductionMonthlyPlan"))
+            .Read(read => read.Action("ProductionMonthlyPlans_Read", "FurnitureProductionMonthlyPlan", new { id = "#=FurnitureProductionYearlyPlanId#" }))
+            .Create(create => create.Action("ProductionMonthlyPlans_Create", "FurnitureProductionMonthlyPlan"))
+            .Update(update => update.Action("ProductionMonthlyPlans_Update", "FurnitureProductionMonthlyPlan", new { id = "#=FurnitureProductionYearlyPlanId#" }))
+            .Destroy(destroy => destroy.Action("ProductionMonthlyPlans_Destroy", "FurnitureProductionMonthlyPlan"))
               ).ClientDetailTemplateId("monthlyJobTypePlan")
               .ToClientTemplate()
     )
@@ -136,7 +136,7 @@
           .Name("production_month_job_type_plan_#=ProductionMonthlyPlanId#")
           .Columns(columns =>
           {
-              columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "JobCategoryId", "JobName").Width(150);
+              columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "FurnitureJobCategoryId", "JobName").Width(150);
               columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: \\#=sum\\# ").Width(150);
               columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
 

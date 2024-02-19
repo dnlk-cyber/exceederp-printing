@@ -47,27 +47,27 @@
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model => model.Id(p => p.FurnitureProductDeliveryId))
-                      .Read(read => read.Action("ProductDeliveries_Read", "ProductDeliveries"))
-                      .Create(create => create.Action("ProductDeliveries_Create", "ProductDeliveries"))
-                      .Update(update => update.Action("ProductDeliveries_Update", "ProductDeliveries"))
-                      .Destroy(destroy => destroy.Action("ProductDeliveries_Destroy", "ProductDeliveries"))
+                      .Read(read => read.Action("ProductDeliveries_Read", "FurnitureProductDeliveries"))
+                      .Create(create => create.Action("ProductDeliveries_Create", "FurnitureProductDeliveries"))
+                      .Update(update => update.Action("ProductDeliveries_Update", "FurnitureProductDeliveries"))
+                      .Destroy(destroy => destroy.Action("ProductDeliveries_Destroy", "FurnitureProductDeliveries"))
                    ).ClientDetailTemplateId("Detail")
 )
 
 
 <script id="Detail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                         .Name("tabstrip2_#=ProductDeliveryId#")
+                         .Name("tabstrip2_#=FurnitureProductDeliveryId#")
                         .SelectedIndex(0)
                         .Items(items =>
                         {
 
                             items.Add().Text("Delivery Items").Content(
                 @<text>
-                    <a href='@Url.Action("GetDeliveryNote", "ProductionFollowUpReport")/?id=#=ProductDeliveryId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
+                    <a href='@Url.Action("GetDeliveryNote", "ProductionFollowUpReport")/?id=#=FurnitureProductDeliveryId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp.FurnitureProductDeliveryItems>()
-                                .Name("ProductDeliveryItems#=ProductDeliveryId#")
+                                .Name("FurnitureProductDeliveryItems#=FurnitureProductDeliveryId#")
                                         .Columns(columns =>
                                         {
                                             columns.ForeignKey(c => c.FurnitureJobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No").Width(100);
@@ -112,9 +112,9 @@
                                                         //  .Sort(s => s.Add(x => x.ProformaId).Descending())
                                                         .Events(events =>
                                                         {
-                                                            events.Error("error_handler(\"ProductDeliveryItems#=ProductDeliveryId#\")");
-                                                            events.RequestStart("onRequestStart(\"ProductDeliveryItems#=ProductDeliveryId#\")");
-                                                            events.RequestEnd("onRequestEnd(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                                            events.Error("error_handler(\"FurnitureProductDeliveryItems#=FurnitureProductDeliveryId#\")");
+                                                            events.RequestStart("onRequestStart(\"FurnitureProductDeliveryItems#=FurnitureProductDeliveryId#\")");
+                                                            events.RequestEnd("onRequestEnd(\"FurnitureProductDeliveryItems#=FurnitureProductDeliveryId#\")");
                                                         }
                                                            )
 
@@ -123,10 +123,10 @@
                                                                model.Id(p => p.FurnitureProductDeliveryItemsId);
                                                            })
 
-                                           .Read(read => read.Action("ProductDeliveryItems_Read", "ProductDeliveryItems", new { id = "#=ProductDeliveryId#" }))
-                                          .Create(create => create.Action("ProductDeliveryItems_Create", "ProductDeliveryItems", new { id = "#=ProductDeliveryId#" }))
-                                          .Update(update => update.Action("ProductDeliveryItems_Update", "ProductDeliveryItems"))
-                                          .Destroy(destroy => destroy.Action("ProductDeliveryItems_Destroy", "ProductDeliveryItems"))
+                                           .Read(read => read.Action("ProductDeliveryItems_Read", "FurnitureProductDeliveryItems", new { id = "#=FurnitureProductDeliveryId#" }))
+                                          .Create(create => create.Action("ProductDeliveryItems_Create", "FurnitureProductDeliveryItems", new { id = "#=FurnitureProductDeliveryId#" }))
+                                          .Update(update => update.Action("ProductDeliveryItems_Update", "FurnitureProductDeliveryItems"))
+                                          .Destroy(destroy => destroy.Action("ProductDeliveryItems_Destroy", "FurnitureProductDeliveryItems"))
 
                                           ).ToClientTemplate()
                     )
@@ -151,8 +151,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-           url: '@Url.Action("VoidDelivery", "ProductDeliveries", new { area = "ProductionFollowUp" })',
-            data: { id: dataItem.ProductDeliveryId },
+           url: '@Url.Action("VoidDelivery", "FurnitureProductDeliveries", new { area = "ProductionFollowUp" })',
+            data: { id: dataItem.FurnitureProductDeliveryId },
            success: function(result) {
                 alert(result);
                 location.reload(true);

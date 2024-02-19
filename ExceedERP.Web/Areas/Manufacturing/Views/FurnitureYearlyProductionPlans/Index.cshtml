@@ -70,10 +70,10 @@
               model.Field(p => p.EndDateEth).Editable(false);
               model.Field(p => p.StartDateEth).Editable(false);
           } )
-          .Read(read => read.Action("YearlyProductionPlans_Read", "YearlyProductionPlans"))
-          .Create(create => create.Action("YearlyProductionPlans_Create", "YearlyProductionPlans"))
-          .Update(update => update.Action("YearlyProductionPlans_Update", "YearlyProductionPlans"))
-          .Destroy(destroy => destroy.Action("YearlyProductionPlans_Destroy", "YearlyProductionPlans"))
+          .Read(read => read.Action("YearlyProductionPlans_Read", "FurnitureYearlyProductionPlans"))
+          .Create(create => create.Action("YearlyProductionPlans_Create", "FurnitureYearlyProductionPlans"))
+          .Update(update => update.Action("YearlyProductionPlans_Update", "FurnitureYearlyProductionPlans"))
+          .Destroy(destroy => destroy.Action("YearlyProductionPlans_Destroy", "FurnitureYearlyProductionPlans"))
       ).ClientDetailTemplateId("halfYearPlan")
 )
     </section>
@@ -165,10 +165,10 @@
                   model.Field(p => p.EndDateEth).Editable(false);
               })
 
-              .Read(read => read.Action("HalfYearlyProductionPlans_Read", "HalfYearlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
-              .Create(create => create.Action("HalfYearlyProductionPlans_Create", "HalfYearlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
-              .Update(update => update.Action("HalfYearlyProductionPlans_Update", "HalfYearlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
-              .Destroy(destroy => destroy.Action("HalfYearlyProductionPlans_Destroy", "HalfYearlyProductionPlans"))
+              .Read(read => read.Action("HalfYearlyProductionPlans_Read", "FurnitureHalfYearlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
+              .Create(create => create.Action("HalfYearlyProductionPlans_Create", "FurnitureHalfYearlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
+              .Update(update => update.Action("HalfYearlyProductionPlans_Update", "FurnitureHalfYearlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
+              .Destroy(destroy => destroy.Action("HalfYearlyProductionPlans_Destroy", "FurnitureHalfYearlyProductionPlans"))
 
           ).ClientDetailTemplateId("quarterPlans")
           .ToClientTemplate()
@@ -259,10 +259,10 @@
                   model.Field(p => p.EndDate).Editable(false);
               })
 
-              .Read(read => read.Action("QuarterlyProductionPlans_Read", "QuarterlyProductionPlans", new { id = "#=HalfYearlyProductionPlanId#" }))
-              .Create(create => create.Action("QuarterlyProductionPlans_Create", "QuarterlyProductionPlans", new { id = "#=HalfYearlyProductionPlanId#" }))
-              .Update(update => update.Action("QuarterlyProductionPlans_Update", "QuarterlyProductionPlans", new { id = "#=HalfYearlyProductionPlanId#" }))
-              .Destroy(destroy => destroy.Action("QuarterlyProductionPlans_Destroy", "QuarterlyProductionPlans"))
+              .Read(read => read.Action("QuarterlyProductionPlans_Read", "FurnitureQuarterlyProductionPlans", new { id = "#=HalfYearlyProductionPlanId#" }))
+              .Create(create => create.Action("QuarterlyProductionPlans_Create", "FurnitureQuarterlyProductionPlans", new { id = "#=HalfYearlyProductionPlanId#" }))
+              .Update(update => update.Action("QuarterlyProductionPlans_Update", "FurnitureQuarterlyProductionPlans", new { id = "#=HalfYearlyProductionPlanId#" }))
+              .Destroy(destroy => destroy.Action("QuarterlyProductionPlans_Destroy", "FurnitureQuarterlyProductionPlans"))
 
           )
 

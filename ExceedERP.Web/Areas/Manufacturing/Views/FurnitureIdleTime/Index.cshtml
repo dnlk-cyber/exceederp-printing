@@ -29,20 +29,20 @@
                     .Ajax()
                     .Sort(sort=>sort.Add(s=>s.FurnitureIdleTimeID).Descending())
                     .Model(model => model.Id(p => p.FurnitureIdleTimeID))
-                    .Read(read => read.Action("IdleTimes_Read", "IdleTime"))
-                    .Create(create => create.Action("IdleTimes_Create", "IdleTime"))
-                    .Update(update => update.Action("IdleTimes_Update", "IdleTime"))
-                    .Destroy(destroy => destroy.Action("IdleTimes_Destroy", "IdleTime"))
+                    .Read(read => read.Action("IdleTimes_Read", "FurnitureIdleTime"))
+                    .Create(create => create.Action("IdleTimes_Create", "FurnitureIdleTime"))
+                    .Update(update => update.Action("IdleTimes_Update", "FurnitureIdleTime"))
+                    .Destroy(destroy => destroy.Action("IdleTimes_Destroy", "FurnitureIdleTime"))
                       ).ClientDetailTemplateId("DetailTemplate")
 )
 
 <script id="DetailTemplate" type="text/x-kendo-template">
-    @(Html.Kendo().TabStrip().Name("tabstrip_grid_#=IdleTimeID#").SelectedIndex(0).Items(itemn =>
+    @(Html.Kendo().TabStrip().Name("tabstrip_grid_#=FurnitureIdleTimeID#").SelectedIndex(0).Items(itemn =>
                                                                                         {
                                                                                             itemn.Add().Text("OT").Content(@<text>
 
           @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeOT>()
-                                                 .Name("OTgrid#=IdleTimeID#")
+                                                 .Name("OTgrid#=FurnitureIdleTimeID#")
                                                  .Columns(columns =>
                                                  {
                                                      columns.ForeignKey(c => c.CostCenterId, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
@@ -87,10 +87,10 @@
                                                    .Ajax()
                                                    .Aggregates(ag=>ag.Add(a=>a.Value).Sum())
                                                    .Model(model => model.Id(p => p.FurnitureIdleTimeOTID))
-                                                   .Read(read => read.Action("IdleTimeOTs_Read", "IdleTimeOT", new { id = "#=IdleTimeID #" }))
-                                                   .Create(create => create.Action("IdleTimeOTs_Create", "IdleTimeOT", new { id = "#=IdleTimeID #" }))
-                                                   .Update(update => update.Action("IdleTimeOTs_Update", "IdleTimeOT"))
-                                                   .Destroy(destroy => destroy.Action("IdleTimeOTs_Destroy", "IdleTimeOT"))
+                                                   .Read(read => read.Action("IdleTimeOTs_Read", "FurnitureIdleTimeOT", new { id = "#=FurnitureIdleTimeID#" }))
+                                                   .Create(create => create.Action("IdleTimeOTs_Create", "FurnitureIdleTimeOT", new { id = "#=FurnitureIdleTimeID#" }))
+                                                   .Update(update => update.Action("IdleTimeOTs_Update", "FurnitureIdleTimeOT"))
+                                                   .Destroy(destroy => destroy.Action("IdleTimeOTs_Destroy", "FurnitureIdleTimeOT"))
                                                        )
 
                                                                        .ToClientTemplate())
@@ -98,7 +98,7 @@
               itemn.Add().Text("Productive").Content(@<text>
 
                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeProductive>()
-                                                              .Name("ProductiveGrid#=IdleTimeID#")
+                                                              .Name("ProductiveGrid#=FurnitureIdleTimeID#")
                                                               .Columns(columns =>
                                                               {
                                                                   columns.ForeignKey(c => c.CostCenterId, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
@@ -149,10 +149,10 @@
                                                                                                                                            ag.Add(a => a.Value).Sum();
                                                                                                                                        })
                                                                                                                                        .Model(model => model.Id(p => p.FurnitureIdleTimeProductiveID))
-                                                                                                                                       .Read(read => read.Action("IdleTimeProductives_Read", "IdleTimeProductive", new { id = "#=IdleTimeID #" }))
-                                                                                                                                       .Create(create => create.Action("IdleTimeProductives_Create", "IdleTimeProductive", new { id = "#=IdleTimeID #" }))
-                                                                                                                                       .Update(update => update.Action("IdleTimeProductives_Update", "IdleTimeProductive"))
-                                                                                                                                       .Destroy(destroy => destroy.Action("IdleTimeProductives_Destroy", "IdleTimeProductive"))
+                                                                                                                                       .Read(read => read.Action("IdleTimeProductives_Read", "FurnitureIdleTimeProductive", new { id = "#=FurnitureIdleTimeID#" }))
+                                                                                                                                       .Create(create => create.Action("IdleTimeProductives_Create", "FurnitureIdleTimeProductive", new { id = "#=FurnitureIdleTimeID#" }))
+                                                                                                                                       .Update(update => update.Action("IdleTimeProductives_Update", "FurnitureIdleTimeProductive"))
+                                                                                                                                       .Destroy(destroy => destroy.Action("IdleTimeProductives_Destroy", "FurnitureIdleTimeProductive"))
                                                                                                                                            )
 
                                                                                                                                                            .ToClientTemplate())
@@ -161,10 +161,10 @@
                       itemn.Add().Text(" Non Productive Controllable").Content(@<text>
 
                           @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeNonProductiveControllable>()
-                                                                      .Name("NPCGrid#=IdleTimeID#")
+                                                                      .Name("NPCGrid#=FurnitureIdleTimeID#")
                                                                       .Columns(columns =>
                                                                       {
-                                                                          columns.ForeignKey(c => c.IdleTimeCategoryId, (IEnumerable)ViewData["ControllableIdleTimeCategories"], "IdleTimeCategoryId", "CategoryName").Title("IdleTime Category").Width(120);
+                                                                          columns.ForeignKey(c => c.IdleTimeCategoryId, (IEnumerable)ViewData["ControllableIdleTimeCategories"], "IdleTimeCategoryId", "CategoryName").Title("FurnitureIdleTime Category").Width(120);
                                                                           columns.ForeignKey(c => c.CostCenterId, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
                                                                                                                                                                                                                          .Title("Cost Center").Width(200);                                                                                                                                       //columns.Bound(c => c.OTManualHour);
                                                                                                                                                                                                                                                                                                                                                                                                  //columns.Bound(c => c.OTManualHour);
@@ -213,10 +213,10 @@
                                                                           ag.Add(a => a.Value).Sum();
                                                                       })
                                                                       .Model(model => model.Id(p => p.FurnitureIdleTimeNonProductiveControllableID))
-                                                                      .Read(read => read.Action("IdleTimeNonProductiveControllables_Read", "IdleTimeNonProductiveControllable", new { id = "#=IdleTimeID #" }))
-                                                                      .Create(create => create.Action("IdleTimeNonProductiveControllables_Create", "IdleTimeNonProductiveControllable", new { id = "#=IdleTimeID #" }))
-                                                                      .Update(update => update.Action("IdleTimeNonProductiveControllables_Update", "IdleTimeNonProductiveControllable"))
-                                                                      .Destroy(destroy => destroy.Action("IdleTimeNonProductiveControllables_Destroy", "IdleTimeNonProductiveControllable"))
+                                                                      .Read(read => read.Action("IdleTimeNonProductiveControllables_Read", "FurnitureIdleTimeNonProductiveControllable", new { id = "#=FurnitureIdleTimeID#" }))
+                                                                      .Create(create => create.Action("IdleTimeNonProductiveControllables_Create", "FurnitureIdleTimeNonProductiveControllable", new { id = "#=FurnitureIdleTimeID#" }))
+                                                                      .Update(update => update.Action("IdleTimeNonProductiveControllables_Update", "FurnitureIdleTimeNonProductiveControllable"))
+                                                                      .Destroy(destroy => destroy.Action("IdleTimeNonProductiveControllables_Destroy", "FurnitureIdleTimeNonProductiveControllable"))
                                                                           )
 
                                                                                           .ToClientTemplate())
@@ -224,11 +224,11 @@
                               itemn.Add().Text(" Non Productive Non Controllable").Content(@<text>
 
                                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureIdleTimeNonProductiveNonControllable>()
-                                                                              .Name("NPNCGrid_#=IdleTimeID#")
+                                                                              .Name("NPNCGrid_#=FurnitureIdleTimeID#")
                                                                               .Columns(columns =>
                                                                               {
 
-                                                                                  columns.ForeignKey(c => c.IdleTimeCategoryId, (IEnumerable)ViewData["NonControllableIdleTimeCategories"], "IdleTimeCategoryId", "CategoryName").Title("IdleTime Category").Width(120);
+                                                                                  columns.ForeignKey(c => c.IdleTimeCategoryId, (IEnumerable)ViewData["NonControllableIdleTimeCategories"], "IdleTimeCategoryId", "CategoryName").Title("FurnitureIdleTime Category").Width(120);
                                                                                   columns.ForeignKey(c => c.CostCenterId, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
                                                                                                                                                                                                                          .Title("Cost Center").Width(200);                                                                                                                                       //columns.Bound(c => c.OTManualHour);
                                                                                                                                                                                                                                                                                                                                                                                                  //columns.Bound(c => c.OTManualHour);
@@ -278,10 +278,10 @@
                                                                                               ag.Add(a => a.Value).Sum();
                                                                                           })
                                                                                           .Model(model => model.Id(p => p.FurnitureIdleTimeNonProductiveNonControllableID))
-                                                                                          .Read(read => read.Action("IdleTimeNonProductiveNonControllables_Read", "IdleTimeNonProductiveNonControllable", new { id = "#=IdleTimeID #" }))
-                                                                                          .Create(create => create.Action("IdleTimeNonProductiveNonControllables_Create", "IdleTimeNonProductiveNonControllable", new { id = "#=IdleTimeID #" }))
-                                                                                          .Update(update => update.Action("IdleTimeNonProductiveNonControllables_Update", "IdleTimeNonProductiveNonControllable"))
-                                                                                          .Destroy(destroy => destroy.Action("IdleTimeNonProductiveNonControllables_Destroy", "IdleTimeNonProductiveNonControllable"))
+                                                                                          .Read(read => read.Action("IdleTimeNonProductiveNonControllables_Read", "FurnitureIdleTimeNonProductiveNonControllable", new { id = "#=FurnitureIdleTimeID#" }))
+                                                                                          .Create(create => create.Action("IdleTimeNonProductiveNonControllables_Create", "FurnitureIdleTimeNonProductiveNonControllable", new { id = "#=FurnitureIdleTimeID#" }))
+                                                                                          .Update(update => update.Action("IdleTimeNonProductiveNonControllables_Update", "FurnitureIdleTimeNonProductiveNonControllable"))
+                                                                                          .Destroy(destroy => destroy.Action("IdleTimeNonProductiveNonControllables_Destroy", "FurnitureIdleTimeNonProductiveNonControllable"))
                                                                                               )
 
                                                                                                               .ToClientTemplate())

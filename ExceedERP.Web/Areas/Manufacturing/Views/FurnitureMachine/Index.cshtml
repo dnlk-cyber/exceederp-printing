@@ -30,10 +30,10 @@
           .DataSource(dataSource => dataSource
         .Ajax()
         .Model(model => model.Id(p => p.FurnitureMachineId))
-        .Read(read => read.Action("Machines_Read", "Machine"))
-        .Create(create => create.Action("Machines_Create", "Machine"))
-        .Update(update => update.Action("Machines_Update", "Machine"))
-        .Destroy(destroy => destroy.Action("Machines_Destroy", "Machine"))
+        .Read(read => read.Action("Machines_Read", "FurnitureMachine"))
+        .Create(create => create.Action("Machines_Create", "FurnitureMachine"))
+        .Update(update => update.Action("Machines_Update", "FurnitureMachine"))
+        .Destroy(destroy => destroy.Action("Machines_Destroy", "FurnitureMachine"))
           )
 )
 

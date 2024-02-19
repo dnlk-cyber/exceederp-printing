@@ -16,8 +16,8 @@
                           {
 
 
-                              columns.ForeignKey(c => c.FurnitureMonthlyProductionPlanId, (System.Collections.IEnumerable)ViewData["MonthlyProductionPlans"], "MonthlyProductionPlanId", "NameAm").Filterable(f => f.Multi(true).Search(true)).Width(300);
-                              columns.ForeignKey(c => c.FurnitureMonthlyProductionPlanId, (System.Collections.IEnumerable)ViewData["MonthlyProductionPlans"], "MonthlyProductionPlanId", "Name").Filterable(f => f.Multi(true).Search(true)).Width(300);
+                              //columns.ForeignKey(c => c.FurnitureMonthlyProductionPlanId, (System.Collections.IEnumerable)ViewData["FurnitureMonthlyProductionPlans"], "MonthlyProductionPlanId", "NameAm").Filterable(f => f.Multi(true).Search(true)).Width(300);
+                              //columns.ForeignKey(c => c.FurnitureMonthlyProductionPlanId, (System.Collections.IEnumerable)ViewData["FurnitureMonthlyProductionPlans"], "MonthlyProductionPlanId", "Name").Filterable(f => f.Multi(true).Search(true)).Width(300);
                               columns.Bound(c => c.StartDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
                               columns.Bound(c => c.EndDateEth).Filterable(f => f.Multi(true).Search(true)).Width(120);
                               columns.Bound(c => c.StartDate).Filterable(f => f.Multi(true).Search(true)).Width(120);
@@ -75,7 +75,7 @@
                                       model.Field(p => p.EndDateEth).Editable(false);
                                   })
 
-                                  .Read(read => read.Action("MonthlyProductionPlans_Read", "MonthlyProductionPlans"))
+                                  .Read(read => read.Action("MonthlyProductionPlans_Read", "FurnitureMonthlyProductionPlans"))
 
                               ).ClientDetailTemplateId("weeklyPlans")
 
@@ -202,10 +202,10 @@
 
                     })
 
-                    .Read(read => read.Action("WeeklyProductionPlans_Read", "WeeklyProductionPlans", new { id = "#=MonthlyProductionPlanId#" }))
-                    .Create(create => create.Action("WeeklyProductionPlans_Create", "WeeklyProductionPlans", new { id = "#=MonthlyProductionPlanId#" }))
-                    .Update(update => update.Action("WeeklyProductionPlans_Update", "WeeklyProductionPlans", new { id = "#=MonthlyProductionPlanId#" }))
-                    .Destroy(destroy => destroy.Action("WeeklyProductionPlans_Destroy", "WeeklyProductionPlans"))
+                    .Read(read => read.Action("WeeklyProductionPlans_Read", "FurnitureWeeklyProductionPlans", new { id = "#=MonthlyProductionPlanId#" }))
+                    .Create(create => create.Action("WeeklyProductionPlans_Create", "FurnitureWeeklyProductionPlans", new { id = "#=MonthlyProductionPlanId#" }))
+                    .Update(update => update.Action("WeeklyProductionPlans_Update", "FurnitureWeeklyProductionPlans", new { id = "#=MonthlyProductionPlanId#" }))
+                    .Destroy(destroy => destroy.Action("WeeklyProductionPlans_Destroy", "FurnitureWeeklyProductionPlans"))
 
                     )
                     .ClientDetailTemplateId("jobTypePlan")
@@ -221,7 +221,7 @@
               .Name("production_month_job_type_plan_#=WeeklyProductionPlanId#")
                   .Columns(columns =>
               {
-                columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "JobCategoryId", "JobName").Width(150);
+                columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "FurnitureJobCategoryId", "JobName").Width(150);
                 columns.Bound(c => c.ProductionPlanQuantity).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
                 columns.Bound(c => c.ProductionPlanBirr).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
 
@@ -254,10 +254,10 @@
                 model.Id(p => p.FurnitureProductionJobTypePlanId);
                 model.Field(p => p.JobTypeId).Editable(false);
             })
-                .Read(read => read.Action("ProductionJobTypePlans_Read", "ProductionJobTypePlans", new { id = "#=WeeklyProductionPlanId#" }))
-                .Create(create => create.Action("ProductionJobTypePlans_Create", "ProductionJobTypePlans", new { id = "#=WeeklyProductionPlanId#" }))
-                .Update(update => update.Action("ProductionJobTypePlans_Update", "ProductionJobTypePlans", new { id = "#=WeeklyProductionPlanId#" }))
-                .Destroy(destroy => destroy.Action("ProductionJobTypePlans_Destroy", "ProductionJobTypePlans"))
+                .Read(read => read.Action("ProductionJobTypePlans_Read", "FurnitureProductionJobTypePlans", new { id = "#=WeeklyProductionPlanId#" }))
+                .Create(create => create.Action("ProductionJobTypePlans_Create", "FurnitureProductionJobTypePlans", new { id = "#=WeeklyProductionPlanId#" }))
+                .Update(update => update.Action("ProductionJobTypePlans_Update", "FurnitureProductionJobTypePlans", new { id = "#=WeeklyProductionPlanId#" }))
+                .Destroy(destroy => destroy.Action("ProductionJobTypePlans_Destroy", "FurnitureProductionJobTypePlans"))
                   ).ToClientTemplate()
 )
 }

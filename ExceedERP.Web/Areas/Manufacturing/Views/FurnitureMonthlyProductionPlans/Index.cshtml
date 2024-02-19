@@ -64,7 +64,7 @@
               model.Field(p => p.ProductionPlanQuantity).Editable(false);
               model.Field(p => p.ProductionPlanBirr).Editable(false);
           } )
-          .Read(read => read.Action("YearlyProductionPlans_Read", "YearlyProductionPlans"))
+          .Read(read => read.Action("YearlyProductionPlans_Read", "FurnitureYearlyProductionPlans"))
       ).ClientDetailTemplateId("monthlyPlans")
 )
 
@@ -160,10 +160,10 @@
               })
               .PageSize(12)
               .Group(gr=>gr.Add(g=>g.QuarterlyProductionPlanId))
-              .Read(read => read.Action("MonthlyProductionPlans_Read", "MonthlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
-              .Create(create => create.Action("MonthlyProductionPlans_Create", "MonthlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
-              .Update(update => update.Action("MonthlyProductionPlans_Update", "MonthlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
-              .Destroy(destroy => destroy.Action("MonthlyProductionPlans_Destroy", "MonthlyProductionPlans"))
+              .Read(read => read.Action("MonthlyProductionPlans_Read", "FurnitureMonthlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
+              .Create(create => create.Action("MonthlyProductionPlans_Create", "FurnitureMonthlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
+              .Update(update => update.Action("MonthlyProductionPlans_Update", "FurnitureMonthlyProductionPlans", new { id = "#=YearlyProductionPlanId#" }))
+              .Destroy(destroy => destroy.Action("MonthlyProductionPlans_Destroy", "FurnitureMonthlyProductionPlans"))
 
           ).ClientDetailTemplateId("weeklyPlans")
           .ToClientTemplate()

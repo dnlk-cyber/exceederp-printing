@@ -6,7 +6,7 @@
                 .DataTextField("Name")
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetAllPeriods", "JobCostingDataProvider")
+                    dataSource.Read(read => read.Action("GetAllPeriods", "FurnitureJobCostingDataProvider")
                     .Data("filterPeriods"))
 
                     .ServerFiltering(true);

@@ -30,10 +30,10 @@
                   .DataSource(dataSource => dataSource
                 .Ajax()
                 .Model(model => model.Id(p => p.FurnitureIdleTimeCategoryId))
-                .Read(read => read.Action("IdleTimeCategories_Read", "IdleTimeCategory"))
-                .Create(create => create.Action("IdleTimeCategories_Create", "IdleTimeCategory"))
-                .Update(update => update.Action("IdleTimeCategories_Update", "IdleTimeCategory"))
-                .Destroy(destroy => destroy.Action("IdleTimeCategories_Destroy", "IdleTimeCategory"))
+                .Read(read => read.Action("IdleTimeCategories_Read", "FurnitureIdleTimeCategory"))
+                .Create(create => create.Action("IdleTimeCategories_Create", "FurnitureIdleTimeCategory"))
+                .Update(update => update.Action("IdleTimeCategories_Update", "FurnitureIdleTimeCategory"))
+                .Destroy(destroy => destroy.Action("IdleTimeCategories_Destroy", "FurnitureIdleTimeCategory"))
                   )
 )
 

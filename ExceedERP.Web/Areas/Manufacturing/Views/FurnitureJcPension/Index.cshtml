@@ -28,9 +28,9 @@
               .DataSource(dataSource => dataSource
             .Ajax()
             .Model(model => model.Id(p => p.FurnitureJcPensionId))
-            .Read(read => read.Action("JcPensions_Read", "JcPension"))
-            .Create(create => create.Action("JcPensions_Create", "JcPension"))
-            .Update(update => update.Action("JcPensions_Update", "JcPension"))
-            .Destroy(destroy => destroy.Action("JcPensions_Destroy", "JcPension"))
+            .Read(read => read.Action("JcPensions_Read", "FurnitureJcPension"))
+            .Create(create => create.Action("JcPensions_Create", "FurnitureJcPension"))
+            .Update(update => update.Action("JcPensions_Update", "FurnitureJcPension"))
+            .Destroy(destroy => destroy.Action("JcPensions_Destroy", "FurnitureJcPension"))
               )
 )

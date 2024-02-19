@@ -31,10 +31,10 @@
           .DataSource(dataSource => dataSource
         .Ajax()
         .Model(model => model.Id(p => p.FurnitureProductionCustomerTypeId))
-        .Read(read => read.Action("ProductionCustomerTypes_Read", "ProductionCustomerType"))
-        .Create(create => create.Action("ProductionCustomerTypes_Create", "ProductionCustomerType"))
-        .Update(update => update.Action("ProductionCustomerTypes_Update", "ProductionCustomerType"))
-        .Destroy(destroy => destroy.Action("ProductionCustomerTypes_Destroy", "ProductionCustomerType"))
+        .Read(read => read.Action("ProductionCustomerTypes_Read", "FurnitureProductionCustomerType"))
+        .Create(create => create.Action("ProductionCustomerTypes_Create", "FurnitureProductionCustomerType"))
+        .Update(update => update.Action("ProductionCustomerTypes_Update", "FurnitureProductionCustomerType"))
+        .Destroy(destroy => destroy.Action("ProductionCustomerTypes_Destroy", "FurnitureProductionCustomerType"))
           )
 )
 

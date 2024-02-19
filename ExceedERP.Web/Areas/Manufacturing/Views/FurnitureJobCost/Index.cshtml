@@ -42,16 +42,16 @@
         .Ajax()
         .Sort(se=>se.Add(s=>s.FurnitureJobCostId).Descending())
         .Model(model => { model.Id(p => p.FurnitureJobCostId); })
-        .Read(read => read.Action("JobCosts_Read", "JobCost"))
-        .Create(create => create.Action("JobCosts_Create", "JobCost"))
-        .Update(update => update.Action("JobCosts_Update", "JobCost"))
-        .Destroy(destroy => destroy.Action("JobCosts_Destroy", "JobCost"))
+        .Read(read => read.Action("JobCosts_Read", "FurnitureJobCost"))
+        .Create(create => create.Action("JobCosts_Create", "FurnitureJobCost"))
+        .Update(update => update.Action("JobCosts_Update", "FurnitureJobCost"))
+        .Destroy(destroy => destroy.Action("JobCosts_Destroy", "FurnitureJobCost"))
             ).ClientDetailTemplateId("DetailTemplate")
 )
 <script id="DetailTemplate" type="text/x-kendo-template">
 
     @(Html.Kendo().TabStrip()
-        .Name("DocumentTabstrip_#=JobCostId#")
+        .Name("DocumentTabstrip_#=FurnitureJobCostId#")
         .SelectedIndex(0)
         .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
 
@@ -80,7 +80,7 @@
          @<text>
 
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobChangeOfOrder>()
-            .Name("ChangeOfOrder#=JobCostId#")
+            .Name("ChangeOfOrder#=FurnitureJobCostId#")
             .Columns(columns =>
             {
                 //columns.Bound(c => c.ChangeOrderId);
@@ -104,9 +104,9 @@
             .DataSource(dataSource => dataSource
             .Ajax()
             .Sort(se => se.Add(s => s.FurnitureChangeOrderId).Descending())
-            .Events(ev => ev.Error("error_handler(\"ChangeOfOrder#=JobCostId#\")")
-            .RequestStart("onRequestStart(\"ChangeOfOrder#=JobCostId#\")")
-            .RequestEnd("onRequestEnd(\"ChangeOfOrder#=JobCostId#\")"))
+            .Events(ev => ev.Error("error_handler(\"ChangeOfOrder#=FurnitureJobCostId#\")")
+            .RequestStart("onRequestStart(\"ChangeOfOrder#=FurnitureJobCostId#\")")
+            .RequestEnd("onRequestEnd(\"ChangeOfOrder#=FurnitureJobCostId#\")"))
             .Aggregates(ag =>
             {
                 ag.Add(a => a.AdditionalChange).Sum();
@@ -115,10 +115,10 @@
             })
             .PageSize(5)
             .Model(model => model.Id(p => p.FurnitureJobChangeOfOrderId))
-            .Read(read => read.Action("JobChangeOfOrders_Read", "JobChangeOfOrder", new { id = "#=JobCostId #" }))
-            .Create(create => create.Action("JobChangeOfOrders_Create", "JobChangeOfOrder", new { id = "#=JobCostId #" }))
-            .Update(update => update.Action("JobChangeOfOrders_Update", "JobChangeOfOrder"))
-            .Destroy(destroy => destroy.Action("JobChangeOfOrders_Destroy", "JobChangeOfOrder"))
+            .Read(read => read.Action("JobChangeOfOrders_Read", "FurnitureJobChangeOfOrder", new { id = "#=FurnitureJobCostId #" }))
+            .Create(create => create.Action("JobChangeOfOrders_Create", "FurnitureJobChangeOfOrder", new { id = "#=FurnitureJobCostId #" }))
+            .Update(update => update.Action("JobChangeOfOrders_Update", "FurnitureJobChangeOfOrder"))
+            .Destroy(destroy => destroy.Action("JobChangeOfOrders_Destroy", "FurnitureJobChangeOfOrder"))
             .PageSize(10))
 
             .Pageable(p => p.Refresh(true))
@@ -130,7 +130,7 @@
 
          itemn.Add().Text("Labor Cost ").Content(@<text>                                                                                                            
            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobLaborCost>()
-                    .Name("LaborCost#=JobCostId#")
+                    .Name("LaborCost#=FurnitureJobCostId#")
                     .Columns(columns =>
                     {
 
@@ -163,9 +163,9 @@
                     .DataSource(dataSource => dataSource
                        .Ajax()
                        .Sort(se => se.Add(s => s.FurnitureJobLaborCostId).Descending())
-                        .Events(ev => ev.Error("error_handler(\"LaborCost#=JobCostId#\")")
-                        .RequestStart("onRequestStart(\"LaborCost#=JobCostId#\")")
-                        .RequestEnd("onRequestEnd(\"LaborCost#=JobCostId#\")"))
+                        .Events(ev => ev.Error("error_handler(\"LaborCost#=FurnitureJobCostId#\")")
+                        .RequestStart("onRequestStart(\"LaborCost#=FurnitureJobCostId#\")")
+                        .RequestEnd("onRequestEnd(\"LaborCost#=FurnitureJobCostId#\")"))
                         .Aggregates(ag =>
                         {
                             ag.Add(a => a.PermanetLaborCost).Sum();
@@ -177,10 +177,10 @@
                         })
                         .PageSize(5)
                         .Model(model => model.Id(p => p.FurnitureJobLaborCostId))
-                        .Read(read => read.Action("JobLaborCosts_Read", "JobLaborCost", new { id = "#=JobCostId #" }))
-                        .Create(create => create.Action("JobLaborCosts_Create", "JobLaborCost", new { id = "#=JobCostId #" }))
-                        .Update(update => update.Action("JobLaborCosts_Update", "JobLaborCost"))
-                        .Destroy(destroy => destroy.Action("JobLaborCosts_Destroy", "JobLaborCost"))
+                        .Read(read => read.Action("JobLaborCosts_Read", "FurnitureJobLaborCost", new { id = "#=FurnitureJobCostId #" }))
+                        .Create(create => create.Action("JobLaborCosts_Create", "FurnitureJobLaborCost", new { id = "#=FurnitureJobCostId #" }))
+                        .Update(update => update.Action("JobLaborCosts_Update", "FurnitureJobLaborCost"))
+                        .Destroy(destroy => destroy.Action("JobLaborCosts_Destroy", "FurnitureJobLaborCost"))
                         .PageSize(10))
                         .Pageable(p => p.Refresh(true))
                         .Sortable()
@@ -190,7 +190,7 @@
 
     itemn.Add().Text("Material Cost ").Content(@<text>                                                                                                                  
        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobMaterialCost>()
-            .Name("MaterialCost#=JobCostId#")
+            .Name("MaterialCost#=FurnitureJobCostId#")
             .Columns(columns =>
             {
 
@@ -216,9 +216,9 @@
             .Ajax()
             .Sort(se => se.Add(s => s.FurnitureJobMaterialCostId).Descending())
 
-            .Events(ev => ev.Error("error_handler(\"MaterialCost#=JobCostId#\")")
-            .RequestStart("onRequestStart(\"MaterialCost#=JobCostId#\")")
-            .RequestEnd("onRequestEnd(\"MaterialCost#=JobCostId#\")"))
+            .Events(ev => ev.Error("error_handler(\"MaterialCost#=FurnitureJobCostId#\")")
+            .RequestStart("onRequestStart(\"MaterialCost#=FurnitureJobCostId#\")")
+            .RequestEnd("onRequestEnd(\"MaterialCost#=FurnitureJobCostId#\")"))
             .Aggregates(ag =>
             {
                 ag.Add(a => a.Cost).Sum();
@@ -229,10 +229,10 @@
             })
             .PageSize(5)
             .Model(model => model.Id(p => p.FurnitureJobMaterialCostId))
-            .Read(read => read.Action("JobMaterialCosts_Read", "JobMaterialCost", new { id = "#=JobCostId #" }))
-            //.Create(create => create.Action("JobMaterialCosts_Create", "JobMaterialCost", new { id = "#=JobCostId #" }))
-            //.Update(update => update.Action("JobMaterialCosts_Update", "JobMaterialCost"))
-            //.Destroy(destroy => destroy.Action("JobMaterialCosts_Destroy", "JobMaterialCost"))
+            .Read(read => read.Action("FurnitureJobMaterialCosts_Read", "FurnitureJobMaterialCost", new { id = "#=FurnitureJobCostId #" }))
+            //.Create(create => create.Action("JobMaterialCosts_Create", "FurnitureJobMaterialCost", new { id = "#=FurnitureJobCostId #" }))
+            //.Update(update => update.Action("JobMaterialCosts_Update", "FurnitureJobMaterialCost"))
+            //.Destroy(destroy => destroy.Action("JobMaterialCosts_Destroy", "FurnitureJobMaterialCost"))
             .PageSize(10))
 
             .Pageable(p => p.Refresh(true))
@@ -244,7 +244,7 @@
         itemn.Add().Text("Material Return ").Content(@<text>
 
         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureJobMaterialReturn>()
-            .Name("MaterialReturn#=JobCostId#")
+            .Name("MaterialReturn#=FurnitureJobCostId#")
             .Columns(columns =>
             {
 
@@ -274,9 +274,9 @@
             .Ajax()
             .Sort(se => se.Add(s => s.FurnitureJobMaterialReturnId).Descending())
 
-            .Events(ev => ev.Error("error_handler(\"MaterialReturn#=JobCostId#\")")
-            .RequestStart("onRequestStart(\"MaterialReturn#=JobCostId#\")")
-            .RequestEnd("onRequestEnd(\"MaterialReturn#=JobCostId#\")"))
+            .Events(ev => ev.Error("error_handler(\"MaterialReturn#=FurnitureJobCostId#\")")
+            .RequestStart("onRequestStart(\"MaterialReturn#=FurnitureJobCostId#\")")
+            .RequestEnd("onRequestEnd(\"MaterialReturn#=FurnitureJobCostId#\")"))
             .Aggregates(ag =>
             {
                 ag.Add(a => a.Quantity).Sum();
@@ -287,7 +287,7 @@
             })
             .PageSize(5)
             .Model(model => model.Id(p => p.FurnitureJobMaterialReturnId))
-            .Read(read => read.Action("JobMaterialReturns_Read", "JobMaterialReturn", new { id = "#=JobCostId #" }))
+            .Read(read => read.Action("JobMaterialReturns_Read", "FurnitureJobMaterialReturn", new { id = "#=FurnitureJobCostId #" }))
             .PageSize(10))
 
             .Pageable(p => p.Refresh(true))
@@ -298,7 +298,7 @@
             itemn.Add().Text("Finished Jobs").Content(@<text>
 
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureFinishedJob>()
-            .Name("FinishedJob#=JobCostId#")
+            .Name("FurnitureFinishedJob#=FurnitureJobCostId#")
             .Columns(columns =>
             {
 
@@ -326,16 +326,16 @@
             .DataSource(dataSource => dataSource
             .Ajax()
             .ServerOperation(false)
-            .Events(ev => ev.Error("error_handler(\"FinishedJob#=JobCostId#\")")
-            .RequestStart("onRequestStart(\"FinishedJob#=JobCostId#\")")
-            .RequestEnd("onRequestEnd(\"FinishedJob#=JobCostId#\")"))
+            .Events(ev => ev.Error("error_handler(\"FurnitureFinishedJob#=FurnitureJobCostId#\")")
+            .RequestStart("onRequestStart(\"FurnitureFinishedJob#=FurnitureJobCostId#\")")
+            .RequestEnd("onRequestEnd(\"FurnitureFinishedJob#=FurnitureJobCostId#\")"))
 
             .PageSize(5)
             .Model(model => model.Id(p => p.FurnitureFinishedJobId))
-            .Read(read => read.Action("FinishedJobs_Read", "FinishedJob", new { id = "#=JobCostId #" }))
-            .Create(create => create.Action("FinishedJobs_Create", "FinishedJob", new { id = "#=JobCostId #" }))
-            .Update(update => update.Action("FinishedJobs_Update", "FinishedJob"))
-            .Destroy(destroy => destroy.Action("FinishedJobs_Destroy", "FinishedJob"))
+            .Read(read => read.Action("FinishedJobs_Read", "FurnitureFinishedJob", new { id = "#=FurnitureJobCostId #" }))
+            .Create(create => create.Action("FinishedJobs_Create", "FurnitureFinishedJob", new { id = "#=FurnitureJobCostId #" }))
+            .Update(update => update.Action("FinishedJobs_Update", "FurnitureFinishedJob"))
+            .Destroy(destroy => destroy.Action("FinishedJobs_Destroy", "FurnitureFinishedJob"))
             .PageSize(10))
 
             .Pageable(p => p.Refresh(true))
@@ -347,7 +347,7 @@
             itemn.Add().Text("Delivered Job ").Content(@<text>
 
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.JobCosting.FurnitureDeliveredJob>()
-            .Name("DeliveredJob#=JobCostId#")
+            .Name("FurnitureDeliveredJob#=FurnitureJobCostId#")
             .Columns(columns =>
             {
 
@@ -375,16 +375,16 @@
             .DataSource(dataSource => dataSource
             .Ajax()
             .ServerOperation(false)
-            .Events(ev => ev.Error("error_handler(\"DeliveredJob#=JobCostId#\")")
-            .RequestStart("onRequestStart(\"DeliveredJob#=JobCostId#\")")
-            .RequestEnd("onRequestEnd(\"DeliveredJob#=JobCostId#\")"))
+            .Events(ev => ev.Error("error_handler(\"FurnitureDeliveredJob#=FurnitureJobCostId#\")")
+            .RequestStart("onRequestStart(\"FurnitureDeliveredJob#=FurnitureJobCostId#\")")
+            .RequestEnd("onRequestEnd(\"FurnitureDeliveredJob#=FurnitureJobCostId#\")"))
 
             .PageSize(5)
             .Model(model => model.Id(p => p.FurnitureDeliveredJobId))
-            .Read(read => read.Action("DeliveredJobs_Read", "DeliveredJob", new { id = "#=JobCostId #" }))
-            .Create(create => create.Action("DeliveredJobs_Create", "DeliveredJob", new { id = "#=JobCostId #" }))
-            .Update(update => update.Action("DeliveredJobs_Update", "DeliveredJob"))
-            .Destroy(destroy => destroy.Action("DeliveredJobs_Destroy", "DeliveredJob"))
+            .Read(read => read.Action("DeliveredJobs_Read", "FurnitureDeliveredJob", new { id = "#=FurnitureJobCostId #" }))
+            .Create(create => create.Action("DeliveredJobs_Create", "FurnitureDeliveredJob", new { id = "#=FurnitureJobCostId #" }))
+            .Update(update => update.Action("DeliveredJobs_Update", "FurnitureDeliveredJob"))
+            .Destroy(destroy => destroy.Action("DeliveredJobs_Destroy", "FurnitureDeliveredJob"))
             .PageSize(10))
 
             .Pageable(p => p.Refresh(true))

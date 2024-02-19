@@ -36,16 +36,16 @@
           .DataSource(dataSource => dataSource
         .Ajax()
         .Model(model => model.Id(p => p.FurnitureJobCategoryId))
-        .Read(read => read.Action("JobCategories_Read", "JobCategory"))
-        .Create(create => create.Action("JobCategories_Create", "JobCategory"))
-        .Update(update => update.Action("JobCategories_Update", "JobCategory"))
-        .Destroy(destroy => destroy.Action("JobCategories_Destroy", "JobCategory"))
+        .Read(read => read.Action("JobCategories_Read", "FurnitureJobCategory"))
+        .Create(create => create.Action("JobCategories_Create", "FurnitureJobCategory"))
+        .Update(update => update.Action("JobCategories_Update", "FurnitureJobCategory"))
+        .Destroy(destroy => destroy.Action("JobCategories_Destroy", "FurnitureJobCategory"))
           )
 )
 
 <script type="text/javascript">
     function onEdit() {
-        var ddl = $('#ParentId').data('kendoDropDownList');
+        var ddl = $('#FurnitureParentId').data('kendoDropDownList');
         var condition = $('#HaveParent').is(':checked');
 
         if (condition) {
@@ -59,7 +59,7 @@
         
     }
     function onChange() {
-        var ddl = $('#ParentId').data('kendoDropDownList');
+        var ddl = $('#FurnitureParentId').data('kendoDropDownList');
         var condition = $('#HaveParent').is(':checked');
 
         if (condition) {

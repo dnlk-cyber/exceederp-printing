@@ -32,9 +32,9 @@
               .DataSource(dataSource => dataSource
             .Ajax()
             .Model(model => model.Id(p => p.FurnitureYearlyOverHeadRateId))
-            .Read(read => read.Action("YearlyOverHeadRates_Read", "YearlyOverHeadRate"))
-            .Create(create => create.Action("YearlyOverHeadRates_Create", "YearlyOverHeadRate"))
-            .Update(update => update.Action("YearlyOverHeadRates_Update", "YearlyOverHeadRate"))
-            .Destroy(destroy => destroy.Action("YearlyOverHeadRates_Destroy", "YearlyOverHeadRate"))
+            .Read(read => read.Action("YearlyOverHeadRates_Read", "FurnitureYearlyOverHeadRate"))
+            .Create(create => create.Action("YearlyOverHeadRates_Create", "FurnitureYearlyOverHeadRate"))
+            .Update(update => update.Action("YearlyOverHeadRates_Update", "FurnitureYearlyOverHeadRate"))
+            .Destroy(destroy => destroy.Action("YearlyOverHeadRates_Destroy", "FurnitureYearlyOverHeadRate"))
               )
 )

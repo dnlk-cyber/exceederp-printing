@@ -28,7 +28,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.ProductionFollowUp.Opera
             ViewData["JobOrder"] = db.FurnitureJobs.ToList().Select(s=>
             new {
                 JobId =s.FurnitureJobId,
-                JobNo = s.JobNo+"-"+ db.FurnitureJobCategories.Find(s.FurnitureJobTypeId).JobName
+                JobNo = s.JobNo//+"-"+ db.FurnitureJobCategories.Find(s.FurnitureJobTypeId).JobName
             }).ToList();
             ViewData["Units"] = db.FurnitureUnits.ToList();
             PopulateViewData();
