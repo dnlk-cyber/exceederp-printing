@@ -1,0 +1,100 @@
+﻿
+
+<label>Material Category</label>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.ManufacturingMaterialCategory>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.InventoryCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text");/*.EditorTemplateName("InventoryCategoryTemplate");*/
+              columns.Bound(c => c.ManufacturingCategory);
+              columns.Bound(c => c.CostAccountCode);
+              columns.Bound(c => c.InventoryAccountCode);
+              columns.Bound(c => c.ProductionAccountCode);
+              //columns.Bound(c => c.IsActive);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Navigatable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.ManufacturingMaterialCategoryId))
+              .Read(read => read.Action("ManufacturingMaterialCategories_Read", "ManufacturingMaterialCategory"))
+              .Create(create => create.Action("ManufacturingMaterialCategories_Create", "ManufacturingMaterialCategory"))
+              .Update(update => update.Action("ManufacturingMaterialCategories_Update", "ManufacturingMaterialCategory"))
+              .Destroy(destroy => destroy.Action("ManufacturingMaterialCategories_Destroy", "ManufacturingMaterialCategory"))
+          ).ClientDetailTemplateId("templateId")
+)
+
+<script id="templateId" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+    .Name("Detail_#=ManufacturingMaterialCategoryId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+        items.Add().Text("Detail").Content(
+    @<text>
+        @Detail();
+    </text>);
+    }).ToClientTemplate())
+</script>
+
+@helper Detail()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.ManufacturingMaterialCategoryDetail>()
+              .Name("grid_#=ManufacturingMaterialCategoryId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.InventorySubCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").EditorTemplateName("SubCategoryTemplate");
+                  columns.Bound(c => c.ItemName);
+                  columns.Bound(c => c.ItemCode);
+                  columns.Bound(c => c.UnitOfMeasurement);
+                  columns.Bound(c => c.UnitPrice);
+                  //columns.Bound(c => c.IsActive);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.ManufacturingMaterialCategoryDetailId))
+                  .Read(read => read.Action("ManufacturingMaterialCategoryDetails_Read", "ManufacturingMaterialCategoryDetail", new { id = "#=ManufacturingMaterialCategoryId#" }))
+                  .Create(create => create.Action("ManufacturingMaterialCategoryDetails_Create", "ManufacturingMaterialCategoryDetail", new { id = "#=ManufacturingMaterialCategoryId#" }))
+                  .Update(update => update.Action("ManufacturingMaterialCategoryDetails_Update", "ManufacturingMaterialCategoryDetail"))
+                  .Destroy(destroy => destroy.Action("ManufacturingMaterialCategoryDetails_Destroy", "ManufacturingMaterialCategoryDetail"))
+              ).ToClientTemplate()
+    )
+}
+
+<script type="text/javascript">
+
+    function filterCategory() {
+        return {
+            text: $("#InventoryCategoryCode").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterSubCategory() {
+        return {
+            categoryCode: $("#InventoryCategoryCode").val,//.data("kendoDropDownList").value(),
+            text: $("#InventorySubCategoryCode").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    
+</script>

@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.ManufacturingMaterialCategoryDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.SubCategoryId);
+        columns.Bound(c => c.ItemName);
+        columns.Bound(c => c.ItemCode);
+        columns.Bound(c => c.UnitOfMeasurement);
+        columns.Bound(c => c.UnitPrice);
+        columns.Bound(c => c.IsActive);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ManufacturingMaterialCategoryDetailId))
+          .Read(read => read.Action("ManufacturingMaterialCategoryDetails_Read", "ManufacturingMaterialCategoryDetail"))
+          .Create(create => create.Action("ManufacturingMaterialCategoryDetails_Create", "ManufacturingMaterialCategoryDetail"))
+          .Update(update => update.Action("ManufacturingMaterialCategoryDetails_Update", "ManufacturingMaterialCategoryDetail"))
+          .Destroy(destroy => destroy.Action("ManufacturingMaterialCategoryDetails_Destroy", "ManufacturingMaterialCategoryDetail"))
+      )
+)

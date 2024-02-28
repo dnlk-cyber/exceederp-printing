@@ -1,0 +1,27 @@
+﻿
+
+<label>Task Category</label>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.ManifucturingTaskCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Type).EditorTemplateName("ManufacturingTypeTemplate");
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.StandardHour);
+        columns.Bound(c => c.HourRate);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ManifucturingTaskCategoryId))
+          .Read(read => read.Action("ManifucturingTaskCategories_Read", "ManufucturingTaskCategory"))
+          .Create(create => create.Action("ManifucturingTaskCategories_Create", "ManufucturingTaskCategory"))
+          .Update(update => update.Action("ManifucturingTaskCategories_Update", "ManufucturingTaskCategory"))
+          .Destroy(destroy => destroy.Action("ManifucturingTaskCategories_Destroy", "ManufucturingTaskCategory"))
+      )
+)

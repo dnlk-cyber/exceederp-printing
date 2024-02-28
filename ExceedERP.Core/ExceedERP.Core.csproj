@@ -1085,6 +1085,8 @@
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\PrePrinting.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\Printing.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\Settings.cs" />
+    <Compile Include="Domain\Manufacturing\Setting\ManifucturingTaskCategory.cs" />
+    <Compile Include="Domain\Manufacturing\Setting\MaterialCategory.cs" />
     <Compile Include="Domain\Printing\JobCosting\ContratDLR.cs" />
     <Compile Include="Domain\Printing\JobCosting\CostCenter.cs" />
     <Compile Include="Domain\Printing\JobCosting\DailyLaborRate.cs" />

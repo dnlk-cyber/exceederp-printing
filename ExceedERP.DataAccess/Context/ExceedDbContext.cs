@@ -103,6 +103,7 @@ using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1614,6 +1615,9 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP
+            modelBuilder.Configurations.Add(new ManifucturingTaskCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureYearlyProductionPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureHalfYearlyProductionPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureQuarterlyProductionPlanEntityTypeConfiguration());
@@ -2137,8 +2141,10 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Production Follow UP
+        public DbSet<ManifucturingTaskCategory> ManifucturingTaskCategories { get; set; }
+        public DbSet<ManufacturingMaterialCategory> ManufacturingMaterialCategories { get; set; }
+        public DbSet<ManufacturingMaterialCategoryDetail> ManufacturingMaterialCategoryDetails { get; set; }
         public DbSet<FurnitureYearlyProductionPlan> FurnitureYearlyProductionPlans { get; set; }
-
 
         public DbSet<FurnitureJobProcuctionPlan> FurnitureJobProcuctionPlans { get; set; }
         public DbSet<FurnitureHalfYearlyProductionPlan> FurnitureHalfYearlyProductionPlans { get; set; }

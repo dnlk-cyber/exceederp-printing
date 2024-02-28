@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.Manufacturing.Setting
+{
+   
+    public class ManifucturingTaskCategory
+    {
+        public int ManifucturingTaskCategoryId { get; set; }
+        public ManifucturingTaskType Type { get; set; }
+        public string Name { get; set; }
+        [Display(Name="Standard Hour")]
+        public decimal StandardHour { get; set; }
+        [Display(Name="Hour Rate")]
+        public decimal HourRate { get; set; }
+
+    }
+    public enum ManifucturingTaskType
+    {
+        Metal,
+        WoodWork,
+        Finishing        
+    }
+}

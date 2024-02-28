@@ -373,6 +373,10 @@
     <Compile Include="Migrations\202402061357359_printfurniture.Designer.cs">
       <DependentUpon>202402061357359_printfurniture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202402280833083_manufacturingcatego.cs" />
+    <Compile Include="Migrations\202402280833083_manufacturingcatego.Designer.cs">
+      <DependentUpon>202402280833083_manufacturingcatego.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -610,6 +614,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202402061357359_printfurniture.resx">
       <DependentUpon>202402061357359_printfurniture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202402280833083_manufacturingcatego.resx">
+      <DependentUpon>202402280833083_manufacturingcatego.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

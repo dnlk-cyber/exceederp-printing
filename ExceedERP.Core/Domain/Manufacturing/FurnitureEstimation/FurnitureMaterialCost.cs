@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,8 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal TotalPrice { get; set; }
         [NotMapped]
         public decimal Balance { get; set; }
+        [Display(Name ="Task Type")]
+        public ManifucturingTaskType TaskType { get; set; }
 
     }
 }

@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
@@ -528,5 +529,29 @@ namespace ExceedERP.DataAccess.Context
     }
     #endregion
 
+    public class ManifucturingTaskCategoryEntityTypeConfiguration : EntityTypeConfiguration<ManifucturingTaskCategory>
+    {
+        public ManifucturingTaskCategoryEntityTypeConfiguration()
+        {
+            this.ToTable("ManifucturingTaskCategory", "Manufacturing");
+            this.HasKey<int>(k => k.ManifucturingTaskCategoryId);
+        }
+    }
+    public class ManufacturingMaterialCategoryEntityTypeConfiguration : EntityTypeConfiguration<ManufacturingMaterialCategory>
+    {
+        public ManufacturingMaterialCategoryEntityTypeConfiguration()
+        {
+            this.ToTable("ManufacturingMaterialCategory", "Manufacturing");
+            this.HasKey<int>(k => k.ManufacturingMaterialCategoryId);
+        }
+    }
+    public class ManufacturingMaterialCategoryDetailEntityTypeConfiguration : EntityTypeConfiguration<ManufacturingMaterialCategoryDetail>
+    {
+        public ManufacturingMaterialCategoryDetailEntityTypeConfiguration()
+        {
+            this.ToTable("ManufacturingMaterialCategoryDetail", "Manufacturing");
+            this.HasKey<int>(k => k.ManufacturingMaterialCategoryDetailId);
+        }
+    }
 
 }
