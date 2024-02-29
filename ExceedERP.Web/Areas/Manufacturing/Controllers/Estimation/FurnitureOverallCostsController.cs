@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -22,65 +22,58 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             return View();
         }
-        
-        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
-        public ActionResult FurnitureOverallCosts_Read([DataSourceRequest]DataSourceRequest request,int estimationFormId)
+
+        //[OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
+        public ActionResult FurnitureOverallCosts_Read([DataSourceRequest]DataSourceRequest request, int estimationFormId)
         {
 
-            IQueryable<FurnitureOverallCost> overallcosts = db.FurnitureOverallCosts.Where(q=>q.FurnitureEstimationId == estimationFormId);
-            decimal materialCost = db.FurnitureMaterialCosts.Where(q => q.FurnitureEstimationId == estimationFormId).ToList().Sum(q => q.TotalPrice);
-            decimal laborCost = db.DirectLaborCosts.Where(q => q.FurnitureEstimationId == estimationFormId).ToList().Sum(q => q.TotalCost);
-            decimal lab_mate_cost = materialCost + laborCost;
-            //var Tcost = ((overallCost.OverHeadCost) / 100) * lab_mate_cost + lab_mate_cost;
-            //var NBTCost = ((overallCost.MarginalCost) / 100) * Tcost + Tcost;
-            //var GTCost = ((overallCost.TInpercent) / 100) * NBTCost + NBTCost;
-             var result = overallcosts.AsEnumerable().Select(overallCost => new FurnitureOverallCost {
-                 FurnitureOverallCostId = overallCost.FurnitureOverallCostId,
-                 FurnitureEstimationId = overallCost.FurnitureEstimationId,
-                MaterialCost = materialCost,
-                LaborCost = laborCost,
-                OverHeadCost = overallCost.OverHeadCost,
-                T = overallCost.T,
-                MarginalCost = overallCost.MarginalCost,
-                NBT =  overallCost.NBT,
-                TInpercent = overallCost.TInpercent,
-                GT = overallCost.GT,
-                Graphic = overallCost.Graphic,
-                EstimatedNetPrice =  overallCost.EstimatedNetPrice
-             }).ToList();
+            IQueryable<FurnitureOverallCost> overallcosts = db.FurnitureOverallCosts.Where(q => q.FurnitureEstimationId == estimationFormId);
 
-            return Json(result.ToTreeDataSourceResult(request));
+            var result = overallcosts.ToDataSourceResult(request, model => new FurnitureOverallCost
+            {
+                AdministrativeCost = model.AdministrativeCost,
+                Estimation = model.Estimation,
+                FurnitureEstimationId = model.FurnitureEstimationId,
+                FurnitureOverallCostId = model.FurnitureOverallCostId,
+                GrandTotalCost = model.GrandTotalCost,
+                LabourCost = model.LabourCost,
+                ManufacturingCost = model.ManufacturingCost,
+                MaterialCost = model.MaterialCost,
+                OverHeadCost = model.OverHeadCost,
+                ProfitMargin = model.ProfitMargin,
+                FinalPriceIncludingProfit = model.FinalPriceIncludingProfit
+            });
+
+            return Json(result);
         }
         public ActionResult FurnitureOverallCosts_Create([DataSourceRequest]DataSourceRequest request, FurnitureOverallCost overallCost, int parentId)
         {
-            
+
             if (ModelState.IsValid)
             {
-                var materialCost = db.FurnitureMaterialCosts.Where(q => q.FurnitureEstimationId == parentId).ToList().Sum(q => q.TotalPrice);
-                var laborCost = db.DirectLaborCosts.Where(q => q.FurnitureEstimationId == parentId).ToList().Sum(q => q.TotalCost);
-                var lab_mate_cost = materialCost + laborCost;
-                var Tcost = ((overallCost.OverHeadCost) / 100) * lab_mate_cost + lab_mate_cost;
-                var NBTCost = ((overallCost.MarginalCost) / 100) * Tcost + Tcost;
-                var GTCost = ((overallCost.TInpercent) / 100) * NBTCost + NBTCost;
+                var estimationForm = db.FurnitureEstimationForms.Find(parentId);
+                var materialCost = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId).ToList();
+                var labourCost = db.FurnitureLaborCosts.Where(x => x.EstimationFormId == estimationForm.FurnitureEstimationId).ToList();
+
+                if(materialCost.Any() && labourCost.Any())
+                {
+                    overallCost.MaterialCost = materialCost.Sum(s => s.TotalPrice);
+                    overallCost.LabourCost = labourCost.Sum(s => s.TotalCost);
+                }
                 var entity = new FurnitureOverallCost
                 {
                     OverHeadCost = overallCost.OverHeadCost,
                     FurnitureEstimationId = parentId,
-                    T = Tcost,
-                    MarginalCost = overallCost.MarginalCost,
-                    NBT = NBTCost,
-                    TInpercent = overallCost.TInpercent,
-                    GT = GTCost,
-                    Graphic = overallCost.Graphic,
-                    EstimatedNetPrice = GTCost+ overallCost.Graphic
-
+                    AdministrativeCost = overallCost.AdministrativeCost,
+                    LabourCost = overallCost.LabourCost,              
+                    MaterialCost = overallCost.MaterialCost,
                 };
-
+                entity.ManufacturingCost = overallCost.MaterialCost + overallCost.LabourCost + overallCost.OverHeadCost;
+                entity.GrandTotalCost = entity.ManufacturingCost + entity.AdministrativeCost;
                 db.FurnitureOverallCosts.Add(entity);
                 db.SaveChanges();
-               
-             
 
+                overallCost.FurnitureOverallCostId = entity.FurnitureOverallCostId;
             }
             return Json(new[] { overallCost }.ToDataSourceResult(request, ModelState));
         }
@@ -88,35 +81,19 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureOverallCosts_Update([DataSourceRequest]DataSourceRequest request, FurnitureOverallCost overallCost)
         {
-           
-                
-                if (ModelState.IsValid)
-                {
-                decimal materialCost = db.FurnitureMaterialCosts.Where(q => q.FurnitureEstimationId == overallCost.FurnitureEstimationId).ToList().Sum(q => q.TotalPrice);
-                decimal laborCost = db.DirectLaborCosts.Where(q => q.FurnitureEstimationId == overallCost.FurnitureEstimationId).ToList().Sum(q => q.TotalCost);
-                decimal lab_mate_cost = materialCost + laborCost;
-                decimal Tcost = ((overallCost.OverHeadCost) / 100) * lab_mate_cost + lab_mate_cost;
-                decimal NBTCost = ((overallCost.MarginalCost) / 100) * Tcost + Tcost;
-                decimal GTCost = ((overallCost.TInpercent) / 100) * NBTCost + NBTCost;
-                var entity = new FurnitureOverallCost
-                {
-                    FurnitureOverallCostId = overallCost.FurnitureOverallCostId,
-                    FurnitureEstimationId = overallCost.FurnitureEstimationId,
-                    OverHeadCost = overallCost.OverHeadCost,
-                        T = Tcost,
-                        MarginalCost = overallCost.MarginalCost,
-                        NBT = NBTCost,
-                        TInpercent = overallCost.TInpercent,
-                        GT = GTCost,
-                        Graphic = overallCost.Graphic,
-                        EstimatedNetPrice = GTCost + overallCost.Graphic
 
-                    };
 
-                    db.FurnitureOverallCosts.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+            if (ModelState.IsValid)
+            {
+                overallCost.ManufacturingCost = overallCost.MaterialCost + overallCost.LabourCost + overallCost.OverHeadCost;
+                overallCost.GrandTotalCost = overallCost.ManufacturingCost + overallCost.AdministrativeCost;
+                var profit = overallCost.GrandTotalCost * overallCost.ProfitMargin;
+                overallCost.FinalPriceIncludingProfit = overallCost.GrandTotalCost + profit;
+
+                db.FurnitureOverallCosts.Attach(overallCost);
+                db.Entry(overallCost).State = EntityState.Modified;
                 db.SaveChanges();
-                
+
             }
 
             return Json(new[] { overallCost }.ToDataSourceResult(request, ModelState));
@@ -128,27 +105,58 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
             if (ModelState.IsValid)
             {
-                var entity = new FurnitureOverallCost
-                {
-                    FurnitureOverallCostId = overallCost.FurnitureOverallCostId,
-                    OverHeadCost = overallCost.OverHeadCost,
-                    T = overallCost.T,
-                    MarginalCost = overallCost.MarginalCost,
-                    TInpercent = overallCost.TInpercent,
-                    GT = overallCost.GT,
-                    Graphic = overallCost.Graphic,
-                    EstimatedNetPrice = overallCost.EstimatedNetPrice
-
-                };
-
-                db.FurnitureOverallCosts.Attach(entity);
-                db.FurnitureOverallCosts.Remove(entity);
+                var furnitureOverAllCost = db.FurnitureOverallCosts.Find(overallCost.FurnitureOverallCostId);
+                db.FurnitureOverallCosts.Attach(furnitureOverAllCost);
+                db.FurnitureOverallCosts.Remove(furnitureOverAllCost);
                 db.SaveChanges();
-               
+
             }
 
             return Json(new[] { overallCost }.ToDataSourceResult(request, ModelState));
         }
+
+        //------ajax method------//
+        public JsonResult CalculateOverAllCost(int id)
+        {
+            var msg = new
+            {
+                success = "Calculation succeeded",
+                error = "Failed to calculate make sure you have material and labour cost",
+                exists = "Already calculated"
+            };
+            var estimation = db.FurnitureEstimationForms.Find(id);
+            if (estimation != null)
+            {
+                var overAllCost = db.OverallCosts.Where(x => x.EstimationFormId == estimation.FurnitureEstimationId).ToList();
+                if (overAllCost.Any()) return Json(msg.exists);
+                var labourCost = db.DirectLaborCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
+                if (labourCost.Any())
+                {
+                    var materialCost = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
+                    if (materialCost.Any())
+                    {
+                        var totalLabourCost = labourCost.Sum(x => x.TotalCost);
+                        var totalMaterialCost = materialCost.Sum(s => s.TotalPrice);
+                        var entity = new FurnitureOverallCost
+                        {
+                            FurnitureEstimationId = estimation.FurnitureEstimationId,
+                            LabourCost = totalLabourCost,
+                            MaterialCost = totalMaterialCost,
+                            OverHeadCost = 0,
+                            ManufacturingCost = totalLabourCost + totalMaterialCost,
+                            AdministrativeCost = 0,
+                            GrandTotalCost = totalLabourCost + totalMaterialCost
+                        };
+                        db.FurnitureOverallCosts.Add(entity);
+                        db.SaveChanges();
+                        
+                        return Json(msg.success, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            return Json(msg.error, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

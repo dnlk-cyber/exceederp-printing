@@ -53,6 +53,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             ViewData["FurnitureSteps"] = FurnitureSteps;
             ViewBag.data = GetData();
 
+            var materialCategories = db.ManufacturingMaterialCategories.Select(s => new
+            {
+                Text = s.ManufacturingCategory,
+                Value = s.ManufacturingMaterialCategoryId
+            }).ToList();
+            ViewData["MaterialCategory"] = materialCategories;
             return View();
 
         }
@@ -72,6 +78,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             
             IQueryable<FurnitureEstimationForm> estimationforms = db.FurnitureEstimationForms;
+            
             DataSourceResult result = estimationforms.ToDataSourceResult(request, estimationForm => new {
 
                 FurnitureEstimationId = estimationForm.FurnitureEstimationId,
@@ -87,7 +94,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 //BindingStyle = estimationForm.BindingStyle,
                 Others = estimationForm.Others,
                 IsChecked = estimationForm.IsChecked,
-                IsApproved = estimationForm.IsApproved
+                IsApproved = estimationForm.IsApproved,
+                
             });
 
             return Json(result);

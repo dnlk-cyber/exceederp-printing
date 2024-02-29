@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+    .AutoBind(false)
+    .OptionLabel("Select UOM...")
+    .DataTextField("UoMName")
+    .DataValueField("Value")
+    .ValuePrimitive(true)
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetUoM", "ManufacturingDataProvider"))
+                .ServerFiltering(true);
+    })
+
+)

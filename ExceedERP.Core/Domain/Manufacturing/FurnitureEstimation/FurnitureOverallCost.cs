@@ -12,22 +12,22 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     {
         [Key]
         public int FurnitureOverallCostId { get; set; }
+        [Display(Name ="Material Cost")]
         public decimal MaterialCost { get; set; }
-        public decimal LaborCost { get; set; }
+        [Display(Name ="Direct labour Cost")]
+        public decimal LabourCost { get; set; }
+        [Display(Name ="OverHead Cost")]
         public decimal OverHeadCost { get; set; }
-        [Required]
-        public decimal T { get; set; }
-        [Display(Name = "Marginal Cost")]
-        public decimal MarginalCost { get; set; }
-        [Required]
-        public decimal NBT { get; set; }
-        [Display(Name = "Tin Percent")]
-        public decimal TInpercent { get; set; }
-        [Required]
-        public decimal GT { get; set; }
-        public decimal Graphic { get; set; }
-        [Required]
-        public decimal EstimatedNetPrice { get; set; }
+        [Display(Name = "Manuf. Cost")]
+        public decimal ManufacturingCost { get; set; }
+        [Display(Name = "Administrative Cost")]
+        public decimal AdministrativeCost { get; set; }
+        [Display(Name ="Total Cost")]
+        public decimal GrandTotalCost { get; set; }
+        [Display(Name = "Profit Margin")]
+        public decimal ProfitMargin { get; set; }
+        [Display(Name = "Final Price")]
+        public decimal FinalPriceIncludingProfit { get; set; }
         public int FurnitureEstimationId { get; set; }
         public FurnitureEstimationForm Estimation { get; set; }
     }

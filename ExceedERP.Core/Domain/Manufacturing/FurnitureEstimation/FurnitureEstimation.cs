@@ -31,8 +31,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public string CheckedBy { get; set; }
         public string ApprovedBy { get; set; }
         public bool IsApproved { get; set; }
-        public virtual ICollection<FurnitureMaterialCost> MaterialCosts { get; set; } = new List<FurnitureMaterialCost>();
-        public virtual ICollection<DirectLaborCost> LaborCosts { get; set; } = new List<DirectLaborCost>();
+        [NotMapped]
+        public bool IsCalculated { get; set; }
+
         public object EstimationId { get; set; }
     }
     
@@ -48,9 +49,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Required]
         [Display(Name ="Category")]
         public int FurnitureCategoryId { get; set; }
-        public FurnitureCategory Category { get; set; }
+        
         public int FurnitureEstimationId { get; set; }
-        public FurnitureEstimationForm Estimation { get; set; }
+       
         [Required]
         [Display(Name = "Total Working Time")]
         public decimal WorkingTime { get; set; }
@@ -58,6 +59,8 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal CostPerHour { get; set; }
         [ReadOnly(true)]
         public decimal TotalCost { get; set; }
+        [Display(Name ="Task Category")]
+        public int TaskCategoryId { get; set; }
     }
 
    
@@ -66,6 +69,6 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public int FurnitureOverHeadCostId { get; set; }
         public decimal OverHeadCost { get; set; }
         public int FurnitureEstimationId { get; set; }
-        public FurnitureEstimationForm Estimation { get; set; }
+        
     }
 }

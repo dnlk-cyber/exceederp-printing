@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -27,8 +27,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         public ActionResult DirectLaborCosts_Read([DataSourceRequest]DataSourceRequest request, int? estimationFormId)
         {
-            IQueryable<Core.Domain.Manufacturing.FurnitureEstimation.DirectLaborCost> laborcosts = db.DirectLaborCosts.Where(q=>q.FurnitureEstimationId== estimationFormId).OrderByDescending(a => a.DirectLaborCostId);
-            DataSourceResult result = laborcosts.ToDataSourceResult(request, laborCost => new {
+            IQueryable<Core.Domain.Manufacturing.FurnitureEstimation.DirectLaborCost> laborcosts = db.DirectLaborCosts.Where(q => q.FurnitureEstimationId == estimationFormId).OrderByDescending(a => a.DirectLaborCostId);
+            DataSourceResult result = laborcosts.ToDataSourceResult(request, laborCost => new
+            {
                 DirectLaborCostId = laborCost.DirectLaborCostId,
                 FurnitureCostEstimationId = laborCost.FurnitureEstimationId,
                 FurnitureCategoryId = laborCost.FurnitureCategoryId,
@@ -36,70 +37,58 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 CostPerHour = laborCost.CostPerHour,
                 TotalCost = laborCost.TotalCost,
                 DateCreated = laborCost.DateCreated,
-                LastModified = laborCost.LastModified
+                LastModified = laborCost.LastModified,
+
             });
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult DirectLaborCosts_Create([DataSourceRequest]DataSourceRequest request, DirectLaborCost laborCost,  int parentId)
+        public ActionResult DirectLaborCosts_Create([DataSourceRequest]DataSourceRequest request, DirectLaborCost labourCost, int parentId)
         {
             if (ModelState.IsValid)
             {
-                var costperHr = db.PrintingCriteriaCatagorys.Find(laborCost.FurnitureCategoryId);
-                laborCost.FurnitureEstimationId = parentId;
-                laborCost.CostPerHour = costperHr != null ? laborCost.CostPerHour : 0;
-                laborCost.TotalCost = laborCost.WorkingTime * laborCost.CostPerHour;
-                var entity = GetMappedObject(laborCost);
-                db.DirectLaborCosts.Add(entity);
+                var taskCategory = db.ManifucturingTaskCategories.Find(labourCost.TaskCategoryId);
+                labourCost.CostPerHour = taskCategory.HourRate;
+                labourCost.TotalCost = labourCost.CostPerHour * labourCost.WorkingTime;
+                labourCost.FurnitureEstimationId = parentId;
+                db.DirectLaborCosts.Attach(labourCost);
+                db.DirectLaborCosts.Add(labourCost);
                 db.SaveChanges();
-                laborCost.DirectLaborCostId = entity.DirectLaborCostId;
-                 var estimation = new UpdateFurnitureOverallCost();
-                   estimation.update(parentId);
-
             }
-        
 
-            return Json(new[] { laborCost }.ToDataSourceResult(request, ModelState));
+
+            return Json(new[] { labourCost }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult DirectLaborCosts_Update([DataSourceRequest]DataSourceRequest request, DirectLaborCost laborCost)
+        public ActionResult DirectLaborCosts_Update([DataSourceRequest]DataSourceRequest request, DirectLaborCost labourCost)
         {
+            var taskCategory = db.ManifucturingTaskCategories.Find(labourCost.TaskCategoryId);
+            if (taskCategory == null) ModelState.AddModelError(string.Empty, "Task category not found");
             if (ModelState.IsValid)
             {
-                var costperHr = db.PrintingCriteriaCatagorys.Find(laborCost.FurnitureCategoryId);
-                laborCost.CostPerHour = costperHr != null ? laborCost.CostPerHour : 0;
-                laborCost.TotalCost = laborCost.WorkingTime * laborCost.CostPerHour;
-                var entity = GetMappedObject(laborCost);
-                db.DirectLaborCosts.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                labourCost.CostPerHour = taskCategory.HourRate;
+                labourCost.TotalCost = labourCost.CostPerHour * labourCost.WorkingTime;
+                db.DirectLaborCosts.Attach(labourCost);
+                db.Entry(labourCost).State = EntityState.Modified;
                 db.SaveChanges();
-                var estimation = new UpdateFurnitureOverallCost();
-                estimation.update(laborCost.FurnitureEstimationId);
             }
 
-            return Json(new[] { laborCost }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { labourCost }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult DirectLaborCosts_Destroy([DataSourceRequest]DataSourceRequest request, DirectLaborCost laborCost)
+        public ActionResult DirectLaborCosts_Destroy([DataSourceRequest]DataSourceRequest request, DirectLaborCost labourCost)
         {
 
-            if (ModelState.IsValid)
-            {
-                var entity = GetMappedObject(laborCost);
-                db.DirectLaborCosts.Attach(entity);
-                db.DirectLaborCosts.Remove(entity);
-                db.SaveChanges();
-                var estimation = new UpdateFurnitureOverallCost();
-                estimation.update(laborCost.FurnitureEstimationId);
-            }
+            var directLabourCost = db.DirectLaborCosts.Find(labourCost.DirectLaborCostId);
+            db.DirectLaborCosts.Remove(directLabourCost);
+            db.SaveChanges();
 
-            return Json(new[] { laborCost }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { labourCost }.ToDataSourceResult(request, ModelState));
         }
         private DirectLaborCost GetMappedObject(DirectLaborCost laborCost)
         {
-            
             var entity = new DirectLaborCost
             {
                 DirectLaborCostId = laborCost.DirectLaborCostId,
@@ -109,8 +98,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 CostPerHour = laborCost.CostPerHour,
                 TotalCost = laborCost.TotalCost,
                 DateCreated = laborCost.DateCreated,
-                LastModified = laborCost.LastModified
-
+                LastModified = laborCost.LastModified,
+                TaskCategoryId = laborCost.TaskCategoryId
             };
             return entity;
         }

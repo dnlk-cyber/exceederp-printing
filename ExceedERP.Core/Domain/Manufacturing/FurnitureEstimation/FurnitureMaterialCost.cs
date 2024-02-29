@@ -24,6 +24,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public string InventoryId { get; set; }
         public int? JobId { get; set; }
         public string StoreCode { get; set; }
+
+        public string UnitOfMeasurment { get; set; }
+
         [Required]
         public decimal Quantity { get; set; }
         [Required]

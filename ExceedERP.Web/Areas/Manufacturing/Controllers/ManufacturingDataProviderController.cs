@@ -57,5 +57,27 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetUoM()
+        {
+            var unitOfm = db.UoMs.AsQueryable();
+            return Json(unitOfm.Select(i => new
+            {
+                UoMName = i.UoMName,
+                Value = i.UoMName
+            })
+            , JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetTaskCategory()
+        {
+            var taskCategory = db.ManifucturingTaskCategories.AsQueryable();
+            var result = taskCategory.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.ManifucturingTaskCategoryId
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -21,13 +21,14 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-     
+
 
         public ActionResult FurnitureMaterialCosts_Read([DataSourceRequest]DataSourceRequest request, int estimationFormId)
-            
+
         {
-            IQueryable<FurnitureMaterialCost> materialcosts = db.FurnitureMaterialCosts.Where(q=>q.FurnitureEstimationId == estimationFormId).OrderByDescending(a => a.FurnitureMaterialCostId);
-            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
+            IQueryable<FurnitureMaterialCost> materialcosts = db.FurnitureMaterialCosts.Where(q => q.FurnitureEstimationId == estimationFormId).OrderByDescending(a => a.FurnitureMaterialCostId);
+            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new
+            {
                 FurnitureMaterialCostId = materialCost.FurnitureMaterialCostId,
                 FurnitureEstimationId = materialCost.FurnitureEstimationId,
                 InventoryCategoryId = materialCost.InventoryCategoryId,
@@ -46,7 +47,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             //var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
             IQueryable<FurnitureMaterialCost> materialcosts = db.FurnitureMaterialCosts.Where(q => q.JobId == id);
-            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
+            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new
+            {
                 FurnitureMaterialCostId = materialCost.FurnitureMaterialCostId,
                 FurnitureEstimationId = materialCost.FurnitureEstimationId,
                 InventoryCategoryId = materialCost.InventoryCategoryId,
@@ -68,12 +70,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
             if (ModelState.IsValid)
             {
-                var invs = db.FurnitureMaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId&&q.JobId==parentId).ToList();
+                var invs = db.FurnitureMaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId && q.JobId == parentId).ToList();
                 if (invs.Any())
                 {
                     ModelState.AddModelError("403", "Inventory already available");
                 }
-                materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
+                materialCost.TotalPrice = materialCost.UnitPrice * materialCost.Quantity;
                 var entity = new FurnitureMaterialCost
                 {
                     FurnitureMaterialCostId = materialCost.FurnitureMaterialCostId,
@@ -84,17 +86,19 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     Quantity = materialCost.Quantity,
                     StoreCode = materialCost.StoreCode,
                     UnitPrice = materialCost.UnitPrice,
-                    TotalPrice = materialCost.TotalPrice
+                    TotalPrice = materialCost.TotalPrice,
+                    UnitOfMeasurment = materialCost.UnitOfMeasurment,
+
                 };
 
                 db.FurnitureMaterialCosts.Add(entity);
                 db.SaveChanges();
-                var estimation = new UpdateFurnitureOverallCost();
-                estimation.update(parentId);
+                //var estimation = new UpdateFurnitureOverallCost();
+                //estimation.update(parentId);
 
             }
 
-            
+
             return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
         }
         public ActionResult JobMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, FurnitureMaterialCost materialCost, int id)
@@ -104,13 +108,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             {
                 int estId = 0;
                 var job = db.Jobs.Find(id);
-                if(job != null)
+                if (job != null)
                 {
                     var performa = db.Proformas.Find(job.ProformaId);
-                    if(performa != null)
+                    if (performa != null)
                     {
                         estId = (int)performa.EstimationFormId;
-                       // var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
+                        // var estId = (int)db.Proformas.Find(db.Jobs.Find(id)?.ProformaId)?.EstimationFormId;
                         var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId && q.EstimationFormId == performa.EstimationFormId).ToList();
                         if (invs.Any())
                         {
@@ -118,7 +122,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                         }
                     }
                 }
-                
+
                 materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
                 var entity = new FurnitureMaterialCost
                 {
@@ -135,12 +139,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
                 db.FurnitureMaterialCosts.Add(entity);
                 db.SaveChanges();
-                var estimation = new FurnitureUpdateOverallCost();
-                estimation.update(estId);
+                //var estimation = new FurnitureUpdateOverallCost();
+                //estimation.update(estId);
 
             }
 
-            
+
             return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
         }
 
@@ -153,7 +157,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             if (ModelState.IsValid)
             {
-                materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
+                materialCost.TotalPrice = materialCost.Quantity * materialCost.UnitPrice;
 
                 var entity = new FurnitureMaterialCost
                 {
@@ -164,14 +168,14 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     StoreCode = materialCost.StoreCode,
                     Quantity = materialCost.Quantity,
                     UnitPrice = materialCost.UnitPrice,
-                    TotalPrice = materialCost.TotalPrice
+                    TotalPrice = materialCost.TotalPrice,
+                    UnitOfMeasurment = materialCost.UnitOfMeasurment
                 };
 
                 db.FurnitureMaterialCosts.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-                var estimation = new UpdateFurnitureOverallCost();
-                estimation.update(materialCost.FurnitureEstimationId);
+
             }
 
             return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
@@ -181,29 +185,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         public ActionResult FurnitureMaterialCosts_Destroy([DataSourceRequest]DataSourceRequest request, FurnitureMaterialCost materialCost)
         {
 
-            if (ModelState.IsValid)
-            {
-                var entity = new FurnitureMaterialCost
-                {
-                    FurnitureMaterialCostId = materialCost.FurnitureMaterialCostId,
-                    InventoryCategoryId = materialCost.InventoryCategoryId,
-                    InventoryId = materialCost.InventoryId,
-                    FurnitureEstimationId = materialCost.FurnitureEstimationId,
-                    StoreCode = materialCost.StoreCode,
-                    Quantity = materialCost.Quantity,
-                    UnitPrice = materialCost.UnitPrice,
-                    TotalPrice = materialCost.TotalPrice
-
-                };
-
-                db.FurnitureMaterialCosts.Attach(entity);
-                db.FurnitureMaterialCosts.Remove(entity);
-                db.SaveChanges();
-                var estimation = new UpdateFurnitureOverallCost();
-                estimation.update(materialCost.FurnitureEstimationId);
-
-
-            }
+            var furnitureMaterialCost = db.FurnitureMaterialCosts.Find(materialCost.FurnitureMaterialCostId);
+            db.FurnitureMaterialCosts.Remove(furnitureMaterialCost);
+            db.SaveChanges();
 
             return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
         }

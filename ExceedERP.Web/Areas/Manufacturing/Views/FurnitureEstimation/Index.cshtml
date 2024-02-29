@@ -73,9 +73,9 @@
                     .Columns(columns =>
                     {
                         columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
-                        columns.Bound(c => c.StoreCode).Title("Store").Width(100);
-                        columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Categorys"], "Code", "Name").Width(90);
-                        columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Inventories"], "Code", "Name") .Width(90);
+                        columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
+                        columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100);
+                        
                         columns.Bound(c => c.Quantity).Width(80);
                         columns.Bound(c => c.UnitPrice).Width(80);
                         columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
@@ -176,28 +176,30 @@
                 </text>);
 
             itemn.Add().Text("Overall Costs").Content(@<text>
-            #if(IsApproved){#
+            @*#if(IsApproved){#
               <a href='@Url.Action("PrintingEstimationForms", "PrintingEstimationReport")/#=FurnitureEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-            #}#
+            #}#*@
+           
+            <a onclick='return calculateOverallCost("#=FurnitureEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureOverallCost>()
                 .Name("overall_costs_#=FurnitureEstimationId#")
                 .Columns(columns =>
                 {
-                    columns.Bound(c => c.MaterialCost).Title("M.C").Width(80);
-                    columns.Bound(c => c.LaborCost).Title("L.C").Width(80);
-                    columns.Bound(c => c.OverHeadCost).Title("O.H(%)").Width(80).EditorTemplateName("NumericTextBox");
-                    columns.Bound(c => c.T).Width(80);
-                    columns.Bound(c => c.MarginalCost).Title("M(%)").EditorTemplateName("NumericTextBox").Width(80);
-                    columns.Bound(c => c.NBT).Title("N.B.T").Width(80);
-                    columns.Bound(c => c.TInpercent).Title("T(%)").EditorTemplateName("NumericTextBox").Width(80);
-                    columns.Bound(c => c.GT).Title("G.T").Width(80);
-                    columns.Bound(c => c.Graphic).EditorTemplateName("NumericTextBox").Width(80);
-                    columns.Bound(c => c.EstimatedNetPrice).Width(80);
+                    columns.Bound(c => c.MaterialCost);
+                    columns.Bound(c => c.LabourCost);
+                    columns.Bound(c => c.OverHeadCost);
+                    columns.Bound(c => c.ManufacturingCost);
+                    columns.Bound(c => c.AdministrativeCost);
+                    columns.Bound(c => c.GrandTotalCost);
+                    columns.Bound(c => c.ProfitMargin);
+                    columns.Bound(c => c.FinalPriceIncludingProfit);
+                    
                     columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
                 })
 
                     .Editable(editable => editable.Mode(GridEditMode.InLine))
                     .Events(ev => ev.DataBound("onChildDataBound"))
+                    .Events(ev => ev.Edit("onEditOverHeadCost"))
                     .DataSource(dataSource => dataSource
                         .Ajax()
                         //.ServerOperation(false)
@@ -207,8 +209,8 @@
                         .Model(model =>
                         {
                             model.Id(p => p.FurnitureOverallCostId);
-                            //model.Field(p => p.LaborCost).Editable(false);
-                            //model.Field(p => p.MaterialCost).Editable(false);
+                            model.Field(p => p.LabourCost).Editable(false);
+                            model.Field(p => p.MaterialCost).Editable(false);
                             model.Field(p => p.FurnitureOverallCostId).Editable(false);
                         })
                         .Read(read => read.Action("FurnitureOverallCosts_Read", "FurnitureOverallCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
@@ -230,6 +232,25 @@
 
 
 <script>
+    function calculateOverallCost(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CalculateOverAllCost", "FurnitureOverallCosts", new { area = "Manufacturing" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
     function filterCategory() {
         return {
             text: $("#InventoryCategoryId").data("kendoDropDownList").filterInput.val(),
@@ -302,6 +323,12 @@
             }
 
         });
+        
+    }
+    function onEditOverHeadCost() {
+        $("#GrandTotalCost").prop('disabled', true);
+        $("#ManufacturingCost").prop('disabled', true);
+        $("#FinalPriceIncludingProfit").prop('disabled', true);
     }
     function selectInventory() {
         var productId = $("#InventoryId").val()
