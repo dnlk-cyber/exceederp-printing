@@ -17,47 +17,36 @@
         </div>*@
 
 
-    @*<div class="row">
-
-
-                <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Category Value</label>
-                <div class="col-sm-6">
-                    @(Html.Kendo().DropDownListFor(model => model.FurnitureCategoryId)
-                                        .Name("FurnitureCategoryId")
-                                        .ValuePrimitive(true)
-                                        .OptionLabel("Select Category...")
-                                        .DataTextField("Name")
-                                        .DataTextField("Name")
-                                        .DataValueField("FurnitureCategoryId")
-                                        .Filter("contains")
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetFurnitureCategory", "PrintingEstimationDataProvider", new { Area = "Printing" })
-                                           )
-                                            .ServerFiltering(false);
-                                        })
-
-                                        )
-                </div>
-        </div>*@
     <div class="row">
+        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Task Type</label>
+        <div class="col-sm-6">
+            @(Html.Kendo().DropDownListFor(m => m.TaskType)
+                     .OptionLabel("Task Type...")
+                     .DataTextField("Text")
+                     .DataValueField("Value")
 
+                     .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Setting.ManifucturingTaskType))
+                     )
+            )
+        </div>
+    </div>
+    
+    <div class="row">
 
         <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Task Category</label>
         <div class="col-sm-6">
             @(Html.Kendo().DropDownListFor(model => model.TaskCategoryId)
-
-                                                .ValuePrimitive(true)
-                                                .OptionLabel("Select task category...")
-                                                .DataTextField("Text")
-                                                .DataValueField("Value")
-                                                .Filter("contains")
-                                                .DataSource(dataSource =>
-                                                {
-                                                    dataSource.Read(read => read.Action("GetTaskCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" })
-                                                   )
-                                                    .ServerFiltering(false);
-                                                })
+                .ValuePrimitive(true)
+                .OptionLabel("Select task category...")
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetTaskCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterTaskCategory")
+                    )
+                    .ServerFiltering(true);
+                }).CascadeFrom("TaskType")
 
             )
         </div>
@@ -74,23 +63,23 @@
     @*<div class="row">
 
 
-        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Cost PerHour:</label>
+            <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Cost PerHour:</label>
 
-        <div class="col-sm-6">
+            <div class="col-sm-6">
 
-            @(Html.Kendo().NumericTextBoxFor(model => model.CostPerHour))
-        </div>
-    </div>*@
+                @(Html.Kendo().NumericTextBoxFor(model => model.CostPerHour))
+            </div>
+        </div>*@
     @*<div class="row">
 
 
-        <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Total Cost:</label>
+            <label for="Material" class="control-label control-label col-sm-3 text-right text-right">Total Cost:</label>
 
-        <div class="col-sm-6">
+            <div class="col-sm-6">
 
-            @(Html.Kendo().NumericTextBoxFor(model => model.TotalCost))
-        </div>
-    </div>*@
+                @(Html.Kendo().NumericTextBoxFor(model => model.TotalCost))
+            </div>
+        </div>*@
 
 
 

@@ -73,9 +73,11 @@
                     .Columns(columns =>
                     {
                         columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
+                        columns.Bound(c => c.TaskType).Width(90).EditorTemplateName("TaskTypeTemplate");
+                        columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialCategoryTemplate");
+
                         columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
-                        columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100);
-                        
+
                         columns.Bound(c => c.Quantity).Width(80);
                         columns.Bound(c => c.UnitPrice).Width(80);
                         columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
@@ -89,9 +91,10 @@
 
                     })
                     .Events(ev => ev.DataBound("onChildDataBound"))
-                    .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                    .TemplateName("FurnitureMaterialCost")
-                    .Window(w => w.Title("Material Cost Form").Width(500)))
+                    .Events(ev => ev.Edit("onEditMaterialCost"))
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    //.TemplateName("FurnitureMaterialCost")
+                    //.Window(w => w.Title("Material Cost Form").Width(500)))
                     .Pageable(pageable => pageable
                     .Refresh(true)
                     .PageSizes(true)
@@ -487,7 +490,16 @@
         
 
     }
-
+    function onEditMaterialCost() {
+        $("#UnitOfMeasurment").prop('disabled', true);
+        $("#UnitPrice").prop('disabled', true);
+        
+    }
+    function filterTaskCategory() {
+        return {
+            taskType: $("#TaskType").val()
+        }
+    }
 </script>
 
 <script type="text/javascript">

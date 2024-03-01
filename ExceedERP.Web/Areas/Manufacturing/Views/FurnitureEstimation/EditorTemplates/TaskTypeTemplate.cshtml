@@ -1,0 +1,8 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                 .OptionLabel("Task Type...")
+                 .DataTextField("Text")
+                 .DataValueField("Value")
+
+                 .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Setting.ManifucturingTaskType))
+                 )
+)

@@ -21,14 +21,15 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 Text = s.Name,
                 Value = s.ItemCategoryCode
             });
-            
+
             return View();
         }
 
         public ActionResult ManufacturingMaterialCategories_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ManufacturingMaterialCategory> manufacturingmaterialcategories = db.ManufacturingMaterialCategories;
-            DataSourceResult result = manufacturingmaterialcategories.ToDataSourceResult(request, manufacturingMaterialCategory => new {
+            DataSourceResult result = manufacturingmaterialcategories.ToDataSourceResult(request, manufacturingMaterialCategory => new
+            {
                 ManufacturingMaterialCategoryId = manufacturingMaterialCategory.ManufacturingMaterialCategoryId,
                 InventoryCategoryCode = manufacturingMaterialCategory.InventoryCategoryCode,
                 ManufacturingCategory = manufacturingMaterialCategory.ManufacturingCategory,
@@ -58,6 +59,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
                 db.ManufacturingMaterialCategories.Add(entity);
                 db.SaveChanges();
+                GenerateManufactureCategoryDetail(entity);
                 manufacturingMaterialCategory.ManufacturingMaterialCategoryId = entity.ManufacturingMaterialCategoryId;
             }
 
@@ -110,6 +112,29 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }
 
             return Json(new[] { manufacturingMaterialCategory }.ToDataSourceResult(request, ModelState));
+        }
+
+        private void GenerateManufactureCategoryDetail(ManufacturingMaterialCategory materialCategory)
+        {
+            var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == materialCategory.InventoryCategoryCode);
+
+            var items = db.InventoryItems.Where(x => x.ItemCategoryCode == itemCategory.ItemCategoryCode).ToList();
+            foreach (var item in items)
+            {
+                var entity = new ManufacturingMaterialCategoryDetail
+                {
+                    ItemName = item.Name,
+                    ItemCode = item.ItemCode,
+                    UnitOfMeasurement = item.UoMName,
+                    InventorySubCategoryCode = item.SubCategoryCode,
+                    UnitPrice = 0,
+                    IsActive = true,
+                    ManufacturingMaterialCategoryId = materialCategory.ManufacturingMaterialCategoryId
+                };
+                db.ManufacturingMaterialCategoryDetails.Add(entity);
+                db.SaveChanges();
+            }
+
         }
 
         protected override void Dispose(bool disposing)

@@ -6,7 +6,7 @@
 
     @Html.HiddenFor(model => model.FurnitureMaterialCostId)
 
-    @*<div class="form-group row">
+    <div class="form-group row">
         <label for="cat" class="control-label control-label col-sm-2 text-right text-right">Type:</label>
 
         <div class="col-sm-8">
@@ -19,12 +19,12 @@
              )
             )
         </div>
-    </div>*@
+    </div>
 
     <div class="row">
         <label for="cat" class="control-label control-label col-sm-2 text-right text-right">Category:</label>
         <div class="col-sm-8">
-            @(Html.Kendo().DropDownListFor(m => m.InventoryCategoryId)
+            @(Html.Kendo().DropDownListFor(m => m.ManufacturingMaterialCategoryId)
                 .OptionLabel(Resources.Select)
                 .DataTextField("Text")
                 .DataValueField("Value")
@@ -42,7 +42,7 @@
     </div>
 
 
-    <div class="form-group row">
+    @*<div class="form-group row">
         <label for="Product" class="control-label col-sm-2 text-right">Unit of measurement:</label>
         <div class="col-sm-8">
             @(Html.Kendo().DropDownListFor(m => m.UnitOfMeasurment)
@@ -59,7 +59,7 @@
 
             )
         </div>
-    </div>
+    </div>*@
 
     @*<div class="form-group row">
         <label for="Balance" class="control-label col-sm-2 text-right col-form-label">Balance:</label>
@@ -80,22 +80,22 @@
     </div>
 
 
-    <div class="form-group row">
+    @*<div class="form-group row">
         <label for="UnitPrice" class="control-label col-sm-2 text-right col-form-label">Unit Price:</label>
         <div class="col-sm-8">
             @(Html.Kendo().TextBoxFor(model => model.UnitPrice)
                                           .HtmlAttributes(new { style = "color:red;", onchange = "onChange(this)"/*, @readonly = "readonly" */}))
         </div>
-    </div>
+    </div>*@
 
 
-    <div class="form-group row">
+    @*<div class="form-group row">
         <label for="TotalPrice" class="control-label col-sm-2 text-right col-form-label">Total Price:</label>
         <div class="col-sm-8">
             @(Html.Kendo().TextBoxFor(model => model.TotalPrice)
 .HtmlAttributes(new { style = "color:red;", @readonly = "readonly" }) )
         </div>
-    </div>
+    </div>*@
 
 </form>
 

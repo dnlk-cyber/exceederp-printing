@@ -65,14 +65,22 @@
               })
               .ToolBar(toolbar =>
               {
-                  toolbar.Create();
+                  //toolbar.Create();
               })
               .Editable(editable => editable.Mode(GridEditMode.InLine))
               .Filterable()
               .Scrollable()
               .DataSource(dataSource => dataSource
                   .Ajax()
-                  .Model(model => model.Id(p => p.ManufacturingMaterialCategoryDetailId))
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ManufacturingMaterialCategoryDetailId);
+                      model.Field(p => p.InventorySubCategoryCode).Editable(false);
+                      model.Field(p => p.ItemName).Editable(false);
+                      model.Field(p => p.ItemCode).Editable(false);
+                      model.Field(p => p.UnitOfMeasurement).Editable(false);
+
+                  })
                   .Read(read => read.Action("ManufacturingMaterialCategoryDetails_Read", "ManufacturingMaterialCategoryDetail", new { id = "#=ManufacturingMaterialCategoryId#" }))
                   .Create(create => create.Action("ManufacturingMaterialCategoryDetails_Create", "ManufacturingMaterialCategoryDetail", new { id = "#=ManufacturingMaterialCategoryId#" }))
                   .Update(update => update.Action("ManufacturingMaterialCategoryDetails_Update", "ManufacturingMaterialCategoryDetail"))

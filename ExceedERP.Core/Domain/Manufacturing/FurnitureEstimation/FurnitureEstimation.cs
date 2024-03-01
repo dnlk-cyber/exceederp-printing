@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,6 +62,8 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal TotalCost { get; set; }
         [Display(Name ="Task Category")]
         public int TaskCategoryId { get; set; }
+        [Display(Name ="Task Type")]
+        public ManifucturingTaskType TaskType { get; set; }
     }
 
    

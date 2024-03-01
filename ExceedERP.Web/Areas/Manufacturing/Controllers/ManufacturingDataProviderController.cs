@@ -1,4 +1,5 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.Manufacturing.Setting;
+using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,9 +70,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             , JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetTaskCategory()
+        public JsonResult GetTaskCategory(ManifucturingTaskType taskType)
         {
-            var taskCategory = db.ManifucturingTaskCategories.AsQueryable();
+            var taskCategory = db.ManifucturingTaskCategories.Where(x => x.Type == taskType).AsQueryable();
             var result = taskCategory.Select(s => new
             {
                 Text = s.Name,

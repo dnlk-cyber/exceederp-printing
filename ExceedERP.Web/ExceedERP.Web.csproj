@@ -6573,6 +6573,8 @@
     <Content Include="Areas\Manufacturing\Views\ManufucturingTaskCategory\EditorTemplates\ManufacturingTypeTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\ManufucturingTaskCategory\Index.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\UnitOfMeasurement.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\MaterialCategoryTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\TaskTypeTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

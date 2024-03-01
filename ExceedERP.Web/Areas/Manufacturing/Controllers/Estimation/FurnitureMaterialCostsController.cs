@@ -27,7 +27,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         {
             IQueryable<FurnitureMaterialCost> materialcosts = db.FurnitureMaterialCosts.Where(q => q.FurnitureEstimationId == estimationFormId).OrderByDescending(a => a.FurnitureMaterialCostId);
-            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new
+            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new FurnitureMaterialCost
             {
                 FurnitureMaterialCostId = materialCost.FurnitureMaterialCostId,
                 FurnitureEstimationId = materialCost.FurnitureEstimationId,
@@ -38,7 +38,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 UnitPrice = materialCost.UnitPrice,
                 TotalPrice = materialCost.TotalPrice,
                 DateCreated = materialCost.DateCreated,
-                LastModified = materialCost.LastModified
+                LastModified = materialCost.LastModified,
+                UnitOfMeasurment = materialCost.UnitOfMeasurment,
+                ManufacturingMaterialCategoryId = materialCost.ManufacturingMaterialCategoryId,
+                TaskType = materialCost.TaskType
             });
 
             return Json(result);
@@ -75,24 +78,28 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 {
                     ModelState.AddModelError("403", "Inventory already available");
                 }
-                materialCost.TotalPrice = materialCost.UnitPrice * materialCost.Quantity;
-                var entity = new FurnitureMaterialCost
+
+                //var materialCategory = db.ManufacturingMaterialCategories.FirstOrDefault(x => x.ManufacturingMaterialCategoryId == materialCost.ManufacturingMaterialCategoryId);
+                var materialCategoryDetails = db.ManufacturingMaterialCategoryDetails.Where(x => x.ManufacturingMaterialCategoryId == materialCost.ManufacturingMaterialCategoryId).ToList();
+                foreach (var item in materialCategoryDetails)
                 {
-                    FurnitureMaterialCostId = materialCost.FurnitureMaterialCostId,
-                    FurnitureEstimationId = parentId,
-                    JobId = parentId,
-                    InventoryCategoryId = materialCost.InventoryCategoryId,
-                    InventoryId = materialCost.InventoryId,
-                    Quantity = materialCost.Quantity,
-                    StoreCode = materialCost.StoreCode,
-                    UnitPrice = materialCost.UnitPrice,
-                    TotalPrice = materialCost.TotalPrice,
-                    UnitOfMeasurment = materialCost.UnitOfMeasurment,
+                    var entity = new FurnitureMaterialCost
+                    {
+                        
+                        FurnitureEstimationId = parentId,
+                        ManufacturingMaterialCategoryId = materialCost.ManufacturingMaterialCategoryId,                        
+                        Quantity = materialCost.Quantity,                        
+                        UnitPrice = item.UnitPrice,                       
+                        UnitOfMeasurment = item.UnitOfMeasurement,
+                        
+                    };
+                    entity.TotalPrice = entity.UnitPrice * entity.Quantity;
+                    db.FurnitureMaterialCosts.Add(entity);
+                    db.SaveChanges();
 
-                };
-
-                db.FurnitureMaterialCosts.Add(entity);
-                db.SaveChanges();
+                }
+               
+                
                 //var estimation = new UpdateFurnitureOverallCost();
                 //estimation.update(parentId);
 
@@ -169,7 +176,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     Quantity = materialCost.Quantity,
                     UnitPrice = materialCost.UnitPrice,
                     TotalPrice = materialCost.TotalPrice,
-                    UnitOfMeasurment = materialCost.UnitOfMeasurment
+                    UnitOfMeasurment = materialCost.UnitOfMeasurment,
+                    ManufacturingMaterialCategoryId = materialCost.ManufacturingMaterialCategoryId,
+                    TaskType = materialCost.TaskType
                 };
 
                 db.FurnitureMaterialCosts.Attach(entity);
