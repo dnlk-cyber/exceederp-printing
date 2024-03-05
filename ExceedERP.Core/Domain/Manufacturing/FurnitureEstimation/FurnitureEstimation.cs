@@ -63,7 +63,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Display(Name ="Task Category")]
         public int TaskCategoryId { get; set; }
         [Display(Name ="Task Type")]
-        public ManifucturingTaskType TaskType { get; set; }
+        public WorkShop TaskType { get; set; }
     }
 
    

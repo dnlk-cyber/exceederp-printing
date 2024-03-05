@@ -70,13 +70,41 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             , JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetTaskCategory(ManifucturingTaskType taskType)
+        public JsonResult GetTaskCategory(WorkShop taskType)
         {
             var taskCategory = db.ManifucturingTaskCategories.Where(x => x.Type == taskType).AsQueryable();
             var result = taskCategory.Select(s => new
             {
                 Text = s.Name,
                 Value = s.ManifucturingTaskCategoryId
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetFurnitureJobCategory(string text)
+        {
+            var furnitureJobCategories = db.FurnitureJobCategories.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                furnitureJobCategories = furnitureJobCategories.Where(x => x.JobName.Contains(text)).AsQueryable();
+            }
+            var result = furnitureJobCategories.Select(s => new
+            {
+                Value = s.FurnitureJobCategoryId,
+                Text = s.JobName
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetACustomers(string text)
+        {
+            var customers = db.OrganizationCustomers.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                customers = customers.Where(x => x.TradeName.Contains(text)).AsQueryable();
+            }
+            var result = customers.Select(s => new {
+                Value = s.OrganizationCustomerID,
+                Text = s.TradeName
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

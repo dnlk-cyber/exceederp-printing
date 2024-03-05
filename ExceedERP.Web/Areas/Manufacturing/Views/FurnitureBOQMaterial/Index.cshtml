@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBOQMaterial>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ItemCode);
+        columns.Bound(c => c.UnitOfMeasurement);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.WorkshopType);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable(filterable => filterable.Mode(GridFilterMode.Row))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureBOQMaterialId))
+          .Read(read => read.Action("FurnitureBOQMaterials_Read", "FurnitureBOQMaterial"))
+          .Create(create => create.Action("FurnitureBOQMaterials_Create", "FurnitureBOQMaterial"))
+          .Update(update => update.Action("FurnitureBOQMaterials_Update", "FurnitureBOQMaterial"))
+          .Destroy(destroy => destroy.Action("FurnitureBOQMaterials_Destroy", "FurnitureBOQMaterial"))
+      )
+)

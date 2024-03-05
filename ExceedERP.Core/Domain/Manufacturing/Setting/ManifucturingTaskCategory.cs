@@ -11,7 +11,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
     public class ManifucturingTaskCategory
     {
         public int ManifucturingTaskCategoryId { get; set; }
-        public ManifucturingTaskType Type { get; set; }
+        public WorkShop Type { get; set; }
         public string Name { get; set; }
         [Display(Name="Standard Hour")]
         public decimal StandardHour { get; set; }
@@ -19,7 +19,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
         public decimal HourRate { get; set; }
 
     }
-    public enum ManifucturingTaskType
+    public enum WorkShop
     {
         Metal,
         WoodWork,

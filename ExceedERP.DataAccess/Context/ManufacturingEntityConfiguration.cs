@@ -13,6 +13,30 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    class FurnitureBillOfQuantityEntityConfiguration : EntityTypeConfiguration<FurnitureBillOfQuantity>
+    {
+        public FurnitureBillOfQuantityEntityConfiguration()
+        {
+            this.ToTable("FurnitureBillOfQuantity", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBillOfQuantityId);
+        }
+    }
+    class FurnitureBOQMaterialEntityTypeConfiguration : EntityTypeConfiguration<FurnitureBOQMaterial>
+    {
+        public FurnitureBOQMaterialEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureBOQMaterial", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBOQMaterialId);
+        }
+    }
+    class FurnitureBOQLaborEntityTypeConfiguration : EntityTypeConfiguration<FurnitureBOQLabor>
+    {
+        public FurnitureBOQLaborEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureBOQLabor", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBOQLaborId);
+        }
+    }
     #region Furniture Estimation
 
 

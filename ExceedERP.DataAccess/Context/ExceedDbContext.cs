@@ -104,6 +104,7 @@ using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
+using ExceedERP.Core.Domain.Manufacturing;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1615,6 +1616,9 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP
+            modelBuilder.Configurations.Add(new FurnitureBillOfQuantityEntityConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureBOQMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureBOQLaborEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ManifucturingTaskCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryDetailEntityTypeConfiguration());
@@ -2141,6 +2145,9 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Production Follow UP
+        public DbSet<FurnitureBillOfQuantity> FurnitureBillOfQuantities { get; set; }
+        public DbSet<FurnitureBOQMaterial> FurnitureBOQMaterials { get; set; }
+        public DbSet<FurnitureBOQLabor> FurnitureBOQLabors { get; set; }
         public DbSet<ManifucturingTaskCategory> ManifucturingTaskCategories { get; set; }
         public DbSet<ManufacturingMaterialCategory> ManufacturingMaterialCategories { get; set; }
         public DbSet<ManufacturingMaterialCategoryDetail> ManufacturingMaterialCategoryDetails { get; set; }

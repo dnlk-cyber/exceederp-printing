@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBOQLabor>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.WorkShopType);
+        columns.Bound(c => c.NumberOfEmloyees);
+        columns.Bound(c => c.EstimatedHour);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable(filterable => filterable.Mode(GridFilterMode.Row))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureBOQLaborId))
+          .Read(read => read.Action("FurnitureBOQLabors_Read", "FurnitureBOQLabor"))
+          .Create(create => create.Action("FurnitureBOQLabors_Create", "FurnitureBOQLabor"))
+          .Update(update => update.Action("FurnitureBOQLabors_Update", "FurnitureBOQLabor"))
+          .Destroy(destroy => destroy.Action("FurnitureBOQLabors_Destroy", "FurnitureBOQLabor"))
+      )
+)

@@ -1030,6 +1030,7 @@
     <Compile Include="Domain\Inventory\StoreReturn.cs" />
     <Compile Include="Domain\Inventory\TemporaryGoodReceive.cs" />
     <Compile Include="Domain\Global\GlobalRuleValue.cs" />
+    <Compile Include="Domain\Manufacturing\FurnitureBillOfQuantity.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureCategory.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEnum.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEstimation.cs" />

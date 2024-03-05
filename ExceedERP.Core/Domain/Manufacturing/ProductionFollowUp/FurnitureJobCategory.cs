@@ -10,6 +10,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp
 {
     public class FurnitureJobCategory : TrackUserSettingOperation
     {
+        [Key]
         public int FurnitureJobCategoryId { get; set; }
         public string JobName { get; set; }
         public string JobCode { get; set; }

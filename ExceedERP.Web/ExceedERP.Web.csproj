@@ -1978,6 +1978,9 @@
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureOverallCostsController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurniturePrintingStepController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureStepController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureBillOfQuantityController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureBOQLaborController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureBOQMaterialController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\Common\FurnitureJobCostingDataProviderController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDailyLaborRateController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDeliveredJobController.cs" />
@@ -6575,6 +6578,10 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\UnitOfMeasurement.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\MaterialCategoryTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\TaskTypeTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBillOfQuantity\EditorTemplates\FurnitureBillOfQuantityTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBillOfQuantity\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBOQLabor\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBOQMaterial\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
