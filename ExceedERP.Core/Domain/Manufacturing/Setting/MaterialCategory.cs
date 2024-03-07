@@ -25,10 +25,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
         public bool IsActive { get; set; }
 
     }
-    public class ManufacturingMaterialCategoryDetail
+    public class ManufacturingMaterialCategoryItem
     {
         [Key]
-        public int ManufacturingMaterialCategoryDetailId { get; set; }
+        public int ManufacturingMaterialCategoryItemId { get; set; }
         [Display(Name ="Sub-Category Code")]
         public string InventorySubCategoryCode { get; set; }
         [Display(Name ="Item Name")]

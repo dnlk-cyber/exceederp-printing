@@ -51,7 +51,7 @@
 
 @helper Detail()
 {
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.ManufacturingMaterialCategoryDetail>()
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.ManufacturingMaterialCategoryItem>()
               .Name("grid_#=ManufacturingMaterialCategoryId#")
               .Columns(columns =>
               {
@@ -74,7 +74,7 @@
                   .Ajax()
                   .Model(model =>
                   {
-                      model.Id(p => p.ManufacturingMaterialCategoryDetailId);
+                      model.Id(p => p.ManufacturingMaterialCategoryItemId);
                       model.Field(p => p.InventorySubCategoryCode).Editable(false);
                       model.Field(p => p.ItemName).Editable(false);
                       model.Field(p => p.ItemCode).Editable(false);

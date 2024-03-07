@@ -1,37 +1,133 @@
 ﻿
-
 <label>Bill of Quantity</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBillOfQuantity>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-        columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
 
-        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
-        columns.Bound(c => c.Quantity);
-        columns.Bound(c => c.Size);
-        
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
-      .ToolBar(toolbar =>
-      {
-            toolbar.Create();
-      })
-      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureBillOfQuantityTemplate"))
-      .Pageable()
-      
-      .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
-      .Scrollable()
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Model(model => model.Id(p => p.FurnitureBillOfQuantityId))
-          .Read(read => read.Action("FurnitureBillOfQuantities_Read", "FurnitureBillOfQuantity"))
-          .Create(create => create.Action("FurnitureBillOfQuantities_Create", "FurnitureBillOfQuantity"))
-          .Update(update => update.Action("FurnitureBillOfQuantities_Update", "FurnitureBillOfQuantity"))
-          .Destroy(destroy => destroy.Action("FurnitureBillOfQuantities_Destroy", "FurnitureBillOfQuantity"))
-      )
+                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.Quantity);
+                          columns.Bound(c => c.Size);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text(" ");
+                              command.Custom("Check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                              command.Custom("Approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                              command.Destroy().Text(" ");
+
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureBillOfQuantityTemplate"))
+                      .Pageable()
+
+                      .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                          .Model(model => model.Id(p => p.FurnitureBillOfQuantityId))
+                          .Read(read => read.Action("FurnitureBillOfQuantities_Read", "FurnitureBillOfQuantity"))
+                          .Create(create => create.Action("FurnitureBillOfQuantities_Create", "FurnitureBillOfQuantity"))
+                          .Update(update => update.Action("FurnitureBillOfQuantities_Update", "FurnitureBillOfQuantity"))
+                          .Destroy(destroy => destroy.Action("FurnitureBillOfQuantities_Destroy", "FurnitureBillOfQuantity"))
+                      ).ClientDetailTemplateId("tabstrip")
 )
 
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                        .Name("grid_#=FurnitureBillOfQuantityId#")
+                                        .Items(item1 =>
+                                        {
+                                            item1.Add().Text("Material").Content(@<text>
+                                                @Material();
+                                            </text>);
+                                                    item1.Add().Text("Labor").Content(@<text>
+                                                        @Labor();
+                                                    </text>);
+                                                        }).ToClientTemplate())
+</script>
+
+@helper Material()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBOQMaterial>()
+                                      .Name("material_#=FurnitureBillOfQuantityId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.WorkshopType);
+                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
+                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
+                                          columns.Bound(c => c.UnitOfMeasurement);
+                                          columns.Bound(c => c.Quantity);
+                                          columns.Bound(c => c.Remark);
+
+
+                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Create();
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MaterialBOQTemplate"))
+                                      .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
+                                      .Scrollable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev.Error("error_handler(\"material_#=FurnitureBillOfQuantityId#\")")
+                                            .RequestStart("onRequestStart(\"material_#=FurnitureBillOfQuantityId#\")")
+                                            .RequestEnd("onRequestEnd(\"material_#=FurnitureBillOfQuantityId#\")"))
+                                          .Model(model => model.Id(p => p.FurnitureBOQMaterialId))
+                                          .Read(read => read.Action("FurnitureBOQMaterials_Read", "FurnitureBOQMaterial", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                          .Create(create => create.Action("FurnitureBOQMaterials_Create", "FurnitureBOQMaterial", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                          .Update(update => update.Action("FurnitureBOQMaterials_Update", "FurnitureBOQMaterial"))
+                                          .Destroy(destroy => destroy.Action("FurnitureBOQMaterials_Destroy", "FurnitureBOQMaterial"))
+                                      ).ToClientTemplate()
+    )
+}
+
+@helper Labor()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBOQLabor>()
+                              .Name("labor_#=FurnitureBillOfQuantityId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.WorkShopType);
+                                  columns.Bound(c => c.NumberOfEmloyees);
+                                  columns.Bound(c => c.EstimatedMinute);
+
+
+                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create();
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LaborBOQTemplate"))
+                              .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
+                              .Scrollable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureBillOfQuantityId#\")")
+                                            .RequestStart("onRequestStart(\"labor_#=FurnitureBillOfQuantityId#\")")
+                                            .RequestEnd("onRequestEnd(\"labor_#=FurnitureBillOfQuantityId#\")"))
+                                  .Model(model => model.Id(p => p.FurnitureBOQLaborId))
+                                  .Read(read => read.Action("FurnitureBOQLabors_Read", "FurnitureBOQLabor", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                  .Create(create => create.Action("FurnitureBOQLabors_Create", "FurnitureBOQLabor", new { id = "#=FurnitureBillOfQuantityId#" }))
+                                  .Update(update => update.Action("FurnitureBOQLabors_Update", "FurnitureBOQLabor"))
+                                  .Destroy(destroy => destroy.Action("FurnitureBOQLabors_Destroy", "FurnitureBOQLabor"))
+                              ).ToClientTemplate()
+    )
+
+}
 
 <script type="text/javascript">
     function filterJobType() {
@@ -44,10 +140,80 @@
             text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
         }
     }
+    function filterCategory() {
+        return {
+            text: $("#ManufacturingMaterialCategoryId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategoryItem() {
+        return {
+            materialCategoryId: $("#ManufacturingMaterialCategoryId").val(),
+            text: $("#ManufacturingMaterialCategoryItemId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function handleChecked(e) {
+        //var id = $("#FurnitureBillOfQuantityId").data("kendoNumericTextBox").value();
+
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.FurnitureBillOfQuantityId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+    function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureBillOfQuantityId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
 </script>
 <style>
     div.k-edit-form-container {
         width: auto;
-       
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
     }
 </style>

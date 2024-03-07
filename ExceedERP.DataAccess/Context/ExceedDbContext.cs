@@ -1621,7 +1621,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FurnitureBOQLaborEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ManifucturingTaskCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ManufacturingMaterialCategoryItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureYearlyProductionPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureHalfYearlyProductionPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureQuarterlyProductionPlanEntityTypeConfiguration());
@@ -2150,7 +2150,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FurnitureBOQLabor> FurnitureBOQLabors { get; set; }
         public DbSet<ManifucturingTaskCategory> ManifucturingTaskCategories { get; set; }
         public DbSet<ManufacturingMaterialCategory> ManufacturingMaterialCategories { get; set; }
-        public DbSet<ManufacturingMaterialCategoryDetail> ManufacturingMaterialCategoryDetails { get; set; }
+        public DbSet<ManufacturingMaterialCategoryItem> ManufacturingMaterialCategoryItems { get; set; }
         public DbSet<FurnitureYearlyProductionPlan> FurnitureYearlyProductionPlans { get; set; }
 
         public DbSet<FurnitureJobProcuctionPlan> FurnitureJobProcuctionPlans { get; set; }

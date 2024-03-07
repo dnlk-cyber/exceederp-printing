@@ -11,40 +11,26 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
 {
-   public class FurnitureEstimationForm : TrackUserSettingOperation
+   public class FurnitureEstimationForm : Operations
     {
         [Key]
         public int FurnitureEstimationId { get; set;}
+        public int FurnitureBillOfQuantityId { get; set; }
         public int CustomerId { get; set; }
-        [Required]
-        public DateTime Date { get; set; }
+        
         [Required]
         [Display(Name = "Type of Job ")]
         public int  JobTypeId { get; set; }
-        public string  JT { get; set; }
-        [Required]
-        public int JobNumber { get; set; }
+        
         [Required]
         public decimal Quantity { get; set; }
         public string Description { get; set; }
-        public string Others { get; set; }
-        public bool IsChecked { get; set; }
-        public string CheckedBy { get; set; }
-        public string ApprovedBy { get; set; }
-        public bool IsApproved { get; set; }
-        [NotMapped]
-        public bool IsCalculated { get; set; }
-
-        public object EstimationId { get; set; }
+        
     }
     
     public class DirectLaborCost : TrackUserSettingOperation
     {
-        public DirectLaborCost()
-        {
-            this.DateCreated = DateTime.UtcNow;
-            this.LastModified = DateTime.UtcNow;
-        }
+        
         [Key]
         public int DirectLaborCostId { get; set; }
         [Required]

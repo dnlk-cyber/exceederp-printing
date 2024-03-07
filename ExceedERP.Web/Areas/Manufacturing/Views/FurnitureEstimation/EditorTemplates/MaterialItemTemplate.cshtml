@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                    //.OptionLabel(Resources.Select)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetManufacturingMaterialCategoryItem", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterMaterialItem"))
+                        .ServerFiltering(true);
+                    })
+                    .Filter("contains")
+                    .MinLength(2)
+                    .ValuePrimitive(true)
+                    .CascadeFrom("ManufacturingMaterialCategoryId")
+)

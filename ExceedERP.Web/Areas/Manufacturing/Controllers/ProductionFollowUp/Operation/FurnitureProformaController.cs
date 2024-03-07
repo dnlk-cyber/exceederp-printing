@@ -25,11 +25,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.ProductionFollowUp.Opera
         public ActionResult Index()
         {
 
-            ViewData["EstimationForms"] = db.FurnitureEstimationForms.Select(s => new
-            {
-                Value = s.FurnitureEstimationId,
-                Text = s.JobNumber
-            }).ToList();
+            //ViewData["EstimationForms"] = db.FurnitureEstimationForms.Select(s => new
+            //{
+            //    Value = s.FurnitureEstimationId,
+            //    Text = s.JobNumber
+            //}).ToList();
             
              var jobCategories = db.FurnitureJobCategories.Select(s => new {
                 JobTypeId = s.FurnitureJobCategoryId,

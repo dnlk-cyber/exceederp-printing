@@ -22,9 +22,14 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         public ActionResult Index()
         {
-            ViewData["JobTypes"] = db.FurnitureJobCategories.Select(s => new {
-                JobTypeId = s.FurnitureJobCategoryId,
-                Type = s.HaveParent ? db.FurnitureJobCategories.Where(q => q.FurnitureJobCategoryId == s.FurnitureParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            //ViewData["JobTypes"] = db.FurnitureJobCategories.Select(s => new {
+            //    JobTypeId = s.FurnitureJobCategoryId,
+            //    Type = s.HaveParent ? db.FurnitureJobCategories.Where(q => q.FurnitureJobCategoryId == s.FurnitureParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            //}).ToList();
+            ViewData["JobType"] = db.FurnitureJobCategories.Select(s => new
+            {
+                Value = s.FurnitureJobCategoryId,
+                Text = s.JobName
             }).ToList();
             var selecteditems = db.InventoryItems.Select(
                i => new
@@ -83,18 +88,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
                 FurnitureEstimationId = estimationForm.FurnitureEstimationId,
                 CustomerId = estimationForm.CustomerId,
-                Date = estimationForm.Date,
-                JobNumber = estimationForm.JobNumber,
+                
+                
                 JobTypeId = estimationForm.JobTypeId,
                 Quantity = estimationForm.Quantity,
-                //Size = estimationForm.Size,
-                //TextPaper = estimationForm.TextPaper,
-                //TextPrint = estimationForm.TextPrint,
-                //CoverPrint = estimationForm.CoverPrint,
-                //BindingStyle = estimationForm.BindingStyle,
-                Others = estimationForm.Others,
-                IsChecked = estimationForm.IsChecked,
-                IsApproved = estimationForm.IsApproved,
+                
                 
             });
 
@@ -109,27 +107,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 {
                     FurnitureEstimationId = estimationForm.FurnitureEstimationId,
                     CustomerId = estimationForm.CustomerId,
-                    Date = DateTime.Now,
-                    JobNumber = estimationForm.JobNumber,
+                    
                     Quantity = estimationForm.Quantity,
-                    JobTypeId = int.Parse(estimationForm.JT),
-                    //Size = estimationForm.Size,
-                    //TextPaper = estimationForm.TextPaper,
-                    //TextPrint = estimationForm.TextPrint,
-                    //CoverPrint = estimationForm.CoverPrint,
-                    //BindingStyle = estimationForm.BindingStyle,
+                   
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
-                    Others = estimationForm.Others
-
+                   
                 };
 
                 db.FurnitureEstimationForms.Add(entity);
                 db.SaveChanges();
                 estimationForm.FurnitureEstimationId = entity.FurnitureEstimationId;
-                entity.JobNumber = entity.FurnitureEstimationId;
+                
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
@@ -146,8 +137,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 {
                     FurnitureEstimationId = estimationForm.FurnitureEstimationId,
                     CustomerId = estimationForm.CustomerId,
-                    Date = estimationForm.Date,
-                    JobNumber = estimationForm.JobNumber,
+                    
                     Quantity = estimationForm.Quantity,
                     //Size = estimationForm.Size,
                     //JobTypeId = int.Parse(estimationForm.JT),
@@ -155,7 +145,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     //TextPrint = estimationForm.TextPrint,
                     //CoverPrint = estimationForm.CoverPrint,
                     //BindingStyle = estimationForm.BindingStyle,
-                    Others = estimationForm.Others,
+                    
             
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
@@ -175,30 +165,18 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         public ActionResult EstimationForms_Destroy([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm estimationForm)
         {
 
-            if (ModelState.IsValid)
-            {
-                var entity = new FurnitureEstimationForm
-                {
-                    FurnitureEstimationId = estimationForm.FurnitureEstimationId,
-                    CustomerId = estimationForm.CustomerId,
-                    Date = estimationForm.Date,
-                    JobNumber = estimationForm.JobNumber,
-                    JobTypeId = estimationForm.JobTypeId,
-                    Quantity = estimationForm.Quantity,
-                    //Size = estimationForm.Size,
-                    //TextPaper = estimationForm.TextPaper,
-                    //TextPrint = estimationForm.TextPrint,
-                    //CoverPrint = estimationForm.CoverPrint,
-                    //BindingStyle = estimationForm.BindingStyle,
-                    Others = estimationForm.Others
-
-
-                };
-
-                db.FurnitureEstimationForms.Attach(entity);
-                db.FurnitureEstimationForms.Remove(entity);
-                db.SaveChanges();
-            }
+            //if (ModelState.IsValid)
+            //{
+            var estimation = db.FurnitureEstimationForms.Find(estimationForm.FurnitureEstimationId);
+            var labor = db.FurnitureLaborCosts.Where(x => x.EstimationFormId == estimation.FurnitureEstimationId).ToList();
+            var material = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
+            db.FurnitureLaborCosts.RemoveRange(labor);
+            db.FurnitureMaterialCosts.RemoveRange(material);
+            db.SaveChanges();
+            db.FurnitureEstimationForms.Remove(estimation);
+                
+            db.SaveChanges();
+            //}
 
             return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
         }

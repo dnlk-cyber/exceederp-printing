@@ -5,8 +5,8 @@
 
                     .DataSource(dataSource =>
                     {
-                        dataSource.Read(read => read.Action("GetManufacturingMaterialCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }))
-                        .ServerFiltering(false);
+                        dataSource.Read(read => read.Action("GetManufacturingMaterialCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterCategory"))
+                        .ServerFiltering(true);
                     })
                     .Filter("contains")
                     .MinLength(2)

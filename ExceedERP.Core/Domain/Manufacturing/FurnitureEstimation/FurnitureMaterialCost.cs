@@ -37,8 +37,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal Balance { get; set; }
         [Display(Name ="Task Type")]
         public WorkShop TaskType { get; set; }
-        [Display(Name = "Material Categoryt")]
+        [Display(Name = "Material Category")]
         public int ManufacturingMaterialCategoryId { get; set; }
+        [Display(Name ="Item")]
+        public int ManufacturingMaterialCategoryItemId { get; set; }
 
     }
 }

@@ -48,16 +48,16 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetManufacturingMaterialCategory()
-        {
-            var categories = db.ManufacturingMaterialCategories;
-            var result = categories.Select(s => new
-            {
-                Value = s.ManufacturingMaterialCategoryId,
-                Text = s.ManufacturingCategory
-            }).ToList();
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult GetManufacturingMaterialCategory()
+        //{
+        //    var categories = db.ManufacturingMaterialCategories;
+        //    var result = categories.Select(s => new
+        //    {
+        //        Value = s.ManufacturingMaterialCategoryId,
+        //        Text = s.ManufacturingCategory
+        //    }).ToList();
+        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //}
 
         public JsonResult GetUoM()
         {
@@ -105,6 +105,49 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var result = customers.Select(s => new {
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetInventoryItems(string text)
+        {
+            var inventoryItems = db.InventoryItems.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                inventoryItems = inventoryItems.Where(x => x.Name.Contains(text)).AsQueryable();
+            }
+            var result = inventoryItems.Select(s => new
+            {
+                Value = s.ItemCode,
+                Text = s.Name
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetManufacturingMaterialCategory(string text)
+        {
+            var materialCategory = db.ManufacturingMaterialCategories.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                materialCategory = materialCategory.Where(x => x.ManufacturingCategory.Contains(text)).AsQueryable();
+            }
+            var result = materialCategory.Select(s => new
+            {
+                Value = s.ManufacturingMaterialCategoryId,
+                Text = s.ManufacturingCategory
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetManufacturingMaterialCategoryItem(int materialCategoryId, string text)
+        {
+            var materialCategoryItems = db.ManufacturingMaterialCategoryItems.Where(x => x.ManufacturingMaterialCategoryId == materialCategoryId).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                materialCategoryItems = materialCategoryItems.Where(x => x.ItemName.Contains(text)).AsQueryable();
+            }
+            var result = materialCategoryItems.Select(s => new
+            {
+                Value = s.ManufacturingMaterialCategoryItemId,
+                Text = s.ItemName
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

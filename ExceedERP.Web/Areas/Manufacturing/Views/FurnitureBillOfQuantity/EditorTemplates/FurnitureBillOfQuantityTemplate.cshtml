@@ -3,8 +3,9 @@
 <div class="row">
     <div class="col-sm-2">
         <div class="form-group">
+            <label>Product Name</label>
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.JobTypeId)                   
+                @(Html.Kendo().DropDownListFor(model => model.JobTypeId)
                     .ValuePrimitive(true)
                     .OptionLabel("Select Job Title...")
                     .DataTextField("Text")
@@ -14,14 +15,15 @@
                     {
                         dataSource.Read(read => read.Action("GetFurnitureJobCategory", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterJobType"))
                             .ServerFiltering(true);
-                    }))
+                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
     <div class="col-sm-2">
         <div class="form-group">
+            <label>Customer</label>
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.CustomerId)                   
+                @(Html.Kendo().DropDownListFor(model => model.CustomerId)
                     .ValuePrimitive(true)
                     .OptionLabel("Select Customer...")
                     .DataTextField("Text")
@@ -31,14 +33,15 @@
                     {
                         dataSource.Read(read => read.Action("GetACustomers", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterCustomer"))
                             .ServerFiltering(true);
-                    }))
+                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
     <div class="col-sm-2">
         <div class="form-group">
+            <label>Quantity</label>
             <div>
-                @(Html.Kendo().TextBoxFor(model => model.Quantity))
+                @(Html.Kendo().TextBoxFor(model => model.Quantity).HtmlAttributes(new { style = "width:100%"}))
             </div>
         </div>
     </div>

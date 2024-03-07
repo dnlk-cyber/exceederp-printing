@@ -21,7 +21,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
     }
     public enum WorkShop
     {
-        Metal,
+        Metal = 1,
         WoodWork,
         Finishing        
     }

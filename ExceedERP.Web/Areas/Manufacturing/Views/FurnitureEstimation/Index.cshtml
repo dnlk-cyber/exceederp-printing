@@ -6,12 +6,12 @@
                 .Name("grid")
                 .Columns(columns =>
                 {
-                    columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "JobTypeId", "Type").Width(130);
+                    columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
-                    columns.Bound(c => c.JobNumber).Width(100);
+                    
                     columns.Bound(c => c.Quantity).Width(100);
                     columns.Bound(c => c.Description).Width(80);
-                    columns.Bound(c => c.Others).Width(100);
+                    
                     columns.Command(command =>
                     {
                         command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
@@ -73,14 +73,15 @@
                     .Columns(columns =>
                     {
                         columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
-                        columns.Bound(c => c.TaskType).Width(90).EditorTemplateName("TaskTypeTemplate");
-                        columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialCategoryTemplate");
+                        columns.Bound(c => c.TaskType).Width(90).EditorTemplateName("TaskTypeTemplate").Width(120);
+                        columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialCategoryTemplate").Width(130);
+                        columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialItemTemplate").Width(130);
 
                         columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
 
                         columns.Bound(c => c.Quantity).Width(80);
-                        columns.Bound(c => c.UnitPrice).Width(80);
-                        columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                        columns.Bound(c => c.UnitPrice).Width(100);
+                        columns.Bound(c => c.TotalPrice).Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
                         // escaped template expression, to be evaluated in the child/detail context
                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
@@ -131,6 +132,7 @@
                           {
                               columns.Bound(x => x.DirectLaborCostId).Hidden(true);
                               
+                              columns.Bound(o => o.TaskType).EditorTemplateName("TaskTypeTemplate").Width(80);
                               columns.Bound(o => o.WorkingTime).Width(80);
                               columns.Bound(o => o.CostPerHour).Width(80);
                               columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
@@ -366,7 +368,7 @@
         $.ajax({
            type: "POST",
             url: '@Url.Action("CheckEstimation", "EstimationForm", new { Area = "Printing" })',
-            data: { id: dataItem.EstimationFormId },
+            data: { id: dataItem.FurnitureEstimationId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -392,7 +394,7 @@
         $.ajax({
            type: "POST",
             url: '@Url.Action("ApproveEstimation", "EstimationForm", new { Area = "Printing" })',
-            data: { id: dataItem.EstimationFormId },
+            data: { id: dataItem.FurnitureEstimationId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -500,6 +502,17 @@
             taskType: $("#TaskType").val()
         }
     }
+    function filterMaterialItem() {
+        return {
+            materialCategoryId: $("#ManufacturingMaterialCategoryId").val(),
+            text: $("#ManufacturingMaterialCategoryItemId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategory() {
+        return {
+            text: $("#ManufacturingMaterialCategoryId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 </script>
 
 <script type="text/javascript">
@@ -516,6 +529,13 @@
             alert(message);
         }
     }
+
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    
 </script>
 <style>
     .k-grid .k-grid-toolbar .k-grid-add,

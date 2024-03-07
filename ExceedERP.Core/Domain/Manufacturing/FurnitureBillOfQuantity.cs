@@ -25,8 +25,11 @@ namespace ExceedERP.Core.Domain.Manufacturing
     {
         [Key]
         public int FurnitureBOQMaterialId { get; set; }
+
+        public int ManufacturingMaterialCategoryId { get; set; }
+        public int ManufacturingMaterialCategoryItemId { get; set; }
         [Display(Name ="Item")]
-        public int ItemCode { get; set; }
+        public string ItemCode { get; set; }
         [Display(Name ="Unit of measurement")]
         public string UnitOfMeasurement { get; set; }
         public decimal Quantity { get; set; }
@@ -41,9 +44,13 @@ namespace ExceedERP.Core.Domain.Manufacturing
     {
         [Key]
         public int FurnitureBOQLaborId { get; set; }
+        [Display(Name ="Work Shop")]
         public WorkShop WorkShopType { get; set; }
+        [Display(Name ="Number of Employees")]
         public int NumberOfEmloyees { get; set; }
-        public float EstimatedHour { get; set; }
+        [Display(Name = "Estimated Minute")]
+        public int EstimatedMinute { get; set; }
+        
 
         public int FurnitureBillOfQuantityId { get; set; }
         public FurnitureBillOfQuantity FurnitureBillOfQuantity { get; set; }

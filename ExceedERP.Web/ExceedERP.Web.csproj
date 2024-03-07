@@ -6582,6 +6582,9 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureBillOfQuantity\Index.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureBOQLabor\Index.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureBOQMaterial\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBillOfQuantity\EditorTemplates\LaborBOQTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBillOfQuantity\EditorTemplates\MaterialBOQTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\MaterialItemTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

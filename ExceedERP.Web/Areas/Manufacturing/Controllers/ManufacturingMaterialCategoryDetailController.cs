@@ -19,94 +19,95 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         public ActionResult ManufacturingMaterialCategoryDetails_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<ManufacturingMaterialCategoryDetail> manufacturingmaterialcategorydetails = db.ManufacturingMaterialCategoryDetails.Where(x => x.ManufacturingMaterialCategoryId == id);
-            DataSourceResult result = manufacturingmaterialcategorydetails.ToDataSourceResult(request, manufacturingMaterialCategoryDetail => new ManufacturingMaterialCategoryDetail
+            IQueryable<ManufacturingMaterialCategoryItem> manufacturingmaterialcategorydetails = db.ManufacturingMaterialCategoryItems.Where(x => x.ManufacturingMaterialCategoryId == id);
+
+            DataSourceResult result = manufacturingmaterialcategorydetails.ToDataSourceResult(request, ManufacturingMaterialCategoryItem => new ManufacturingMaterialCategoryItem
             {
-                ManufacturingMaterialCategoryDetailId = manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryDetailId,
-                InventorySubCategoryCode = manufacturingMaterialCategoryDetail.InventorySubCategoryCode,
-                ItemName = manufacturingMaterialCategoryDetail.ItemName,
-                ItemCode = manufacturingMaterialCategoryDetail.ItemCode,
-                UnitOfMeasurement = manufacturingMaterialCategoryDetail.UnitOfMeasurement,
-                UnitPrice = manufacturingMaterialCategoryDetail.UnitPrice,
-                IsActive = manufacturingMaterialCategoryDetail.IsActive,
-               ManufacturingMaterialCategoryId = manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryId
+                ManufacturingMaterialCategoryItemId = ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryItemId,
+                InventorySubCategoryCode = ManufacturingMaterialCategoryItem.InventorySubCategoryCode,
+                ItemName = ManufacturingMaterialCategoryItem.ItemName,
+                ItemCode = ManufacturingMaterialCategoryItem.ItemCode,
+                UnitOfMeasurement = ManufacturingMaterialCategoryItem.UnitOfMeasurement,
+                UnitPrice = ManufacturingMaterialCategoryItem.UnitPrice,
+                IsActive = ManufacturingMaterialCategoryItem.IsActive,
+                ManufacturingMaterialCategoryId = ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryId
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManufacturingMaterialCategoryDetails_Create([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategoryDetail manufacturingMaterialCategoryDetail, int id)
+        public ActionResult ManufacturingMaterialCategoryDetails_Create([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategoryItem ManufacturingMaterialCategoryItem, int id)
         {
             if (ModelState.IsValid)
             {
-                var entity = new ManufacturingMaterialCategoryDetail
+                var entity = new ManufacturingMaterialCategoryItem
                 {
-                    InventorySubCategoryCode = manufacturingMaterialCategoryDetail.InventorySubCategoryCode,
-                    ItemName = manufacturingMaterialCategoryDetail.ItemName,
-                    ItemCode = manufacturingMaterialCategoryDetail.ItemCode,
-                    UnitOfMeasurement = manufacturingMaterialCategoryDetail.UnitOfMeasurement,
-                    UnitPrice = manufacturingMaterialCategoryDetail.UnitPrice,
-                    IsActive = manufacturingMaterialCategoryDetail.IsActive,
+                    InventorySubCategoryCode = ManufacturingMaterialCategoryItem.InventorySubCategoryCode,
+                    ItemName = ManufacturingMaterialCategoryItem.ItemName,
+                    ItemCode = ManufacturingMaterialCategoryItem.ItemCode,
+                    UnitOfMeasurement = ManufacturingMaterialCategoryItem.UnitOfMeasurement,
+                    UnitPrice = ManufacturingMaterialCategoryItem.UnitPrice,
+                    IsActive = ManufacturingMaterialCategoryItem.IsActive,
                     ManufacturingMaterialCategoryId = id
                 };
 
-                db.ManufacturingMaterialCategoryDetails.Add(entity);
+                db.ManufacturingMaterialCategoryItems.Add(entity);
                 db.SaveChanges();
-                manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryDetailId = entity.ManufacturingMaterialCategoryDetailId;
+                ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryItemId = entity.ManufacturingMaterialCategoryItemId;
             }
 
-            return Json(new[] { manufacturingMaterialCategoryDetail }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { ManufacturingMaterialCategoryItem }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManufacturingMaterialCategoryDetails_Update([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategoryDetail manufacturingMaterialCategoryDetail)
+        public ActionResult ManufacturingMaterialCategoryDetails_Update([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategoryItem ManufacturingMaterialCategoryItem)
         {
             if (ModelState.IsValid)
             {
-                var entity = new ManufacturingMaterialCategoryDetail
+                var entity = new ManufacturingMaterialCategoryItem
                 {
-                    ManufacturingMaterialCategoryDetailId = manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryDetailId,
-                    InventorySubCategoryCode = manufacturingMaterialCategoryDetail.InventorySubCategoryCode,
-                    ItemName = manufacturingMaterialCategoryDetail.ItemName,
-                    ItemCode = manufacturingMaterialCategoryDetail.ItemCode,
-                    UnitOfMeasurement = manufacturingMaterialCategoryDetail.UnitOfMeasurement,
-                    UnitPrice = manufacturingMaterialCategoryDetail.UnitPrice,
-                    IsActive = manufacturingMaterialCategoryDetail.IsActive,
-                    ManufacturingMaterialCategoryId = manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryId
+                    ManufacturingMaterialCategoryItemId = ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryItemId,
+                    InventorySubCategoryCode = ManufacturingMaterialCategoryItem.InventorySubCategoryCode,
+                    ItemName = ManufacturingMaterialCategoryItem.ItemName,
+                    ItemCode = ManufacturingMaterialCategoryItem.ItemCode,
+                    UnitOfMeasurement = ManufacturingMaterialCategoryItem.UnitOfMeasurement,
+                    UnitPrice = ManufacturingMaterialCategoryItem.UnitPrice,
+                    IsActive = ManufacturingMaterialCategoryItem.IsActive,
+                    ManufacturingMaterialCategoryId = ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryId
                 };
 
-                db.ManufacturingMaterialCategoryDetails.Attach(entity);
+                db.ManufacturingMaterialCategoryItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
-            return Json(new[] { manufacturingMaterialCategoryDetail }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { ManufacturingMaterialCategoryItem }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManufacturingMaterialCategoryDetails_Destroy([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategoryDetail manufacturingMaterialCategoryDetail)
+        public ActionResult ManufacturingMaterialCategoryDetails_Destroy([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategoryItem ManufacturingMaterialCategoryItem)
         {
             if (ModelState.IsValid)
             {
-                var entity = new ManufacturingMaterialCategoryDetail
+                var entity = new ManufacturingMaterialCategoryItem
                 {
-                    ManufacturingMaterialCategoryDetailId = manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryDetailId,
-                    InventorySubCategoryCode = manufacturingMaterialCategoryDetail.InventorySubCategoryCode,
-                    ItemName = manufacturingMaterialCategoryDetail.ItemName,
-                    ItemCode = manufacturingMaterialCategoryDetail.ItemCode,
-                    UnitOfMeasurement = manufacturingMaterialCategoryDetail.UnitOfMeasurement,
-                    UnitPrice = manufacturingMaterialCategoryDetail.UnitPrice,
-                    IsActive = manufacturingMaterialCategoryDetail.IsActive,
-                    ManufacturingMaterialCategoryId = manufacturingMaterialCategoryDetail.ManufacturingMaterialCategoryId
+                    ManufacturingMaterialCategoryItemId = ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryItemId,
+                    InventorySubCategoryCode = ManufacturingMaterialCategoryItem.InventorySubCategoryCode,
+                    ItemName = ManufacturingMaterialCategoryItem.ItemName,
+                    ItemCode = ManufacturingMaterialCategoryItem.ItemCode,
+                    UnitOfMeasurement = ManufacturingMaterialCategoryItem.UnitOfMeasurement,
+                    UnitPrice = ManufacturingMaterialCategoryItem.UnitPrice,
+                    IsActive = ManufacturingMaterialCategoryItem.IsActive,
+                    ManufacturingMaterialCategoryId = ManufacturingMaterialCategoryItem.ManufacturingMaterialCategoryId
                 };
 
-                db.ManufacturingMaterialCategoryDetails.Attach(entity);
-                db.ManufacturingMaterialCategoryDetails.Remove(entity);
+                db.ManufacturingMaterialCategoryItems.Attach(entity);
+                db.ManufacturingMaterialCategoryItems.Remove(entity);
                 db.SaveChanges();
             }
 
-            return Json(new[] { manufacturingMaterialCategoryDetail }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { ManufacturingMaterialCategoryItem }.ToDataSourceResult(request, ModelState));
         }
 
         protected override void Dispose(bool disposing)

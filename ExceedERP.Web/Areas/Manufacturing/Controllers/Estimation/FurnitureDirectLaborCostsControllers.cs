@@ -28,16 +28,18 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         public ActionResult DirectLaborCosts_Read([DataSourceRequest]DataSourceRequest request, int? estimationFormId)
         {
             IQueryable<Core.Domain.Manufacturing.FurnitureEstimation.DirectLaborCost> laborcosts = db.DirectLaborCosts.Where(q => q.FurnitureEstimationId == estimationFormId).OrderByDescending(a => a.DirectLaborCostId);
-            DataSourceResult result = laborcosts.ToDataSourceResult(request, laborCost => new
+            DataSourceResult result = laborcosts.ToDataSourceResult(request, laborCost => new DirectLaborCost
             {
                 DirectLaborCostId = laborCost.DirectLaborCostId,
-                FurnitureCostEstimationId = laborCost.FurnitureEstimationId,
+                FurnitureEstimationId = laborCost.FurnitureEstimationId,
                 FurnitureCategoryId = laborCost.FurnitureCategoryId,
                 WorkingTime = laborCost.WorkingTime,
                 CostPerHour = laborCost.CostPerHour,
                 TotalCost = laborCost.TotalCost,
                 DateCreated = laborCost.DateCreated,
                 LastModified = laborCost.LastModified,
+                TaskType = laborCost.TaskType,
+                
 
             });
 

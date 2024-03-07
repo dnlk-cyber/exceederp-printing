@@ -1,0 +1,75 @@
+﻿@model ExceedERP.Core.Domain.Manufacturing.FurnitureBOQMaterial
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Work Shop</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.WorkshopType)
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Setting.WorkShop))
+                                            )
+                                        .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Material Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ManufacturingMaterialCategoryId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Item...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetManufacturingMaterialCategory", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterCategory"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Material Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ManufacturingMaterialCategoryItemId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Item...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .CascadeFrom("ManufacturingMaterialCategoryId")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetManufacturingMaterialCategoryItem", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterCategoryItem"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Quantity</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Quantity).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

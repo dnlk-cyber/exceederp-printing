@@ -22,25 +22,27 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return View();
         }
 
-        public ActionResult FurnitureBOQLabors_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult FurnitureBOQLabors_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<FurnitureBOQLabor> furnitureboqlabors = db.FurnitureBOQLabors;
-            DataSourceResult result = furnitureboqlabors.ToDataSourceResult(request, furnitureBOQLabor => new {
+            IQueryable<FurnitureBOQLabor> furnitureboqlabors = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == id);
+            DataSourceResult result = furnitureboqlabors.ToDataSourceResult(request, furnitureBOQLabor => new FurnitureBOQLabor
+            {
                 FurnitureBOQLaborId = furnitureBOQLabor.FurnitureBOQLaborId,
                 WorkShopType = furnitureBOQLabor.WorkShopType,
                 NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
-                EstimatedHour = furnitureBOQLabor.EstimatedHour,
+                EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                 DateCreated = furnitureBOQLabor.DateCreated,
                 LastModified = furnitureBOQLabor.LastModified,
                 CreatedBy = furnitureBOQLabor.CreatedBy,
-                ModifiedBy = furnitureBOQLabor.ModifiedBy
+                ModifiedBy = furnitureBOQLabor.ModifiedBy,
+                FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureBOQLabors_Create([DataSourceRequest]DataSourceRequest request, FurnitureBOQLabor furnitureBOQLabor)
+        public ActionResult FurnitureBOQLabors_Create([DataSourceRequest]DataSourceRequest request, FurnitureBOQLabor furnitureBOQLabor, int id)
         {
             if (ModelState.IsValid)
             {
@@ -48,11 +50,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 {
                     WorkShopType = furnitureBOQLabor.WorkShopType,
                     NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
-                    EstimatedHour = furnitureBOQLabor.EstimatedHour,
+                    EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                     DateCreated = furnitureBOQLabor.DateCreated,
                     LastModified = furnitureBOQLabor.LastModified,
                     CreatedBy = furnitureBOQLabor.CreatedBy,
-                    ModifiedBy = furnitureBOQLabor.ModifiedBy
+                    ModifiedBy = furnitureBOQLabor.ModifiedBy,
+                    FurnitureBillOfQuantityId = id,
+                    
                 };
 
                 db.FurnitureBOQLabors.Add(entity);
@@ -73,11 +77,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     FurnitureBOQLaborId = furnitureBOQLabor.FurnitureBOQLaborId,
                     WorkShopType = furnitureBOQLabor.WorkShopType,
                     NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
-                    EstimatedHour = furnitureBOQLabor.EstimatedHour,
+                    EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                     DateCreated = furnitureBOQLabor.DateCreated,
                     LastModified = furnitureBOQLabor.LastModified,
                     CreatedBy = furnitureBOQLabor.CreatedBy,
-                    ModifiedBy = furnitureBOQLabor.ModifiedBy
+                    ModifiedBy = furnitureBOQLabor.ModifiedBy,
+                    FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId
                 };
 
                 db.FurnitureBOQLabors.Attach(entity);
@@ -98,11 +103,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     FurnitureBOQLaborId = furnitureBOQLabor.FurnitureBOQLaborId,
                     WorkShopType = furnitureBOQLabor.WorkShopType,
                     NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
-                    EstimatedHour = furnitureBOQLabor.EstimatedHour,
+                    EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                     DateCreated = furnitureBOQLabor.DateCreated,
                     LastModified = furnitureBOQLabor.LastModified,
                     CreatedBy = furnitureBOQLabor.CreatedBy,
-                    ModifiedBy = furnitureBOQLabor.ModifiedBy
+                    ModifiedBy = furnitureBOQLabor.ModifiedBy,
+                    FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId
                 };
 
                 db.FurnitureBOQLabors.Attach(entity);

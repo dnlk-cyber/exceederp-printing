@@ -4,12 +4,7 @@ using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -569,12 +564,12 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(k => k.ManufacturingMaterialCategoryId);
         }
     }
-    public class ManufacturingMaterialCategoryDetailEntityTypeConfiguration : EntityTypeConfiguration<ManufacturingMaterialCategoryDetail>
+    public class ManufacturingMaterialCategoryItemEntityTypeConfiguration : EntityTypeConfiguration<ManufacturingMaterialCategoryItem>
     {
-        public ManufacturingMaterialCategoryDetailEntityTypeConfiguration()
+        public ManufacturingMaterialCategoryItemEntityTypeConfiguration()
         {
-            this.ToTable("ManufacturingMaterialCategoryDetail", "Manufacturing");
-            this.HasKey<int>(k => k.ManufacturingMaterialCategoryDetailId);
+            this.ToTable("ManufacturingMaterialCategoryItem", "Manufacturing");
+            this.HasKey<int>(k => k.ManufacturingMaterialCategoryItemId);
         }
     }
 

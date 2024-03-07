@@ -22,10 +22,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return View();
         }
 
-        public ActionResult FurnitureBOQMaterials_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult FurnitureBOQMaterials_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<FurnitureBOQMaterial> furnitureboqmaterials = db.FurnitureBOQMaterials;
-            DataSourceResult result = furnitureboqmaterials.ToDataSourceResult(request, furnitureBOQMaterial => new {
+            IQueryable<FurnitureBOQMaterial> furnitureboqmaterials = db.FurnitureBOQMaterials.Where(x => x.FurnitureBillOfQuantityId == id).OrderByDescending(x => x.WorkshopType);
+            DataSourceResult result = furnitureboqmaterials.ToDataSourceResult(request, furnitureBOQMaterial => new FurnitureBOQMaterial
+            {
                 FurnitureBOQMaterialId = furnitureBOQMaterial.FurnitureBOQMaterialId,
                 ItemCode = furnitureBOQMaterial.ItemCode,
                 UnitOfMeasurement = furnitureBOQMaterial.UnitOfMeasurement,
@@ -35,28 +36,38 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 DateCreated = furnitureBOQMaterial.DateCreated,
                 LastModified = furnitureBOQMaterial.LastModified,
                 CreatedBy = furnitureBOQMaterial.CreatedBy,
-                ModifiedBy = furnitureBOQMaterial.ModifiedBy
+                ModifiedBy = furnitureBOQMaterial.ModifiedBy,
+                FurnitureBillOfQuantityId = furnitureBOQMaterial.FurnitureBillOfQuantityId,
+                ManufacturingMaterialCategoryId = furnitureBOQMaterial.ManufacturingMaterialCategoryId,
+                ManufacturingMaterialCategoryItemId = furnitureBOQMaterial.ManufacturingMaterialCategoryItemId
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureBOQMaterials_Create([DataSourceRequest]DataSourceRequest request, FurnitureBOQMaterial furnitureBOQMaterial)
+        public ActionResult FurnitureBOQMaterials_Create([DataSourceRequest]DataSourceRequest request, FurnitureBOQMaterial furnitureBOQMaterial, int id)
         {
+            
+            var materialItems = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == furnitureBOQMaterial.ManufacturingMaterialCategoryItemId);
+            if (materialItems == null) ModelState.AddModelError("", "Item Not Found");
             if (ModelState.IsValid)
             {
                 var entity = new FurnitureBOQMaterial
                 {
                     ItemCode = furnitureBOQMaterial.ItemCode,
-                    UnitOfMeasurement = furnitureBOQMaterial.UnitOfMeasurement,
+                    UnitOfMeasurement = materialItems.UnitOfMeasurement,
                     Quantity = furnitureBOQMaterial.Quantity,
                     Remark = furnitureBOQMaterial.Remark,
                     WorkshopType = furnitureBOQMaterial.WorkshopType,
-                    DateCreated = furnitureBOQMaterial.DateCreated,
-                    LastModified = furnitureBOQMaterial.LastModified,
-                    CreatedBy = furnitureBOQMaterial.CreatedBy,
-                    ModifiedBy = furnitureBOQMaterial.ModifiedBy
+                    DateCreated = DateTime.Today,
+                    
+                    CreatedBy = User.Identity.Name,
+                    
+                    FurnitureBillOfQuantityId = id,
+                    ManufacturingMaterialCategoryItemId = furnitureBOQMaterial.ManufacturingMaterialCategoryItemId,
+                    ManufacturingMaterialCategoryId = furnitureBOQMaterial.ManufacturingMaterialCategoryId,
+                    
                 };
 
                 db.FurnitureBOQMaterials.Add(entity);
@@ -70,20 +81,24 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureBOQMaterials_Update([DataSourceRequest]DataSourceRequest request, FurnitureBOQMaterial furnitureBOQMaterial)
         {
+            var materialItems = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == furnitureBOQMaterial.ManufacturingMaterialCategoryItemId);
+            if (materialItems == null) ModelState.AddModelError("", "Item Not Found");
             if (ModelState.IsValid)
             {
                 var entity = new FurnitureBOQMaterial
                 {
                     FurnitureBOQMaterialId = furnitureBOQMaterial.FurnitureBOQMaterialId,
                     ItemCode = furnitureBOQMaterial.ItemCode,
-                    UnitOfMeasurement = furnitureBOQMaterial.UnitOfMeasurement,
+                    UnitOfMeasurement = materialItems.UnitOfMeasurement,
                     Quantity = furnitureBOQMaterial.Quantity,
                     Remark = furnitureBOQMaterial.Remark,
                     WorkshopType = furnitureBOQMaterial.WorkshopType,
                     DateCreated = furnitureBOQMaterial.DateCreated,
-                    LastModified = furnitureBOQMaterial.LastModified,
+                    LastModified = DateTime.Today,
                     CreatedBy = furnitureBOQMaterial.CreatedBy,
-                    ModifiedBy = furnitureBOQMaterial.ModifiedBy
+                    ModifiedBy = User.Identity.Name,
+                    ManufacturingMaterialCategoryItemId = furnitureBOQMaterial.ManufacturingMaterialCategoryItemId,
+                    ManufacturingMaterialCategoryId = furnitureBOQMaterial.ManufacturingMaterialCategoryId,
                 };
 
                 db.FurnitureBOQMaterials.Attach(entity);
@@ -110,7 +125,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureBOQMaterial.DateCreated,
                     LastModified = furnitureBOQMaterial.LastModified,
                     CreatedBy = furnitureBOQMaterial.CreatedBy,
-                    ModifiedBy = furnitureBOQMaterial.ModifiedBy
+                    ModifiedBy = furnitureBOQMaterial.ModifiedBy,
+                    ManufacturingMaterialCategoryItemId = furnitureBOQMaterial.ManufacturingMaterialCategoryItemId,
+                    ManufacturingMaterialCategoryId = furnitureBOQMaterial.ManufacturingMaterialCategoryId,
                 };
 
                 db.FurnitureBOQMaterials.Attach(entity);

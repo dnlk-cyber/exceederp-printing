@@ -10,6 +10,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 {
@@ -28,6 +29,24 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
+            }).ToList();
+
+            ViewData["ItemCode"] = db.InventoryItems.Select(s => new
+            {
+                Value = s.ItemCode,
+                Text = s.Name
+            }).ToList();
+
+            ViewData["MaterialCategory"] = db.ManufacturingMaterialCategories.Select(s => new
+            {
+                Value = s.ManufacturingMaterialCategoryId,
+                Text = s.ManufacturingCategory
+            }).ToList();
+
+            ViewData["MaterialCategoryItem"] = db.ManufacturingMaterialCategoryItems.Select(s => new
+            {
+                Value = s.ManufacturingMaterialCategoryItemId,
+                Text = s.ItemName
             }).ToList();
             return View();
         }
@@ -178,7 +197,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CreatedBy = furnitureBillOfQuantity.CreatedBy,
                     ModifiedBy = furnitureBillOfQuantity.ModifiedBy
                 };
-
+                var labor = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == entity.FurnitureBillOfQuantityId);
+                var material = db.FurnitureBOQMaterials.Where(x => x.FurnitureBillOfQuantityId == entity.FurnitureBillOfQuantityId);
+                db.FurnitureBOQLabors.RemoveRange(labor);
+                db.FurnitureBOQMaterials.RemoveRange(material);
+                
                 db.FurnitureBillOfQuantities.Attach(entity);
                 db.FurnitureBillOfQuantities.Remove(entity);
                 db.SaveChanges();
@@ -187,6 +210,99 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return Json(new[] { furnitureBillOfQuantity }.ToDataSourceResult(request, ModelState));
         }
 
+        public JsonResult CheckBOQ(int id)
+        {
+            object response = null;
+            var billOfQuantity = db.FurnitureBillOfQuantities.Find(id);
+            if(billOfQuantity != null)
+            {
+                billOfQuantity.IsSendForApproval = true;
+                billOfQuantity.SendForApprovalBy = User.Identity.Name;
+                billOfQuantity.SendForApprovalTime = DateTime.Today;
+
+                db.FurnitureBillOfQuantities.Attach(billOfQuantity);
+                db.Entry(billOfQuantity).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Bill of Quantity Checked Successfully!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+
+        public JsonResult ApproveBOQ(int id)
+        {
+            object response = null;
+            var billOfQuantity = db.FurnitureBillOfQuantities.Find(id);
+            if (billOfQuantity != null)
+            {
+                billOfQuantity.IsOnlineApproved = true;
+                billOfQuantity.OnlineApprovedBy = User.Identity.Name;
+                billOfQuantity.OnlineApprovedTime = DateTime.Today;
+
+                db.FurnitureBillOfQuantities.Attach(billOfQuantity);
+                db.Entry(billOfQuantity).State = EntityState.Modified;
+                db.SaveChanges();
+                //--Generate Estimation--//
+                GenerateEstimation(billOfQuantity);
+                response = new { Success = true, Message = "Bill of Quantity Approved!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+
+        private void GenerateEstimation(FurnitureBillOfQuantity billOfQuantity)
+        {
+            var boqMaterial = db.FurnitureBOQMaterials.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
+            var boqLabor = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
+            if(boqMaterial.Any() && boqLabor.Any())
+            {
+                var estimation = new FurnitureEstimationForm
+                {
+                    JobTypeId = billOfQuantity.JobTypeId,
+                    CustomerId = billOfQuantity.CustomerId,
+                    Quantity = billOfQuantity.Quantity,
+                    FurnitureBillOfQuantityId = billOfQuantity.FurnitureBillOfQuantityId,
+                };
+                db.FurnitureEstimationForms.Add(estimation);
+                db.SaveChanges();
+
+                foreach (var item in boqMaterial)
+                {
+                    var material = new FurnitureMaterialCost
+                    {
+                        TaskType = item.WorkshopType,
+                        ManufacturingMaterialCategoryId = item.ManufacturingMaterialCategoryId,
+                        ManufacturingMaterialCategoryItemId = item.ManufacturingMaterialCategoryItemId,
+                        UnitOfMeasurment = item.UnitOfMeasurement,
+                        Quantity = item.Quantity,
+                        UnitPrice = 0,
+                        TotalPrice = 0,
+                        FurnitureEstimationId = estimation.FurnitureEstimationId
+                    };
+                    db.FurnitureMaterialCosts.Add(material);
+                    db.SaveChanges();
+                }
+                foreach (var item in boqLabor)
+                {
+                    var labor = new DirectLaborCost
+                    {
+                        TaskType = item.WorkShopType,
+                        WorkingTime = item.EstimatedMinute,
+                        FurnitureEstimationId = estimation.FurnitureEstimationId
+                    };
+                    db.DirectLaborCosts.Add(labor);
+                    db.SaveChanges();
+                }
+               
+            }
+            
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

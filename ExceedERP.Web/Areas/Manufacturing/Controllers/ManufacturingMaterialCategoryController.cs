@@ -121,7 +121,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var items = db.InventoryItems.Where(x => x.ItemCategoryCode == itemCategory.ItemCategoryCode).ToList();
             foreach (var item in items)
             {
-                var entity = new ManufacturingMaterialCategoryDetail
+                var entity = new ManufacturingMaterialCategoryItem
                 {
                     ItemName = item.Name,
                     ItemCode = item.ItemCode,
@@ -131,7 +131,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     IsActive = true,
                     ManufacturingMaterialCategoryId = materialCategory.ManufacturingMaterialCategoryId
                 };
-                db.ManufacturingMaterialCategoryDetails.Add(entity);
+                db.ManufacturingMaterialCategoryItems.Add(entity);
                 db.SaveChanges();
             }
 
