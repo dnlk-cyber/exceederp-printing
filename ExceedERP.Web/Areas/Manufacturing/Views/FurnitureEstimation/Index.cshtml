@@ -191,17 +191,17 @@
                                                     .Name("overall_costs_#=FurnitureEstimationId#")
                                                     .Columns(columns =>
                                                     {
-                                                           columns.Bound(c => c.MaterialCost);
-                                                           columns.Bound(c => c.LabourCost);
-                                                           columns.Bound(c => c.OverHeadCost);
-                                                           columns.Bound(c => c.ManufacturingCost);
-                                                           columns.Bound(c => c.AdministrativeCost);
-                                                           columns.Bound(c => c.GrandTotalCost);
-                                                           columns.Bound(c => c.ProfitMargin);
-                                                           columns.Bound(c => c.FinalPriceIncludingProfit);
+                                                        columns.Bound(c => c.MaterialCost);
+                                                        columns.Bound(c => c.LabourCost);
+                                                        columns.Bound(c => c.OverHeadCost);
+                                                        columns.Bound(c => c.ManufacturingCost);
+                                                        columns.Bound(c => c.AdministrativeCost);
+                                                        columns.Bound(c => c.GrandTotalCost);
+                                                        columns.Bound(c => c.ProfitMargin);
+                                                        columns.Bound(c => c.FinalPriceIncludingProfit);
 
-                                                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                       })
+                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                    })
 
                                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                         .Events(ev => ev.DataBound("onChildDataBound"))
@@ -351,19 +351,20 @@
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             $(this).find(".k-grid-reject").hide();
-            if (dataItem.IsApproved == true) {
+            if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
-
                 $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsChecked == true) {
+            else if (dataItem.IsOnlineTransferred) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
             }
             else {
                 $(this).find(".k-grid-approve").hide();
@@ -421,7 +422,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("CheckEstimation", "EstimationForm", new { Area = "Printing" })',
+            url: '@Url.Action("CheckEstimation", "FurnitureEstimation", new { Area = "Manufacturing" })',
             data: { id: dataItem.FurnitureEstimationId },
             success: function (result) {
                 if (result.Success) {
@@ -447,7 +448,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("ApproveEstimation", "EstimationForm", new { Area = "Printing" })',
+            url: '@Url.Action("ApproveEstimationForm", "FurnitureEstimation", new { Area = "Manufacturing" })',
             data: { id: dataItem.FurnitureEstimationId },
             success: function (result) {
                 if (result.Success) {

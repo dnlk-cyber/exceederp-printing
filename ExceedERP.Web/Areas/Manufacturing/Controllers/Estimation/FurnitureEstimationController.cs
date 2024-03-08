@@ -87,15 +87,17 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             
             IQueryable<FurnitureEstimationForm> estimationforms = db.FurnitureEstimationForms;
             
-            DataSourceResult result = estimationforms.ToDataSourceResult(request, estimationForm => new {
+            DataSourceResult result = estimationforms.ToDataSourceResult(request, model => new FurnitureEstimationForm
+            {
 
-                FurnitureEstimationId = estimationForm.FurnitureEstimationId,
-                CustomerId = estimationForm.CustomerId,
+                FurnitureEstimationId = model.FurnitureEstimationId,
+                CustomerId = model.CustomerId,
                 
                 
-                JobTypeId = estimationForm.JobTypeId,
-                Quantity = estimationForm.Quantity,
-                
+                JobTypeId = model.JobTypeId,
+                Quantity = model.Quantity,
+                IsOnlineTransferred = model.IsOnlineTransferred,
+                IsOnlineApproved = model.IsOnlineApproved
                 
             });
 
@@ -186,14 +188,15 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         public JsonResult CheckEstimation(int id)
         {
-            var estimation = db.EstimationForms.Find(id);
+            var estimation = db.FurnitureEstimationForms.Find(id);
             object response = null;
 
             if (estimation!=null)
                 {
-                estimation.IsChecked = true;
-                estimation.CheckedBy = User.Identity.Name;
-                db.EstimationForms.Attach(estimation);
+                estimation.IsOnlineTransferred = true;
+                estimation.IsOnlineTransferredBy = User.Identity.Name;
+                estimation.OnlineTransferredTime = DateTime.Today;
+                
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true,Message= "Estimation has been checked Successfully!" };
@@ -230,7 +233,76 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             return Json(response);
 
         }
+        public JsonResult ApproveEstimationForm(int id)
+        {
+            Object response = null;
+            var estimationForm = db.FurnitureEstimationForms.Find(id);
+            if(estimationForm != null)
+            {
+                var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId);
+                
+                if(overAllCost != null)
+                {
+                    estimationForm.IsOnlineApproved = true;
+                    estimationForm.OnlineApprovedBy = User.Identity.Name;
+                    estimationForm.OnlineApprovedTime = DateTime.Today;
 
+                    db.Entry(estimationForm).State = EntityState.Modified;
+
+                    // Create Proforma Invoice
+                    var proformaInvoice = new FurnitureProformaInvoice
+                    {
+                        CustomerId = estimationForm.CustomerId,
+                        DateCreated = DateTime.Today,
+                        CreatedBy = User.Identity.Name,
+                        FurnitureEstimationId = estimationForm.FurnitureEstimationId,
+                        DeliveryDate = DateTime.Today
+
+                    };
+                    db.FurnitureProformaInvoices.Add(proformaInvoice);
+                    db.SaveChanges();
+
+                    // Create ProformaInvoiceItem
+                    var jobCategory = db.JobCategories.Find(estimationForm.JobTypeId);
+                    if(jobCategory == null)
+                    {
+                        response = new { Success = false, Message = "Something's wrong! Job Type Not Found" };
+                        return Json(response);
+                    }
+                    var taxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobCategory.GLTaxRateID);
+                    if (taxRate == null)
+                    {
+                        response = new { Success = false, Message = "Something's wrong! Tax Rate Not Found" };
+                        return Json(response);
+                    }
+                    var proformaItem = new FurnitureProformaInvoiceItem
+                    {
+                        JobTypeId = estimationForm.JobTypeId,
+                        Quantity = estimationForm.Quantity,
+                        UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
+                        VAT = taxRate.CalculatedRate,
+                        DateCreated = DateTime.Today,
+                        FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId
+                    };
+                    proformaItem.UnitPriceWithVAT = proformaItem.UnitPriceBeforeVAT + proformaItem.UnitPriceBeforeVAT * proformaItem.VAT;
+                    
+                    db.FurnitureProformaInvoiceItems.Add(proformaItem);
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Successfully Created proforma Invoice" };
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Something's Wrong!, Overall Cost Not Found" };
+
+                }
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!" };
+            }
+
+            return Json(response);
+        }
         public JsonResult ApproveEstimation(int id)
         {
             var estimation = db.EstimationForms.Find(id);
@@ -260,7 +332,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     decimal beforeTax = 0;
                     decimal withTax = 0;
                     decimal vat = 0;
-                        var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == estimation.JobTypeId.ToString());
+                    var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == estimation.JobTypeId.ToString());
                     if (jobType != null)
                     {
                         var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
@@ -300,6 +372,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
             return Json(response);
         }
+
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

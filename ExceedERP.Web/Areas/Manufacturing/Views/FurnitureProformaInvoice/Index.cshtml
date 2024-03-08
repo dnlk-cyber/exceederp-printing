@@ -1,0 +1,175 @@
+﻿
+
+<label>Proforma Invoice</label>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureProformaInvoice>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+
+              columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+              columns.Bound(c => c.DeliveryPeriod);
+              
+              columns.Bound(c => c.PriceValidityPeriod);
+              columns.Bound(c => c.ModeOfPayment);
+              columns.Bound(c => c.Remark);
+
+              columns.Command(command =>
+              {
+                  command.Edit().Text(" ");
+                  command.Custom("Check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                  command.Custom("Approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                  command.Destroy().Text(" ");
+
+              }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureProformaInvoiceTemplate"))
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.FurnitureProformaInvoiceId))
+              .Read(read => read.Action("FurnitureProformaInvoices_Read", "FurnitureProformaInvoice"))
+              .Create(create => create.Action("FurnitureProformaInvoices_Create", "FurnitureProformaInvoice"))
+              .Update(update => update.Action("FurnitureProformaInvoices_Update", "FurnitureProformaInvoice"))
+              .Destroy(destroy => destroy.Action("FurnitureProformaInvoices_Destroy", "FurnitureProformaInvoice"))
+          ).ClientDetailTemplateId("tabstrip")
+)
+
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                .Name("tab_#=FurnitureProformaInvoiceId#")
+                                                .Items(item1 =>
+                                                {
+                                                    item1.Add().Text("Proforma Item").Content(@<text>
+                                                        @ProformaItem();
+                                                    </text>);
+                                                            
+                                                                }).ToClientTemplate())
+</script>
+
+
+@helper ProformaItem()
+{
+
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureProformaInvoiceItem>()
+              .Name("grid_#=FurnitureProformaInvoiceId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                  columns.Bound(c => c.UnitOfMeasurment);
+                  columns.Bound(c => c.Quantity);
+                  columns.Bound(c => c.UnitPriceBeforeVAT);
+                  columns.Bound(c => c.VAT);
+                  columns.Bound(c => c.UnitPriceWithVAT);
+                  columns.Bound(c => c.Remark);
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProformaItemEditorTemplate"))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(ev => ev.Error("error_handler(\"grid_#=FurnitureProformaInvoiceId#\")")
+                                            .RequestStart("onRequestStart(\"grid_#=FurnitureProformaInvoiceId#\")")
+                                            .RequestEnd("onRequestEnd(\"grid_#=FurnitureProformaInvoiceId#\")"))
+                  .Model(model => model.Id(p => p.FurnitureProformaInvoiceItemId))
+                  .Read(read => read.Action("FurnitureProformaInvoiceItems_Read", "FurnitureProformaInvoiceItem", new { proformaId = "#=FurnitureProformaInvoiceId#" }))
+                  .Create(create => create.Action("FurnitureProformaInvoiceItems_Create", "FurnitureProformaInvoiceItem", new { proformaId = "#=FurnitureProformaInvoiceId#" }))
+                  .Update(update => update.Action("FurnitureProformaInvoiceItems_Update", "FurnitureProformaInvoiceItem"))
+                  .Destroy(destroy => destroy.Action("FurnitureProformaInvoiceItems_Destroy", "FurnitureProformaInvoiceItem"))
+              ).ToClientTemplate()
+    )
+
+}
+
+
+<script type="text/javascript">
+
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCustomer() {
+        return {
+            text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function handleChecked(e) {
+        //var id = $("#FurnitureBillOfQuantityId").data("kendoNumericTextBox").value();
+
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.FurnitureBillOfQuantityId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+    function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureBillOfQuantityId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

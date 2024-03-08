@@ -1,0 +1,33 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureProformaInvoiceItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobOrderId);
+        columns.Bound(c => c.UnitOfMeasurment);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPriceBeforeVAT);
+        columns.Bound(c => c.VAT);
+        columns.Bound(c => c.UnitPriceWithVAT);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureProformaInvoiceItemId))
+          .Read(read => read.Action("FurnitureProformaInvoiceItems_Read", "FurnitureProformaInvoiceItem"))
+          .Create(create => create.Action("FurnitureProformaInvoiceItems_Create", "FurnitureProformaInvoiceItem"))
+          .Update(update => update.Action("FurnitureProformaInvoiceItems_Update", "FurnitureProformaInvoiceItem"))
+          .Destroy(destroy => destroy.Action("FurnitureProformaInvoiceItems_Destroy", "FurnitureProformaInvoiceItem"))
+      )
+)

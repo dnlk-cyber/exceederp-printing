@@ -1,0 +1,32 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureJobOrderForm>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+          columns.Bound(c => c.UnitOfMeasurment);
+          columns.Bound(c => c.Quantity);
+          columns.Bound(c => c.UnitPriceBeforeVAT);
+          columns.Bound(c => c.UnitPriceWithVAT);
+          columns.Bound(c => c.DeliveryDate);
+          columns.Bound(c => c.CRVNo);
+          columns.Bound(c => c.AdvancePaymentInPercent);
+          
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureJobOrderFormId))
+          .Read(read => read.Action("FurnitureJobOrderForms_Read", "FurnitureJobOrderForm"))
+          .Create(create => create.Action("FurnitureJobOrderForms_Create", "FurnitureJobOrderForm"))
+          .Update(update => update.Action("FurnitureJobOrderForms_Update", "FurnitureJobOrderForm"))
+          .Destroy(destroy => destroy.Action("FurnitureJobOrderForms_Destroy", "FurnitureJobOrderForm"))
+      )
+)

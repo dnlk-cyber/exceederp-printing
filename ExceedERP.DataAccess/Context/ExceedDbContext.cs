@@ -1604,6 +1604,8 @@ namespace ExceedERP.DataAccess.Context
             #region Manufucturing 
             #region  Estimation
             #region Furniture Estimation
+            modelBuilder.Configurations.Add(new FurnitureProformaInvoiceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureProformaInvoiceItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureStepEntityConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureLaborCostEntityConfiguration());
             modelBuilder.Configurations.Add(new Context.FurnitureOverallCostEntityConfiguration());
@@ -2134,6 +2136,9 @@ namespace ExceedERP.DataAccess.Context
         #region Manufucturing
         #region  Estimation
         #region Furniture Estimation
+        public DbSet<FurnitureProformaInvoice> FurnitureProformaInvoices { get; set; }
+        public DbSet<FurnitureProformaInvoiceItem> FurnitureProformaInvoiceItems { get; set; }
+        public DbSet<FurnitureJobOrderForm> FurnitureJobOrderForms { get; set; }
         public DbSet<FurnitureStep> FurnitureSteps { get; set; }
         public DbSet<FurnitureMaterialCost> FurnitureMaterialCosts { get; set; }
         public DbSet<FurnitureEstimationForm> FurnitureEstimationForms { get; set; }

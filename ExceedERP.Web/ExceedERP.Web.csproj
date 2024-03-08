@@ -1982,6 +1982,9 @@
     <Compile Include="Areas\Manufacturing\Controllers\FurnitureBillOfQuantityController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\FurnitureBOQLaborController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\FurnitureBOQMaterialController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureJobOrderFormController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureProformaInvoiceController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureProformaInvoiceItemController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\Common\FurnitureJobCostingDataProviderController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDailyLaborRateController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDeliveredJobController.cs" />
@@ -6588,6 +6591,11 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\MaterialItemTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EditorTemplates\TaskCategoryTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\LaborCostbatch\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderForm\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureProformaInvoiceItem\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureProformaInvoice\EditorTemplates\FurnitureProformaInvoiceTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureProformaInvoice\EditorTemplates\ProformaItemEditorTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureProformaInvoice\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

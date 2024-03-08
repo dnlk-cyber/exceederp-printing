@@ -8,6 +8,23 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+
+    class FurnitureProformaInvoiceEntityTypeConfiguration : EntityTypeConfiguration<FurnitureProformaInvoice>
+    {
+        public FurnitureProformaInvoiceEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureProformaInvoice", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureProformaInvoiceId);
+        }
+    }
+    class FurnitureProformaInvoiceItemEntityTypeConfiguration : EntityTypeConfiguration<FurnitureProformaInvoiceItem>
+    {
+        public FurnitureProformaInvoiceItemEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureProformaInvoiceItem", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureProformaInvoiceItemId);
+        }
+    }
     class FurnitureBillOfQuantityEntityConfiguration : EntityTypeConfiguration<FurnitureBillOfQuantity>
     {
         public FurnitureBillOfQuantityEntityConfiguration()

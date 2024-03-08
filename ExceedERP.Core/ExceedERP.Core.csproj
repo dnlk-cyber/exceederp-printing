@@ -1035,9 +1035,11 @@
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEnum.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEstimation.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEstimationRoles.cs" />
+    <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureJobOrderForm.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureLaborCost.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureMaterialCost.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureOverallCost.cs" />
+    <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureProforma.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureStep.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\Setting\FurnitureCommonEnum.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\Setting\Validation.cs" />
