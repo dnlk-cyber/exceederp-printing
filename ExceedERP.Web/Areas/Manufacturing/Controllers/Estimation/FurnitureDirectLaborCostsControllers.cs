@@ -32,7 +32,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             {
                 DirectLaborCostId = laborCost.DirectLaborCostId,
                 FurnitureEstimationId = laborCost.FurnitureEstimationId,
-                FurnitureCategoryId = laborCost.FurnitureCategoryId,
+                
                 WorkingTime = laborCost.WorkingTime,
                 CostPerHour = laborCost.CostPerHour,
                 TotalCost = laborCost.TotalCost,
@@ -95,7 +95,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             {
                 DirectLaborCostId = laborCost.DirectLaborCostId,
                 FurnitureEstimationId = laborCost.FurnitureEstimationId,
-                FurnitureCategoryId = laborCost.FurnitureCategoryId,
+                
                 WorkingTime = laborCost.WorkingTime,
                 CostPerHour = laborCost.CostPerHour,
                 TotalCost = laborCost.TotalCost,

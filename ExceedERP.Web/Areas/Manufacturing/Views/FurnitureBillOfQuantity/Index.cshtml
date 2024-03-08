@@ -100,9 +100,10 @@
                               .Name("labor_#=FurnitureBillOfQuantityId#")
                               .Columns(columns =>
                               {
-                                  columns.Bound(c => c.WorkShopType);
-                                  columns.Bound(c => c.NumberOfEmloyees);
-                                  columns.Bound(c => c.EstimatedMinute);
+                                  columns.Bound(c => c.WorkShopType).Width(120);
+                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+                                  columns.Bound(c => c.NumberOfEmloyees).Width(100);
+                                  columns.Bound(c => c.EstimatedMinute).Width(100);
 
 
                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -130,6 +131,11 @@
 }
 
 <script type="text/javascript">
+    function filterTaskCategory() {
+        return {
+            taskType: $("#WorkShopType").val()
+        }
+    }
     function filterJobType() {
         return {
             text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),

@@ -35,7 +35,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 LastModified = furnitureBOQLabor.LastModified,
                 CreatedBy = furnitureBOQLabor.CreatedBy,
                 ModifiedBy = furnitureBOQLabor.ModifiedBy,
-                FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId
+                FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId,
+                ManufacturingTaskCategoryId = furnitureBOQLabor.ManufacturingTaskCategoryId
             });
 
             return Json(result);
@@ -51,12 +52,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     WorkShopType = furnitureBOQLabor.WorkShopType,
                     NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
                     EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
-                    DateCreated = furnitureBOQLabor.DateCreated,
-                    LastModified = furnitureBOQLabor.LastModified,
-                    CreatedBy = furnitureBOQLabor.CreatedBy,
-                    ModifiedBy = furnitureBOQLabor.ModifiedBy,
-                    FurnitureBillOfQuantityId = id,
+                    DateCreated = DateTime.Today,
                     
+                    CreatedBy = User.Identity.Name,
+                   
+                    FurnitureBillOfQuantityId = id,
+                    ManufacturingTaskCategoryId = furnitureBOQLabor.ManufacturingTaskCategoryId
+
                 };
 
                 db.FurnitureBOQLabors.Add(entity);
@@ -79,10 +81,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
                     EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                     DateCreated = furnitureBOQLabor.DateCreated,
-                    LastModified = furnitureBOQLabor.LastModified,
+                    LastModified = DateTime.Today,
                     CreatedBy = furnitureBOQLabor.CreatedBy,
-                    ModifiedBy = furnitureBOQLabor.ModifiedBy,
-                    FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId
+                    ModifiedBy = User.Identity.Name,
+                    FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId,
+                    ManufacturingTaskCategoryId = furnitureBOQLabor.ManufacturingTaskCategoryId
                 };
 
                 db.FurnitureBOQLabors.Attach(entity);
@@ -108,7 +111,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     LastModified = furnitureBOQLabor.LastModified,
                     CreatedBy = furnitureBOQLabor.CreatedBy,
                     ModifiedBy = furnitureBOQLabor.ModifiedBy,
-                    FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId
+                    FurnitureBillOfQuantityId = furnitureBOQLabor.FurnitureBillOfQuantityId,
+                    ManufacturingTaskCategoryId = furnitureBOQLabor.ManufacturingTaskCategoryId
                 };
 
                 db.FurnitureBOQLabors.Attach(entity);

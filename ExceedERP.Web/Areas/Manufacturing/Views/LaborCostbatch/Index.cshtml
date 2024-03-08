@@ -1,0 +1,56 @@
+﻿
+@helper LaborCostBatch()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.DirectLaborCost>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(o => o.TaskType).EditorTemplateName("TaskTypeTemplate").Width(120);
+                  columns.Bound(o => o.TaskCategoryId).EditorTemplateName("TaskCategoryTemplate").Width(150);
+                  columns.Bound(o => o.WorkingTime).Width(100);
+                  columns.Bound(o => o.CostPerHour).Width(100);
+                  columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
+                  columns.Command(command => { command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+                  toolbar.Save();
+              })
+              .ColumnMenu()
+              .Events(ev => ev.DataBound("onChildDataBound"))
+              .Editable(editable => editable.Mode(GridEditMode.InCell))
+              .Pageable()
+              .Navigatable()
+              .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Cell);
+              })
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                   .Events(ev => ev.Error("error_handler(\"labor_costs_#=FurnitureEstimationId#\")")
+                                    .RequestStart("onRequestStart(\"labor_costs_#=FurnitureEstimationId#\")")
+                                    .RequestEnd("onRequestEnd(\"labor_costs_#=FurnitureEstimationId#\")"))
+                                    .Aggregates(aggregates =>
+
+                                    {
+                                        aggregates.Add(c => c.TotalCost).Sum();
+                                    })
+                  .Batch(true)
+                  .Model(model => model.Id(p => p.DirectLaborCostId))
+                  .Read(read => read.Action("DirectLaborCosts_Read", "LaborCostbatch", new { estimationFormId = "#=FurnitureEstimationId#" }))
+                  .Create(create => create.Action("DirectLaborCosts_Create", "LaborCostbatch", new { estimationFormId = "#=FurnitureEstimationId#" }))
+                  .Update(update => update.Action("DirectLaborCosts_Update", "LaborCostbatch"))
+                  .Destroy(destroy => destroy.Action("DirectLaborCosts_Destroy", "LaborCostbatch"))
+              )
+    )
+
+}
+

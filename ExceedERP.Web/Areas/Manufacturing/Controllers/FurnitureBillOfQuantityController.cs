@@ -48,6 +48,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 Value = s.ManufacturingMaterialCategoryItemId,
                 Text = s.ItemName
             }).ToList();
+
+            ViewData["TaskCategory"] = db.ManifucturingTaskCategories.Select(s => new
+            {
+                Value = s.ManifucturingTaskCategoryId,
+                Text = s.Name
+            });
             return View();
         }
 
@@ -274,6 +280,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
                 foreach (var item in boqMaterial)
                 {
+                    var materialItem = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == item.ManufacturingMaterialCategoryItemId);
                     var material = new FurnitureMaterialCost
                     {
                         TaskType = item.WorkshopType,
@@ -281,21 +288,30 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         ManufacturingMaterialCategoryItemId = item.ManufacturingMaterialCategoryItemId,
                         UnitOfMeasurment = item.UnitOfMeasurement,
                         Quantity = item.Quantity,
-                        UnitPrice = 0,
-                        TotalPrice = 0,
+                        UnitPrice = materialItem.UnitPrice,
+                        
                         FurnitureEstimationId = estimation.FurnitureEstimationId
                     };
+
+                    // Total Price Calculation
+                    material.TotalPrice = material.UnitPrice * material.Quantity;
+
                     db.FurnitureMaterialCosts.Add(material);
                     db.SaveChanges();
                 }
                 foreach (var item in boqLabor)
                 {
+                    var taskCategory = db.ManifucturingTaskCategories.Find(item.ManufacturingTaskCategoryId);
                     var labor = new DirectLaborCost
                     {
+                        TaskCategoryId = item.ManufacturingTaskCategoryId,
+                        CostPerHour = taskCategory.HourRate,
+                        
                         TaskType = item.WorkShopType,
                         WorkingTime = item.EstimatedMinute,
                         FurnitureEstimationId = estimation.FurnitureEstimationId
                     };
+                    labor.TotalCost = labor.WorkingTime * labor.CostPerHour;
                     db.DirectLaborCosts.Add(labor);
                     db.SaveChanges();
                 }

@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
-using System.Data.Entity.Core;
-using System.Data.Entity.Core.Objects;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
-using ExceedERP.Web.Areas.Manufacturing.Models;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 {

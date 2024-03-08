@@ -33,10 +33,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         
         [Key]
         public int DirectLaborCostId { get; set; }
-        [Required]
-        [Display(Name ="Category")]
-        public int FurnitureCategoryId { get; set; }
-        
+       
         public int FurnitureEstimationId { get; set; }
        
         [Required]

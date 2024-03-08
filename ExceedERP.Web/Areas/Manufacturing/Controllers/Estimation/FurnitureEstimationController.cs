@@ -1,15 +1,12 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 
@@ -22,10 +19,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         public ActionResult Index()
         {
-            //ViewData["JobTypes"] = db.FurnitureJobCategories.Select(s => new {
-            //    JobTypeId = s.FurnitureJobCategoryId,
-            //    Type = s.HaveParent ? db.FurnitureJobCategories.Where(q => q.FurnitureJobCategoryId == s.FurnitureParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
-            //}).ToList();
+            ViewData["TaskCategory"] = db.ManifucturingTaskCategories.Select(s => new
+            {
+                Value = s.ManifucturingTaskCategoryId,
+                Text = s.Name
+            });
             ViewData["JobType"] = db.FurnitureJobCategories.Select(s => new
             {
                 Value = s.FurnitureJobCategoryId,
@@ -64,6 +62,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 Value = s.ManufacturingMaterialCategoryId
             }).ToList();
             ViewData["MaterialCategory"] = materialCategories;
+            ViewData["MaterialItem"] = db.ManufacturingMaterialCategoryItems.Select(s => new
+            {
+                Value = s.ManufacturingMaterialCategoryItemId,
+                Text = s.ItemName
+            }).ToList();
             return View();
 
         }

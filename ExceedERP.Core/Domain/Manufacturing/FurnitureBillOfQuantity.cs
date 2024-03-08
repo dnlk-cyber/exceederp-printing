@@ -44,6 +44,8 @@ namespace ExceedERP.Core.Domain.Manufacturing
     {
         [Key]
         public int FurnitureBOQLaborId { get; set; }
+        [Display(Name ="Task Category")]
+        public int ManufacturingTaskCategoryId { get; set; }
         [Display(Name ="Work Shop")]
         public WorkShop WorkShopType { get; set; }
         [Display(Name ="Number of Employees")]
