@@ -67,7 +67,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 ModifiedBy = furnitureProformaInvoice.ModifiedBy,
                 PaymentType = furnitureProformaInvoice.PaymentType,
                 HaveEstimation = furnitureProformaInvoice.HaveEstimation,
-                IsExistingCustomer = furnitureProformaInvoice.IsExistingCustomer
+                IsExistingCustomer = furnitureProformaInvoice.IsExistingCustomer,
+                AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent
             });
 
             return Json(result);
@@ -87,7 +88,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     PriceValidityPeriod = furnitureProformaInvoice.PriceValidityPeriod,
                     ModeOfPayment = furnitureProformaInvoice.ModeOfPayment,
                     Remark = furnitureProformaInvoice.Remark,
-                    
+                    AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent,
                     DateCreated = DateTime.Today,
                     
                     CreatedBy = User.Identity.Name,
@@ -121,7 +122,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureProformaInvoice.DateCreated,
                     LastModified = DateTime.Today,
                     CreatedBy = furnitureProformaInvoice.CreatedBy,
-                    ModifiedBy = User.Identity.Name
+                    ModifiedBy = User.Identity.Name,
+                    AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent
                 };
 
                 db.FurnitureProformaInvoices.Attach(entity);
@@ -160,6 +162,83 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         {
             db.Dispose();
             base.Dispose(disposing);
+        }
+        public JsonResult CheckProforma(int id)
+        {
+            Object response = null;
+            var proforma = db.FurnitureProformaInvoices.Find(id);
+            if(proforma != null)
+            {
+                proforma.IsSendForApproval = true;
+                proforma.SendForApprovalBy = User.Identity.Name;
+                proforma.SendForApprovalTime = DateTime.Today;
+                db.Entry(proforma).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Checked" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!" };
+            }
+            return Json(response);
+        }
+        public JsonResult ApproveProforma(int id)
+        {
+            Object response = null;
+            var proformaInvoice = db.FurnitureProformaInvoices.Find(id);
+            if (proformaInvoice != null)
+            {
+                var proformaItem = db.FurnitureProformaInvoiceItems.FirstOrDefault(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId);
+                if (proformaItem != null)
+                {
+                    proformaInvoice.IsOnlineApproved = true;
+                    proformaInvoice.OnlineApprovedBy = User.Identity.Name;
+                    proformaInvoice.OnlineApprovedTime = DateTime.Now;
+
+                    db.Entry(proformaInvoice).State = EntityState.Modified;
+
+                    var jobOrder = new FurnitureJobOrderForm
+                    {
+                        CustomerId = proformaInvoice.CustomerId,
+                        AdvancePaymentInPercent = proformaInvoice.AdvancePaymentInPercent,
+                        DeliveryDate = proformaInvoice.DeliveryDate,
+                        PaymentType = proformaInvoice.PaymentType,
+                        FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
+                        
+                        DateCreated = DateTime.Today,
+                        CreatedBy = User.Identity.Name,
+                        
+                    };
+                    
+                    db.FurnitureJobOrderForms.Add(jobOrder);
+                    db.SaveChanges();
+
+                    var jobOrderItem = new FurnitureJobOrderItem
+                    {
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Today,
+                        Quantity = proformaItem.Quantity,
+                        JobTypeId = proformaItem.JobTypeId,
+                        UnitOfMeasurment = proformaItem.UnitOfMeasurment,
+                        UnitPriceBeforeVAT = proformaItem.UnitPriceBeforeVAT,
+                        VAT = proformaItem.VAT,
+                        UnitPriceWithVAT = proformaItem.UnitPriceWithVAT,
+                        FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId
+                    };
+                    db.FurnitureJobOrderItems.Add(jobOrderItem);
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Successfully Created Job-Order Form" };
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Something's Wrong!, Proforma Item Not Found!" };
+                }
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!, Proforma Not Found!" };
+            }
+            return Json(response);
         }
     }
 }

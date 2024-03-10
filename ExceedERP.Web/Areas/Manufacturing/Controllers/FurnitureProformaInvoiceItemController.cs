@@ -97,7 +97,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureProformaInvoiceItem.DateCreated,
                     LastModified = furnitureProformaInvoiceItem.LastModified,
                     CreatedBy = furnitureProformaInvoiceItem.CreatedBy,
-                    ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy
+                    ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy,
+                    FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId
                 };
 
                 db.FurnitureProformaInvoiceItems.Attach(entity);
@@ -126,7 +127,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureProformaInvoiceItem.DateCreated,
                     LastModified = furnitureProformaInvoiceItem.LastModified,
                     CreatedBy = furnitureProformaInvoiceItem.CreatedBy,
-                    ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy
+                    ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy,
+                    FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId
                 };
 
                 db.FurnitureProformaInvoiceItems.Attach(entity);

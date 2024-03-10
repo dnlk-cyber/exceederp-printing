@@ -537,9 +537,9 @@
         masterRow = e.masterRow;
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
-        codeid = masterDataItem.EstimationFormId;
-        isApproved = masterDataItem.IsApproved;
-        isChecked = masterDataItem.IsChecked;
+        codeid = masterDataItem.FurnitureEstimationId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#material_costs_" + codeid).hide();
             $(".k-grid-add", "#labor_costs_" + codeid).hide();

@@ -1618,6 +1618,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP
+            modelBuilder.Configurations.Add(new FurnitureJobOrderItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FurnitureBillOfQuantityEntityConfiguration());
             modelBuilder.Configurations.Add(new FurnitureBOQMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FurnitureBOQLaborEntityTypeConfiguration());
@@ -2150,6 +2151,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Production Follow UP
+        public DbSet<FurnitureJobOrderItem> FurnitureJobOrderItems { get; set; }
         public DbSet<FurnitureBillOfQuantity> FurnitureBillOfQuantities { get; set; }
         public DbSet<FurnitureBOQMaterial> FurnitureBOQMaterials { get; set; }
         public DbSet<FurnitureBOQLabor> FurnitureBOQLabors { get; set; }

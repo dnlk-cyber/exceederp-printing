@@ -1,0 +1,32 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureJobOrderItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobTypeId);
+        columns.Bound(c => c.UnitOfMeasurment);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPriceBeforeVAT);
+        columns.Bound(c => c.VAT);
+        columns.Bound(c => c.UnitPriceWithVAT);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureJobOrderItemId))
+          .Read(read => read.Action("FurnitureJobOrderItems_Read", "FurnitureJobOrderItem"))
+          .Create(create => create.Action("FurnitureJobOrderItems_Create", "FurnitureJobOrderItem"))
+          .Update(update => update.Action("FurnitureJobOrderItems_Update", "FurnitureJobOrderItem"))
+          .Destroy(destroy => destroy.Action("FurnitureJobOrderItems_Destroy", "FurnitureJobOrderItem"))
+      )
+)

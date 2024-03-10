@@ -22,6 +22,8 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public int PriceValidityPeriod { get; set; }
         [Display(Name ="Mode of payment")]
         public string ModeOfPayment { get; set; }
+        [Display(Name = "Advance Payment(%)")]
+        public decimal AdvancePaymentInPercent { get; set; }
         [Display(Name ="Payment Type")]
         public TypeOfPayment PaymentType { get; set; }
         public bool HaveEstimation { get; set; }

@@ -36,14 +36,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureJobOrderForms_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FurnitureJobOrderForm> furniturejoborderforms = db.FurnitureJobOrderForms;
-            DataSourceResult result = furniturejoborderforms.ToDataSourceResult(request, furnitureJobOrderForm => new {
+            DataSourceResult result = furniturejoborderforms.ToDataSourceResult(request, furnitureJobOrderForm => new FurnitureJobOrderForm
+            {
                 FurnitureJobOrderFormId = furnitureJobOrderForm.FurnitureJobOrderFormId,
-                CustomerId = furnitureJobOrderForm.CustomerId,
-                JobTypeId = furnitureJobOrderForm.JobTypeId,
-                UnitOfMeasurment = furnitureJobOrderForm.UnitOfMeasurment,
-                Quantity = furnitureJobOrderForm.Quantity,
-                UnitPriceBeforeVAT = furnitureJobOrderForm.UnitPriceBeforeVAT,
-                UnitPriceWithVAT = furnitureJobOrderForm.UnitPriceWithVAT,
+                CustomerId = furnitureJobOrderForm.CustomerId,                
                 DeliveryDate = furnitureJobOrderForm.DeliveryDate,
                 CRVNo = furnitureJobOrderForm.CRVNo,
                 AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
@@ -66,7 +62,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 DateCreated = furnitureJobOrderForm.DateCreated,
                 LastModified = furnitureJobOrderForm.LastModified,
                 CreatedBy = furnitureJobOrderForm.CreatedBy,
-                ModifiedBy = furnitureJobOrderForm.ModifiedBy
+                ModifiedBy = furnitureJobOrderForm.ModifiedBy,                
             });
 
             return Json(result);
@@ -80,11 +76,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 var entity = new FurnitureJobOrderForm
                 {
                     CustomerId = furnitureJobOrderForm.CustomerId,
-                    JobTypeId = furnitureJobOrderForm.JobTypeId,
-                    UnitOfMeasurment = furnitureJobOrderForm.UnitOfMeasurment,
-                    Quantity = furnitureJobOrderForm.Quantity,
-                    UnitPriceBeforeVAT = furnitureJobOrderForm.UnitPriceBeforeVAT,
-                    UnitPriceWithVAT = furnitureJobOrderForm.UnitPriceWithVAT,
+                    
                     DeliveryDate = furnitureJobOrderForm.DeliveryDate,
                     CRVNo = furnitureJobOrderForm.CRVNo,
                     AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
@@ -127,11 +119,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 {
                     FurnitureJobOrderFormId = furnitureJobOrderForm.FurnitureJobOrderFormId,
                     CustomerId = furnitureJobOrderForm.CustomerId,
-                    JobTypeId = furnitureJobOrderForm.JobTypeId,
-                    UnitOfMeasurment = furnitureJobOrderForm.UnitOfMeasurment,
-                    Quantity = furnitureJobOrderForm.Quantity,
-                    UnitPriceBeforeVAT = furnitureJobOrderForm.UnitPriceBeforeVAT,
-                    UnitPriceWithVAT = furnitureJobOrderForm.UnitPriceWithVAT,
+                    
                     DeliveryDate = furnitureJobOrderForm.DeliveryDate,
                     CRVNo = furnitureJobOrderForm.CRVNo,
                     AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
@@ -174,11 +162,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 {
                     FurnitureJobOrderFormId = furnitureJobOrderForm.FurnitureJobOrderFormId,
                     CustomerId = furnitureJobOrderForm.CustomerId,
-                    JobTypeId = furnitureJobOrderForm.JobTypeId,
-                    UnitOfMeasurment = furnitureJobOrderForm.UnitOfMeasurment,
-                    Quantity = furnitureJobOrderForm.Quantity,
-                    UnitPriceBeforeVAT = furnitureJobOrderForm.UnitPriceBeforeVAT,
-                    UnitPriceWithVAT = furnitureJobOrderForm.UnitPriceWithVAT,
+                    
                     DeliveryDate = furnitureJobOrderForm.DeliveryDate,
                     CRVNo = furnitureJobOrderForm.CRVNo,
                     AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,

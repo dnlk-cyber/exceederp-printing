@@ -29,9 +29,13 @@
           })
           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureProformaInvoiceTemplate"))
           .Filterable()
+          .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
           .Scrollable()
           .DataSource(dataSource => dataSource
               .Ajax()
+              .Events(ev => ev.Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
               .Model(model => model.Id(p => p.FurnitureProformaInvoiceId))
               .Read(read => read.Action("FurnitureProformaInvoices_Read", "FurnitureProformaInvoice"))
               .Create(create => create.Action("FurnitureProformaInvoices_Create", "FurnitureProformaInvoice"))
@@ -43,14 +47,15 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                .Name("tab_#=FurnitureProformaInvoiceId#")
-                                                .Items(item1 =>
-                                                {
-                                                    item1.Add().Text("Proforma Item").Content(@<text>
-                                                        @ProformaItem();
-                                                    </text>);
-                                                            
-                                                                }).ToClientTemplate())
+        .Name("tab_#=FurnitureProformaInvoiceId#")
+        .Items(item1 =>
+        {
+            item1.Add().Text("Proforma Item")
+            .Content(
+            @<text>
+                @ProformaItem();
+            </text>);
+        }).ToClientTemplate())
 </script>
 
 
@@ -96,7 +101,7 @@
 
 
 <script type="text/javascript">
-
+    
     function filterJobType() {
         return {
             text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
@@ -107,16 +112,63 @@
             text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
         }
     }
-    function handleChecked(e) {
-        //var id = $("#FurnitureBillOfQuantityId").data("kendoNumericTextBox").value();
 
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsOnlineTransferred) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.FurnitureProformaInvoiceId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#grid_" + codeid).hide();
+            
+        }
+
+
+    }
+    function handleChecked(e) {
+      
         if (confirm("Are you sure you this form is checked?")) {
             var grid = this;
             var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-            var id = dataItem.FurnitureBillOfQuantityId;
+            var id = dataItem.FurnitureProformaInvoiceId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("CheckBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                url: '@Url.Action("CheckProforma", "FurnitureProformaInvoice", new { Area = "Manufacturing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -140,8 +192,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
-                data: { id: dataItem.FurnitureBillOfQuantityId},
+                url: '@Url.Action("ApproveProforma", "FurnitureProformaInvoice", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureProformaInvoiceId},
                 success: function (result) {
                     if (result.Success) {
                         toastr.success(result.Message)
