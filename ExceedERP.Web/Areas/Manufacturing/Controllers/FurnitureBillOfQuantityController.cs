@@ -253,7 +253,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 db.SaveChanges();
                 //--Generate Estimation--//
                 GenerateEstimation(billOfQuantity);
-                response = new { Success = true, Message = "Bill of Quantity Approved!" };
+                response = new { Success = true, Message = "Successfully Approved and Created Estimation!" };
             }
             else
             {

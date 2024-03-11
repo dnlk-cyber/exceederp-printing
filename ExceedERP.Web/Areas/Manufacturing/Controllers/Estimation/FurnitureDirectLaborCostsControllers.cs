@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 DateCreated = laborCost.DateCreated,
                 LastModified = laborCost.LastModified,
                 TaskType = laborCost.TaskType,
-                
+                TaskCategoryId = laborCost.TaskCategoryId
 
             });
 

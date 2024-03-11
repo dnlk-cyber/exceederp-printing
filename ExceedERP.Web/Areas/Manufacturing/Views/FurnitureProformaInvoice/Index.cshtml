@@ -17,8 +17,8 @@
               columns.Command(command =>
               {
                   command.Edit().Text(" ");
-                  command.Custom("Check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                  command.Custom("Approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                  command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                  command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
                   command.Destroy().Text(" ");
 
               }).Width(180);
@@ -126,7 +126,7 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsOnlineTransferred) {
+            else if (dataItem.IsSendForApproval) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();

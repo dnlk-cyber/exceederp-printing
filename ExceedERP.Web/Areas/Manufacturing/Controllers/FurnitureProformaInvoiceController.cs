@@ -153,11 +153,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return Json(new[] { furnitureProformaInvoice }.ToDataSourceResult(request, ModelState));
         }
 
-        //public JsonResult ApproveProforma(int id)
-        //{
-        //    var jobOrder = db.FurnitureProformaInvoices
-        //    var item = db
-        //}
+        
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
@@ -201,7 +197,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     {
                         CustomerId = proformaInvoice.CustomerId,
                         AdvancePaymentInPercent = proformaInvoice.AdvancePaymentInPercent,
-                        DeliveryDate = proformaInvoice.DeliveryDate,
+                        
                         PaymentType = proformaInvoice.PaymentType,
                         FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
                         
@@ -209,7 +205,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         CreatedBy = User.Identity.Name,
                         
                     };
-                    
+                    jobOrder.DeliveryDate = DateTime.Today.AddDays(proformaInvoice.DeliveryPeriod);
                     db.FurnitureJobOrderForms.Add(jobOrder);
                     db.SaveChanges();
 

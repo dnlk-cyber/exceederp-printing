@@ -22,7 +22,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         public ActionResult DirectLaborCosts_Read([DataSourceRequest]DataSourceRequest request, int estimationFormId)
         {
             IQueryable<DirectLaborCost> directlaborcosts = db.DirectLaborCosts.Where(x => x.FurnitureEstimationId == estimationFormId);
-            DataSourceResult result = directlaborcosts.ToDataSourceResult(request, directLaborCost => new {
+            DataSourceResult result = directlaborcosts.ToDataSourceResult(request, directLaborCost => new DirectLaborCost
+            {
                 DirectLaborCostId = directLaborCost.DirectLaborCostId,
                 
                 FurnitureEstimationId = directLaborCost.FurnitureEstimationId,
@@ -34,7 +35,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 DateCreated = directLaborCost.DateCreated,
                 LastModified = directLaborCost.LastModified,
                 CreatedBy = directLaborCost.CreatedBy,
-                ModifiedBy = directLaborCost.ModifiedBy
+                ModifiedBy = directLaborCost.ModifiedBy,
+                
+                
             });
 
             return Json(result);

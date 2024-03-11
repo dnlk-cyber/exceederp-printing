@@ -13,8 +13,8 @@
                           columns.Command(command =>
                           {
                               command.Edit().Text(" ");
-                              command.Custom("Check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                              command.Custom("Approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                              command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                              command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
                               command.Destroy().Text(" ");
 
                           }).Width(180);
@@ -25,7 +25,7 @@
                       })
                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureBillOfQuantityTemplate"))
                       .Pageable()
-
+                      .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
                       .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
                       .Scrollable()
                       .DataSource(dataSource => dataSource
@@ -158,6 +158,54 @@
         }
     }
 
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        codeid = masterDataItem.FurnitureBillOfQuantityId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#material_" + codeid).hide();
+            $(".k-grid-add", "#labor_" + codeid).hide();
+        }
+
+
+    }
     function handleChecked(e) {
         //var id = $("#FurnitureBillOfQuantityId").data("kendoNumericTextBox").value();
 
