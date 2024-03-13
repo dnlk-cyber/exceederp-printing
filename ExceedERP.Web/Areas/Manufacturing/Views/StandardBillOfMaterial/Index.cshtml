@@ -1,0 +1,32 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfMaterial>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MyProperty);
+        columns.Bound(c => c.ManufacturingMaterialCategoryId);
+        columns.Bound(c => c.ManufacturingMaterialCategoryItemId);
+        columns.Bound(c => c.ItemCode);
+        columns.Bound(c => c.UnitOfMeasurement);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.WorkshopType);
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StandardBillOfMaterialId))
+          .Read(read => read.Action("StandardBillOfMaterials_Read", "StandardBillOfMaterial"))
+          .Create(create => create.Action("StandardBillOfMaterials_Create", "StandardBillOfMaterial"))
+          .Update(update => update.Action("StandardBillOfMaterials_Update", "StandardBillOfMaterial"))
+          .Destroy(destroy => destroy.Action("StandardBillOfMaterials_Destroy", "StandardBillOfMaterial"))
+      )
+)

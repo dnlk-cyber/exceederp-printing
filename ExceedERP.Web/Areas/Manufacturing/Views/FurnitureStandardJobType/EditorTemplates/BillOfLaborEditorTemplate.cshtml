@@ -1,0 +1,59 @@
+﻿@model ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfLabor
+
+
+@* Labor *@
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Work Shop</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.WorkShopType)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Setting.WorkShop))
+                                    )
+                                .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Task Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ManufacturingTaskCategoryId)
+                                     .ValuePrimitive(true)
+                                     .OptionLabel("Select task category...")
+                                     .DataTextField("Text")
+                                     .DataValueField("Value")
+                                     .Filter("contains")
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetTaskCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterTaskCategory")
+                                         )
+                                         .ServerFiltering(true);
+                                     }).CascadeFrom("WorkShopType")
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>No of Employees</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.NumberOfEmloyees).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Estimated Minute</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.EstimatedMinute).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+</div>

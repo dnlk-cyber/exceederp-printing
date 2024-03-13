@@ -328,8 +328,9 @@
                     </a>
                     <b class="arrow"></b>
                     <ul class="submenu">
-                        <li id="setting001" class="actionlinlk">@Html.ActionLink("Furniture Setup", "Index", "FurniturePrintingStep", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Categories", "Index", "FurnitureCategories", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        @*<li id="setting001" class="actionlinlk">@Html.ActionLink("Furniture Setup", "Index", "FurniturePrintingStep", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Categories", "Index", "FurnitureCategories", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>*@
+                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Standard Jobtype", "Index", "FurnitureStandardJobType", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                         <li id="setting002" class="actionlinlk">@Html.ActionLink("Task Category", "Index", "ManufucturingTaskCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                         <li id="setting002" class="actionlinlk">@Html.ActionLink("Material Category", "Index", "ManufacturingMaterialCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                     </ul>

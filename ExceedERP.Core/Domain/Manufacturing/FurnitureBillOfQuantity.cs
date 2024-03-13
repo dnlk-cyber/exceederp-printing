@@ -9,16 +9,36 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Manufacturing
 {
+    public enum JobTypeCategory
+    {
+        Standard,
+        [Display(Name ="Custom-Made")]
+        Custom_Made
+    }
     public class FurnitureBillOfQuantity : Operations
     {
         [Key]
         public int FurnitureBillOfQuantityId { get; set; }
-        [Display(Name ="Product Name")]
-        public int JobTypeId { get; set; }
+        public bool IsCustomizedJob { get; set; }
+        [Display(Name ="JobType Category")]
+        public JobTypeCategory JobTypeCategory { get; set; }
+
+        // If JobCategory == Customized
+        [Display(Name ="Job.No")]
+        public string JobNo { get; set; }
+        [Display(Name ="JobType Name")]
+        public string JobTypeName { get; set; }
+        public string Unit { get; set; }
+        
+        // else
+
+        [Display(Name ="Type of Job")]
+        public int? JobTypeId { get; set; }
         [Display(Name ="Customer")]
         public int CustomerId { get; set; }
         public decimal Quantity { get; set; }      
         public string Size { get; set; }
+
 
     }
     public class FurnitureBOQMaterial : TrackUserSettingOperation

@@ -48,16 +48,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult GetManufacturingMaterialCategory()
-        //{
-        //    var categories = db.ManufacturingMaterialCategories;
-        //    var result = categories.Select(s => new
-        //    {
-        //        Value = s.ManufacturingMaterialCategoryId,
-        //        Text = s.ManufacturingCategory
-        //    }).ToList();
-        //    return Json(result, JsonRequestBehavior.AllowGet);
-        //}
+        
 
         public JsonResult GetUoM()
         {
@@ -150,6 +141,21 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 Text = s.ItemName
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetStandardJobType(string text)
+        {
+            var jobType = db.FurnitureStandardJobTypes.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                jobType = jobType.Where(x => x.JobTypeName.Contains(text) || x.JobNo.Contains(text)).AsQueryable();
+            }
+            var result = jobType.Select(s => new
+            {
+                Value = s.FurnitureStandardJobTypeId,
+                Text = s.JobNo + "/" + s.JobTypeName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet); 
         }
     }
 }

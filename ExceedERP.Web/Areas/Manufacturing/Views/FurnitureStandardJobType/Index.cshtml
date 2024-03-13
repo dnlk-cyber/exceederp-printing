@@ -1,0 +1,171 @@
+﻿
+
+<label>Standard Job Type</label>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.FurnitureStandardJobType>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.JobNo);
+                  columns.Bound(c => c.JobTypeName);
+                  columns.Bound(c => c.Unit);                
+                  columns.Bound(c => c.DateCreated);
+                  columns.Bound(c => c.Remark);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobTypeEditorTemplate"))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(ev => ev.Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                  .Model(model => model.Id(p => p.FurnitureStandardJobTypeId))
+                  .Read(read => read.Action("FurnitureStandardJobTypes_Read", "FurnitureStandardJobType"))
+                  .Create(create => create.Action("FurnitureStandardJobTypes_Create", "FurnitureStandardJobType"))
+                  .Update(update => update.Action("FurnitureStandardJobTypes_Update", "FurnitureStandardJobType"))
+                  .Destroy(destroy => destroy.Action("FurnitureStandardJobTypes_Destroy", "FurnitureStandardJobType"))
+              ).ClientDetailTemplateId("tabstrip")
+)
+
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                                .Name("grid_#=FurnitureStandardJobTypeId#")
+                                                                .Items(item1 =>
+                                                                {
+                                                                    item1.Add().Text("Bill of Material").Content(@<text>
+    @Material();
+                                                                    </text>);
+                                                                            item1.Add().Text("Bill of Labor").Content(@<text>
+    @Labor();
+                                                                            </text>);
+                                                                                }).ToClientTemplate())
+</script>
+
+
+@helper Material()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfMaterial>()
+                      .Name("material_#=FurnitureStandardJobTypeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.WorkshopType);
+                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
+                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
+                          
+                          columns.Bound(c => c.UnitOfMeasurement);
+                          columns.Bound(c => c.Quantity);
+                          columns.Bound(c => c.Remark);
+                          
+
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BillOfMaterialEditorTemplate"))
+                      .Pageable()
+                      .Filterable()
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"material_#=FurnitureStandardJobTypeId#\")")
+                            .RequestStart("onRequestStart(\"material_#=FurnitureStandardJobTypeId#\")")
+                            .RequestEnd("onRequestEnd(\"material_#=FurnitureStandardJobTypeId#\")"))
+                          .Model(model => model.Id(p => p.StandardBillOfMaterialId))
+                          .Read(read => read.Action("StandardBillOfMaterials_Read", "StandardBillOfMaterial", new { id = "#=FurnitureStandardJobTypeId#" }))
+                          .Create(create => create.Action("StandardBillOfMaterials_Create", "StandardBillOfMaterial", new { id = "#=FurnitureStandardJobTypeId#" }))
+                          .Update(update => update.Action("StandardBillOfMaterials_Update", "StandardBillOfMaterial"))
+                          .Destroy(destroy => destroy.Action("StandardBillOfMaterials_Destroy", "StandardBillOfMaterial"))
+                      ).ToClientTemplate()
+    )
+
+}
+
+@helper Labor()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfLabor>()
+              .Name("labor_#=FurnitureStandardJobTypeId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+                  
+                  columns.Bound(c => c.WorkShopType);
+                  columns.Bound(c => c.NumberOfEmloyees);
+                  columns.Bound(c => c.EstimatedMinute);
+                  columns.Bound(c => c.DateCreated);
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BillOfLaborEditorTemplate"))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureStandardJobTypeId#\")")
+                            .RequestStart("onRequestStart(\"labor_#=FurnitureStandardJobTypeId#\")")
+                            .RequestEnd("onRequestEnd(\"labor_#=FurnitureStandardJobTypeId#\")"))
+                  .Model(model => model.Id(p => p.StandardBillOfLaborId))
+                  .Read(read => read.Action("StandardBillOfLabors_Read", "StandardBillOfLabor", new { id = "#=FurnitureStandardJobTypeId#" }))
+                  .Create(create => create.Action("StandardBillOfLabors_Create", "StandardBillOfLabor", new { id = "#=FurnitureStandardJobTypeId#" }))
+                  .Update(update => update.Action("StandardBillOfLabors_Update", "StandardBillOfLabor"))
+                  .Destroy(destroy => destroy.Action("StandardBillOfLabors_Destroy", "StandardBillOfLabor"))
+              ).ToClientTemplate()
+    )
+
+}
+
+<script type="text/javascript">
+    function filterTaskCategory() {
+        return {
+            taskType: $("#WorkShopType").val()
+        }
+    }
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCustomer() {
+        return {
+            text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategory() {
+        return {
+            text: $("#ManufacturingMaterialCategoryId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategoryItem() {
+        return {
+            materialCategoryId: $("#ManufacturingMaterialCategoryId").val(),
+            text: $("#ManufacturingMaterialCategoryItemId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

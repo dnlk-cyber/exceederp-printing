@@ -1,0 +1,46 @@
+﻿@model ExceedERP.Core.Domain.Manufacturing.Setting.FurnitureStandardJobType
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Job Name</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.JobTypeName).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Job.No</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.JobNo).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Unit</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.Unit)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select unit...")
+                                                    .DataTextField("UoMName")
+                                                    .DataValueField("Value")
+                                                    .Filter("contains")
+                                                   
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetUoM", "ManufacturingDataProvider", new { area = "Manufacturing" }))
+                                                            .ServerFiltering(true);
+                                                    }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

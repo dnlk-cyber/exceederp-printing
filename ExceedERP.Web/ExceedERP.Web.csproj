@@ -1986,6 +1986,7 @@
     <Compile Include="Areas\Manufacturing\Controllers\FurnitureJobOrderItemController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\FurnitureProformaInvoiceController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\FurnitureProformaInvoiceItemController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\FurnitureStandardJobTypeController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\Common\FurnitureJobCostingDataProviderController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDailyLaborRateController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\JobCosting\FurnitureDeliveredJobController.cs" />
@@ -2062,6 +2063,8 @@
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Setting\FurnitureProductionYearlyPlanController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\Setting\ProductionMonthlyPlanController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\ViewModel\ChangeOfOrderVM.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\StandardBillOfLaborController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\StandardBillOfMaterialController.cs" />
     <Compile Include="Areas\Manufacturing\ManufacturingAreaRegistration.cs" />
     <Compile Include="Areas\Manufacturing\Models\AddNewCustomer.cs" />
     <Compile Include="Areas\Manufacturing\Models\UpdateDLR.cs" />
@@ -6600,6 +6603,12 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderForm\EditorTemplates\FurnitureJoborderEditorTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderForm\EditorTemplates\JobOrderItemEditorTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderItem\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureStandardJobType\EditorTemplates\BillOfLaborEditorTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureStandardJobType\EditorTemplates\BillOfMaterialEditorTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureStandardJobType\EditorTemplates\JobTypeEditorTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureStandardJobType\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\StandardBillOfLabor\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\StandardBillOfMaterial\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

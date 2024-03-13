@@ -5,10 +5,10 @@
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-
+                          columns.Bound(c => c.JobTypeName);
                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
                           columns.Bound(c => c.Quantity);
-                          columns.Bound(c => c.Size);
+                          //columns.Bound(c => c.Size);
 
                           columns.Command(command =>
                           {
@@ -131,6 +131,8 @@
 }
 
 <script type="text/javascript">
+
+    
     function filterTaskCategory() {
         return {
             taskType: $("#WorkShopType").val()
@@ -256,6 +258,20 @@
             });
         }
     }
+    
+     function onJobCategoryChange() {
+         var selectedValue = $("#JobTypeCategory").val();
+        
+        if (selectedValue == 0) {
+            $(".standard").show();
+            $(".custom-made").hide();
+            
+        } else if (selectedValue == 1) {
+            $(".standard").hide();
+            $(".custom-made").show();
+            
+        }
+    }
 </script>
 <style>
     div.k-edit-form-container {
@@ -270,4 +286,5 @@
     .row {
         margin: auto;
     }
+    
 </style>

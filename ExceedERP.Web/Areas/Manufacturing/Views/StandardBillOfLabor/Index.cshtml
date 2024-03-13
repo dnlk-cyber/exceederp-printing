@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfLabor>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ManufacturingTaskCategoryId);
+        columns.Bound(c => c.WorkShopType);
+        columns.Bound(c => c.NumberOfEmloyees);
+        columns.Bound(c => c.EstimatedMinute);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StandardBillOfLaborId))
+          .Read(read => read.Action("StandardBillOfLabors_Read", "StandardBillOfLabor"))
+          .Create(create => create.Action("StandardBillOfLabors_Create", "StandardBillOfLabor"))
+          .Update(update => update.Action("StandardBillOfLabors_Update", "StandardBillOfLabor"))
+          .Destroy(destroy => destroy.Action("StandardBillOfLabors_Destroy", "StandardBillOfLabor"))
+      )
+)

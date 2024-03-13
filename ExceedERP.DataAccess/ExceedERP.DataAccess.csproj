@@ -405,6 +405,10 @@
     <Compile Include="Migrations\202403101014561_furniturejoborder.Designer.cs">
       <DependentUpon>202403101014561_furniturejoborder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403131855517_furnituresetting.cs" />
+    <Compile Include="Migrations\202403131855517_furnituresetting.Designer.cs">
+      <DependentUpon>202403131855517_furnituresetting.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -666,6 +670,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403101014561_furniturejoborder.resx">
       <DependentUpon>202403101014561_furniturejoborder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403131855517_furnituresetting.resx">
+      <DependentUpon>202403131855517_furnituresetting.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
