@@ -50,7 +50,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                 LastModified = bidPParticipatingSuppliers.LastModified,
                 CreatedBy = bidPParticipatingSuppliers.CreatedBy,
                 ModifiedBy = bidPParticipatingSuppliers.ModifiedBy,
-                IsQualified = bidPParticipatingSuppliers.IsQualified
+                IsQualified = bidPParticipatingSuppliers.IsQualified,
+                GLTaxRateID = bidPParticipatingSuppliers.GLTaxRateID
             });
 
             return Json(result);
@@ -80,19 +81,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             if (ModelState.IsValid)
             {
-                _db.BidPParticipatingSupplierses.RemoveRange(existing);
-                _db.SaveChanges();
-                foreach (var purchasingSuppliers in bidPurchasingSuppliers)
-                {
+                //_db.BidPParticipatingSupplierses.RemoveRange(existing);
+                //_db.SaveChanges();
+                //foreach (var purchasingSuppliers in bidPurchasingSuppliers)
+                //{
                     var entity = new BidPParticipatingSuppliers
                     {
                         LotID = id,
-                        SupplierId = purchasingSuppliers.SupplierId,
-                        IsNewSupplier = purchasingSuppliers.IsNewSupplier,
-                        SupplierName = purchasingSuppliers.SupplierName,
-                        Representative = purchasingSuppliers.Representative,
-                        Address = purchasingSuppliers.Address,
-                        Telephone = purchasingSuppliers.Telephone,
+                        SupplierId = bidPParticipatingSuppliers.SupplierId,
+                        IsNewSupplier = bidPParticipatingSuppliers.IsNewSupplier,
+                        SupplierName = bidPParticipatingSuppliers.SupplierName,
+                        Representative = bidPParticipatingSuppliers.Representative,
+                        Address = bidPParticipatingSuppliers.Address,
+                        Telephone = bidPParticipatingSuppliers.Telephone,
                         BidSubmissionDate = bidPParticipatingSuppliers.BidSubmissionDate,
                         BidSubmissionTime = bidPParticipatingSuppliers.BidSubmissionTime,
                         NumberOfDocument = bidPParticipatingSuppliers.NumberOfDocument,
@@ -101,6 +102,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         DateCreated = DateTime.Now,
                         LastModified = bidPParticipatingSuppliers.LastModified,
                         IsQualified = bidPParticipatingSuppliers.IsQualified,
+                        GLTaxRateID = bidPParticipatingSuppliers.GLTaxRateID,
                         CreatedBy = User.Identity.Name,
                         ModifiedBy = bidPParticipatingSuppliers.ModifiedBy
                     };
@@ -108,11 +110,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     _db.BidPParticipatingSupplierses.Add(entity);
                     _db.SaveChanges();
                     bidPParticipatingSuppliers.BidPParticipatingSuppliersID = entity.BidPParticipatingSuppliersID;
-                    GetParticipantItems(entity.BidPParticipatingSuppliersID);
+                    //GetParticipantItems(entity.BidPParticipatingSuppliersID);
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "lot bid participant", "Success", User.Identity.Name, $"created bid partifipant {entity.SupplierName} under record {entity.LotID} ", Modules.Procurement);
                     #endregion
-                }
+               // }
             }
 
             return Json(new[] { bidPParticipatingSuppliers }.ToDataSourceResult(request, ModelState));
@@ -156,6 +158,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     NumberOfDocument = bidPParticipatingSuppliers.NumberOfDocument,
                     Remark = bidPParticipatingSuppliers.Remark,
                     IsQualified = bidPParticipatingSuppliers.IsQualified,
+                    GLTaxRateID = bidPParticipatingSuppliers.GLTaxRateID,
                     OrgBranchName = bidPParticipatingSuppliers.OrgBranchName,
                     DateCreated = bidPParticipatingSuppliers.DateCreated,
                     LastModified = bidPParticipatingSuppliers.LastModified,
@@ -194,6 +197,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     BidSubmissionTime = bidPParticipatingSuppliers.BidSubmissionTime,
                     NumberOfDocument = bidPParticipatingSuppliers.NumberOfDocument,
                     IsQualified = bidPParticipatingSuppliers.IsQualified,
+                    GLTaxRateID = bidPParticipatingSuppliers.GLTaxRateID,
                     Remark = bidPParticipatingSuppliers.Remark,
                     OrgBranchName = bidPParticipatingSuppliers.OrgBranchName,
                     DateCreated = bidPParticipatingSuppliers.DateCreated,
@@ -229,7 +233,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                     ItemSpecification = lotItem.ItemSpecification,
                     UoM = lotItem.UoM,
                     ItemType = lotItem.ItemType,
-                    GLTaxRateID = 0,
+                    GLTaxRateID = record.GLTaxRateID,
                     TaxAmount = 0,
                     Quantity = lotItem.Quantity,
                     SubTotal=0,

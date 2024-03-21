@@ -31,9 +31,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
         
         public ActionResult ApPaymentSettlementValidations_Read(int id,[DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ApPaymentSettlementValidation> ApPaymentSettlementValidations = _db.ApPaymentSettlementValidations.Where(x=>x.ApPaymentSettlementId==id);
+            IQueryable<ApPaymentSettlementDepartmentValidation> ApPaymentSettlementValidations = _db.ApPaymentSettlementDepartmentValidations.Where(x=>x.ApPaymentSettlementId==id);
             DataSourceResult result = ApPaymentSettlementValidations.ToDataSourceResult(request, ApPaymentSettlementValidation => new {
-                ApPaymentSettlementValidationId = ApPaymentSettlementValidation.ApPaymentSettlementValidationId,
+                ApPaymentSettlementDepartmentValidationId = ApPaymentSettlementValidation.ApPaymentSettlementDepartmentValidationId,
                 ApPaymentSettlementId =id,
                 Status = ApPaymentSettlementValidation.Status,
                 Remark = ApPaymentSettlementValidation.Remark,
@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
 
         [AuthorizeRoles(ProcurementRoles.ProcurementPaymentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApPaymentSettlementValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ApPaymentSettlementValidation ApPaymentSettlementValidation)
+        public ActionResult ApPaymentSettlementValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ApPaymentSettlementDepartmentValidation ApPaymentSettlementValidation)
         {
             #region validated record
             var record = _db.ApPaymentSettlements.Find(id);
@@ -65,7 +65,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                 {
                     if (ApPaymentSettlementValidation.Status == ApprovalStatuses.Approve)
                     {
-                       
+
                         #region pass data for reconciliation
 
                         //foreach (var distribution in record.ApPaymentSettlementDistributions)
@@ -98,11 +98,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                         #endregion
                         //PostToSecondaryLedger(id);
                         //record.IsPostedToSecondLedger = true;
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
+                        record.Status = "Department Approved";
+                        record.IsDepartmentOnlineApproved = true;
                         record.IsVoid = false;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
+                        record.DepartmentOnlineApprovedBy = User.Identity.Name;
+                        record.DepartmentOnlineApprovedTime = DateTime.Now;
                         _db.Entry(record).State = EntityState.Modified;
                         _db.SaveChanges();
 
@@ -122,8 +122,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
 
                     if (ApPaymentSettlementValidation.Status == ApprovalStatuses.Reject)
                     {
-                        record.IsSendForApproval = false;
-                        record.Status = "Rejected";
+                        record.IsDepartmentSendForApproval = false;
+                        record.Status = "Department Rejected";
                         _db.Entry(record).State = EntityState.Modified;
                         _db.SaveChanges();
                     }
@@ -131,7 +131,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                    
 
 
-                    var entity = new ApPaymentSettlementValidation
+                    var entity = new ApPaymentSettlementDepartmentValidation
                     {
                         ApPaymentSettlementId = id,
                         Status = ApPaymentSettlementValidation.Status,
@@ -143,10 +143,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                         ModifiedBy = ApPaymentSettlementValidation.ModifiedBy
                     };
 
-                    _db.ApPaymentSettlementValidations.Add(entity);
+                    _db.ApPaymentSettlementDepartmentValidations.Add(entity);
                     _db.SaveChanges();
-                    ApPaymentSettlementValidation.ApPaymentSettlementValidationId =
-                        entity.ApPaymentSettlementValidationId;
+                    ApPaymentSettlementValidation.ApPaymentSettlementDepartmentValidationId =
+                        entity.ApPaymentSettlementDepartmentValidationId;
                 }
 
             }

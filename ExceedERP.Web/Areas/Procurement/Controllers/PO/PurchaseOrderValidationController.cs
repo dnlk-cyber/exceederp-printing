@@ -178,6 +178,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
                     if (purchaseOrderValidation.Status == ApprovalStatuses.Reject)
                     {
+                        record.IsOnlineApproved = false;
                         record.IsSendForApproval = false;
                         record.Status = "Rejected";
                         //notification

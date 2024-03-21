@@ -1685,6 +1685,7 @@ namespace ExceedERP.DataAccess.Context
 
         }
         #region Common
+        public DbSet<IsoDocument> IsoDocuments { get; set; }
 
         public DbSet<Configuration> Configurations { get; set; }
 
@@ -3352,6 +3353,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PurchasePaymentValidation> PurchasePaymentValidations { get; set; }
         public DbSet<PurchasePaymentBudgetValidation> PurchasePaymentBudgetValidations { get; set; }
         public DbSet<PurchasePaymentFinanceValidation> PurchasePaymentFinanceValidations { get; set; }
+        public DbSet<PurchasePaymentAuthorizeValidation> PurchasePaymentAuthorizeValidations { get; set; }
 
         public DbSet<ContractTermination> ContractTerminations { get; set; }
         public DbSet<ContractTerminationAttachment> ContractTerminationAttachments { get; set; }
@@ -3478,6 +3480,13 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PurchaseOrderValidation> PurchaseOrderValidations { get; set; }
         public DbSet<PoPaymentSchedule> PoPaymentSchedules { get; set; }
         public DbSet<PoAdditionalCharge> PoAdditionalCharges { get; set; }
+        public DbSet<PoAttachment> PoAttachments { get; set; }
+
+        //change of order
+
+        public DbSet<PoChangeOforder> PoChangeOforders { get; set; }
+        public DbSet<PoChangeOfOrderItem> PoChangeOfOrderItems { get; set; }
+        public DbSet<PoChangeOforderValidation> PoChangeOforderValidations { get; set; }
 
         public DbSet<BankGuarantee> BankGuarantees { get; set; }
         public DbSet<Tender> Tenders { get; set; }

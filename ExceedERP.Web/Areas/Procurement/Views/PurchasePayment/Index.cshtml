@@ -1,363 +1,394 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Procurement.PaymentRequest
 @using ExceedERP.Web.Areas.Procurement.Models
+@using ExceedERP.Helpers.Finance
 
 <legend>Purchase Payment</legend>
 
 @(Html.Kendo().Grid<PurchasePayment>()
-                              .Name("grid")
-                              .Columns(columns =>
-                              {
-                                  columns.Bound(c => c.PurchasePaymentId).Title("Payment No.").Width(120).ClientTemplate("#=appendZeros(PurchasePaymentId)#");
-                                  columns.Bound(p => p.Date).Width(130);
-                                  columns.Bound(c => c.SupplierId).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
-                                  columns.Bound(c => c.SupplierName).Width(180).Filterable(ftb => ftb.Multi(true).Search(true));
-                                  columns.Bound(p => p.SupplierInvoice).Width(130);
-                                  columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["Purchasers"], "EmployeeId", "FullNameEnglish").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
-                                  //columns.Bound(c => c.WithOutGRN).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= WithOutGRN ? checked='checked' :'' # />");
-                                  columns.Bound(c => c.Type).Width(110);
-                                  //columns.Bound(c => c.PoOrContractNumber).Width(80).Title("Ref.");
-                                  columns.Bound(o => o.PoOrContractNumber).Width(80).Title("Ref.").ClientTemplate(
-                                     "# if (PoOrContractNumber) { #" +
-                                     @Html.ActionLink("#=PoOrContractNumber#", "PurchaseOrderPrint", "ProcurementPrint", new { area = "Procurement", Id = "#=PoOrContractNumber#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
-                                     + "# } #"
-                                     );
-                                  columns.Bound(c => c.PaymentType).Width(110);
-                                  columns.Bound(c => c.PurposeOfPayment).Width(130);
-                                  columns.Bound(c => c.PurchasePaymentType).Width(130);
-                                  columns.Bound(p => p.PaymentAmount).Width(130);
-                                  columns.Bound(p => p.PenalityAmount).Width(130);
-                                  columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
-                                  columns.Bound(p => p.ServiceCharge).Width(130);
-                                  columns.Bound(p => p.OtherPayment).Width(130);
-                                  columns.Bound(p => p.NetPayable).Width(130);
-                                  columns.Bound(p => p.AmountDue).Width(130);
-                                  columns.Bound(c => c.Paid).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' #= Paid ? checked='checked' :'' # />");
-                                  columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
-                                  columns.Bound(p => p.Remark).Width(150);
-                                  columns.Bound(p => p.Status).Width(150);
-                                  columns.Command(command =>
+                                  .Name("grid")
+                                  .Columns(columns =>
                                   {
-                                      command.Edit();
-                                      command.Destroy();
-                                  }).Width(180);
-                              })
-                              .ToolBar(toolbar =>
-                              {
-                                  toolbar.Create();
-                              })
-                              // .Editable(editable => editable.Mode(GridEditMode.InLine))
-                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Payment").Window(w => w.Title("Purchase Payment")))
-                              .Scrollable()
-                              .Sortable()
-                              .Filterable()
-                              .Pageable(pageable => pageable
-                              .Input(true)
-                              .Numeric(false)
-                              .Refresh(true)
-                              .PageSizes(true)
-                              .ButtonCount(5))
-
-                              .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
-                              .Scrollable(h => h.Height(500))
-                              .Events(x => x.DataBound("onDataBoundMasterNew"))
-                              .DataSource(dataSource => dataSource
-                                  .Ajax()
-                                  .Sort(sort => sort.Add("PurchasePaymentId").Descending())
-                                  .Model(
-                                      model =>
+                                      columns.Bound(c => c.PurchasePaymentId).Title("Payment No.").Width(120).ClientTemplate("#=appendZeros(PurchasePaymentId)#");
+                                      columns.Bound(p => p.Date).Width(130);
+                                      columns.Bound(c => c.SupplierId).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                                      columns.Bound(c => c.SupplierName).Width(180).Filterable(ftb => ftb.Multi(true).Search(true));
+                                      columns.Bound(p => p.SupplierInvoice).Width(130);
+                                      columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["Purchasers"], "EmployeeId", "FullNameEnglish").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+                          //columns.Bound(c => c.WithOutGRN).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= WithOutGRN ? checked='checked' :'' # />");
+                          columns.Bound(c => c.Type).Width(110);
+                          //columns.Bound(c => c.PoOrContractNumber).Width(80).Title("Ref.");
+                          columns.Bound(o => o.PoOrContractNumber).Width(80).Title("Ref.").ClientTemplate(
+                                         "# if (PoOrContractNumber) { #" +
+                                         @Html.ActionLink("#=PoOrContractNumber#", "PurchaseOrderPrint", "ProcurementPrint", new { area = "Procurement", Id = "#=PoOrContractNumber#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+                                         + "# } #"
+                                         );
+                                      columns.Bound(c => c.PaymentType).Width(110);
+                                      columns.Bound(c => c.PurposeOfPayment).Width(130);
+                                      columns.Bound(c => c.PurchasePaymentType).Width(130);
+                                      columns.Bound(p => p.PaymentAmount).Width(130);
+                                      columns.Bound(p => p.PenalityAmount).Width(130);
+                                      columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' #= ApplyPenality ? checked='checked' :'' # />");
+                                      columns.Bound(p => p.ServiceCharge).Width(130);
+                                      columns.Bound(p => p.OtherPayment).Width(130);
+                                      columns.Bound(p => p.NetPayable).Width(130);
+                                      columns.Bound(p => p.AmountDue).Width(130);
+                                      columns.Bound(c => c.Paid).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' #= Paid ? checked='checked' :'' # />");
+                                      columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
+                                      columns.Bound(p => p.Remark).Width(150);
+                                      columns.Bound(p => p.Status).Width(150);
+                                      columns.Command(command =>
                                       {
-                                          model.Id(p => p.PurchasePaymentId);
-                                          model.Field(p => p.PurchasePaymentId).Editable(false);
-                                          model.Field(p => p.BranchId).Editable(false);
-                                          model.Field(p => p.BusinessUnitId).Editable(false);
-                                          model.Field(p => p.Paid).Editable(false);
-                                          model.Field(p => p.TenderRef).Editable(false);
-                                          model.Field(p => p.ProformaRef).Editable(false);
-                                          model.Field(p => p.PurchasePaymentType).Editable(false);
-                                          model.Field(p => p.ProcurementAnalyzer).Editable(false);
-                                          model.Field(p => p.PurposeOfPayment).Editable(false);
-                                          model.Field(p => p.NetPayable).Editable(false);
-                                          model.Field(p => p.AmountDue).Editable(false);
-                                          model.Field(p => p.OrgBranchName).Editable(false);
-                                          model.Field(p => p.CreatedBy).Editable(false);
-                                          model.Field(p => p.ModifiedBy).Editable(false);
-                                          model.Field(p => p.LastModified).Editable(false);
-                                          model.Field(p => p.DateCreated).Editable(false);
-                                          model.Field(p => p.Status).Editable(false);
+                                          command.Edit();
+                                          command.Destroy();
+                                      }).Width(180);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  // .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Payment").Window(w => w.Title("Purchase Payment")))
+                                  .Scrollable()
+                                  .Sortable()
+                                  .Filterable()
+                                  .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
 
-                                      })
+                                  .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+                                  .Scrollable(h => h.Height(500))
+                                  .Events(x => x.DataBound("onDataBoundMasterNew"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Sort(sort => sort.Add("PurchasePaymentId").Descending())
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.PurchasePaymentId);
+                                              model.Field(p => p.PurchasePaymentId).Editable(false);
+                                              model.Field(p => p.BranchId).Editable(false);
+                                              model.Field(p => p.BusinessUnitId).Editable(false);
+                                              model.Field(p => p.Paid).Editable(false);
+                                              model.Field(p => p.TenderRef).Editable(false);
+                                              model.Field(p => p.ProformaRef).Editable(false);
+                                              model.Field(p => p.PurchasePaymentType).Editable(false);
+                                              model.Field(p => p.ProcurementAnalyzer).Editable(false);
+                                              model.Field(p => p.PurposeOfPayment).Editable(false);
+                                              model.Field(p => p.NetPayable).Editable(false);
+                                              model.Field(p => p.AmountDue).Editable(false);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                              model.Field(p => p.Status).Editable(false);
 
-                                  .Events(ev => ev
-                                     .Error("error_handler(\"grid\")")
-                              .RequestStart("onRequestStart(\"grid\")")
-                              .RequestEnd("onRequestEnd(\"grid\")"))
-                                  .Read(read => read.Action("PurchasePayments_Read", "PurchasePayment"))
-                                  .Create(create => create.Action("PurchasePayments_Create", "PurchasePayment"))
-                                  .Update(update => update.Action("PurchasePayments_Update", "PurchasePayment"))
-                                  .Destroy(destroy => destroy.Action("PurchasePayments_Destroy", "PurchasePayment"))
-                              ).ClientDetailTemplateId("template")
-                              )
+                                          })
+
+                                      .Events(ev => ev
+                                         .Error("error_handler(\"grid\")")
+                                  .RequestStart("onRequestStart(\"grid\")")
+                                  .RequestEnd("onRequestEnd(\"grid\")"))
+                                      .Read(read => read.Action("PurchasePayments_Read", "PurchasePayment"))
+                                      .Create(create => create.Action("PurchasePayments_Create", "PurchasePayment"))
+                                      .Update(update => update.Action("PurchasePayments_Update", "PurchasePayment"))
+                                      .Destroy(destroy => destroy.Action("PurchasePayments_Destroy", "PurchasePayment"))
+                                  ).ClientDetailTemplateId("template")
+)
 
 
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                                                                            .Name("tabStrip_#=PurchasePaymentId#")
-                                                                                                                                            .SelectedIndex(0)
-                                                                                                                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                                                                                                                            .Items(items =>
-                                                                                                                                            {
-                                                                                                                                                items.Add().Text("Detail").Content(
-                                                                                                                                                    @<text>
-                                                                                                                                                        # if (!IsOnlineApproved&&!IsSendForApproval)
-                                                                                                                                                        {#
-                                                                                                                                                        <a onclick='return sendForApproval("#=PurchasePaymentId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                                                                                                        <br />
-                                                                                                                                                        # } #
-                                                                                                                                                        # if (IsOnlineApproved)
-                                                                                                                                                        {#
-                                                                                                                                                        <a href='@Url.Action("PurchasePaymentPrint", "ProcurementPrint")/#=PurchasePaymentId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                                                                                                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                                                                                                                                                        # } #
+                                                                                                                                                            .Name("tabStrip_#=PurchasePaymentId#")
+                                                                                                                                                            .SelectedIndex(0)
+                                                                                                                                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                                                                                                                            .Items(items =>
+                                                                                                                                                            {
+                                                                                                                                                                items.Add().Text("Detail").Content(
+                                                                                                                                                                    @<text>
+                                                                                                                                                                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                                                                                                                                        {#
+                                                                                                                                                                        <a onclick='return sendForApproval("#=PurchasePaymentId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                                                                                                        <br />
+                                                                                                                                                                        # } #
+                                                                                                                                                                        # if (IsOnlineApproved)
+                                                                                                                                                                        {#
+                                                                                                                                                                        @if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
+                                                                                                                                                                                    {
+                                                                                                                                                                            <a href='@Url.Action("PurchasePaymentPrintNew", "ProcurementPrint", new { Area = "Procurement" })/#=PurchasePaymentId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                                                                                                                                                    }
+                                                                                                                                                                                    else
+                                                                                                                                                                                    {
+                                                                                                                                                                            <a href='@Url.Action("PurchasePaymentPrint", "ProcurementPrint", new { Area = "Procurement" })/#=PurchasePaymentId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                                                                                                                                                    }
+
+                                                                                                                                                                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                                                                                                                                                        # } #
 
 
-                                                                                                                                                        <hr />
-                                                                                                                                                        <strong>References :</strong>
-                                                                                                                                                        # if (PoOrContractNumber)
-                                                                                                                                                        {#
-                                                                                                                                                        <a target="_new" href='@Url.Action("PurchaseOrderPrint", "ProcurementPrint")/#=PoOrContractNumber#'>Purchase Order  </a> |
-                                                                                                                                                        # } #
-                                                                                                                                                        # if (TenderRef)
-                                                                                                                                                        {#
-                                                                                                                                                        <a target="_new" href='@Url.Action("Award", "ProcurementPrint")/#=TenderRef#'>Award Letter   </a> |
-                                                                                                                                                        # } #
-                                                                                                                                                        # if (ProformaRef)
-                                                                                                                                                        {#
-                                                                                                                                                        <a target="_new" href='@Url.Action("ProformaResultEn", "ProcurementPrint")/#=ProformaRef#'>Proforma  </a>
-                                                                                                                                                        # } #
+                                                                                                                                                                        <hr />
+                                                                                                                                                                        <strong>References :</strong>
+                                                                                                                                                                        # if (PoOrContractNumber)
+                                                                                                                                                                        {#
+                                                                                                                                                                        <a target="_new" href='@Url.Action("PurchaseOrderPrint", "ProcurementPrint")/#=PoOrContractNumber#'>Purchase Order  </a> |
+                                                                                                                                                                        # } #
+                                                                                                                                                                        # if (TenderRef)
+                                                                                                                                                                        {#
+                                                                                                                                                                        <a target="_new" href='@Url.Action("Award", "ProcurementPrint")/#=TenderRef#'>Award Letter   </a> |
+                                                                                                                                                                        # } #
+                                                                                                                                                                        # if (ProformaRef)
+                                                                                                                                                                        {#
+                                                                                                                                                                        <a target="_new" href='@Url.Action("ProformaResultEn", "ProcurementPrint")/#=ProformaRef#'>Proforma  </a>
+                                                                                                                                                                        # } #
 
-                                                                                                                                                        <div>
-                                                                                                                                                            <hr>
-                                                                                                                                                            <dl class="dl-horizontal">
+                                                                                                                                                                        <div>
+                                                                                                                                                                            <hr>
+                                                                                                                                                                            <dl class="dl-horizontal">
 
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Payment No.
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #= PurchasePaymentId #
-                                                                                                                                                                </dd>
-
-
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Status
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #= Status #
-
-                                                                                                                                                                </dd>
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Created On
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Payment No.
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #= PurchasePaymentId #
+                                                                                                                                                                                </dd>
 
 
-                                                                                                                                                                </dd>
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Created By
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #=CreatedBy #
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Status
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #= Status #
 
-                                                                                                                                                                </dd>
-
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Approved On
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                                                                                </dd>
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Created On
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
 
 
-                                                                                                                                                                </dd>
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Approved By
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #=OnlineApprovedBy #
+                                                                                                                                                                                </dd>
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Created By
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #=CreatedBy #
 
-                                                                                                                                                                </dd>
+                                                                                                                                                                                </dd>
 
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Budget Approved On
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Approved On
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
 
 
-                                                                                                                                                                </dd>
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Approved By
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #=BudgetApprovedBy #
+                                                                                                                                                                                </dd>
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Approved By
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #=OnlineApprovedBy #
 
-                                                                                                                                                                </dd>
-                                                                                                                                                            </dl>
-                                                                                                                                                            # if (!IsOnlineApproved)
-                                                                                                                                                            {#
-                                                                                                                                                            <dl class="h6">
-                                                                                                                                                                <dt>
-                                                                                                                                                                    Next Approver
-                                                                                                                                                                </dt>
-                                                                                                                                                                <dd>
-                                                                                                                                                                    #= ForwardedTo # <snap id="user_name_display"></snap>
-                                                                                                                                                                    <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
-                                                                                                                                                                    <a onclick='SelectNextApprover(this,"#=PurchasePaymentId#","PurchasePayment")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
-                                                                                                                                                                    <snap id="new_user_name_display"></snap>
-                                                                                                                                                                </dd>
-                                                                                                                                                            </dl>
-                                                                                                                                                            # } #
-                                                                                                                                                        </div>
+                                                                                                                                                                                </dd>
 
-                                                                                                                                                    </text>
-                                                                                                                                                                                                                                                            );
-                                                                                                                                                        items.Add().Text("GRN/SRN").Content(
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Budget Approved On
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                                                                                                                                </dd>
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Approved By
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #=BudgetApprovedBy #
+
+                                                                                                                                                                                </dd>
+
+                                                                                                                                                                            </dl>
+                                                                                                                                                                            # if (!IsOnlineApproved)
+                                                                                                                                                                            {#
+                                                                                                                                                                            <dl class="h6">
+                                                                                                                                                                                <dt>
+                                                                                                                                                                                    Next Approver
+                                                                                                                                                                                </dt>
+                                                                                                                                                                                <dd>
+                                                                                                                                                                                    #= ForwardedTo # <snap id="user_name_display"></snap>
+                                                                                                                                                                                    <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                                                                                                                                                                    <a onclick='SelectNextApprover(this,"#=PurchasePaymentId#","PurchasePayment")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                                                                                                                                                                    <snap id="new_user_name_display"></snap>
+                                                                                                                                                                                </dd>
+                                                                                                                                                                            </dl>
+                                                                                                                                                                            # } #
+                                                                                                                                                                        </div>
+                                                                                                                                                                        <hr>
+
+                                                                                                                                                                        # if (IsOnlineApproved && !IsVoid)
+                                                                                                                                                                        {#
+                                                                                                                                                                        @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                                                                                                                                                                    {
+                                                                                                                                                                            <a onclick='return voidRecord("#=PurchasePaymentId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                                                                                                                                                    }
+                                                                                                                                                                        /**/
+                                                                                                                                                                        /**/
+
+                                                                                                                                                                        # } #
+
+                                                                                                                                                                    </text>
+                                                                                                                                                                                                                                                                                            );
+                                                                                                                                                                        items.Add().Text("GRN/SRN").Content(
     @<text>
         @(Html.Kendo().Grid<PurchasePaymentGrn>()
-                                                                                                                                                      .Name("PurchasePaymentGrn#=PurchasePaymentId#")
-                                                                                                                                                      .Columns(columns =>
-                                                                                                                                                      {
-                                                                                                                                                                  columns.Bound(c => c.PurchasePaymentGrnId).Hidden(true);
-                                                                                                                                                                  columns.Bound(c => c.ItemType).Width(70).EditorTemplateName("PurchaseType");
-                                                                                                                                                                  columns.Bound(o => o.GrnNo).Width(70).EditorTemplateName("GrnSelector").ClientTemplate(
+                                                                                                                                                                      .Name("PurchasePaymentGrn#=PurchasePaymentId#")
+                                                                                                                                                                      .Columns(columns =>
+                                                                                                                                                                      {
+                                                                                                                                                                          columns.Bound(c => c.PurchasePaymentGrnId).Hidden(true);
+                                                                                                                                                                          columns.Bound(c => c.ItemType).Width(70).EditorTemplateName("PurchaseType");
+                                                                                                                                                                          //columns.Bound(o => o.GrnNo).Width(70).EditorTemplateName("GrnSelector").Template(x);    
+                                                                                                                                                                          //columns.Bound(o => o.GrnNo).Width(70).EditorTemplateName("GrnSelector").ClientTemplate("\\#if('#=ItemType#'!='Y') {\\<input type='button' value='OK' />\\}\\#");
+                                                                                
 
-        @Html.ActionLink("\\#=GrnNo\\#", "Goodreceive", "InventoryPrint", new { area = "Inventory", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+                                                                                                                                                                          columns.Bound(o => o.GrnNo).Width(70).Title("Stock").EditorTemplateName("GrnSelector").ClientTemplate(
 
-        );
+                                                                                                                                                                                    @Html.ActionLink("\\#=GrnNo\\#", "Goodreceive", "InventoryPrint", new { area = "Inventory", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
 
-                                                                                                                                                                  columns.Command(command =>
-      {
+                                                                                                                                                                                    );
+                                                                                                                                                                          columns.Bound(o => o.GrnNo).Width(70).Title("PPE").EditorTemplateName("GrnSelector").ClientTemplate(
 
-                              command.Edit();
-                              command.Destroy();
+                                                                                                                                                                                   @Html.ActionLink("\\#=GrnNo\\#", "FixedAssetReceive", "FixedAssetPrint", new { area = "FixedAsset", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
 
-                          }).Width(680);
+                                                                                                                                                                                   );
 
-                                                                                                                                                              })
-                                                                                                                                                      .ToolBar(toolbar =>
-                                                                                                                                                      {
-                                                                                                                                                                  toolbar.Create();
-                                                                                                                                                              })
-                                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                                          columns.Command(command =>
+                                                                                                                                                                          {
 
-                                                                                                                                                      .Sortable(sortable =>
-                                                                                                                                                      {
-                                                                                                                                                                  sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                                                                              })
-                                                                                                                                                      .Filterable()
-                                                                                                                                                      .Scrollable()
-                                                                                                                                                      .Events(x => x.DataBound("onDataBoundLineNew"))
-                                                                                                                                                      .DataSource(dataSource => dataSource
-                                                                                                                                                          .Ajax()
-                                                                                                                                                          .Model(
-                                                                                                                                                              model =>
-                                                                                                                                                              {
-                                                                                                                                                                          model.Id(p => p.PurchasePaymentGrnId);
-                                                                                                                                                                          model.Field(p => p.OrgBranchName).Editable(false);
-                                                                                                                                                                          model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                                                          model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                                                                          model.Field(p => p.LastModified).Editable(false);
-                                                                                                                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                                              command.Edit();
+                                                                                                                                                                              command.Destroy();
+
+                                                                                                                                                                          }).Width(680);
+
                                                                                                                                                                       })
-                                                                                                                                                          .Events(ev => ev
-                                                                                                                                                              .Error("error_handler(\"PurchasePaymentGrn#=PurchasePaymentId#\")")
-                                                                                                                                                              .RequestStart("onRequestStart(\"PurchasePaymentGrn#=PurchasePaymentId#\")")
-                                                                                                                                                              .RequestEnd("onRequestEnd(\"PurchasePaymentGrn#=PurchasePaymentId#\")"))
-                                                                                                                                                          .Read(read => read.Action("PurchasePaymentGrns_Read", "PurchasePaymentGrn", new { id = "#=PurchasePaymentId#" }))
-                                                                                                                                                          .Create(create => create.Action("PurchasePaymentGrns_Create", "PurchasePaymentGrn", new { id = "#=PurchasePaymentId#" }))
-                                                                                                                                                          .Update(update => update.Action("PurchasePaymentGrns_Update", "PurchasePaymentGrn"))
-                                                                                                                                                          .Destroy(destroy => destroy.Action("PurchasePaymentGrns_Destroy", "PurchasePaymentGrn"))
-                                                                                                                                                      )
-                                                                                                                                                      .ToClientTemplate())
+                                                                                                                                                                      .ToolBar(toolbar =>
+                                                                                                                                                                      {
+                                                                                                                                                                          toolbar.Create();
+                                                                                                                                                                      })
+                                                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                                                                                                                                      .Sortable(sortable =>
+                                                                                                                                                                      {
+                                                                                                                                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                      })
+                                                                                                                                                                      .Filterable()
+                                                                                                                                                                      .Scrollable()
+                                                                                                                                                                      .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                                                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                                                                                          .Ajax()
+                                                                                                                                                                          .Model(
+                                                                                                                                                                              model =>
+                                                                                                                                                                              {
+                                                                                                                                                                                  model.Id(p => p.PurchasePaymentGrnId);
+                                                                                                                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                                              })
+                                                                                                                                                                          .Events(ev => ev
+                                                                                                                                                                              .Error("error_handler(\"PurchasePaymentGrn#=PurchasePaymentId#\")")
+                                                                                                                                                                              .RequestStart("onRequestStart(\"PurchasePaymentGrn#=PurchasePaymentId#\")")
+                                                                                                                                                                              .RequestEnd("onRequestEnd(\"PurchasePaymentGrn#=PurchasePaymentId#\")"))
+                                                                                                                                                                          .Read(read => read.Action("PurchasePaymentGrns_Read", "PurchasePaymentGrn", new { id = "#=PurchasePaymentId#" }))
+                                                                                                                                                                          .Create(create => create.Action("PurchasePaymentGrns_Create", "PurchasePaymentGrn", new { id = "#=PurchasePaymentId#" }))
+                                                                                                                                                                          .Update(update => update.Action("PurchasePaymentGrns_Update", "PurchasePaymentGrn"))
+                                                                                                                                                                          .Destroy(destroy => destroy.Action("PurchasePaymentGrns_Destroy", "PurchasePaymentGrn"))
+                                                                                                                                                                      )
+                                                                                                                                                                      .ToClientTemplate())
 
     </text>);
 
-                                                                                                                                                items.Add().Text("Attachement").Content(@<text>
+                                                                                                                                                                items.Add().Text("Attachement").Content(@<text>
 
-                                                                                                                                                    @PurchasePaymentFileUpload()
+                                                                                                                                                                    @PurchasePaymentFileUpload()
 
-                                                                                                                                                </text>);
+                                                                                                                                                                </text>);
 
 
-                                                                                                                                                        items.Add().Text("Validation").Content(
+                                                                                                                                                                        items.Add().Text("Validation").Content(
     @<text>
         @(Html.Kendo().Grid<PurchasePaymentValidation>()
-                                                                                                                                              .Name("PurchasePaymentValidation#=PurchasePaymentId#")
-                                                                                                                                              .Columns(columns =>
-                                                                                                                                              {
-                                                                                                                                                          columns.Bound(c => c.PurchasePaymentValidationId).Hidden(true);
-                                                                                                                                                          columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
-                                                                                                                                                          columns.Bound(c => c.Remark).Width(130);
-                                                                                                                                                          columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
-                                                                                                                                                          columns.Bound(c => c.LastModified).Hidden(true);
-                                                                                                                                                          columns.Bound(c => c.CreatedBy).Width(150).Title("User");
-                                                                                                                                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
-                                                                                                                                                          columns.Command(command =>
+                                                                                                                                                              .Name("PurchasePaymentValidation#=PurchasePaymentId#")
+                                                                                                                                                              .Columns(columns =>
+                                                                                                                                                              {
+                                                                                                                                                                          columns.Bound(c => c.PurchasePaymentValidationId).Hidden(true);
+                                                                                                                                                                          columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                                                                                                                          columns.Bound(c => c.Remark).Width(130);
+                                                                                                                                                                          columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                                                                                                          columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                                                                                                          columns.Bound(c => c.CreatedBy).Width(150).Title("User");
+                                                                                                                                                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                                                                                                          columns.Command(command =>
 {
                     command.Edit();
 
                 });
 
-                                                                                                                                                      })
-                                                                                                                                              .ToolBar(toolbar =>
-                                                                                                                                              {
-                                                                                                                                                          toolbar.Create();
-                                                                                                                                                      })
-                                                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                                      })
+                                                                                                                                                              .ToolBar(toolbar =>
+                                                                                                                                                              {
+                                                                                                                                                                          toolbar.Create();
+                                                                                                                                                                      })
+                                                                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
 
-                                                                                                                                              .Pageable(pageable => pageable
-                                                                                                                                                  .Input(true)
-                                                                                                                                                  .Numeric(false)
-                                                                                                                                                  .Refresh(true)
-                                                                                                                                                  .PageSizes(true)
-                                                                                                                                                  .ButtonCount(5))
-                                                                                                                                              .Sortable(sortable =>
-                                                                                                                                              {
-                                                                                                                                                          sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                                                                      })
-                                                                                                                                              //.Filterable()
-                                                                                                                                              .Scrollable()
-                                                                                                                                              .Events(events => events.DataBound("onDataBoundFisrtValidation"))
-                                                                                                                                              .DataSource(dataSource => dataSource
-                                                                                                                                                  .Ajax()
-                                                                                                                                                  .Model(
-                                                                                                                                                      model =>
-                                                                                                                                                      {
-                                                                                                                                                                  model.Id(p => p.PurchasePaymentValidationId);
-                                                                                                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
-                                                                                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                                                                  model.Field(p => p.LastModified).Editable(false);
-                                                                                                                                                                  model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                                              })
-                                                                                                                                                  .Events(ev => ev
-                                                                                                                                                      .Error("error_handler(\"PurchasePaymentValidation#=PurchasePaymentId#\")")
-                                                                                                                                                      .RequestStart("onRequestStart(\"PurchasePaymentValidation#=PurchasePaymentId#\")")
-                                                                                                                                                      .RequestEnd("onRequestEnd(\"PurchasePaymentValidation#=PurchasePaymentId#\")"))
+                                                                                                                                                              .Pageable(pageable => pageable
+                                                                                                                                                                  .Input(true)
+                                                                                                                                                                  .Numeric(false)
+                                                                                                                                                                  .Refresh(true)
+                                                                                                                                                                  .PageSizes(true)
+                                                                                                                                                                  .ButtonCount(5))
+                                                                                                                                                              .Sortable(sortable =>
+                                                                                                                                                              {
+                                                                                                                                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                      })
+                                                                                                                                                              //.Filterable()
+                                                                                                                                                              .Scrollable()
+                                                                                                                                                              .Events(events => events.DataBound("onDataBoundFisrtValidation"))
+                                                                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                                                                  .Ajax()
+                                                                                                                                                                  .Model(
+                                                                                                                                                                      model =>
+                                                                                                                                                                      {
+                                                                                                                                                                                  model.Id(p => p.PurchasePaymentValidationId);
+                                                                                                                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                                              })
+                                                                                                                                                                  .Events(ev => ev
+                                                                                                                                                                      .Error("error_handler(\"PurchasePaymentValidation#=PurchasePaymentId#\")")
+                                                                                                                                                                      .RequestStart("onRequestStart(\"PurchasePaymentValidation#=PurchasePaymentId#\")")
+                                                                                                                                                                      .RequestEnd("onRequestEnd(\"PurchasePaymentValidation#=PurchasePaymentId#\")"))
 
-                                                                                                                                                  .Read(read => read.Action("PurchasePaymentValidations_Read", "PurchasePaymentValidation", new { id = "#=PurchasePaymentId#" }))
-                                                                                                                                                  .Create(create => create.Action("PurchasePaymentValidations_Create", "PurchasePaymentValidation", new { id = "#=PurchasePaymentId#" }))
-                                                                                                                                                  .Update(update => update.Action("PurchasePaymentValidations_Update", "PurchasePaymentValidation", new { id = "#=PurchasePaymentId#" }))
-                                                                                                                                                  .Destroy(destroy => destroy.Action("PurchasePaymentValidations_Destroy", "PurchasePaymentValidation"))
-                                                                                                                                              )
-                                                                                                                                              .ToClientTemplate())
+                                                                                                                                                                  .Read(read => read.Action("PurchasePaymentValidations_Read", "PurchasePaymentValidation", new { id = "#=PurchasePaymentId#" }))
+                                                                                                                                                                  .Create(create => create.Action("PurchasePaymentValidations_Create", "PurchasePaymentValidation", new { id = "#=PurchasePaymentId#" }))
+                                                                                                                                                                  .Update(update => update.Action("PurchasePaymentValidations_Update", "PurchasePaymentValidation", new { id = "#=PurchasePaymentId#" }))
+                                                                                                                                                                  .Destroy(destroy => destroy.Action("PurchasePaymentValidations_Destroy", "PurchasePaymentValidation"))
+                                                                                                                                                              )
+                                                                                                                                                              .ToClientTemplate())
 
     </text>);
 
 
-                                                                                                                                            })
-                                                                                                                      .ToClientTemplate()
+                                                                                                                                                            })
+                                                                                                                                      .ToClientTemplate()
     )
 </script>
 
@@ -371,44 +402,70 @@
 @helper PurchasePaymentFileUpload()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PaymentRequest.PurchasePaymentAttachment>()
-                  .Name("Purchasedocument_#=PurchasePaymentId#")
-                  .Columns(columns =>
-                  {
-                      columns.Bound(c => c.FileName).ClientTemplate("<a href='/PurchasePaymentDocument/FileDwonload?id=\\#=PurchasePaymentAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
-                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
-                  })
-                  .ToolBar(t => t.Template(
-                    @<text>
-                        @(Html.Kendo().Upload()
-                                      .Name("PurchasePaymentDocuments")
-                                      .Async(a => a.Save("PurchasePaymentAttachments_Create", "PurchasePaymentDocument", new { id = "#=PurchasePaymentId #" }))
-                                      .Events(e => e.Complete("PurchasePaymentAttachementSuccess"))
-                                      .ShowFileList(false)
-                                      .ToClientTemplate())
-                    </text>
-                                ))
+                          .Name("Purchasedocument_#=PurchasePaymentId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.FileName).ClientTemplate("<a href='/PurchasePaymentDocument/FileDwonload?id=\\#=PurchasePaymentAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+                          })
+                          .ToolBar(t => t.Template(
+                            @<text>
+                                @(Html.Kendo().Upload()
+                                                      .Name("PurchasePaymentDocuments")
+                                                      .Async(a => a.Save("PurchasePaymentAttachments_Create", "PurchasePaymentDocument", new { id = "#=PurchasePaymentId #" }))
+                                                      .Events(e => e.Complete("PurchasePaymentAttachementSuccess"))
+                                                      .ShowFileList(false)
+                                                      .ToClientTemplate())
+                            </text>
+                                                    ))
 
-                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .HtmlAttributes(new { style = "height: 350px;" })
-                            .Scrollable()
-                            .Events(x => x.DataBound("onDataBoundFisrtValidation"))
-                            .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(ev => ev
-                                    .Error("error_handler(\"Purchasedocument_#=PurchasePaymentId#\")")
-                                    .RequestStart("onRequestStart(\"Purchasedocument_#=PurchasePaymentId#\")")
-                                    .RequestEnd("onRequestEnd(\"Purchasedocument_#=PurchasePaymentId#\")"))
-                                .Model(model => model.Id(p => p.PurchasePaymentAttachmentId))
-                                .Read(read => read.Action("PurchasePaymentAttachments_Read", "PurchasePaymentDocument", new { id = "#= PurchasePaymentId #" }))
-                                .Create(create => create.Action("PurchasePaymentAttachments_Create", "PurchasePaymentDocument", new { id = "#=PurchasePaymentId #" }))
-                                .Update(update => update.Action("PurchasePaymentAttachments_Update", "PurchasePaymentDocument"))
-                                .Destroy(destroy => destroy.Action("PurchasePaymentAttachments_Destroy", "PurchasePaymentDocument"))
-                            ).ToClientTemplate())
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                .HtmlAttributes(new { style = "height: 350px;" })
+                                                .Scrollable()
+                                                .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Events(ev => ev
+                                                        .Error("error_handler(\"Purchasedocument_#=PurchasePaymentId#\")")
+                                                        .RequestStart("onRequestStart(\"Purchasedocument_#=PurchasePaymentId#\")")
+                                                        .RequestEnd("onRequestEnd(\"Purchasedocument_#=PurchasePaymentId#\")"))
+                                                    .Model(model => model.Id(p => p.PurchasePaymentAttachmentId))
+                                                    .Read(read => read.Action("PurchasePaymentAttachments_Read", "PurchasePaymentDocument", new { id = "#= PurchasePaymentId #" }))
+                                                    .Create(create => create.Action("PurchasePaymentAttachments_Create", "PurchasePaymentDocument", new { id = "#=PurchasePaymentId #" }))
+                                                    .Update(update => update.Action("PurchasePaymentAttachments_Update", "PurchasePaymentDocument"))
+                                                    .Destroy(destroy => destroy.Action("PurchasePaymentAttachments_Destroy", "PurchasePaymentDocument"))
+                                                ).ToClientTemplate())
 }
 
 
 <script>
 
+    function grnData(grn) {
+        console.log(grn);
+        
+           var action = '@Url.Action("Goodreceive", "InventoryPrint", new { area = "Inventory"})';
+
+                var html = kendo.format("<a href='{0}/{1}'>Show Product Details</a>",
+                    action,
+                    grn.GrnNo
+                );
+
+            return html;
+        
+           
+
+    }
+
+    function getDynamicContent(data) {
+        console.log(data);
+        if (data.OtherColumn === "Value1") {
+            return data.ThisColumn;
+        } else if (data.OtherColumn === "Value2") {
+            return "Different Text";
+        } else {
+            return "";
+        }
+    }
 
     function sendForApproval(id) {
         var recordStatus = "";
@@ -429,11 +486,30 @@
         });
     }
 
-   
 
-   
+     function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "PurchasePayment", new {area = "Procurement"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
 
-    
+
+
 
 
     var masterDataItem;
@@ -535,10 +611,10 @@
 
         this.table.find(".k-grid-edit").hide();
     }
-    
 
- 
-    
+
+
+
 
     function filterInventoryItems() {
 
@@ -592,14 +668,14 @@
 
     function getPoOrContractId() {
         //alert(codeid);
-        return {           
+        return {
             type: $("#Type").data("kendoDropDownList").value(),
             text: $("#PoOrContractNumber").data("kendoDropDownList").filterInput.val()
         }
 
     }
 
-   
+
 
 
     function onSelectSourPoOrContract(e) {
@@ -627,9 +703,9 @@
         }); //end post
         //end
     }
-    
 
-    
+
+
 
     function applyPenalty(obj) {
 
@@ -637,16 +713,16 @@
             var amount = $("#PaymentAmount").val();
             var penalty = $("#PenalityAmount").val();
             var net = amount - penalty;
-            $("#NetPayable").val(net).trigger("change");        
+            $("#NetPayable").val(net).trigger("change");
 
         } else {
-            var amount = $("#PaymentAmount").val();          
+            var amount = $("#PaymentAmount").val();
             $("#NetPayable").val(amount).trigger("change");
         }
 
     }
     //not used
-    function serviceChargeChange(servicechargeObj) {      
+    function serviceChargeChange(servicechargeObj) {
 
         var serviceChargePercent = servicechargeObj.value;
         var type = $("#Type").data("kendoDropDownList").value();
@@ -658,7 +734,7 @@
             type: 'GET',
             data: { id: id, type: type, paymenttype: paymenttype, serviceCharge: serviceChargePercent },
             success: function (result) {
-                $("#PaymentAmount").val(result.PaymentAmount).trigger("change");              
+                $("#PaymentAmount").val(result.PaymentAmount).trigger("change");
                 $("#NetPayable").val(result.PaymentAmount).trigger("change");
                 $("#SupplierId").val(result.SupplierId).trigger("change");
                 $("#SupplierName").val(result.SupplierName).trigger("change");
@@ -672,7 +748,7 @@
 
     }
 
-    
+
 </script>
 
 

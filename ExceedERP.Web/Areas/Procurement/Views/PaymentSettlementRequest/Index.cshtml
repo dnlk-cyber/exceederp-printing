@@ -194,9 +194,18 @@
 
 
                                                                 </div>
-                                                                <hr>
+                                                                 <hr>
 
-                                                                
+                                                # if (IsDepartmentOnlineApproved && !IsOnlineApproved && !IsVoid)
+                                                {#
+                                                @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                                            {
+                                                    <a onclick='return voidRecord("#=ApPaymentSettlementId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                            }
+
+                                                # } #
+
+
 
                                                             </text>);
 
@@ -344,7 +353,7 @@
                                                     </text>);
 
 
-                                                                 
+
 
                                                                   items.Add().Text("Validation").Content(
                                     @<text>
@@ -418,7 +427,7 @@
         if (conf === true) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("Void", "ApPaymentSettlements", new {area = "Finance"})',
+                url: '@Url.Action("Void", "PaymentSettlementRequest", new {area = "Procurement"})',
                 data: { id: id },
                 success: function (result) {
                     // toastr.warnning(result.Message);

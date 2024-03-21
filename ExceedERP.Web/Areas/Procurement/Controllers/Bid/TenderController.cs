@@ -623,6 +623,66 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetParticipantItems(string id)
+        {
+            int lotId = int.Parse(id);
+            var lot = _db.Lots.Find(lotId);
+            if (lot != null)
+            {
+                var preQualifiedPartificpants = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lot.LotID && x.IsQualified==PreQualification.Pass).ToList();
+                var lotItems = _db.LotItems.Where(x => x.LotID == lot.LotID).ToList();
+                foreach (var s in preQualifiedPartificpants)
+                {
+                    foreach (var lotItem in lotItems)
+                    {
+                        var exist=_db.BidParticipatingSupplierItems
+                            .Where(x=>x.BidPParticipatingSuppliersID== s.BidPParticipatingSuppliersID)
+                            .Where(x=>x.LotItemID==lotItem.LotItemsID).FirstOrDefault();
+                        if (exist == null)
+                        {
+                            var entity = new BidParticipatingSupplierItem
+                            {
+                                BidPParticipatingSuppliersID = s.BidPParticipatingSuppliersID,
+                                LotItemID = lotItem.LotItemsID,
+                                CatCode = lotItem.CatCode,
+                                CategoryName = lotItem.CategoryName,
+                                ItmCode = lotItem.ItmCode,
+                                ItemName = lotItem.ItemName,
+                                PartNo = lotItem.PartNo,
+                                Name = lotItem.Name,
+                                ItemSpecification = lotItem.ItemSpecification,
+                                UoM = lotItem.UoM,
+                                ItemType = lotItem.ItemType,
+                                GLTaxRateID = s.GLTaxRateID,
+                                TaxAmount = 0,
+                                Quantity = lotItem.Quantity,
+                                SubTotal = 0,
+                                UnitPrice = 0,
+                                Total = 0,
+
+                                IsOutOfStock = false
+                            };
+
+                            _db.BidParticipatingSupplierItems.Add(entity);
+                            _db.SaveChanges();
+                        }
+                    }
+                }
+                var formattedData = new
+                {
+                    Message = "Complete",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData1 = new
+            {
+                Message = "The record is not found.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+        }
+
         //public JsonResult GetParticipantItem(string id)
         //{
         //    int lotId = int.Parse(id);
@@ -662,7 +722,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //                    if (lotitem.ItemType == PurchaseItemType.FixedAsset)
         //                    {
         //                        var proformPassFail = _db.TenderPassFailResult.Where(
-        //                            x => x.LotID == lotId && x.ItmCode == lotitem.ItmCode && 
+        //                            x => x.LotID == lotId && x.ItmCode == lotitem.ItmCode &&
         //                            x.Name == lotitem.Name &&
         //                             x.ModelNo == lotitem.ModelNo &&
         //                                 x.SupplierName == supplier.SupplierName).FirstOrDefault();
@@ -674,7 +734,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //                    else
         //                    {
         //                        var proformPassFail = _db.TenderPassFailResult
-        //                            .Where(x=>x.SupplierName == supplier.SupplierName)
+        //                            .Where(x => x.SupplierName == supplier.SupplierName)
         //                             .Where(x => x.LotID == lotId)
         //                              .Where(x => x.ItmCode == lotitem.ItmCode)
         //                              .Where(x => x.ItemSpecification == lotitem.ItemSpecification)//added
@@ -683,7 +743,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //                        if (proformPassFail?.Result == PassFailStatus.Fail)
         //                            continue;
         //                    }
-                            
+
         //                }
 
         //                #endregion
@@ -692,8 +752,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //                {
         //                    //if exists jump
         //                    var exists = _db.BidParticipatingSupplierItems.Where(
-        //                        x => x.BidPParticipatingSupplier.LotID == lotId 
-        //                        && x.ItmCode == lotitem.ItmCode 
+        //                        x => x.BidPParticipatingSupplier.LotID == lotId
+        //                        && x.ItmCode == lotitem.ItmCode
         //                         && x.Name == lotitem.Name
         //                          && x.ModelNo == lotitem.ModelNo
         //                         && x.SupplierName == supplier.SupplierName).FirstOrDefault();
@@ -716,7 +776,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //                            LotID = lotId,
         //                            GLTaxRateID = 0,
         //                            Quantity = lotitem.Quantity,
-        //                            LotItemID=lotitem.LotItemsID
+        //                            LotItemID = lotitem.LotItemsID
         //                        };
         //                        _db.ParticipantsItems.Add(item);
         //                        _db.SaveChanges();
@@ -743,7 +803,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //                            ItemSpecification = lotitem.ItemSpecification,
         //                            Name = lotitem.Name,
         //                            ModelNo = lotitem.ModelNo,
-        //                            UoM =lotitem.UoM,
+        //                            UoM = lotitem.UoM,
         //                            SupplierId = supplier.SupplierId,
         //                            IsNewSupplier = supplier.IsNewSupplier,
         //                            SupplierName = supplier.SupplierName,
@@ -759,7 +819,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         //            }
         //        }
 
-                
+
 
         //        #endregion
 

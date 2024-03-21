@@ -409,6 +409,10 @@
     <Compile Include="Migrations\202403131855517_furnituresetting.Designer.cs">
       <DependentUpon>202403131855517_furnituresetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403210659104_procupgrade.cs" />
+    <Compile Include="Migrations\202403210659104_procupgrade.Designer.cs">
+      <DependentUpon>202403210659104_procupgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -673,6 +677,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403131855517_furnituresetting.resx">
       <DependentUpon>202403131855517_furnituresetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403210659104_procupgrade.resx">
+      <DependentUpon>202403210659104_procupgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

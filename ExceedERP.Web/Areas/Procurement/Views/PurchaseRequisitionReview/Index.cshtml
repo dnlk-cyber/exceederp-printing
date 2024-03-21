@@ -179,7 +179,7 @@
                                                                     #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
                                                                 </dd>
                                                                 <dt>
-                                                                   Second Approved By 
+                                                                   Second Approved By
                                                                 </dt>
                                                                 <dd>
                                                                     #= MiddleOnlineApprovedBy #s
@@ -228,6 +228,7 @@
                                                                                                               {
                                                                                                                   columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category");
                                                                                                                   columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items");
+
                                                                                                                   columns.Bound(c => c.Name).Width(120);
                                                                                                                   columns.Bound(c => c.PartNo).Width(120);
                                                                                                                   columns.Bound(c => c.ModelNo).Width(120);
@@ -285,7 +286,11 @@
 
                                                                                                     </text>);
 
-                                                    
+                                                     itemn.Add().Text("Attachment").Content(@<text>
+
+                        @PrFileUpload()
+
+                    </text>);
 
           itemn.Add().Text("Validation").Content(
 
@@ -356,7 +361,7 @@
                                                                                                                       { toolbar.Create();}
                                                                                                                   })
                                                                                                                   .HtmlAttributes(new { style = "height: 500px;" })
-                                                                                                                  
+
                                                                                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                                                   .Scrollable()
                                                                                                                   .Events(x=>x.DetailExpand("detailExpandPurchaseAssignment")
@@ -500,8 +505,46 @@
 
                                                                 </text>);
 
-                                                                     
+
       }).ToClientTemplate())
+
+    @helper PrFileUpload()
+{
+    @(Html.Kendo().Grid<PurchaseRequisitionAttachment>()
+                  .Name("PurchaseRequisitionAttachment_#=PurchaseRequisitionID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.FileName).ClientTemplate("<a href='/PurchaseRequisitionAttachmentSelfCare/FileDwonload?id=\\#=PurchaseRequisitionAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+                  })
+                  .ToolBar(t => t.Template(
+                    @<text>
+                        @(Html.Kendo().Upload()
+                                      .Name("PurchaseRequisitionAttachments")
+                                      .Async(a => a.Save("PurchaseRequisitionAttachments_Create", "PurchaseRequisitionAttachmentSelfCare", new { id = "#=PurchaseRequisitionID #" }))
+                                      .Events(e => e.Complete("prAttachementSuccess"))
+                                      .ShowFileList(false)
+                                      .ToClientTemplate())
+                    </text>
+                                ))
+
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .HtmlAttributes(new { style = "height: 350px;" })
+                            .Scrollable()
+                            .Events(x => x.DataBound("onDataBoundLineNew"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                    .Error("error_handler(\"PurchaseRequisitionAttachment_#=PurchaseRequisitionID#\")")
+                                    .RequestStart("onRequestStart(\"PurchaseRequisitionAttachment_#=PurchaseRequisitionID#\")")
+                                    .RequestEnd("onRequestEnd(\"PurchaseRequisitionAttachment_#=PurchaseRequisitionID#\")"))
+                                .Model(model => model.Id(p => p.PurchaseRequisitionAttachmentId))
+                                .Read(read => read.Action("PurchaseRequisitionAttachments_Read", "PurchaseRequisitionAttachmentSelfCare", new { id = "#= PurchaseRequisitionID #" }))
+                                .Create(create => create.Action("PurchaseRequisitionAttachments_Create", "PurchaseRequisitionAttachmentSelfCare", new { id = "#=PurchaseRequisitionID #" }))
+                                .Update(update => update.Action("PurchaseRequisitionAttachments_Update", "PurchaseRequisitionAttachmentSelfCare"))
+                                .Destroy(destroy => destroy.Action("PurchaseRequisitionAttachments_Destroy", "PurchaseRequisitionAttachmentSelfCare"))
+                            ).ToClientTemplate())
+}
 </script>
 
 <script id="itemDetail" type="text/Kendo-tmpl">
@@ -561,6 +604,10 @@
 
 <script>
 
+    function prAttachementSuccess(e) {
+        var gridname = "#PurchaseRequisitionAttachment_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
 
     function sendForApproval(id) {
         var recordStatus = "";

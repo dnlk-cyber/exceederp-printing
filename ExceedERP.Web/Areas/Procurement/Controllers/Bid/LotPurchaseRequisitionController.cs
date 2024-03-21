@@ -225,6 +225,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                             .Where(x => x.LotID == id)
                             .Where(x=>x.Name==item.Name)
                             .Where(x => x.ItmCode == item.ItmCode)
+                             .Where(x => x.ItemSpecification == item.ItemSpecification)//added
                             .FirstOrDefault(x => x.ModelNo == item.ModelNo);
                         if (existingLotItem == null)
                         {
@@ -316,6 +317,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                         var existingLotItem = _db.LotItems
                             .Where(x => x.LotID == id)
                             .Where(x => x.Name == item.Name)
+                            .Where(x => x.ItemSpecification == item.ItemSpecification)//added
                             .FirstOrDefault(x => x.ItmCode == item.ItmCode);
                         if (existingLotItem != null)
                         {

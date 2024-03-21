@@ -33,8 +33,8 @@
 <body>
 
 @(Html.TelerikReporting().ReportViewer()
-        // Each report viewer must have an id - it will be used by the initialization script
-        // to find the element and initialize the report viewer.
+      // Each report viewer must have an id - it will be used by the initialization script
+      // to find the element and initialize the report viewer.
       .Id("reportViewer1").ParameterEditors(editors => editors.SingleSelectEditor("createSingleSelectEditor")
           .MultiValueEditor("createMultiSelectEditor"))
         // The URL of the service which will serve reports.
@@ -46,7 +46,14 @@
         // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
         // 
         // Strongly typed ReportSource - TypeReportSource or UriReportSource.
-        .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.Procurements.rptProformaSummaryAmharic, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", Parameters = { new Parameter("id", ViewBag.Id) } })
+        .ReportSource(new TypeReportSource()
+        {
+            TypeName = "ExceedERP.Reporting.Procurements.rptProformaSummaryAmharic, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            Parameters = {
+                    new Parameter("id", ViewBag.Id),
+                    new Parameter("FormTitle", ViewBag.FormTitle),
+                    new Parameter("FormNumber", ViewBag.FormNumber) }
+        })
         // Specifies whether the viewer is in interactive or print preview mode.
         // PrintPreview - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
         // Interactive - Displays the report in its original width and height with no paging. Additionally interactivity is enabled.

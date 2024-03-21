@@ -24,6 +24,7 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public int EmployeeId { get; set; }
         public string SignedBy { get; set; }
         public DateTime? SginTime { get; set; }
+        public string Title { get; set; }
     }
 
     public class ProformaTeamDecision : TrackUserOperation

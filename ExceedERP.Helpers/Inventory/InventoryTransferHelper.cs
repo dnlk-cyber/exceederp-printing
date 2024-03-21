@@ -21,6 +21,179 @@ namespace ExceedERP.Helpers.Inventory
         private readonly ExceedDbContext _db = new ExceedDbContext();
         AccountHelper helper = new AccountHelper();
 
+        private string GetStoreDesc(string storecode)
+        {
+            string str = "";
+            var store=_db.InventoryStores.Find(storecode);
+            if(store!=null)
+            {
+                str= store.StoreCode+ "_"+store.Name;
+            }
+            return str; 
+        }
+
+        public string ServiceReceive(int id, string description, string user)
+        {
+            string responseMessage = "";
+            var record = _db.GoodReceives.Find(id);
+
+            if (record != null && record.IsOnlineApproved && !record.IsOnlineTransferred)
+            {
+                #region check if already transffered 
+                var exist = _db.GLRecordJournals
+                               .Where(x => x.Source == JournalSources.Stock_Receive.ToString())
+                               .Where(x => x.SourceId == record.GoodReceiveId.ToString())
+                               .FirstOrDefault();
+                if (exist != null)
+                    return "The record is already transffered, it can't be retransferred.";
+
+                #endregion
+                #region check segment length validation
+                AccountHelper accountHelper = new AccountHelper();
+                foreach (var dist in record.GoodReceiveDistribution)
+                {
+                    string message = accountHelper.ValidateSegmentCombinationLength(dist.AccountCode);
+                    if (!String.IsNullOrEmpty(message))
+                        return message;
+                }
+
+
+                #endregion
+
+                #region check if debit and credit are equal
+
+                decimal debit = 0;
+                decimal credit = 0;
+                var distribution = record.GoodReceiveDistribution.ToList();
+                if (distribution.Any())
+                {
+                    debit = distribution.Sum(x => x.Debit);
+                    credit = distribution.Sum(x => x.Credit);
+                }
+
+                if (debit != credit)
+                {
+                    responseMessage = "Total debit and total credit is not balanced.";
+                    return responseMessage;
+                }
+
+                if (debit <= 0)
+                {
+                    responseMessage = "Total debit and total credit should be positive number.";
+                    return responseMessage;
+                }
+
+                #endregion
+
+                #region send to GL
+
+                string glperiod = "";
+                string glyear = "";
+
+                #region get period
+
+                var period = _db.InventoryPeriods.Find(record.GLPeriodId);
+
+
+                if (period != null)
+                {
+                    var glperiodObj = _db.GLPeriods.FirstOrDefault(x => x.Name == period.Name);
+
+                    if (glperiodObj != null)
+                    {
+                        glperiod = glperiodObj.Name;
+                        glyear = glperiodObj.GlFiscalYear.Name;
+                        if (glperiodObj.Status == FiscalYearStatus.Close)
+                        {
+                            responseMessage =
+                                $"The period {glperiodObj.Name} is closed,the record cannot be transfered to closed period.";
+                            return responseMessage;
+                        }
+                    }
+
+                    else
+                    {
+                        responseMessage = $"The corresponding GL period {period.Name} is not found.";
+                        return responseMessage;
+
+                    }
+                }
+                else
+                {
+                    responseMessage = $"The period is not found in inventory period.";
+                    return responseMessage;
+                }
+
+                #endregion
+
+                if (record.GoodReceiveDistribution.Any())
+                {
+                    GlRecordJournal journal = new GlRecordJournal
+                    {
+                        DateCreated = DateTime.Now,
+                        CreatedBy = user,
+                        BusinessUnitId = record.BusinessUnitId,
+                        BranchId = record.BranchId,
+                        JournalName = "GoodReceive",
+                        Description = !String.IsNullOrEmpty(description) ? description +" "+ GetStoreDesc(record.StoreCode) : "GoodReceive" + " " + GetStoreDesc(record.StoreCode),
+                        FiscalYear = glyear,
+                        PeriodName = glperiod,
+                        CategoryName = "GoodReceive",
+                        SourcesName = "GR",
+                        JournalNumber = "GoodRecive." + record.GoodReceiveId,
+                        SourceId = record.GoodReceiveId.ToString(),
+                        Source = JournalSources.Stock_Receive.ToString(),
+                        EffectiveDate = record.ReceiveDate.Date.Date,
+                        Status = "Approved",
+                        IsOnlineApproved = true,
+                        OnlineApprovedBy = user,
+                        OnlineApprovedTime = DateTime.Now,
+                        OrgBranchName = record.OrgBranchName
+                    };
+                    _db.GLRecordJournals.Add(journal);
+                    _db.SaveChanges();
+                    foreach (GoodReceiveDistribution i in record.GoodReceiveDistribution)
+                    {
+                        #region debit and credit
+
+                        var journalDetail = new GLRecordJournalDetail
+                        {
+                            DateCreated = DateTime.Now,
+                            CreatedBy = user,
+                            GLRecordJournal = journal,
+                            AccountCode = i.AccountCode,
+                            AccountDesc = i.AccountDesc,
+                            AdditionalDescription = i.AdditionalDescription,
+                            Debit = i.Debit,
+                            Credit = i.Credit
+                        };
+                        _db.GLRecordJournalDetails.Add(journalDetail);
+                        _db.SaveChanges();
+
+                        #endregion
+                    }
+                    #region split journal
+                    foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
+                    {
+                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                    }
+                    #endregion
+                    record.IsOnlineTransferred = true;
+                    record.IsOnlineTransferredBy = user;
+                    record.OnlineTransferredTime = DateTime.Now;
+                    _db.Entry(record).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    responseMessage = "SUCCESS";
+                    return responseMessage;
+                }
+
+                responseMessage = "There is no distribution to be transferred.";
+                return responseMessage;
+
+                #endregion
+            }
+            return responseMessage;
+        }
         public  string GoodReceive(int id, string description,string user)
         {
             string responseMessage = "";
@@ -124,7 +297,7 @@ namespace ExceedERP.Helpers.Inventory
                         BusinessUnitId = record.BusinessUnitId,
                         BranchId = record.BranchId,
                         JournalName = "GoodReceive",
-                        Description = !String.IsNullOrEmpty(description) ? description : "GoodReceive",
+                        Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.StoreCode) : "GoodReceive" + " " + GetStoreDesc(record.StoreCode),
                         FiscalYear = glyear,
                         PeriodName = glperiod,
                         CategoryName = "GoodReceive",
@@ -290,7 +463,7 @@ namespace ExceedERP.Helpers.Inventory
                             BusinessUnitId = record.BusinessUnitId,
                             BranchId = record.BranchId,
                             JournalName = "Issue",
-                            Description = !String.IsNullOrEmpty(description) ? description : "Issue",
+                            Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.StoreCode) : "Issue" + " " + GetStoreDesc(record.StoreCode),
                             FiscalYear = glyear,
                             PeriodName = glperiod,
                             CategoryName = "Issue",
@@ -464,7 +637,7 @@ namespace ExceedERP.Helpers.Inventory
                         BusinessUnitId = record.BusinessUnitId,
                         BranchId = record.BranchId,
                         JournalName = "Issue Fuel",
-                        Description = !String.IsNullOrEmpty(description) ? description : "Issue Fuel",
+                        Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.StoreCode) : "Issue Fuel" + " " + GetStoreDesc(record.StoreCode),
                         FiscalYear = glyear,
                         PeriodName = glperiod,
                         CategoryName = "Issue Fuel",
@@ -632,7 +805,7 @@ namespace ExceedERP.Helpers.Inventory
                         BusinessUnitId = record.BusinessUnitId,
                         BranchId = record.BranchId,
                         JournalName = "Good Selling",
-                        Description = !String.IsNullOrEmpty(description) ? description : "Good Selling",
+                        Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.StoreCode) : "Good Selling" + " " + GetStoreDesc(record.StoreCode),
                         FiscalYear = glyear,
                         PeriodName = glperiod,
                         CategoryName = "Good Selling",
@@ -798,7 +971,7 @@ namespace ExceedERP.Helpers.Inventory
                         BusinessUnitId =record.BusinessUnitId,
                         BranchId = record.BranchId,                       
                         JournalName = "Transfer Send",
-                        Description = !String.IsNullOrEmpty(description) ? description : "Transfer Send",
+                        Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.FromStore) : "Transfer Send" + " " + GetStoreDesc(record.FromStore),
                         FiscalYear = glyear,
                         PeriodName = glperiod,
                         CategoryName = "Transfer Send",
@@ -963,7 +1136,7 @@ namespace ExceedERP.Helpers.Inventory
                         BusinessUnitId = record.BusinessUnitId,
                         BranchId = record.BranchId,
                         JournalName = "Transfer Receive",
-                        Description = !String.IsNullOrEmpty(description) ? description : "Transfer Receive",
+                        Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.ToStore) : "Transfer Receive" + " " + GetStoreDesc(record.ToStore),
                         FiscalYear = glyear,
                         PeriodName = glperiod,
                         CategoryName = "Transfer Receive",
@@ -1128,7 +1301,7 @@ namespace ExceedERP.Helpers.Inventory
                         BranchId = record.BranchId,
                         CreatedBy = user,
                         JournalName = "Store Return",
-                        Description = !String.IsNullOrEmpty(description) ? description : "Store Return",
+                        Description = !String.IsNullOrEmpty(description) ? description + " " + GetStoreDesc(record.StoreCode) : "Store Return" + " " + GetStoreDesc(record.StoreCode),
                         FiscalYear = glyear,
                         PeriodName = glperiod,
                         CategoryName = "Store Return",

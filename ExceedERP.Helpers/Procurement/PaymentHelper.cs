@@ -45,7 +45,7 @@ namespace ExceedERP.Helpers.Procurement
         public static void UpdatePurchasePaymentTotals(int id)
         {
             ExceedDbContext db = new ExceedDbContext();
-            
+            decimal totalServiceCharge = 0;
             var record = db.PurchasePayments.Find(id);
             if(record.PaymentType==PaymentType.Credit)
             {
@@ -114,6 +114,22 @@ namespace ExceedERP.Helpers.Procurement
                             #endregion
                         }
                     }
+
+                    #region additional charge
+                    int did=int.Parse(record.PoOrContractNumber);
+                    var additionalCharge = db.PoAdditionalCharges.Where(x => x.PurchaseOrderID == did).ToList();
+                    foreach (var item in additionalCharge)
+                    {
+                        if (item.AmountType == AmountType.Percent)
+                        {
+                            totalServiceCharge = amount * (item.Amount / 100);
+                        }
+                        else
+                        {
+                            totalServiceCharge = totalServiceCharge + item.Amount;
+                        }
+                    }
+                    #endregion
 
                     record.PaymentAmount = amount;
                     record.NetPayable = amount;

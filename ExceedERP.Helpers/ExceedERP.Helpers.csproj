@@ -194,6 +194,7 @@
     <Compile Include="Procurement\GuaranteeHelper.cs" />
     <Compile Include="Procurement\ItemHelper.cs" />
     <Compile Include="Procurement\PaymentHelper.cs" />
+    <Compile Include="Procurement\ProcurementIsoDocumentHelper.cs" />
     <Compile Include="Procurement\ProcurementTransactionHelper.cs" />
     <Compile Include="Production\CleanedProductsSellingPriceHelper.cs" />
     <Compile Include="Production\CostTrackingHelper.cs" />

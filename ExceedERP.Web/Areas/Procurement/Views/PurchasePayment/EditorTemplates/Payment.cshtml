@@ -174,7 +174,7 @@
 
             @Html.LabelFor(model => model.PaymentAmount, htmlAttributes: new { @class = "control-label col-md-8" })
             <div class="col-md-6">
-                @Html.Kendo().TextBoxFor(model => model.PaymentAmount).HtmlAttributes(new { @disabled = "disabled" })
+                @Html.Kendo().TextBoxFor(model => model.PaymentAmount)@*.HtmlAttributes(new { @disabled = "disabled" })*@
                 @Html.ValidationMessageFor(model => model.PaymentAmount, "", new { @class = "text-danger" })
             </div>
 
@@ -217,7 +217,7 @@
 
             @Html.LabelFor(model => model.NetPayable, htmlAttributes: new { @class = "control-label col-md-8" })
             <div class="col-md-6">
-                @Html.Kendo().TextBoxFor(model => model.NetPayable).HtmlAttributes(new { @disabled = "disabled" })
+                @Html.Kendo().TextBoxFor(model => model.NetPayable)@*.HtmlAttributes(new { @disabled = "disabled" })*@
                 @Html.ValidationMessageFor(model => model.NetPayable, "", new { @class = "text-danger" })
             </div>
 

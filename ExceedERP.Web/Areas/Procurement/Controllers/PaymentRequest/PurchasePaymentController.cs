@@ -114,6 +114,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 BudgetApprovedBy = purchasePayment.BudgetApprovedBy,
                 BudgetApprovedTime = purchasePayment.BudgetApprovedTime,
 
+                IsFinanceSendForApproval = purchasePayment.IsFinanceSendForApproval,
+                FinanceSendForApprovalBy = purchasePayment.FinanceSendForApprovalBy,
+                FinanceSendForApprovalTime = purchasePayment.FinanceSendForApprovalTime,
+
+                IsFinanceApproved = purchasePayment.IsFinanceApproved,
+                FinanceApprovedBy = purchasePayment.FinanceApprovedBy,
+                FinanceApprovedTime = purchasePayment.FinanceApprovedTime,
+
+                IsAuthorized = purchasePayment.IsAuthorized,
+                AuthorizedBy = purchasePayment.AuthorizedBy,
+                AuthorizedTime = purchasePayment.AuthorizedTime,
+
                 OrgBranchName = purchasePayment.OrgBranchName,
                 DateCreated = purchasePayment.DateCreated,
                 LastModified = purchasePayment.LastModified,
@@ -133,12 +145,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
             if(String.IsNullOrEmpty(purchasePayment.PoOrContractNumber))
                 ModelState.AddModelError("required", "Please select purchase order number");
 
-            var exist = _db.PurchasePayments
-                .Where(x => x.Type == purchasePayment.Type)//po
-                .Where(x => x.PaymentType != PaymentType.Credit) //credit has its own grn,can request on deliver..later will allow all
-                .Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
-            if (exist != null)
-                ModelState.AddModelError("exisit","Payment request for this source ia already added");
+            //var exist = _db.PurchasePayments
+            //    .Where(x => x.Type == purchasePayment.Type)//po
+            //    .Where(x => x.PaymentType != PaymentType.Credit) //credit has its own grn,can request on deliver..later will allow all
+            //    .Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
+            //if (exist != null)
+            //    ModelState.AddModelError("exisit","Payment request for this source ia already added");
 
             if(!IsItLegibleToAdd(purchasePayment))
                 ModelState.AddModelError("ilegitimate", "Please check if there  is correct payment schedule defined");
@@ -256,13 +268,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
             if (String.IsNullOrEmpty(purchasePayment.PoOrContractNumber))
                 ModelState.AddModelError("required", "Please select purchase order number");
 
-            var exist = _db.PurchasePayments
-                .Where(x=>x.PurchasePaymentId!=purchasePayment.PurchasePaymentId)
-                .Where(x => x.PaymentType != PaymentType.Credit) //credit has its own grn,can request on deliver..later will allow all
-                .Where(x => x.Type == purchasePayment.Type) //po
-                .Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
-            if (exist != null)
-                ModelState.AddModelError("exisit", "Payment request for this source ia already added");
+            //var exist = _db.PurchasePayments
+            //    .Where(x=>x.PurchasePaymentId!=purchasePayment.PurchasePaymentId)
+            //    .Where(x => x.PaymentType != PaymentType.Credit) //credit has its own grn,can request on deliver..later will allow all
+            //    .Where(x => x.Type == purchasePayment.Type) //po
+            //    .Where(x => x.PoOrContractNumber == purchasePayment.PoOrContractNumber).FirstOrDefault();
+            //if (exist != null)
+            //    ModelState.AddModelError("exisit", "Payment request for this source ia already added");
 
             if (!IsItLegibleToAdd(purchasePayment))
                 ModelState.AddModelError("ilegitimate", "Please check if there  is correct payment schedule defined");
@@ -684,6 +696,94 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
             //    #endregion
             //}
 
+        }
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = _db.PurchasePayments.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid)
+            {
+                
+                #region validate payment
+
+                var payment = _db.APPayments
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => x.PoType == "Purchase Payment")
+                    .FirstOrDefault(x => x.PurchaseReference == record.PurchasePaymentId.ToString());
+
+                if (payment != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This payment request can not be void since it is referred in payment {payment.ApPaymentId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region validate invoice
+
+                var invoice = _db.APPaybleInvoices
+                    .Where(x => x.IsVoid == false)
+                    .FirstOrDefault(x => x.SourceId == record.PurchasePaymentId.ToString());
+
+                if (invoice != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This payment request can not be void since it is referred in invoice {invoice.ApPaybleInvoicesId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+
+
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsFinanceApproved = false;
+                record.IsFinanceSendForApproval = false;
+                record.IsBudgetApproved = false;
+                //record.isVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                record.ForwardedFrom = User.Identity.Name;
+                record.ForwardedTo = User.Identity.Name;
+                _db.PurchasePayments.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
         }
         protected override void Dispose(bool disposing)
         {

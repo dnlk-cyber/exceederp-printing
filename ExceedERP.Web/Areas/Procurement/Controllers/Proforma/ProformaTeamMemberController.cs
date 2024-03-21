@@ -29,15 +29,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         public ActionResult ProformaTeamMembers_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<ProformaTeamMember> ProformaTeamMember = _db.ProformaTeamMembers.Where(p => p.ProformaTeamId == id);
-            DataSourceResult result = ProformaTeamMember.ToDataSourceResult(request, winningSupplier => new {
-                ProformaTeamMemberId = winningSupplier.ProformaTeamMemberId,
-                ProformaTeamId = winningSupplier.ProformaTeamId,
-                EmployeeId = winningSupplier.EmployeeId,
-                OrgBranchName = winningSupplier.OrgBranchName,
-                DateCreated = winningSupplier.DateCreated,
-                LastModified = winningSupplier.LastModified,
-                CreatedBy = winningSupplier.CreatedBy,
-                ModifiedBy = winningSupplier.ModifiedBy
+            DataSourceResult result = ProformaTeamMember.ToDataSourceResult(request, team => new {
+                ProformaTeamMemberId = team.ProformaTeamMemberId,
+                ProformaTeamId = team.ProformaTeamId,
+                EmployeeId = team.EmployeeId,
+                Title = team.Title,
+                OrgBranchName = team.OrgBranchName,
+                DateCreated = team.DateCreated,
+                LastModified = team.LastModified,
+                CreatedBy = team.CreatedBy,
+                ModifiedBy = team.ModifiedBy
             });
 
             return Json(result);
@@ -45,7 +46,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProformaTeamMembers_Create([DataSourceRequest]DataSourceRequest request, ProformaTeamMember member , int id )
+        public ActionResult ProformaTeamMembers_Create([DataSourceRequest]DataSourceRequest request, ProformaTeamMember team , int id )
             {
 
             if (ModelState.IsValid)
@@ -53,17 +54,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     var entity = new ProformaTeamMember
                     {
                         ProformaTeamId =id,
-                        EmployeeId = member.EmployeeId,
-                        OrgBranchName = member.OrgBranchName,
+                        EmployeeId = team.EmployeeId,
+                        Title = team.Title,
+                        OrgBranchName = team.OrgBranchName,
                         DateCreated = DateTime.Today,
-                        LastModified = member.LastModified,
+                        LastModified = team.LastModified,
                         CreatedBy = User.Identity.Name,
-                        ModifiedBy = member.ModifiedBy
+                        ModifiedBy = team.ModifiedBy
                     };
 
                     _db.ProformaTeamMembers.Add(entity);
                     _db.SaveChanges();
-                    member.ProformaTeamMemberId = entity.ProformaTeamMemberId;
+                    team.ProformaTeamMemberId = entity.ProformaTeamMemberId;
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "proforma team member", "Success", User.Identity.Name, $"created winner {entity.EmployeeId} under record {entity.EmployeeId}", Modules.Procurement);
@@ -72,24 +74,25 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             }
 
 
-            return Json(new[] { member }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { team }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProformaTeamMembers_Update([DataSourceRequest]DataSourceRequest request, ProformaTeamMember winningSupplier)
+        public ActionResult ProformaTeamMembers_Update([DataSourceRequest]DataSourceRequest request, ProformaTeamMember team)
         {
                 if (ModelState.IsValid)
                 {
                         var entity = new ProformaTeamMember
                         {
-                            EmployeeId= winningSupplier.EmployeeId,
-                            ProformaTeamMemberId = winningSupplier.ProformaTeamMemberId,
-                            ProformaTeamId = winningSupplier.ProformaTeamId,
-                            OrgBranchName = winningSupplier.OrgBranchName,
-                            DateCreated = winningSupplier.DateCreated,
+                            EmployeeId= team.EmployeeId,
+                            Title = team.Title,
+                            ProformaTeamMemberId = team.ProformaTeamMemberId,
+                            ProformaTeamId = team.ProformaTeamId,
+                            OrgBranchName = team.OrgBranchName,
+                            DateCreated = team.DateCreated,
                             LastModified = DateTime.Today,
-                            CreatedBy = winningSupplier.CreatedBy,
+                            CreatedBy = team.CreatedBy,
                             ModifiedBy = User.Identity.Name
                         };
 
@@ -104,25 +107,25 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             }
 
 
-            return Json(new[] { winningSupplier }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { team }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProformaTeamMembers_Destroy([DataSourceRequest]DataSourceRequest request, ProformaTeamMember winningSupplier)
+        public ActionResult ProformaTeamMembers_Destroy([DataSourceRequest]DataSourceRequest request, ProformaTeamMember team)
         {
             if (ModelState.IsValid)
             {
                 var entity = new ProformaTeamMember
                 {
-                    ProformaTeamMemberId = winningSupplier.ProformaTeamMemberId,
-                    ProformaTeamId = winningSupplier.ProformaTeamId,
-                    EmployeeId = winningSupplier.EmployeeId,
-                    OrgBranchName = winningSupplier.OrgBranchName,
-                    DateCreated = winningSupplier.DateCreated,
-                    LastModified = winningSupplier.LastModified,
-                    CreatedBy = winningSupplier.CreatedBy,
-                    ModifiedBy = winningSupplier.ModifiedBy
+                    ProformaTeamMemberId = team.ProformaTeamMemberId,
+                    ProformaTeamId = team.ProformaTeamId,
+                    EmployeeId = team.EmployeeId,
+                    OrgBranchName = team.OrgBranchName,
+                    DateCreated = team.DateCreated,
+                    LastModified = team.LastModified,
+                    CreatedBy = team.CreatedBy,
+                    ModifiedBy = team.ModifiedBy
                 };
 
                 _db.ProformaTeamMembers.Attach(entity);
@@ -130,7 +133,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 _db.SaveChanges();
             }
 
-            return Json(new[] { winningSupplier }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { team }.ToDataSourceResult(request, ModelState));
         }
 
         

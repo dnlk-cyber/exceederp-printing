@@ -351,6 +351,13 @@
 
 <script>
 
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
     var supplierTextBox;
     var popup;
     var slectedUser;

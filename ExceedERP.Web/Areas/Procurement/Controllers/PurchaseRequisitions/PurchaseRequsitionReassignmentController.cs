@@ -67,8 +67,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
             var purchaseReq =_db.PurchaseRequisitions.Find(purchaseRequisitionAssignment.PurchaseRequisitionID);
 
-            if (purchaseReq != null&& (purchaseReq.ProcurementMethod != ProcurementMethod.DirectPurchase && purchaseReq.FromPreviousPurchase))
-                ModelState.AddModelError("notallowed","Only direct purchase is allowed because it is made to be from previous purchase");
+            if (purchaseReq != null&& (purchaseReq.ProcurementMethod == ProcurementMethod.Proforma && purchaseReq.FromPreviousPurchase))
+                ModelState.AddModelError("notallowed","Proforma is not allowed to be from previous purchase");
 
                                   
             if (ModelState.IsValid)

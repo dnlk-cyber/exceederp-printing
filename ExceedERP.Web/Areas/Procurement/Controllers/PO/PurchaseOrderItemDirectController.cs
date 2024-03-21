@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
@@ -74,17 +77,40 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             var tax = db.GLTaxRates.Find(purchaseOrderItem.GLTaxRateID);
 
-            //#region validate quantity
+            #region validate quantity
 
             //var purchaseOrder = db.PurchaseOrders.Find(id);
 
             //var prid = db.PurchaseRequisitions.Find(purchaseOrder?.PurchaseRequisitionID)?.PurchaseRequisitionID;
             //var pritem = db.PurchaseRequisitionItems
             //    .Where(x => x.PurchaseRequisitionID == prid).FirstOrDefault(x => x.ItmCode == purchaseOrderItem.ItmCode);
-            //if(purchaseOrderItem.Quantity>pritem.Quantity)
-            //    ModelState.AddModelError("above","Quanity of item is above requested quanity.");
+            //if (purchaseOrderItem.Quantity > pritem.Quantity)
+            //    ModelState.AddModelError("above", "Quanity of item is above requested quanity.");
 
-            //#endregion
+
+            List<int> assignmentIds = db.PoPurchaseRequisitions
+               .Where(x => x.PurchaseOrderID == id).Select(x=>x.PurchaseRequisitionAssignmentId).ToList();
+
+            var pritems=db.PurchaseRequisitionReassignmentItems
+                .Where(x=>assignmentIds.Contains(x.PurchaseRequisitionAssignmentId))
+                .Where(x=>x.ItmCode== purchaseOrderItem.ItmCode)
+                .Where(x=>x.ItemSpecification==purchaseOrderItem.ItemSpecification).AsQueryable();
+
+            if(purchaseOrderItem.ItemType==PurchaseItemType.FixedAsset)
+            {
+                pritems = pritems.Where(x => x.Name == purchaseOrderItem.Name);
+            }
+           
+            var filteredPrItems=pritems.ToList();
+
+            if(filteredPrItems.Any())
+            {
+                decimal requestedTotal = filteredPrItems.Sum(x => x.Quantity);
+                if (purchaseOrderItem.Quantity > requestedTotal)
+                    ModelState.AddModelError("above", "Quanity of item is above requested quanity.");
+            }
+
+            #endregion
 
             if (ModelState.IsValid)
             {
@@ -143,7 +169,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             var tax = db.GLTaxRates.Find(purchaseOrderItem.GLTaxRateID);
 
-            //#region validate quantity
+            #region validate quantity
 
             //var purchaseOrder = db.PurchaseOrders.Find(purchaseOrderItem.PurchaseOrderID);
 
@@ -153,7 +179,30 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             //if (purchaseOrderItem.Quantity > pritem.Quantity)
             //    ModelState.AddModelError("above", "Quanity of item is above requested quanity.");
 
-            //#endregion
+            List<int> assignmentIds = db.PoPurchaseRequisitions
+               .Where(x => x.PurchaseOrderID == purchaseOrderItem.PurchaseOrderID).Select(x => x.PurchaseRequisitionAssignmentId).ToList();
+
+            var pritems = db.PurchaseRequisitionReassignmentItems
+                .Where(x => assignmentIds.Contains(x.PurchaseRequisitionAssignmentId))
+                .Where(x => x.ItmCode == purchaseOrderItem.ItmCode)
+                .Where(x => x.ItemSpecification == purchaseOrderItem.ItemSpecification).AsQueryable();
+
+            if (purchaseOrderItem.ItemType == PurchaseItemType.FixedAsset)
+            {
+                pritems = pritems.Where(x => x.Name == purchaseOrderItem.Name);
+            }
+
+            var filteredPrItems = pritems.ToList();
+
+            if (filteredPrItems.Any())
+            {
+                decimal requestedTotal = filteredPrItems.Sum(x => x.Quantity);
+                if (purchaseOrderItem.Quantity > requestedTotal)
+                    ModelState.AddModelError("above", "Quanity of item is above requested quanity.");
+            }
+
+
+            #endregion
             if (ModelState.IsValid)
             {
                 PurchaseOrderItem entity =new PurchaseOrderItem

@@ -202,6 +202,7 @@
     <Compile Include="Domain\Common\DocumentApproval\Enums.cs" />
     <Compile Include="Domain\Common\CommonConstants.cs" />
     <Compile Include="Domain\Common\HRM\BusinessUnit.cs" />
+    <Compile Include="Domain\Common\IsoDocument.cs" />
     <Compile Include="Domain\Common\Notification.cs" />
     <Compile Include="Domain\Common\ViewModel\SelectorVM.cs" />
     <Compile Include="Domain\Common\VoucherDistribution.cs" />
@@ -1210,6 +1211,7 @@
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionReassignmentValidation.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionSecondValidation.cs" />
     <Compile Include="Domain\Procurement\PR\PurchaseRequisitionUserDepartmentValidation.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\POChangeOfOrder.cs" />
     <Compile Include="Domain\Procurement\PurchaseOrder\POPurchaseRequisition.cs" />
     <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseFollowUp.cs" />
     <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseOrder.cs" />

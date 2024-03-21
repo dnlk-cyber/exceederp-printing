@@ -106,7 +106,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                 
                 Remark = apPaymentsettlement.Remark,
                 IsSendForApproval = apPaymentsettlement.IsSendForApproval,
-                IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
+                    SendForApprovalBy = apPaymentsettlement.SendForApprovalBy,
+                    IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
                 IsOnlineTransferredBy = apPaymentsettlement.IsOnlineTransferredBy,
                 OnlineTransferredTime = apPaymentsettlement.OnlineTransferredTime,
                 Status = apPaymentsettlement.Status,
@@ -426,7 +427,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
             }         
 
 
-            if (record != null && !record.IsOnlineApproved && !record.IsSendForApproval)
+            if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
             {
                 record.Status = OperationStatuses.SendForDepartmentApproval.ToString();
                 record.IsDepartmentSendForApproval = true;
@@ -443,9 +444,96 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
 
             }
             return null;
-        }  
+        }
+
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = _db.ApPaymentSettlements.Find(id);
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsDepartmentOnlineApproved && !record.IsVoid && !record.IsOnlineApproved )
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsDepartmentOnlineApproved = false;
+                record.IsDepartmentSendForApproval = false;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                record.IsVoid = false;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                _db.ApPaymentSettlements.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+                #region update direct payment
+                //get the list from line items
+                //int requestid = int.Parse(record.SourceId);
+                //var payment = _db.ForeignPurchaseCosts.Find(requestid);
+                //if (payment != null)
+                //{
+                //    payment.Paid = false;
+                //    _db.Entry(payment).State = EntityState.Modified;
+                //}
+
+                //_db.SaveChanges();
+                #endregion
+                //copy
+                //CopyRecord(id);
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "payment settlement department", "Success", User.Identity.Name, $"void payment settlement {id} ", Modules.Procurement);
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+           
+
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is approve by Finance.You can not void .",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!record.IsDepartmentOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
 
 
+            return null;
+        }
 
         protected override void Dispose(bool disposing)
         {

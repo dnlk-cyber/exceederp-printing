@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
@@ -17,6 +18,10 @@ namespace ExceedERP.Helpers.Inventory
         private  readonly ExceedDbContext _db = new ExceedDbContext();
         private DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
         // inventory
+        public void UpdateServiceReceiveDistribution(ServiceReceive record)
+        {
+
+        }
         public  void UpdateGoodReceiveDistribution(GoodReceive record)
         {
             var distributions = _db.GoodReceiveDistributions.Where(x => x.GoodReceiveId == record.GoodReceiveId).ToList();
@@ -150,6 +155,28 @@ namespace ExceedERP.Helpers.Inventory
                             int branchId = InventoryHelper.GetStoreBranch(record.StoreCode);
                             string locationAccountSeG = HrHelper.GetBranchLocationAccount(branchId);
                             string newacc = _dynamicAccount.ReplaceSegment(clearingAccount.AccountCode, locationindex, locationAccountSeG);
+
+                            #region replace clearing sub account  with purchaser..ECWC
+                            var receiveType = _db.ReceiveTypes.Find(record.ReceiveTypeId);
+                            if (receiveType != null && receiveType.Type == GoodReceiveType.PurchaseOrder)
+                            {
+                                int did = int.Parse(record.ReceiveRef);
+                                var po = _db.PurchaseOrders.Find(did);
+                                if (po != null)
+                                {
+                                    var employeeSubAccount = _db.Purchasers.FirstOrDefault(x => x.EmployeeId == po.ProcurementOfficer);
+                                    if (employeeSubAccount != null)
+                                    {
+                                        int subAccountIndex = _dynamicAccount.GetSubAccountSequenceIndex();
+                                        if (subAccountIndex != -1)
+                                        {
+                                            string subAccountSeG = employeeSubAccount.AccountCode.Split('-')[subAccountIndex];
+                                            newacc = _dynamicAccount.ReplaceSegment(newacc, subAccountIndex, subAccountSeG);
+                                        }
+                                    }
+                                }
+                            }
+                            #endregion
 
                             var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
                             if (receiveDistribution != null)

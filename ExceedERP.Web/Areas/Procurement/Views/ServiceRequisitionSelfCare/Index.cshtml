@@ -486,7 +486,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SendForApproval", "PurchaseRequisitionService", new { area = "Procurement" })',
+            url: '@Url.Action("SendForApproval", "ServiceRequisitionSelfCare", new { area = "Procurement" })',
             data: { id: id },
             success: function (result) {
                 // toastr.warnning(result.Message);
@@ -508,7 +508,7 @@
         else {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("SendForSecondApproval", "PurchaseRequisitionService", new { area = "Procurement" })',
+                url: '@Url.Action("SendForSecondApproval", "ServiceRequisitionSelfCare", new { area = "Procurement" })',
                 data: {
                     id: id,
                     user: user

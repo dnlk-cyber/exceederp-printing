@@ -92,6 +92,20 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             };
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetPOforOrderChange(string text)
+        {
+            var purchaseOrders = db.PurchaseOrders.Where(x => x.IsOnlineApproved && x.IsVoid==false).AsQueryable();
+
+            if (!string.IsNullOrEmpty(text))
+                purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString().Contains(text));
+            return Json(purchaseOrders.Select(p => new
+            {
+                Name = p.PurchaseOrderID + "-" + p.SupplierName,
+                Code = p.PurchaseOrderID
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetSuppliersList()
         {
             var suppliers = db.ProcurementSuppliers.Where(x => x.IsActive).AsQueryable();
@@ -828,32 +842,49 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
              if (procurementMethod == 0)//tender
             {
-                var tenders = db.Tenders.Where(x => x.IsOnlineApproved && x.IsVoid==false && x.IsCancelled == false).ToList();
-                
+                var purchaseOrders = db.PurchaseOrders
+                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                    .Where(x=>x.BidAwardedSupplierID!=null)
+                    .Where(x => x.OrderDate >= minimumDate)
+                    .ToList();
 
-                foreach (var tender in tenders)
+                foreach (var po in purchaseOrders)
                 {
-                    var lots = db.Lots.Where(x => x.TenderID == tender.TenderID).ToList();
-
-                    foreach (var lot in lots)
+                    var record = new SelectorVm
                     {
-                        var awards = db.BidAwardedSuppliers
-                            .Where(x => x.LotID == lot.LotID)
-                            .Where(x => x.AwardDate >= minimumDate)
-                            .ToList();
-                        foreach (var award in awards)
-                        {
+                        Name = "PO_" + po.PurchaseOrderID + "_" + po.SupplierName,
+                        Code = po.PurchaseOrderID.ToString()
+                    };
 
-                            var record = new SelectorVm
-                            {
-                                Name = "Tender_" + tender.TenderReference + "_" + lot.Description + "_" + award.SupplierName,
-                                Code = award.BidAwardedSupplierID.ToString()
-                            };
+                    list.Add(record);
 
-                            list.Add(record);
-                        }
-                    }
                 }
+                //var tenders = db.Tenders.Where(x => x.IsOnlineApproved && x.IsVoid==false && x.IsCancelled == false).ToList();
+
+
+                //foreach (var tender in tenders)
+                //{
+                //    var lots = db.Lots.Where(x => x.TenderID == tender.TenderID).ToList();
+
+                //    foreach (var lot in lots)
+                //    {
+                //        var awards = db.BidAwardedSuppliers
+                //            .Where(x => x.LotID == lot.LotID)
+                //            .Where(x => x.AwardDate >= minimumDate)
+                //            .ToList();
+                //        foreach (var award in awards)
+                //        {
+
+                //            var record = new SelectorVm
+                //            {
+                //                Name = "Tender_" + tender.TenderReference + "_" + lot.Description + "_" + award.SupplierName,
+                //                Code = award.BidAwardedSupplierID.ToString()
+                //            };
+
+                //            list.Add(record);
+                //        }
+                //    }
+                //}
             }
             else if (procurementMethod == 1)//proforma
             {
@@ -1419,6 +1450,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         {
            
             decimal totalAmount = 0;
+            decimal totalServiceCharge = 0;
             decimal amount = 0;
             string supplierId = "";
             string supplierName = "";
@@ -1441,9 +1473,25 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                     var payments = paymentSchedule.Where(x => x.PaymentType == PaymentType.Payment).Where(x => x.PurchaseOrderID == did).ToList();
                     var credits = paymentSchedule.Where(x => x.PaymentType == PaymentType.Credit).Where(x => x.PurchaseOrderID == did).ToList();
 
-                    var items = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == did).ToList();
+                    var items = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == did).ToList();                   
+
                     if (items.Any())
                         totalAmount = items.Sum(x => x.SubTotal);
+                    #region additional charge
+                    var additionalCharge = db.PoAdditionalCharges.Where(x => x.PurchaseOrderID == did).ToList();
+                    foreach ( var item in additionalCharge )
+                    {
+                        if(item.AmountType== AmountType.Percent)
+                        {
+                            totalServiceCharge=totalAmount*(item.Amount/100);
+                        }
+                        else
+                        {
+                            totalServiceCharge = totalServiceCharge + item.Amount;
+                        }
+                    }
+                    #endregion
+                    totalAmount = totalAmount + totalServiceCharge;
 
                     if (advances.Any() && paymenttype == "0")
                     {

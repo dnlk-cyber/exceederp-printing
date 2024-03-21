@@ -68,9 +68,28 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ParticipatingSupplierItems_Create([DataSourceRequest]DataSourceRequest request, BidParticipatingSupplierItem participatingItem, int id)
         {
-            var tax = _db.GLTaxRates.Find(participatingItem.GLTaxRateID);
-           
+            ModelState.Clear();
+
+            var tax = _db.GLTaxRates.Find(participatingItem.GLTaxRateID);           
             var lotItem = _db.LotItems.Find(participatingItem.LotItemID);
+
+            if(lotItem!=null)
+            {
+                participatingItem.CatCode = lotItem.CatCode;
+                participatingItem.ItmCode = lotItem.ItmCode;
+                participatingItem.CategoryName = lotItem.CategoryName;
+                participatingItem.ItemName = lotItem.ItemName;
+                participatingItem.Name = lotItem.Name;
+                participatingItem.ModelNo = lotItem.ModelNo;
+                participatingItem.Quantity = lotItem.Quantity;
+            }
+            else
+            {
+                ModelState.AddModelError("null","The lot item does not exist.");
+            }
+
+            if(tax==null)
+                ModelState.AddModelError("tax", "Please select tax.");
 
             if (ModelState.IsValid)
             {
@@ -134,13 +153,22 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ParticipatingSupplierItems_Update([DataSourceRequest]DataSourceRequest request, BidParticipatingSupplierItem participatingItem)
         {
-            var tax = _db.GLTaxRates.Find(participatingItem.GLTaxRateID);
+            ModelState.Clear();
 
+            var tax = _db.GLTaxRates.Find(participatingItem.GLTaxRateID);
             var lotItem = _db.LotItems.Find(participatingItem.LotItemID);
+
+            if (lotItem == null)
+            {
+                ModelState.AddModelError("null", "The lot item does not exist.");
+            }
+           
+            if (tax == null)
+                ModelState.AddModelError("tax", "Please select tax.");
 
             #region get lote item info
 
-            
+
             if (lotItem != null)
             {
                 participatingItem.CatCode = lotItem.CatCode;

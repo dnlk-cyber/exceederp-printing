@@ -54,7 +54,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 ModelState.AddModelError("ilegitimate", "The PO is credit type hence can't allow Advance payment. ");
             
             
-            var paySchedule= _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
+            var paySchedule= _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).AsNoTracking().ToList();
             var percentPaySche = paySchedule.Where(x => x.AmountType == AmountType.Percent);
             var amountPaySche = paySchedule.Where(x => x.AmountType == AmountType.Amount);
 
@@ -128,7 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             if ((po.PurchasePaymentType == PurchasePaymentType.Credit) && (poPaymentSchedule.PaymentType == PaymentType.Advance))
                 ModelState.AddModelError("ilegitimate", "The PO is credit type hence can't allow Advance payment. ");
 
-            var paySchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).ToList();
+            var paySchedule = _db.PoPaymentSchedules.Where(x => x.PurchaseOrderID == id).AsNoTracking().ToList();
             var percentPaySche = paySchedule.Where(x => x.AmountType == AmountType.Percent);
             var amountPaySche = paySchedule.Where(x => x.AmountType == AmountType.Amount);
 
@@ -163,6 +163,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 
             }
             #endregion
+
             if (ModelState.IsValid)
             {
                 var entity = new PoPaymentSchedule

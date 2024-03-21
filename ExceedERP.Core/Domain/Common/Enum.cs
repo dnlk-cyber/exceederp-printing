@@ -3,6 +3,16 @@ using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Core.Domain.Common
 {
+    public enum ProcurementModuleReportType
+    {
+
+        Service_Requestion,
+        Purchase_Order,
+        Purchase_Requisition,
+        Purchase_Payment_Request,
+        Proforma_Result_Summary,
+        Award,
+    }
     public enum FinalizeType
     {
         WAITING,

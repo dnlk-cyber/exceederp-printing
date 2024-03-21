@@ -42,6 +42,8 @@ namespace ExceedERP.Core.Domain.Procurement.Tender.Lot
         [Display(Name = "Pre Qualification")]
         public PreQualification IsQualified { get; set; }
         public string Remark { get; set; }
+        [DisplayName("Tax Type")]
+        public int GLTaxRateID { get; set; }
         public virtual ICollection<BidParticipatingSupplierItem> BidParticipatingSupplierItems { get; set; }
     }
 

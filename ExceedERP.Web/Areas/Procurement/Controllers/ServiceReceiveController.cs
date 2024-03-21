@@ -5,7 +5,9 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -14,6 +16,7 @@ using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Inventory.Models;
@@ -32,6 +35,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
     {
         private ExceedDbContext _db = new ExceedDbContext();
         private readonly DistributionHelper _distributionHelper = new DistributionHelper();
+        private InventoryTransferHelper _transferHelper;
 
         [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser, ProcurementRoles.ProcurementUserDepartmentApprover)]
         public ActionResult Index()
@@ -205,7 +209,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
                 var entity = new ServiceReceive
                     {
-                        BranchId = serviceReceive.BranchId,
+                        BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                         BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         ReceiveRef = serviceReceive.ReceiveRef,
                         ReceiveTypeId = serviceReceive.ReceiveTypeId,
@@ -445,11 +449,94 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return null;
         }
 
-       // [AuthorizeRoles(ProcurementConstants.PropertyVoid)]
+         [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
         {
             var record = _db.ServiceReceives.Find(id);
-          
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred )
+            {
+                    record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                    record.IsVoid = true;
+                    record.VoidBy = User.Identity.Name;
+                    record.VoidTime = DateTime.Now;
+                    _db.ServiceReceives.Attach(record);
+                    _db.Entry(record).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                   
+
+                    #region update  po status
+                    var receiveType = _db.ReceiveTypes.Where(x => x.ReceiveTypeId == record.ReceiveTypeId).FirstOrDefault();
+                    if (receiveType != null)
+                    {
+                        if (receiveType.Type == GoodReceiveType.PurchaseOrder)
+                        {
+                            int did = int.Parse(record.ReceiveRef);
+                            var po = _db.PurchaseOrders.Find(did);
+                            if (po != null)
+                            {
+                                po.IsFullfilled = false;
+                                _db.PurchaseOrders.Attach(po);
+                                _db.Entry(po).State = EntityState.Modified;
+                                _db.SaveChanges();
+                            }
+                        }
+                    }
+                    #endregion
+
+                    //copy record
+                    CopyRecord(id);
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "service receive", "Success", User.Identity.Name, $"void service receive {id} ", Modules.Procurement);
+                    #endregion
+
+                    var formattedData = new
+                    {
+                        Message = "Void Successful.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is transferred to GL.You can not void .",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
 
 
             return null;
@@ -458,145 +545,87 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         private void CopyRecord(int id)
         {
             var record = _db.ServiceReceives.Find(id);
-            if (record!=null)
+            if (record != null)
             {
-                
-               
+                #region header
+                var entity = new ServiceReceive
+                {
+                    BranchId = record.BranchId,
+                    BusinessUnitId = record.BusinessUnitId,
+                    ServiceReceiveId = record.ServiceReceiveId,
+                    ReceiveRef = record.ReceiveRef,
+                    SupplierName = record.SupplierName,
+                    SupplierInvoiceNo = record.SupplierInvoiceNo,
+                    Reference = record.Reference,
+                    ReceiveDate = record.ReceiveDate,
+                    Status = record.Status,
+                    ReceiveTypeId = record.ReceiveTypeId,
+                    Remark = record.Remark,
+                    ItemType = PurchaseItemType.Service,
+                    GLPeriodId = record.GLPeriodId,
+                    IsVoid = record.IsVoid,
+                    VoidBy = record.VoidBy,
+                    VoidTime = record.VoidTime,
+                    IsOnlineApproved = record.IsOnlineApproved,
+                    OnlineApprovedBy = record.OnlineApprovedBy,
+                    OnlineApprovedTime = record.OnlineApprovedTime,
+                    IsOnlineTransferred = record.IsOnlineTransferred,
+                    IsOnlineTransferredBy = record.IsOnlineTransferredBy,
+                    OnlineTransferredTime = record.OnlineTransferredTime,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                };
+
+                _db.ServiceReceives.Add(entity);
+                _db.SaveChanges();
+                #endregion
+                foreach (var i in record.ServiceReceiveItems)
+                {
+                    #region lines
+                    var line = new ServiceReceiveItem
+                    {
+                        ServiceReceiveId = entity.ServiceReceiveId,
+                        ServiceReceiveItemId = i.ServiceReceiveItemId,
+                        ServiceCategoryCode = i.ServiceCategoryCode,
+                        ServiceCategoryName = i.ServiceCategoryName,
+                        ServiceItemCode = i.ServiceItemCode,
+                        ServiceItemName = i.ServiceItemName,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice,
+                        SubTotal = i.SubTotal,
+                        Total = i.Total,
+                        GLTaxRateID = i.GLTaxRateID,
+                        TaxAmount = i.TaxAmount,
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Now,
+                    };
+                    _db.ServiceReceiveItems.Add(line);
+                    _db.SaveChanges();
+
+                    #endregion
+
+                }
+
             }
-           
+
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementUserDepartmentUser)]
-        public JsonResult ServiceReceive_OnlineTransfer(string id)
+        [AuthorizeRoles(FinanceConstants.GeneralSubLedgerTransfer)]
+        public JsonResult TransferDistribution(string id, string description)
         {
             int myid = int.Parse(id);
-            ServiceReceive record = _db.ServiceReceives.Find(myid);
+            var record = _db.ServiceReceives.Find(myid);
 
             if (record != null && record.IsOnlineApproved && !record.IsOnlineTransferred)
             {
-                #region check if debit and credit are equal
-                decimal debit = 0;
-                decimal credit = 0;
-                var distribution = record.ServiceReceiveDistribution.ToList();
-                if (distribution.Any())
-                {
-                    debit = distribution.Sum(x => x.Debit);
-                    credit = distribution.Sum(x => x.Credit);
-                }
-                if (debit != credit)
+                _transferHelper = new InventoryTransferHelper();
+                string response = _transferHelper.ServiceReceive(myid, description, User?.Identity?.Name ?? "");
+                if (response != "SUCCESS")
                 {
                     var formattedData = new
                     {
-                        Message = "Total debit and total credit is not balanced.",
+                        Message = response,
                         Status = "NOT_OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                if (debit == 0)
-                {
-                    var formattedData = new
-                    {
-                        Message = "Total debit and total credit is zero.",
-                        Status = "NOT_OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                #endregion
-                #region send to GL
-                string glperiod = "";
-                string glyear = "";
-                #region get period
-                var period = _db.GLPeriods.Where(x => x.DateFrom <= record.ReceiveDate).Where(x => x.DateTo >= record.ReceiveDate).ToList();
-                if (period.Any())
-                {
-                    if (period.Count == 1)
-                    {
-                        var myPeriod = period.FirstOrDefault();
-                        if (myPeriod != null)
-                        {
-                            glperiod = myPeriod.Name;
-                            glyear = myPeriod.GlFiscalYear.Name;
-                            if (myPeriod.Status == FiscalYearStatus.Close)
-                            {
-                                var formattedData = new
-                                {
-                                    Message = "The period " + glperiod + " is closed,the record cannot be transfered to closed period.",
-                                    Status = "NOT_OK"
-                                };
-                                return Json(formattedData, JsonRequestBehavior.AllowGet);
-                            }
-                        }
-                    }
-
-                    else if (period.Count > 1)
-                    {
-                        var formattedData = new
-                        {
-                            Message = "There are multiple periods defined that contain the transaction date.",
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-                    }
-                    else
-                    {
-                        var formattedData = new
-                        {
-                            Message = "There are no periods defined that contain the transaction date.",
-                            Status = "NOT_OK"
-                        };
-                        return Json(formattedData, JsonRequestBehavior.AllowGet);
-
-                    }
-                }
-
-                #endregion
-                if (record.ServiceReceiveDistribution.Any())
-                {
-                    GlRecordJournal journal = new GlRecordJournal
-                    {
-                        DateCreated = DateTime.Now,
-                        CreatedBy = User.Identity.Name,
-                        JournalName = "ServiceReceive",
-                        Description = "ServiceReceive",
-                        FiscalYear = glyear,
-                        PeriodName = glperiod,
-                        CategoryName = "ServiceReceive",
-                        SourcesName = "GR",
-                        JournalNumber = "ServiceReceive." + record.ServiceReceiveId,
-                        EffectiveDate = record.ReceiveDate,
-                        Status = "Approved",
-                        IsOnlineApproved = true,
-                        OnlineApprovedBy = User.Identity.Name,
-                        OnlineApprovedTime = DateTime.Now
-                    };
-                    _db.GLRecordJournals.Add(journal);
-                    _db.SaveChanges();
-                    foreach (ServiceReceiveDistribution i in record.ServiceReceiveDistribution)
-                    {
-                        #region debit and credit
-
-                        var journalDetail = new GLRecordJournalDetail
-                        {
-                            DateCreated = DateTime.Now,
-                            CreatedBy = User.Identity.Name,
-                            GLRecordJournal = journal,
-                            AccountCode = i.AccountCode,
-                            Debit = i.Debit,
-                            Credit = i.Credit
-                        };
-                        _db.GLRecordJournalDetails.Add(journalDetail);
-                        _db.SaveChanges();
-                        #endregion
-                    }
-                    record.IsOnlineTransferred = true;
-                    record.IsOnlineTransferredBy = User.Identity.Name;
-                    record.OnlineTransferredTime = DateTime.Now;
-                    _db.Entry(record).State = EntityState.Modified;
-                    _db.SaveChanges();
-                    var formattedData = new
-                    {
-                        Message = "Successfully transferred.",
-                        Status = "OK"
                     };
                     return Json(formattedData, JsonRequestBehavior.AllowGet);
                 }
@@ -604,12 +633,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 {
                     var formattedData = new
                     {
-                        Message = "There is no distribution to be transferred.",
+                        Message = "Successfuly Transferred.",
                         Status = "NOT_OK"
                     };
                     return Json(formattedData, JsonRequestBehavior.AllowGet);
                 }
-                #endregion
+
 
             }
             if (record != null && !record.IsOnlineApproved)
@@ -635,118 +664,28 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             return null;
         }
 
-        private void GetServiceReceiveItems1(ServiceReceive record)
+        [AuthorizeRoles(FinanceConstants.GeneralSubLedgerTransfer)]
+        public JsonResult GenerateDistribution(int id)
         {
 
-            ReceiveType type = record.ReceiveType;
-
-            if (type.Type == GoodReceiveType.PurchaseOrder)
+            var record = _db.ServiceReceives.Find(id);
+            if (record != null && !record.IsOnlineTransferred)
             {
-                #region Purchase Order Items
-                int pid = int.Parse(record.ReceiveRef);
-                List<PurchaseOrderItem> purchaseOrderItems = _db.PurchaseOrderItems
-                    .Where(pi => pi.PurchaseOrderID == pid)
-                    .Where(pi => pi.ItemType == PurchaseItemType.Service)
-                    .ToList();
-
-                foreach (var orderItem in purchaseOrderItems)
+                _distributionHelper.UpdateServiceReceiveDistribution(record);
+                var formattedData1 = new
                 {
-                    var tax = _db.GLTaxRates.Find(orderItem.GLTaxRateID);
-
-                    var receiveItem = new ServiceReceiveItem
-                    {
-                        ServiceReceiveId = record.ServiceReceiveId,
-                        ServiceCategoryCode = orderItem.CatCode,
-                        ServiceItemCode = orderItem.ItmCode,
-                        Quantity = orderItem.Quantity,
-                        UnitPrice = orderItem.UnitPrice,
-                        GLTaxRateID = orderItem.GLTaxRateID,
-                        TaxAmount = orderItem.TaxAmount,
-                        SubTotal = orderItem.SubTotal,
-                        Total = orderItem.Total
-                    };
-
-                    if (tax != null)
-                    {
-                        receiveItem.TaxAmount = orderItem.UnitPrice * receiveItem.Quantity * tax.CalculatedRate;
-                        receiveItem.SubTotal = orderItem.UnitPrice * receiveItem.Quantity;
-                        receiveItem.Total = orderItem.UnitPrice * receiveItem.Quantity + (orderItem.UnitPrice * receiveItem.Quantity * tax.CalculatedRate);
-                    }
-
-                    _db.ServiceReceiveItems.Add(receiveItem);
-                    _db.SaveChanges();
-
-                }
-
-                #endregion
+                    Message = "Complete.",
+                    Status = "OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
             }
 
-            else if (type.Type == GoodReceiveType.Tender)
+            var formattedData = new
             {
-                #region tender
-                int awardid = int.Parse(record.ReceiveRef);
-                var awarditems = _db.BidAwardedSupplierItems.Where(x => x.ItemType == PurchaseItemType.Service).Where(x => x.BidAwardedSupplierID == awardid).ToList();
-                foreach (var awardItem in awarditems)
-                {
-                    decimal unitprice = awardItem.UPrice;
-                    #region check foreign purchase
-                    var award = _db.BidAwardedSuppliers.Find(awardid);
-                    if (award != null)
-                    {
-                        var lot = _db.Lots.Find(award.LotID);
-                        if (lot != null)
-                        {
-                            var tender = _db.Tenders.Find(lot.TenderID);
-                            if (tender != null && tender.PurchaseCategory == PurchaseCategory.ForeignPurchase)
-                            {
-                                var foreignpurchase = _db.ForeignPurchases.FirstOrDefault(x => x.PurchaseRef == awardItem.BidAwardedSupplierID);
-                                if (foreignpurchase != null)
-                                {
-                                    var item = _db.ForeignPurchaseFollowUpItems
-                                        .Where(x => x.ItmCode == awardItem.ItmCode)
-                                        .FirstOrDefault(x => x.ForeignPurchaseId == foreignpurchase.ForeignPurchaseId);
-                                    if (item != null)
-                                        unitprice = item.FinalUnitPrice;
-                                }
-                            }
-                        }
-                    }
-
-                    #endregion
-                    var tax = _db.GLTaxRates.Find(awardItem.GLTaxRateID);
-                    var receiveItem = new ServiceReceiveItem
-                    {
-                        ServiceReceiveId = record.ServiceReceiveId,
-                        ServiceCategoryCode = awardItem.CatCode,
-                        ServiceItemCode = awardItem.ItmCode,
-                        Quantity = awardItem.Quanity,
-                        UnitPrice = unitprice,
-                        GLTaxRateID = awardItem.GLTaxRateID,
-                        TaxAmount = awardItem.TaxAmount,
-
-                        ModifiedBy = User.Identity.Name,
-                        LastModified = DateTime.Today,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Today
-                    };
-                    if (tax != null)
-                    {
-                        receiveItem.TaxAmount = unitprice * receiveItem.Quantity * tax.CalculatedRate;
-                        receiveItem.SubTotal = unitprice * receiveItem.Quantity;
-                        receiveItem.Total = unitprice * receiveItem.Quantity +
-                                            (unitprice * receiveItem.Quantity * tax.CalculatedRate);
-                    }
-
-                    _db.ServiceReceiveItems.Add(receiveItem);
-                    _db.SaveChanges();
-
-                }
-
-                #endregion
-
-            }
-            // DistributionHelper.UpdateGoodReceiveDistribution(record);
-
+                Message = "Record not found.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
 
         private void GetServiceReceiveItems(ServiceReceive record)
@@ -767,11 +706,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             {
                 #region get prev receive
 
-                var previousReceiveIds = _db.ServiceReceives.Where(x => x.ReceiveType.Type == GoodReceiveType.PurchaseOrder)
+                var previousReceiveIds = _db.ServiceReceives
+                    .Where(x => x.ReceiveType.Type == GoodReceiveType.PurchaseOrder)
                     .Where(x => x.ReceiveRef == record.ReceiveRef).Where(x => x.IsOnlineApproved)
                     .Where(x => x.IsVoid == false).Select(x => x.ServiceReceiveId).ToList();
 
-                var prevReceiveItems = _db.ServiceReceiveItems.Where(x => previousReceiveIds.Contains(x.ServiceReceiveId))
+                var prevReceiveItems = _db.ServiceReceiveItems
+                    .Where(x => previousReceiveIds.Contains(x.ServiceReceiveId))
                     .ToList();
 
                 #endregion
@@ -802,7 +743,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                         ServiceItemCode = orderItem.ItmCode,
                         ServiceItemName = orderItem.ItemName,
                         Quantity = unReceivedQty,
-                        //UnitPrice = orderItem.UnitPrice,
+                        UnitPrice = orderItem.UnitPrice,
                         //Balance = unReceivedQty,
                         //UOM = orderItem.UoM,
                         GLTaxRateID = orderItem.GLTaxRateID

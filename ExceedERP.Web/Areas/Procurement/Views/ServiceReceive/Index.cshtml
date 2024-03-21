@@ -402,7 +402,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SendForApproval", "GoodReceive", new { area = "Inventory" })',
+            url: '@Url.Action("SendForApproval", "ServiceReceive", new { area = "Procurement" })',
             data: { id: id },
             success: function (result) {
                 // toastr.warnning(result.Message);

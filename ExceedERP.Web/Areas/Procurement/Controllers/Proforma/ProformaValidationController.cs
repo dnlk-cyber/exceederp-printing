@@ -299,7 +299,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                                     CatCode = item.CatCode,
                                     CategoryName = item.CategoryName,
                                     ItmCode = item.ItmCode,
-                                    ItemName = item.ItemName,
+                                    ItemName =!string.IsNullOrEmpty(item.ItemName) ?  item.ItemName : "NA",
                                     Name = item.Name,
                                     ModelNo = item.ModelNo,
                                     PartNo = item.PartNo,

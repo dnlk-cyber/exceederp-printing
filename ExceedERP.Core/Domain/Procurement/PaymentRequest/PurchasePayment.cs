@@ -62,6 +62,10 @@ namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        //authorization
+        public bool IsAuthorized { get; set; }
+        public string AuthorizedBy { get; set; }
+        public DateTime? AuthorizedTime { get; set; }
         //finance controll
         public bool IsFinanceSendForApproval { get; set; }
         public string FinanceSendForApprovalBy { get; set; }
@@ -76,6 +80,7 @@ namespace ExceedERP.Core.Domain.Procurement.PaymentRequest
         public virtual ICollection<PurchasePaymentValidation> PurchasetPaymentValidations { get; set; }
         public virtual ICollection<PurchasePaymentBudgetValidation> PurchasePaymentBudgetValidations { get; set; }
         public virtual ICollection<PurchasePaymentFinanceValidation> PurchasePaymentFinanceValidations { get; set; }
+        public virtual ICollection<PurchasePaymentAuthorizeValidation> PurchasePaymentAuthorizeValidations { get; set; }
     }
 
     public class PurchasePaymentBudgetValidation: VoucherValidation

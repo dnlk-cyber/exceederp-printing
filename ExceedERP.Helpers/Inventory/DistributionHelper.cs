@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Finance;
@@ -17,6 +18,18 @@ namespace ExceedERP.Helpers.Inventory
         private readonly DynamicDistributionHelper _dynamicDistributionHelper = new DynamicDistributionHelper();
         AccountHelper _accountHelper = new AccountHelper();
         // inventory
+        public void UpdateServiceReceiveDistribution(ServiceReceive record)
+        {
+            if (_accountHelper.IsDynamicCoA())
+            {
+                _dynamicDistributionHelper.UpdateServiceReceiveDistribution(record);
+            }
+            else
+            {
+                //_staticDistributionHelper.UpdateGoodReceiveDistribution(record);
+            }
+
+        }
         public  void UpdateGoodReceiveDistribution(GoodReceive record)
         {
             if (_accountHelper.IsDynamicCoA())

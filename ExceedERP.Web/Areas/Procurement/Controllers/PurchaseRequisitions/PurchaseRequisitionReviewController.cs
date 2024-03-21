@@ -330,12 +330,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             if (purchaseRequisition.ProcurementOfficer == 0)
                 ModelState.AddModelError("purchaser", " Please assign procurement officer.");
 
-            if (purchaseRequisition.ProcurementMethod != ProcurementMethod.DirectPurchase && purchaseRequisition.FromPreviousPurchase)
-                ModelState.AddModelError("prev", "From previous purchase is only for direct purchase.");
+            if (purchaseRequisition.ProcurementMethod == ProcurementMethod.Proforma && purchaseRequisition.FromPreviousPurchase)
+                ModelState.AddModelError("notallowed", "Proforma is not allowed to be from previous purchase");
 
-            if (purchaseRequisition.ProcurementMethod == ProcurementMethod.DirectPurchase && purchaseRequisition.FromPreviousPurchase)
-                if (String.IsNullOrWhiteSpace(purchaseRequisition.PreviousPurchaseReference))
-                    ModelState.AddModelError("prevreference", "Please select previous purchase reference.");
+            if (purchaseRequisition.FromPreviousPurchase && String.IsNullOrWhiteSpace(purchaseRequisition.PreviousPurchaseReference))
+                      ModelState.AddModelError("prevreference", "Please select previous purchase reference.");
 
             if (ModelState.IsValid)
             {

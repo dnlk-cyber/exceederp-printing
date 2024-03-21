@@ -1,0 +1,15 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("...Select PO...")
+                  .DataTextField("Name")
+                  .DataValueField("Code")
+                  .Filter("contains")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPOforOrderChange", "ProcurementDataProvider").Data("filterPO"))
+                                .ServerFiltering(true);
+                  }) 
+)
+@Html.ValidationMessageFor(m => m)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.Core.Domain.Procurement.Proforma;
 
 namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
 {
@@ -70,6 +71,7 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         public virtual ICollection<PoPaymentSchedule> PoPaymentSchedule { get; set; }
         public virtual ICollection<PoAdditionalCharge> PoAdditionalCharges { get; set; }
         public virtual ICollection<PoPurchaseRequisition> PoPurchaseRequisitions { get; set; }
+        public virtual ICollection<PoAttachment> Attachments { get; set; }
     }
 
     public class PoAdditionalCharge : TrackUserOperation
@@ -97,5 +99,13 @@ namespace ExceedERP.Core.Domain.Procurement.PurchaseOrder
         [Display(Name = "Amount")]
         public decimal Percentage { get; set; }
         public string Remark { get; set; }
+    }
+    public class PoAttachment
+    {
+        public int PoAttachmentId { get; set; }
+        public int PurchaseOrderID { get; set; }
+        public virtual PurchaseOrder PurchaseOrder { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 }

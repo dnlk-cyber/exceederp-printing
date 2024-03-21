@@ -32,6 +32,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             var categories = db.ItemCategorys;
           
             var branches = db.Branch;
+            var businessUnits = db.BusinessUnits;
             var costCenter = db.MainCompanyStructures;
             var employee = db.Person_Employee;
             var selectedEmployee = employee.Select(
@@ -53,6 +54,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
 
             ViewData["Periods"] = periods;
             ViewData["Branches"] = branches;
+            ViewData["BusinessUnits"] = businessUnits;
 
             var items = db.AnnualNeedAssesmentItems;
             var selecteditems = items.Select(
@@ -84,7 +86,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
-                annualneedassesments = annualneedassesments.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+                annualneedassesments = annualneedassesments.Where(x => myBusinessUnits.Contains((int)x.BusinessUnitId));
             }
             
             DataSourceResult result = annualneedassesments.ToDataSourceResult(request, annualNeedAssesment => new
@@ -139,7 +141,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
                 {
                     OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId),
                     BranchId = annualNeedAssesment.BranchId,// UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
-                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                    BusinessUnitId = annualNeedAssesment.BusinessUnitId,// UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     EmployeeId = annualNeedAssesment.EmployeeId, //UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,

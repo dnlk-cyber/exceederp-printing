@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Helpers.Procurement;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.UI;
 
@@ -18,9 +22,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         {
             return View();
         }
-
+        public ActionResult PurchasePaymentPrintNew(int id)
+        {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Purchase_Payment_Request, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult PurchasePaymentPrint(int id)
         {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Purchase_Payment_Request, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
@@ -50,6 +64,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         public ActionResult PurchaseRequistionReviewPrint(int id)
         {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Purchase_Requisition, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
@@ -61,21 +78,33 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         public ActionResult ServiceRequisitionPrint(int id)
         {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Service_Requestion, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
         public ActionResult PurchaseOrderPrint(int id)
         {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Purchase_Order, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
         public ActionResult AwardAmharic(string id)
             {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Award, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View(); 
         } 
         public ActionResult Award(string id)
             {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Award, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View(); 
         }
@@ -121,11 +150,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         }
         public ActionResult ProformaResultAm(string id)
         {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Proforma_Result_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }
         public ActionResult ProformaResultEn(string id)
         {
+            ProcurementIsoDocumentHelper.GetIsoDocumentInfo(Modules.Procurement, ProcurementModuleReportType.Proforma_Result_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             ViewBag.Id = id;
             return View();
         }

@@ -69,17 +69,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                 //    ModelState.AddModelError("account", "Please select account.");
             }
 
-            if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
-            {
-                if (apPaymentSettlementLine.AccountCode == null)
-                    ModelState.AddModelError("sourceid", "Please select source document.");
-            }
+            //if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
+            //{
+            //    if (apPaymentSettlementLine.AccountCode == null)
+            //        ModelState.AddModelError("sourceid", "Please select source document.");
+            //}
 
             var exist = _db.ApPaymentSettlementLines.Where(x => x.Source !=SettlemetSource.NA.ToString())
                                                     .Where(x => x.Source == apPaymentSettlementLine.Source)
                                                     .Where(x => x.SourceId == apPaymentSettlementLine.SourceId).FirstOrDefault();
             if(exist!=null)
-                ModelState.AddModelError("exist", $"The document number {apPaymentSettlementLine.SourceId} of type {apPaymentSettlementLine.Source} is already applied under settlment {id}");
+                ModelState.AddModelError("exist", $"The document number {apPaymentSettlementLine.SourceId} of type {apPaymentSettlementLine.Source} is already applied under settlment {exist.ApPaymentSettlementId}");
 
             #endregion
             #region data
@@ -208,18 +208,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentSettlement
                 //    ModelState.AddModelError("account", "Please select account.");
             }
 
-            if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
-            {
-                if (apPaymentSettlementLine.AccountCode==null)
-                    ModelState.AddModelError("sourceid", "Please select source document.");
-            }
+            //if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
+            //{
+            //    if (apPaymentSettlementLine.AccountCode==null)
+            //        ModelState.AddModelError("sourceid", "Please select source document.");
+            //}
 
             var exist = _db.ApPaymentSettlementLines.Where(x => x.Source != SettlemetSource.NA.ToString())
-                                                .Where(x => x.ApPaymentSettlementId != apPaymentSettlementLine.ApPaymentSettlementId)
+                                                .Where(x => x.ApPaymentSettlementLineId != apPaymentSettlementLine.ApPaymentSettlementLineId)
                                                 .Where(x => x.Source == apPaymentSettlementLine.Source)
                                                 .Where(x => x.SourceId == apPaymentSettlementLine.SourceId).FirstOrDefault();
             if (exist != null)
-                ModelState.AddModelError("exist", $"The document number {apPaymentSettlementLine.SourceId} of type {apPaymentSettlementLine.Source} is already applied under settlment {apPaymentSettlementLine.ApPaymentSettlementId}");
+                ModelState.AddModelError("exist", $"The document number {apPaymentSettlementLine.SourceId} of type {apPaymentSettlementLine.Source} is already applied under settlment {exist.ApPaymentSettlementId}");
 
             #endregion
             #region data
