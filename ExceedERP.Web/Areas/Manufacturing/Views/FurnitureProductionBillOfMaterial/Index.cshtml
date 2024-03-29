@@ -1,0 +1,35 @@
+﻿
+
+
+@helper BillOfMaterial() { 
+
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfMaterial>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.ManufacturingMaterialCategoryId);
+                  columns.Bound(c => c.ManufacturingMaterialCategoryItemId);
+                  columns.Bound(c => c.ItemCode);
+                  columns.Bound(c => c.UnitOfMeasurement);
+                  columns.Bound(c => c.Quantity);
+                  columns.Bound(c => c.Remark);
+                  columns.Bound(c => c.WorkshopType);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.FurnitureProductionBillOfMaterialId))
+                  .Read(read => read.Action("FurnitureProductionBillOfMaterials_Read", "FurnitureProductionBillOfMaterial"))
+                  .Create(create => create.Action("FurnitureProductionBillOfMaterials_Create", "FurnitureProductionBillOfMaterial"))
+                  .Update(update => update.Action("FurnitureProductionBillOfMaterials_Update", "FurnitureProductionBillOfMaterial"))
+                  .Destroy(destroy => destroy.Action("FurnitureProductionBillOfMaterials_Destroy", "FurnitureProductionBillOfMaterial"))
+              )
+        )
+}

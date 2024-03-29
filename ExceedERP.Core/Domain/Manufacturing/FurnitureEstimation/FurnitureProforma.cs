@@ -11,7 +11,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     public class FurnitureProformaInvoice : Operations
     {
         public int FurnitureProformaInvoiceId { get; set; }
-        public int FurnitureEstimationId { get; set; }
+        
         [Display(Name ="Customer")]
         public int CustomerId { get; set; }
         [Display(Name ="Delivery Period(Days)")]
@@ -29,13 +29,15 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public bool HaveEstimation { get; set; }
         public bool IsExistingCustomer { get; set; }
 
-
     }
     public class FurnitureProformaInvoiceItem : TrackUserSettingOperation
     {
         public int FurnitureProformaInvoiceItemId { get; set; }
-        [Display(Name ="Item")]
 
+        // Fk for Estimation
+        public int FurnitureEstimationId { get; set; }
+
+        [Display(Name ="Item")]
         public int JobTypeId { get; set; }
         [Display(Name ="Unit of measurment")]
         public string UnitOfMeasurment { get; set; }
@@ -48,6 +50,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Display(Name = "Unit Price With VAT")]
         public decimal UnitPriceWithVAT { get; set; }
         public string Remark { get; set; }
+        public bool IsActive { get; set; }  
 
         public int FurnitureProformaInvoiceId { get; set; }
         public FurnitureProformaInvoice FurnitureProformaInvoice { get; set; } 

@@ -24,10 +24,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 Value = s.ManifucturingTaskCategoryId,
                 Text = s.Name
             });
-            ViewData["JobType"] = db.FurnitureJobCategories.Select(s => new
+            ViewData["JobType"] = db.FurnitureStandardJobTypes.Select(s => new
             {
-                Value = s.FurnitureJobCategoryId,
-                Text = s.JobName
+                Value = s.FurnitureStandardJobTypeId,
+                Text = s.JobTypeName
             }).ToList();
             var selecteditems = db.InventoryItems.Select(
                i => new
@@ -190,7 +190,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             var estimation = db.FurnitureEstimationForms.Find(id);
             object response = null;
-
+            var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId);
+            if(overAllCost == null)
+            {
+                response = new { Success = false, Message = "⚠️ You forgot to calculate overall cost" };
+                return Json(response);
+            }
             if (estimation!=null)
                 {
                 estimation.IsOnlineTransferred = true;
@@ -237,69 +242,104 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             Object response = null;
             var estimationForm = db.FurnitureEstimationForms.Find(id);
-            if(estimationForm != null)
-            {
-                var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId);
-                
-                if(overAllCost != null)
-                {
-                    estimationForm.IsOnlineApproved = true;
-                    estimationForm.OnlineApprovedBy = User.Identity.Name;
-                    estimationForm.OnlineApprovedTime = DateTime.Today;
+            estimationForm.IsOnlineApproved = true;
+            estimationForm.OnlineApprovedBy = User.Identity.Name;
+            estimationForm.OnlineApprovedTime = DateTime.Today;
 
-                    db.Entry(estimationForm).State = EntityState.Modified;
+            db.Entry(estimationForm).State = EntityState.Modified;
+            db.SaveChanges();
+            response = new { Success = true, Message = "Successfully Approved!" };
+            //if (estimationForm != null)
+            //{
+            //    var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId);
 
-                    // Create Proforma Invoice
-                    var proformaInvoice = new FurnitureProformaInvoice
-                    {
-                        CustomerId = estimationForm.CustomerId,
-                        DateCreated = DateTime.Today,
-                        CreatedBy = User.Identity.Name,
-                        FurnitureEstimationId = estimationForm.FurnitureEstimationId,
-                        DeliveryDate = DateTime.Today
+            //    if(overAllCost != null)
+            //    {
+            //        estimationForm.IsOnlineApproved = true;
+            //        estimationForm.OnlineApprovedBy = User.Identity.Name;
+            //        estimationForm.OnlineApprovedTime = DateTime.Today;
 
-                    };
-                    db.FurnitureProformaInvoices.Add(proformaInvoice);
-                    db.SaveChanges();
+            //        db.Entry(estimationForm).State = EntityState.Modified;
 
-                    // Create ProformaInvoiceItem
-                    var jobCategory = db.JobCategories.Find(estimationForm.JobTypeId);
-                    if(jobCategory == null)
-                    {
-                        response = new { Success = false, Message = "Something's wrong! Job Type Not Found" };
-                        return Json(response);
-                    }
-                    var taxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobCategory.GLTaxRateID);
-                    if (taxRate == null)
-                    {
-                        response = new { Success = false, Message = "Something's wrong! Tax Rate Not Found" };
-                        return Json(response);
-                    }
-                    var proformaItem = new FurnitureProformaInvoiceItem
-                    {
-                        JobTypeId = estimationForm.JobTypeId,
-                        Quantity = estimationForm.Quantity,
-                        UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
-                        VAT = taxRate.CalculatedRate,
-                        DateCreated = DateTime.Today,
-                        FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId
-                    };
-                    proformaItem.UnitPriceWithVAT = proformaItem.UnitPriceBeforeVAT + proformaItem.UnitPriceBeforeVAT * proformaItem.VAT;
-                    
-                    db.FurnitureProformaInvoiceItems.Add(proformaItem);
-                    db.SaveChanges();
-                    response = new { Success = true, Message = "Successfully Created proforma Invoice" };
-                }
-                else
-                {
-                    response = new { Success = false, Message = "Something's Wrong!, Overall Cost Not Found" };
+            //        var existingProforma = db.FurnitureProformaInvoices.FirstOrDefault(x => x.CustomerId == estimationForm.CustomerId);
+            //        if(existingProforma == null)
+            //        {
+            //            // Create Proforma Invoice
+            //            var proformaInvoice = new FurnitureProformaInvoice
+            //            {
+            //                CustomerId = estimationForm.CustomerId,
+            //                DateCreated = DateTime.Today,
+            //                CreatedBy = User.Identity.Name,                           
+            //                DeliveryDate = DateTime.Today,
+            //            };
+            //            db.FurnitureProformaInvoices.Add(proformaInvoice);
+            //            db.SaveChanges();
 
-                }
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
+            //            // Create ProformaInvoiceItem
+            //            var jobTypeN = db.FurnitureStandardJobTypes.Find(estimationForm.JobTypeId);
+            //            if (jobTypeN == null)
+            //            {
+            //                response = new { Success = false, Message = "Something's wrong! Job Type Not Found" };
+            //                return Json(response);
+            //            }
+
+            //            var proformaItemN = new FurnitureProformaInvoiceItem
+            //            {
+            //                JobTypeId = jobTypeN.FurnitureStandardJobTypeId,
+            //                Quantity = estimationForm.Quantity,
+            //                UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
+            //                VAT = 0.15M,/* taxRate.CalculatedRate*/
+            //                DateCreated = DateTime.Today,
+            //                FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
+            //                UnitOfMeasurment = jobTypeN.Unit,
+            //                IsActive = true,
+
+            //            };
+            //            proformaItemN.UnitPriceWithVAT = proformaItemN.UnitPriceBeforeVAT + proformaItemN.UnitPriceBeforeVAT * proformaItemN.VAT;
+
+            //            db.FurnitureProformaInvoiceItems.Add(proformaItemN);
+            //            db.SaveChanges();
+            //            response = new { Success = true, Message = "Successfully Created proforma Invoice" };
+            //        }
+            //        else
+            //        {
+            //            // Create ProformaInvoiceItem
+            //            var jobType = db.FurnitureStandardJobTypes.Find(estimationForm.JobTypeId);
+            //            if (jobType == null)
+            //            {
+            //                response = new { Success = false, Message = "Something's wrong! Job Type Not Found" };
+            //                return Json(response);
+            //            }
+
+            //            var proformaItem = new FurnitureProformaInvoiceItem
+            //            {
+            //                JobTypeId = jobType.FurnitureStandardJobTypeId,
+            //                Quantity = estimationForm.Quantity,
+            //                UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
+            //                VAT = 0.15M,/* taxRate.CalculatedRate*/
+            //                DateCreated = DateTime.Today,
+            //                FurnitureProformaInvoiceId = existingProforma.FurnitureProformaInvoiceId,
+            //                UnitOfMeasurment = jobType.Unit,
+            //                IsActive = true
+            //            };
+            //            proformaItem.UnitPriceWithVAT = proformaItem.UnitPriceBeforeVAT + proformaItem.UnitPriceBeforeVAT * proformaItem.VAT;
+
+            //            db.FurnitureProformaInvoiceItems.Add(proformaItem);
+            //            db.SaveChanges();
+            //            response = new { Success = true, Message = "Successfully Created proforma Invoice" };
+            //        }
+
+            //    }
+            //    else
+            //    {
+            //        response = new { Success = false, Message = "Something's Wrong!, Overall Cost Not Found" };
+
+            //    }
+            //}
+            //else
+            //{
+            //    response = new { Success = false, Message = "Something's Wrong!" };
+            //}
 
             return Json(response);
         }

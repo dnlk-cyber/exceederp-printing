@@ -1089,6 +1089,8 @@
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\PrePrinting.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\Printing.cs" />
     <Compile Include="Domain\Manufacturing\ProductionFollowUp\Settings.cs" />
+    <Compile Include="Domain\Manufacturing\Production\FurnitureJobAssignment.cs" />
+    <Compile Include="Domain\Manufacturing\Production\FurnitureJobOrderProduction.cs" />
     <Compile Include="Domain\Manufacturing\Setting\FurnitureStandardJobType.cs" />
     <Compile Include="Domain\Manufacturing\Setting\ManifucturingTaskCategory.cs" />
     <Compile Include="Domain\Manufacturing\Setting\MaterialCategory.cs" />

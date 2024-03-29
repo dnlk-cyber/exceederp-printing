@@ -195,9 +195,9 @@
                                                     {
                                                         columns.Bound(c => c.MaterialCost);
                                                         columns.Bound(c => c.LabourCost);
-                                                        columns.Bound(c => c.OverHeadCost);
+                                                        columns.Bound(c => c.OverHeadCost).Title("Overhead(%)").Width(120);
                                                         columns.Bound(c => c.ManufacturingCost);
-                                                        columns.Bound(c => c.AdministrativeCost);
+                                                        columns.Bound(c => c.AdministrativeCost).Title("Adminst Cost(%)").Width(120);
                                                         columns.Bound(c => c.GrandTotalCost);
                                                         columns.Bound(c => c.ProfitMargin);
                                                         columns.Bound(c => c.FinalPriceIncludingProfit);

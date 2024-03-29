@@ -157,5 +157,21 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet); 
         }
+
+        public JsonResult GetFurnitureEstimation(string text)
+        {
+            var estimation = db.FurnitureEstimationForms.AsQueryable();
+            if (!string.IsNullOrEmpty(text))
+            {
+                estimation = estimation.Where(x => x.FurnitureEstimationId == int.Parse(text)).AsQueryable();
+            }
+            var result = estimation.Select(s => new
+            {
+                Value = s.FurnitureEstimationId,
+                Text = s.FurnitureEstimationId /*+ db.FurnitureStandardJobTypes.Find(s.JobTypeId).JobTypeName*/
+            }).ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
     }
 }

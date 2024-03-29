@@ -38,7 +38,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 LastModified = furnitureJobOrderItem.LastModified,
                 CreatedBy = furnitureJobOrderItem.CreatedBy,
                 ModifiedBy = furnitureJobOrderItem.ModifiedBy,
-                FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId
+                FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId,
+                JobNo = furnitureJobOrderItem.JobNo
             });
 
             return Json(result);
@@ -60,7 +61,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = DateTime.Today,
                     
                     CreatedBy = User.Identity.Name,
-                    FurnitureJobOrderFormId = id
+                    FurnitureJobOrderFormId = id,
+                    JobNo = furnitureJobOrderItem.JobNo
+                    
                 };
 
                 db.FurnitureJobOrderItems.Add(entity);
@@ -88,7 +91,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureJobOrderItem.DateCreated,
                     LastModified = DateTime.Today,
                     CreatedBy = furnitureJobOrderItem.CreatedBy,
-                    ModifiedBy = User.Identity.Name
+                    ModifiedBy = User.Identity.Name,
+                    JobNo = furnitureJobOrderItem.JobNo,
+                    FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId
                 };
 
                 db.FurnitureJobOrderItems.Attach(entity);

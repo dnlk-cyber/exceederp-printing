@@ -85,7 +85,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
             if (ModelState.IsValid)
             {
+                
+                overallCost.OverHeadCost = overallCost.LabourCost * overallCost.OverHeadCost;
+                overallCost.AdministrativeCost = (overallCost.MaterialCost + overallCost.LabourCost + overallCost.OverHeadCost) * overallCost.AdministrativeCost;
                 overallCost.ManufacturingCost = overallCost.MaterialCost + overallCost.LabourCost + overallCost.OverHeadCost;
+
                 overallCost.GrandTotalCost = overallCost.ManufacturingCost + overallCost.AdministrativeCost;
                 var profit = overallCost.GrandTotalCost * overallCost.ProfitMargin;
                 overallCost.FinalPriceIncludingProfit = overallCost.GrandTotalCost + profit;

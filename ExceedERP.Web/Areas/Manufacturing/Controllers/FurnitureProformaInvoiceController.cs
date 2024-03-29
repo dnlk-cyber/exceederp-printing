@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -25,10 +25,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 Text = s.TradeName
             }).ToList();
 
-            ViewData["JobType"] = db.FurnitureJobCategories.Select(s => new
+            ViewData["JobType"] = db.FurnitureStandardJobTypes.Select(s => new
             {
-                Value = s.FurnitureJobCategoryId,
-                Text = s.JobName
+                Value = s.FurnitureStandardJobTypeId,
+                Text = s.JobTypeName
             }).ToList();
 
             return View();
@@ -36,11 +36,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         public ActionResult FurnitureProformaInvoices_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices;
+            IQueryable<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices.OrderBy(x => x.FurnitureProformaInvoiceId);
             DataSourceResult result = furnitureproformainvoices.ToDataSourceResult(request, furnitureProformaInvoice => new FurnitureProformaInvoice
             {
                 FurnitureProformaInvoiceId = furnitureProformaInvoice.FurnitureProformaInvoiceId,
-                FurnitureEstimationId = furnitureProformaInvoice.FurnitureEstimationId,
+
                 CustomerId = furnitureProformaInvoice.CustomerId,
                 DeliveryPeriod = furnitureProformaInvoice.DeliveryPeriod,
                 DeliveryDate = furnitureProformaInvoice.DeliveryDate,
@@ -81,7 +81,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 var entity = new FurnitureProformaInvoice
                 {
-                    FurnitureEstimationId = furnitureProformaInvoice.FurnitureEstimationId,
+
                     CustomerId = furnitureProformaInvoice.CustomerId,
                     DeliveryPeriod = furnitureProformaInvoice.DeliveryPeriod,
                     DeliveryDate = furnitureProformaInvoice.DeliveryDate,
@@ -90,18 +90,19 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     Remark = furnitureProformaInvoice.Remark,
                     AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent,
                     DateCreated = DateTime.Today,
-                    
-                    CreatedBy = User.Identity.Name,
-                    
+                    CreatedBy = User.Identity.Name
                 };
 
                 db.FurnitureProformaInvoices.Add(entity);
                 db.SaveChanges();
                 furnitureProformaInvoice.FurnitureProformaInvoiceId = entity.FurnitureProformaInvoiceId;
+
             }
 
             return Json(new[] { furnitureProformaInvoice }.ToDataSourceResult(request, ModelState));
         }
+
+        //private void GeneratePerformaItem()
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureProformaInvoices_Update([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoice furnitureProformaInvoice)
@@ -111,14 +112,14 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 var entity = new FurnitureProformaInvoice
                 {
                     FurnitureProformaInvoiceId = furnitureProformaInvoice.FurnitureProformaInvoiceId,
-                    FurnitureEstimationId = furnitureProformaInvoice.FurnitureEstimationId,
+
                     CustomerId = furnitureProformaInvoice.CustomerId,
                     DeliveryPeriod = furnitureProformaInvoice.DeliveryPeriod,
                     DeliveryDate = furnitureProformaInvoice.DeliveryDate,
                     PriceValidityPeriod = furnitureProformaInvoice.PriceValidityPeriod,
                     ModeOfPayment = furnitureProformaInvoice.ModeOfPayment,
                     Remark = furnitureProformaInvoice.Remark,
-                    
+
                     DateCreated = furnitureProformaInvoice.DateCreated,
                     LastModified = DateTime.Today,
                     CreatedBy = furnitureProformaInvoice.CreatedBy,
@@ -153,7 +154,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return Json(new[] { furnitureProformaInvoice }.ToDataSourceResult(request, ModelState));
         }
 
-        
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
@@ -163,7 +164,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         {
             Object response = null;
             var proforma = db.FurnitureProformaInvoices.Find(id);
-            if(proforma != null)
+            if (proforma != null)
             {
                 proforma.IsSendForApproval = true;
                 proforma.SendForApprovalBy = User.Identity.Name;
@@ -184,8 +185,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var proformaInvoice = db.FurnitureProformaInvoices.Find(id);
             if (proformaInvoice != null)
             {
-                var proformaItem = db.FurnitureProformaInvoiceItems.FirstOrDefault(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId);
-                if (proformaItem != null)
+                var proformaItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId).ToList();
+                if (proformaItems.Any())
                 {
                     proformaInvoice.IsOnlineApproved = true;
                     proformaInvoice.OnlineApprovedBy = User.Identity.Name;
@@ -193,37 +194,43 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
                     db.Entry(proformaInvoice).State = EntityState.Modified;
 
+
                     var jobOrder = new FurnitureJobOrderForm
                     {
                         CustomerId = proformaInvoice.CustomerId,
                         AdvancePaymentInPercent = proformaInvoice.AdvancePaymentInPercent,
-                        
+
                         PaymentType = proformaInvoice.PaymentType,
                         FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
-                        
+
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name,
-                        
+
                     };
                     jobOrder.DeliveryDate = DateTime.Today.AddDays(proformaInvoice.DeliveryPeriod);
                     db.FurnitureJobOrderForms.Add(jobOrder);
                     db.SaveChanges();
-
-                    var jobOrderItem = new FurnitureJobOrderItem
+                    foreach (var proformaItem in proformaItems)
                     {
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Today,
-                        Quantity = proformaItem.Quantity,
-                        JobTypeId = proformaItem.JobTypeId,
-                        UnitOfMeasurment = proformaItem.UnitOfMeasurment,
-                        UnitPriceBeforeVAT = proformaItem.UnitPriceBeforeVAT,
-                        VAT = proformaItem.VAT,
-                        UnitPriceWithVAT = proformaItem.UnitPriceWithVAT,
-                        FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId
-                    };
-                    db.FurnitureJobOrderItems.Add(jobOrderItem);
-                    db.SaveChanges();
+                        var jobOrderItem = new FurnitureJobOrderItem
+                        {
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Today,
+                            Quantity = proformaItem.Quantity,
+                            JobTypeId = proformaItem.JobTypeId,
+                            UnitOfMeasurment = proformaItem.UnitOfMeasurment,
+                            UnitPriceBeforeVAT = proformaItem.UnitPriceBeforeVAT,
+                            VAT = proformaItem.VAT,
+                            UnitPriceWithVAT = proformaItem.UnitPriceWithVAT,
+                            FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId,
+                            
+                        };
+                        db.FurnitureJobOrderItems.Add(jobOrderItem);
+                        db.SaveChanges();
+                    }
+
                     response = new { Success = true, Message = "Successfully Created Job-Order Form" };
+
                 }
                 else
                 {

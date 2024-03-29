@@ -1,46 +1,25 @@
 ﻿@model ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureProformaInvoiceItem
 
 <div class="row">
-
     <div class="col-sm-2">
         <div class="form-group">
-            <label>Item</label>
+            <label>Estimation</label>
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.JobTypeId)
-                                            .ValuePrimitive(true)
-                                            .OptionLabel("Select Job Title...")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value")
-                                            .Filter("contains")
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("GetFurnitureJobCategory", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterJobType"))
-                                                    .ServerFiltering(true);
-                                            }).HtmlAttributes(new { style = "width:100%" }))
+                @(Html.Kendo().DropDownListFor(model => model.FurnitureEstimationId)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select Estimation No...")
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .Filter("contains")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetFurnitureEstimation", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterEstimation"))
+                                                            .ServerFiltering(true);
+                                                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Unit</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(m => m.UnitOfMeasurment)
-                                        .AutoBind(false)
-                                        .OptionLabel("Select UOM...")
-                                        .DataTextField("UoMName")
-                                        .DataValueField("Value")
-                                        .ValuePrimitive(true)
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetUoM", "ManufacturingDataProvider"))
-                                                    .ServerFiltering(false);
-                                        })
+    </div>  
 
-                )
-            </div>
-        </div>
-    </div>
-    
     <div class="col-sm-2">
         <div class="form-group">
             <label>Quantity</label>
@@ -49,18 +28,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Unit Price Before VAT</label>
-            <div>
-                @(Html.Kendo().NumericTextBoxFor(model => model.UnitPriceBeforeVAT).HtmlAttributes(new { style = "width:100%" }))
-            </div>
-        </div>
-    </div>
-   
-</div>
 
-<div class="row">
     <div class="col-sm-2">
         <div class="form-group">
             <label>Remark</label>
@@ -69,4 +37,6 @@
             </div>
         </div>
     </div>
+
 </div>
+

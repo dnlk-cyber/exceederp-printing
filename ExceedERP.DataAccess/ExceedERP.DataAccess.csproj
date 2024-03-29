@@ -413,6 +413,10 @@
     <Compile Include="Migrations\202403210659104_procupgrade.Designer.cs">
       <DependentUpon>202403210659104_procupgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403291337271_manufacturingmig.cs" />
+    <Compile Include="Migrations\202403291337271_manufacturingmig.Designer.cs">
+      <DependentUpon>202403291337271_manufacturingmig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -680,6 +684,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403210659104_procupgrade.resx">
       <DependentUpon>202403210659104_procupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403291337271_manufacturingmig.resx">
+      <DependentUpon>202403291337271_manufacturingmig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

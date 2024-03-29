@@ -12,9 +12,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     {
         [Key]
         public int FurnitureJobOrderFormId { get; set; }
-        [Display(Name ="J.O.NO")]
-        public string JobNo { get; set; }
-        [Display(Name = "Customer")]
+       
         public int CustomerId { get; set; }       
        
         [Display(Name = "Delivery Date"), DataType(DataType.Date)]
@@ -32,7 +30,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     public class FurnitureJobOrderItem : TrackUserSettingOperation
     {
         public int FurnitureJobOrderItemId { get; set; }
+        [Display(Name ="Job Type")]
         public int JobTypeId { get; set; }
+        [Display(Name ="Job-No")]
+        public string JobNo { get; set; }
         [Display(Name = "Unit of measurment")]
         public string UnitOfMeasurment { get; set; }
 

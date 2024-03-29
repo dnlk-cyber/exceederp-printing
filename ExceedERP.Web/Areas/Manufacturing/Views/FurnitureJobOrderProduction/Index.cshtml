@@ -1,0 +1,155 @@
+﻿
+<label>Production</label>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobOrderProduction>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.JobNo).Width(100);
+                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+                      columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+
+                      columns.Bound(c => c.Unit).Width(100);
+                      columns.Bound(c => c.Quantity).Width(100);
+                      columns.Bound(c => c.DeliveryDate).Width(120);
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.FurnitureJobOrderProductionId))
+                      .Read(read => read.Action("FurnitureJobOrderProductions_Read", "FurnitureJobOrderProduction"))
+                      .Create(create => create.Action("FurnitureJobOrderProductions_Create", "FurnitureJobOrderProduction"))
+                      .Update(update => update.Action("FurnitureJobOrderProductions_Update", "FurnitureJobOrderProduction"))
+                      .Destroy(destroy => destroy.Action("FurnitureJobOrderProductions_Destroy", "FurnitureJobOrderProduction"))
+                  ).ClientDetailTemplateId("tabstrip")
+)
+
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                        .Name("tab_#=FurnitureJobOrderProductionId#")
+                        .Items(item1 =>
+                        {
+                            item1.Add().Text("Bill Of Quantity").Content(
+                                @<text>
+                                    @BillOfMaterial();
+                                </text>);
+                                    item1.Add().Text("Material Requisition").Content(
+                            @<text>
+
+                            </text>);
+                        item1.Add().Text("Bill Of Labor").Content(
+                @<text>
+                    @Labor();
+                </text>);
+    item1.Add().Text("Job Assignment").Content(
+@<text>
+    @JobAssignment();
+</text>);
+
+}).ToClientTemplate())
+</script>
+@helper BillOfMaterial()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfMaterial>()
+                                  .Name("Material_#=FurnitureJobOrderProductionId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.WorkshopType);
+                                      columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
+                                      columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
+                                      columns.Bound(c => c.UnitOfMeasurement);
+                                      columns.Bound(c => c.Quantity);
+                                      columns.Bound(c => c.Remark);
+                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Filterable()
+                                  .Scrollable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(model => model.Id(p => p.FurnitureProductionBillOfMaterialId))
+                                      .Read(read => read.Action("FurnitureProductionBillOfMaterials_Read", "FurnitureProductionBillOfMaterial", new { Id = "#=FurnitureJobOrderProductionId#" }))
+                                      .Create(create => create.Action("FurnitureProductionBillOfMaterials_Create", "FurnitureProductionBillOfMaterial", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                      .Update(update => update.Action("FurnitureProductionBillOfMaterials_Update", "FurnitureProductionBillOfMaterial"))
+                                      .Destroy(destroy => destroy.Action("FurnitureProductionBillOfMaterials_Destroy", "FurnitureProductionBillOfMaterial"))
+                                  ).ToClientTemplate()
+    )
+}
+
+
+@helper Labor()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfLabor>()
+                              .Name("labor_#=FurnitureJobOrderProductionId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.WorkShopType).Width(120);
+                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+                                  columns.Bound(c => c.NumberOfEmloyees).Width(100);
+                                  columns.Bound(c => c.EstimatedMinute).Width(100);
+                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create();
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Filterable()
+                              .Scrollable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Model(model => model.Id(p => p.FurnitureProductionBillOfLaborId))
+                                  .Read(read => read.Action("FurnitureProductionBillOfLabors_Read", "FurnitureProductionBillOfLabor", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  .Create(create => create.Action("FurnitureProductionBillOfLabors_Create", "FurnitureProductionBillOfLabor", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  .Update(update => update.Action("FurnitureProductionBillOfLabors_Update", "FurnitureProductionBillOfLabor"))
+                                  .Destroy(destroy => destroy.Action("FurnitureProductionBillOfLabors_Destroy", "FurnitureProductionBillOfLabor"))
+                              ).ToClientTemplate()
+    )
+}
+
+@helper JobAssignment()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobAssignment>()
+                      .Name("JobAssign_#=FurnitureJobOrderProductionId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+                          columns.Bound(c => c.Type).EditorTemplateName("Type");
+                          columns.ForeignKey(c => c.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+
+                          columns.Bound(c => c.TimeSpent);
+                          columns.Bound(c => c.TaskAssignedDate);
+                          columns.Bound(c => c.TaskEndDate);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Filterable()
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => model.Id(p => p.FurnitureJobAssignmentId))
+                          .Read(read => read.Action("FurnitureJobAssignments_Read", "FurnitureJobAssignment", new { id = "#=FurnitureJobOrderProductionId#" }))
+                          .Create(create => create.Action("FurnitureJobAssignments_Create", "FurnitureJobAssignment", new { id = "#=FurnitureJobOrderProductionId#" }))
+                          .Update(update => update.Action("FurnitureJobAssignments_Update", "FurnitureJobAssignment"))
+                          .Destroy(destroy => destroy.Action("FurnitureJobAssignments_Destroy", "FurnitureJobAssignment"))
+                      ).ToClientTemplate()
+    )
+}

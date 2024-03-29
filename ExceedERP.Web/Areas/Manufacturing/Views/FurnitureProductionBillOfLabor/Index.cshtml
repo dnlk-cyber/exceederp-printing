@@ -1,0 +1,29 @@
+﻿
+@helper Labor() { 
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfLabor>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.ManufacturingTaskCategoryId);
+                  columns.Bound(c => c.WorkShopType);
+                  columns.Bound(c => c.NumberOfEmloyees);
+                  columns.Bound(c => c.EstimatedMinute);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.FurnitureProductionBillOfLaborId))
+                  .Read(read => read.Action("FurnitureProductionBillOfLabors_Read", "FurnitureProductionBillOfLabor"))
+                  .Create(create => create.Action("FurnitureProductionBillOfLabors_Create", "FurnitureProductionBillOfLabor"))
+                  .Update(update => update.Action("FurnitureProductionBillOfLabors_Update", "FurnitureProductionBillOfLabor"))
+                  .Destroy(destroy => destroy.Action("FurnitureProductionBillOfLabors_Destroy", "FurnitureProductionBillOfLabor"))
+              )
+    )
+}

@@ -4,10 +4,11 @@
                       .Name("grid")
                       .Columns(columns =>
                       {
-                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                          columns.Bound(c => c.JobTypeName);
+                          //columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.JobNo).Width(100);
+                          columns.Bound(c => c.JobTypeName).Width(120);
                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
-                          columns.Bound(c => c.Quantity);
+                          columns.Bound(c => c.Quantity).Width(100);
                           //columns.Bound(c => c.Size);
 
                           columns.Command(command =>

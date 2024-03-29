@@ -25,7 +25,8 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Required]
         public decimal Quantity { get; set; }
         public string Description { get; set; }
-        
+        public bool IsCurrent { get; set; }
+
     }
     
     public class DirectLaborCost : TrackUserSettingOperation

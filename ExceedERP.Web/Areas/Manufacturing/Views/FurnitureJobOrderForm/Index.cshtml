@@ -5,14 +5,21 @@
               .Name("grid")
               .Columns(columns =>
               {
-                  columns.Bound(c => c.JobNo).Width(100);
+                  
                   columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);    
                   columns.Bound(c => c.DeliveryDate).Width(120);
                   columns.Bound(c => c.CRVNo).Width(100);
                   columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
                   columns.Bound(c => c.Remark).Width(100);
 
-                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  columns.Command(command =>
+                  {
+                      command.Edit().Text(" ");
+                      command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                      command.Destroy().Text(" ");
+
+                  }).Width(180);
               })
               .ToolBar(toolbar =>
               {
@@ -21,6 +28,7 @@
               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureJoborderEditorTemplate"))
               .Filterable()
               .Scrollable()
+              .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Events(ev => ev.Error("error_handler(\"grid\")")
@@ -52,6 +60,7 @@
               .Name("grid_#=FurnitureJobOrderFormId#")
               .Columns(columns =>
               {
+                  columns.Bound(c => c.JobNo).Width(120);
                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
                   columns.Bound(c => c.UnitOfMeasurment);
                   columns.Bound(c => c.Quantity);
@@ -96,6 +105,106 @@
             text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
         }
     }
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        codeid = masterDataItem.FurnitureJobOrderFormId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#grid_" + codeid).hide();
+            
+        }
+
+
+    }
+
+    function handleChecked(e) {
+        
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.FurnitureJobOrderFormId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckJob", "FurnitureJobOrderForm", new { Area = "Manufacturing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+    function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveJobOrder", "FurnitureJobOrderForm", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureJobOrderFormId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+    
 </script>
 
 

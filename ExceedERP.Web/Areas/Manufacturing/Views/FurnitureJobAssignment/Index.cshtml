@@ -1,0 +1,33 @@
+﻿
+
+@helper JobAssignment() { 
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobAssignment>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.EmployeeId);
+                  columns.Bound(c => c.Type);
+                  columns.Bound(c => c.TaskCategoryId);
+                  columns.Bound(c => c.TimeSpent);
+                  columns.Bound(c => c.TaskAssignedDate);
+                  columns.Bound(c => c.TaskEndDate);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.FurnitureJobAssignmentId))
+                  .Read(read => read.Action("FurnitureJobAssignments_Read", "FurnitureJobAssignment"))
+                  .Create(create => create.Action("FurnitureJobAssignments_Create", "FurnitureJobAssignment"))
+                  .Update(update => update.Action("FurnitureJobAssignments_Update", "FurnitureJobAssignment"))
+                  .Destroy(destroy => destroy.Action("FurnitureJobAssignments_Destroy", "FurnitureJobAssignment"))
+              )
+    )
+}

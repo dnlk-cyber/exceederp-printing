@@ -105,6 +105,7 @@ using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
 using ExceedERP.Core.Domain.Manufacturing;
+using ExceedERP.Core.Domain.Manufacturing.Production;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1618,6 +1619,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP
+
             modelBuilder.Configurations.Add(new StandardBillOfLaborEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new StandardBillOfMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FurnitureStandardJobTypeEntityTypeConfiguration());
@@ -2155,6 +2157,10 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Production Follow UP
+        public DbSet<FurnitureJobOrderProduction> FurnitureJobOrderProductions { get; set; }
+        public DbSet<FurnitureProductionBillOfMaterial> FurnitureProductionBillOfMaterials { get; set; }
+        public DbSet<FurnitureProductionBillOfLabor> FurnitureProductionBillOfLabors { get; set; }
+        public DbSet<FurnitureJobAssignment> FurnitureJobAssignments { get; set; }
         public DbSet<FurnitureStandardJobType> FurnitureStandardJobTypes { get; set; }
         public DbSet<StandardBillOfMaterial> StandardBillOfMaterials { get; set; }
         public DbSet<StandardBillOfLabor> StandardBillOfLabors { get; set; }
