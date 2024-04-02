@@ -275,9 +275,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Entity<GLTaxRate>().Property(e => e.CalculatedRate).HasPrecision(18, 4);
             modelBuilder.Entity<GLTaxRate>().Property(e => e.Rate).HasPrecision(18, 4);
 
-            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.Debit).HasPrecision(18, 4);
+            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.Debit).HasPrecision(18, 9);
 
-            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.Credit).HasPrecision(18, 4);
+            modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.Credit).HasPrecision(18, 9);
 
             modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.ExRate).HasPrecision(18, 4);
             modelBuilder.Entity<GLRecordJournalDetail>().Property(e => e.DebitNonFun).HasPrecision(18, 4);
@@ -297,9 +297,9 @@ namespace ExceedERP.DataAccess.Context
 
 
 
-            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.Debit).HasPrecision(18, 4);
+            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.Debit).HasPrecision(18, 9);
 
-            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.Credit).HasPrecision(18, 4);
+            modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.Credit).HasPrecision(18, 9);
 
             modelBuilder.Entity<GLLedgerPostingLines>().Property(e => e.Balance).HasPrecision(18, 4);
 

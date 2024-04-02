@@ -417,6 +417,10 @@
     <Compile Include="Migrations\202403291337271_manufacturingmig.Designer.cs">
       <DependentUpon>202403291337271_manufacturingmig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404021605255_accountdigitiincreasenine.cs" />
+    <Compile Include="Migrations\202404021605255_accountdigitiincreasenine.Designer.cs">
+      <DependentUpon>202404021605255_accountdigitiincreasenine.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -687,6 +691,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403291337271_manufacturingmig.resx">
       <DependentUpon>202403291337271_manufacturingmig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404021605255_accountdigitiincreasenine.resx">
+      <DependentUpon>202404021605255_accountdigitiincreasenine.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
