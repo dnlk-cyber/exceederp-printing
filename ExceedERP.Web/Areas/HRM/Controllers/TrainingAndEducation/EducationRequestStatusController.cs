@@ -13,10 +13,11 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
-    public class EducationRequestStatusController : Controller
+    public class EducationRequestStatusController : BaseController
     {
       
             private ExceedDbContext db = new ExceedDbContext();

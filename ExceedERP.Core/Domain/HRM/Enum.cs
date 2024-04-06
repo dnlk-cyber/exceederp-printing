@@ -37,7 +37,8 @@ namespace ExceedERP.Core.Domain.HRM
         Frequency,
         [Display(Name = "Initial Year/Gerigorian/")]
         InitialYear,
-        Maternitiy
+        Maternitiy,
+        Paternity
     }
     public enum EmployeeIdAttribute
     {

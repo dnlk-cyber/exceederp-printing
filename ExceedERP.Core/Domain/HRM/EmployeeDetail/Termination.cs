@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Common;
@@ -27,14 +27,12 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public virtual Lookup Lookup { get; set; }
         [Display(Name = "HR_EmployeeDetail_Termination_Reason", ResourceType = typeof(Localization.Resources))]
         public string Reason { get; set; }
-        [Required]
         [Display(Name = "HR_EmployeeDetail_Termination_ApplicationDate", ResourceType = typeof(Localization.Resources))]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime ApplicationDate { get; set; }
         [Display(Name = "HR_EmployeeDetail_Termination_ApplicationDate", ResourceType = typeof(Localization.Resources))]
         public string ApplicationDateAm { get; set; }
-        [Required]
         [Display(Name = "HR_EmployeeDetail_Termination_TerminationDate", ResourceType = typeof(Localization.Resources))]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
@@ -45,6 +43,8 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public string Remark { get; set; }
         [Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
         public bool IsForOther { get; set; }
+        [Display(Name = "Is Forcibly Terminated ")]
+        public bool IsForciblyTerminated { get; set; }
         /// <summary>
         /// IsDirect Field is added to check if the termination is direct or with request 
         /// if it is from request all the button are hidden
@@ -56,6 +56,8 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         /// //this field is added to check the employee active or not , if he is 'InActive' we will hide 'Force Terminate' Button
         /// </summary>
         /// 
+        [NotMapped]
+        public bool IsApproved { get; set; }
         [NotMapped]
         public bool IsActive { get; set; }
 

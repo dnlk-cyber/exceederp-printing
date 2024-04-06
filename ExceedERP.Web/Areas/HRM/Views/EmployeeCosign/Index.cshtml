@@ -7,10 +7,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>@Resources.NavigatorRecruitment_Cosign</legend>
-
-
-              @(Html.Kendo().Grid<Cosign>()
-              .Name("Cosigngrid")
+   @(Html.Kendo().Grid<Cosign>()
+   .Name("Cosigngrid")
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);
@@ -18,7 +16,6 @@
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CosignType"], "LookupId", "Description").EditorTemplateName("CosignType").Width(120);
           columns.Bound(c => c.AgreementDateAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.FullName).Width (120);
-          columns.Bound(c => c.BirthPlace).Width (100);
           
           columns.Bound(c => c.Workorganization).Width (150);
           //columns.Bound(c => c.Remark);
@@ -49,46 +46,41 @@
       })
               .Scrollable(h => h.Height(500))
                  .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
+                 .Sortable(sortable =>
+                 {
+                     sortable.SortMode(GridSortMode.SingleColumn);
+                 })
               .Filterable()
-                       .Events(x =>
-                       {
-                           x.Edit("GetDate");
-                           x.Save("GetDate");
-                       })
-                 .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-                                                    
+              .Events(x =>
+              {
+                  x.Edit("GetDate");
+                  x.Save("GetDate");
+              })
+              .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))                  
       .DataSource(dataSource => dataSource
           .Ajax()
-                                    .Events(events =>
-                                                          {
-                                                              events.Error("error_handler(\"Cosigngrid\")");
-                                                              events.RequestStart("onRequestStart(\"Cosigngrid\")");
-                                                              events.RequestEnd("onRequestEnd(\"Cosigngrid\")");
-                                                          })
-                                  
-
-                  .Model(model => { model.Id(p => p.CosignId);
-                   model.Field(p => p.EmployeeCode).Editable (false);})
-                          .Read(read => read.Action("Cosigns_Read", "EmployeeCosign"))
-                          .Create(create => create.Action("Cosigns_Create", "EmployeeCosign"))
-                  .Update(update => update.Action("Cosigns_Update", "EmployeeCosign"))
-                  .Destroy(destroy => destroy.Action("Cosigns_Destroy", "EmployeeCosign"))
+          .Events(events =>
+          {
+              events.Error("error_handler(\"Cosigngrid\")");
+              events.RequestStart("onRequestStart(\"Cosigngrid\")");
+              events.RequestEnd("onRequestEnd(\"Cosigngrid\")");
+          })
+          .Model(model => { model.Id(p => p.CosignId);
+            model.Field(p => p.EmployeeCode).Editable (false);})
+          .Read(read => read.Action("Cosigns_Read", "EmployeeCosign"))
+          .Create(create => create.Action("Cosigns_Create", "EmployeeCosign"))
+          .Update(update => update.Action("Cosigns_Update", "EmployeeCosign"))
+          .Destroy(destroy => destroy.Action("Cosigns_Destroy", "EmployeeCosign"))
       ).ClientDetailTemplateId("AddressTemplate")
-              )
-       
- 
+     )
     <script id="AddressTemplate" type="text/kendo-tmpl">
-        @(Html.Kendo().TabStrip()
-            .Name("tabstrip_#CosignId#")
+    @(Html.Kendo().TabStrip()
+    .Name("tabstrip_#CosignId#")
     .SelectedIndex(0)
     .Items(items =>
      {
@@ -107,14 +99,14 @@
           columns.Bound(c => c.Value);
           columns.Bound(c => c.Remark);
           columns.Command(command => {
-                                         if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
-                                         {
-                                             command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                         }
-                                         if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                         {
-                                             command.Destroy().Text(Resources.ActionButton_Cancel);
-                                         }
+            if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            }
+            if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+            {
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }
           }).Width(200);
              
       })

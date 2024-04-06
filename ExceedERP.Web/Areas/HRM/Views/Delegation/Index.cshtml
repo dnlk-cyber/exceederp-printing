@@ -11,7 +11,7 @@
             .Name("Delegation")
         .Columns(columns =>
         {
-            columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+            //columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
             columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
             columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
@@ -23,15 +23,15 @@
                 if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
                 {
                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "delegationEdit" });
-                    command.Custom("").Click("Open").Text("  Open ").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Open delegation and set start date ", @id = "open" });
-                    command.Custom("").Click("Close").Text(" Close").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Close delegation and set end date ", @id = "close" });
+                    command.Custom("").Click("Open").Text(Resources.Button_Open).IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Open delegation and set start date ", @id = "open" });
+                    command.Custom("").Click("Close").Text(Resources.Button_Close).IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Close delegation and set end date ", @id = "close" });
 
                 }
                 if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
                 {
                     command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { @id = "delegationDelete" }); ;
                 }
-            }).Width(300);
+            }).Width(350);
         })
         .ToolBar(toolbar =>
         {
@@ -74,11 +74,11 @@
             {
                 model.Id(p => p.DelegationId);
                 model.Field(p => p.FromDateTime).Editable(false);
-                model.Field(p => p.ToDateTimeAm).Editable(false);
-                model.Field(p => p.FromDateTimeAm).Editable(false);
-                model.Field(p => p.ToDateTimeAm).Editable(false);
+                //model.Field(p => p.ToDateTimeAm).Editable(false);
+                //model.Field(p => p.FromDateTimeAm).Editable(false);
+                model.Field(p => p.ToDateTime).Editable(false);
             })
-                .Read(read => read.Action("Delegations_Read", "Delegation"))
+                .Read(read => read.Action("Delegations_Hr_Read", "Delegation"))
                 .Create(create => create.Action("Delegations_Create", "Delegation"))
                 .Update(update => update.Action("Delegations_Update", "Delegation"))
                 .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation"))
@@ -104,27 +104,26 @@
                   //columns.Bound(c => c.IsCurrent).Width(100);
                   columns.Command(command =>
                   {
-                      if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                      {
-                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "ccEditButton" });
-                          command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id="ccDeleteButton"});
-                      }
+                      //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                      //{
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "ccEditButton" });
+                      command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id="ccDeleteButton"});
+                      // }
 
                   }).Width(100);
               })
 
                   .ToolBar(toolbar =>
                   {
-                      if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                      {
-                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "ccAddButton" });
-                      }
+                      //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                      //{
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "ccAddButton" });
+                     //}
                   })
-                  .Events(e=> 
+                  .Events(E =>
                   {
-                      e.DataBound("onDetailDataBound");
+                      E.DataBound("onDetailDataBound");
                   })
-
                          .Editable(editable => editable.Mode(GridEditMode.InLine))
                          .Scrollable()
                          .Selectable()
@@ -162,27 +161,26 @@
                                 columns.Bound(c => c.Reason).Width(200);
                                 columns.Command(command =>
                                 {
-                                    if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                    {
-                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "reasonEditButton" });
-                                        command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id = "reasonDeleteButton" });
-                                    }
+                                    //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                                    //{
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "reasonEditButton" });
+                                    command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id = "reasonDeleteButton" });
+                                    //}
                                 }).Width(100);
                             })
 
                  .ToolBar(toolbar =>
                  {
-                     if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                     {
-                         toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "reasonAddButton" });
-                     }
+                     //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                     //{
+                     toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "reasonAddButton" });
+                    //}
                  })
 
-                .Events(e =>
-                {
-                    e.DataBound("onDetailDataBound");
-                })
-
+               .Events(E =>
+               {
+                   E.DataBound("onDetailDataBound");
+               })
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                      .Scrollable(h=>h.Height("auto"))
                       .Selectable()
@@ -337,6 +335,8 @@
 
 
 <script>
+    var isOpen_Global = false;
+    var hideButtons_Global = false;
 
     function onDataBound(e) {
 
@@ -377,8 +377,6 @@
 </script>
 
 <script>
-    var isOpen_Global = false;
-    var hideButtons_Global = false;
 
     function onDetailExpand(e) {
 
@@ -394,6 +392,11 @@
 
         isOpen_Global = masterDataItem.IsOpen;
         hideButtons_Global = masterDataItem.HideButtons;
+
+        //var row = $(e.target).closest("tr");
+        //var grid = $("#Delegation").data("kendoGrid");
+        //var dataItem = grid.dataItem(row);
+        //var id = dataItem.DelegationId;
 
         if (masterDataItem.IsOpen === false) {
             $("#ccAddButton").hide();
@@ -449,7 +452,7 @@
                 row.find("#reasonAddButton").hide();
                 row.find("#reasonEditButton").hide();
                 row.find("#reasonDeleteButton").hide();
-
+                
             }
             else if (isOpen_Global === true) {
                 row.find("#ccAddButton").show();
@@ -459,7 +462,7 @@
                 row.find("#reasonAddButton").show();
                 row.find("#reasonEditButton").show();
                 row.find("#reasonDeleteButton").show();
-
+               
             }
 
             if (hideButtons_Global === true) {

@@ -23,7 +23,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
     [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin, HrmConstants.HRDisciplineUser)]
-    public class CommitteMinuteDetailController : BaseController
+    public class CommitteMinuteDetailsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         public static string DateAmharic { get; set; }
@@ -52,19 +52,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         }
 
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin, HrmConstants.HRDisciplineUser)]
-        public ActionResult CommitteMinute_Read([DataSourceRequest]DataSourceRequest request, string committeeMinut, int id)
+        public ActionResult CommitteMinuteDetails_Read([DataSourceRequest]DataSourceRequest request, string committeeMinut, int id)
         {
-            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.CommitteeId == id).AsQueryable();
+            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.CommitteeId == id);
 
             DataSourceResult result = committeminutes.ToDataSourceResult(request, committeMinute => new
             {
-                CommitteeId = committeMinute.CommitteeId,
                 CommitteMinuteId = committeMinute.CommitteMinuteId,
+                CommitteeId = committeMinute.CommitteeId,
+                //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                 FileNo = committeMinute.FileNo,
                 Agenda = committeMinute.Agenda,
                 PlaceOfMetting = committeMinute.PlaceOfMetting,
                 Remark = committeMinute.Remark,
-                Date = Date,
+                Date = committeMinute.Date,
                 OrgBranchName = committeMinute.OrgBranchName,
                 DateCreated = committeMinute.DateCreated,
                 LastModified = committeMinute.LastModified,
@@ -78,9 +79,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         //[Authorize(Roles = HR_Company_User + "," + HR_Discipline_User)]
         //[AuthorizeRoles(HrmConstants.HRCompanyUser, HrmConstants.HRDisciplineUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CommitteMinute_Create([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute, int id)
+        public ActionResult CommitteMinuteDetails_Create([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute, int id)
         {
             ModelState.Clear();
+            var splitDate = committeMinute.DateAmharic.Split('/');
+            Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             if (ModelState.IsValid)
             {
                 var entity = new CommitteMinute
@@ -90,13 +93,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
+                    DateAmharic = committeMinute.DateAmharic,
                     Date = Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = DateTime.Now,
                     LastModified = committeMinute.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = committeMinute.ModifiedBy,
-                    DateAmharic = DateAmharic
+                    ModifiedBy = committeMinute.ModifiedBy
                 };
 
 
@@ -113,15 +116,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
         [AuthorizeRoles(HrmConstants.HRCompanyUser, HrmConstants.HRDisciplineUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CommitteMinute_Update([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute)
+        public ActionResult CommitteMinuteDetails_Update([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                if (DateAmharic == null)
+                if (committeMinute.DateAmharic == null)
                 {
-                    DateAmharic = committeMinute.DateAmharic;
-                    var splitDate = DateAmharic.Split('/');
+                    var splitDate = committeMinute.DateAmharic.Split('/');
                     Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
                 }
                 var entity = new CommitteMinute
@@ -130,6 +132,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     CommitteMinuteId = committeMinute.CommitteMinuteId,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
+                    DateAmharic = committeMinute.DateAmharic,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
                     Date = Date,
@@ -138,7 +141,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     LastModified = DateTime.Now,
                     CreatedBy = committeMinute.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    DateAmharic = DateAmharic
                 };
 
                 db.CommitteMinutes.Attach(entity);
@@ -151,7 +153,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CommitteMinute_Destroy([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute)
+        public ActionResult CommitteMinuteDetails_Destroy([DataSourceRequest]DataSourceRequest request, CommitteMinute committeMinute)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -165,7 +167,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
                     Remark = committeMinute.Remark,
-                    Date = Date,
+                    Date = committeMinute.Date,
                     OrgBranchName = committeMinute.OrgBranchName,
                     DateCreated = committeMinute.DateCreated,
                     LastModified = committeMinute.LastModified,
@@ -225,12 +227,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 if (file.ContentLength > 0)
                 {
                     var fileName = Path.GetFileName(file.FileName);
-                    var path =
-                        Path.Combine(
+                    var path =  Path.Combine(
                             Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
                                            AttachmentType.MINUTE), fileName);
-                    var mainPath =
-                        Path.Combine(
+                    var mainPath =  Path.Combine(
                             Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
                                            AttachmentType.MINUTE));
                     if (!Directory.Exists(mainPath))
@@ -239,7 +239,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     }
                     if (!System.IO.File.Exists(path))
                     {
-
 
                         file.SaveAs(path);
 
@@ -309,6 +308,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             }
 
             return Json(new[] { attachment }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult FileDownload(int id)
+        {
+            var record = db.Attachments.Find(id);
+
+            return File(record.URL, "application/force-download", Path.GetFileName(record.URL));
         }
         protected override void Dispose(bool disposing)
         {

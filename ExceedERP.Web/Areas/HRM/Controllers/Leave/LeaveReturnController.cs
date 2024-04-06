@@ -82,7 +82,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
 
                 list.Remove(employeeId);
                 IsForOther = true;
@@ -280,7 +280,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeaveReturn_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
             employeeids.Remove(employeeid);
             //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId)).OrderBy(x => x.RequestDate);
             //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => x.EmployeeId == employeeid || x.RequesterId == employeeid).OrderBy(x => x.RequestDate);

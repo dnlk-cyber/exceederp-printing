@@ -1,0 +1,444 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.RecruitmentRequest</legend>
+@(Html.Kendo().Grid<EmployeeTransferRequest>()
+              .Name("EmployeeTransferRequestgrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.EmployeeTransferRequestId).Title("S.N").Width(80);
+                  //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("GetAllActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(180);
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                  columns.Bound(c => c.RequestDate).Width(120);
+                  columns.Bound(c => c.Reason).Width(130);
+                  columns.Bound(c => c.Remark).Width(110);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Scrollable(h => h.Height(500))
+                 //.Events(x => x.Save("GetAbscenceDate"))
+                 //.Events(x => x.Edit("GetAbscenceDate"))
+                 .Events(ev => {
+                     ev.DetailExpand("detailExpandMasterDepartment");
+                     ev.DataBound("onDataBoundMasterDepartment");
+                 })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Filterable()
+                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                 .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"EmployeeTransferRequestgrid\")");
+                        events.RequestStart("onRequestStart(\"EmployeeTransferRequestgrid\")");
+                        events.RequestEnd("onRequestEnd(\"EmployeeTransferRequestgrid\")");
+                    })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.EmployeeTransferRequestId);
+                      model.Field(p => p.EmployeeTransferRequestId).Editable(false);
+
+                  })
+                  .Read(read => read.Action("EmployeeTransferRequests_Read", "EmployeeTransferRequests"))
+                  .Create(create => create.Action("EmployeeTransferRequests_Create", "EmployeeTransferRequests"))
+                  .Update(update => update.Action("EmployeeTransferRequests_Update", "EmployeeTransferRequests"))
+                  .Destroy(destroy => destroy.Action("EmployeeTransferRequests_Destroy", "EmployeeTransferRequests"))
+              ).ClientDetailTemplateId("Employee_transfer_requests_template")
+)
+
+<script type="text/kendo-template" id="Employee_transfer_requests_template">
+    @(Html.Kendo().TabStrip()
+            .Name("tab_strip_#=EmployeeTransferRequestId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+
+                   
+                    items.Add().Text("Detail ").Content(
+                    @<text>
+                        # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                            {#
+                            <a onclick='return sendForApproval("#=EmployeeTransferRequestId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            # } #
+                        @transferRequestDetail()
+                    </text>);
+                   items.Add().Text("Department Validation").Content(
+                    @<text>
+                        @transferRequestDepartmentValidation()
+                    </text>);
+                    @*items.Add().Text("Validation ").Content(
+                    @<text>
+                        @transferRequestValidation()
+                    </text>);*@
+                    
+                   
+
+            }).ToClientTemplate()
+    )
+</script>
+
+@helper transferRequestDetail() { 
+    @(Html.Kendo().Grid<TransferRequestDetail>()
+            .Name("TransferRequestDetailGrid_#=EmployeeTransferRequestId#")
+            .Columns(columns =>
+            {
+
+                columns.ForeignKey(c => c.JobTitleId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(120);
+                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("GetAllActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
+                columns.Bound(c => c.Quantity).Width(120);
+                columns.Bound(c => c.Description).Width(120);
+                columns.Command(command =>
+                {
+
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+
+                    command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                }).Width(200);
+
+            })
+            .ToolBar(toolbar =>
+            {
+
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+            })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Scrollable(h => h.Height(500))
+         .Sortable(sortable =>
+         {
+             sortable.SortMode(GridSortMode.SingleColumn);
+         })
+         .Filterable()
+         .Events(x => x.DataBound("onDataBoundLineDepartment"))
+         .Pageable(pageable => pageable
+             .Input(true)
+             .Numeric(false)
+             .Refresh(true)
+             .PageSizes(true)
+             .ButtonCount(5))
+         .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"TransferRequestDetailGrid_#=EmployeeTransferRequestId#\")");
+                 events.RequestStart("onRequestStart(\"TransferRequestDetailGrid_#=EmployeeTransferRequestId#\")");
+                 events.RequestEnd("onRequestEnd(\"TransferRequestDetailGrid_#=EmployeeTransferRequestId#\")");
+             })
+
+             .Model(model => model.Id(p => p.TransferRequestDetailId))
+             .Read(read => read.Action("EmployeeTransferRequestDetails_Read", "EmployeeTransferRequestDetails", new { Area = "HRM", empTRId = "#=EmployeeTransferRequestId#" }))
+             .Create(create => create.Action("EmployeeTransferRequestDetails_Create", "EmployeeTransferRequestDetails", new { Area = "HRM", empTRId = "#=EmployeeTransferRequestId#" }))
+             .Update(update => update.Action("EmployeeTransferRequestDetails_Update", "EmployeeTransferRequestDetails"))
+             .Destroy(destroy => destroy.Action("EmployeeTransferRequestDetails_Destroy", "EmployeeTransferRequestDetails"))
+                ).ToClientTemplate()
+
+            )
+    }
+
+@helper transferRequestValidation() { 
+    @(Html.Kendo().Grid<TransferRequestValidation>()
+            .Name("TransferRequestValidationGrid_#=EmployeeTransferRequestId#")
+            .Columns(columns =>
+            {
+
+                columns.Bound(c => c.Status).Width(150);
+                columns.Bound(c => c.Remark).Width(150);
+                columns.Command(command =>
+                {
+                    
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                    
+                }).Width(200);
+
+            })
+            .ToolBar(toolbar =>
+            {
+
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+            })
+         .Editable(editable => editable.Mode(GridEditMode.InLine)) 
+         .Scrollable(h => h.Height(500))
+         .Sortable(sortable =>
+         {
+             sortable.SortMode(GridSortMode.SingleColumn);
+         })
+         .Filterable()
+         //.Events(e =>
+         //{
+         //    e.Save("GetAssignDate");
+         //    e.Edit("GetAssignDate");
+         //})
+         .Pageable(pageable => pageable
+             .Input(true)
+             .Numeric(false)
+             .Refresh(true)
+             .PageSizes(true)
+             .ButtonCount(5))
+         .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"TransferRequestValidationGrid_#=EmployeeTransferRequestId#\")");
+                 events.RequestStart("onRequestStart(\"TransferRequestValidationGrid_#=EmployeeTransferRequestId#\")");
+                 events.RequestEnd("onRequestEnd(\"TransferRequestValidationGrid_#=EmployeeTransferRequestId#\")");
+             })
+
+             .Model(model => model.Id(p => p.TransferRequestValidationId))
+             .Read(read => read.Action("EmployeeTransferRequestValidations_Read", "EmployeeTransferRequestValidations", new { Area = "HRM", employeeTRId = "#=EmployeeTransferRequestId#" }))
+                    .Create(create => create.Action("EmployeeTransferRequestValidations_Create", "EmployeeTransferRequestValidations", new { Area = "HRM", employeeTRId = "#=EmployeeTransferRequestId#" }))
+                    .Update(update => update.Action("EmployeeTransferRequestValidations_Update", "EmployeeTransferRequestValidations"))
+                    .Destroy(destroy => destroy.Action("EmployeeTransferRequestValidations_Destroy", "EmployeeTransferRequestValidations"))
+                ).ToClientTemplate()
+
+            )
+
+    }
+@helper transferRequestDepartmentValidation() { 
+     @(Html.Kendo().Grid<TransferRequestDepartmentValidation>()
+            .Name("TransferRequestDepartmentValidationGrid_#=EmployeeTransferRequestId#")
+            .Columns(columns =>
+            {
+
+                columns.Bound(c => c.Status).Width(150);
+                columns.Bound(c => c.Remark).Width(150);
+                columns.Command(command =>
+                {
+                    
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    
+                   
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                    
+                }).Width(200);
+
+            })
+            .ToolBar(toolbar =>
+            {
+
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+            })
+         .Editable(editable => editable.Mode(GridEditMode.InLine)) 
+         .Scrollable(h => h.Height(500))
+         .Sortable(sortable =>
+         {
+             sortable.SortMode(GridSortMode.SingleColumn);
+         })
+         .Filterable()
+         .Events(x => x.DataBound("onDataBoundValidationDepartment"))
+         .Pageable(pageable => pageable
+             .Input(true)
+             .Numeric(false)
+             .Refresh(true)
+             .PageSizes(true)
+             .ButtonCount(5))
+         .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"TransferRequestDepartmentValidationGrid_#=EmployeeTransferRequestId#\")");
+                 events.RequestStart("onRequestStart(\"TransferRequestDepartmentValidationGrid_#=EmployeeTransferRequestId#\")");
+                 events.RequestEnd("onRequestEnd(\"TransferRequestDepartmentValidationGrid_#=EmployeeTransferRequestId#\")");
+             })
+
+             .Model(model => model.Id(p => p.TransferRequestDepartmentValidationId))
+             .Read(read => read.Action("EmployeeTransferRequestDepartmentValidations_Read", "EmployeeTransferRequestDepartmentValidations", new { Area = "HRM", employeeTansReqId = "#=EmployeeTransferRequestId#" }))
+                    .Create(create => create.Action("EmployeeTransferRequestDepartmentValidations_Create", "EmployeeTransferRequestDepartmentValidations", new { Area = "HRM", employeeTansReqId = "#=EmployeeTransferRequestId#" }))
+                    .Update(update => update.Action("EmployeeTransferRequestDepartmentValidations_Update", "EmployeeTransferRequestDepartmentValidations"))
+                    .Destroy(destroy => destroy.Action("EmployeeTransferRequestDepartmentValidations_Destroy", "EmployeeTransferRequestDepartmentValidations"))
+                ).ToClientTemplate()
+
+            )
+    }
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    @*function GetAbscenceDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAbscAmharic").trigger("change");
+        $("#ToAbscAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Absence")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }*@
+     function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforDepartmentApproval", "EmployeeTransferRequests", new { area = "HRM" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>
+<script>
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+
+    function detailExpandMasterDepartment(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#EmployeeTransferRequestgrid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+    }
+    function onDataBoundMasterDepartment(e) {
+       
+        var grid = $("#EmployeeTransferRequestgrid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsDepartmentOnlineApproved || gridData[i].IsDepartmentSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        //var grid = this;
+        //grid.tbody.find("tr[role='row']").each(function (e) {
+        //    var model = grid.dataItem(this);
+        //    if (model.IsDepartmentOnlineApproved || model.IsDepartmentSendForApproval ) {
+        //        $(this).find(".k-grid-edit").remove();
+        //        $(this).find(".k-grid-delete").remove();
+        //        $(".k-grid-add", detailGrid).hide();
+        //    }
+
+        //});
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            //if (dataItem.IsBudgetApproved) {
+            //    row.css("background-color", "gold");
+            //}
+
+            //if (dataItem.Paid) {
+            //    row.css("background-color", "honeydew");
+            //}
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineDepartment(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isDeptapproved || isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationDepartment(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isDeptapproved || !isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+</script>

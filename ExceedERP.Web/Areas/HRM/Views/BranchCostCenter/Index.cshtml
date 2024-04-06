@@ -10,20 +10,18 @@
       {
           columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["Orgs"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true));
-         // columns.ForeignKey(c => c.Values, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description");
+          columns.ForeignKey(c => c.Values, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description");
           columns.Bound(c => c.Name).Visible( false);
         columns.Bound(c => c.Remark);
         columns.Command(command =>
         {
             if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-
             {
                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                 
             }
             if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-            {
-               
+            {               
                  command.Destroy().Text(Resources.ActionButton_Cancel);//
             }
         }).Width(180);
@@ -38,7 +36,7 @@
                               {
                                   toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
                                   toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                              }
+                            }
       }).Events(x=> x.Edit( "change"))
           .Excel(excel => excel
                                                             .FileName(Resources.Navigator_Company_BranchCostCenter + ".xlsx")

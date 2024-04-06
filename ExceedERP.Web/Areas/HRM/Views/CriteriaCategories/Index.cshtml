@@ -1,0 +1,101 @@
+﻿@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Rpt_Criteria @Resources.Common_Lookup_Category</legend>
+@(Html.Kendo().Grid<CriteriaCategory>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.CriteriaCategoryId).Title("S.N").Width(80);
+              columns.Bound(c => c.Name).Width(200);
+              columns.Bound(c => c.Description).Width(150);
+
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+              }).Width(200);
+
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+
+          })
+          .Scrollable(h => h.Height(500))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+
+          })
+          .Filterable()
+          .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+           .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"grid\")");
+                      events.RequestStart("onRequestStart(\"grid\")");
+                      events.RequestEnd("onRequestEnd(\"grid\")");
+
+                  })
+
+                  .Model(model => {
+                      model.Id(p => p.CriteriaCategoryId);
+                      model.Field(p => p.CriteriaCategoryId).Editable(false);
+                  })
+                  .Read(read => read.Action("CriteriaCategories_Read", "CriteriaCategories"))
+                  .Create(create => create.Action("CriteriaCategories_Create", "CriteriaCategories"))
+                  .Update(update => update.Action("CriteriaCategories_Update", "CriteriaCategories"))
+                  .Destroy(destroy => destroy.Action("CriteriaCategories_Destroy", "CriteriaCategories"))
+              )
+)
+<script>
+    
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    //function onUploadSuccess(e) {
+    //    $("#Branchgrid").data("kendoGrid").dataSource.read();
+    //    $("#Branchgrid").data("kendoGrid").refresh();
+    //}
+
+    //function checkFileType(e) {
+    //    var files = e.files;
+
+    //    $.each(files, function () {
+
+    //        if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+    //        } else {
+    //            alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+    //            e.preventDefault();
+    //        }
+
+    //    });
+    //}
+
+    
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

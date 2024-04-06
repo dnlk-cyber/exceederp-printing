@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveEntitleStartingDate>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Start);
+          columns.Bound(c => c.Remark);
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LeaveEntitleStartingDateId))
+          .Read(read => read.Action("LeaveEntitleStartingDate_Read", "LeaveEntitleStartingDate"))
+          .Create(create => create.Action("LeaveEntitleStartingDate_Create", "LeaveEntitleStartingDate"))
+          .Update(update => update.Action("LeaveEntitleStartingDate_Update", "LeaveEntitleStartingDate"))
+          .Destroy(destroy => destroy.Action("LeaveEntitleStartingDate_Destroy", "LeaveEntitleStartingDate"))
+      )
+)

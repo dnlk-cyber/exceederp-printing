@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -17,6 +17,7 @@ using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -99,19 +100,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         {
            // List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             IQueryable<ExperienceRequest> expriancerequests = db.ExprianceRequests;//.Where(x => mybraches.Contains(x.OrgBranchName));
-            List<ExperienceRequest> Requstes = new List<ExperienceRequest>();
-            foreach (var m in expriancerequests)
-            {
-                db = new ExceedDbContext();
-                var status = db.RequestesStatus.Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.RequestId == m.ExperienceRequestId && x.ReferenceType == "Experience").FirstOrDefault();
-                if (status != null)
-                {
-                    Requstes.Add(m);
-                }
+            //List<ExperienceRequest> Requstes = new List<ExperienceRequest>();
+            //foreach (var m in expriancerequests)
+            //{
+            //    db = new ExceedDbContext();
+            //    var status = db.RequestesStatus.Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.RequestId == m.ExperienceRequestId && x.ReferenceType == "Experience").FirstOrDefault();
+            //    if (status != null)
+            //    {
+            //        Requstes.Add(m);
+            //    }
 
-            }
+            //}
 
-            expriancerequests = Requstes.AsQueryable().OrderBy(x => x.ApplicationDate);
+            //expriancerequests = Requstes.AsQueryable().OrderBy(x => x.ApplicationDate);
             DataSourceResult result = expriancerequests.ToDataSourceResult(request, exprianceRequest => new
             {
                 ExperienceRequestId = exprianceRequest.ExperienceRequestId,
@@ -151,6 +152,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             experienceRequest.ApplicationDate = DateTime.Today;
             experienceRequest.ApplicationDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year);
+            var RequestIds = db.ExprianceRequests.Where(x => x.EmployeeId == experienceRequest.EmployeeId).Select(x => x.ExperienceRequestId).ToList();
+            foreach( var RequestId in RequestIds)
+            {
+                var requestesStatus = db.RequestesStatus.FirstOrDefault(x =>
+                        x.RequestId == RequestId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Experience");
+                if(requestesStatus != null)
+                {
+                    var totalDays = (requestesStatus.Date - DateTime.Now.Date).TotalDays;
+                    if (totalDays < 180 && requestesStatus.Status == RequestStatus.APPROVE)
+                    {
+                        ModelState.AddModelError("", "you cannot ask before Six(6) Months");
+                    }
+                }
+               
+            }
+            
             if (ModelState.IsValid)
             {
                 var entity = new ExperienceRequest
@@ -312,6 +329,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     #endregion
 
                     db.SaveChanges();
+                    if (experience.EmployeeId != 0)
+                    {
+                        //var bossId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
+                        NotifModels notif = new NotifModels
+                        {
+                            UserId = UserInformationHelper.GetEmployeeUserId(experience.EmployeeId),
+                            Title = " Suppurvisor has approved your Performance ",
+                            Message = $" you have performance has been approved by your Second Level Approver",
+                            URL = "/HRM/EmployeePerformanceSecondLevelSummaries/"
+
+                        };
+
+                        Notify.NotifyUser(notif);
+                    }
 
                     var formatedData = new
                     {
@@ -328,7 +359,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             };
             return Json(formatedData1, JsonRequestBehavior.AllowGet);
         }
-
+        public string CheckStatuses(int masterId)
+        {
+            var reques = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Experience").FirstOrDefault();
+            if (reques != null)
+            {
+                var checkApprove = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Experience" && x.Status == RequestStatus.APPROVE).FirstOrDefault();
+                if (checkApprove != null)
+                {
+                    return "approved";
+                }
+                var deptApproval = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Experience" && x.Status == RequestStatus.DEPARTMENT_APPROVAL).FirstOrDefault();
+                if (deptApproval != null)
+                {
+                    return "Dapproved";
+                }
+                return "true";
+            }
+            return "false";
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

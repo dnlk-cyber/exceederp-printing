@@ -6,7 +6,7 @@
 
                 Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<Legend>Retirement Setting</Legend>
+<Legend>@Resources.RetirementSetting</Legend>
 @(Html.Kendo().Grid<RetirementSetting>()
           .Name("RetirementSettinggrid")
           .Columns(columns =>

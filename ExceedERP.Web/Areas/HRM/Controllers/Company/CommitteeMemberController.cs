@@ -84,9 +84,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         Role = committeeMember.Role,
                         IsActive = committeeMember.IsActive,
                         Remark = committeeMember.Remark,
-                        //Date = DateTime.Now,
+                       // Date = DateTime.Now,
                         CreatedBy = committeeMember.CreatedBy,
-                        // DateAmharic = committeeMember.DateAmharic
+                        //DateAmharic = committeeMember.DateAmharic
                     };
 
                     db.CommitteeMembers.Add(entity);
@@ -99,7 +99,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     if(commitee != null)
                     {
                        
-                                UserHelper.OperationLog(Request.UserHostAddress, "Committee Member ", "Success", User.Identity.Name, User.Identity.Name + " Create Committee Member for " + commitee.CommitteeType + " added Employee Name is "+ User.Identity.Name,Modules.HRM);
+                                UserHelper.OperationLog(Request.UserHostAddress, "Committee Member ", "Success", User.Identity.Name, User.Identity.Name + " Create Committee Member for "  + " added Employee Name is "+ User.Identity.Name,Modules.HRM);
 
                             
 
@@ -143,7 +143,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 if (commitee != null)
                 {
                     
-                            UserHelper.OperationLog(Request.UserHostAddress, "Committee Member ", "Success", User.Identity.Name, User.Identity.Name + " Updated Committee Member Info of " + commitee.CommitteeType + " added Employee Name is " + User.Identity.Name,Modules.HRM);
+                            UserHelper.OperationLog(Request.UserHostAddress, "Committee Member ", "Success", User.Identity.Name, User.Identity.Name + " Updated Committee Member Info of " + " added Employee Name is " + User.Identity.Name,Modules.HRM);
 
                        
                 }

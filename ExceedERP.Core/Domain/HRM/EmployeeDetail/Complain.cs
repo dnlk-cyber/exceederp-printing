@@ -27,6 +27,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public virtual Person_Employee Person_Employee { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "HR_ArchiveManagement_NewIncommingLetterRegistration_SerialNo", ResourceType = typeof(Localization.Resources))]
         public int RefersTo { get; set; }
         //public int CC { get; set; }
         public int SendTo { get; set; }

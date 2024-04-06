@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             List<Vacancy> list = new List<Vacancy>();
             var vacancies = db.VaccancyPlans.ToList();
 
-            ViewData["Vacancy"] = vacancies;
+            ViewData["Vacancy"] = db.VaccancyPlans.Select(x=>new { x.VacancyId,x.VaccancyCode}).ToList(); ;
             var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
             ViewData["JobTitle"] = jobtitles;
 
@@ -417,9 +417,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     var applicantDetails = db.ApplicantDetails.Where(x => x.ApplicantRegistrationId == applicantRegistration.ApplicantRegistrationId).ToList();
 
                     // screening with Gender
-                    if (applicantScreening.Gender == Gender.MALE || applicantScreening.Gender == Gender.FEMALE)
+                    if (applicantScreening.Gender == GenderForVacancyGender.MALE || applicantScreening.Gender == GenderForVacancyGender.FEMALE)
                     {
-                        applicantDetails = applicantDetails.Where(x => x.Sex == applicantScreening.Gender).ToList();
+                        applicantDetails = applicantDetails.Where(x => x.Sex.ToString() == applicantScreening.Gender.ToString()).ToList();
                     }
 
                     if (applicantScreening.Language != Languages.Not_Required)
@@ -678,28 +678,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                         Lname = applicantScreening.ApplicantName.Split(' ')[2];
                     }
                 }
+                if(Mname == "")
+                {
+                    Mname = "Unkown";
+                }
+                if (Lname =="")
+                {
+                    Lname = "Unknown";
 
+                }
 
                 profile.EmployeeCode = "Not Generated";
                 profile.FirstNameEnglish = Fname;
+                profile.FirstName = Fname;
                 profile.MiddleNameEnglish = Mname;
+                profile.MiddleName = Mname;
                 profile.LastNameEnglish = Lname;
-                if (applicantScreening.Sex == Gender.MALE)
-                {
-                    // profile.Gender = "M";
-                }
-                else if (applicantScreening.Sex == Gender.FEMALE)
-                {
-                    // profile.Gender = "F";
-                }
+                profile.LastName = Lname;
+                profile.Gender = applicantScreening.Sex;
+                profile.Region = 0;
+                profile.Religion = 0;
+                profile.Status = 0;
+                profile.IsActive = true;
+                //if (applicantScreening.Sex == Gender.MALE)
+                //{
+                //     profile.Gender = Gender.MALE;
+                //}
+                //else if (applicantScreening.Sex == Gender.FEMALE)
+                //{
+                //     profile.Gender = Gender.FEMALE;
+                //}
 
                 profile.DateCreated = DateTime.Now;
-                profile.DateOfBirth = DateTime.Now;
+                DateTime currentDate = DateTime.Now;
+
+                // Calculate birth date by subtracting age from current date
+                DateTime birthDate = currentDate.AddYears(-applicantScreening.Age);
+                profile.DateOfBirth = birthDate;
                 // profile.EffectiveDate = DateTime.Now;
                 profile.HiredDate = DateTime.Now;
                 //profile.OrginalHiredDate = DateTime.Now;
                 //profile.TerminationDate = DateTime.Now;
-
+                profile.HiredDateAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+                profile.DateOfBirthAm = XAPI.EthiopicDateTime.GetEthiopicDate(birthDate.Day, birthDate.Month, birthDate.Year);
                 db.Person_Employee.Add(profile);
                 db.SaveChanges();
 
@@ -725,9 +746,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
                     //experience.Type = exp.OrganizationType;
                     //experience.Jobtitle = exp.JobTitleId;
-                    experience.Organozation = exp.OrganizationName;
-                    experience.From = exp.From is null ? DateTime.Now : exp.From.Value;
-                    experience.To = exp.To is null ? DateTime.Now : exp.To.Value;
+                    experience.EmployeeId = profile.EmployeeId;
+                    experience.OrgFullAddress = "Hiring Campany";
+                    experience.Organozation = "Hiring Campnay";
+                    experience.From =  exp.From.Value;
+                    experience.FromExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Value.Day, exp.From.Value.Month, exp.From.Value.Year); 
+                    experience.To =  exp.To.Value;
+                    experience.ToExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Value.Day, exp.To.Value.Month, exp.To.Value.Year);
                     experience.EmployeeId = profile.EmployeeId;
 
                     db.Experiences.Add(experience);

@@ -401,7 +401,6 @@
     <Compile Include="Domain\Finance\AP\Invoice\APPaybleInvoicesLines.cs" />
     <Compile Include="Domain\Finance\AP\Invoice\APPaybleInvoicesPrepayment.cs" />
     <Compile Include="Domain\Finance\AP\Invoice\APPaybleInvoiceValidation.cs" />
-    <Compile Include="Domain\Finance\AP\LeaveTransfer.cs" />
     <Compile Include="Domain\Finance\AP\MiscPayment\APMiscellaneousPaymentDistribution.cs" />
     <Compile Include="Domain\Finance\AP\MiscPayment\APMiscellaneousPayments.cs" />
     <Compile Include="Domain\Finance\AP\MiscPayment\APMiscellaneousPaymentValidation.cs" />
@@ -756,6 +755,7 @@
     <Compile Include="Domain\HRM\Allowance\OtherBenefit.cs" />
     <Compile Include="Domain\HRM\ArchiveManagement\ArchiveManagement.cs" />
     <Compile Include="Domain\HRM\ArchiveManagement\AttachmentArchive.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\EmployeeFolderAttachment.cs" />
     <Compile Include="Domain\HRM\ArchiveManagement\EmployeeIncomingLetter.cs" />
     <Compile Include="Domain\HRM\ArchiveManagement\EmployeeIncommingUploadDbModel.cs" />
     <Compile Include="Domain\HRM\ArchiveManagement\EmployeeLetterSender.cs" />
@@ -772,8 +772,11 @@
     <Compile Include="Domain\HRM\ArchiveManagement\Zone.cs" />
     <Compile Include="Domain\HRM\Attendance\Absence.cs" />
     <Compile Include="Domain\HRM\Attendance\Attendance.cs" />
+    <Compile Include="Domain\HRM\Attendance\AttendanceBio.cs" />
     <Compile Include="Domain\HRM\Attendance\AttendanceNew.cs" />
     <Compile Include="Domain\HRM\Attendance\EmpPayrollNoDaysWorked.cs" />
+    <Compile Include="Domain\HRM\Attendance\VM\BiometricDataVM.cs" />
+    <Compile Include="Domain\HRM\Company\EmployeeProbationSetting.cs" />
     <Compile Include="Domain\HRM\Company\SalarySetting.cs" />
     <Compile Include="Domain\HRM\Company\WaterMark.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ComplainCC.cs" />
@@ -879,7 +882,10 @@
     <Compile Include="Domain\HRM\LeaveManagment\LeaveManagment.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveNewAwajStartYear.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeavePaid.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeavePayable.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeavePayableSetting.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveReturn.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeaveTransfer.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveUsageTrackingForVoid.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\MonthlyLeavePlan.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\MonthlyLeavePlanDetail.cs" />
@@ -902,19 +908,31 @@
     <Compile Include="Domain\HRM\Payroll\Setting\PayrollCostAllocationSetting.cs" />
     <Compile Include="Domain\HRM\Payroll\Setting\PerdimeSetting.cs" />
     <Compile Include="Domain\HRM\Payroll\Vm\EmployeeSelectorVm.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\CriteriaCategory.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeeMeasurement.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeeMeasurementDefinition.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformance.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceAction.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceEvaluationSetting.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceScore.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmpMeasurmentDefinition.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EvaluationCriteriaActionType.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\InternalCustomerEmployeeMeasurement.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\InternalCustomerEmployeePerformance.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\InternalCustomerEmployeePerformanceScore.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\InternalPerformanceEvaluation.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\Measurement.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\MeasurementDefinition.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PeerEmployeeMeasurement.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PeerToPeerEmployeePerformance.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PeerToPeerEmployeePerformanceScore.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PeerToPeerPerformanceEvaluation.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\PerformanceAction.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\PerformanceBehavior.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\PerformanceManagment.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\PerformanceRank.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PerformanceRequestPeriod.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PerformanceSetting.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\ProbationPerformance.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\ProbationPerformanceDetail.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\ProbationPerformanceSetting.cs" />
@@ -932,6 +950,7 @@
     <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantTotalResult.cs" />
     <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantTraining.cs" />
     <Compile Include="Domain\HRM\RecruitmentManagment\CheckUp.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\EmployeeTransferRequest.cs" />
     <Compile Include="Domain\HRM\RecruitmentManagment\ExamTypeSetting.cs" />
     <Compile Include="Domain\HRM\RecruitmentManagment\ExperienceJobTitle.cs" />
     <Compile Include="Domain\HRM\RecruitmentManagment\ExperienceOrganizationTypeSetting.cs" />
@@ -973,11 +992,13 @@
     <Compile Include="Domain\HRM\SelfCare\RequestesStatus.cs" />
     <Compile Include="Domain\HRM\SelfCare\SelfCare.cs" />
     <Compile Include="Domain\HRM\SelfCare\TrainingApplicant.cs" />
+    <Compile Include="Domain\HRM\Severance\SeverancePayable.cs" />
     <Compile Include="Domain\HRM\Templates\Template.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\CourseTracking.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\Education.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\EmployeesInAssessment.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\NeedAssessment.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\NeedAssessmentSummary.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\Trainee.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\Training.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingAssessmentViewModel.cs" />
@@ -986,6 +1007,7 @@
     <Compile Include="Domain\HRM\TrainingEducation\TrainingEvaluationCriteria.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingEvaluationCriteriaCategory.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingFeedback.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\TrainingNeedRequest.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingStatus.cs" />
     <Compile Include="Domain\InfoDesk\Enum.cs" />
     <Compile Include="Domain\InfoDesk\InfoDeskConstants.cs" />
@@ -1266,6 +1288,7 @@
     <Compile Include="Domain\Production\SettingModels.cs" />
     <Compile Include="Localization\Resources.am.Designer.cs" />
     <Compile Include="Localization\Resources.Designer.cs" />
+    <Compile Include="Localization\Resources.om.Designer.cs" />
     <Compile Include="Localization\Resources.ti.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1305,6 +1328,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localization\Resources.am.resx" />
+    <EmbeddedResource Include="Localization\Resources.om.resx" />
     <EmbeddedResource Include="Localization\Resources.resx" />
     <EmbeddedResource Include="Localization\Resources.ti.resx" />
   </ItemGroup>

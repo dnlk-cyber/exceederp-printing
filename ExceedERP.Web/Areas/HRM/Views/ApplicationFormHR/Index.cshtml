@@ -20,13 +20,13 @@
 
               columns.Command(command =>
               {
-                  command.Edit();
-                  command.Destroy();
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
               }).Width(180);
           })
           .ToolBar(toolbar =>
           {
-              toolbar.Create();
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           })
 
            .Scrollable(h => h.Height(500))

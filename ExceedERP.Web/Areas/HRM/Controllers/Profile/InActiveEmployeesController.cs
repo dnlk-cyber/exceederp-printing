@@ -83,11 +83,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 ModifiedBy = person_Employee.ModifiedBy
             });
 
-            return Json(result);
+            return Json(result,JsonRequestBehavior.AllowGet);
         }
         public ActionResult NotPlaced_Employees_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Person_Employee> person_employee = db.Person_Employee.Where(x => x.IsActive && !x.IsPlaced);
+            var person_employee = db.Person_Employee.Where(x => x.IsActive && !x.IsPlaced).ToList();
             DataSourceResult result = person_employee.ToDataSourceResult(request, person_Employee => new {
                 EmployeeId = person_Employee.EmployeeId,
                 EmployeeCode = person_Employee.EmployeeCode,

@@ -8,16 +8,13 @@
 <legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
 
 @(Html.Kendo().Grid<Placement>()
-              .Name("PlacementGrid")
+       .Name("PlacementGrid")
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "PersonId", "FullNameEng").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-
-          // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-
           columns.Bound(c => c.JobTitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
           columns.Bound(c => c.IsHead).Width(90).ClientTemplate(
             "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
@@ -32,7 +29,7 @@
           columns.Bound(c => c.Salary).Width(100);
           columns.Bound(c => c.AssignmentType).Width (150);
           columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
-
+          // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
           // columns.ForeignKey(c => c.ReportsTo, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(200);
           // columns.Bound(c => c.ResponsibilityLevel);
           // columns.Bound(c => c.Remark);
@@ -63,9 +60,9 @@
                                                                         .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
                                                                             .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacment"))
                                         )
-            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
+         .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
          .Scrollable(h => h.Height(500))
-             .Groupable()
+         .Groupable()
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -83,9 +80,9 @@
                                         .PageSizes(true)
                                         .ButtonCount(5))
 
-      .DataSource(dataSource => dataSource
+          .DataSource(dataSource => dataSource
           .Ajax()
-                  .Sort(sort => sort.Add("EmployeeCode"))
+               .Sort(sort => sort.Add("EmployeeCode"))
                .Events(events =>
                {
                    events.Error("error_handler(\"PlacementGrid\")");
@@ -93,7 +90,7 @@
                    events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
                })
 
-          .Model(model => model.Id(p => p.PlacementId))
+                  .Model(model => model.Id(p => p.PlacementId))
                   .Read(read => read.Action("Placements_Read", "EmployeePlacment"))
                           .Create(create => create.Action("Placements_Create", "EmployeePlacment"))
                   .Update(update => update.Action("Placements_Update", "EmployeePlacment"))

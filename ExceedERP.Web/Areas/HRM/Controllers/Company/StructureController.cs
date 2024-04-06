@@ -231,7 +231,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 {
                     StructureId = structure.StructureId,
                     Name = structure.Name,
-
                     Remark = structure.Remark,
                     DateCreated = structure.DateCreated,
                     LastModified = structure.LastModified,

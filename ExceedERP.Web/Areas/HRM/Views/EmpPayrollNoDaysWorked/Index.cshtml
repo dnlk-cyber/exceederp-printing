@@ -9,7 +9,7 @@
           .Name("EmpPayrollNoDaysWorkedgrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["CurrentYearPeriods"], "GLPeriodId", "Name").EditorTemplateName("GetCurrentYearPeriods").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
           columns.Bound(c => c.Days);
           //columns.Bound(c => c.Remark);
@@ -36,40 +36,47 @@
         @item.CreateButton(Resources.ActionButton_AddNewRecord)
 
                 }
-    
+
+
     <label class="category-label" for="GLPeriodId">@Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId</label>
     @(Html.Kendo().ComboBox()
-                  .Placeholder(Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId)
-                  .Name("Period")
+                          .Placeholder(Resources.HR_Attendance_EmpPayrollNoDaysWorked_PeriodId)
+                          .Name("Period")
 
-                  .DataSource(dataSource =>
-                  {
-                          dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmpPayrollNoDaysWorked", new { area = "HRM" }))
-                          .ServerFiltering(false);
-                  })
-                                              
-                  .DataTextField("Name")
-                  .DataValueField("GLPeriodId")
-                  .AutoBind(false)
+                          .DataSource(dataSource =>
+                          {
+                            dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmpPayrollNoDaysWorked", new { area = "HRM" }))
+                .ServerFiltering(false);
+                        })
 
-                  .HtmlAttributes(new { style = "width: 300px;" })
+                          .DataTextField("Name")
+                          .DataValueField("GLPeriodId")
+                          .AutoBind(false)
+
+                          .HtmlAttributes(new { style = "width: 300px;" })
 
     )
-   
+
 
     @(Html.Kendo().Button()
-                 .Name("btnRefresh")
-                 .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
-                 .Events(e => e.Click("Refresh"))
-                 .Content("Generate Days Absent"))
-    
+                         .Name("btnRefresh")
+                         .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                         .Events(e => e.Click("Refresh"))
+                         .Content("Generate Days Absent"))
 
     @(Html.Kendo().Button()
-                  .Name("btnSummary")
-                  .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
-                  .Events(e => e.Click("summary"))
-                  .Content(Resources.HR_Attendance_EmpPayrollNoDaysWorked_Summary))
-   
+                        .Name("btnBiometric")
+                        .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                        .Events(e => e.Click("Biometric"))
+                        .Content("Generate Days Absent from Biometric"))
+
+
+    @(Html.Kendo().Button()
+                          .Name("btnSummary")
+                          .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                          .Events(e => e.Click("summary"))
+                          .Content(Resources.HR_Attendance_EmpPayrollNoDaysWorked_Summary))
+
 
 
 </div>
@@ -190,7 +197,42 @@
             });
         }
       
+    }
+
+    function Biometric() {
+        $('#loading-image').show();
+        var grid = $("#Period").data("kendoComboBox");
+        var period = grid.value();
+        if (period === "") {
+            alert("Please select period first!!");
+        } else {
+
+            $.ajax({
+                url: '@Url.Action("ImportBiometricData", "EmpPayrollNoDaysWorked")',
+                //contentType: "application/json; charset=utf-8",
+                data: { period: period},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $('#loading-image').hide();
+                    r = result;
+                    alert(result.Message);
+
+                   $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").dataSource.read();
+                   // $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
+                },
+                 error: function (xhr, status, error) {
+                     var errorMessage = xhr.status + ': ' + xhr.statusText
+                     $('#loading-image').hide();
+                    alert('Error - ' + errorMessage);
+                }
+
+
+            });
         }
+      
+        }
+
 
 
 </script>

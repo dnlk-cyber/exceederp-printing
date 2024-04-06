@@ -9,14 +9,14 @@
           .Name("RegularContributiongrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(260).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("PayrollListOfEmployee").Width(260).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.ContributionTypeId, (IEnumerable)ViewData["Contribution"], "ContributionTypeId", "Description").EditorTemplateName("ContributionType").Width(150);
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(150);
           columns.Bound(c => c.Amount).Width(200);
           columns.Bound(c => c.NetGross).Width( 150);
           columns.Bound(c => c.AdditionalAmount).Width( 150);
           columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(120);
-          columns.Bound(c => c.ApplyToAll).ClientTemplate("<input type='checkbox'  disabled='true' value='#=ApplyToAll #' " + " # if (ApplyToAll) { #" + "checked='checked'" + "# } #" + " />").Width(120);
+          //columns.Bound(c => c.ApplyToAll).ClientTemplate("<input type='checkbox'  disabled='true' value='#=ApplyToAll #' " + " # if (ApplyToAll) { #" + "checked='checked'" + "# } #" + " />").Width(120);
           columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar => {

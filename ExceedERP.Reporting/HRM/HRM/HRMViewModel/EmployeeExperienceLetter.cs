@@ -8,6 +8,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string ApplicantName { get; set; }
         public bool IsTerminated { get; set; }
         public string Date { get; set; }
+        public string Allowance { get; set; }
         public string TotalExpriance { get; set; }
         public string Remark { get; set; }
         public decimal CurrentSalary { get; set; }

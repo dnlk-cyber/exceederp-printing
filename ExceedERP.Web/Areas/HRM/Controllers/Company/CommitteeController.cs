@@ -38,6 +38,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         private void PopulateViewData()
         {
             ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
+            ViewData["DisciplinaryCases"] = db.DisciplinaryCases.Select(x=>new
+            {x.DisciplinaryCaseId,
+            x.NatureofTransgression
+            }).ToList();
+            ViewData["committeType"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.COMMITTEE_TYPE).ToList();
         }
 
         public void GetCommitteType()
@@ -55,7 +60,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
 
                 CommitteeId = committee.CommitteeId,
-                CommitteeType = committee.CommitteeType,
+                LookupId = committee.LookupId,
                 IsActive = committee.IsActive,
                 Remark = committee.Remark,
                 DateCreated = committee.DateCreated,
@@ -80,7 +85,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 var entity = new Committee
                 {
 
-                    CommitteeType = committee.CommitteeType,
+                    LookupId = committee.LookupId,
                     IsActive = committee.IsActive,
                     Remark = committee.Remark,
                     DateCreated = DateTime.Now,
@@ -102,7 +107,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Committee ", "Success", User.Identity.Name, User.Identity.Name + " Create Committee for " + entity.CommitteeType,Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Committee ", "Success", User.Identity.Name, User.Identity.Name + " Create Committee for " + entity.Description,Modules.HRM);
                     
 
                     #endregion
@@ -135,7 +140,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     CommitteeId = committee.CommitteeId,
                     // EmployeeId = committee.EmployeeId,
                     //Role = committee.Role,
-                    CommitteeType = committee.CommitteeType,
+                    LookupId = committee.LookupId,
                     IsActive = committee.IsActive,
                     Remark = committee.Remark,
                     DateCreated = committee.DateCreated,
@@ -154,7 +159,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                
-                    UserHelper.OperationLog(Request.UserHostAddress, "Committee ", "Success", User.Identity.Name, User.Identity.Name + " Updated Committee Info of " + entity.CommitteeType,Modules.HRM);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Committee ", "Success", User.Identity.Name, User.Identity.Name + " Updated Committee Info of " ,Modules.HRM);
 
                 
                 #endregion
@@ -175,7 +180,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     CommitteeId = committee.CommitteeId,
                     // EmployeeId = committee.EmployeeId,
                     // Role = committee.Role,
-                    CommitteeType = committee.CommitteeType,
+                    LookupId = committee.LookupId,
                     IsActive = committee.IsActive,
                     Remark = committee.Remark,
                     DateCreated = committee.DateCreated,
@@ -186,7 +191,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Description = committee.Description
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Commitee of  " + committee.CommitteeType.ToString());
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Commitee of  ");
                 #endregion
                 db.Committees.Attach(entity);
                 db.Committees.Remove(entity);
@@ -232,7 +237,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         var entity = new Attachment
                         {
 
-                            Reference = "0",
+                            Reference = HRMInputs.Owner,
                             Description = file.FileName,
                             FileType = file.ContentType,
                             ReferenceType = AttachmentType.MINUTE,

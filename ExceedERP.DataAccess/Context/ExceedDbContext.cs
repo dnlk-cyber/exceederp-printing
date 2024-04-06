@@ -106,6 +106,8 @@ using ExceedERP.Core.Domain.Printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
 using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.Core.Domain.Manufacturing.Production;
+using ExceedERP.Core.Domain.HRM.Severance;
+using ExceedERP.Core.Domain.ArchiveManagement;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -2232,6 +2234,12 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region HRM
+
+        public System.Data.Entity.DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
+        public System.Data.Entity.DbSet<LeavePayable> LeavePayables { get; set; }
+        public System.Data.Entity.DbSet<LeavePayableDetail> LeavePayableDetails { get; set; }
+        public System.Data.Entity.DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
+        public System.Data.Entity.DbSet<SeverancePayable> SeverancePayables { get; set; }
         #region Company
         public System.Data.Entity.DbSet<SalarySetting> SalarySettings { get; set; }
         public System.Data.Entity.DbSet<WaterMark> WaterMarks { get; set; }
@@ -2411,23 +2419,39 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region PerformanceManagment
-        public System.Data.Entity.DbSet<EvaluationCriteriaActionType> EvaluationCriteriaActionTypes { get; set; }
+        public DbSet<MainCompanyEvalutionSetting> MainCompanyEvalutionSettings { get; set; }
+        public System.Data.Entity.DbSet<PerformanceSetting> PerformanceSettings { get; set; }
+        public System.Data.Entity.DbSet<CriteriaCategory> CriteriaCategories { get; set; }
+        public System.Data.Entity.DbSet<InternalCustomerDetail> InternalCustomerDetails { get; set; }
+        public DbSet<PerformanceRequestPeriod> PerformanceRequestPeriods { get; set; }
+        public DbSet<PeerToPeerPerformanceEvaluation> PeerToPeerPerformanceEvaluations { get; set; }
+        public DbSet<InternalCustomerPerformanceEvaluation> InternalCustomerPerformanceEvaluations { get; set; }
+        public DbSet<InternalCustomer> InternalCustomers { get; set; }
+        public DbSet<InternalCustomerEmployeePerformance> InternalCustomerEmployeePerformances { get; set; }
+        public DbSet<InternalCustomerEmployeeMeasurement> InternalCustomerEmployeeMeasurements { get; set; }
+        public DbSet<InternalCustomerEmployeePerformanceScore> InternalCustomerEmployeePerformanceScores { get; set; }
+        public DbSet<PeerToPeerEmployeePerformance> PeerToPeerEmployeePerformances { get; set; }
+        public DbSet<PeerEmployeeMeasurement> PeerEmployeeMeasurements { get; set; }
+        public DbSet<PeerToPeerEmployeePerformanceScore> PeerToPeerEmployeePerformanceScores { get; set; }
+        public DbSet<EvaluationCriteriaActionType> EvaluationCriteriaActionTypes { get; set; }
         public DbSet<EmployeePerformanceScore> EmployeePerformanceScores { get; set; }
-        public System.Data.Entity.DbSet<ProbationPerformanceSetting> ProbationPerformanceSettings { get; set; }
-        public System.Data.Entity.DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }
-        public System.Data.Entity.DbSet<Measurement> Measurements { get; set; }
-        public System.Data.Entity.DbSet<PerformanceAction> PerformanceActions { get; set; }
-        public System.Data.Entity.DbSet<EmployeePerformance> EmployeePerformances { get; set; }
-        public System.Data.Entity.DbSet<EmployeeMeasurementDefinition> EmployeeMeasurementDefinition { get; set; }
-        public System.Data.Entity.DbSet<EmployeeMeasurement> EmployeeMeasurement { get; set; }
-        public System.Data.Entity.DbSet<EmployeePerformanceAction> EmployeePerformanceAction { get; set; }
-        public System.Data.Entity.DbSet<PerformanceRank> PerformanceRank { get; set; }
-        //public System.Data.Entity.DbSet<DepartmentDefineMeasurment> DepartmentDefineMeasurments { get; set; }
-        //public System.Data.Entity.DbSet<DepartmentMeasurment> DepartmentMeasurments { get; set; }
-        //public System.Data.Entity.DbSet<DepartmentPerformanceAction> DepartmentPerformanceActions { get; set; }
+        public DbSet<ProbationPerformanceSetting> ProbationPerformanceSettings { get; set; }
+        public DbSet<EmployeeProbationSetting> EmployeeProbationSettings { get; set; }
+        public DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }
+        public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<PerformanceAction> PerformanceActions { get; set; }
+        public DbSet<EmployeePerformance> EmployeePerformances { get; set; }
+        public DbSet<EmployeeMeasurementDefinition> EmployeeMeasurementDefinition { get; set; }
+        public DbSet<EmployeeMeasurement> EmployeeMeasurement { get; set; }
+        public DbSet<EmployeePerformanceAction> EmployeePerformanceAction { get; set; }
+        public DbSet<PerformanceRank> PerformanceRank { get; set; }
+        //public DbSet<DepartmentDefineMeasurment> DepartmentDefineMeasurments { get; set; }
+        //public DbSet<DepartmentMeasurment> DepartmentMeasurments { get; set; }
+        //public DbSet<DepartmentPerformanceAction> DepartmentPerformanceActions { get; set; }
         #endregion
 
         #region Plan
+        public DbSet<TrainingNeedRequest> TrainingNeedRequests { get; set; }
 
         public System.Data.Entity.DbSet<LeavePlan> LeavePlans { get; set; }
         public System.Data.Entity.DbSet<RecruitmentPlan> RecruitmentPlans { get; set; }
@@ -2457,29 +2481,33 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region RecruitmentManagment
-        public System.Data.Entity.DbSet<Recruitment> Recruitments { get; set; }
-        public System.Data.Entity.DbSet<RecruitmentVacancy> RecruitmentVacancy { get; set; }
-        public System.Data.Entity.DbSet<ClearanceProvider> ClearanceProvideres { get; set; }
-        public System.Data.Entity.DbSet<ApplicantEducation> ApplicantEducation { get; set; }
+        public System.Data.Entity.DbSet<EmployeeTransferRequest> EmployeeTransferRequests { get; set; }
+        public System.Data.Entity.DbSet<TransferRequestDetail> TransferRequestDetails { get; set; }
+        public System.Data.Entity.DbSet<TransferRequestValidation> TransferRequestValidations { get; set; }
+        public System.Data.Entity.DbSet<TransferRequestDepartmentValidation> TransferRequestDepartmentValidations { get; set; }
+        public DbSet<Recruitment> Recruitments { get; set; }
+        public DbSet<RecruitmentVacancy> RecruitmentVacancy { get; set; }
+        public DbSet<ClearanceProvider> ClearanceProvideres { get; set; }
+        public DbSet<ApplicantEducation> ApplicantEducation { get; set; }
 
 
-        public System.Data.Entity.DbSet<RecruitmetnInterviewerPerseon> RecruitmetnInterviewerPerseons { get; set; }
+        public DbSet<RecruitmetnInterviewerPerseon> RecruitmetnInterviewerPerseons { get; set; }
 
-        public System.Data.Entity.DbSet<ExperienceOrganizationTypeSetting> ExperienceOrganizationTypeSettings { get; set; }
-        public System.Data.Entity.DbSet<ScreeningSetting> ScreeningSettings { get; set; }
-        public System.Data.Entity.DbSet<ExperienceJobTitle> ExperienceJobTitles { get; set; }
+        public DbSet<ExperienceOrganizationTypeSetting> ExperienceOrganizationTypeSettings { get; set; }
+        public DbSet<ScreeningSetting> ScreeningSettings { get; set; }
+        public DbSet<ExperienceJobTitle> ExperienceJobTitles { get; set; }
 
-        public System.Data.Entity.DbSet<ScreeningEducationLevel> ScreeningEducationLevels { get; set; }
-        public System.Data.Entity.DbSet<ScreeningEducationField> ScreeningEducationFields { get; set; }
-        public System.Data.Entity.DbSet<ScreeningExperienceJobtitle> ScreeningExperienceJobtitles { get; set; }
-        public System.Data.Entity.DbSet<ScreeningExperienceJobtitleForInternal> ScreeningExperienceJobtitleForInternals { get; set; }
-        public System.Data.Entity.DbSet<ApplicantCertefication> ApplicantCertefications { get; set; }
-        public System.Data.Entity.DbSet<RecruitmentApplicantPassSetting> RecruitmentApplicantPassSettings { get; set; }
+        public DbSet<ScreeningEducationLevel> ScreeningEducationLevels { get; set; }
+        public DbSet<ScreeningEducationField> ScreeningEducationFields { get; set; }
+        public DbSet<ScreeningExperienceJobtitle> ScreeningExperienceJobtitles { get; set; }
+        public DbSet<ScreeningExperienceJobtitleForInternal> ScreeningExperienceJobtitleForInternals { get; set; }
+        public DbSet<ApplicantCertefication> ApplicantCertefications { get; set; }
+        public DbSet<RecruitmentApplicantPassSetting> RecruitmentApplicantPassSettings { get; set; }
 
-        public System.Data.Entity.DbSet<InternalApplicants> InternalApplicants { get; set; }
-        //public System.Data.Entity.DbSet<InternalApplicantEducation> InternalApplicantEducations { get; set; }
-        //public System.Data.Entity.DbSet<InternalApplicantExperience> InternalApplicantExperiences { get; set; }
-        #endregion 
+        public DbSet<InternalApplicants> InternalApplicants { get; set; }
+        //public DbSet<InternalApplicantEducation> InternalApplicantEducations { get; set; }
+        //public DbSet<InternalApplicantExperience> InternalApplicantExperiences { get; set; }
+        #endregion
         #region Salary Structure
         public System.Data.Entity.DbSet<Rank> Ranks { get; set; }
         public System.Data.Entity.DbSet<Step> Steps { get; set; }
@@ -2490,17 +2518,21 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Training and Education
-        public System.Data.Entity.DbSet<Training> EmpTrainingEducations { get; set; }
-        public System.Data.Entity.DbSet<NeedAssessment> NeedAssessments { get; set; }
-        public System.Data.Entity.DbSet<EmployeesInAssessment> EmployeesInAssessments { get; set; }
-        public System.Data.Entity.DbSet<CourseTracking> CourseTrackings { get; set; }
-        public System.Data.Entity.DbSet<Education> Education { get; set; }
-        public System.Data.Entity.DbSet<Trainee> Trainee { get; set; }
-        public System.Data.Entity.DbSet<TrainingStatus> TrainingStatuses { get; set; }
-        public System.Data.Entity.DbSet<TrainingFeedback> TrainingFeedbacks { get; set; }
-        public System.Data.Entity.DbSet<TrainingEvaluationCriteriaCategory> TrainingEvaluationCriteriaCategories { get; set; }
-        public System.Data.Entity.DbSet<TrainingEvaluationCriteria> TrainingEvaluationCriterias { get; set; }
-        public System.Data.Entity.DbSet<TrainingEvaluation> TrainingEvaluations { get; set; }
+        public DbSet<TrainingEvaluationBefore> TrainingEvaluationBefores { get; set; }
+        public DbSet<TrainingEvaluationAfter> TrainingEvaluationAfters { get; set; }
+        public System.Data.Entity.DbSet<NeedAssessmentSummary> NeedAssessmentSummary { get; set; }
+        public System.Data.Entity.DbSet<NeedAssessmentSummaryDetail> NeedAssessmentSummaryDetails { get; set; }
+        public DbSet<Training> EmpTrainingEducations { get; set; }
+        public DbSet<NeedAssessment> NeedAssessments { get; set; }
+        public DbSet<EmployeesInAssessment> EmployeesInAssessments { get; set; }
+        public DbSet<CourseTracking> CourseTrackings { get; set; }
+        public DbSet<Education> Education { get; set; }
+        public DbSet<Trainee> Trainee { get; set; }
+        public DbSet<TrainingStatus> TrainingStatuses { get; set; }
+        public DbSet<TrainingFeedback> TrainingFeedbacks { get; set; }
+        public DbSet<TrainingEvaluationCriteriaCategory> TrainingEvaluationCriteriaCategories { get; set; }
+        public DbSet<TrainingEvaluationCriteria> TrainingEvaluationCriterias { get; set; }
+        public DbSet<TrainingEvaluation> TrainingEvaluations { get; set; }
         #endregion
 
         #region Discipline
@@ -2581,6 +2613,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region ArchiveManagement
+        public DbSet<EmployeeFolderAttachment> EmployeeFolderAttachments { get; set; }
         public System.Data.Entity.DbSet<SubjectType> SubjectTypes { get; set; }
         public System.Data.Entity.DbSet<IncomingLetterRegistration> NewIncommingLetter { get; set; }
         public System.Data.Entity.DbSet<EmployeeIncomingLetter> EmployeeIncommingLetter { get; set; }

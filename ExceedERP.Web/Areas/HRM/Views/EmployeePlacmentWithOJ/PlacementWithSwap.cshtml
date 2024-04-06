@@ -1,0 +1,238 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@model DateTime?
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<legend>Swapping Employee Placements</legend>
+    <div class="row">
+
+        <div class="col-md-2">
+
+            <label class="category-label" for="EmployeeId">First @Resources.Employee</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                .Name("EmployeeId1")
+                .DataValueField("EmployeeId")
+                .DataTextField("FullNameaEnglish")
+                .OptionLabel(Resources.Select)
+                .Filter("contains")
+                .HtmlAttributes(new { style = "width:200px;height:50px" })
+
+                .DataSource(source =>
+                {
+                    source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee1s"))
+            .ServerFiltering(true);
+                })
+                .ValuePrimitive(true)
+            )
+
+        </div>
+        <div class="col-md-2">
+
+            <label class="category-label" for="EmployeeId">Second @Resources.Employee</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                .Name("EmployeeId2")
+                .DataValueField("EmployeeId")
+                .DataTextField("FullNameaEnglish")
+                .OptionLabel(Resources.Select)
+                .Filter("contains")
+                .HtmlAttributes(new { style = "width:200px;height:50px" })
+
+                .DataSource(source =>
+                {
+                    source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee2s"))
+                    .ServerFiltering(true);
+                })
+                .ValuePrimitive(true)
+            )
+
+        </div>
+        <div class="col-md-1">
+
+            <br />
+
+            @(Html.Kendo().Button()
+                  .Name("btnRefresh")
+                  .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width:200px;height:50px" })
+                  .Events(e => e.Click("employeeSwappingProcess"))
+                  .Content("Swap"))
+            &nbsp; &nbsp;
+            &nbsp; &nbsp;
+            &nbsp;  &nbsp;
+
+
+        </div>
+    </div>*@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Page Title</title>
+    <style>
+        /*  custom styles  */
+        .table-container {
+            width: 50%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            .table-container th, .table-container td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+        .category-label {
+            font-weight: bold;
+        }
+
+        .k-button {
+            display: inline-block;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .k-primary {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="table-container">
+        <tr>
+            <th class="col-md-2">
+                <label class="category-label" for="EmployeeId">First @Resources.Employee</label>
+            </th>
+
+            <th class="col-md-2">
+                <label class="category-label" for="EmployeeId">Second @Resources.Employee</label>
+            </th>
+            <th class="col-md-2">
+                <label class="category-label" for="Date"> @Resources.Date</label>
+            </th>
+
+            <th class="col-md-1">
+                <br />
+                Action
+            </th>
+        </tr>
+        <tr>
+            <td class="col-md-2">
+                @(Html.Kendo().DropDownListFor(m => m)
+                                            .Name("EmployeeId1")
+                                            .DataValueField("EmployeeId")
+                                            .DataTextField("FullNameaEnglish")
+                                            .OptionLabel(Resources.Select)
+                                            .Filter("contains")
+                                            .HtmlAttributes(new { style = "width:200px;height:50px" })
+                                            .DataSource(source =>
+                                            {
+                                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee1s"))
+                                                    .ServerFiltering(true);
+                                            })
+                                            .ValuePrimitive(true)
+                )
+            </td>
+
+            <td class="col-md-2">
+                @(Html.Kendo().DropDownListFor(m => m)
+                                            .Name("EmployeeId2")
+                                            .DataValueField("EmployeeId")
+                                            .DataTextField("FullNameaEnglish")
+                                            .OptionLabel(Resources.Select)
+                                            .Filter("contains")
+                                            .HtmlAttributes(new { style = "width:200px;height:50px" })
+                                            .DataSource(source =>
+                                            {
+                                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployee2s"))
+                                                    .ServerFiltering(true);
+                                            })
+                                            .ValuePrimitive(true)
+                )
+            </td>
+            <td class="col-md-2">
+                @(Html.Kendo().DatePickerFor(m => m)
+                                              .Name("SwapDate")
+                                              .HtmlAttributes(new { style = "width:150px;height:40px" })
+                )
+            </td>
+            <td class="col-md-1">
+                @(Html.Kendo().Button()
+                                                      .Name("btnRefresh")
+                                                      .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width:200px;height:50px" })
+                                                      .Events(e => e.Click("employeeSwappingProcess"))
+                                                      .Content("Placement Swap"))
+            </td>
+        </tr>
+    </table>
+
+
+</body>
+</html>
+
+<script>
+    function employeeSwappingProcess() {
+
+        var employeeId1 = $("#EmployeeId1").data("kendoDropDownList").value();
+        var employeeId2 = $("#EmployeeId2").data("kendoDropDownList").value();
+        //var swapDate = $("#SwapDate").data("kendoDatePicker").value();
+        var swapDatePicker = $("#SwapDate").data("kendoDatePicker");
+        var swapDate = swapDatePicker ? swapDatePicker.value() : null;
+
+        // Validate inputs
+        if (!employeeId1 || !employeeId2) {
+            alert('Please select both employees.');
+            return;
+        }
+
+        if (!swapDate) {
+            alert('Please select a valid swap date.');
+            return;
+        }
+
+        // Format swapDate to your desired format (e.g., "yyyy-MM-dd")
+        var formattedSwapDate = swapDate.getFullYear() + '-' + ('0' + (swapDate.getMonth() + 1)).slice(-2) + '-' + ('0' + swapDate.getDate()).slice(-2);
+
+
+
+       $.ajax({
+        url: '@Url.Action("EmployeeSwapping", "EmployeePlacmentWithOJ", new { area = "HRM" })',
+           data: { employeeId1: employeeId1, employeeId2: employeeId2, swapDate: formattedSwapDate },
+        type: 'POST',
+        cache: false,
+        success: function (result) {
+            if (result && result.Message) {
+                alert(result.Message);
+                location.reload();
+            } else {
+                alert('Unexpected response format');
+            }
+        },
+        error: function (xhr, status, error) {
+            alert('Error occurred while making the request. Status: ' + status + ', Error: ' + error);
+        }
+       });
+
+    }
+</script>
+<script>
+    function filterEmployee1s() {
+        return {
+            text: $("#EmployeeId1").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterEmployee2s() {
+        return {
+            text: $("#EmployeeId2").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>

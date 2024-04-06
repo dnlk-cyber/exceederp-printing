@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -34,10 +34,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         {
             var types = db.Lookups.Where(x => x.LookupType == LookUpTypes.PROJECT_TYPE);
             ViewData["types"] = types;
+
+            var branches = db.Branch;
+            ViewData["branches"] = branches;
         }
         public void GetAmharicName(string car)
         {
             AmharicName = car;
+        }
+
+        public JsonResult GetBranches()
+        {
+
+            var branchs = db.Branch.AsQueryable();
+
+            return Json(branchs.Select(p => new
+            {
+                BranchId = p.BranchId,
+                Name =  p.Name
+            }), JsonRequestBehavior.AllowGet);
+
         }
 
         public ActionResult Branch_Read([DataSourceRequest]DataSourceRequest request)
@@ -47,6 +63,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 BranchId = branch.BranchId,
                 Name = branch.Name,
+                ParentBranchId = branch.ParentBranchId,
                 Remark = branch.Remark,
                 DateCreated = branch.DateCreated,
                 LastModified = branch.LastModified,
@@ -82,6 +99,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     var entity = new Branch
                     {
                         Name = branch.Name,
+                        ParentBranchId = branch.ParentBranchId,
                         Remark = branch.Remark,
                         DateCreated = DateTime.Now,
                         LastModified = branch.LastModified,
@@ -116,6 +134,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 var entity = new Branch
                 {
                     BranchId = branch.BranchId,
+                    ParentBranchId = branch.ParentBranchId,
                     Name = branch.Name,
                     Remark = branch.Remark,
                     DateCreated = branch.DateCreated,

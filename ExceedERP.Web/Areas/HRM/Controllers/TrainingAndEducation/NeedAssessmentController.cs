@@ -28,9 +28,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
         public ActionResult Index()
         {
-
+            HRMInputs inputs = new HRMInputs();
+            ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
             GetCourse();
             GetProvider();
+            GetProvider1();
             PopulateViewData();
             GetTargetGroup();
             TrainingType();
@@ -52,7 +54,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             ViewData["TargetGroup"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.TARGET_GROUP);
 
         }
-
+        public ActionResult FiscalYearTrainingPlanActionPlan()
+        {
+            return View();
+        }
+        public ActionResult TrainingNeedRequestReport()
+        {
+            return View();
+        }
         public JsonResult GetTargetGroup()
         {
             var targetGroupList = db.Lookups.AsQueryable().ToList();
@@ -121,8 +130,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             {
                 providerlist = providerlist.Where(c => c.Category == "1" && c.IsActive).AsQueryable();
             }
+           // ViewData["Companies"] = providerlist.Count > 0 ? providerlist.ToList() : new List<MainCompany>();
             ViewData["ProviderList"] = providerlist != null ? providerlist.ToList() : new List<MainCompany>();
             return Json(providerlist.Select(p => new { MainCompanyId = p.MainCompanyId, TradeName = p.TradeName }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetProvider1()
+        {
+            var providerlist = db.Companies.AsQueryable().ToList();
+            if (providerlist.Any())
+            {
+                providerlist = providerlist.Where(c => c.Category == "1" && c.IsActive).ToList();
+            }
+            ViewData["Companies"] = providerlist.Count > 0 ? providerlist.ToList() : new List<MainCompany>();
+            return Json(providerlist.Select(p => new
+            {
+                MainCompanyId = p.MainCompanyId,
+                TradeName = p.TradeName
+            }), JsonRequestBehavior.AllowGet);
         }
         private string GetTitleName(int id)
         {
@@ -139,15 +163,87 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 return "";
             }
         }
+        public ActionResult SummarizeNeedSummary(int[] assessmentIds)
+        {
+            var needAssessments = db.NeedAssessments.Where(x => assessmentIds.Contains(x.AssesmentId)).ToList();
+            if (needAssessments.Count() > 0)
+            {
+                var needAssessmentSummaries = needAssessments
+                    .GroupBy(x => new
+                    {
+                        x.GlFiscalYearId,
+                        x.LookupId,
+                    }).Select(g => new NeedAssessmentSummary
+                    {
+                        GlFiscalYearId = g.Key.GlFiscalYearId,
+                        LookupId = g.Key.LookupId,
+                        NoOfStaff = g.Sum(s => s.NoOfStaff),
+                        RequiredTraining = 0,
+                        CostPerPerson = 0,
+                        Check = true,
+                        DateCreated = DateTime.Now.Date,
+                        CreatedBy = User.Identity.Name,
+                        LastModified = null,
+                        ModifiedBy = null
 
+                    }).ToList();
+                foreach (var needAssessmentSummary in needAssessmentSummaries)
+                {
+                    var entity = new NeedAssessmentSummary
+                    {
+                        GlFiscalYearId = needAssessmentSummary.GlFiscalYearId,
+                        LookupId = needAssessmentSummary.LookupId,
+                        NoOfStaff = needAssessmentSummary.NoOfStaff,
+                        RequiredTraining = 0,
+                        CostPerPerson = 0,
+                        IsTransfered = false,
+                        IsSendForApproval = false,
+                        IsSecondSendForApproval = false,
+                        Check = false,
+                        DateCreated = DateTime.Now.Date,
+                        CreatedBy = User.Identity.Name,
+                        LastModified = null,
+                        ModifiedBy = null
+
+                    };
+                    db.NeedAssessmentSummary.Add(entity);
+                    db.SaveChanges();
+                    var needAssessmentIds = needAssessments.Where(n => n.GlFiscalYearId == needAssessmentSummary.GlFiscalYearId && n.LookupId == needAssessmentSummary.LookupId).Select(n => n.AssesmentId);
+                    foreach(var assessmentId in needAssessmentIds)
+                    {
+                        var entity1 = new NeedAssessmentSummaryDetail
+                        {
+                            AssesmentId = assessmentId,
+                            AssesmentSummaryId = entity.NeedAssessmentSummaryId
+                        };
+                        db.NeedAssessmentSummaryDetails.Add(entity1);
+                        db.SaveChanges();
+                    }
+                }
+                foreach(var assessmentId in assessmentIds)
+                {
+                    var needAssessmentUpdate = db.NeedAssessments.Find(assessmentId);
+                    if(needAssessmentUpdate != null)
+                    {
+                        needAssessmentUpdate.IsSummarized = true;
+                        db.NeedAssessments.Attach(needAssessmentUpdate);
+                        db.Entry(needAssessmentUpdate).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+
+                }
+
+            }
+            return Json("Summarized");
+        }
         public ActionResult NeedAssessments_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<NeedAssessment> needassessments = db.NeedAssessments;//.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x=>x.IsSendForApproval && !x.IsSummarized);//.Where(x => mybraches.Contains(x.OrgBranchName));
+
             DataSourceResult result = needassessments.ToDataSourceResult(request, needAssessment => new
             {
                 AssesmentId = needAssessment.AssesmentId,
-
                 OrgStructureId = needAssessment.OrgStructureId,
                 GlFiscalYearId = needAssessment.GlFiscalYearId,
                 NoOfStaff = needAssessment.NoOfStaff,
@@ -167,7 +263,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 IsTransfered = needAssessment.IsTransfered,
                 IsSendForApproval = needAssessment.IsSendForApproval,
             });
-
             return Json(result);
         }
 
@@ -176,7 +271,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         {
             ModelState.Clear();
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employeeId && x.isCurrent);
+            var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employeeId /*&& x.isCurrent*/);
             if(placement != null)
             {
                 needAssessment.OrgStructureId = placement.OrgStructureId;
@@ -193,6 +288,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     NoOfStaff = needAssessment.NoOfStaff,
                     RequiredTraining = needAssessment.RequiredTraining,
                     IsTransfered = false,
+                    IsSendForApproval = true,
                     GlFiscalYearId = needAssessment.GlFiscalYearId,
                     LookupId = needAssessment.LookupId,
                     Description = needAssessment.Description,
@@ -383,7 +479,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
 
                 }
-
+             
             }
 
             return Json(planList.ToDataSourceResult(request, ModelState));

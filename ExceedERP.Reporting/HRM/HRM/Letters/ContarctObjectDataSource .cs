@@ -108,6 +108,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     }
                 }
                 EmployeeInfo.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
             }
             if (employee != null)
             {

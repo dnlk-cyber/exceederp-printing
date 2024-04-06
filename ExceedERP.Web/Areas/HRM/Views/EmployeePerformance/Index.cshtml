@@ -19,26 +19,9 @@
                            
                             <div class="row">
 
-                                <div class="col-md-2">
-                                    <label class="category-label" for="Role">Evaluation Level</label>
+                                
 
-                                    <br />
-
-                                    @(Html.Kendo().DropDownListFor(m => m)
-                                       .Name("Evaluation")
-                                       .OptionLabel(Resources.Select)
-                                       //.Placeholder("Evaluation Level")
-                                       .DataTextField("Text")
-                                       .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.EvaluationLevel)))
-                                       .DataValueField("Value")
-                                       .AutoBind(false)
-                                       //.Events(e => e.Change("Roles"))
-                                       .HtmlAttributes(new { style = "width: 100px;" })
-
-                                    )
-                                </div>
-
-                                <div class="col-md-2">
+                                <div class="col-md-1">
 
                                     <label class="category-label" @*for="Period"*@>Year</label>
 
@@ -56,11 +39,14 @@
                                            dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }))
                                                 .ServerFiltering(false);
                                        })
+                                                                           
+                                       .HtmlAttributes(new { style = "width: 120px;" })
+
                                        )
 
                                 </div>
 
-                                <div class="col-md-2">
+                                <div class="col-md-1">
 
                                     <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
 
@@ -81,50 +67,91 @@
                                     .DataValueField("QuarterId")
                                     .AutoBind(false)
                                     .Events(e => e.Change("Period"))
-                                    .HtmlAttributes(new { style = "width: 150px;" })
+                                    .HtmlAttributes(new { style = "width: 120px;" })
 
                                     )
 
                                 </div>
 
-                                <div class="col-md-2">
+                                <div class="col-md-1">
 
                                     <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+                                    <br />
                                     @(Html.Kendo().DropDownListFor(m => m)
-                                        .Name("EmployeeId")
-                                        .OptionLabel(Resources.Select)
-                                        .Filter("contains")
-                                        .DataTextField("FullNameaEnglish")
-                                        .DataValueField("EmployeeId")
+                                                .Name("EmployeeId")
+                                                .OptionLabel(Resources.Select)
+                                                .Filter("contains")
+                                                .DataTextField("FullNameaEnglish")
+                                                .DataValueField("EmployeeId")
 
-                                         .DataSource(dataSource =>
-                                         {
-                                             dataSource.Read(read => read.Action("GetEmployeesByUserForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
-                                             .ServerFiltering(false);
-                                         })
+                                                 .DataSource(dataSource =>
+                                                 {
+                                                     dataSource.Read(read => read.Action("GetEmployeesByUserForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
+                                                     .ServerFiltering(false);
+                                                 })
 
-                                        .HtmlAttributes(new { style = "width: 150px;" })
+                                                .HtmlAttributes(new { style = "width: 150px;" })
                                     )
 
                                 </div>
-
-                                <div class="col-md-3">
-                                    <label class="category-label" for="EvaluationCriteriaId">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
+                                                                
+                                <div class="col-md-1">
+                                    <label class="category-label" for="CriteriaCategoryId" style="width: 150px;">@Resources.Rpt_Criteria @Resources.Common_Lookup_Category</label>
+                                    <br />
                                     @(Html.Kendo().DropDownListFor(m => m)
-                                       .Name("EvaluationCriteriaId")
+                                               .Name("CriteriaCategoryId")
+                                               .OptionLabel(Resources.Select)
+                                               // .Placeholder("Type")
+                                               //.CascadeFrom("Evaluation")
+                                               .DataTextField("Name")
+                                               //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                                               .DataValueField("CriteriaCategoryId")
+                                               .AutoBind(false)
+                                               .DataSource(dataSource =>
+                                               {
+                                                   dataSource.Read(read => read.Action("GetCriteriaCategory", "HRMDataProvider", new { area = "HRM" })/*.Data("filterEvaluationCriteria")*/)
+                                                   .ServerFiltering(false);
+                                               })
+                                               //.HtmlAttributes(new { style = "width: 150px;" })
+                                    )
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="category-label" for="Role" style="width: 120px;">Evaluation-Level</label>
+
+                                    <br />
+
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                       .Name("Evaluation")
                                        .OptionLabel(Resources.Select)
-                                       // .Placeholder("Type")
-                                       .CascadeFrom("Evaluation")
-                                       .DataTextField("Name")
-                                       //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
-                                       .DataValueField("MeasurementDefinitionId")
+                                       //.Placeholder("Evaluation Level")
+                                       .DataTextField("Text")
+                                       .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.EvaluationLevel)))
+                                       .DataValueField("Value")
                                        .AutoBind(false)
-                                       .DataSource(dataSource =>
-                                       {
-                                           dataSource.Read(read => read.Action("GetEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("filterEvaluationCriteria"))
-                                           .ServerFiltering(true);
-                                       })
-                                       .HtmlAttributes(new { style = "width: 250px;" })
+                                       //.Events(e => e.Change("Roles"))
+                                       .HtmlAttributes(new { style = "width: 120px;" })
+
+                                    )
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="category-label" for="EvaluationCriteriaId" style="width: 150px;">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
+                                    <br />
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                               .Name("EvaluationCriteriaId")
+                                               .OptionLabel(Resources.Select)
+                                               // .Placeholder("Type")
+                                               .CascadeFrom("Evaluation")
+                                               .CascadeFrom("CriteriaCategoryId")
+                                               .DataTextField("Name")
+                                               //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                                               .DataValueField("MeasurementDefinitionId")
+                                               .AutoBind(false)
+                                               .DataSource(dataSource =>
+                                               {
+                                                   dataSource.Read(read => read.Action("GetEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("filterEvaluationCriteria"))
+                                                   .ServerFiltering(true);
+                                               })
+                                               .HtmlAttributes(new { style = "width: 150px;" })
                                     )
                                 </div>
 
@@ -134,7 +161,7 @@
 
                                     @(Html.Kendo().Button()
                                       .Name("btnRefresh")
-                                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                      .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width: 100px;height:40px" })
                                       .Events(e => e.Click("Process"))
                                       .Content(Resources.Show))
                                        &nbsp; &nbsp;
@@ -162,50 +189,94 @@
       <br />
 
     <div class="row">
-        <div class="col-md-2">            
+        <div class="col-md-2">
+            
+            @(Html.Kendo().PanelBar()
+                      .Name("panelbar")
+                      .ExpandMode(PanelBarExpandMode.Multiple)
+                      .Items(panelbar =>
+                      {
+                          panelbar.Add().Text("Employee Info")
+                              .Expanded(true)
+                              .Content(@<div style="padding: 10px;">
+                                <button class="btn btn-success" id="approveButtonStyle" onclick="ApproveEvaluation()">Submit Evaluation</button>
+                                <br />
+                                <label>Name  </label>
+                                <br />
+                                <label id="EmpName" style="color:red">  </label>
+                                <br />
+                                <label>Year  </label>
+                                <br />
+                                <label id="YearName" style="color:red">  </label>
+                                <br />
+                                <label>Period  </label>
+                                <br />
+                                <label id="PeriodName" style="color:red">  </label>
+                                <br />
+                                <label>Evaluation Criteria  </label>
+                                <br />
+                                <label id="EvaluationCriteriaName" style="color:red">  </label>
+                                <br />
+                                <label>Weight : </label>
+                                <label id="weight" style="color:red"> </label>
+                                <label>Result : </label>
+                                <label id="result" style="color:red">  </label>
 
-                @(Html.Kendo().PanelBar()
-                  .Name("panelbar")
-                  .ExpandMode(PanelBarExpandMode.Multiple)
-                  .Items(panelbar =>
-                  {
-                      panelbar.Add().Text("Employee Info")
-                          .Expanded(true)
-                          .Content(@<div style="padding: 10px;">
-                          <button class="btn btn-success" id="approveButtonStyle" onclick="ApproveEvaluation()">Approve Evaluation</button>
-                          <br />
-                          <label>Name  </label>
-                          <br />
-                          <label id="EmpName" style="color:red">  </label>
-                          <br />
-                          <label>Year  </label>
-                          <br />
-                          <label id="YearName" style="color:red">  </label>
-                          <br />
-                          <label>Period  </label>
-                          <br />
-                          <label id="PeriodName" style="color:red">  </label>
-                          <br />
-                          <label>Evaluation Criteria  </label>
-                          <br />
-                          <label id="EvaluationCriteriaName" style="color:red">  </label>
-                          <br />
-                          <label>Weight : </label>
-                          <label id="weight" style="color:red"> </label>
-                          <label>Result : </label>
-                          <label id="result" style="color:red">  </label>
+                                <br />
+                                <label>Approval : </label>
+                                <br />
+                                <label id="approval" style="color:red">  </label>
+                                @*<script>
 
-                          <br />
-                          <label>Approval : </label>
-                          <br />
-                          <label id="approval" style="color:red">  </label>
-                           
-                        </div>);
-        
-                             })
-                            )
-                           
-            </div>
+                                    var isEvaluationApproved = false; // Initialize the approval status
+
+                                    function ApproveEvaluation() {
+                                        // Check the approval status and hide the button if approved
+                                        if (isEvaluationApproved) {
+                                            document.getElementById("approveButtonStyle").style.display = "none";
+                                        }
+
+                                        // Other logic for the ApproveEvaluation function
+                                    }
+
+                                    // Function to fetch the approval status asynchronously
+                                    function fetchApprovalStatus() {
+                                        $.ajax({
+                                            url: '@Url.Action("GetApprovalStatus", "YourController")', // Replace 'YourController' with your actual controller name
+                                            type: 'GET',
+                                            success: function (result) {
+                                                // Update the approval status based on the response
+                                                isEvaluationApproved = (result === "Approved");
+
+                                                // Invoke the ApproveEvaluation function after fetching the status
+                                                ApproveEvaluation();
+                                            },
+                                            error: function () {
+                                                // Handle error if needed
+                                            }
+                                        });
+                                    }
+
+                                    // Initial invocation to fetch and check the approval status
+                                    fetchApprovalStatus();
+
+                                    function Process() {
+                                        // ... (existing Process function code)
+
+                                        // Invoke the function to fetch and update the approval status
+                                        fetchApprovalStatus();
+
+                                        // ... (existing Process function code)
+                                    }
+                                </script>*@
+                            
+                                 
+                                  </div>);
+
+                })
+            )
+
+        </div>
 
         <div class="col-md-10">
 
@@ -387,6 +458,12 @@
                 document.getElementById("weight").innerHTML = r.Weight;
                 document.getElementById("result").innerHTML = r.Result;
                 document.getElementById("approval").innerHTML = r.Approval;
+                if (r.Approval === "Submitted") {
+                    document.getElementById("approveButtonStyle").style.display = "none";
+
+                }
+                //location.reload();
+
             }
 
         });
@@ -409,12 +486,14 @@
         var fiscalYearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
         var periodId = $("#Period").data("kendoDropDownList").value();
         var evaluationCriteriaId = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
+        var criteriaCategoryId = $("#CriteriaCategoryId").data("kendoDropDownList").value();
 
         return {
             empId: empId,
             fiscalYearId: fiscalYearId,
             periodId: periodId,
-            evaluationCriteriaId: evaluationCriteriaId
+            evaluationCriteriaId: evaluationCriteriaId,
+            criteriaCategoryId: criteriaCategoryId
         };
     }
 
@@ -463,7 +542,9 @@
 
     function filterEvaluationCriteria() {
         return {
+            criteriaCategoryId: $("#CriteriaCategoryId").val(),
             level: $("#Evaluation").val()
+
         };
     }
 
@@ -476,6 +557,8 @@
         var period = $("#Period").data("kendoDropDownList").value();
         var employee = $("#EmployeeId").data("kendoDropDownList").value();
         var evaluationCriteria = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
+        var criteriaCategoryId = $("#CriteriaCategoryId").data("kendoDropDownList").value();
+
         
         if (year == "") {
             alert("please select the year to approve");
@@ -490,27 +573,27 @@
             alert("please select the evaluation criteria to approve");
         }
         else {
-            var conf = confirm("Are you sure you want to approve this quarter performance evaluation");
+            var conf = confirm("Are you sure you want to Submit this quarter performance evaluation");
             if (conf === true) {
                 $('#loading-image').show();
 
                 $.ajax({
                     url: '@Url.Action("ApproveEvaluation", "EmployeePerformance")',
                     //contentType: "application/json; charset=utf-8",
-                    data: { year: year, period: period, employee: employee, evaluationCriteria: evaluationCriteria },
+                    data: { year: year, period: period, employee: employee, evaluationCriteria: evaluationCriteria, criteriaCategoryId: criteriaCategoryId},
                     type: 'POST',
                     cache: false,
                     success: function (result) {
                         r = result;
-                        alert("Successfully Approved");
+                        alert("Successfully Summited");
                         $('#loading-image').hide();
 
                         if (r == "true")
                         {
-                            document.getElementById("approval").innerHTML = "Approved";
+                            document.getElementById("approval").innerHTML = "Submitted";
                         }
                         else {
-                            document.getElementById("approval").innerHTML = "Not Approved";
+                            document.getElementById("approval").innerHTML = "Not Submitted";
                         }
                         grid.dataSource.read();
                     }
@@ -521,4 +604,17 @@
         }
        
 </script>
+<style>
+    .col-md-1 {
+        margin-right: 50px; /* Add margin to the right of each column */
+    }
+    /* Remove margin from the last column */
+        /*.col-md-1:last-child {
+            margin-right: 0; 
+        }*/
 
+    /* You can add styles for other elements if needed */
+    .cards-container {
+        margin-top: 20px;
+    }
+</style>

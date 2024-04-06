@@ -11,10 +11,11 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
-    public class ComplainDescriptionController : Controller
+    public class ComplainDescriptionController : BaseController
     {
         // GET: HRM/ComplainCC
         ExceedDbContext db = new ExceedDbContext();

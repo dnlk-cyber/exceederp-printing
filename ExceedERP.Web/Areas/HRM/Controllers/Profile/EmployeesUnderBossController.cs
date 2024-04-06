@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -47,7 +47,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var place = db.Placements.FirstOrDefault(x => x.PlacementId == id && x.IsHead && x.isCurrent);
             if (place != null)
             {
-                List<int> employeeids = EmployeeHelper.GetSubordinates(place.EmployeeId);
+                //List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(place.EmployeeId);//.GetSubordinates(place.EmployeeId);
+                List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByHead(place.EmployeeId);//.GetSubordinates(place.EmployeeId);
                 employeeids.Remove(place.EmployeeId);
 
                 //var employees = db.Placements.Where(x => x.OrgStructureId == place.OrgStructureId && x.BranchId == place.BranchId && x.isCurrent).ToList();

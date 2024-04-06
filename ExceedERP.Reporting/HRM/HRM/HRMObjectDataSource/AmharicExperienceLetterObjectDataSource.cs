@@ -21,7 +21,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeExperienceLetter> GetEmployeeAmharicExperience(string id, bool header)
+        public EmployeeExperienceLetter GetEmployeeAmharicExperience(string id, bool header)
         {
 
 
@@ -263,8 +263,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
                         currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
-                       
-                        var bra = db.Branch.FirstOrDefault(x=>x.BranchId == empCurrrEx[e].BranchId);
+
+                        int currentBranch = empCurrrEx[e].BranchId;
+                        
+                        var bra = db.Branch.FirstOrDefault(x=>x.BranchId == currentBranch);
                         if(bra != null)
                         {
                             currentEmployeeExpriance.Branch = bra.AmharicName;
@@ -389,7 +391,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
                         var emp = ExprianceRequest.FirstOrDefault();
-                        if (emp == null) return new List<EmployeeExperienceLetter>();
+                        if (emp == null) return new EmployeeExperienceLetter();
                         var approval =
                             db.RequestesStatus.Where(x =>
                                 x.ReferenceType == "Experience" && x.RequestId == emp.ExperienceRequestId &&
@@ -617,7 +619,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             
 
-            return EmployeeInfoList;
+            return EmployeeInfo;
         }
 
 

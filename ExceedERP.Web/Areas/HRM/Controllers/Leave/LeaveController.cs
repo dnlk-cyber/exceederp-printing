@@ -278,7 +278,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     {
                         entity.Amount = To.Subtract(From).Days + 1 - count;
                         entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
-                        if (leave.Day == LeaveDay.ግማሽ_ቀን)
+                        if (leave.Day == LeaveDay.Half_Day)
                         {
                             decimal checkWeekEnd = To.Subtract(From).Days + 1 - count;
                             double amt = GetHalf(From, To);
@@ -308,7 +308,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                         entity.Amount = To.Subtract(From).Days + 1;
 
-                        if (entity.Day == LeaveDay.ግማሽ_ቀን)
+                        if (entity.Day == LeaveDay.Half_Day)
                         {
                           
                             entity.Amount = entity.Amount / 2;
@@ -583,7 +583,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     {
                         entity.Amount = To.Subtract(From).Days + 1 - count;
                         entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
-                        if (leave.Day == LeaveDay.ግማሽ_ቀን)
+                        if (leave.Day == LeaveDay.Half_Day)
                         {
                             entity.Amount = entity.Amount / 2;
                         }

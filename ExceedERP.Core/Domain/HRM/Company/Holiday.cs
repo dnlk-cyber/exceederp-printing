@@ -19,7 +19,6 @@ namespace ExceedERP.Core.Domain.HRM.Company
         public DateTime Date { get; set; }
         [Display(Name = "HR_Company_Holiday_Date", ResourceType = typeof(Localization.Resources))]
         public string DateHoAmhaic { get; set; }
-
         [Display(Name = "HR_Company_Holiday_Name", ResourceType = typeof(Localization.Resources))]
         public string Name { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]

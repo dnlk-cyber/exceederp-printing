@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         private void PopulateViewData()
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             var list = inputs.GetEmployees().Where(x => x.IsActive && empIdList.Contains(x.PersonId) && x.PersonId != empId).ToList();
             ViewData["EmployeeList"] = db.Person_Employee.AsQueryable();
             ViewData["AllEmployeeList"] = inputs.GetAllPlacmentEmployees(User.Identity.Name);
@@ -915,7 +915,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             //WeekNo(DateTime.Now.Month, DateTime.Now.Date);
             WeekNo(pid,yid, DateTime.Now.Date);
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             //IQueryable<WeeklyAttendance> weeklyattendances = db.WeeklyAttendances.Where(
             //        x => x.Month == DateTime.Now.Month && x.Year == DateTime.Now.Year && x.Week == WeekNumber && empIdList.Contains(x.EmployeeId)).AsQueryable();// DetailViewModels().AsQueryable();
 

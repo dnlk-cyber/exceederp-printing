@@ -35,7 +35,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         {
 
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             var list = inputs.GetEmployees().Where(x => x.IsActive && empIdList.Contains(x.PersonId) && x.PersonId != empId).ToList();
             ViewData["EmployeeList"] = list.Where(x => x.IsActive);
             ViewData["PeriodList"] = db.GLPeriods.Where(x => x.Status == Core.Domain.Finance.GL.FiscalYearStatus.Open);
@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult LateCommings_Read([DataSourceRequest]DataSourceRequest request)
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<LateComming> latecommings = db.LateCommings.Where(x => empIdList.Contains(x.EmployeeId));
             DataSourceResult result = latecommings.ToDataSourceResult(request, lateComming => new

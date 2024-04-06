@@ -69,7 +69,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 var entity = new JobTitleMappingDetail
                 {
-
                     LookupId = jobTitleMappingDetail.LookupId,
                     RelevantExp = jobTitleMappingDetail.RelevantExp,
                     Experience = jobTitleMappingDetail.Experience,

@@ -1,0 +1,175 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Severance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Severance Payables </Legend>
+@(Html.Kendo().Grid<SeverancePayable>()
+          .Name("LeavePayable_grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(200);
+              columns.Bound(c => c.Description).Width(200);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"LeavePayable_grid\")");
+                  events.RequestStart("onRequestStart(\"LeavePayable_grid\")");
+                  events.RequestEnd("onRequestEnd(\"LeavePayable_grid\")");
+
+              })
+
+              .Model(model => model.Id(p => p.SeverancePayableId))
+              .Read(read => read.Action("SeverancePayables_Read", "SeverancePayables"))
+              .Create(create => create.Action("SeverancePayables_Create", "SeverancePayables"))
+              .Update(update => update.Action("SeverancePayables_Update", "SeverancePayables"))
+              .Destroy(destroy => destroy.Action("SeverancePayables_Destroy", "SeverancePayables"))
+          ).ClientDetailTemplateId("Severance_Payable_Template")
+)
+<script id="Severance_Payable_Template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+              .Name("tabstrip_#=SeverancePayableId#")
+              .SelectedIndex(0)
+                 .Items(items =>
+                 {
+                     items.Add().Text("Severance Payable Details").Content(
+        @<text>
+              <div class="row">
+                  <div class="col-sm-1">
+
+
+
+                      <a onclick='return generateSeverancePayable("#=SeverancePayableId#")' href=' \#' title="Generate"><i class=" fa fa-wrench fa-2x">Generate</i></a>
+                  </div>
+                  <div class="col-sm-1">
+
+
+                      <a href='@Url.Action("SeverancePayableReport", "EmployeeReport")/#=SeverancePayableId#' title="Print"><i class="fa fa-print fa-2x">Print</i></a>
+                  </div>
+             </div>
+            @(Html.Kendo().Grid<SeverancePayableDetail>()
+                      .Name("SeverancePayableDetail_grid#=SeverancePayableId#")
+                      .Columns(columns =>
+                      {
+
+                          columns.Bound(c => c.EmployeeCode).Width(120);
+                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("EmployeeEditor").Width(210);
+                          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+                          columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                          columns.Bound(c => c.BasicSalary).Width(120);
+                          columns.Bound(c => c.Balance).Width(120);
+                          columns.Bound(c => c.NumberOFYears).Width(150);
+                          columns.Bound(c => c.GrossComponsation).Width(150);
+                          columns.Bound(c => c.NoneTaxableTotal).Width(150);
+                          columns.Bound(c => c.TaxWithheldIncomeTax).Width(150);
+                          columns.Bound(c => c.TaxWithheldComTax).Width(150);
+                          columns.Bound(c => c.SpecialSalaryDeduction).Width(150);
+                          columns.Bound(c => c.TotalDeductions).Width(150);
+                          columns.Bound(c => c.NetPay).Width(150);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }).Width(400);
+                      })
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    // toolbar.Custom().Action("SendForApproval", "LeaveReturn").Text(Resources.HR_Send_For_Approval);
+                                //    toolbar.Custom().Action("GenerateSeverancePayable", "SeverancePayables", new { id = "#=SeverancePayableId#" }).Text("Generate");
+
+                                //})
+
+
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable()
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"SeverancePayableDetail_grid#=SeverancePayableId#\")");
+                                        events.RequestStart("onRequestStart(\"SeverancePayableDetail_grid#=SeverancePayableId#\")");
+                                        events.RequestEnd("onRequestEnd(\"SeverancePayableDetail_grid#=SeverancePayableId#\")");
+
+
+                                    })
+                                   .Model(model =>
+                                   {
+                                       model.Id(p => p.SeverancePayableId);
+                                       //model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                       model.Field(p => p.EmployeeId).Editable(false);
+                                       model.Field(p => p.EmployeeCode).Editable(false);
+                                       model.Field(p => p.BusinessUnitId).Editable(false);
+                                       model.Field(p => p.BranchId).Editable(false);
+                                       model.Field(p => p.OrgStructureId).Editable(false);
+                                   })
+                                  .Read(read => read.Action("SeverancePayableDetails_Read", "SeverancePayableDetails", new { sPId = "#=SeverancePayableId#" }))
+                                  .Create(create => create.Action("SeverancePayableDetails_Create", "SeverancePayableDetails", new { sPId = "#=SeverancePayableId#" }))
+                                  .Update(update => update.Action("SeverancePayableDetails_Update", "SeverancePayableDetails"))
+                                  .Destroy(destroy => destroy.Action("SeverancePayableDetails_Destroy", "SeverancePayableDetails"))
+
+                                  ).ToClientTemplate()
+
+            )
+
+        </text>);
+
+
+
+
+              }).ToClientTemplate())
+</script>
+
+<script>
+    
+    function generateSeverancePayable(id) {
+        $('#loading-image').show();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GenerateSeverancePayable", "SeverancePayables", new { area = "HRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            }, 
+            error: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+
+            }
+        });
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

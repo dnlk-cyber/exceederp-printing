@@ -13,7 +13,6 @@ using XAPI;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
-
     [DataObject]
     public class EmployeePerformanceDepartmentODS : List<EmployeePerfromanceVM>
     {
@@ -21,11 +20,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeePerfromanceVM> GetEmployeePerformance(string empId, string id, string year)
+        public List<EmployeePerfromanceVM> GetEmployeePerformance(string empId, string id, string year, string businessUnit)
         {
             List<EmployeePerfromanceVM> employeePerformanceList = new List<EmployeePerfromanceVM>();
 
             int.TryParse(year, out int yearId);
+            decimal totalResult = 0;
 
             var placements = db.Placements.Where(x => x.isCurrent).ToList();
 
@@ -44,6 +44,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 placements = placements.Where(x => x.EmployeeId == employeeId).ToList();
             }
 
+            if (businessUnit != null)
+            {
+                int.TryParse(businessUnit, out int businessUnitId);
+                placements = placements.Where(x => x.BusinessUnitId == businessUnitId).ToList();
+            }
 
             foreach (var place in placements)
             {
@@ -86,6 +91,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         if (performance != null)
                         {
                             quarter.Score = GetPerformanceScore(performance.EmployeePerformanceId);
+                            totalResult = totalResult + quarter.Score;
+
                         }
 
                         empPerformance.PerformanceResults.Add(quarter);

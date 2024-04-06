@@ -23,6 +23,7 @@ namespace ExceedERP.Core.Domain
         public const string HRTerminationUser = "HR_Termination_User";
         public const string HRTrainingRequester = "HR_Training_Requester";
         public const string HRTrainingApprover = "HR_Training_Approver";
+        public const string HRNeedApprover = "HR_Training_Need_Approver";
         public const string HRArchiveUser = "Archive_User";
         public const string HRArchiveAdmin = "Archive_Admin";
         public const string HRAttendanceUser = "HR_Attendance_User";
@@ -39,6 +40,7 @@ namespace ExceedERP.Core.Domain
         public const string HRPerformanceUser = "HR_Performance_User";
         public const string HRPrintableDocumentsUser = "HR_PrintableDocuments_User";
         public const string HRProfileAdmin = "HR_Profile_Admin";
+        public const string HRRehireProfileAdmin = "HR_Rehire_Profile_Admin";
         public const string HRProfileUser = "HR_Profile_User";
         public const string HRPlacementAdmin = "HR_Placement_Admin";
         public const string HRPlacementUser = "HR_Placement_User";
@@ -49,6 +51,7 @@ namespace ExceedERP.Core.Domain
         public const string HRPerformanceReport = "HR_Performance_Report";
         public const string HRDepartmentHead = "HR_Department_Head";
         public const string HRTrainingUser = "HR_Training_User";
+        public const string HRTemporaryPlacementAdmin = "HR_Temporary_Placement_Admin";
 
     }
 }

@@ -22,7 +22,31 @@ namespace ExceedERP.Reporting.SharedDataSources
                 join p in db.Placements
                     on e.EmployeeId equals p.EmployeeId
                 where p.isCurrent && p.AssignmentType == AssignmentType.PROMOTION
-                select (new
+                            select (new
+                {
+                    e
+                });
+            var list = employees.Select(x=> x.e).ToList();
+            //foreach (var e in employees)
+            //{
+            //    view = new EmployeeIdView();
+            //    view.EmployeeCode = e.e.EmployeeCode;
+            //    view.FullName = HrHelper.GetEmployeeFullName(e.e.EmployeeId);
+            //    view.g = e.e.EmployeeCode;
+            //    view.EmployeeCode = e.e.EmployeeCode;
+            //}
+            return list;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<Person_Employee> GetTransferedEmployees()
+        {
+            EmployeeIdView view = new EmployeeIdView();
+            List<EmployeeIdView> viewList = new List<EmployeeIdView>();
+            var employees = from e in db.Person_Employee
+                join p in db.Placements
+                    on e.EmployeeId equals p.EmployeeId
+                where p.isCurrent && p.AssignmentType== AssignmentType.TRANSFER
+                            select (new
                 {
                     e
                 });

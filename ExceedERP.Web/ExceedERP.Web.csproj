@@ -113,6 +113,9 @@
     <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.2\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNetCore.WebUtilities">
+      <HintPath>..\packages\Microsoft.AspNetCore.WebUtilities.2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -134,6 +137,7 @@
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -158,6 +162,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -1570,8 +1577,10 @@
     <Compile Include="Areas\HRM\Controllers\Archive\SentLetterController.cs" />
     <Compile Include="Areas\HRM\Controllers\Archive\SubjectTypeController.cs" />
     <Compile Include="Areas\HRM\Controllers\Archive\ZoneController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Attendance\AttendanceNewForWeekHRController.cs" />
     <Compile Include="Areas\HRM\Controllers\Attendance\AttendanceNewHRController.cs" />
     <Compile Include="Areas\HRM\Controllers\Attendance\AttendancesNewController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Attendance\AttendancesNewForWeeKController.cs" />
     <Compile Include="Areas\HRM\Controllers\Attendance\LateComingSummaryController.cs" />
     <Compile Include="Areas\HRM\Controllers\Attendance\OverTimeRequestApprovalController.cs" />
     <Compile Include="Areas\HRM\Controllers\Attendance\PreviousAttendanceController.cs" />
@@ -1584,6 +1593,7 @@
     <Compile Include="Areas\HRM\Controllers\Company\CompanyEmailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\ComplainResponseController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\EmployeeComplainController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\EmployeeProbationSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\HolidayController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\JobTitleAndSalaryController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\JobTitleMappingController.cs">
@@ -1608,6 +1618,7 @@
     <Compile Include="Areas\HRM\Controllers\Company\ProjectTypeController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\WaterMarkController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\WeekendController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\WorkUnitCostCenterMapController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\CommitteMinuteDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\DisciplinaryCaseCourtController.cs" />
     <Compile Include="Areas\HRM\Controllers\Discipline\DisciplineMeasuresCourtController.cs" />
@@ -1635,6 +1646,9 @@
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitleStartingDateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveModel.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveNewAwajStartYearsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeavePayableDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeavePayablesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeavePayableSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnPersonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnStatusController.cs" />
@@ -1753,20 +1767,41 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\StepController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Performance\AssignEvaluatorsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\CriteriaCategoriesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentDefineMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentPerformanceActionController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformanceAllSummariesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformanceCorporateAndSectorLevelsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformancePersonalSummariesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformanceSecondLevelSummariesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformanceSummariesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaActionTypeController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaSecondDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCritetiasController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationPeriodController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EvaluatorsRequestController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\InternalCustomerDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\InternalCustomerEmployeePerformanceController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\InternalCustomerPerformanceEvaluationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\InternalCustomerPerformanceEvaluationsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\InternalCustomersController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\MainCompanyEvalutionSettingsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\PeerToPeerEmployeePerformanceController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\PeerToPeerPerformanceEvaluationsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\PerformanceRequestPeriodsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\PerformanceResponsePeriodsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\PerformanceSettingsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\PersonalEmployeePerformanceController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\ProbationPerformanceController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\ProbationPerformanceDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\ProbationPerformanceSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\QuarterController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\QuarterLengthController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeePlacmentManualController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Profile\EmployeePlacmentTemporaryWithOJController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeTypesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeCodeSequenceController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeCodeSettingController.cs" />
@@ -1804,6 +1839,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Areas\HRM\Controllers\Recruitment\CheckUpController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestDepartmentValidationsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestHRsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Recruitment\EmployeeTransferRequestValidationsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ExamTypeSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ExperienceJobTitlesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Recruitment\ExperienceOrganizationTypeSettingsController.cs" />
@@ -1835,12 +1875,13 @@
     <Compile Include="Areas\HRM\Controllers\SelfCare\ComplainDescriptionController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ComplainDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ComplainResponseDepartmentController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\DelegationCCsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\DelegationSelfcaresController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\DepartmentSentLetterController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\DeptLateComingSummaryController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\DeptLateCommingController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\EducationRequestController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\EmployeeAccidentRequestController.cs" />
-    <Compile Include="Areas\HRM\Controllers\SelfCare\EmployeeInsuranceController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\InternalApplicationController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\LeaveRequestPersonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ManPowerPlanningRequestController.cs" />
@@ -1895,17 +1936,26 @@
     <Compile Include="Areas\HRM\Controllers\SelfCare\SelfCareAccouncmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\SelfCareEmployeeIncomingController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\WorkunitIncomingController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayableDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayablesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplatesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Termination\LeaveTerminationController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\DepartmentNeedAssessmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\EducationRequestStatusController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\EmployeesInAssessmentsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\NeedAssessmentSummaryController.cs" />
+    <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\NeedAssessmentSummaryFinalController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingAssessmentController.cs" />
+    <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingEvaluationAftersController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingEvaluationAndFeedbackController.cs" />
+    <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingEvaluationBeforesController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingEvaluationCriteriaCategoriesController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingEvaluationCriteriaController.cs" />
+    <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingNeedRequestsController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingPlanDepartmentReadController.cs" />
+    <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingPlanSummaryController.cs" />
+    <Compile Include="Areas\HRM\HRMAreaRegistration.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\AssignTicketController.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\CustomerTicketController.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\HandlerController.cs" />
@@ -2538,7 +2588,6 @@
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingOutComeController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingPlanController.cs" />
     <Compile Include="Areas\HRM\Controllers\TrainingAndEducation\TrainingProviderController.cs" />
-    <Compile Include="Areas\HRM\Views\HRMAreaRegistration.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\AveragePriceSettingController.cs" />
     <Compile Include="Areas\Inventory\Controllers\BinCardLineController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\BranchItemAssignmentController.cs" />
@@ -4791,7 +4840,6 @@
     <Content Include="Areas\HRM\Views\VacancyTracking\Index.cshtml" />
     <Content Include="Areas\HRM\Views\Vacancy\EditorTemplates\EmployeeList.cshtml" />
     <Content Include="Areas\HRM\Views\LeaveEntitle\EditorTemplates\LeaveEntitlePop.cshtml" />
-    <Content Include="Areas\HRM\Views\EmployeePlacmentWithOJ.rar" />
     <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\EvaluationTypes.cshtml" />
     <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\Role.cshtml" />
     <Content Include="Areas\HRM\Views\EvaluationCritetias\Index.cshtml" />
@@ -6628,6 +6676,144 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderProduction\Index.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureProductionBillOfLabor\Index.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureProductionBillOfMaterial\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\AssignEvaluators\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\HRM\Views\AssignEvaluators\EditorTemplates\fiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\AssignEvaluators\EditorTemplates\getListOfEmployee.cshtml" />
+    <Content Include="Areas\HRM\Views\AssignEvaluators\EditorTemplates\Period.cshtml" />
+    <Content Include="Areas\HRM\Views\AssignEvaluators\EditorTemplates\workUnit.cshtml" />
+    <Content Include="Areas\HRM\Views\AssignEvaluators\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\AttendanceNewForWeekHR\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\AttendancesNewForWeeK\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\AttendancesNew\EditorTemplates\AttendanceEnums.cshtml" />
+    <Content Include="Areas\HRM\Views\BioAttendanceIntegrationSetting\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\BioAttendance\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\ClearanceProvider\EditorTemplates\ClearanceType.cshtml" />
+    <Content Include="Areas\HRM\Views\CommitmentDepartment\EditorTemplates\ActiveEmployees.cshtml" />
+    <Content Include="Areas\HRM\Views\CommitmentDepartment\EditorTemplates\CommitmentType.cshtml" />
+    <Content Include="Areas\HRM\Views\CommitmentDepartment\EditorTemplates\CosignType.cshtml" />
+    <Content Include="Areas\HRM\Views\CommitmentDepartment\EditorTemplates\EmployeeCommitment.cshtml" />
+    <Content Include="Areas\HRM\Views\CommitmentDepartment\EditorTemplates\Upload.cshtml" />
+    <Content Include="Areas\HRM\Views\CriteriaCategories\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationCCs\EditorTemplates\Employees.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationCCs\EditorTemplates\GLPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationCCs\EditorTemplates\GLPeriodSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationCCs\EditorTemplates\OrganizationDept.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationCCs\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationSelfcares\EditorTemplates\Employees.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationSelfcares\EditorTemplates\GLPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationSelfcares\EditorTemplates\GLPeriodSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationSelfcares\EditorTemplates\OrganizationDept.cshtml" />
+    <Content Include="Areas\HRM\Views\DelegationSelfcares\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\DepartmentNeedAssessment\EditorTemplates\TrainingRequest.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformanceAllSummaries\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformanceCorporateAndSectorLevels\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformancePersonalSummaries\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformanceSecondLevelSummaries\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformanceSummaries\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformance\EmployeePerformanceTotalSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\EditorTemplates\Branch.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\EditorTemplates\JobTitleAutoComplet.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\EditorTemplates\Organization.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\EditorTemplates\Placement.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\EditorTemplates\UploadDocument.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentTemporaryWithOJ\PlacementWithSwap.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentWithJ\EditorTemplates\JobTitles.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentWithOJ\EditorTemplates\JobTitleAutoComplet.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentWithOJ\EditorTemplates\UploadDocument.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentWithOJ\PlacementWithSwap.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeProbationSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\BenefitReport.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\DayAbsentAndLateComingReport.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\EmployeePlacement.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\EmployeeProfileReport.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\NotEvaluatedEmployeeReport.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\OverTimeHours.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\SeverancePayableReport.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeTransferRequestHRs\EditorTemplates\GetAllActiveEmployees.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeTransferRequestHRs\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeTransferRequests\EditorTemplates\GetAllActiveEmployees.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeTransferRequests\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCriteriaActionType\EditorTemplates\Period.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCriteriaActionType\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\criteriaCategory.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\Department.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\EmployeeDepartment.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\JobTitles.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\EmployeeEvalutorsList.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\EmployeeSubList.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\fiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\getListOfEmployee.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\Period.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\EditorTemplates\workUnit.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluatorsRequest\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\InternalCustomerEmployeePerformance\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\InternalCustomerEmployeePerformance\PerformanceSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\InternalCustomerEmployeePerformance\PerformanceSummaryDepartment.cshtml" />
+    <Content Include="Areas\HRM\Views\InternalCustomerPerformanceEvaluation\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveEntitleStartingDate\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePayableSetting\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePayables\EditorTemplates\EmployeeEditor.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePayables\EditorTemplates\Employees.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePayables\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePayables\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReport\LeavePayableReport.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReport\LeavePlan.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReport\LeaveRequestStatusReport.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequestPersonal\EditorTemplates\UploadDocument.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveRequest\EditorTemplates\EnumWithoutWaitingForApprovalAndApprove.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummaryFinal\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummaryFinal\EditorTemplates\Organization.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummaryFinal\EditorTemplates\TrainingPlan.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummaryFinal\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummary\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummary\EditorTemplates\Organization.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummary\EditorTemplates\TrainingPlan.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessmentSummary\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessment\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessment\EditorTemplates\TrainingRequest.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessment\FiscalYearTrainingPlanActionPlan.cshtml" />
+    <Content Include="Areas\HRM\Views\NeedAssessment\TrainingNeedRequestReport.cshtml" />
+    <Content Include="Areas\HRM\Views\PeerToPeerEmployeePerformance\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\PeerToPeerEmployeePerformance\PerformanceSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\PeerToPeerEmployeePerformance\PerformanceSummaryDepartment.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceRequestPeriods\EditorTemplates\fiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceRequestPeriods\EditorTemplates\getListOfEmployee.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceRequestPeriods\EditorTemplates\Period.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceRequestPeriods\EditorTemplates\workUnit.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceRequestPeriods\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceResponsePeriods\EditorTemplates\fiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceResponsePeriods\EditorTemplates\getListOfEmployee.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceResponsePeriods\EditorTemplates\Period.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceResponsePeriods\EditorTemplates\workUnit.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceResponsePeriods\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceSettings\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\PeriodStatus\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\PersonalEmployeePerformance\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\PersonalEmployeePerformance\PerformanceSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\PersonalEmployeePerformance\PerformanceSummaryDepartment.cshtml" />
+    <Content Include="Areas\HRM\Views\PrintableLetter\EmployeeProfile.cshtml" />
+    <Content Include="Areas\HRM\Views\PrintableLetter\ExperienceLetterTwo.cshtml" />
+    <Content Include="Areas\HRM\Views\PrintableLetter\PromotionLetterTwo.cshtml" />
+    <Content Include="Areas\HRM\Views\PrintableLetter\RecruitmentLetterTwo.cshtml" />
+    <Content Include="Areas\HRM\Views\PrintableLetter\TransferLetterTwo.cshtml" />
+    <Content Include="Areas\HRM\Views\SeverancePayables\EditorTemplates\EmployeeEditor.cshtml" />
+    <Content Include="Areas\HRM\Views\SeverancePayables\EditorTemplates\Employees.cshtml" />
+    <Content Include="Areas\HRM\Views\SeverancePayables\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\SeverancePayables\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\Shared\EditorTemplates\EnumWithoutWaitingForApprovalAndApprove.cshtml" />
+    <Content Include="Areas\HRM\Views\Shared\EditorTemplates\JobTitles.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\Course.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\Department.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\GLFPeriod.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\NeedAssessment.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\Organization.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\TrainingPlan.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\TrainingRequest.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\EditorTemplates\TrainingType.cshtml" />
+    <Content Include="Areas\HRM\Views\TrainingPlanSummary\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -8772,6 +8958,7 @@
     <Folder Include="Areas\HRM\Views\PatientDrugOrder\" />
     <Folder Include="Areas\HRM\Views\PatientResultDetail\" />
     <Folder Include="Areas\HRM\Views\PayrollDataProvider\" />
+    <Folder Include="Areas\HRM\Views\PeriodStatus\EditorTemplates\" />
     <Folder Include="Areas\HRM\Views\PlacementInActiveBatch\" />
     <Folder Include="Areas\HRM\Views\ProbationPerformanceDetail\" />
     <Folder Include="Areas\HRM\Views\Salary\EditorTemplates\" />

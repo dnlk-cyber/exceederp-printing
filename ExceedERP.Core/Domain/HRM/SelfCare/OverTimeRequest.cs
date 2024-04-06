@@ -39,7 +39,6 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public string Description { get; set; }
         public OverTimeType Type { get; set; }
     }
-
     public enum OverTimeType
     {
         Norma_lHour,

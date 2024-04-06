@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeLeavePlan> GetLeavePlan(string period, string dept, string branchId)
+        public List<EmployeeLeavePlan> GetLeavePlan(string empId,string period, string dept, string branchId,DateTime? from,DateTime? to)
         {
             List<EmployeeLeavePlan> list = new List<EmployeeLeavePlan>();
             EmployeeLeavePlan employee = new EmployeeLeavePlan();
@@ -59,6 +59,21 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var leaveList = db.LeavePlans.ToList();
                 leaveList = leaveList.Where(
                     x => x.GlFiscalYearId.ToString() == period).ToList();
+                if (empId != null)
+                {
+                    int.TryParse(empId, out int employeId);
+                    leaveList = leaveList.Where(x => x.EmployeeId == employeId).ToList();
+                }
+                if (from.HasValue)
+                {
+                    leaveList = leaveList.Where(x => x.From.Date >= from.Value.Date).ToList();
+
+                }
+                if (to.HasValue)
+                {
+                    leaveList = leaveList.Where(x => x.To.Date <= to.Value.Date).ToList();
+
+                }
                 employee = new EmployeeLeavePlan();
                 if (leaveList.Any())
                 {
@@ -134,8 +149,21 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
           
                 var leaveList = db.LeavePlans.DistinctByField(x => x.EmployeeId).ToList();//.Where(x => periods.Contains(x.GlFiscalYearId)).ToList();
+                if(empId != null)
+                {
+                    int.TryParse(empId, out int employeId);
+                    leaveList = leaveList.Where(x => x.EmployeeId == employeId).ToList();
+                }
+                if (from.HasValue)
+                {
+                    leaveList = leaveList.Where(x => x.From.Date >= from.Value.Date).ToList();
 
+                }
+                if (to.HasValue)
+                {
+                    leaveList = leaveList.Where(x => x.To.Date <= to.Value.Date).ToList();
 
+                }
                 if (leaveList.Any())
                 {
                     db = new ExceedDbContext();

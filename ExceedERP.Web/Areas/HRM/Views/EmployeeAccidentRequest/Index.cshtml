@@ -1,18 +1,18 @@
-﻿@model ExceedERP.Core.Domain.HRM.HealthAndInsurance.EmployeeAccident
+﻿@model ExceedERP.Core.Domain.Insurance.EmployeeAccident
 @using System.Collections
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>Employee Accident Request</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.HealthAndInsurance.EmployeeAccident>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Insurance.EmployeeAccident>()
               .Name("grid")
               .Columns(columns =>
               {
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Name"], "EmployeeId", "FullNameaEnglish").Width(120);
                   columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120);
-                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Workunit"], "OrgStructureId", "Name").Width(120);
-                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Jobtitle"], "LookupId", "Description").Width(120);
+                  //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Workunit"], "OrgStructureId", "Name").Width(120);
+                  //columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Jobtitle"], "LookupId", "Description").Width(120);
                   columns.Bound(c => c.Salary).Width(120);
                   columns.Bound(c => c.EmployeementType).Width(120);
                   columns.Bound(c => c.Description).Width(120);
@@ -27,7 +27,7 @@
                   {
 
 
-                      command.Custom("").Text("Send For Approval").Click("sendforapproval");
+                      //command.Custom("").Text("Send For Approval").Click("sendforapproval");
                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
 
                       command.Destroy().Text(Resources.ActionButton_Cancel);
@@ -106,100 +106,51 @@
           .Create(create => create.Action("EmployeeAccidentRequest_Create", "EmployeeAccidentRequest"))
           .Update(update => update.Action("EmployeeAccidentRequest_Update", "EmployeeAccidentRequest"))
           .Destroy(destroy => destroy.Action("EmployeeAccidentRequest_Destroy", "EmployeeAccidentRequest"))
-      ))
+      ).ClientDetailTemplateId("template")
+      )
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                            .Name("tabStrip_#=EmployeeAccidentId#")
-            .SelectedIndex(0)
-            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-            .Items(items =>
-            {
-                items.Add().Text("Detail").Content(
-                    @<text>
-                        <div>
-                            <div class="box">
-
-                                <div class="box-col">
-                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                    {#
-
-                                    @* <a href='@Url.Action("SendForApproval", "EmployeeAccident")/?Id=#=EmployeeAccidentId#' title="Send for Insurance"><i class="fa fa-share-square fa-2x"></i></a>*@
-                                    # }#
-
-
+                    .Name("tabStrip_#=EmployeeAccidentId#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+                        items.Add().Text("Detail").Content(
+                            @<text>
+                               <div class="box">                   
+                                   <div class="box-col">
+                                            # if (IsSendForApproval == false || IsSendForApproval == "false") {#
+                                            <a href='@Url.Action("SendForApproval", "EmployeeAccidentRequest")/?id=#=EmployeeAccidentId#' title="Send for Approval">
+                                                <i class="fa fa-share-square fa-2x">Send for Approval</i>
+                                            </a>
+                                            # }#
+                                       
+                                   </div>
+                                    
+                               </div>
+                                     
+                                <div class="row">
+                                    <div class="label">
+                                        CreatedBy:  #=CreatedBy#
+                                    </div>
+                                                    
                                 </div>
-                            </div>
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
 
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
-                                                    </div>
-                                                    <div>
-                                                        #=CreatedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @*<div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            @Html.LabelFor(model => model.DateCreated)
-                                                        </div>
-                                                        <div>
-                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                        </div>
-                                                    </div>
-                                                </div>*@
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModifiedBy)
-                                                    </div>
-                                                    <div>
-
-                                                        #=LastModifiedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            @*<div class="col-md-2">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            @Html.LabelFor(model => model.LastModified)
-                                                        </div>
-                                                        <div>
-                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                        </div>
-                                                    </div>
-                                                </div>*@
-
-                                        </div>
-
-                                    </form>
-
+                                <div class="row">
+                                    <div class="label">
+                                        Last Modified By: #=LastModifiedBy#
+                                    </div>
+                                                   
                                 </div>
-                            </div>
+                                        
 
-                        </div>
-
-                    </text>
+                            </text>
 
 
-            );
-            })
-                                                                                                                                                                                                                                                                                                                        .ToClientTemplate())
+                            );
+                            })
+                                                                                                                                                                                                                                                                                                                                        .ToClientTemplate())
 </script>
 
 <style type="text/css">

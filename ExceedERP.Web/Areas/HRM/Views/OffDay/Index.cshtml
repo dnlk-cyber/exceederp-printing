@@ -7,30 +7,94 @@
 }
 
 @(Html.Kendo().TabStrip()
-                      .Name("tabstrip")
-                      .Animation(animation =>
-                          animation.Open(effect =>
-                              effect.Fade(FadeDirection.In)))
-                      .Items(tabstrip =>
-                      {
-                          tabstrip.Add().Text("Weekend")
-                              .Selected(true)
-                              .Content(@<text><legend>Weekend</legend>
+     .Name("tabstrip")
+     .Animation(animation =>
+         animation.Open(effect =>
+             effect.Fade(FadeDirection.In)))
+     .Items(tabstrip =>
+     {
+         tabstrip.Add().Text(Resources.Navigator_Weekend)
+         .Selected(true)
+         .Content(@<text><legend>@Resources.Navigator_Weekend</legend>
 
-                                @(Html.Kendo().Grid<Weekend>()
-                                                      .Name("Weekend")
-                                                  .Columns(columns =>
-                                                  {
-                                                            columns.Bound(c => c.Name).EditorTemplateName("Enum").Width(200);
-                                                            columns.Bound(c => c.IsHalfDay).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsHalfDay #' " + " # if (IsHalfDay) { #" + "checked='checked'" + "# } #" + " />").Width(200);
-                                                            columns.Bound(c => c.Remark).Width(200);
-                                                //columns.Bound(c => c.OrgBranchName);
-                                                //columns.Bound(c => c.DateCreated);
-                                                //columns.Bound(c => c.LastModified);
-                                                //columns.Bound(c => c.CreatedBy);
-                                                //columns.Bound(c => c.ModifiedBy);
-                                                columns.Command(command =>
-                                                {
+            @(Html.Kendo().Grid<Weekend>()
+                 .Name("Weekend")
+                 .Columns(columns =>
+                 {
+                   columns.Bound(c => c.Name).EditorTemplateName("Enum").Width(200);
+                   columns.Bound(c => c.IsHalfDay).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsHalfDay #' " + " # if (IsHalfDay) { #" + "checked='checked'" + "# } #" + " />").Width(200);
+                   columns.Bound(c => c.Remark).Width(200);
+                 
+                   columns.Command(command =>
+                   {
+                       if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                       {
+                           command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                       }
+                       if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                       {
+                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                       }
+                         }).Width(200);
+                        })
+                            .ToolBar(toolbar =>
+                            {
+                                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                }
+                            })
+                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Selectable(selectable =>
+                                   {
+                                            selectable.Mode(GridSelectionMode.Single);
+                                            selectable.Type(GridSelectionType.Row);
+                                   })
+                                   .Scrollable(h => h.Height(500))
+                                   .Groupable()
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                      .Filterable()
+                                       .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                              .Events(events =>
+                                              {
+                                                  events.Error("error_handler(\"Weekend\")");
+                                                  events.RequestStart("onRequestStart(\"Weekend\")");
+                                                  events.RequestEnd("onRequestEnd(\"Weekend\")");
+                                               })
+
+                            .Model(model => model.Id(p => p.WeekendId))
+                            .Read(read => read.Action("Weekend_Read", "Weekend"))
+                            .Create(create => create.Action("Weekend_Create", "Weekend"))
+                            .Update(update => update.Action("Weekend_Update", "Weekend"))
+                            .Destroy(destroy => destroy.Action("Weekend_Destroy", "Weekend"))
+                                 )
+                                )
+                            </text>);
+
+                                tabstrip.Add().Text(Resources.Enum_HOLIDAY)
+            .Content(@<text> <legend>@Resources.Enum_HOLIDAY</legend>
+
+                    @(Html.Kendo().Grid<Holiday>()
+                                  .Name("Holiday")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+                                  columns.Bound(c => c.DateHoAmhaic).EditorTemplateName("Calander");
+                                  columns.Bound(c => c.Name);
+                                  columns.Bound(c => c.Remark);
+                                
+                                  columns.Command(command =>
+                                  {
                                       if (HttpContext.Current.User.IsInRole("HR_Company_User"))
                                       {
                                           command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -40,122 +104,48 @@
                                           command.Destroy().Text(Resources.ActionButton_Cancel);
                                       }
                                   }).Width(200);
-                                                        })
-                                                  .ToolBar(toolbar =>
-                                    {
-                                              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                              {
-                                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                              }
-                                          })
-                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                              .Selectable(selectable =>
-                                                              {
-                                                                        selectable.Mode(GridSelectionMode.Single);
-                                                                        selectable.Type(GridSelectionType.Row);
-                                                                    })
-                                                                 .Scrollable(h => h.Height(500))
-                                                                     .Groupable()
-                                                                              .Sortable(sortable =>
-                                                                              {
-                                                                                        sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                    })
-                                                                  .Filterable()
-                                                                     .Pageable(pageable => pageable
-                                                                                                .Input(true)
-                                                                                                .Numeric(false)
-                                                                                                .Refresh(true)
-                                                                                                .PageSizes(true)
-                                                                                                .ButtonCount(5))
-                                                          .DataSource(dataSource => dataSource
-                                                              .Ajax()
-                                                                  .Events(events =>
-                                                                          {
-                                                                                    events.Error("error_handler(\"Weekend\")");
-                                                                                    events.RequestStart("onRequestStart(\"Weekend\")");
-                                                                                    events.RequestEnd("onRequestEnd(\"Weekend\")");
-                                                                                })
-
-                                                      .Model(model => model.Id(p => p.WeekendId))
-                                                      .Read(read => read.Action("Weekend_Read", "Weekend"))
-                                                      .Create(create => create.Action("Weekend_Create", "Weekend"))
-                                                      .Update(update => update.Action("Weekend_Update", "Weekend"))
-                                                      .Destroy(destroy => destroy.Action("Weekend_Destroy", "Weekend"))
-                                                  )
-                                )
-
-
-                            </text>);
-
-                                tabstrip.Add().Text("Holiday")
-            .Content(@<text> <legend>Holiday</legend>
-
-                    @(Html.Kendo().Grid<Holiday>()
-                                  .Name("Holiday")
-                              .Columns(columns =>
-                              {
-                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
-                      columns.Bound(c => c.DateHoAmhaic).EditorTemplateName("Calander");
-                      columns.Bound(c => c.Name);
-                      columns.Bound(c => c.Remark);
-          // columns.Bound(c => c.OrgBranchName);
-          //columns.Bound(c => c.DateCreated);
-          //columns.Bound(c => c.LastModified);
-          //columns.Bound(c => c.CreatedBy);
-          //columns.Bound(c => c.ModifiedBy);
-          columns.Command(command =>
-          {
-                         if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                         {
-                             command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                         }
-                         if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                         {
-                             command.Destroy().Text(Resources.ActionButton_Cancel);
-                         }
-                     }).Width(200);
-                  })
+                              })
                               .ToolBar(toolbar =>
-                  {
-                      if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                      {
-                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      }
-                  })
+                              {
+                                  if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                  {
+                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                  }
+                              })
                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                                       .Selectable(selectable =>
                                       {
-                              selectable.Mode(GridSelectionMode.Single);
-                              selectable.Type(GridSelectionType.Row);
-                          })
+                                          selectable.Mode(GridSelectionMode.Single);
+                                          selectable.Type(GridSelectionType.Row);
+                                      })
                                          .Scrollable(h => h.Height(500))
                                              .Groupable()
                                                       .Sortable(sortable =>
                                                       {
-                                              sortable.SortMode(GridSortMode.SingleColumn);
-                                          })
+                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                      })
                                           .Filterable()
                                               .Events(x =>
-                                    {
-                            x.Save("GetDate");
-                            x.Edit("GetDate");
-                        })
+                                              {
+                                                  x.Save("GetDate");
+                                                  x.Edit("GetDate");
+                                              })
                                              .Pageable(pageable => pageable
-                                                                        .Input(true)
-                                                                        .Numeric(false)
-                                                                        .Refresh(true)
-                                                                        .PageSizes(true)
-                                                                        .ButtonCount(5))
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
                                        .Sort(sort => sort.Add("HolidayId").Descending())
                                            .Events(events =>
-                                     {
+                                           {
 
-                             events.Error("error_handler(\"Holiday\")");
-                             events.RequestStart("onRequestStart(\"Holiday\")");
-                             events.RequestEnd("onRequestEnd(\"Holiday\")");
-                         })
+                                               events.Error("error_handler(\"Holiday\")");
+                                               events.RequestStart("onRequestStart(\"Holiday\")");
+                                               events.RequestEnd("onRequestEnd(\"Holiday\")");
+                                           })
 
                                   .Model(model => model.Id(p => p.HolidayId))
                                   .Read(read => read.Action("Holiday_Read", "Holiday"))
@@ -164,10 +154,7 @@
                                   .Destroy(destroy => destroy.Action("Holiday_Destroy", "Holiday"))
                               )
                     )
-
             </text>);
-
-
                   })
 )
 

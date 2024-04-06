@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<CompanyStructureVM> structures = new List<CompanyStructureVM>();
 
-            var companies = db.MainCompanyStructures.Select(x => x.Parent).ToList();
+            var companies = db.MainCompanyStructures.Select(x => x.Parent).Distinct().ToList();
             foreach (var com in companies)
             {
                 var company = new CompanyStructureVM();

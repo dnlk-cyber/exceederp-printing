@@ -1,0 +1,119 @@
+﻿@using System.Collections
+@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.TrainingEducation.TrainingNeedRequest
+@using ExceedERP.Core.Localization
+
+
+<div class="row my-class">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.EmployeeId)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.EmployeeId)
+                             .OptionLabel(Resources.Select)
+                             .DataTextField("FullNameAmharic")
+                                    .DataValueField("EmployeeId")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetEmployeesInSelectedDepartment", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                              .ServerFiltering(false);
+                      })
+                       .ValuePrimitive(true)
+                )
+
+
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.Prerequest)
+            </div>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Prerequest)
+
+                )
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="row my-class">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.EmployeePerformanceGap)
+            </div>
+            <div>
+                @(Html.TextAreaFor(model => model.EmployeePerformanceGap) )
+
+
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.TrainingNeedForEmployeePerformanceGap)
+            </div>
+            <div>
+                @Html.TextAreaFor(model => model.TrainingNeedForEmployeePerformanceGap)
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="row my-class">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.TheNeedForTrainingRelatedToInistitution)
+            </div>
+            <div>
+                @(Html.TextAreaFor(model => model.TheNeedForTrainingRelatedToInistitution) )
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.ExpectedResultFromTraining)
+            </div>
+            <div>
+                @(Html.TextAreaFor(model => model.ExpectedResultFromTraining))
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-left: 10px;
+    }
+
+    
+
+    
+</style>

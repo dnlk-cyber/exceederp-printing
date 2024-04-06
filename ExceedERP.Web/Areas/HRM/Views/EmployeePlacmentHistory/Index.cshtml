@@ -9,7 +9,7 @@
 
 
 @(Html.Kendo().Grid<PlacementHistory>()
-              .Name("PlacementHistoryGrid")
+      .Name("PlacementHistoryGrid")
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);
@@ -55,11 +55,11 @@
                                            e.Edit("GetDate");
                                        })
              .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+                               .Input(true)
+                               .Numeric(false)
+                               .Refresh(true)
+                               .PageSizes(true)
+                               .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
                .Events(events =>
@@ -71,7 +71,7 @@
                        
           .Model(model => model.Id(p => p.PlacementHistoryId))
                               .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory"))
-                              .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory"))
+                        .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory"))
                       .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory"))
                       .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
               )

@@ -101,7 +101,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
 
                 IsForOther = true;
                 return list.Count();
@@ -109,10 +109,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return 0;
         }
+        public bool CheckStatusForBackColor(int termId)
+        {
+            var reques = db.RequestesStatus.Where(x => x.RequestId == termId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Termination").FirstOrDefault();
+            if (reques != null)
+            {
+                return true;
+            }
+            return false;
+        }
         public ActionResult Terminations_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
 
             IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations.Where(x => employeeids.Contains(x.EmployeeId));
             DataSourceResult result = terminations.ToDataSourceResult(request, termination => new
@@ -133,6 +142,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 CreatedBy = termination.CreatedBy,
                 ModifiedBy = termination.ModifiedBy,
                 OrgBranchName = termination.OrgBranchName,
+                IsApproved = CheckStatusForBackColor(termination.TerminationId),
                 DepartmentSendForApprovalBy = termination.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = termination.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = termination.IsDepartmentSendForApproval,

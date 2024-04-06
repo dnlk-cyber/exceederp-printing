@@ -1,4 +1,16 @@
-﻿using System;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.HRM.SelfCare;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Hubs;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -6,21 +18,6 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.HRM.SelfCare;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Core.Domain.Global;
-using ExceedERP.Web.Areas.Common.Controllers;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
-using ExceedERP.Web.Controllers;
-using ExceedERP.Web.Helpers;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Hubs;
-using ExceedERP.Web.Models;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 {
@@ -81,7 +78,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         {
             var terminationTypes = db.Lookups.Where(l => l.LookupType == LookUpTypes.TERMINATIONTYPE);
             ViewData["TerminationTypes"] = terminationTypes;
-            ViewData["EmployeeName"] = db.Person_Employee?.ToList();
+            ViewData["EmployeeName"] = db.Person_Employee.ToList().Select(e => new { e.EmployeeId, FullNameAmharic = e.EmployeeCode + " " + e.FullNameAmharic, FullNameaEnglish = e.EmployeeCode + " " + e.FullNameaEnglish}).ToList();
             var list = inputs.GetEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = list;//.Where(x => x.IsActive);
         }
@@ -95,11 +92,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 {
                     var formatedData = new
                     {
-                        Message = "This request is already approved",
+                        Message = "This request is already Terminated",
                         Status = "FAIL"
                     };
                     return Json(formatedData, JsonRequestBehavior.AllowGet);
                 }
+              
                 else
                 {
                     termination.IsOnlineApproved = true;
@@ -170,7 +168,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 
                     var formatedData = new
                     {
-                        Message = "This employee is successfully Terminated",
+                        Message = "This employee is Forcible Terminated successfully",
                         Status = "OK"
                     };
                     return Json(formatedData, JsonRequestBehavior.AllowGet);
@@ -189,6 +187,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
             if (termination != null)
             {
                 termination.IsOnlineApproved = true;
+                termination.IsForciblyTerminated = true;
+                termination.Remark += "Terminated back by " + User.Identity.Name+" ";
 
                 db.Entry(termination).State = EntityState.Modified;
 
@@ -250,6 +250,74 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
             };
             return Json(formatedData1, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult UnterminateEmployee(int id)
+        {
+            var termination = db.Terminations.Where(x=>x.IsForciblyTerminated || x.IsOnlineApproved).FirstOrDefault(x => x.TerminationId == id);
+            if (termination != null)
+            {
+                termination.IsOnlineApproved = false;
+                termination.IsForciblyTerminated = false;
+                termination.Remark += "Unterminated back by " + User.Identity.Name+",";
+
+                db.Entry(termination).State = EntityState.Modified;
+
+                #region change resquest status 
+
+                var statusDep = new RequestesStatus
+                {
+                    RequestId = termination.TerminationId,
+                    Date = DateTime.Now.Date,
+                    ReferenceType = "Termination",
+                    Status = RequestStatus.DEPARTMENT_APPROVAL
+                };
+                db.RequestesStatus.Add(statusDep);
+
+                var statusApp = new RequestesStatus
+                {
+                    RequestId = termination.TerminationId,
+                    Date = DateTime.Now.Date,
+                    ReferenceType = "Termination",
+                    Status = RequestStatus.REJECT
+                };
+                db.RequestesStatus.Add(statusApp);
+
+                #endregion
+
+                db.SaveChanges();
+
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+                if (person != null)
+                {
+                    person.IsActive = true;
+
+                    db.Entry(person).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                var placements = db.Placements.Where(x => x.EmployeeId == termination.EmployeeId).ToList();
+
+                foreach (var place in placements)
+                {
+                    place.isCurrent = true;
+                    db.Entry(place).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                var formatedData = new
+                {
+                    Message = "This employee is successfully un-Terminated",
+                    Status = "OK"
+                };
+                return Json(formatedData, JsonRequestBehavior.AllowGet);
+
+            }
+            var formatedData1 = new
+            {
+                Message = "Please select employee",
+                Status = "Fail"
+            };
+            return Json(formatedData1, JsonRequestBehavior.AllowGet);
+        }
 
         public JavaScriptResult UpdateTerminationStatus()
         {
@@ -290,9 +358,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         [AuthorizeRoles(HrmConstants.HRTerminationUser, HrmConstants.HRAdmin)]
         public ActionResult Terminations_Read([DataSourceRequest]DataSourceRequest request)
         {
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetAllUserBranchEmployees(User.Identity.Name);
-            IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            db.Database.CommandTimeout = 7200;//added
+            //List<int> employees = inputs.GetUserBranchAndBusinessUnitEmployees(User.Identity.Name);
+            IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations/*.Where(x => employees.Contains(x.EmployeeId))*/;
             //List<Core.Domain.HRM.EmployeeDetail.Termination> terminationList = new List<Core.Domain.HRM.EmployeeDetail.Termination>();
             //foreach (var t in terminations)
             //{
@@ -324,6 +392,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 EmployeeCode = termination.EmployeeCode,
                 IsOnlineApproved = termination.IsOnlineApproved,
                 IsDirect = termination.IsDirect,
+                IsForciblyTerminated = termination.IsForciblyTerminated,
                 IsActive = CheckIfActive(termination.EmployeeId)
                 //TerminationLevel = termination.TerminationLevel
             });
@@ -331,29 +400,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
             return Json(result);
         }
 
-        public void SetEmployeeId(string fullName)
-        {
-            List<EmployeeIdView> EmployeeIdViews = new List<EmployeeIdView>();
-            EmployeeIdView EmployeeIdView = new EmployeeIdView();
-            var employeeList = db.Person_Employee.AsQueryable();
-            if (employeeList.Count() > 0)
-            {
-                employeeList = employeeList.Where(l => l.IsActive).AsQueryable();
-            }
-            foreach (var emp in employeeList)
-            {
-                EmployeeIdView = new EmployeeIdView();
-                EmployeeIdView.PersonId = emp.EmployeeId;
-                EmployeeIdView.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
-                EmployeeIdViews.Add(EmployeeIdView);
-            }
-            var employees = EmployeeIdViews.Where(p => p.FullName == fullName).FirstOrDefault();
-            if (employees != null)
-            {
-                HRMInputs.EmployeeId = employees.PersonId;
-            }
-            ;
-        }
         [AuthorizeRoles(HrmConstants.HRTerminationUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Terminations_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.EmployeeDetail.Termination termination)
@@ -417,7 +463,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                     ModifiedBy = termination.ModifiedBy,
                     IsOnlineApproved = termination.IsOnlineApproved,
                     IsDirect = true,
-                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == termination.EmployeeId).FirstOrDefault().EmployeeCode,
+                    EmployeeCode = db.Person_Employee.Find(termination.EmployeeId).EmployeeCode,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
                     //TerminationLevel = termination.TerminationLevel
 
@@ -459,22 +505,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 var splitDate = termination.TerminationDateAm.Split('/');
                 termination.TerminationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-            else
-            {
-                ModelState.AddModelError("", "Termination Date Is Required");
-            }
+            //else
+            //{
+            //    ModelState.AddModelError("", "Termination Date Is Required");
+            //}
 
             if (termination.ApplicationDateAm != null)
             {
                 var splitDate = termination.ApplicationDateAm.Split('/');
                 termination.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-            else
-            {
-                ModelState.AddModelError("", "Termination Date Is Required");
-            }
+            //else
+            //{
+            //    ModelState.AddModelError("", "Termination Date Is Required");
+            //}
 
-            var checkExistance = db.Terminations.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+            var checkExistance = db.Terminations.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId&&x.TerminationId != termination.TerminationId);
             if (checkExistance != null)
             {
                 ModelState.AddModelError("", "This employee already request the termination!!");
@@ -510,7 +556,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                     CreatedBy = termination.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     OrgBranchName = termination.OrgBranchName,
-                    EmployeeCode = termination.EmployeeCode,
+                    EmployeeCode = db.Person_Employee.Find(termination.EmployeeId).EmployeeCode,
                     IsDirect = termination.IsDirect,
                     IsOnlineApproved = termination.IsOnlineApproved,
                     //TerminationLevel = termination.TerminationLevel
@@ -696,6 +742,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         {
             HRMInputs.SelectedFile = id;
 
+        }
+        public void SetEmployeeId(string fullName)
+        {
+            List<EmployeeIdView> EmployeeIdViews = new List<EmployeeIdView>();
+            EmployeeIdView EmployeeIdView = new EmployeeIdView();
+            var employeeList = db.Person_Employee.AsQueryable();
+            if (employeeList.Count() > 0)
+            {
+                employeeList = employeeList.Where(l => l.IsActive).AsQueryable();
+            }
+            foreach (var emp in employeeList)
+            {
+                EmployeeIdView = new EmployeeIdView();
+                EmployeeIdView.PersonId = emp.EmployeeId;
+                EmployeeIdView.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
+                EmployeeIdViews.Add(EmployeeIdView);
+            }
+            var employees = EmployeeIdViews.Where(p => p.FullName == fullName).FirstOrDefault();
+            if (employees != null)
+            {
+                HRMInputs.EmployeeId = employees.PersonId;
+            }
+        ;
         }
         public ActionResult Attachments_Destroy([DataSourceRequest]DataSourceRequest request, Attachment attachment)
         {

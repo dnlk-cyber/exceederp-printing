@@ -117,8 +117,79 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox15.Value" xml:space="preserve">
-    <value>{=Fields.CheckTermination} ያልተጣራ የወር ደመወዝ ብር {=Fields.CurrentSalary} /{=Fields.SalaryInWord}/ መሆኑን እየገለፅን  ተገቢው የስራ ግብር ከደመወዛቸው ላይ እየተቀነሰ ለገቢዎችና ጉምሩክ ባለስልጣን ገቢ የተደረገ መሆኑን እንገልፃለን፡፡ {=Fields.TerminationMassage}
-</value>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox46.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.Tel</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Fax</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>= Fields.Pobox</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>= Fields.Email</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Date:-</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>_____________</value>
+  </data>
+  <data name="textBox40.Value" xml:space="preserve">
+    <value>Number :-</value>
+  </data>
+  <data name="textBox43.Value" xml:space="preserve">
+    <value>_____________</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>To whom it may concern</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>{Fields.JobTitleName} From {Fields.From} To {Fields.To}  {Fields.Branch} {Fields.RecruitmentType}</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= RowNumber("tblexpe")</value>
+  </data>
+  <data name="htmlTextBox1.Value" xml:space="preserve">
+    <value>&lt;p&gt;{Fields.TempOne}'s work experience detailing the time spent at our company by&amp;nbsp;&amp;nbsp; {Fields.ApplicantName} They asked us to write evidence in {Fields.Date} Accordingly, according to the information obtained from their personal files:&lt;/p&gt;&lt;p&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>{Fields.CheckTermination} We declare that the Gross monthly salary&amp;nbsp; in Birr is {Fields.CurrentSalary} ({Fields.SalaryInWord}&amp;nbsp; and the appropriate employment tax is deducted from their salary and submitted to the Revenue and Customs Authority.&amp;nbsp; {Fields.TerminationMassage}&lt;br /&gt;</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>With Regards</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>CC፡-</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.Abbreviation</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>  personal archive</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>page:</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee ID</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>With Header</value>
   </data>
 </root>

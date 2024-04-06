@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -14,6 +14,7 @@ using ExceedERP.Web.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
@@ -47,21 +48,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                         var attendance = new AttendanceNew
                         {
                             EmployeeId = emp,
+                            OrgStructureId = placement.OrgStructureId,
                             IsPresentMorning = true,
                             IsPresentAfternoon = true,
+                            MorningAttendance = TakeAttendance.Present,
+                            AfternoonAttendance = TakeAttendance.Present,
                             Date = date,
                             IsDepartmentApproved = false,
                             IsApproved = false
                         };
 
                         attendance.DateAm = XAPI.EthiopicDateTime.GetEthiopicDate(date.Day, date.Month, date.Year);
-
                         var period = db.GLPeriods.FirstOrDefault(x => x.DateFrom <= date && x.DateTo >= date);
                         if (period != null)
                         {
                             attendance.GlFisicalYearId = period.GlFiscalYearId;
                             attendance.GlPeriodId = period.GLPeriodId;
-
                             db.AttendanceNews.Add(attendance);
                             db.SaveChanges();
                         }
@@ -80,7 +82,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
             if (placement != null)
             {
-                var placements = db.Placements.Where(x => x.OrgStructureId == placement.OrgStructureId && x.isCurrent);
+                var placements = db.Placements.Where(x => x.OrgStructureId == placement.OrgStructureId &&x.BranchId==placement.BranchId&& x.isCurrent);
                 if (placements.Any())
                 {
                     var empIdList = placements.Select(x => x.EmployeeId).ToList();
@@ -90,7 +92,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 var employeesUnderThisParent = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
                 foreach (var und in employeesUnderThisParent)
                 {
-                    var employeesPlacedInThisParent = db.Placements.Where(x => x.OrgStructureId == und.OrgStructureId).ToList();
+                    var employeesPlacedInThisParent = db.Placements.Where(x => x.OrgStructureId == und.OrgStructureId&& x.BranchId == placement.BranchId).ToList();
                     if (employeesPlacedInThisParent.Any())
                     {
                         var empIds = employeesPlacedInThisParent.Select(x => x.EmployeeId).ToList();
@@ -144,7 +146,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             {
                 AttendanceNewId = attendanceNew.AttendanceNewId,
                 EmployeeId = attendanceNew.EmployeeId,
-                OrgStructureId = GetDepartment(attendanceNew.EmployeeId),
+                //OrgStructureId = GetDepartment(attendanceNew.EmployeeId),
+                OrgStructureId = attendanceNew.OrgStructureId,
+                MorningAttendance = attendanceNew.MorningAttendance,
+                AfternoonAttendance = attendanceNew.AfternoonAttendance,
                 Date = attendanceNew.Date,
                 DateAm = attendanceNew.DateAm,
                 IsPresentMorning = attendanceNew.IsPresentMorning,
@@ -161,11 +166,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AttendanceNews_Create([DataSourceRequest]DataSourceRequest request, AttendanceNew attendanceNew)
         {
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == attendanceNew.EmployeeId && x.isCurrent);
+            if (placement != null)
+            {
+                attendanceNew.OrgStructureId = placement.OrgStructureId;
+            }
             if (ModelState.IsValid)
             {
                 var entity = new AttendanceNew
                 {
                     EmployeeId = attendanceNew.EmployeeId,
+                    OrgStructureId = attendanceNew.OrgStructureId,
+                    MorningAttendance = attendanceNew.MorningAttendance,
+                    AfternoonAttendance = attendanceNew.AfternoonAttendance,
                     Date = attendanceNew.Date,
                     DateAm = attendanceNew.DateAm,
                     IsPresentMorning = attendanceNew.IsPresentMorning,
@@ -184,12 +197,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AttendanceNews_Update([DataSourceRequest]DataSourceRequest request, AttendanceNew attendanceNew)
         {
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == attendanceNew.EmployeeId && x.isCurrent);
+            if (placement != null)
+            {
+                attendanceNew.OrgStructureId = placement.OrgStructureId;
+            }
+            if (attendanceNew.MorningAttendance == TakeAttendance.Absent)
+            {
+                attendanceNew.IsPresentMorning = false;
+            }
+            if (attendanceNew.AfternoonAttendance == TakeAttendance.Absent)
+            {
+                attendanceNew.IsPresentAfternoon = false;
+            }
             if (ModelState.IsValid)
             {
                 var entity = new AttendanceNew
                 {
                     AttendanceNewId = attendanceNew.AttendanceNewId,
                     EmployeeId = attendanceNew.EmployeeId,
+                    OrgStructureId = attendanceNew.OrgStructureId,
+                    MorningAttendance = attendanceNew.MorningAttendance,
+                    AfternoonAttendance = attendanceNew.AfternoonAttendance,
                     Date = attendanceNew.Date,
                     DateAm = attendanceNew.DateAm,
                     IsPresentMorning = attendanceNew.IsPresentMorning,
@@ -214,6 +243,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 {
                     AttendanceNewId = attendanceNew.AttendanceNewId,
                     EmployeeId = attendanceNew.EmployeeId,
+                    OrgStructureId = attendanceNew.OrgStructureId,
+                    MorningAttendance = attendanceNew.MorningAttendance,
+                    AfternoonAttendance = attendanceNew.AfternoonAttendance,
                     Date = attendanceNew.Date,
                     DateAm = attendanceNew.DateAm,
                     IsPresentMorning = attendanceNew.IsPresentMorning,
@@ -240,30 +272,56 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                     var attendance = db.AttendanceNews.FirstOrDefault(x => x.AttendanceNewId == att.AttendanceNewId);
                     if (attendance != null)
                     {
-                        attendance.IsPresentMorning = att.IsPresentMorning;
-                        attendance.IsPresentAfternoon = att.IsPresentAfternoon;
-
+                        
+                        attendance.MorningAttendance = att.MorningAttendance;
+                        attendance.AfternoonAttendance = att.AfternoonAttendance;
+                        if(att.MorningAttendance == TakeAttendance.Absent)
+                        {
+                            attendance.IsPresentMorning = false;
+                            attendance.MorningAttendance = TakeAttendance.Absent;
+                        }
+                        if (att.AfternoonAttendance == TakeAttendance.Absent)
+                        {
+                            attendance.IsPresentAfternoon = false;
+                            attendance.AfternoonAttendance = TakeAttendance.Absent;
+                        }
+                        if (att.MorningAttendance != TakeAttendance.Absent)
+                        {
+                            attendance.IsPresentMorning = true;
+                        }
+                        if (att.AfternoonAttendance != TakeAttendance.Absent)
+                        {
+                            attendance.IsPresentAfternoon = true;
+                        }
+                       
                         var leaveTaken = db.Leaves.FirstOrDefault(x => x.EmployeeId == att.EmployeeId && x.From <= att.Date && x.To >= att.Date);
 
                         if (leaveTaken != null)
                         {
-                            if (leaveTaken.Day == LeaveDay.ግማሽ_ቀን)
+                            if (leaveTaken.Day == LeaveDay.Half_Day)
                             {
-                                if (leaveTaken.MorningOrAfternoon == MorningOrAfternoon.ጥዋት)
+                                if (leaveTaken.MorningOrAfternoon == MorningOrAfternoon.Morning)
                                 {
+                                    attendance.MorningAttendance = TakeAttendance.Leave;
                                     attendance.IsPresentMorning = true;
                                 }
-                                else if (leaveTaken.MorningOrAfternoon == MorningOrAfternoon.ከሰዓት)
+                                else if (leaveTaken.MorningOrAfternoon == MorningOrAfternoon.Afternoon)
                                 {
                                     attendance.IsPresentAfternoon = true;
+                                    attendance.AfternoonAttendance = TakeAttendance.Leave;
+
                                 }
                             }
                             else
                             {
                                 attendance.IsPresentMorning = true;
                                 attendance.IsPresentAfternoon = true;
+                                attendance.MorningAttendance = TakeAttendance.Leave;
+                                attendance.AfternoonAttendance = TakeAttendance.Leave;
+
                             }
                         }
+                        
 
                         db.Entry(attendance).State = System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
@@ -285,10 +343,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 {
                     att.IsDepartmentApproved = true;
                     int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                    att.DepartmentApproverId = empId;
+                    int orgId = UserInformationHelper.GetEmployeeDepartmentIdByEmpId(empId);
+                    att.ApproverEmpId = empId;
+                    att.DepartmentApproverId = orgId;
 
                     db.Entry(att).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
+                    if (att != null)
+                    {
+                        NotifModels notif = new NotifModels
+                        {
+                            UserId = UserInformationHelper.GetEmployeeUserId(att.EmployeeId),
+                            Title = "attendance ",
+                            Message = "Your attendance  is Approved by Department"
+                        };
+
+                        Notify.NotifyUser(notif);
+                    }
                 }
 
                 var formattedData = new
@@ -330,10 +401,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                     {
                         att.IsDepartmentApproved = false;
                         int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                        att.DepartmentApproverId = empId;
+                        int orgId = UserInformationHelper.GetEmployeeDepartmentIdByEmpId(empId);
+                        att.ApproverEmpId = empId;
+                        att.DepartmentApproverId = orgId;
 
                         db.Entry(att).State = System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
+                        if (att != null)
+                        {
+                            NotifModels notif = new NotifModels
+                            {
+                                UserId = UserInformationHelper.GetEmployeeUserId(att.EmployeeId),
+                                Title = "attendance ",
+                                Message = "Your attendance  is returned by Department"
+                            };
+
+                            Notify.NotifyUser(notif);
+                        }
                     }
                 }
 

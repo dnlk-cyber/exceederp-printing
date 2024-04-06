@@ -9,17 +9,17 @@
           .Name("CourseTrackingGrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(100);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
           //columns.ForeignKey(c => c.TrainingPlanId, (IEnumerable)ViewData["plan"], "TrainingPlanId", "NoofTrainee").EditorTemplateName("TrainingPlan").Width(120);
-          columns.Bound(x=>x.NoOfTrainee).Width(120);
-          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
+          columns.Bound(x=>x.NoOfTrainee).Width(130);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           columns.Bound(c => c.FromAmharic).Width(80);
           columns.Bound(c => c.ToAmharic).Width(80);
           columns.Bound(c => c.Cost).Width(70);
           columns.Bound(c => c.TrainingType).EditorTemplateName("Enum").Width(110);
           columns.Bound(c => c.TrainingTerm).EditorTemplateName("Enum").Width(120);
           columns.Bound(c => c.TrainingLocation).EditorTemplateName("Enum").Width(120);
-          columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["ProviderList"], "MainCompanyId", "TradeName").EditorTemplateName("TrainingProvider").Width(120);
+          columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["ProviderList"], "MainCompanyId", "TradeName").EditorTemplateName("TrainingProvider").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           //columns.Bound(c => c.Remark);
           columns.Command(command =>
           {
@@ -63,7 +63,6 @@
       })
                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CourseTracking").Window(window => { window.Title(Resources.NavigatorTraining_CourseTracking); window.Scrollable(false); }))
          .Scrollable(h => h.Height(500))
-             .Groupable()
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -179,7 +178,7 @@
           .Items(items =>
           {
 
-          items.Add().Text("Training Evaluation").Content(
+          items.Add().Text(Resources.TrainingEvaluation).Content(
             @<text>
     <a href='@Url.Action("TrainingEvaluation", "PrintableLetter")/?traineeId=#=TraineeId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
 
@@ -217,7 +216,7 @@
             </text>
                   );
 
-          items.Add().Text("Training Feedback").Content(
+          items.Add().Text(Resources.TrainingFeedback).Content(
             @<text>
 
                 @(Html.Kendo().Grid<TrainingFeedback>()

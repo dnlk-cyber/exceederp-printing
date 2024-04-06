@@ -6,18 +6,26 @@
 @using ExceedERP.Core.Localization
 <br />
 <form>
-
+    <div class="row "style="margin-bottom:10px">
+        <div class="col-md-1"> </div>
+        @(Html.Kendo().CheckBoxFor(m => m.IsForAll).HtmlAttributes(new { @class="my-checkbox", onchange = "SetAllowance(this)" }))
+    </div>
+    <div class="row">
+        <div class="col-md-1"> </div>
+    </div>
     <div class="row">
         <div class="col-md-1">
 
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <div>@Html.LabelFor(model => model.LookupId, htmlAttributes: new {@class = "control-label col-md-8"})</div>
+                <div>@Html.LabelFor(model => model.LookupId, htmlAttributes: new {@class = "control-label col-md-10"})</div>
 
                 @(Html.Kendo().DropDownListFor(m => m.LookupId)
                       .DataTextField("Description")
                       .DataValueField("LookupId")
+                      .Filter("contains")
+                      .Events(ev=>ev.Change("onCheckBookChange"))
                       .DataSource(dataSource =>
                       {
                           dataSource.Read(read => read.Action("GetAllowance", "HRMDataProvider", new { area = "HRM" }))
@@ -39,8 +47,9 @@
                         @(Html.Kendo().DropDownListFor(model => model.BenefitName)
                     .ValuePrimitive(true)
                     .OptionLabel(Resources.Select)
-                                    .DataValueField("LookupId")
-                                            .DataTextField("Description")
+                    .DataValueField("LookupId")
+                    .DataTextField("Description")
+                    .Filter("contains")
                               .DataSource(dataSource =>
                               {
                                   dataSource.Read(read => read.Action("GetBenefit", "HRMDataProvider", new { area = "HRM" }))
@@ -59,11 +68,12 @@
                     </div>
                     <div>
 
-                        @(Html.Kendo().DropDownListFor(model => model.UnitofMeasurement)
+                    @(Html.Kendo().DropDownListFor(model => model.UnitofMeasurement)
                     .ValuePrimitive(true)
                     .OptionLabel(Resources.Select)
                                     .DataValueField("LookupId")
-                                            .DataTextField("Description")
+                                    .DataTextField("Description")
+                                    .Filter("contains")
                               .DataSource(dataSource =>
                               {
                                   dataSource.Read(read => read.Action("GetUOM", "HRMDataProvider", new { area = "HRM" }))

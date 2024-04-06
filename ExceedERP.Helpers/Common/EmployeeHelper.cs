@@ -16,6 +16,22 @@ namespace ExceedERP.Helpers.Common
     {
         static ExceedDbContext db = new ExceedDbContext();
 
+        public static int GetDelegatorEmployeeId(int empId)
+        {
+            int delegatorEmpId = 0;
+            DateTime curentDate = DateTime.Today;
+
+            ExceedDbContext db = new ExceedDbContext();
+            var delegation = db.Delegations.Where(x => x.EmployeeId == empId)
+                .Where(x => x.ToDateTime > curentDate).FirstOrDefault();
+            if (delegation != null)
+            {
+                delegatorEmpId = delegation.FromEmployeeId;
+            }
+
+            return delegatorEmpId;
+        }
+
         public static List<Person_Employee> GetEmployeesByBranch(int branchId)
         {
             db = new ExceedDbContext();
@@ -165,6 +181,17 @@ namespace ExceedERP.Helpers.Common
             return Name;
         }
         //new
+        public static double GetAge(int empId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var employee = db.Person_Employee.FirstOrDefault(x => x.IsActive && x.EmployeeId == empId);
+            if (employee != null)
+            {
+                double age = DateTime.Now.Date.Subtract(new DateTime(employee.DateOfBirth.Year, employee.DateOfBirth.Month, employee.DateOfBirth.Day)).TotalDays / 365.25;
+                return age;
+            }
+            return 0;
+        }
         public static string GetEmployeeJobTitle(int empid)
         {
             string jobTitle = "";
@@ -183,6 +210,50 @@ namespace ExceedERP.Helpers.Common
         }
 
         public static int GetSupervisor(int empid)
+        {
+            db = new ExceedDbContext();
+
+            int nextempid = 0;
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+            if (placement != null)
+            {
+                if (placement.IsHead)
+                {
+                    var currentWorkunit = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+                    if (currentWorkunit != null)
+                    {
+                        var parentworkunit = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == currentWorkunit.Parent);
+                        if (parentworkunit != null)
+                        {
+                            var parentbranch = db.Branch.Find(placement.BranchId);
+                            var headPlacement = db.Placements
+                                .Where(x => x.BranchId == parentbranch.BranchId || x.BranchId == placement.BranchId)
+                                .FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == parentworkunit.OrgStructureId);
+                            if (headPlacement != null)
+                            {
+                                nextempid = headPlacement.EmployeeId;
+                            }
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    var head = db.Placements
+                        .Where(x => x.BranchId == placement.BranchId)//added
+                        .FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
+                    if (head != null)
+                    {
+                        nextempid = head.EmployeeId;
+                    }
+                }
+            }
+            return nextempid;
+        }
+
+        public static int GetSupervisor_old(int empid)
         {
             db = new ExceedDbContext();
             int nextempid = 0;
@@ -216,8 +287,75 @@ namespace ExceedERP.Helpers.Common
             }
             return nextempid;
         }
-
+        //new filtered by branch also
         public static List<int> GetSubordinates(int empid)
+        {
+
+            List<int> employeeList = new List<int>();
+            var directSub = GetSubordinateEmps(empid);
+            employeeList.AddRange(directSub);
+
+            //if the current employee is delegated by other
+            int delegatetorEmpId = GetDelegatorEmployeeId(empid);
+            if (delegatetorEmpId != 0)
+            {
+                var delegatedSub = GetSubordinateEmps(delegatetorEmpId);
+                employeeList.AddRange(delegatedSub);
+            }
+
+            return employeeList;
+
+        }
+        private static List<int> GetSubordinateEmps(int empid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> employeeList = new List<int>();
+            //if the current employee is delegated by other
+            int delegatetorEmpId = GetDelegatorEmployeeId(empid);
+
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+
+            if (placement != null && placement.IsHead)
+            {
+                var empPlacement = db.Placements.Where(x => x.isCurrent && x.OrgStructureId == placement.OrgStructureId && x.BranchId == placement.BranchId).ToList();
+
+                foreach (var emp in empPlacement)
+                {
+                    employeeList.Add(emp.EmployeeId);
+                }
+                var childWorkunits = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
+                foreach (var ch in childWorkunits)
+                {
+                    var headPlacement = db.Placements.FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId && x.BranchId == placement.BranchId);
+                    if (headPlacement != null)
+                    {
+                        employeeList.Add(headPlacement.EmployeeId);
+                    }
+
+                    var branchs = db.Branch.Where(x => x.BranchId != placement.BranchId && x.ParentBranchId == placement.BranchId).ToList();//added &&x.ParentBranchId== placement.BranchId
+                    foreach (var bra in branchs)
+                    {
+                        var otherOneBranch = db.Placements.FirstOrDefault(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
+                        // if that department is not there in the branch, list all the child department heads to child of the head office parent 
+                        if (otherOneBranch == null)
+                        {
+                            var otherBranchChilds = db.Placements.Where(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId).Select(x => x.EmployeeId).ToList();
+                            employeeList.AddRange(otherBranchChilds);
+                        }
+                    }
+                }
+
+                return employeeList;
+            }
+            else
+            {
+                if (placement != null) employeeList.Add(placement.EmployeeId);
+                return employeeList;
+            }
+            //child head
+        }
+        public static List<int> GetSubordinates_old1(int empid)
         {
             ExceedDbContext db = new ExceedDbContext();
             List<int> employeeList = new List<int>();
@@ -262,7 +400,172 @@ namespace ExceedERP.Helpers.Common
 
 
         }
+        //new ..added active branch only
+        public static List<int> GetSubordinates_FilteredByBranchAlso(int empid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> employeeList = new List<int>();
+
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+            if (placement != null && placement.IsHead)
+            {
+                var empPlacement = db.Placements.Where(x => x.isCurrent && x.OrgStructureId == placement.OrgStructureId && x.BranchId == placement.BranchId).ToList();
+
+                foreach (var emp in empPlacement)
+                {
+                    employeeList.Add(emp.EmployeeId);
+                }
+                var childWorkunits = db.MainCompanyStructures.Where(x => x.IsActive).Where(x => x.Parent == placement.OrgStructureId).ToList();
+                foreach (var ch in childWorkunits)
+                {
+                    var headPlacement = db.Placements.FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId && x.BranchId == placement.BranchId);
+                    if (headPlacement != null)
+                    {
+                        employeeList.Add(headPlacement.EmployeeId);
+                    }
+
+                    var branchs = db.Branch.Where(x => x.IsActive).Where(x => x.BranchId != placement.BranchId).ToList();
+                    foreach (var bra in branchs)
+                    {
+                        var otherOneBranch = db.Placements.FirstOrDefault(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
+                        // if that department is not there in the branch, list all the child department heads to child of the head office parent 
+                        if (otherOneBranch == null)
+                        {
+                            var otherBranchChilds = db.Placements.Where(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId).Select(x => x.EmployeeId).ToList();
+                            employeeList.AddRange(otherBranchChilds);
+                        }
+                    }
+                }
+
+                return employeeList;
+            }
+            else
+            {
+                if (placement != null) employeeList.Add(placement.EmployeeId);
+                return employeeList;
+            }
+            //child head
+        }
+        public static List<int> GetSubordinates_FilteredByBranchAlso_1(int empid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> employeeList = new List<int>();
+
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+            if (placement != null && placement.IsHead)
+            {
+                var empPlacement = db.Placements.Where(x => x.isCurrent && x.OrgStructureId == placement.OrgStructureId && x.BranchId == placement.BranchId).ToList();
+
+                foreach (var emp in empPlacement)
+                {
+                    employeeList.Add(emp.EmployeeId);
+                }
+                var childWorkunits = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
+                foreach (var ch in childWorkunits)
+                {
+                    var headPlacement = db.Placements.FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId && x.BranchId == placement.BranchId);
+                    if (headPlacement != null)
+                    {
+                        employeeList.Add(headPlacement.EmployeeId);
+                    }
+
+                    var branchs = db.Branch.Where(x => x.BranchId != placement.BranchId && x.ParentBranchId == placement.BranchId).ToList();//added &&x.ParentBranchId== placement.BranchId
+                    foreach (var bra in branchs)
+                    {
+                        var otherOneBranch = db.Placements.FirstOrDefault(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
+                        // if that department is not there in the branch, list all the child department heads to child of the head office parent 
+                        if (otherOneBranch == null)
+                        {
+                            var otherBranchChilds = db.Placements.Where(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId).Select(x => x.EmployeeId).ToList();
+                            employeeList.AddRange(otherBranchChilds);
+                        }
+                    }
+                }
+
+                return employeeList;
+            }
+            else
+            {
+                if (placement != null) employeeList.Add(placement.EmployeeId);
+                return employeeList;
+            }
+            //child head
+        }
+        //previous method
+        public static List<int> GetSubordinates_FilteredByBranchAlso_old1(int empid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> employeeList = new List<int>();
+
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+            if (placement != null && placement.IsHead)
+            {
+                var empPlacement = db.Placements.Where(x => x.isCurrent && x.OrgStructureId == placement.OrgStructureId && x.BranchId == placement.BranchId).ToList();
+
+                foreach (var emp in empPlacement)
+                {
+                    employeeList.Add(emp.EmployeeId);
+                }
+                var childWorkunits = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
+                foreach (var ch in childWorkunits)
+                {
+                    var headPlacement = db.Placements.FirstOrDefault(x => x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId && x.BranchId == placement.BranchId);
+                    if (headPlacement != null)
+                    {
+                        employeeList.Add(headPlacement.EmployeeId);
+                    }
+
+                    var branchs = db.Branch.Where(x => x.BranchId != placement.BranchId).ToList();
+                    foreach (var bra in branchs)
+                    {
+                        var otherOneBranch = db.Placements.FirstOrDefault(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == placement.OrgStructureId);
+                        // if that department is not there in the branch, list all the child department heads to child of the head office parent 
+                        if (otherOneBranch == null)
+                        {
+                            var otherBranchChilds = db.Placements.Where(x => x.BranchId == bra.BranchId && x.isCurrent && x.IsHead && x.OrgStructureId == ch.OrgStructureId).Select(x => x.EmployeeId).ToList();
+                            employeeList.AddRange(otherBranchChilds);
+                        }
+                    }
+                }
+
+                return employeeList;
+            }
+            else
+            {
+                if (placement != null) employeeList.Add(placement.EmployeeId);
+                return employeeList;
+            }
+            //child head
+        }
         //new 
+        public static List<int> GetSubordinates_FilteredByHead(int empid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> employeeList = new List<int>();
+
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+            if (placement != null && placement.IsHead)
+            {
+                var empPlacement = db.Placements.Where(x => x.isCurrent && x.HeadId == placement.EmployeeId).ToList();
+
+                foreach (var emp in empPlacement)
+                {
+                    employeeList.Add(emp.EmployeeId);
+                }
+
+                return employeeList;
+            }
+            else
+            {
+                //if (placement != null) employeeList.Add(placement.EmployeeId);
+                return employeeList;
+            }
+
+        }
         public static string GetDaystoWords(double totalday)
         {
             //int totalday = (int)days;
@@ -394,15 +697,29 @@ namespace ExceedERP.Helpers.Common
         public static int GetEmployeePlacementBranch(int empid)
         {
             ExceedDbContext db = new ExceedDbContext();
-            int branch = 0;
+            int branchId = 0;
             var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
 
             if (placement != null)
             {
-                branch = placement.BranchId;
+                branchId = placement.BranchId;
 
             }
-            return branch;
+            return branchId;
+        }
+
+        public static int GetEmployeePlacementBusinessUnit(int empid)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            int businessUnitId = 0;
+            var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empid);
+
+            if (placement != null)
+            {
+                businessUnitId = placement.BusinessUnitId;
+
+            }
+            return businessUnitId;
         }
         //new 
         public static string GetEmployeePlacementBranchName(int empid)

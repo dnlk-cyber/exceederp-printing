@@ -4,13 +4,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Monthly Leave Plan</legend>
+<legend>@Resources.MonthlyLeavePlan</legend>
 @(Html.Kendo().Grid<MonthlyLeavePlan>()
                   .Name("MonthlyLeavePlangrid")
                   .Columns(columns =>
                   {
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(180).Title("Employee");
-                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFiscalYear").Width(150).Title("Year");
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(180);
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFiscalYear").Width(150);
 
                       columns.Command(command =>
                       {
@@ -23,7 +23,7 @@
                   })
                   .ToolBar(toolbar =>
                   {
-                      toolbar.Create();
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
                   })
                   .ColumnMenu()
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -71,13 +71,13 @@
                                             .Items(items =>
                                              {
 
-                                                 items.Add().Text("Leave Plan Detail").Content(
+                                                 items.Add().Text(Resources.Leave_Plan_Detail).Content(
                     @<text>
                         @(Html.Kendo().Grid<MonthlyLeavePlanDetail>()
                                                                              .Name("MonthlyLeavePlanDetailGrid")
                                                                  .Columns(columns =>
                                                                  {
-                                                                             columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(200).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Period");
+                                                                             columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
                                                                              columns.Bound(c => c.Amount);
                                                                              columns.Bound(c => c.Remark);
                                                                              columns.Command(command =>

@@ -1,6 +1,6 @@
 ﻿@using System.Collections
 @using Kendo.Mvc.UI
-@model ExceedERP.Core.Domain.HRM.HealthAndInsurance.Insurance   
+@model ExceedERP.Core.Domain.HealthAndInsurance.Insurance   
 @using ExceedERP.Core.Localization
 
 <div class="form">
@@ -20,7 +20,7 @@
                 // .BindTo((IEnumerable)ViewData["classList"])
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetInsuranceType", "Insurance", new { area = "HRM" }))
+                    dataSource.Read(read => read.Action("GetInsuranceType", "EmployeeInsurance", new { area = "HRM" }))
                         .ServerFiltering(false);
                 })
 

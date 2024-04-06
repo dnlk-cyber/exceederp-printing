@@ -94,14 +94,13 @@
                           .Columns(columns =>
                           {
               // columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(120);
-              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CosignType"], "LookupId", "Description").EditorTemplateName("CosignType").Width(120);
+              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CosignType"], "LookupId", "Description").EditorTemplateName("CosignType").Width(150);
                           columns.Bound(c => c.AgreementDateAm).Width(170).EditorTemplateName("Calander");
                           columns.Bound(c => c.FullName).Width(120);
-                          columns.Bound(c => c.BirthPlace).Width(120);
               //columns.Bound(c => c.Occupation).Width (120);
               columns.Bound(c => c.Workorganization).Width(150);
               //columns.Bound(c => c.Remark);
-              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); });
                       })
                           .ToolBar(toolbar =>
                           {
@@ -446,6 +445,11 @@
 
             });
 
+        }
+    }
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
         }
     }
 </script>

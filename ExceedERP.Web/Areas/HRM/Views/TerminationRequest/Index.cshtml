@@ -7,7 +7,7 @@
 }
 <Legend>@Resources.NavigatorTermination_TerminationRequest</Legend>
 @(Html.Kendo().Grid<Termination>()
-          .Name("TerminationGrid")
+      .Name("TerminationGrid")
       .Columns(columns =>
       {
 
@@ -36,7 +36,10 @@
           selectable.Mode(GridSelectionMode.Single);
           selectable.Type(GridSelectionType.Row);
       })
-           .Events(events => events.DetailExpand("onDetailExpandUser"))
+           .Events(events => {
+               events.DataBound("onDataBound");
+               events.DetailExpand("onDetailExpandUser");
+           })
       .Scrollable(h => h.Height(500))
                .Groupable()
                       .Sortable(sortable =>
@@ -99,8 +102,8 @@
                               columns.Bound(c => c.Remark).Width(100);
                               columns.Command(command =>
                               {
-                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  //command.Destroy().Text(Resources.ActionButton_Cancel);
                               }).Width(400);
                           })
                           .ToolBar(toolbar =>
@@ -219,6 +222,28 @@
     function AssignDate() {
         var list = AssignDates();
         return list;
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsApproved === true || dataItem.IsDepartmentSendForApproval) {
+
+                row.css("background-color", "darkgrey");
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+            }
+            else {
+
+                row.css("background-color", "lightgreen");
+                row.find(".k-grid-delete").remove();
+
+            }
+
+
+        }
     }
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;

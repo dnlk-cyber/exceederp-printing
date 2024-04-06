@@ -16,7 +16,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public ActionResult Index()
         {
           
-            var Nodes = db.MainCompanyStructures.ToList();
+            var Nodes = db.MainCompanyStructures.Where(x=>x.IsActive).ToList();
 
             this.ViewBag.Tree = GetCHildrens(Nodes);
             return View();
@@ -25,7 +25,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         {
             NodeViewModel root = new NodeViewModel();
             List<NodeViewModel> items = new List<NodeViewModel>();
-            var lookups = db.MainCompanyStructures;
+            var lookups = db.MainCompanyStructures.Where(x=>x.IsActive);
             if (Nodes.Any())
             {
                 foreach (var nod in Nodes)

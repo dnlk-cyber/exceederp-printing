@@ -11,21 +11,41 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
-    public class AttendanceNewHRController : Controller
+    public class AttendanceNewHRController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
         {
-            ViewData["EmployeeList"] = db.Person_Employee.AsQueryable();
+            ViewData["EmployeeList"] = db.Person_Employee.Select(x=>new { x.EmployeeId, FullNameaEnglish =x.FirstNameEnglish+" "+x.MiddleNameEnglish+" "+x.LastNameEnglish}).AsQueryable();
             ViewData["Department"] = db.MainCompanyStructures.AsQueryable();
+            UpdateDepartment();
 
             return View();
         }
+        private void UpdateDepartment()
+        {
+            var attendancenews = db.AttendanceNews.Where(x => x.OrgStructureId == 0).ToList();
+            foreach(var attendanceNew in attendancenews)
+            {
+                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == attendanceNew.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    attendanceNew.OrgStructureId = placement.OrgStructureId;
+                    db.AttendanceNews.Attach(attendanceNew);
+                    db.Entry(attendanceNew).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
 
+
+        }
         public ActionResult AttendanceNews_Read([DataSourceRequest]DataSourceRequest request, string date)
         {
             DateTime attendanceDate = DateTime.Today;
@@ -42,8 +62,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             {
                 AttendanceNewId = attendanceNew.AttendanceNewId,
                 EmployeeId = attendanceNew.EmployeeId,
-                OrgStructureId = GetDepartment(attendanceNew.EmployeeId),
+                //OrgStructureId = GetDepartment(attendanceNew.EmployeeId),
+                OrgStructureId = attendanceNew.OrgStructureId,
                 Date = attendanceNew.Date,
+                MorningAttendance = attendanceNew.MorningAttendance,
+                AfternoonAttendance = attendanceNew.AfternoonAttendance,
                 DateAm = attendanceNew.DateAm,
                 IsPresentMorning = attendanceNew.IsPresentMorning,
                 IsPresentAfternoon = attendanceNew.IsPresentAfternoon,
@@ -76,10 +99,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 {
                     att.IsApproved = true;
                     int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    int orgId = UserInformationHelper.GetEmployeeDepartmentIdByEmpId(empId);
                     att.ApproverEmpId = empId;
-
+                    att.DepartmentApproverId = orgId;
                     db.Entry(att).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
+                    if (att != null)
+                    {
+                        NotifModels notif = new NotifModels
+                        {
+                            UserId = UserInformationHelper.GetEmployeeUserId(att.EmployeeId),
+                            Title = "attendance ",
+                            Message = "Your attendance  is Approved"
+                        };
+
+                        Notify.NotifyUser(notif);
+                    }
                 }
 
                 var formattedData = new

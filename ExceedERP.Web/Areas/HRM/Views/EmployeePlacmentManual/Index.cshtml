@@ -7,20 +7,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
-
+<div class="row">
+    <p >
+        <span class="fa fa-circle" style="color:yellow;"></span>&nbsp;&nbsp;@Resources.Enum_RequestStatus_PEND,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:olive;"></span>&nbsp;&nbsp;@Resources.Rpt_RetirementNotification &nbsp;&nbsp;
+    </p>
+</div>
 @(Html.Kendo().Grid<Placement>()
               .Name("PlacementGrid")
               .Columns(columns =>
               {
                   // columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+                  //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
 
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
+                  //columns.Bound(c => c.FullName).Width(150);
                   columns.Bound(c => c.Boss).Width(150);
                   columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                  //columns.ForeignKey(c => c.ParentOrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                   columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
-
                   columns.Bound(c => c.IsHead).ClientTemplate(
                     "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
                     "# if (IsHead) { #" +
@@ -30,8 +36,7 @@
                     ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
 
                   columns.Bound(c => c.HireDate).Width(100);
-                  columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100); ;
-
+                  columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100);
                   columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
                   columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
                   columns.Bound(c => c.Salary).Width(80);
@@ -131,26 +136,33 @@
                   .ButtonCount(5))
 
               .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Sort(sort => sort.Add("PlacementId").Descending())
-                  .Events(events =>
-                  {
-                      events.Error("error_handler(\"PlacementGrid\")");
-                      events.RequestStart("onRequestStart(\"PlacementGrid\")");
-                      events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
-                  }
-                  )
-                  .Model(model => model.Id(p => p.PlacementId))
-                  .Read(read => read.Action("Placements_Read", "EmployeePlacmentManual"))
-                  .Create(create => create.Action("Placements_Create", "EmployeePlacmentManual"))
-                  .Update(update => update.Action("Placements_Update", "EmployeePlacmentManual"))
-                  .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual"))
+                 .Ajax()
+                 .Sort(sort => sort.Add(s=>s.PlacementId).Descending())
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"PlacementGrid\")");
+                     events.RequestStart("onRequestStart(\"PlacementGrid\")");
+                     events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
+
+                 })
+                 .Model(model =>
+                 {
+                     model.Id(p => p.PlacementId);
+                     model.Field(p => p.AssignmentType).DefaultValue(-1);
+                     model.Field(p => p.ResponsibilityLevel).DefaultValue(-1);
+                     model.Field(p => p.EmployementType).DefaultValue(-1);
+                     
+                 })
+                .Read(read => read.Action("Placements_Read", "EmployeePlacmentManual"))
+                .Create(create => create.Action("Placements_Create", "EmployeePlacmentManual"))
+                .Update(update => update.Action("Placements_Update", "EmployeePlacmentManual"))
+                .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentManual"))
               ).ClientDetailTemplateId("template")
 )
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                       .Name("tabstrip_#=PlacementId#")
+               .Name("tabstrip_#=PlacementId#")
                .SelectedIndex(0)
                .Items(items =>
                {
@@ -166,7 +178,6 @@
 
                        columns.Bound(c => c.EmployeeCode).Width(100);
                        columns.Bound(c => c.FullName).Width(100);
-                       //columns.Bound(c => c.IsCurrent).Width(100);
                        columns.Command(command =>
                        {
 
@@ -179,23 +190,23 @@
                        .Selectable()
                        .DataSource(dataSource => dataSource
                            .Ajax()
-                                   .Events(events =>
-                                   {
-                                       events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
-                                       events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
-                                       events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
-                                   })
+                           .Events(events =>
+                           {
+                                events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
+                                events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
+                                events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
+                            })
 
 
-                                                  .Model(model => model.Id(p => p.EmployeesUnderBossId))
-                                             .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
-
-
-                                                               ).ToClientTemplate()
+                            .Model(model => model.Id(p => p.EmployeesUnderBossId))
+                            .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+                  
+                            ).ToClientTemplate()
                     )
 
                 </text>
-                                                          );
+                                                          
+                     );
 
                items.Add().Text("Placement Before System").Content(
                 @<text>
@@ -204,9 +215,10 @@
                           .Columns(columns =>
                           {
 
-                              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(60);
-                              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(60);
-                              columns.Bound(c => c.JobTitle).Width(80); // EditorTemplateName("JobTitleAutoComplet") , (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+                              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
+                              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+                              columns.Bound(c => c.JobTitle).Width(120); //, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+                              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(120);
                               columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
                               columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
                               columns.Bound(c => c.Salary).Width(80);
@@ -281,7 +293,8 @@
                    {
                        columns.Bound(c => c.Branch).Width(80);
                        columns.Bound(c => c.Department).Width(80);
-                       columns.Bound(c => c.JobTitle).Width(80);
+                       // columns.Bound(c => c.JobTitle).Width(80);
+                       columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Title("Job Title").EditorTemplateName("JobTitles").Width(80);
                        columns.Bound(c => c.AssignmentDate).Width(80);
                        columns.Bound(c => c.AssignmentType).Width(80);
                        columns.Bound(c => c.Salary).Width(80);
@@ -305,19 +318,21 @@
                        .Selectable()
                        .DataSource(dataSource => dataSource
                            .Ajax()
-                                   .Events(events =>
-                                   {
-                                       events.Error("error_handler(\"OldPlacementVM#=PlacementId#\")");
-                                       events.RequestStart("onRequestStart(\"OldPlacementVM#=PlacementId#\")");
-                                       events.RequestEnd("onRequestEnd(\"OldPlacementVM#=PlacementId#\")");
-                                   })
+                           .Events(events =>
+                           {
+                               events.Error("error_handler(\"OldPlacementVM#=PlacementId#\")");
+                               events.RequestStart("onRequestStart(\"OldPlacementVM#=PlacementId#\")");
+                               events.RequestEnd("onRequestEnd(\"OldPlacementVM#=PlacementId#\")");
+
+                           })
+
+                            .Model(model => model.Id(p => p.PlaceId))
+                            .Read(read => read.Action("Placements_History_Read", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
+                            .Update(update => update.Action("Placements_History_Update", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
 
 
-                                      .Model(model => model.Id(p => p.PlaceId))
-                                        .Read(read => read.Action("Placements_History_Read", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
 
-
-                                            ).ToClientTemplate()
+                                        ).ToClientTemplate()
                     )
 
                 </text>
@@ -326,43 +341,44 @@
                items.Add().Text(Resources.Details).Content(
                 @<text>
 
-                    @(Html.Kendo().PanelBar()
-                .Name("panelbar_#=PlacementId#")
-                .ExpandMode(PanelBarExpandMode.Single)
-                .Items(panelbar =>
-                {
-                    panelbar.Add().Text("Status")
-                        .Expanded(true)
-                        .Content(
+                @(Html.Kendo().PanelBar()
+                    .Name("panelbar_#=PlacementId#")
+                    .ExpandMode(PanelBarExpandMode.Single)
+                    .Items(panelbar =>
+                    {
+                        panelbar.Add().Text("Status")
+                            .Expanded(true)
+                            .Content(
 
-                             "<div>" +
-                  "<table class='table'>" +
+                                 "<div>" +
+                                  "<table class='table'>" +
 
-                   "<tr>" +
-                      "<td>" + "<div class='employee-details'>" +
-                            "<ul>" +
+                                   "<tr>" +
+                                      "<td>" + "<div class='employee-details'>" +
+                                            "<ul>" +
 
-                            "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
-                            // "<li><label>Title:  </label>#=Title #</li>" +
-                            "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
-                            "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
-                            "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+                                            "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                            // "<li><label>Title:  </label>#=Title #</li>" +
+                                            "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                            "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                            "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
 
-                            "</ul>" +
-                            "</div>" + "<th>" +
-                      // "<td>" + EmployeeChartsResult() + "<th>" +
+                                            "</ul>" +
+                                            "</div>" + "<th>" +
+                                      // "<td>" + EmployeeChartsResult() + "<th>" +
 
-                      "</table>" +
-              "</div>"
-                        );
+                                      "</table>" +
+                              "</div>"
+                                   
+                              );
 
 
 
-                }).ToClientTemplate()
-                    )
-                    <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                </text>
-           );
+                    }).ToClientTemplate()
+                        )
+                        <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                    </text>
+               );
 
                }).ToClientTemplate())
 
@@ -401,7 +417,8 @@
 
      function filterDepartment() {
          return {
-             BranchId: $("#BranchId").val(),
+             branchId: $("#BranchId").val(),
+             businessUnitId: $("#BusinessUnitId").val(),
              searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
          };
      }
@@ -510,11 +527,29 @@
             OrgStructureId: $("#OrgStructureId").val()
         };
     }
-
+    function filterBranch() {
+        return {
+            businessUnitId: $("#BusinessUnitId").val(),
+        };
+    }
     function filterStructure() {
         return {
             OrgStructureId: $("#OrgStructureId").val()
         };
+    }
+
+    function filterReportToStructure() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val(),
+            isHead: $("#IsHead").is(":checked")
+
+        };
+    }
+    function filterReportToStructurechange(e) {
+        filterReportToStructure();
+    }
+    function onHeadCheckBox(isChecked) {
+        $("#ReportsTo").data("kendoDropDownList").dataSource.read();
     }
 </script>
 
@@ -679,7 +714,7 @@
                 row.find("#unpend").hide();
             }
             else if (dataItem.isCurrent === true && dataItem.IsPend === true) {
-                row.css("background-color", "red");
+                row.css("background-color", "gray");
                 row.find("#pend").hide();
                 row.find("#unpend").show();
             }
@@ -690,6 +725,11 @@
 
             if (dataItem.IsApprove === true) {
                 row.find("#approveplacement").hide();
+            }
+            if (dataItem.Age > 60) {
+
+                row.css("background-color", "olive");
+
             }
         }
     }

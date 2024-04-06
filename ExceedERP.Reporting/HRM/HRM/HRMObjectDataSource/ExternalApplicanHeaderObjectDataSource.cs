@@ -107,11 +107,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             //internalVacancy.RecruitmentType = r.RecruitmentType;
                             if (r.RecruitmentType == VacancyType.PERMANENT)
                             {
-                                internalVacancy.RecruitmentType = "ቋሚ";
+                                internalVacancy.RecruitmentType = "Permanent";
                             }
                             else
                             {
-                                internalVacancy.RecruitmentType = "ጊዜያዊ";
+                                internalVacancy.RecruitmentType = "Contract";
                             }
                             internalVacancies.Add(internalVacancy);
                         }

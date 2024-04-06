@@ -8,13 +8,17 @@ namespace ExceedERP.Core.Domain.Common
 
     public enum ResponsibilityLevel
     {
+        [Display(Name = "Enum_EmployeeStatus_NOTSELECTED", ResourceType = typeof(Resources))]
+        NOTSELECTED = -1,
         [Display(Name = "Enum_ResponsibilityLevel_TOP_MANAGMENT", ResourceType = typeof(Resources))]
-        TOP_MANAGMENT,
+        TOP_MANAGMENT = 0,
         [Display(Name = "Enum_ResponsibilityLevel_MEDIUM_MANAGMENT", ResourceType = typeof(Resources))]
         MEDIUM_MANAGMENT,
         [Display(Name = "Enum_ResponsibilityLevel_LOW_MANAGMENT", ResourceType = typeof(Resources))]
         LOW_MANAGMENT,
         [Display(Name = "Enum_ResponsibilityLevel_STAFF", ResourceType = typeof(Resources))]
-        STAFF
+        STAFF,
+
+
     }
 }

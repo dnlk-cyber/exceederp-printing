@@ -214,7 +214,7 @@
     <value>Abbreviation</value>
   </data>
   <data name="Common_Company_MainCompany_AmharicName" xml:space="preserve">
-    <value>Amharic Name</value>
+    <value>Local Name</value>
   </data>
   <data name="Common_Company_MainCompany_BrandName" xml:space="preserve">
     <value>Brand Name</value>
@@ -367,7 +367,7 @@
     <value>Employee ID</value>
   </data>
   <data name="Common_PersonEmployee_FirstName" xml:space="preserve">
-    <value>Name  (Am)</value>
+    <value>Name</value>
   </data>
   <data name="Common_PersonEmployee_FirstNameEnglish" xml:space="preserve">
     <value>First Name (Eng.)</value>
@@ -385,7 +385,7 @@
     <value>Is Insured?</value>
   </data>
   <data name="Common_PersonEmployee_LastName" xml:space="preserve">
-    <value>Grand Father Name (Am)</value>
+    <value>Grand Father Name</value>
   </data>
   <data name="Common_PersonEmployee_LastNameEnglish" xml:space="preserve">
     <value>Last Name (Eng.)</value>
@@ -394,7 +394,7 @@
     <value>Martial Status</value>
   </data>
   <data name="Common_PersonEmployee_MiddleName" xml:space="preserve">
-    <value>Father Name  (Am)</value>
+    <value>Father Name</value>
   </data>
   <data name="Common_PersonEmployee_MiddleNameEnglish" xml:space="preserve">
     <value>Middle Name (En)</value>
@@ -2149,7 +2149,7 @@
     <value>Type</value>
   </data>
   <data name="HR_EmployeeDetail_Commitment_From" xml:space="preserve">
-    <value>Commitment start date</value>
+    <value>Start date</value>
   </data>
   <data name="HR_EmployeeDetail_Commitment_PersonEmployee" xml:space="preserve">
     <value>Employee</value>
@@ -2158,7 +2158,7 @@
     <value>Reason</value>
   </data>
   <data name="HR_EmployeeDetail_Commitment_To" xml:space="preserve">
-    <value>Commitment end date</value>
+    <value>End date</value>
   </data>
   <data name="HR_EmployeeDetail_Commitment_Value" xml:space="preserve">
     <value>Commitment Value</value>
@@ -2776,7 +2776,7 @@
     <value>Related Experience &amp; Education</value>
   </data>
   <data name="HR_HRMPlan_RecruitmentPlan_From" xml:space="preserve">
-    <value>Vacc.Ann.From</value>
+    <value>From</value>
   </data>
   <data name="HR_HRMPlan_RecruitmentPlan_JobtitleName" xml:space="preserve">
     <value>Job Title Name</value>
@@ -2818,7 +2818,7 @@
     <value>Special Skill</value>
   </data>
   <data name="HR_HRMPlan_RecruitmentPlan_To" xml:space="preserve">
-    <value>Vacc.Ann.To</value>
+    <value>To</value>
   </data>
   <data name="HR_HRMPlan_TrainingPlan_CostPerPerson" xml:space="preserve">
     <value>Cost per person</value>
@@ -3268,7 +3268,7 @@
     <value>Employee</value>
   </data>
   <data name="HR_Payroll_PayrollSetting_PayrollEmployeeAccount_LocationAccCode" xml:space="preserve">
-    <value>Location Code</value>
+    <value>Location Account</value>
   </data>
   <data name="HR_PerformanceManagment_EmployeeMeasurementDefinition_EmpMeasurementDefinitionId" xml:space="preserve">
     <value>Emp Measurement Definition Id</value>
@@ -3430,7 +3430,7 @@
     <value>Photo</value>
   </data>
   <data name="HR_Prohibition_Prohibition_EmployeeCode" xml:space="preserve">
-    <value>Employee</value>
+    <value>Employee Id</value>
   </data>
   <data name="HR_Prohibition_Prohibition_EndDate" xml:space="preserve">
     <value>End Date</value>
@@ -4519,10 +4519,10 @@
     <value>Placement</value>
   </data>
   <data name="NavigatorPrintableDocument_ClearanceLetter" xml:space="preserve">
-    <value>Clearance Letter</value>
+    <value>Clearance Form</value>
   </data>
   <data name="NavigatorPrintableDocument_ExperienceLetter" xml:space="preserve">
-    <value>Experience Letter</value>
+    <value>Experience Letter One</value>
   </data>
   <data name="NavigatorPrintableDocument_ExternalApplicant" xml:space="preserve">
     <value>External Applicant</value>
@@ -5662,7 +5662,7 @@
     <value>To</value>
   </data>
   <data name="NavigatorPrintableDocument_AmharicExperienceLetter" xml:space="preserve">
-    <value>Amharic Experience Letter</value>
+    <value>Experience Letter</value>
   </data>
   <data name="Enum_TrainingLocation_INTERNALTRAINING" xml:space="preserve">
     <value>INTERNAL</value>
@@ -5961,7 +5961,1342 @@
   <data name="NavigatorTraining_DepartmentTrainingPlan" xml:space="preserve">
     <value>Department Training Need Assessment</value>
   </data>
+  <data name="Archive_SenderName" xml:space="preserve">
+    <value>Sender Name</value>
+  </data>
   <data name="HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode" xml:space="preserve">
     <value>Sub Account Code</value>
+  </data>
+  <data name="AccountCode" xml:space="preserve">
+    <value>Account Code</value>
+  </data>
+  <data name="Afternoon" xml:space="preserve">
+    <value>Afternoon</value>
+  </data>
+  <data name="ApplicantName" xml:space="preserve">
+    <value>Applicant Name</value>
+  </data>
+  <data name="CurrentValue" xml:space="preserve">
+    <value>Current Value</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="EducationField" xml:space="preserve">
+    <value>Education Field</value>
+  </data>
+  <data name="EducationLevel" xml:space="preserve">
+    <value>Education Level</value>
+  </data>
+  <data name="Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="ExamSource" xml:space="preserve">
+    <value>Exam Source</value>
+  </data>
+  <data name="ExamType" xml:space="preserve">
+    <value>Exam Type</value>
+  </data>
+  <data name="Experience" xml:space="preserve">
+    <value>Experience</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>FileName</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="Institution" xml:space="preserve">
+    <value>Institution</value>
+  </data>
+  <data name="JobCode" xml:space="preserve">
+    <value>Job Code</value>
+  </data>
+  <data name="JobTitle" xml:space="preserve">
+    <value>JobTitle</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Morning" xml:space="preserve">
+    <value>Morning</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NoOfCurrentStaff" xml:space="preserve">
+    <value>No of current staff</value>
+  </data>
+  <data name="NoOfShouldBeStaff" xml:space="preserve">
+    <value>No of should be staff</value>
+  </data>
+  <data name="NoOfVacantPosition" xml:space="preserve">
+    <value>No of vacant position</value>
+  </data>
+  <data name="OrganizationName" xml:space="preserve">
+    <value>OrganizationName</value>
+  </data>
+  <data name="OrganizationType" xml:space="preserve">
+    <value>OrganizationType</value>
+  </data>
+  <data name="PassScore" xml:space="preserve">
+    <value>Pass Score</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="RetireSetting" xml:space="preserve">
+    <value>Retire Setting</value>
+  </data>
+  <data name="SettingValue" xml:space="preserve">
+    <value>Setting Value</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="TotalExperience" xml:space="preserve">
+    <value>Total Experience</value>
+  </data>
+  <data name="TotalValue" xml:space="preserve">
+    <value>TotalValue</value>
+  </data>
+  <data name="Training" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="UploadFile" xml:space="preserve">
+    <value>UploadFile</value>
+  </data>
+  <data name="Vacancy" xml:space="preserve">
+    <value>Vacancy</value>
+  </data>
+  <data name="VacancyCode" xml:space="preserve">
+    <value>Vacancy Code</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="ApplicationForm" xml:space="preserve">
+    <value>Application Form</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="BussinessUnit" xml:space="preserve">
+    <value>Bussiness Unit</value>
+  </data>
+  <data name="EmployeeType" xml:space="preserve">
+    <value>Employee Type</value>
+  </data>
+  <data name="ExamTypeSetting" xml:space="preserve">
+    <value>Exam Type Setting</value>
+  </data>
+  <data name="ExperienceOrganization" xml:space="preserve">
+    <value>Experience Organization</value>
+  </data>
+  <data name="InternalApplicant" xml:space="preserve">
+    <value>Internal Applicant</value>
+  </data>
+  <data name="JobTitleAndSalary" xml:space="preserve">
+    <value>Job Title and Salary</value>
+  </data>
+  <data name="LeaveVoid" xml:space="preserve">
+    <value>Leave Void</value>
+  </data>
+  <data name="ManPowerPlanning" xml:space="preserve">
+    <value>Man Power Planning</value>
+  </data>
+  <data name="MonthlyLeavePlan" xml:space="preserve">
+    <value>Monthly Leave Plan</value>
+  </data>
+  <data name="OffDay" xml:space="preserve">
+    <value>Off Day</value>
+  </data>
+  <data name="PassSetting" xml:space="preserve">
+    <value>Pass Setting</value>
+  </data>
+  <data name="RecruitmentRequest" xml:space="preserve">
+    <value>Recruitment Request</value>
+  </data>
+  <data name="RecruitmentSummary" xml:space="preserve">
+    <value>Recruitment Summary</value>
+  </data>
+  <data name="RetirementSetting" xml:space="preserve">
+    <value>Retirement Setting</value>
+  </data>
+  <data name="SalaryCalculator" xml:space="preserve">
+    <value>Salary Calculator</value>
+  </data>
+  <data name="SalarySetting" xml:space="preserve">
+    <value>Salary Setting</value>
+  </data>
+  <data name="ScreeningSetting" xml:space="preserve">
+    <value>Screening Setting</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SickLeaveSetting" xml:space="preserve">
+    <value>Sick Leave Setting</value>
+  </data>
+  <data name="TrainingAndNeedAssessment" xml:space="preserve">
+    <value>Training and Need Assessment</value>
+  </data>
+  <data name="TrainingEvaluationSetting" xml:space="preserve">
+    <value>Training Evaluation Setting</value>
+  </data>
+  <data name="Common_Lookup_Description_Eng" xml:space="preserve">
+    <value>English Name</value>
+  </data>
+  <data name="CerteficateName" xml:space="preserve">
+    <value>Certeficate Name</value>
+  </data>
+  <data name="CerteficateType" xml:space="preserve">
+    <value>Certeficate Type</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="HR_EmployeeDetail_Placement_PersonEmployeeID" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Placement_Boss" xml:space="preserve">
+    <value>Head Name</value>
+  </data>
+  <data name="Placement_FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Enum_Self_Service_Request_Type_Expreience" xml:space="preserve">
+    <value>Expreience</value>
+  </data>
+  <data name="Enum_Self_Service_Request_Type_Support_Letter" xml:space="preserve">
+    <value>To Whon It May Concern</value>
+  </data>
+  <data name="Enum_Self_Service_Request_Type_Warranty_Letter" xml:space="preserve">
+    <value>Warranty Letter</value>
+  </data>
+  <data name="HR_Button_Refresh_Branch" xml:space="preserve">
+    <value>Refresh Branch</value>
+  </data>
+  <data name="HR_Contract_Below_15_day_left" xml:space="preserve">
+    <value>Contract Below 15 day left</value>
+  </data>
+  <data name="HR_Employee_profile_Address_Information" xml:space="preserve">
+    <value>Address Information</value>
+  </data>
+  <data name="HR_Employee_profile_Basic_Information" xml:space="preserve">
+    <value>Basic Information</value>
+  </data>
+  <data name="HR_Employee_profile_Other_Information" xml:space="preserve">
+    <value>Other Information</value>
+  </data>
+  <data name="HR_Probation_Period" xml:space="preserve">
+    <value>Probation Period</value>
+  </data>
+  <data name="HR_Probation_Period_end_or_no_status" xml:space="preserve">
+    <value>Probation Period End/ No Status</value>
+  </data>
+  <data name="HR_SelfCare_LeaveRequest_RequestType" xml:space="preserve">
+    <value>Request Type</value>
+  </data>
+  <data name="Navigator_Employee_Inactive_Employee" xml:space="preserve">
+    <value>Terminated Employees</value>
+  </data>
+  <data name="Navigator_Employee_Not_Placed_Employee" xml:space="preserve">
+    <value>Not Placed Employees</value>
+  </data>
+  <data name="Requeststatus_ApproverDepartment" xml:space="preserve">
+    <value>Approver Department</value>
+  </data>
+  <data name="Button_Force_Open" xml:space="preserve">
+    <value>Force Open</value>
+  </data>
+  <data name="EmployeeCodeSetting_Index" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="Enum_Employee_ID_Abbreviation_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Generated_Media_Vacancy_Codes" xml:space="preserve">
+    <value>Koodii Duwwaa Miidiyaa Uumaman</value>
+  </data>
+  <data name="HR_Employee_Code_Sequence_setting_Index_Count" xml:space="preserve">
+    <value>Index Count</value>
+  </data>
+  <data name="HR_Employee_Code_Sequence_setting_Item_Code_Trim" xml:space="preserve">
+    <value>Code Length</value>
+  </data>
+  <data name="HR_RecruitmentManagment_Vacancy_Date_Posted" xml:space="preserve">
+    <value>Date Posted</value>
+  </data>
+  <data name="HR_RecruitmentManagment_Vacancy_Deadline_Date" xml:space="preserve">
+    <value>Deadline Date</value>
+  </data>
+  <data name="RecruitmentApplicantPassSetting_Vacancy" xml:space="preserve">
+    <value>Vacancy</value>
+  </data>
+  <data name="Action_Button_Back_to_List" xml:space="preserve">
+    <value>Back to List</value>
+  </data>
+  <data name="Approve_Attendance" xml:space="preserve">
+    <value>Approve Attendance</value>
+  </data>
+  <data name="Are_you_sure_you_want_to_delete_this" xml:space="preserve">
+    <value>Are you sure you want to delete this?</value>
+  </data>
+  <data name="AttendanceDate" xml:space="preserve">
+    <value>Attendance Date</value>
+  </data>
+  <data name="Button_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Button_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Button_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Button_Submit" xml:space="preserve">
+    <value>submit</value>
+  </data>
+  <data name="Common_Lookup_Description_Eng_Information_one" xml:space="preserve">
+    <value>Information One</value>
+  </data>
+  <data name="Common_Lookup_Description_Eng_Information_Two" xml:space="preserve">
+    <value>Information Two</value>
+  </data>
+  <data name="Complain_Description" xml:space="preserve">
+    <value>Complain Description</value>
+  </data>
+  <data name="Create_Templates_here" xml:space="preserve">
+    <value>Create Templates here</value>
+  </data>
+  <data name="Edit_Templates" xml:space="preserve">
+    <value>Edit Templates</value>
+  </data>
+  <data name="EducationType" xml:space="preserve">
+    <value>Education Type</value>
+  </data>
+  <data name="Enum_Languages_Afaan_Oromoo" xml:space="preserve">
+    <value>Afaan Oromoo</value>
+  </data>
+  <data name="Enum_Languages_Amharic" xml:space="preserve">
+    <value>Amharic</value>
+  </data>
+  <data name="Enum_Languages_Not_Required" xml:space="preserve">
+    <value>Not Required</value>
+  </data>
+  <data name="Enum_Languages_Somali" xml:space="preserve">
+    <value>Somali</value>
+  </data>
+  <data name="Enum_Languages_Tigrigna" xml:space="preserve">
+    <value>Tigrigna</value>
+  </data>
+  <data name="Enum_Leave_Day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="Enum_Leave_Day_Full_Time" xml:space="preserve">
+    <value>Full Time</value>
+  </data>
+  <data name="Enum_Leave_Day_Half_Time" xml:space="preserve">
+    <value>Half Time</value>
+  </data>
+  <data name="Enum_PerformanceCriteriaActionType_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Enum_PerformanceCriteriaActionType_Open_Sum_Of_Actions" xml:space="preserve">
+    <value>Sum Of Actions</value>
+  </data>
+  <data name="Enum_RetireSetting_Heads" xml:space="preserve">
+    <value>Heads</value>
+  </data>
+  <data name="Enum_RetireSetting_Performers" xml:space="preserve">
+    <value>Performers</value>
+  </data>
+  <data name="Enum_Template_Type" xml:space="preserve">
+    <value>Template Type</value>
+  </data>
+  <data name="Enum_Template_Type_Experiance_Amharic" xml:space="preserve">
+    <value>Experiance Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Experiance_English" xml:space="preserve">
+    <value>Experiance English</value>
+  </data>
+  <data name="Enum_Template_Type_Promotion_Amharic" xml:space="preserve">
+    <value>Promotion Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Recruitment_External_Letter_Amharic" xml:space="preserve">
+    <value>Recruitment External Letter Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Termination_Acceptance_Amharic" xml:space="preserve">
+    <value>Termination Acceptance Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Warranty_Amharic" xml:space="preserve">
+    <value>Warranty Amharic</value>
+  </data>
+  <data name="Evaluation_Criteria_Action_Type" xml:space="preserve">
+    <value>Evaluation Criteria Action Type</value>
+  </data>
+  <data name="Expereince_Organization" xml:space="preserve">
+    <value>Expereince Organization</value>
+  </data>
+  <data name="External_Applicant_Screening" xml:space="preserve">
+    <value>External Applicant Screening</value>
+  </data>
+  <data name="Family_Member" xml:space="preserve">
+    <value>Family Member</value>
+  </data>
+  <data name="FeedBack" xml:space="preserve">
+    <value>FeedBack</value>
+  </data>
+  <data name="Filter_Applicant" xml:space="preserve">
+    <value>Filter Applicant</value>
+  </data>
+  <data name="Fiscal_Year" xml:space="preserve">
+    <value>Fiscal Year</value>
+  </data>
+  <data name="Generate_Leave_Entitlement" xml:space="preserve">
+    <value>Generate Leave Entitlement</value>
+  </data>
+  <data name="Get_Attendance" xml:space="preserve">
+    <value>Get Attendance</value>
+  </data>
+  <data name="HR_Allowance_AllowancePerEmployee_UnPend" xml:space="preserve">
+    <value>UnPend</value>
+  </data>
+  <data name="HR_DeActivate_Employees" xml:space="preserve">
+    <value>De-Activate Employees</value>
+  </data>
+  <data name="Interviewers" xml:space="preserve">
+    <value>Interviewers</value>
+  </data>
+  <data name="IsDepartmentApproved" xml:space="preserve">
+    <value>Is Department Approved</value>
+  </data>
+  <data name="IsGenerated" xml:space="preserve">
+    <value>Is Generated</value>
+  </data>
+  <data name="Is_Job_Title_Included_In_Salary" xml:space="preserve">
+    <value>Is Job Title Included In Salary ?</value>
+  </data>
+  <data name="Leave_Entitle_Starting" xml:space="preserve">
+    <value>Leave Entitle Starting</value>
+  </data>
+  <data name="Leave_entitle_start_date" xml:space="preserve">
+    <value>Leave entitle start date</value>
+  </data>
+  <data name="Leave_new_declaration_start_year" xml:space="preserve">
+    <value>Leave new declaration start year</value>
+  </data>
+  <data name="Leave_Plan_Detail" xml:space="preserve">
+    <value>Leave Plan Detail</value>
+  </data>
+  <data name="Leave_Request_Id" xml:space="preserve">
+    <value>Leave Request Id</value>
+  </data>
+  <data name="Leave_Voids" xml:space="preserve">
+    <value>Leave Voids</value>
+  </data>
+  <data name="Man_power_Planning_Requests" xml:space="preserve">
+    <value>Manpower Planning Requests</value>
+  </data>
+  <data name="MorningOrAfternoon" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Navigator_Amharic_Experience_Letter_Three" xml:space="preserve">
+    <value>Amhric Experience Letter Three</value>
+  </data>
+  <data name="Navigator_Amharic_Experience_Letter_Two" xml:space="preserve">
+    <value>Amhric Experience Letter Two</value>
+  </data>
+  <data name="Navigator_Company_Company_Structure" xml:space="preserve">
+    <value>Company Structure</value>
+  </data>
+  <data name="Navigator_English_Experience_Letter_Three" xml:space="preserve">
+    <value>English Experience Letter Three</value>
+  </data>
+  <data name="Navigator_English_Experience_Letter_Two" xml:space="preserve">
+    <value>English Experience Letter Two</value>
+  </data>
+  <data name="Navigator_In_Correct_Employees_Data" xml:space="preserve">
+    <value>InCorrect Employees Data</value>
+  </data>
+  <data name="Navigator_Process" xml:space="preserve">
+    <value>Process</value>
+  </data>
+  <data name="Navigator_Water_Mark_Setting" xml:space="preserve">
+    <value>Water Mark Setting</value>
+  </data>
+  <data name="PassOrFail" xml:space="preserve">
+    <value>Pass Or Fail</value>
+  </data>
+  <data name="PerformanceCriteriaActionType" xml:space="preserve">
+    <value>Performance Criteria Action Type</value>
+  </data>
+  <data name="Recruitment_Reqeusts" xml:space="preserve">
+    <value>Recruitment Reqeusts</value>
+  </data>
+  <data name="Response" xml:space="preserve">
+    <value>Response</value>
+  </data>
+  <data name="Return_Attendance" xml:space="preserve">
+    <value>Return Attendance</value>
+  </data>
+  <data name="Screen_and_Genderate_Applicants" xml:space="preserve">
+    <value>Screen and Genderate Applicants</value>
+  </data>
+  <data name="Select_Employee" xml:space="preserve">
+    <value>Select Employee...</value>
+  </data>
+  <data name="TrainingEvaluation" xml:space="preserve">
+    <value>Training Evaluation</value>
+  </data>
+  <data name="TrainingFeedback" xml:space="preserve">
+    <value>Training Feedback</value>
+  </data>
+  <data name="Training_Evaluation_Criteria" xml:space="preserve">
+    <value>Training Evaluation Criteria</value>
+  </data>
+  <data name="Training_Evaluation_Criteria_Category" xml:space="preserve">
+    <value>Training Evaluation Criteria Category</value>
+  </data>
+  <data name="Button_Force_Treminate" xml:space="preserve">
+    <value>Force Terminate</value>
+  </data>
+  <data name="Select_Account" xml:space="preserve">
+    <value>Select Account</value>
+  </data>
+  <data name="NavigatorReport_Peer_to_Peer_Evalution" xml:space="preserve">
+    <value>Peer To Peer Evalution</value>
+  </data>
+  <data name="NavigatorReport_Personal_Evalution" xml:space="preserve">
+    <value>Personal Evaluation</value>
+  </data>
+  <data name="HR_RecruitmentManagment_ApplicantExperience_Experience_Level" xml:space="preserve">
+    <value>Experience Level</value>
+  </data>
+  <data name="JobRequirement" xml:space="preserve">
+    <value>Job Requirement</value>
+  </data>
+  <data name="Enum_LookUpTypes_CLEARANCE_TYPE" xml:space="preserve">
+    <value>CLEARANCE TYPE</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Five" xml:space="preserve">
+    <value>Experience Letter Five</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Four" xml:space="preserve">
+    <value>Experience Letter Four</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Seven" xml:space="preserve">
+    <value>Experience Letter Seven</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Six" xml:space="preserve">
+    <value>Experience Letter Six</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Three" xml:space="preserve">
+    <value>Experience Letter Three</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Two" xml:space="preserve">
+    <value>Experience Letter Two</value>
+  </data>
+  <data name="Navigator_Department_NeedAssessment" xml:space="preserve">
+    <value>Department Need Assessment</value>
+  </data>
+  <data name="Enum_AssignmentType_ANNUAL_SALARY_INCREMENT" xml:space="preserve">
+    <value>Annual Salary Increment</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Company_level" xml:space="preserve">
+    <value>Company level</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Direct_Boss" xml:space="preserve">
+    <value>Direct Boss</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Internal_Customer" xml:space="preserve">
+    <value>Internal Customer Evaluation</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Others" xml:space="preserve">
+    <value>Others</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Peer_Evaluation" xml:space="preserve">
+    <value>Peer  Evaluation</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Self_Evaluation" xml:space="preserve">
+    <value>Self Evaluation</value>
+  </data>
+  <data name="TERM_TYPE" xml:space="preserve">
+    <value>Term Type</value>
+  </data>
+  <data name="HR_EmployeeDetail_Placement_ParentOrgStructureId" xml:space="preserve">
+    <value>Parent Structure Name</value>
+  </data>
+  <data name="Navigator_Employee_External_Experience" xml:space="preserve">
+    <value>External Experience</value>
+  </data>
+  <data name="Navigator_Employee__Experience_After_System" xml:space="preserve">
+    <value>Experience After System</value>
+  </data>
+  <data name="Navigator_Employee__Experience_Before_System" xml:space="preserve">
+    <value>Experience Before System</value>
+  </data>
+  <data name="Enum_AssignmentType_TEMPORARY" xml:space="preserve">
+    <value>TEMPORARY</value>
+  </data>
+  <data name="Enum_Template_Type_Promotion_English" xml:space="preserve">
+    <value>Promotion English</value>
+  </data>
+  <data name="HR_Employee_Age_To_Retired" xml:space="preserve">
+    <value>Employee ready to be retire</value>
+  </data>
+  <data name="Enum_Template_Type_Reemployement_Amharic" xml:space="preserve">
+    <value>Reemployement Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Reemployement_English" xml:space="preserve">
+    <value>Reemployement English</value>
+  </data>
+  <data name="Enum_Template_Type_Salary_Incremen_Amharic" xml:space="preserve">
+    <value>Salary Incremen Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Salary_Incremen_English" xml:space="preserve">
+    <value>Salary Incremen English</value>
+  </data>
+  <data name="Enum_Template_Type_Title_Change_Amharic" xml:space="preserve">
+    <value>Title Change Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Title_Change_English" xml:space="preserve">
+    <value>Title Change English</value>
+  </data>
+  <data name="Enum_Template_Type_Transfer_Amharic" xml:space="preserve">
+    <value>Transfer Amharic</value>
+  </data>
+  <data name="Enum_Template_Type_Transfer_English" xml:space="preserve">
+    <value>Transfer English</value>
+  </data>
+  <data name="HR_LeaveManagment_Leave_Payable__Balance" xml:space="preserve">
+    <value>Payable Balance</value>
+  </data>
+  <data name="HR_LeaveManagment_Leave_Payable__Days" xml:space="preserve">
+    <value>Leave Payable Days</value>
+  </data>
+  <data name="NavigatorLeave_LeavePayable_Setting" xml:space="preserve">
+    <value>Leave Payable Setting</value>
+  </data>
+  <data name="Navigator_Severance_Payable" xml:space="preserve">
+    <value>Severance Payable</value>
+  </data>
+  <data name="Enum_AssignmentType_TEMPORARY_Job_Title_Change" xml:space="preserve">
+    <value>JOB TITLE CHANGE</value>
+  </data>
+  <data name="Enum_AssignmentType_TEMPORARY_REHIRE" xml:space="preserve">
+    <value>REHIRE</value>
+  </data>
+  <data name="Enum_AssignmentType_ACTING" xml:space="preserve">
+    <value>ACTING</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Corporate_Result" xml:space="preserve">
+    <value>Corporate Level Result</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Sector_Result" xml:space="preserve">
+    <value>Sector Level Result</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Main_Department_Level" xml:space="preserve">
+    <value>Main Department Level</value>
+  </data>
+  <data name="Decisions" xml:space="preserve">
+    <value>Decisions</value>
+  </data>
+  <data name="Ecabinet_Agenda" xml:space="preserve">
+    <value>Agenda</value>
+  </data>
+  <data name="Ecabinet_AgendaContent" xml:space="preserve">
+    <value>Agenda Content</value>
+  </data>
+  <data name="Ecabinet_Agendas" xml:space="preserve">
+    <value>Agendas</value>
+  </data>
+  <data name="Ecabinet_Agenda_btn_approve" xml:space="preserve">
+    <value>approve</value>
+  </data>
+  <data name="Ecabinet_Agenda_btn_reject" xml:space="preserve">
+    <value>reject</value>
+  </data>
+  <data name="Ecabinet_Agenda_Date_Assigned" xml:space="preserve">
+    <value>Date Assigned</value>
+  </data>
+  <data name="Ecabinet_Agenda_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_Attached_Date" xml:space="preserve">
+    <value>Attached Date</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_DownLoad" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_FilePath" xml:space="preserve">
+    <value>File Path</value>
+  </data>
+  <data name="Ecabinet_Agenda_GeezDate" xml:space="preserve">
+    <value>GeezDate</value>
+  </data>
+  <data name="Ecabinet_Agenda_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Ecabinet_Agenda_Response_Reason_For_Rejection" xml:space="preserve">
+    <value>Reason For Rejection</value>
+  </data>
+  <data name="Ecabinet_Agenda_Send" xml:space="preserve">
+    <value>send</value>
+  </data>
+  <data name="Ecabinet_Agenda_Upload_File" xml:space="preserve">
+    <value>Upload File</value>
+  </data>
+  <data name="Ecabinet_Agenda_Window" xml:space="preserve">
+    <value>Window</value>
+  </data>
+  <data name="Ecabinet_Attendance" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="Ecabinet_Attendance_CabinetMemberId" xml:space="preserve">
+    <value>FullName</value>
+  </data>
+  <data name="Ecabinet_Attendance_Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_DateOfBirth" xml:space="preserve">
+    <value>Date  Birth</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_BA" xml:space="preserve">
+    <value>BA</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Bsc" xml:space="preserve">
+    <value>Bsc</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Diploma" xml:space="preserve">
+    <value>Diploma</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_MA" xml:space="preserve">
+    <value>MA</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Msc" xml:space="preserve">
+    <value>Msc</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Others" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_PHD" xml:space="preserve">
+    <value>PHD</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Geneder_Female" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Geneder_Genders" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Geneder_Male" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_HouseNumber" xml:space="preserve">
+    <value>House Number</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_IdentityCard" xml:space="preserve">
+    <value>ID Card</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Level_EducLevel" xml:space="preserve">
+    <value>Education Level</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_MemberName" xml:space="preserve">
+    <value>Member Name</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_ChairMan" xml:space="preserve">
+    <value>Chair Man</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_DuptyChairMan" xml:space="preserve">
+    <value>Dupty Chair Man</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_Member" xml:space="preserve">
+    <value>Member</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_Responsiblity" xml:space="preserve">
+    <value>Responsiblity</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_Secretary" xml:space="preserve">
+    <value>Secretary</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_ProfileName" xml:space="preserve">
+    <value>Profile Name</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Signature" xml:space="preserve">
+    <value>Signature</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Ecabinet_Cabinet_CabinetName" xml:space="preserve">
+    <value>Cabinet Name</value>
+  </data>
+  <data name="Ecabinet_Cabinet_Members" xml:space="preserve">
+    <value>Cabinet Members</value>
+  </data>
+  <data name="Ecabinet_Committe_CommitteName" xml:space="preserve">
+    <value>Committe Name</value>
+  </data>
+  <data name="Ecabinet_Committe_CommResponsibility" xml:space="preserve">
+    <value>Committe Responsibility</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Approved_and_Rejected_Agendas" xml:space="preserve">
+    <value>Approved &amp; Rejected Agends</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Decided_Agenda" xml:space="preserve">
+    <value>Decided Agendas</value>
+  </data>
+  <data name="Ecabinet_DashBoard_E_Cabinet_Dashboard" xml:space="preserve">
+    <value>E-Cabinet   Dashboard</value>
+  </data>
+  <data name="Ecabinet_DashBoard_More_info" xml:space="preserve">
+    <value>More info</value>
+  </data>
+  <data name="Ecabinet_DashBoard_On_Meeting_Agendas" xml:space="preserve">
+    <value>On Meeting Agendas</value>
+  </data>
+  <data name="Ecabinet_DashBoard_On_meeting_and_Decided_Agenda" xml:space="preserve">
+    <value>On Meeting And Decided Agendas</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Pending_Agenda" xml:space="preserve">
+    <value>Pending Agenda</value>
+  </data>
+  <data name="Ecabinet_DashBoard_RefreshData" xml:space="preserve">
+    <value>Refresh Data</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Rejected_Agenda" xml:space="preserve">
+    <value>Rejected Agenda</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Total_Agendas" xml:space="preserve">
+    <value>Total Agendas</value>
+  </data>
+  <data name="Ecabinet_DashBoard_To_date_Agendas" xml:space="preserve">
+    <value>To Date Agendas</value>
+  </data>
+  <data name="Ecabinet_DateSubmitted" xml:space="preserve">
+    <value> Submitted Date</value>
+  </data>
+  <data name="Ecabinet_Decisions" xml:space="preserve">
+    <value>Decisions</value>
+  </data>
+  <data name="Ecabinet_Decision_Date" xml:space="preserve">
+    <value>Decision Date</value>
+  </data>
+  <data name="Ecabinet_Decision_Meeting_Date" xml:space="preserve">
+    <value>Meeting Date</value>
+  </data>
+  <data name="Ecabinet_Decison_Content" xml:space="preserve">
+    <value>Decision's  Content</value>
+  </data>
+  <data name="Ecabinet_ECabinet_DashBoard" xml:space="preserve">
+    <value>DashBoard</value>
+  </data>
+  <data name="Ecabinet_ECabinet_MIS" xml:space="preserve">
+    <value>E-Cabinet-MIS</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Approved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Decided" xml:space="preserve">
+    <value>Decided</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_MeetingDateAssigned" xml:space="preserve">
+    <value>Date Assigned</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_SentToMayor" xml:space="preserve">
+    <value>Sent to Mayor</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Status_Absent" xml:space="preserve">
+    <value>Absent</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Status_Present" xml:space="preserve">
+    <value>Present</value>
+  </data>
+  <data name="Ecabinet_Enum_Priority_High" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="Ecabinet_Enum_Priority_Low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="Ecabinet_Enum_Priority_Middium" xml:space="preserve">
+    <value>Middium</value>
+  </data>
+  <data name="Ecabinet_Mayor_Agenda" xml:space="preserve">
+    <value>Mayor's Agenda</value>
+  </data>
+  <data name="Ecabinet_Mayor_Office_Agenda" xml:space="preserve">
+    <value>Mayor Office's Agenda</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_CatalogNum" xml:space="preserve">
+    <value>Catalog Number</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_MinuteName" xml:space="preserve">
+    <value>Minute Name</value>
+  </data>
+  <data name="Ecabinet_Meetings" xml:space="preserve">
+    <value>Meetings</value>
+  </data>
+  <data name="Ecabinet_Meeting_Date_Place" xml:space="preserve">
+    <value>Meeting Date &amp; Place</value>
+  </data>
+  <data name="Ecabinet_Meeting_Decision" xml:space="preserve">
+    <value>Meeting &amp; Decisions</value>
+  </data>
+  <data name="Ecabinet_Meeting_MeetingDate" xml:space="preserve">
+    <value>Meeting Date</value>
+  </data>
+  <data name="Ecabinet_Meeting_MeetingTimeBegin" xml:space="preserve">
+    <value>Starting Time</value>
+  </data>
+  <data name="Ecabinet_Meeting_MeetingTimeEnd" xml:space="preserve">
+    <value>Ending Time</value>
+  </data>
+  <data name="Ecabinet_Meeting_Meeting_Place" xml:space="preserve">
+    <value>Meeting Place</value>
+  </data>
+  <data name="Ecabinet_Meeting_Motto" xml:space="preserve">
+    <value>Motto</value>
+  </data>
+  <data name="Ecabinet_Meeting_NumberofParticipants" xml:space="preserve">
+    <value>Participants </value>
+  </data>
+  <data name="Ecabinet_Minutes" xml:space="preserve">
+    <value>Minutes</value>
+  </data>
+  <data name="Ecabinet_Priority" xml:space="preserve">
+    <value>Priority</value>
+  </data>
+  <data name="Ecabinet_QuestionsandSuggesion" xml:space="preserve">
+    <value>Questions &amp; Suggesion</value>
+  </data>
+  <data name="Ecabinet_Questions_Question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="Ecabinet_Questions_Suggesion" xml:space="preserve">
+    <value>Suggesion</value>
+  </data>
+  <data name="Ecabinet_Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Ecabinet_Reports_Agenda_Report" xml:space="preserve">
+    <value>Agenda Report</value>
+  </data>
+  <data name="Ecabinet_Report_All_Cabinet_Memebers" xml:space="preserve">
+    <value>All Cabinet Memebers</value>
+  </data>
+  <data name="Ecabinet_Report_Attendance" xml:space="preserve">
+    <value> Attendance Report</value>
+  </data>
+  <data name="Ecabinet_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Ecabinet_Settings_Committees" xml:space="preserve">
+    <value>Committees</value>
+  </data>
+  <data name="Ecabinet_Settings_Members" xml:space="preserve">
+    <value>Members</value>
+  </data>
+  <data name="Ecabinet_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Ecabinet_Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Ecobinet_Mayor_Office_agenda" xml:space="preserve">
+    <value>Mayor Office Agenda</value>
+  </data>
+  <data name="HeadOfficename" xml:space="preserve">
+    <value>Head Office name</value>
+  </data>
+  <data name="LegalCase_Work_order_WorkordeIssueResponse" xml:space="preserve">
+    <value>Work order Issue Response</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type" xml:space="preserve">
+    <value>Legal Issue Type</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Advise" xml:space="preserve">
+    <value>Advise</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Check" xml:space="preserve">
+    <value>Check,</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Draft" xml:space="preserve">
+    <value>Draft,</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Edit" xml:space="preserve">
+    <value>Edit,</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="Legal_Case_Advisory_Request" xml:space="preserve">
+    <value>Legal Advisory Request</value>
+  </data>
+  <data name="Legal_Case_Advocacy_Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Legal_Case_Advocacy_Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Legal_case_Appintment" xml:space="preserve">
+    <value> Case Appintment</value>
+  </data>
+  <data name="Legal_Case_Awareness" xml:space="preserve">
+    <value>Case Awareness</value>
+  </data>
+  <data name="Legal_Case_Awareness_Female" xml:space="preserve">
+    <value>Female</value>
+  </data>
+  <data name="Legal_Case_Awareness_Male" xml:space="preserve">
+    <value>Male</value>
+  </data>
+  <data name="Legal_Case_Awareness_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Legal_Case_Case" xml:space="preserve">
+    <value>Case</value>
+  </data>
+  <data name="Legal_Case_Case_Category" xml:space="preserve">
+    <value>Case Category</value>
+  </data>
+  <data name="Legal_Case_Case_Category_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Legal_Case_Case_Decision" xml:space="preserve">
+    <value>Decision</value>
+  </data>
+  <data name="Legal_Case_Case_Detail" xml:space="preserve">
+    <value>Case Content</value>
+  </data>
+  <data name="Legal_Case_Case_IsCancelled" xml:space="preserve">
+    <value>Is Cancelled</value>
+  </data>
+  <data name="Legal_Case_Case_Is_Seen" xml:space="preserve">
+    <value>Is Seen</value>
+  </data>
+  <data name="Legal_Case_Case_Price" xml:space="preserve">
+    <value>Court Amount</value>
+  </data>
+  <data name="Legal_Case_Case_Status" xml:space="preserve">
+    <value>Case Status</value>
+  </data>
+  <data name="Legal_Case_Case_Status_Type" xml:space="preserve">
+    <value>Case Status Type</value>
+  </data>
+  <data name="Legal_Case_Case_Title" xml:space="preserve">
+    <value>Case-Title</value>
+  </data>
+  <data name="Legal_case_Contract_Claim" xml:space="preserve">
+    <value>Contract Claim</value>
+  </data>
+  <data name="Legal_Case_Court_Type" xml:space="preserve">
+    <value>Court Type</value>
+  </data>
+  <data name="Legal_Case_Court_Type_Name" xml:space="preserve">
+    <value>Court Type Name</value>
+  </data>
+  <data name="Legal_case_Created_By" xml:space="preserve">
+    <value>Created By</value>
+  </data>
+  <data name="Legal_Case_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Legal_Case_Defendant" xml:space="preserve">
+    <value>Defendant</value>
+  </data>
+  <data name="Legal_Case_Descrption" xml:space="preserve">
+    <value>Descrption</value>
+  </data>
+  <data name="legal_Case_Enum_Appealing_Type" xml:space="preserve">
+    <value>Decision Appeal Type</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_Against" xml:space="preserve">
+    <value>Against</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_InFavour_Of" xml:space="preserve">
+    <value>In Favour Of</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_Jointly_Against" xml:space="preserve">
+    <value>Jointly Against</value>
+  </data>
+  <data name="legal_Case_Enum_Appealing_Type_Remand" xml:space="preserve">
+    <value>Remand</value>
+  </data>
+  <data name="legal_Case_Enum_Appealing_Type_Revised_Against" xml:space="preserve">
+    <value>Revised Against</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_Revised_InFavourOf" xml:space="preserve">
+    <value>Revised In Favour Of</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant" xml:space="preserve">
+    <value>Appellant</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant_Both" xml:space="preserve">
+    <value>Both</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant_Defendant" xml:space="preserve">
+    <value>Defendant</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant_Plaintiff" xml:space="preserve">
+    <value>Plaintiff</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuses" xml:space="preserve">
+    <value>Approval Status</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuses_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuse_Approve" xml:space="preserve">
+    <value>Approve</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuse_Reject" xml:space="preserve">
+    <value>Reject</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type" xml:space="preserve">
+    <value>Case Type</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Appeal" xml:space="preserve">
+    <value>Appeal</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Claim" xml:space="preserve">
+    <value>Claim,</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_CounterClaim" xml:space="preserve">
+    <value>CounterClaim,</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Defence" xml:space="preserve">
+    <value>Defence,</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Executions" xml:space="preserve">
+    <value>Executions</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Intervention" xml:space="preserve">
+    <value>Intervention</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type" xml:space="preserve">
+    <value>Executions Types</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Against" xml:space="preserve">
+    <value>Against</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority" xml:space="preserve">
+    <value>Case Priority</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority_High" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority_Low" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority_Medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_InFavourOf" xml:space="preserve">
+    <value>In Favour Of</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Jointly_Against" xml:space="preserve">
+    <value>Jointly Against</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Jointly_Infavour" xml:space="preserve">
+    <value>Jointly Infavour</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_None_Excution" xml:space="preserve">
+    <value>None Execution</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_WaitingInFavour" xml:space="preserve">
+    <value>Waiting(InFavour)</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Waiting_Against" xml:space="preserve">
+    <value>Waiting Against</value>
+  </data>
+  <data name="Legal_Case_File_Number" xml:space="preserve">
+    <value>File Number</value>
+  </data>
+  <data name="Legal_Case_Hearing_Date" xml:space="preserve">
+    <value>HearingdDate</value>
+  </data>
+  <data name="Legal_Case_Judgment_Creditor" xml:space="preserve">
+    <value>Judgment Creditor</value>
+  </data>
+  <data name="Legal_Case_Judgment_Debitor" xml:space="preserve">
+    <value>Judgment Debitor</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory" xml:space="preserve">
+    <value>Legal Advisory</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Engineering_Decision" xml:space="preserve">
+    <value>Engineering Decision</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Issue" xml:space="preserve">
+    <value>Issue</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Number_Of_Pages" xml:space="preserve">
+    <value>Number of Pages</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Resopnse" xml:space="preserve">
+    <value>Legal Advisory Resopnse</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Transaction_Amount" xml:space="preserve">
+    <value>Transaction Amount</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Type" xml:space="preserve">
+    <value>Advisory Type</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Type_Requester_Name" xml:space="preserve">
+    <value>Requester Name</value>
+  </data>
+  <data name="Legal_Case_Legal_Attorney" xml:space="preserve">
+    <value>Legal Attorney</value>
+  </data>
+  <data name="Legal_Case_Legal_Draft" xml:space="preserve">
+    <value>Legal Draft</value>
+  </data>
+  <data name="Legal_Case_Legal_Opinion" xml:space="preserve">
+    <value>Legal Opinion</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order" xml:space="preserve">
+    <value>Legal Work Order</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_assigned_for" xml:space="preserve">
+    <value>Assigned For"</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_Idea_Of_Experts" xml:space="preserve">
+    <value>To be Filled by Experts</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_Kind_of_work" xml:space="preserve">
+    <value>kind of work</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_main_issue" xml:space="preserve">
+    <value>Main Issue</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_Recommendation" xml:space="preserve">
+    <value>Recommendation</value>
+  </data>
+  <data name="Legal_case_Management" xml:space="preserve">
+    <value>Management</value>
+  </data>
+  <data name="Legal_Case_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Legal_Case_Payment_Service_Fee" xml:space="preserve">
+    <value>Service Fee</value>
+  </data>
+  <data name="Legal_Case_Payment_Transaction_Number" xml:space="preserve">
+    <value>Transaction Number</value>
+  </data>
+  <data name="Legal_Case_Plaintiff" xml:space="preserve">
+    <value>Plaintiff</value>
+  </data>
+  <data name="Legal_case_Proposal" xml:space="preserve">
+    <value>Proposal</value>
+  </data>
+  <data name="Legal_Case_Remark" xml:space="preserve">
+    <value>Remark</value>
+  </data>
+  <data name="Legal_Case_Research" xml:space="preserve">
+    <value>Research</value>
+  </data>
+  <data name="Legal_Case_Serial_Number" xml:space="preserve">
+    <value>S.N</value>
+  </data>
+  <data name="Legal_Case_Time_Begin" xml:space="preserve">
+    <value>Time Begin</value>
+  </data>
+  <data name="Legal_Case_Time_End" xml:space="preserve">
+    <value>Time End</value>
+  </data>
+  <data name="OfficeLocation" xml:space="preserve">
+    <value>Office  Location</value>
+  </data>
+  <data name="Enum_EmployeeStatus_NOTSELECTED" xml:space="preserve">
+    <value>NOT SELECTED</value>
+  </data>
+  <data name="ActionButton_Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="ActionButton_Action_Appove" xml:space="preserve">
+    <value>Appove</value>
+  </data>
+  <data name="ActionButton_Action_Decide" xml:space="preserve">
+    <value>Decide</value>
+  </data>
+  <data name="ActionButton_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ActionButton_submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Legal_Case_Appointment" xml:space="preserve">
+    <value>Appointment</value>
+  </data>
+  <data name="Legal_Case_Closed_Case_Report" xml:space="preserve">
+    <value>Closed Case Repor</value>
+  </data>
+  <data name="Legal_Case_Legal_Case" xml:space="preserve">
+    <value>Legal Case</value>
+  </data>
+  <data name="Legal_Case_Legal_Research_Draft" xml:space="preserve">
+    <value>Legal Research &amp; Draft</value>
+  </data>
+  <data name="Legal_case_New_Case_report" xml:space="preserve">
+    <value>New Case Report</value>
+  </data>
+  <data name="Legal_case_Progress_report" xml:space="preserve">
+    <value>Progress Report</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
 </root>

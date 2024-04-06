@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -21,7 +22,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<EmployeeRetirment> list = new List<EmployeeRetirment>();
             EmployeeRetirment employee = new EmployeeRetirment();
             db = new ExceedDbContext();
-            List<Person_Employee> emplist = db.Person_Employee.ToList();
+            List<Person_Employee> emplist = db.Person_Employee.Where(x=>x.IsActive).ToList();
 
             var placements = db.Placements.ToList();
 
@@ -58,11 +59,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             if (emp.Gender == Gender.MALE)
                             {
-                                employee.Sex = "ወንድ";
+                                //employee.Sex = "ወንድ";
+                                employee.Sex = HrHelper.GetGender(emp.Gender);
+
+
                             }
                             else
                             {
-                                employee.Sex = "ሴት";
+                                //employee.Sex = "ሴት";
+                                employee.Sex = HrHelper.GetGender(emp.Gender);
+
                             }
 
                             var retireYear = emp.DateOfBirth.AddYears(60);

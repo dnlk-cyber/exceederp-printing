@@ -32,37 +32,37 @@
         <div class="toolbar">
             @item.SaveButton(Resources .ActionButton_SaveChanges , Resources .ActionButton_Cancel)
             @(Html.Kendo().ComboBox()
-                                   .Name("GlFiscalYearId")
-                                   .Placeholder("Year")
-                                           .DataTextField("Name")
-                                              .DataValueField("GlFiscalYearId")
-                                                   .DataSource(dataSource =>
-                                 {
-                                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
-                                                                  .ServerFiltering(false);
-                                        })
+                        .Name("GlFiscalYearId")
+                        .Placeholder("Year")
+                        .DataTextField("Name")
+                        .DataValueField("GlFiscalYearId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                            .ServerFiltering(false);
+                        })
                                                 
-                           .AutoBind(false)
+                .AutoBind(false)
 
-                           .HtmlAttributes(new { style = "width: 150px;" })
+                .HtmlAttributes(new { style = "width: 150px;" })
 
     )
     <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
     @(Html.Kendo().ComboBox()
-                                    .Name("Period")
-                                    .Placeholder("Period")
-                                            .DataTextField("Name")
-                                            .CascadeFrom("GlFiscalYearId")
-                                             .DataValueField("GLPeriodId")
-                                                    .DataSource(dataSource =>
-                                  {
-                                            dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterPeriod"))
-                                                                  .ServerFiltering(true);
-                                        })
+                .Name("Period")
+                .Placeholder("Period")
+                .DataTextField("Name")
+                .CascadeFrom("GlFiscalYearId")
+                .DataValueField("GLPeriodId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterPeriod"))
+                    .ServerFiltering(true);
+                })
                                                    
-                            .AutoBind(false)
+        .AutoBind(false)
 
-                            .HtmlAttributes(new { style = "width: 150px;" })
+        .HtmlAttributes(new { style = "width: 150px;" })
 
     )
             @*<label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
@@ -105,11 +105,11 @@
 
                       .Filterable()
                          .Pageable(pageable => pageable
-                                                    .Input(true)
-                                                    .Numeric(false)
-                                                    .Refresh(true)
-                                                    .PageSizes(true)
-                                                    .ButtonCount(5))
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
 
       .DataSource(dataSource => dataSource
 

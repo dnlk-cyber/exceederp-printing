@@ -421,6 +421,10 @@
     <Compile Include="Migrations\202404021605255_accountdigitiincreasenine.Designer.cs">
       <DependentUpon>202404021605255_accountdigitiincreasenine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404060655289_hrmupgrademig.cs" />
+    <Compile Include="Migrations\202404060655289_hrmupgrademig.Designer.cs">
+      <DependentUpon>202404060655289_hrmupgrademig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -694,6 +698,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404021605255_accountdigitiincreasenine.resx">
       <DependentUpon>202404021605255_accountdigitiincreasenine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404060655289_hrmupgrademig.resx">
+      <DependentUpon>202404060655289_hrmupgrademig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

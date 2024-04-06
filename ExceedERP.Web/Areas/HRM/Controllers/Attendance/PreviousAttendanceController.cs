@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.EnterpriseServices;
@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         private void PopulateViewData()
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             var list = inputs.GetEmployees().ToList();//.Where(x => empIdList.Contains(x.PersonId) && x.PersonId != empId).ToList();
             ViewData["EmployeeList"] = list;
             ViewData["AllEmployeeList"] = inputs.GetAllPlacmentEmployees(User.Identity.Name);

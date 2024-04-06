@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -51,15 +52,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     EmployeeInfo = new EmployeePromotion();
 
-                    if (employee.Gender == Gender.MALE)
-                    {
-                        EmployeeInfo.Sex = "ወንድ";
-                    }
-                    else
-                    {
-                        EmployeeInfo.Sex = "ሴት";
-                    }
-
+                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
                     EmployeeInfo.FullName = employee.FullNameAmharic;
                     EmployeeInfo.EmployeeId = employee.EmployeeCode;
 

@@ -10,6 +10,8 @@ namespace ExceedERP.Reporting.HRM.HRMCourt
             //
             // Required for telerik Reporting designer support
             //
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.DefaultThreadCurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.DefaultThreadCurrentCulture;
             InitializeComponent();
 
             //

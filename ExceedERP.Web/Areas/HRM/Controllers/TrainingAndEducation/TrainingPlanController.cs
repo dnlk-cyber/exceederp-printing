@@ -39,6 +39,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             ViewData["organization"] = structres;
 
         }
+      
         public JsonResult GetStructures()
         {
             var courseList = db.MainCompanyStructures.AsQueryable().ToList();
@@ -219,7 +220,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     LookupId = trainingPlan.LookupId,
                     MainCompanyId = trainingPlan.MainCompanyId,
                     WorkUnit = trainingPlan.WorkUnit,
-
                     CostPerPerson = trainingPlan.CostPerPerson,
                     TotalCost = trainingPlan.TotalCost,
                     Remark = trainingPlan.Remark,

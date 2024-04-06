@@ -208,12 +208,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             name = "Month " + i;
                             amname = i + "ኛ ወር ";
                         }
-
-
+                        
                         entity.Name = name;
                         entity.AmharicName = amname;
                         entity.Sequence = i;
-
                         db.Quarters.Add(entity);
                         db.SaveChanges();
 

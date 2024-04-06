@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -45,34 +44,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         {
             ViewData["CC"] = db.MainCompanyStructures.ToList();
 
-            var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-            var list = from p in periodList
-                       join g in db.GLPeriods
-                           on p.Name equals g.Name
-                       select (new
-                       {
-                           g
-                       });
-            ViewData["PeriodList"] = db.GLPeriods.ToList();// list.Select(x => x.g).ToList(); ;
+            //var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
+            //var list = from p in periodList
+            //           join g in db.GLPeriods
+            //               on p.Name equals g.Name
+            //           select (new
+            //           {
+            //               g
+            //           });
+            //ViewData["PeriodList"] = db.GLPeriods.ToList();// list.Select(x => x.g).ToList(); ;
                                                            // var listt = inputs.GetEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = db.Person_Employee.ToList();
-            return View();
-        }
-        public ActionResult IndexForCC()
-        {
-            ViewData["CC"] = db.MainCompanyStructures.ToList();
-
-            var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-            var list = from p in periodList
-                       join g in db.GLPeriods
-                           on p.Name equals g.Name
-                       select (new
-                       {
-                           g
-                       });
-            ViewData["PeriodList"] = db.GLPeriods.ToList();// list.Select(x => x.g).ToList(); ;
-            var listt = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
             return View();
         }
         public void SetDate(string name, string value)
@@ -93,13 +75,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         [Authorize(Roles = HR_Profile_Admin + "," + HR_Profile_User + "," + HR_Admin)]
         public ActionResult Delegations_Read([DataSourceRequest]DataSourceRequest request)
         {
-            // List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            //// List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
 
-            var placements = db.Placements.Where(x => x.isCurrent).ToList();
-            int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
+            //var placements = db.Placements.Where(x => x.isCurrent).ToList();
+            //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
 
-            var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
+            //var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
 
+            int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            IQueryable<Delegation> delegations = db.Delegations/*.Where(x => x.EmployeeId == empId || x.FromEmployeeId == empId)*/;//.Where(x => employees.Contains(x.EmployeeId));
+
+            DataSourceResult result = delegations.ToDataSourceResult(request, delegation => new
+            {
+                DelegationId = delegation.DelegationId,
+                FromDateTime = delegation.FromDateTime,
+                ToDateTime = delegation.ToDateTime,
+                FromDateTimeAm = delegation.FromDateTimeAm,
+                ToDateTimeAm = delegation.ToDateTimeAm,
+                EmployeeId = delegation.EmployeeId,
+                FromEmployeeId = delegation.FromEmployeeId,
+                Remark = delegation.Remark,
+                OrgBranchName = delegation.OrgBranchName,
+                DateCreated = delegation.DateCreated,
+                LastModified = delegation.LastModified,
+                CreatedBy = delegation.CreatedBy,
+                ModifiedBy = delegation.ModifiedBy,
+                //Reason = delegation.Reason,
+              //  GLPeriodId = delegation.GLPeriodId,
+                IsOpen = delegation.IsOpen,
+                HideButtons = CheckDate(delegation.DelegationId)
+            });
+
+            return Json(result);
+        }
+        public ActionResult Delegations_Hr_Read([DataSourceRequest]DataSourceRequest request)
+        {
             IQueryable<Delegation> delegations = db.Delegations;//.Where(x => employees.Contains(x.EmployeeId));
 
             DataSourceResult result = delegations.ToDataSourceResult(request, delegation => new
@@ -118,7 +129,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 CreatedBy = delegation.CreatedBy,
                 ModifiedBy = delegation.ModifiedBy,
                 //Reason = delegation.Reason,
-                GLPeriodId = delegation.GLPeriodId,
+                //GLPeriodId = delegation.GLPeriodId,
                 IsOpen = delegation.IsOpen,
                 HideButtons = CheckDate(delegation.DelegationId)
             });
@@ -146,7 +157,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 CreatedBy = delegation.CreatedBy,
                 ModifiedBy = delegation.ModifiedBy,
                 //Reason = delegation.Reason,
-                GLPeriodId = delegation.GLPeriodId,
+               // GLPeriodId = delegation.GLPeriodId,
                 IsOpen = delegation.IsOpen,
                 HideButtons = CheckDate(delegation.DelegationId)
             });
@@ -192,7 +203,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 CreatedBy = delegation.CreatedBy,
                 ModifiedBy = delegation.ModifiedBy,
                 //Reason = delegation.Reason,
-                GLPeriodId = delegation.GLPeriodId
+               // GLPeriodId = delegation.GLPeriodId
             });
 
             return Json(result);
@@ -212,14 +223,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 var splitDate = delegation.ToDateTimeAm.Split('/');
                 delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
-            if (checkexistancep != null)
-            {
-                ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-            }
+            //var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
+            //if (checkexistancep != null)
+            //{
+            //    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
+            //}
             if (delegation.FromEmployeeId == delegation.EmployeeId)
             {
                 ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
+            }
+            if (db.Delegations.Any(x => x.FromEmployeeId == delegation.FromEmployeeId ))
+            {
+                ModelState.AddModelError("", "You  Delegated for another delegate too ! Remove your delegator!!");
+
+            }
+            if (db.Delegations.Any(x => x.EmployeeId == delegation.EmployeeId ))
+            {
+                ModelState.AddModelError("", "He/She is  Delegated for another employee!!");
+
             }
             if (ModelState.IsValid)
             {
@@ -239,7 +260,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = delegation.ModifiedBy,
                     // Reason = delegation.Reason,
-                    GLPeriodId = delegation.GLPeriodId
+                    //GLPeriodId = delegation.GLPeriodId
                 };
 
                 db.Delegations.Add(entity);
@@ -274,23 +295,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 var splitDate = delegation.ToDateTimeAm.Split('/');
                 delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
-            if (checkexistancep != null)
-            {
-                ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-            }
+            //var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
+            //if (checkexistancep != null)
+            //{
+            //    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
+            //}
             if (delegation.FromEmployeeId == delegation.EmployeeId)
             {
                 ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
             }
-            var checkExit = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
-            if (checkExit != null)
-            {
-                ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-            }
+            //var checkExit = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
+            //if (checkExit != null)
+            //{
+            //    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
+            //}
             if (delegation.FromDateTime > delegation.ToDateTime)
             {
                 ModelState.AddModelError("", "Please check the date range!!");
+            }
+            if (db.Delegations.Any(x => x.FromEmployeeId == delegation.FromEmployeeId && x.DelegationId != delegation.DelegationId))
+            {
+                ModelState.AddModelError("", "You  Delegated for another delegate too ! Remove your delegator!!");
+
+            }
+            if (db.Delegations.Any(x => x.EmployeeId == delegation.EmployeeId && x.DelegationId != delegation.DelegationId))
+            {
+                ModelState.AddModelError("", "He/She is  Delegated for another employee!!");
+
             }
             if (ModelState.IsValid)
             {
@@ -311,7 +342,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     CreatedBy = delegation.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     //Reason = delegation.Reason,
-                    GLPeriodId = delegation.GLPeriodId
+                   // GLPeriodId = delegation.GLPeriodId
                 };
 
                 db.Delegations.Attach(entity);
@@ -347,10 +378,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     CreatedBy = delegation.CreatedBy,
                     ModifiedBy = delegation.ModifiedBy,
                     //Reason = delegation.Reason,
-                    GLPeriodId = delegation.GLPeriodId
+                   // GLPeriodId = delegation.GLPeriodId
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted delegation information of employee " + delegation.FromEmployeeId + " period" + delegation.GLPeriodId);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted delegation information of employee " + delegation.FromEmployeeId);
                 #endregion
                 db.Delegations.Attach(entity);
                 db.Delegations.Remove(entity);

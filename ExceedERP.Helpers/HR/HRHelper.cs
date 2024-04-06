@@ -18,7 +18,7 @@ namespace ExceedERP.Helpers.HR
         public static string ReportDateTwoAm { get; set; }
         public static DateTime ReportDateOne { get; set; }
         public static DateTime ReportDateTwo { get; set; }
-
+        public static string cultureName = GlobalHelper.GetCurrentCulture();
         public static string GetHireDate(int empId)
         {
             ExceedDbContext db = new ExceedDbContext();
@@ -49,16 +49,6 @@ namespace ExceedERP.Helpers.HR
                         return "ያላገባ";
                     }
             }
-        }
-
-        public static string GetBusinessUnitSectorAccount(int businessUnitId)
-        {
-            ExceedDbContext db = new ExceedDbContext();
-
-            string businessUnitAccount = "";
-            var record = db.BusinessUnits.FirstOrDefault(x => x.BusinessUnitId == businessUnitId);
-            if (record != null) businessUnitAccount = record.Accountcode;
-            return businessUnitAccount;
         }
         public static decimal GetSalaryFromSalarySetting(int stepId, int rankId, int lookUpId)
         {
@@ -214,6 +204,50 @@ namespace ExceedERP.Helpers.HR
 
 
         }
+
+        public static string GetLocalizedGender(Gender gender)
+        {
+            if (!string.IsNullOrEmpty(cultureName))
+            {
+
+
+                if ((cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et"))
+                {
+                    if (gender == Gender.FEMALE)
+                    {
+                        return "ሴት";
+                    }
+
+                    return "ወንድ";
+                }
+                if (cultureName.ToLower() == "om")
+                {
+                    if (gender == Gender.FEMALE)
+                    {
+                        return "Dhalaa";
+                    }
+
+                    return "Dhiira";
+                }
+                if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                {
+                    if (gender == Gender.FEMALE)
+                    {
+                        return "Female";
+                    }
+
+                    return "MAle";
+                }
+            }
+            if (gender == Gender.FEMALE)
+            {
+                return "Female";
+            }
+
+            return "Male";
+
+
+        }
         public static string GetVacancyType(VacancyType vacancyType)
         {
             if (vacancyType == VacancyType.PERMANENT)
@@ -359,14 +393,14 @@ namespace ExceedERP.Helpers.HR
 
             return "";
         }
-        public static string GetBranchSubAccount(int branchId)
-        {
-            ExceedDbContext db = new ExceedDbContext();
-            string subAccount = "";
-            var record = db.Branch.FirstOrDefault(x => x.BranchId == branchId);
-            if (record != null) subAccount = record.SubAccount;
-            return subAccount;
-        }
+        //public static string GetBranchSubAccount(int branchId)
+        //{
+        //    ExceedDbContext db = new ExceedDbContext();
+        //    string subAccount = "";
+        //    var record = db.Branch.FirstOrDefault(x => x.BranchId == branchId);
+        //    if (record != null) subAccount = record.SubAccount;
+        //    return subAccount;
+        //}
 
         public static string GetBranchLocationAccount(int branchId)
         {
@@ -374,10 +408,29 @@ namespace ExceedERP.Helpers.HR
 
             string branchLocationAccount = "";
             var record = db.Branch.FirstOrDefault(x => x.BranchId == branchId);
-            if (record != null) branchLocationAccount = record.Code;
+            if (record != null) branchLocationAccount = record.LocationAccount;
             return branchLocationAccount;
         }
+        public static string GetBusinessUnitSectorAccount(int businessUnitId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
 
+            string businessUnitAccount = "";
+            var record = db.BusinessUnits.FirstOrDefault(x => x.BusinessUnitId == businessUnitId);
+            if (record != null) businessUnitAccount = record.Accountcode;
+            return businessUnitAccount;
+        }
+
+        public static string GetWorkUnitCostCenter(int orgId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            string costCenter = "";
+            var record = db.BranchCostCenter
+               // .Where(x => x.BranchId == branchid)
+                .FirstOrDefault(x => x.OrgStructureId == orgId);
+            if (record != null) costCenter = record.Values;
+            return costCenter;
+        }
         public static List<Person_Employee> PersonEmployeesList(object[] branchId, string orgStructureId, string employeeType)
         {
             ExceedDbContext db = new ExceedDbContext();

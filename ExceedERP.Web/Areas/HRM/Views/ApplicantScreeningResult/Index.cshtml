@@ -6,12 +6,12 @@
 }
 
 @*<legend>@Resources.Navigator_Recruitment_ApplicantScreeningResult</legend>*@
-<legend>External Applicant Screening</legend>
+<legend>@Resources.External_Applicant_Screening</legend>
 @(Html.Kendo().Grid<ApplicantScreenResult>()
                  .Name("ApplicantScreeninggrid")
          .Columns(columns =>
          {
-             columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VacancyId", "VaccancyCode").EditorTemplateName("Vacancy").Title("Vacancy");
+             columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VacancyId", "VaccancyCode")/*.EditorTemplateName("Vacancy")*/;
              columns.Bound(c => c.JobTitle);
              columns.Bound(c => c.Location);
              columns.Bound(c => c.Remark);
@@ -20,10 +20,10 @@
           .ToolBar(toolbar =>
           {
 
-              toolbar.Template(@<text>
+          toolbar.Template(@<text>
                 <div class="toolbar">
 
-                    <label class="category-label" @*for="Period"*@>Vacancy Code</label>
+                    <label class="category-label" @*for="Period"*@>@Resources.VacancyCode</label>
                     @(Html.Kendo().DropDownListFor(m => m)
                                              .Name("VacancyId")
                                 .OptionLabel(Resources.Select)
@@ -50,32 +50,25 @@
                        .Name("btnScreen")
                                    .HtmlAttributes(new { type = "button", @class = "k-primary" })
                                       .Events(e => e.Click("Screen"))
-                                                       .Content("Screen and Genderate Applicants"))
+                                                       .Content(Resources.Screen_and_Genderate_Applicants))
 
 
-                    <label class="category-label" for="Folder">Filter Applicant </label>
+                    <label class="category-label" for="Folder">@Resources.Filter_Applicant </label>
                     @(Html.Kendo().DropDownList()
-                                                                                  .Name("VacancyToFilter")
-                                                              .OptionLabel(Resources.Select)
-                                                .Filter("contains")
-                                                .DataTextField("VaccancyCode")
-                                                .DataValueField("VacancyId")
-                                                    .DataSource(dataSource =>
-                                                    {
-                                                             dataSource.Read(read => read.Action("GetVacancyExternal", "HRMDataProvider", new { area = "HRM" }))
-                                       .ServerFiltering(false);
-                                                         })
-
-                                                       .Events(e => e.Change("VacancyFilter"))
-
-                                      .HtmlAttributes(new { style = "width: 200px;" })
+                            .Name("VacancyToFilter")
+                            .OptionLabel(Resources.Select)
+                            .Filter("contains")
+                            .DataTextField("VaccancyCode")
+                            .DataValueField("VacancyId")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetVacancyExternal", "HRMDataProvider", new { area = "HRM" }))
+                                .ServerFiltering(false);
+                            })
+                            .Events(e => e.Change("VacancyFilter"))
+                            .HtmlAttributes(new { style = "width: 200px;" })
                     )
-
-
                 </div>
-
-
-
             </text>);
 
                 })
@@ -108,19 +101,16 @@
                                          .Refresh(true)
                                          .PageSizes(true)
                                          .ButtonCount(5))
-                   // .ClientDetailTemplateId("AddressTemplate")
-                   .DataSource(dataSource => dataSource
-
-                      .Ajax()
-                                          .Sort(sort => sort.Add("ApplicantScreenResultId").Descending())
-
-                                   .Events(events =>
-                                   {
-                                       events.Error("error_handler(\"ApplicantScreeninggrid\")");
-                                       events.RequestStart("onRequestStart(\"ApplicantScreeninggrid\")");
-                                       events.RequestEnd("onRequestEnd(\"ApplicantScreeninggrid\")");
-                                   })
-
+                    // .ClientDetailTemplateId("AddressTemplate")
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add("ApplicantScreenResultId").Descending())
+                    .Events(events =>
+                    {
+                         events.Error("error_handler(\"ApplicantScreeninggrid\")");
+                         events.RequestStart("onRequestStart(\"ApplicantScreeninggrid\")");
+                         events.RequestEnd("onRequestEnd(\"ApplicantScreeninggrid\")");
+                    })
                .Model(model =>
                {
                    model.Id(p => p.ApplicantScreenResultId);
@@ -157,7 +147,7 @@
 
                        columns.Command(command =>
                        {
-                           command.Custom("pass").Text(" ").Click("Pass").IconClass("k-icon k-i-check").HtmlAttributes(new { @class = "btn btn-primary ", title = "Generate profile for this applicant ", });
+                           command.Custom("pass").Text("Generate profile ").Click("Pass").IconClass("k-icon k-i-check").HtmlAttributes(new { @class = "btn btn-primary ", title = "Generate profile for this applicant ", });
                        });
                    })
                      .ToolBar(toolbar =>

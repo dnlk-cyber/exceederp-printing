@@ -58,6 +58,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 To = competency.To,
                 LookupId = competency.LookupId,
                 Remark = competency.Remark,
+                Organization = competency.Organization,
                 DateCreated = competency.DateCreated,
                 LastModified = competency.LastModified,
                 CreatedBy = competency.CreatedBy,
@@ -77,11 +78,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             if (ModelState.IsValid)
             {
                 var checkexistance = db.Competencies.Where(x => x.LookupId == competency.LookupId && x.EmployeeId == id).FirstOrDefault();
-                if (checkexistance != null)
-                {
-                    ModelState.AddModelError("", "This skill type is already registered!!");
-                }
-                else if (FromAmharic == null || ToAmharic == null)
+                //if (checkexistance != null)
+                //{
+                //    ModelState.AddModelError("", "This skill type is already registered!!");
+                //}
+                if (FromAmharic == null || ToAmharic == null)
                 {
                     ModelState.AddModelError("", "Date values are mandatory!!");
                 }
@@ -100,6 +101,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         Status = competency.Status,
                         From = From,
                         To = To,
+                        Organization = competency.Organization,
                         Remark = competency.Remark,
                         DateCreated = DateTime.Now,
                         LastModified = competency.LastModified,
@@ -152,6 +154,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         Status = competency.Status,
                         From = From,
                         To = To,
+                        Organization = competency.Organization,
                         Remark = competency.Remark,
                         EmployeeId = competency.EmployeeId,
                         DateCreated = competency.DateCreated,
@@ -186,6 +189,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Status = competency.Status,
                     From = competency.From,
                     To = competency.To,
+                    Organization = competency.Organization,
                     Remark = competency.Remark,
                     EmployeeId = competency.EmployeeId,
                     DateCreated = competency.DateCreated,

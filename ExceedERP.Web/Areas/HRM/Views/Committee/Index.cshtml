@@ -10,10 +10,10 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.CommitteeId).Hidden();
-          columns.Bound(c => c.Description);
-          columns.Bound(c => c.CommitteeType).EditorTemplateName("Enum");
-          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive ? checked='checked' :'' \\# />").Width(100);
-          columns.Bound(c => c.Remark);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["committeType"], "LookupId", "Description").EditorTemplateName("CommitteType").Width(200);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' #=IsActive ? checked='checked' :'' # />").Width(100);
+          columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
           {
               if (HttpContext.Current.User.IsInRole("HR_Company_User"))
@@ -24,7 +24,7 @@
               {
                   command.Destroy().Text(Resources.ActionButton_Cancel);
               }
-          }).Width(200);
+          });
       })
       .ToolBar(toolbar => {
           if (HttpContext.Current.User.IsInRole("HR_Company_User"))
@@ -32,7 +32,7 @@
               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           }
       })
-                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Committee").Window(window => { window.Title(Resources.Navigator_Company_Committee); window.Scrollable(false); }))
+                       .Editable(editable => editable.Mode(GridEditMode.InLine)/*.TemplateName("Committee").Window(window => { window.Title(Resources.Navigator_Company_Committee); window.Scrollable(false); })*/)
       .Selectable(selectable => {
           selectable.Mode(GridSelectionMode.Single);
           selectable.Type(GridSelectionType.Row);
@@ -45,7 +45,7 @@
                           sortable.SortMode(GridSortMode.SingleColumn);
                       })
           .Filterable()
-          
+
              .Pageable(pageable => pageable
                                         .Input(true)
                                         .Numeric(false)
@@ -88,6 +88,7 @@
                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("Employee").Width(200);
 
                  columns.Bound(c => c.Role);
+                 //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # />").Width(100);
                  columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive ? checked='checked' :'' \\# />");
                  columns.Command(command =>
                  {
@@ -107,7 +108,7 @@
                              {
                                  //  e.Change("DownloadAttachmnets");
                                  // e.Edit("onGridEdit");
-                               
+
                              })
                        .ToolBar(toolbar =>
                        {
@@ -154,12 +155,13 @@
             @<text>
 
                 @(Html.Kendo().Grid<CommitteMinute>()
-                                      .Name("CommitteMinute_#=CommitteeId#")
+                      .Name("CommitteMinute_#=CommitteeId#")
              .Columns(columns =>
              {
                  //columns.ForeignKey(p => p.CommitteeId, (IEnumerable)ViewData["Committees"], "CommitteeId", "Role").Title("Committee").EditorTemplateName("CommitteeSelector").Width(150);
 
                  columns.Bound(c => c.FileNo);
+                 //columns.ForeignKey(c => c.DisciplinaryCaseId,(IEnumerable)ViewData["DisciplinaryCases"], "DisciplinaryCaseId", "NatureofTransgression");
                  columns.Bound(c => c.DateAmharic).Width(200).EditorTemplateName("Calander");
                  columns.Bound(c => c.Agenda);
                  columns.Bound(c => c.PlaceOfMetting);
@@ -181,20 +183,20 @@
           x.Edit("GetDate");
           x.Save("GetDate");
       })
-                       //      .Events(e =>
-                       //{
-                       //  //  e.Change("DownloadAttachmnets");
-                       //   // e.Edit("onGridEdit");
-                       //})
-                       .ToolBar(toolbar =>
-                       {
+    //      .Events(e =>
+    //{
+    //  //  e.Change("DownloadAttachmnets");
+    //   // e.Edit("onGridEdit");
+    //})
+    .ToolBar(toolbar =>
+    {
 
-                           if (HttpContext.Current.User.IsInRole("HR_Company_User") || HttpContext.Current.User.IsInRole("HR_Discipline_User"))
-                           {
-                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                           }
-                       })
-                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+        if (HttpContext.Current.User.IsInRole("HR_Company_User") || HttpContext.Current.User.IsInRole("HR_Discipline_User"))
+        {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+        }
+    })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
 
         .Selectable(selectable =>
         {
@@ -215,10 +217,10 @@
                        })
 
                   .Model(model => model.Id(p => p.CommitteMinuteId))
-                              .Read(read => read.Action("CommitteMinute_Read", "CommitteMinuteDetail", new { id = "#=CommitteeId#" }))
-                              .Create(create => create.Action("CommitteMinute_Create", "CommitteMinuteDetail", new { id = "#=CommitteeId#" }))
-                                  .Update(update => update.Action("CommitteMinute_Update", "CommitteMinuteDetail", new { id = "#=CommitteeId#" }))
-                              .Destroy(destroy => destroy.Action("CommitteMinute_Destroy", "CommitteMinuteDetail", new { id = "#=CommitteeId#" }))
+                  .Read(read => read.Action("CommitteMinuteDetails_Read", "CommitteMinuteDetails", new { id = "#=CommitteeId#" }))
+                  .Create(create => create.Action("CommitteMinuteDetails_Create", "CommitteMinuteDetails", new { id = "#=CommitteeId#" }))
+                  .Update(update => update.Action("CommitteMinuteDetails_Update", "CommitteMinuteDetails"))
+                  .Destroy(destroy => destroy.Action("CommitteMinuteDetails_Destroy", "CommitteMinuteDetails"))
                   ).ToClientTemplate()
                 )
             </text>
@@ -233,7 +235,7 @@
 
 <script id="Commiteminutdetail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                            .Name("tabstrip_#=CommitteMinuteId#")
+    .Name("tabstrip_#=CommitteMinuteId#")
     .SelectedIndex(0)
     .Items(items =>
      {
@@ -245,8 +247,11 @@
                       .Name("Attachment_#=CommitteMinuteId#")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Description).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=CommitteMinuteId#" }).ToHtmlString());
-      
+          columns.Template(c => { }).ClientTemplate("<a href='/CommitteMinuteDetails/FileDownload/\\#=AttachmentId\\#'><i class='fa fa-download fa-2x'></i> &nbsp;&nbsp;&nbsp;</a>").Title("Download");
+
+         // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=CommitteMinuteId#", attachId = "\\#=AttachmentId\\#" }).ToHtmlString());
+        //  columns.Bound(c => c.Description).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=CommitteMinuteId#", attachId = "\\#=AttachmentId\\#" }).ToHtmlString());
+
 
           columns.Command(command =>
           {
@@ -256,14 +261,14 @@
 
       })
                         .Events(e =>
-                  {
-                      e.Change("DownloadAttachmnets");
-                      e.Edit("onGridEdit");
-                  })
+                        {
+                            e.Change("DownloadAttachmnets");
+                            e.Edit("onGridEdit");
+                        })
                        .ToolBar(toolbar =>
-              {
-                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-              })
+                       {
+                           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                       })
                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
                       {
                           window.Scrollable(false);
@@ -280,17 +285,16 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                                  .Events(events =>
-         {
-             events.Error("error_handler(\"Attachment_#=CommitteMinuteId#\")");
-             events.RequestStart("onRequestStart(\"Attachment_#=CommitteMinuteId#\")");
-             events.RequestEnd("onRequestEnd(\"Attachment_#=CommitteMinuteId#\")");
-         })
+                                 {
+                                     events.Error("error_handler(\"Attachment_#=CommitteMinuteId#\")");
+                                     events.RequestStart("onRequestStart(\"Attachment_#=CommitteMinuteId#\")");
+                                     events.RequestEnd("onRequestEnd(\"Attachment_#=CommitteMinuteId#\")");
+                                 })
 
-          .Model(model => model.Id(p => p.AttachmentId))
-
-                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "#=CommitteMinuteId#" }))
-                                  .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "#=CommitteMinuteId#" }))
-                                  .Destroy(destroy => destroy.Action("Attachments_Destroy", "CommitteMinuteDetail"))
+            .Model(model => model.Id(p => p.AttachmentId))
+            .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "#=CommitteMinuteId#" }))
+            .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "#=CommitteMinuteId#" }))
+            .Destroy(destroy => destroy.Action("Attachments_Destroy", "CommitteMinuteDetail"))
       ).ToClientTemplate()
                 )
             </text>
@@ -358,11 +362,11 @@
         }
     </script>
     <script>
-        function filterCategories() {
-            return {
-                CommitteeType: $("#CommitteeType").val()
-            };
-        }
+        //function filterCategories() {
+        //    return {
+        //        CommitteeType: $("#CommitteeType").val()
+        //    };
+        //}
     </script>
     <script>
         function Change(e) {
@@ -371,17 +375,17 @@
             var x = e.value;
             if (x == "0") {
                 // $("#VaccancyCode").prop("disabled", false).addClass("k-state-disabled");
-                dropDown.wrapper.show();
-                dropDown.enable(true);
+               // dropDown.wrapper.show();
+                //dropDown.enable(true);
                 // $('#VaccancyCode').show();
-                $("control-label col-md-8", "#VaccancyCode").show();
+               // $("control-label col-md-8", "#VaccancyCode").show();
 
             }
             else {
                 // $("#VaccancyCode").prop("disabled", true).addClass("k-state-disabled");
-                dropDown.enable(false);
-                dropDown.wrapper.hide();
-                $("control-label col-md-8", "#VaccancyCode").hide();
+               // dropDown.enable(false);
+               // dropDown.wrapper.hide();
+                //$("control-label col-md-8", "#VaccancyCode").hide();
 
 
             }
@@ -390,23 +394,23 @@
             var masterRow = e.model.CommitteeType;
 
             var masterGrid = $("#Committeegrid").data("kendoGrid");
-            var dropDown = $("#VaccancyCode").data("kendoDropDownList");
+           // var dropDown = $("#VaccancyCode").data("kendoDropDownList");
             //var masterDataItem = masterGrid.dataItem(masterRow);
 
             masterId = masterRow;
             if (masterId == "0") {
                 // $("#VaccancyCode").prop("disabled", false).addClass("k-state-disabled");
-                dropDown.wrapper.show();
-                dropDown.enable(true);
+                //dropDown.wrapper.show();
+                //dropDown.enable(true);
                 // $('#VaccancyCode').show();
-                $("control-label col-md-8", "#VaccancyCode").show();
+              //  $("control-label col-md-8", "#VaccancyCode").show();
 
             }
             else {
                 // $("#VaccancyCode").prop("disabled", true).addClass("k-state-disabled");
-                dropDown.enable(false);
-                dropDown.wrapper.hide();
-                $("control-label col-md-8", "#VaccancyCode").hide();
+               // dropDown.enable(false);
+               // dropDown.wrapper.hide();
+              //  $("control-label col-md-8", "#VaccancyCode").hide();
 
 
             }
@@ -431,7 +435,7 @@
         var id = rowData.AttachmentID;
         $.ajax({
             contentType: "application/json; charset=utf-8",
-            url: '@Url.Action("Download", "CommitteMinuteDetail")',
+            url: '@Url.Action("Download", "CommitteMinuteDetails")',
             data: { 'id': id },
             type: 'GET',
             cache: false,
@@ -444,10 +448,10 @@
     }
     function GetDate() {
 
-        var x = AssignDate();
-        var y = x;
-        $("#DateAmharic").trigger("change");
-        for (var o in y) {
+        //var x = AssignDate();
+        //var y = x;
+        //$("#DateAmharic").trigger("change");
+        @*for (var o in y) {
             $.ajax({
                 contentType: "application/json; charset=utf-8",
                 url: '@Url.Action("SetDate", "CommitteMinuteDetail")',
@@ -459,6 +463,6 @@
                 }
 
             });
-        }
+        }*@
     }
 </script>

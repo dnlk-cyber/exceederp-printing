@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    public class ManPowerPlanningController : Controller
+    public class ManPowerPlanningController :  BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/ManPowerPlanning
@@ -37,7 +38,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             ViewData["workunits"] = workUnits;
             var types = db.Lookups.Where(x => x.LookupType == LookUpTypes.PROJECT_TYPE).ToList();
             ViewData["projects"] = types;
-
+            ViewData["businessUnits"] = db.BusinessUnits;
             return View();
         }
     }

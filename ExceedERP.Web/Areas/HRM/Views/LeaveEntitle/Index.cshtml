@@ -9,15 +9,16 @@
 <legend>@Resources.NavigatorLeave_LeaveEntitlement</legend>
 
 @(Html.Kendo().Grid<LeaveEntitle>()
-              .Name("LeaveEntitlegrid")
+          .Name("LeaveEntitlegrid")
           .Columns(columns =>
           {
               columns.Bound(c => c.EmployeeCode).Width(150);
+              //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true).DataSource(ds => ds.Read(r => r.Action("LeavEntitleEmployee_Read", "LeaveEntitle").Data("{ field: 'EmployeeId' }"))));
               columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
               //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
 
               //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
-              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name").Width(150).Title("Branch");//.Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));//.Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.HireDate).Filterable(grp=>grp.Search(false).Multi(false).Enabled(false)).Width(150);
               columns.Bound(c => c.Amount).Width(150);
               columns.Bound(c => c.Balance).Width(150);
@@ -44,70 +45,77 @@
           {
           toolbar.Template(@<text>
 
-<div class="toolbar">
-    @if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+          <div class="toolbar">
+                @if (HttpContext.Current.User.IsInRole("HR_Leave_User")
+                    || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
                 {
-                @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                    @item.CreateButton(Resources.ActionButton_AddNewRecord);
+
                 }
-               @(Html.Kendo().CheckBox()
-                   .Name("chkIsInclude")
-                   //.HtmlAttributes(new { @checked  = "Check" } )
-                   .Label(Resources.IncludeExternalExperience))
+                @(Html.Kendo().CheckBox()
+                            .Name("chkIsInclude")
+                            //.HtmlAttributes(new { @checked  = "Check" } )
+                            .Label(Resources.IncludeExternalExperience))
 
-              @(Html.Kendo().DropDownList()
-                       .Name("GlFiscalYear")
-                       .ValuePrimitive(true)
-                       .OptionLabel(Resources.Select)
-                       .DataTextField("Name")
-                       .DataValueField("GlFiscalYearId")
-                       .Filter("contains")
-                       .DataSource(dataSource =>
-                       {
-                          dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
-                          .ServerFiltering(false);
-                        }))
+                @(Html.Kendo().DropDownList()
+                                 .Name("GlFiscalYear")
+                                 .ValuePrimitive(true)
+                                 .OptionLabel(Resources.Select)
+                                 .DataTextField("Name")
+                                 .DataValueField("GlFiscalYearId")
+                                 .Filter("contains")
+                                 .DataSource(dataSource =>
+                                 {
+                                     dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                                     .ServerFiltering(false);
 
-               @(Html.Kendo().Button()
-                       .Name("btnRefresh")
-                        .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                          .Events(e => e.Click("Refresh"))
-                               .Content("Generate Leave Entitlement"))
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                                 }))
+                     @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+                      {
+                                @(Html.Kendo().Button()
+                                    .Name("btnRefresh")
+                                     .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                       .Events(e => e.Click("Refresh"))
+                                            .Content(Resources.Generate_Leave_Entitlement))
+                      }
 
-    @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
-        {
-                @(Html.Kendo().Button()
-                        .Name("btnExpire")
-                         .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                             .Events(e => e.Click("Expire"))
-                              .Content("Expire Leave"))
-       }
-   
-    @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse"))
-                {
-                  @(Html.Kendo().Button()
-                          .Name("btnReverseExpire")
-                           .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                               .Events(e => e.Click("ReverseExpire"))
-                                .Content("Reverse Expire Leave"))
-                }  
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-    @if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
-        {
-           @*@item.Pdf(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });*@
-           @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "Lookups", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
-        }
+                       @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
+                        {
+                                @(Html.Kendo().Button()
 
-          </div>
-            </text>);
+                                     .Name("btnExpire")
+                                     .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                          .Events(e => e.Click("Expire"))
+                                           .Content("Expire Leave"))
+
+                        }
+       
+
+
+                    @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse"))
+
+                     {
+                        @(Html.Kendo().Button()
+                                    .Name("btnReverseExpire")
+                                    .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                         .Events(e => e.Click("ReverseExpire"))
+                                          .Content("Reverse Expire Leave"))
+
+                     }
+      
+
+            </div>
+           </text>);
 
           })
 
@@ -118,12 +126,11 @@
                     selectable.Type(GridSelectionType.Row);
                 })
                    .Scrollable(h => h.Height(500))
-                       .Groupable()
-                                .Sortable(sortable =>
-                                {
-                                    sortable.SortMode(GridSortMode.SingleColumn);
-                                })
-                    .Filterable()
+                   .Sortable(sortable =>
+                   {
+                       sortable.SortMode(GridSortMode.SingleColumn);
+                   })
+                   .Filterable()
                        .Pageable(pageable => pageable
                             .Input(true)
                             .Numeric(false)
@@ -152,8 +159,8 @@
                         })
                     .Read(read => read.Action("LeavesEntitle_New_Read", "LeaveEntitle"))
                      .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle"))
-                     //.Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-                    //.Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+                     .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
+                    .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
                 ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
@@ -176,6 +183,7 @@
                                            columns.Command(command =>
                                            {
                                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id="btnStyle"});
+                                               command.Destroy().Text(Resources.ActionButton_Cancel);
                                            }).Width(200);
                                        })
                              //.ToolBar(toolbar =>
@@ -202,7 +210,7 @@
                                     .Read(read => read.Action("LeavesEntitle_OnePerson_Read", "LeaveEntitle", new { id = "#=EmployeeId#" }))
                                     //.Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle", new { id = "#=EmployeeId#" }))
                                     .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-                               //.Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+                                    .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
                                ).ToClientTemplate()
                     )
                 </text>
@@ -244,7 +252,7 @@
 
 
 
-                                                                                                                       }).ToClientTemplate()
+                              }).ToClientTemplate()
 
                      )
                  </text>
@@ -364,7 +372,7 @@
          }
 
         } catch (e) {
-            //alert("Please select the row!!");
+            alert("Please select  period first!!");
         }
 
     }

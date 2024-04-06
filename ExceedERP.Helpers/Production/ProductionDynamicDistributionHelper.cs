@@ -1,7 +1,11 @@
-﻿using ExceedERP.Core.Domain.Production;
+﻿using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Production;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.HR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,9 +52,9 @@ namespace ExceedERP.Helpers.Production
                         if (item != null)
                         {
                             string acc = item.ItemCategory.AccountCode;
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(StoreHelper.GetStoreBranch(record.StoreCode));
-                            string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(StoreHelper.GetStoreBranch(record.StoreCode));
+                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
                             var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
                             if (receiveDistribution != null)
@@ -227,9 +231,9 @@ namespace ExceedERP.Helpers.Production
                         if (item != null)
                         {
                             string acc = item.ItemCategory.AccountCode;
-                            int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                            string subAccountSeG = HrHelper.GetBranchSubAccount(StoreHelper.GetStoreBranch(record.StoreCode));
-                            string newacc = _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                            int locationindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                            string locationAccountSeG = HrHelper.GetBranchLocationAccount(StoreHelper.GetStoreBranch(record.StoreCode));
+                            string newacc = _dynamicAccount.ReplaceSegment(acc, locationindex, locationAccountSeG);
 
                             var receiveDistribution = distributions.FirstOrDefault(x => x.AccountCode == newacc);
                             if (receiveDistribution != null)

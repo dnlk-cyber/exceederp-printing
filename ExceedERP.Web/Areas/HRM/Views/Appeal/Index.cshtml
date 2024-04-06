@@ -23,13 +23,13 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                .Events(events =>
-                                                                                                  {
-                                                                                                      events.Error("error_handler(\"grid\")");
-                                                                                                      events.RequestStart("onRequestStart(\"grid\")");
-                                                                                                      events.RequestEnd("onRequestEnd(\"grid\")");
-                                                                                                  }
-                                                                                                  )
-              
+                       {
+                           events.Error("error_handler(\"grid\")");
+                           events.RequestStart("onRequestStart(\"grid\")");
+                           events.RequestEnd("onRequestEnd(\"grid\")");
+                       }
+                       )
+                                                                                              
           .Model(model => model.Id(p => p.AppealId))
           .Read(read => read.Action("Appeal_Read", "Appeal"))
           .Create(create => create.Action("Appeal_Create", "Appeal"))

@@ -26,8 +26,8 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }))
-                                      .ServerFiltering(false);
+                                  dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                      .ServerFiltering(true);
                               })
 
                     )

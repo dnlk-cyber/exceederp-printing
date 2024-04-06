@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -29,9 +29,12 @@ namespace ExceedERP.Core.Domain.HRM.Company
         public JobTitlePlan PlanType { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "BussinessUnit", ResourceType = typeof(Localization.Resources))]
+        public int? BusinessUnitId { get; set; }
         public virtual ICollection<JobTitleMappingDetailTemp> JobTitleMappingDetails { get; set; }
         [Display(Name = "NavigatorCompany_ProjectType", ResourceType = typeof(Localization.Resources))]
         public int ProjectType { get; set; }
+        public bool IsActive { get; set; }
         //public virtual Branch Branch { get; set; }
 
 

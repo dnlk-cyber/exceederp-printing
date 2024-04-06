@@ -104,11 +104,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 var pass = (passMark.PassScore * Convert.ToDouble(totalSetting)) / passMark.TotalValue;
                                 if (recruitment.Total >= Convert.ToDecimal(pass))
                                 {
-                                    recruitment.RecruitmentResult = "አልፈዋል";
+                                   // recruitment.RecruitmentResult = "አልፈዋል";
+                                    recruitment.RecruitmentResult = "Passed";
                                 }
                                 else
                                 {
-                                    recruitment.RecruitmentResult = "አላለፉም";
+                                   // recruitment.RecruitmentResult = "አላለፉም";
+                                    recruitment.RecruitmentResult = "Fail";
                                 }
 
                                 summaries.Add(recruitment);
@@ -169,11 +171,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             foreach (var ex in appExps)
                             {
-                                var look = db.Lookups.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
-                                if (look != null)
-                                {
-                                    recruitment.RelevantExperience = recruitment.RelevantExperience + look.Description + ", ";
-                                }
+                                //var look = db.Lookups.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
+                                //if (look != null)
+                                //{
+                                    recruitment.RelevantExperience = recruitment.RelevantExperience + ex.Responsibility + ", ";
+                                //}
                             }
 
                             var applicantExams = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == screen.InternalApplicantScreeningId).ToList();
@@ -206,11 +208,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 var pass = (passMark.PassScore * Convert.ToDouble(totalSetting)) / passMark.TotalValue;
                                 if (recruitment.Total >= Convert.ToDecimal(pass))
                                 {
-                                    recruitment.RecruitmentResult = "አልፈዋል";
+                                    recruitment.RecruitmentResult = "Passed";
                                 }
                                 else
                                 {
-                                    recruitment.RecruitmentResult = "አላለፉም";
+                                    recruitment.RecruitmentResult = "Failed";
                                 }
 
                                 summaries.Add(recruitment);
@@ -234,11 +236,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             if (gender == Gender.MALE)
             {
-                return "ወንድ";
+                return "Male";
             }
             else if (gender == Gender.FEMALE)
             {
-                return "ሴት";
+                return "Female";
             }
 
             return null;

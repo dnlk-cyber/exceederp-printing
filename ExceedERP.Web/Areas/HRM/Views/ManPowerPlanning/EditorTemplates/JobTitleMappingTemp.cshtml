@@ -139,8 +139,33 @@
         <div class="col-md-1">
 
         </div>
- 
 
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
+                                          .Filter("contains")
+                                          .OptionLabel(Resources.Select)
+                                          .MinLength(2)
+                                          .ValuePrimitive(true)
+                                          .AutoBind(false)
+                                          .OptionLabel("Select Business Unit...")
+                                          .DataTextField("Name")
+                                          .DataValueField("Code")
+                                          .Filter("contains")
+                                          .HtmlAttributes(new { style = "width:180px" })
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }))
+                                              .ServerFiltering(false);
+                                          })
+
+                )
+                @Html.ValidationMessageFor(model => model.BusinessUnitId, "", new { @class = "text-danger" })
+            </div>
+
+
+        </div>
         <div class="col-md-3">
             <div>@Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })</div>
             <div class="form-group">

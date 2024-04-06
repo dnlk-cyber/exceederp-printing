@@ -82,7 +82,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
 
                 list.Remove(employeeId);
                 IsForOther = true;
@@ -561,7 +561,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 entity.Amount = leaveReturn.To.Subtract(leaveReturn.From).Days + 1 - count;
                 entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
-                if (checkDate.Day == LeaveDay.ግማሽ_ቀን)
+                if (checkDate.Day == LeaveDay.Half_Day)
                 {
                     decimal checkWeekEnd = leaveReturn.To.Subtract(leaveReturn.From).Days + 1 - count;
                     double amt = GetHalf(leaveReturn.From, leaveReturn.To);

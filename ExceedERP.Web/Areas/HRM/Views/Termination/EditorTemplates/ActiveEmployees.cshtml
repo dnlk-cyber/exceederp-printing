@@ -8,7 +8,7 @@
                     .OptionLabel(Resources.Select)
                 .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }))
+                              dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
                                   .ServerFiltering(false);
                           })
                      .ValuePrimitive(true)

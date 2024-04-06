@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,6 +8,9 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
 {
@@ -19,19 +22,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
         // GET: HRM/PrintableLetter
         public ActionResult PayableLeave()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Payable_Leave, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult LeavePlan()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Leave_Plan, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult Index()
         {
+
             return View();
         }
 
         public ActionResult TerminationLetter()
         {
+
             return View();
         }
 
@@ -57,17 +68,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
 
         public ActionResult InternalVacancyForSelfCare()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Internal_Vacancy_For_SelfCare, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult InternalApplicant()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Internal_Applicant, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult ExperienceLetter()
         {
             return View();
         }
-        public ActionResult AmhraricExperienceLetter()
+        public ActionResult ExperienceLetterTwo()
         {
             return View();
         }
@@ -78,10 +95,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
         }
         public ActionResult ExternalApplicant()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.External_Applicant, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult VacancyForMedia()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Vacancy_For_Media, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult VacancyForInternal()
@@ -92,7 +115,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
         {
             return View();
         }
+        public ActionResult PromotionLetterTwo()
+        {
+            return View();
+        }
         public ActionResult Transfer()
+        {
+            return View();
+        }
+        public ActionResult TransferLetterTwo()
         {
             return View();
         }
@@ -101,6 +132,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
             return View();
         }
         public ActionResult Recruitment()
+        {
+            return View();
+        }
+        public ActionResult RecruitmentLetterTwo()
         {
             return View();
         }
@@ -171,6 +206,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
         public ActionResult Commitment(int id)
         {
             ViewBag.id = id;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Commitment_report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult ComplainResponseDepartmentLetter(int id)
@@ -194,9 +232,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
         {
             return View();
         }
+        public ActionResult EmployeeProfile()
+        {
+           
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Profile_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         public ActionResult ChangeOfPayroll(int id)
         {
             ViewBag.id = id;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Change_Of_Payroll, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
@@ -209,7 +258,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
                 ViewBag.courseTrackingId = trainee.CourseTrackingId;
                 ViewBag.empId = trainee.EmployeeId;
             }
-          
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Training_Evaluation, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
@@ -230,7 +281,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
 
             ViewBag.id = id;
             ViewBag.depname = depname;
-
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Attendance_Letter, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
     }

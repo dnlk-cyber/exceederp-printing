@@ -4,13 +4,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Business Unit</legend>
+<legend>@Resources.BussinessUnit</legend>
 @(Html.Kendo().Grid<BusinessUnit>()
           .Name("grid")
       .Columns(columns =>
       {
           columns.Bound(c => c.Name).Width(300);
-          columns.Bound(c => c.Accountcode).Width (300).Title("Account").EditorTemplateName("BusinessUnitAccountSelector");
+          columns.Bound(c => c.Accountcode).Width (300).EditorTemplateName("BusinessUnitAccountSelector");
           columns.Bound(c => c.Remark);
           columns.Command(command => {
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -22,6 +22,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Hubs;
 using ExceedERP.Web.Models;
+using System.IO;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -90,7 +91,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
 
                 list.Remove(employeeId);
                 IsForOther = true;
@@ -404,6 +405,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Hours = leaveRequest.Hours,
                 RequesterId = leaveRequest.RequesterId,
                 LeaveActionTypes = leaveRequest.LeaveActionTypes,
+                Status = leaveRequest.Status,
                 DepartmentSendForApprovalBy = leaveRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = leaveRequest.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = leaveRequest.IsDepartmentSendForApproval,
@@ -488,7 +490,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             if (leaveRequest.LeaveDays > entitleBal && leaveRequest.Type == LeaveType.ANNUAL)
             {
-                ModelState.AddModelError("", "you requested morethan your balance");
+                ModelState.AddModelError("", "you requested more than your balance");
             }
             var leaveReqPrev = db.LeaveRequest.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To)));
             if (leaveReqPrev != null)
@@ -1230,7 +1232,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 leaveDays = to.Subtract(from).Days + 1 - holiday;
                 leaveDays = leaveDays - Convert.ToDecimal(weekDays);
-                if (day == LeaveDay.ግማሽ_ቀን)
+                if (day == LeaveDay.Half_Day)
                 {
                     decimal checkWeekEnd = to.Subtract(from).Days + 1 - holiday;
                     double amt = GetHalf(from, to);
@@ -1250,7 +1252,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             else
             {
                 leaveDays = to.Subtract(from).Days + 1;
-                if (day == LeaveDay.ግማሽ_ቀን)
+                if (day == LeaveDay.Half_Day)
                 {
                     leaveDays = leaveDays / 2;
                 }
@@ -1557,6 +1559,109 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return RedirectToAction("Index");
         }
+        public ActionResult UploadDocument(int leaveRequestId,HttpPostedFileBase file, string txtValue)
+        {
+            try
+            {
+                if (file.ContentLength > 0)
+                {
+
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/" + leaveRequestId.ToString() + "-" + AttachmentType.DOCUMENT), leaveRequestId.ToString() + "-" + txtValue + "-" + fileName);
+
+                    var mainPath = Path.Combine(Server.MapPath("~/Content/Images/" + leaveRequestId.ToString() + "-" + AttachmentType.DOCUMENT));
+
+                    if (!Directory.Exists(mainPath))
+                    {
+                        Directory.CreateDirectory(mainPath);
+                    }
+                    if (!System.IO.File.Exists(path))
+                    {
+                        file.SaveAs(path);
+
+                        var entity = new Attachment
+                        {
+
+                            Reference = leaveRequestId.ToString(),
+                            Description = leaveRequestId.ToString() + "-" + txtValue + "-" + fileName,
+                            FileName = txtValue,
+                            FileType = file.ContentType,
+                            ReferenceType = AttachmentType.DOCUMENT,
+                            Index = 0,
+                            URL = path,
+                            Remark = leaveRequestId.ToString()
+                        };
+                        db.Attachments.Add(entity);
+
+                        db.SaveChanges();
+                        ViewBag.Message = "Upload successful";
+                    }
+
+                }
+                else
+                {
+
+                    ViewBag.Message = "The file is existed";
+
+                }
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewBag.Message = "Upload failed";
+                return RedirectToAction("Upload");
+            }
+        }
+        public ActionResult DownloadDoument(string filename, string attachId)
+        {
+            int.TryParse(attachId, out int attachmentId);
+            var record = db.Attachments.Find(attachmentId);
+
+            return File(record.URL, "application/force-download", Path.GetFileName(record.URL));
+        }
+        //public ActionResult DownloadDoument(string filename, string attachId)
+        //{
+        //    if (attachId == "0")
+        //    {
+        //        string messages = "Please select the row first!!";
+        //        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+        //    }
+
+        //    db = new ExceedDbContext();
+        //    //try
+        //    //{
+        //    int.TryParse(attachId, out int attachmentId);
+        //    var attachment =
+        //            db.Attachments.FirstOrDefault(x => x.Reference == filename && x.ReferenceType == AttachmentType.DOCUMENT && x.AttachmentId == attachmentId);
+
+        //    if (attachment != null)
+        //    {
+        //        WebClient req = new WebClient();
+        //        HttpResponse response = System.Web.HttpContext.Current.Response;
+        //        response.Clear();
+        //        response.ClearContent();
+        //        response.ClearHeaders();
+        //        response.Buffer = true;
+        //        response.AddHeader("Content-Disposition",
+        //            "attachment;filename=\"" + attachment.Description + "\"");
+        //        byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + attachment.Remark.ToString() + "-" + AttachmentType.DOCUMENT + "/" + attachment.Description));
+
+        //        // byte[] datas11 = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.PHOTO + "/" + attachment.Description));
+
+        //        response.BinaryWrite(datas);
+        //        response.End();
+        //        HRMInputs.SelectedFile = 0;
+        //        return File(filename, attachment.FileType);
+        //    }
+        //    //}
+        //    //catch (Exception)
+        //    //{
+
+        //    //    // throw;
+        //    //}
+        //    HRMInputs.SelectedFile = 0;
+        //    return null;
+        //}
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

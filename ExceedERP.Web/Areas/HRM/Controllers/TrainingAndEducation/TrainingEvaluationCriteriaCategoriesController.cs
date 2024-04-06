@@ -1,6 +1,5 @@
 ﻿﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -10,10 +9,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
-    public class TrainingEvaluationCriteriaCategoriesController : Controller
+    public class TrainingEvaluationCriteriaCategoriesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 
@@ -27,7 +27,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             IQueryable<TrainingEvaluationCriteriaCategory> trainingevaluationcriteriacategories = db.TrainingEvaluationCriteriaCategories;
             DataSourceResult result = trainingevaluationcriteriacategories.ToDataSourceResult(request, trainingEvaluationCriteriaCategory => new {
                 TrainingEvaluationSettingCategoryId = trainingEvaluationCriteriaCategory.TrainingEvaluationSettingCategoryId,
-                Name = trainingEvaluationCriteriaCategory.Name
+                Name = trainingEvaluationCriteriaCategory.Name,
+                //EvaluationType = trainingEvaluationCriteriaCategory.EvaluationType
             });
 
             return Json(result);
@@ -40,7 +41,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             {
                 var entity = new TrainingEvaluationCriteriaCategory
                 {
-                    Name = trainingEvaluationCriteriaCategory.Name
+                    Name = trainingEvaluationCriteriaCategory.Name,
+                    //EvaluationType = trainingEvaluationCriteriaCategory.EvaluationType
                 };
 
                 db.TrainingEvaluationCriteriaCategories.Add(entity);
@@ -59,7 +61,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 var entity = new TrainingEvaluationCriteriaCategory
                 {
                     TrainingEvaluationSettingCategoryId = trainingEvaluationCriteriaCategory.TrainingEvaluationSettingCategoryId,
-                    Name = trainingEvaluationCriteriaCategory.Name
+                    Name = trainingEvaluationCriteriaCategory.Name,
+                    //EvaluationType = trainingEvaluationCriteriaCategory.EvaluationType
                 };
 
                 db.TrainingEvaluationCriteriaCategories.Attach(entity);
@@ -78,7 +81,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 var entity = new TrainingEvaluationCriteriaCategory
                 {
                     TrainingEvaluationSettingCategoryId = trainingEvaluationCriteriaCategory.TrainingEvaluationSettingCategoryId,
-                    Name = trainingEvaluationCriteriaCategory.Name
+                    Name = trainingEvaluationCriteriaCategory.Name,
+                    //EvaluationType = trainingEvaluationCriteriaCategory.EvaluationType
                 };
 
                 db.TrainingEvaluationCriteriaCategories.Attach(entity);

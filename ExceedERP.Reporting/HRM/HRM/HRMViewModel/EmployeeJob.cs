@@ -13,6 +13,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Rank { get; set; }
         public decimal  Salary { get; set; }
         public string Step { get;  set; }
+        public string Remark { get; set; }
         // public string To { get; set; }
 
 
@@ -20,6 +21,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
     public class EmployeeJobTitle
     {
         public string Department { get; set; }
-        public List<EmployeeJob> EmployeeJobs { get; set; }
+        public List<EmployeeJob> EmployeeJobs { get; set; } = new List<EmployeeJob>();
     }
 }

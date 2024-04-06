@@ -1,0 +1,204 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.TrainingEducation
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Need Assessment Summary</legend>
+@(Html.Kendo().Grid<NeedAssessmentSummary>()
+                      .Name("NeedAssessmentSummarygrid")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+                          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
+                          columns.Bound(c => c.NoOfStaff).Width(120);
+                          columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Companies"], "MainCompanyId", "TradeName").EditorTemplateName("Companies").Width(120);
+                          columns.Bound(c => c.CostPerPerson).Width(120);
+                          columns.Bound(c => c.TotalCost).Width(100);
+                          columns.Bound(c => c.Remark).Width(100);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }
+                          }).Width(190);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                          {
+
+                              // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("TrainingPlan")
+                                       .Window(window => { window.Title(Resources.NavigatorTraining_TrainingPlan);
+                                           window.Scrollable(false);
+                                       }))
+                      .Selectable(selectable =>
+                      {
+                          selectable.Mode(GridSelectionMode.Single);
+                          selectable.Type(GridSelectionType.Row);
+
+                      })
+                     .Scrollable(h => h.Height(500))
+                     .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                     .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Sort(sort => sort.Add("DateCreated").Descending())
+                          .Events(events =>
+                          {
+                              events.Error("error_handler(\"NeedAssessmentSummarygrid\")");
+                              events.RequestStart("onRequestStart(\"NeedAssessmentSummarygrid\")");
+                              events.RequestEnd("onRequestEnd(\"NeedAssessmentSummarygrid\")");
+
+                          })
+
+                          .Model(model =>
+                          {
+                              model.Id(p => p.NeedAssessmentSummaryId);
+                              model.Field(p => p.GlFiscalYearId).Editable(false);
+                              model.Field(p => p.LookupId).Editable(false);
+                              model.Field(p => p.NoOfStaff).Editable(false);
+                              model.Field(p => p.TotalCost).Editable(false);
+                          })
+              .Read(read => read.Action("NeedAssessmentSummary_Read", "NeedAssessmentSummary"))
+              .Create(create => create.Action("NeedAssessmentSummary_Create", "NeedAssessmentSummary"))
+              .Update(update => update.Action("NeedAssessmentSummary_Update", "NeedAssessmentSummary"))
+              .Destroy(destroy => destroy.Action("NeedAssessmentSummary_Destroy", "NeedAssessmentSummary"))
+          ).ClientDetailTemplateId("assessment_Summary_details")
+)
+<script id="assessment_Summary_details" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tab_strip1_#=GlFiscalYearId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Training Need Request").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.TrainingNeedRequest>()
+                        .Name("Training_NeedSumarry_Requestgrid#=GlFiscalYearId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
+                            columns.Bound(c => c.Prerequest).Width(150);
+                            columns.Bound(c => c.EmployeePerformanceGap).Width(200);
+                            columns.Bound(c => c.TrainingNeedForEmployeePerformanceGap).Width(200);
+                            columns.Bound(c => c.TheNeedForTrainingRelatedToInistitution).Width(200);
+                            columns.Bound(c => c.ExpectedResultFromTraining).Width(200);
+                            //columns.Command(command =>
+                            //{
+                            //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            //    command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                            //}).Width(180);
+                        })
+                        //.ToolBar(toolbar =>
+                        //{
+                        //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                        //})
+                        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest")
+                        //.                 Window(window => { window.Title("Training Need Request form");
+                        //    window.Scrollable(false); })
+                        //    )
+                        .Scrollable(h=>h.Height(550))
+                        //.Events(ev=>ev.DetailExpand("onDetailExpand"))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"Training_NeedSumarry_Requestgrid#=GlFiscalYearId#\")");
+                                events.RequestStart("onRequestStart(\"Training_NeedSumarry_Requestgrid#=GlFiscalYearId#\")");
+                                events.RequestEnd("onRequestEnd(\"Training_NeedSumarry_Requestgrid#=GlFiscalYearId#\")");
+
+                            })
+
+                            .Model(model =>
+                            {
+                                model.Id(p => p.TrainingNeedRequestId);
+                            })
+                            .Read(read => read.Action("TrainingNeedSummaryRequests_Read", "NeedAssessmentSummary", new { looKupId = "#=LookupId#",fiscalYearId = "#=GlFiscalYearId#" }))
+                            //.Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", , new { looKupId = "#=LookupId#", fiscalYearId = "#=GlFiscalYearId#" }))
+                            // .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests"))
+                            //.Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests"))
+                            ).ToClientTemplate()
+                           )   
+                          </text>);
+            }).ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+    //var courseId = 0;
+    //var yearId = 0;
+    //function onDetailExpand(e) {
+    //    var grid = this,
+    //        dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+    //    courseId = dataItem.LookupId;
+    //}
+    //function filterData(e) {
+    //    return {
+    //        courseId
+    //    };
+    //}
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

@@ -38,7 +38,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 on p.OrgStructureId equals m.OrgStructureId
                             where e.IsActive && p.isCurrent
                             select (new { e, p });
-            var otherexpriances = db.Experiences.ToList();
+            var otherexpriances = db.Experiences.AsNoTracking().ToList().OrderByDescending(x => x.From).ThenByDescending(x => x.To);
             var currentex = db.Placements.ToList();
 
             int TotalYear = 0;
@@ -65,14 +65,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     TotalMonth = 0;
                     TotalDays = 0;
                     PromotedEmployee.LeaveBalance = new List<LeaveBalanceViewModel>();
-                    var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == r.e.EmployeeId && !x.IsExpired);
+                    var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == r.e.EmployeeId && !x.IsExpired).OrderByDescending(x=>x.GlFiscalYearId);
                     foreach (var le in leaveEntitles)
                     {
                         LeaveBalanceViewModel leaveBalance = new LeaveBalanceViewModel();
                         var fisicalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == le.GlFiscalYearId);
                         if (fisicalYear != null)
                         {
-                            leaveBalance.Year = fisicalYear.DateTo.Year.ToString();
+                           // leaveBalance.Year = fisicalYear.DateTo.Year.ToString();
+                            leaveBalance.Year = XAPI.EthiopicDateTime.GetEthiopicYear(fisicalYear.DateTo.Day, fisicalYear.DateTo.Month, fisicalYear.DateTo.Year).ToString();
                             leaveBalance.Balance = le.Balance;
 
                             PromotedEmployee.LeaveBalance.Add(leaveBalance);
@@ -104,7 +105,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     PromotedEmployee.Perfromance = addPerfor.ToString();
                     PromotedEmployee.Educations = new List<EmployeeEducation>();
 
-                    var empEdu = educations.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
+                    var empEdu = educations.OrderByDescending(x=>x.From).ThenByDescending(x=>x.To).Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
                     foreach (var e in empEdu)
                     {
                         edu = new EmployeeEducation();

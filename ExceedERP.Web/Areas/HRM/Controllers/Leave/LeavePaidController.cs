@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -76,6 +76,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeavePaid_Create([DataSourceRequest]DataSourceRequest request, LeavePaid leavePaid)
         {
             ModelState.Clear();
+            var leaveEntitleBalance = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leavePaid.EmployeeId && x.GlFiscalYearId == leavePaid.GlFiscalYearId).ToList();
+            if (leaveEntitleBalance.Count() > 0)
+            {
+                if ((decimal)leavePaid.Amount > leaveEntitleBalance.Sum(x => x.Balance))
+                {
+                    ModelState.AddModelError("exist", "the amount you entered is more than your balance which is =" + leaveEntitleBalance.Sum(x => x.Balance));
+                }
+            }
+            else
+            {
+                decimal maximumValue = 0;
+                var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
+                if (maximumLeave != null)
+                {
+                    maximumValue = Convert.ToInt32(maximumLeave.CurrentValue);
+                }
+                if ((decimal)leavePaid.Amount > maximumValue)
+                {
+                    ModelState.AddModelError("exist", "the amount you entered is more than maximum  Leave Value is =" + maximumValue);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = new LeavePaid
@@ -187,6 +209,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeavePaid_Update([DataSourceRequest]DataSourceRequest request, LeavePaid leavePaid)
         {
             ModelState.Clear();
+            var leaveEntitleBalance = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leavePaid.EmployeeId && x.GlFiscalYearId == leavePaid.GlFiscalYearId).ToList();
+            if (leaveEntitleBalance.Count() > 0)
+            {
+                if ((decimal)leavePaid.Amount > leaveEntitleBalance.Sum(x=>x.Balance))
+                {
+                    ModelState.AddModelError("exist", "the amount you entered is more than your balance which is =" + leaveEntitleBalance.Sum(x => x.Balance));
+                }
+            }
+            else
+            {
+                decimal maximumValue = 0;
+                var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
+                if (maximumLeave != null)
+                {
+                    maximumValue = Convert.ToInt32(maximumLeave.CurrentValue);
+                }
+                if ((decimal)leavePaid.Amount > maximumValue)
+                {
+                    ModelState.AddModelError("exist", "the amount you entered is more than maximum  Leave Value is =" + maximumValue);
+                }
+            }
+            
             if (ModelState.IsValid)
             {
                 var entity = new LeavePaid

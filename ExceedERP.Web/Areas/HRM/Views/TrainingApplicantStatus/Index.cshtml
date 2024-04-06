@@ -41,12 +41,12 @@
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);
                           })
-              .Filterable()
+                 .Filterable()
                  .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
                                             .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -112,10 +112,10 @@
                                   model.Id(p => p.RequestStatusId);
                                   model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
                               })
-                                                             .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }))
-                                                                                                                          .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }))
-                                                          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                            .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }))
+                                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }))
+                                           .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                           .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
                           ).ToClientTemplate()
                     )
 

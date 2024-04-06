@@ -22,7 +22,7 @@
                  toolbar.Template(@<text>
                     <div class="toolbar">
 
-                        <label class="category-label" @*for="Period"*@>Vacancy Code</label>
+                        <label class="category-label" @*for="Period"*@>@Resources.VacancyCode</label>
                         @(Html.Kendo().DropDownListFor(m => m)
                                      .Name("VacancyId")
                               .OptionLabel(Resources.Select)
@@ -42,7 +42,7 @@
                                         .Name("btnScreen")
                                                     .HtmlAttributes(new { type = "button", @class = "k-primary" })
                                                        .Events(e => e.Click("Screen"))
-                                                                        .Content("Screen and Genderate Applicants"))
+                                                                        .Content(Resources.Screen_and_Genderate_Applicants))
 
 
                         @*@(Html.Kendo().Button()
@@ -59,7 +59,6 @@
              })
                            .Editable(editable => editable.Mode(GridEditMode.InLine))
                                .Scrollable(h => h.Height(500))
-                                      .Groupable()
                                                .Sortable(sortable =>
                                                {
                                                    sortable.SortMode(GridSortMode.SingleColumn);

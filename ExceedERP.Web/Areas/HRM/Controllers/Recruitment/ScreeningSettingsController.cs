@@ -14,10 +14,11 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-    public class ScreeningSettingsController : Controller
+    public class ScreeningSettingsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 

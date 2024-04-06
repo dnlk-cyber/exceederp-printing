@@ -49,19 +49,19 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             switch (evalual.Score)
                             {
-                                case TrainingScore.በጣም_ከፍተኛ:
+                                case TrainingScore.Very_High:
                                     evaluation.Excellent = "✓";
                                     break;
-                                case TrainingScore.ከፍተኛ:
+                                case TrainingScore.High:
                                     evaluation.VeryGood = "✓";
                                     break;
-                                case TrainingScore.መካከለኛ:
+                                case TrainingScore.Medium:
                                     evaluation.Good = "✓";
                                     break;
-                                case TrainingScore.ዝቅተኛ:
+                                case TrainingScore.Low:
                                     evaluation.Low = "✓";
                                     break;
-                                case TrainingScore.በጣም_ዝቅተኛ:
+                                case TrainingScore.Very_Low:
                                     evaluation.VeryLow = "✓";
                                     break;
                             }

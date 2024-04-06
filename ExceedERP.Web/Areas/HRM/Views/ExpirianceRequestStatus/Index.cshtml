@@ -1,6 +1,7 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Localization
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -22,10 +23,10 @@
                       command.Custom("approve").Text("&nbsp;Approve").Click("ApproveExperienceRequest").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Experience Request", @id = "approve" });
                   }).Width(250);
               })
-              .ToolBar(toolbar =>
-              {
-                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-              })
+              //.ToolBar(toolbar =>
+              //{
+             //     toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+             // })
                  .Events(e =>
                  {
 
@@ -72,14 +73,12 @@
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                          .Name("tabstrip_#=ExperienceRequestId#")
+     .Name("tabstrip_#=ExperienceRequestId#")
      .SelectedIndex(0)
      .Items(items =>
      {
          items.Add().Text(Resources.HR_RequestStatus).Content(
            @<text>
-               @* <legend>Status</legend>*@
-
                @(Html.Kendo().Grid<RequestesStatus>()
                                      .Name("RequestesStatusgrid_#=ExperienceRequestId#")
                                      .Columns(columns =>
@@ -102,15 +101,17 @@
                                 })
                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
                                      .Scrollable(h => h.Height(500))
+                                     .Events(eve => { eve.DataBound("onDetailDataBound"); })
                                      .DataSource(dataSource => dataSource
                                          .Ajax()
-                                                 .Events(events =>
-                                                 {
+                                         .Events(events =>
+                                         {
 
-                                                     events.Error("error_handler(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
-                                                     events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
-                                                     events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
-                                                 })
+                                             events.Error("error_handler(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
+                                             events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
+                                             events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
+
+                                         })
 
                                          .Model(model =>
                                          {
@@ -130,11 +131,11 @@
                )
 
 
-           </text>
-                                                );
-                          //*****************************************************************************************************//
+           </text>);
+         //*****************************************************************************************************//
 
-                      }).ToClientTemplate())
+
+     }).ToClientTemplate())
 </script>
 
 <script>
@@ -158,6 +159,7 @@
         this.read();
 
     }
+    var masterRowId ;
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
@@ -165,12 +167,13 @@
 
         var masterDataItem = masterGrid.dataItem(masterRow);
 
-        masterId = masterDataItem.ExprianceRequestId;
+        masterId = masterDataItem.ExperienceRequestId;
+        masterRowId = masterId;
         var gridName = "#RequestesStatusgrid_" + masterId;
         $.ajax({
-            url: '@Url.Action("CheckStatuses", "ExpirianceRequest")',
+            url: '@Url.Action("CheckStatuses", "ExpirianceRequestStatus")',
 
-            data: { masterId: masterId },
+            data: { masterId: masterRowId },
             type: 'POST',
             cache: false,
             success: function (result) {
@@ -201,6 +204,45 @@
         });
 
     }
+    function onDetailDataBound(e) {
+
+        var gridName = "#RequestesStatusgrid_" + masterRowId;
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.Status == 0 || model.Status == 1 || model.Status == 2 || model.Status == 3) {
+                $(this).css("background-color", "#darkgrey");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            if (model.Status == 4) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+               // $(this).find(".k-toolbar").remove(); //hide toolbar
+                $(".k-grid-top", gridName).hide();
+                $(this).find(".k-grid-top", gridName).remove();
+                $(this).css("background-color", "#darkgrey");
+
+            }
+
+            else {
+
+                $(this).css("background-color", "lightgreen");
+            }
+        });
+        //var gridIdentifier = "#" + e.sender.element[0].masterRowId;
+        var gridIdentifier = gridName;
+        var Exist = $(gridName).data("kendoGrid").dataSource.data().some(
+            function (dataItem) {
+                return dataItem.Status == 4;
+            });
+        if (Exist) {
+            $(".k-grid-top", gridIdentifier).hide();
+        } else {
+            $(".k-grid-top", gridIdentifier).show();
+        }
+    }
+
 </script>
 
 
@@ -228,6 +270,7 @@
         }
     }
 
+    
 </script>
 
 

@@ -30,7 +30,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
             if (from != null && to != null)
             {
-                return XAPI.Common.getDaystoWordsamharic((to - from).Value.Days);
+                return XAPI.Common.getDaystoWords((to - from).Value.Days);
             }
             return null;
         }

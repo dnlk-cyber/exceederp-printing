@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<Legend>Sick Leave Setting</Legend>
+<Legend>@Resources.SickLeaveSetting</Legend>
 @(Html.Kendo().Grid<SickLeaveSetting>()
           .Name("SickLeaveSettinggrid")
           .Columns(columns =>

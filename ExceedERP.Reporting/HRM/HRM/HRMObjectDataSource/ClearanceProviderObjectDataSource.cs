@@ -20,11 +20,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             foreach (var a in allProviders)
             {
-                var provider = new ClearanceProvider();
+                var mainCompany = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == a.OrgStructureId);
+                var placementEmpId = db.Placements.Where(x => x.OrgStructureId == a.OrgStructureId&&x.IsHead).Select(x => x.EmployeeId);
 
-                provider.Name = a.Name;
+                if(mainCompany != null)
+                {
+                    var provider = new ClearanceProvider();
+                    provider.Name = mainCompany.Name;
+                    var employee = db.Person_Employee.Where(x => placementEmpId.Contains(x.EmployeeId)).FirstOrDefault();
+                    if(employee != null)
+                    {
+                        provider.FullName = employee.FirstNameEnglish+" "+employee.MiddleNameEnglish+" "+employee.LastNameEnglish;
 
-                list.Add(provider);
+                    }
+
+                    list.Add(provider);
+                }
+               
             }
             if (empId != null)
             {
@@ -41,7 +53,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             var pro = new ClearanceProvider();
 
                             pro.Name = mainCompany.Name;
+                            var employee = db.Person_Employee.Where(x => x.EmployeeId == employeeId).FirstOrDefault();
+                            if (employee != null)
+                            {
+                                pro.FullName =  employee.FirstNameEnglish + " " + employee.MiddleNameEnglish + " " + employee.LastNameEnglish;
 
+                            }
                             list.Add(pro);
                         }
                     }

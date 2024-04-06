@@ -247,7 +247,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult MedicalRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
             IQueryable<MedicalRequest> medicalrequest = db.MedicalRequest.Where(x => employeeids.Contains(x.EmployeeId)).OrderBy(x => x.Date);
             DataSourceResult result = medicalrequest.ToDataSourceResult(request, medicalRequest => new
             {

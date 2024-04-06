@@ -1,0 +1,16 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                //.Name("WorkUnit")
+                //.Placeholder("Period")
+                .OptionLabel("---Select----")
+                .Filter("contains")
+                .DataTextField("Name")
+                .DataValueField("OrgStructureId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetWorkUnit", "EvaluatorsRequest", new { area = "HRM" }))
+                    .ServerFiltering(false);
+                })
+            .AutoBind(true)
+            .HtmlAttributes(new { style = "width: 150px;" })
+
+)

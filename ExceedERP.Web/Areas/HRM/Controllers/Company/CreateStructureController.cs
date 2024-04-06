@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -137,6 +137,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 Parent = mainCompanyStructure.Parent,
                 Name = mainCompanyStructure.Name,
                 StructureId = mainCompanyStructure.StructureId,
+                IsActive = mainCompanyStructure.IsActive,
                 Remark = mainCompanyStructure.Remark,
                 DateCreated = mainCompanyStructure.DateCreated,
                 LastModified = mainCompanyStructure.LastModified,
@@ -169,6 +170,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         Name = mainCompanyStructure.Name,
                         Parent = mainCompanyStructure.Parent,
                         StructureId = mainCompanyStructure.StructureId,
+                        IsActive = true,
                         Remark = mainCompanyStructure.Remark,
                         DateCreated = DateTime.Now,
                         LastModified = mainCompanyStructure.LastModified,
@@ -209,6 +211,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Name = mainCompanyStructure.Name,
                     Parent = mainCompanyStructure.Parent,
                     StructureId = mainCompanyStructure.StructureId,
+                    IsActive = mainCompanyStructure.IsActive,
                     Remark = mainCompanyStructure.Remark,
                     DateCreated = mainCompanyStructure.DateCreated,
                     LastModified = DateTime.Now,
@@ -237,6 +240,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Name = mainCompanyStructure.Name,
                     Parent = mainCompanyStructure.Parent,
                     StructureId = mainCompanyStructure.StructureId,
+                    IsActive = mainCompanyStructure.IsActive,
                     Remark = mainCompanyStructure.Remark,
                     DateCreated = mainCompanyStructure.DateCreated,
                     LastModified = mainCompanyStructure.LastModified,
@@ -299,6 +303,68 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             ViewData["structures"] = structures;
             return Json(structures.Select(s => new { StructureId = s.StructureId, Name = s.Name }), JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult EnableOrDisable(int id)
+        {
+            var structure = db.MainCompanyStructures.Find( id);
+
+            if (structure != null && structure.IsActive)
+            {
+
+                structure.IsActive = false;
+
+                db.MainCompanyStructures.Attach(structure);
+                db.Entry(structure).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+
+                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Company Structure ", "Success", User.Identity.Name, User.Identity.Name + " Add new comopany Sturucture " + structure.Name+"IsActive"+structure.IsActive, Modules.HRM);
+
+
+                #endregion
+                var formattedData = new
+                {
+                    Message = "You successfully Disabled this Work unit.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (structure != null && !structure.IsActive)
+            {
+
+                structure.IsActive = true;
+
+                db.MainCompanyStructures.Attach(structure);
+                db.Entry(structure).State = EntityState.Modified;
+                db.SaveChanges();
+                #region operation log
+
+                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Company Structure ", "Success", User.Identity.Name, User.Identity.Name + " Add new comopany Sturucture " + structure.Name + "IsActive" + structure.IsActive, Modules.HRM);
+
+
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "You successfully enabled this Work unit.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData1 = new
+            {
+                Message = "this WorkU nit Not Found .",
+                Status = "FAIL"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

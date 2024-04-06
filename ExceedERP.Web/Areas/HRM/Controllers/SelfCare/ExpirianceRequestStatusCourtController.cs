@@ -19,6 +19,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -139,6 +140,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult SendForApproval()
         {
+
             RequestesStatus requestesStatus;
             db = new ExceedDbContext();
             requestesStatus =
@@ -160,6 +162,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 db.RequestesStatus.Add(entityy);
                 db.SaveChanges();
+                
             }
             else
             {
@@ -191,6 +194,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 db.RequestesStatus.Add(entityy);
                 db.SaveChanges();
+                var employee = db.ExprianceRequests.Find(requestesStatus.RequestId);
+                if(employee != null)
+                {
+                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.isCurrent && x.IsHead);
+                    if (placement != null)
+                    {
+                        var bossId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
+                        NotifModels notif = new NotifModels
+                        {
+                            UserId =UserInformationHelper.GetEmployeeUserId(bossId),
+                            Title = "Expriance Requests Approval ",
+                            Message = $" you have Expriance Requests to Approve",
+                            URL = "/HRM/ExpirianceRequestStatus/"
+                        };
+
+                        Notify.NotifyUser(notif);
+                    }
+
+                }
+              
             }
 
             return RedirectToAction("Index");

@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Web.Mvc;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
     
-    public class OffDayController : Controller
+    public class OffDayController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/OffDay

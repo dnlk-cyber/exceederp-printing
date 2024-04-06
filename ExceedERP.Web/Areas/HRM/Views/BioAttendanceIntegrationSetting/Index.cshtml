@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Attendance.BioAttendanceIntegrationSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Type);
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "delegationEdit" });
+              command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { @id = "delegationDelete" }); ;
+          });
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Navigatable()
+      .Filterable()
+      .Scrollable(h=>h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BioAttendanceIntegrationSettingId))
+          .Read(read => read.Action("BioAttendanceIntegrationSettings_Read", "BioAttendanceIntegrationSetting"))
+          .Create(create => create.Action("BioAttendanceIntegrationSettings_Create", "BioAttendanceIntegrationSetting"))
+          .Update(update => update.Action("BioAttendanceIntegrationSettings_Update", "BioAttendanceIntegrationSetting"))
+          .Destroy(destroy => destroy.Action("BioAttendanceIntegrationSettings_Destroy", "BioAttendanceIntegrationSetting"))
+      )
+)

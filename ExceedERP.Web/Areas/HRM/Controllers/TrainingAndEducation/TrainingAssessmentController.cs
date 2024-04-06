@@ -121,7 +121,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult TrainingAssessments_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x=>x.IsSendForApproval && !x.IsTransfered);//.Where(x => mybraches.Contains(x.OrgBranchName)&&x.IsTransfered==false);
+            IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x=>x.IsSendForApproval &&x.IsTransfered);//.Where(x => mybraches.Contains(x.OrgBranchName)&&x.IsTransfered==false);
             DataSourceResult result = needassessments.ToDataSourceResult(request, needAssessment => new
             {
                 AssesmentId = needAssessment.AssesmentId,
@@ -143,6 +143,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 OrgBranchName = needAssessment.OrgBranchName,
                 IsTransfered = needAssessment.IsTransfered,
                 IsSendForApproval = needAssessment.IsSendForApproval,
+                IsSecondSendForApproval = needAssessment.IsSecondSendForApproval,
             });
 
             return Json(result);
@@ -202,12 +203,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             
             if (needAssessments.Any() && ModelState.IsValid)
             {
+                //var needAssessmentSummary = needAssessments.Where(x => x.Check)
+                //    .GroupBy(x => new
+                //    {
+                //        x.GlFiscalYearId,
+                //        x.LookupId,
+                //    }).Select(g => new NeedAssessmentSummary
+                //    {
+                //        GlFiscalYearId = g.Key.GlFiscalYearId,
+                //        LookupId = g.Key.LookupId,
+                //        NoOfStaff = g.Sum(s => s.NoOfStaff),
+                //        RequiredTraining = 0,
+                //        CostPerPerson = 0,
+                //        IsTransfered = true,
+                //        IsSendForApproval = true,
+                //        IsSecondSendForApproval = true,
+                //        Check = true,
+                //        DateCreated = DateTime.Now.Date,
+                //        CreatedBy = User.Identity.Name,
+                //        LastModified=null,
+                //        ModifiedBy = null
+
+                //    }).ToList();
+                //db.NeedAssessmentSummary.AddRange(needAssessmentSummary);
+                //db.SaveChanges();
+               
                 foreach (var check in needAssessments)
                 {
                     if (check.Check)
                     {
                         trainingPlan = new TrainingPlan();
-
                         //trainingPlan.GlFiscalYearId = product.MainCompanyId;
                         //trainingPlan.GlFiscalYearId = 5;//check.GlFiscalYearId,  
                         trainingPlan.WorkUnit = check.OrgStructureId;
@@ -227,10 +252,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                         UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                         trainingPlan.LastModified = null;
                         planList.Add(trainingPlan);
-
                         db.TrainingPlans.Add(trainingPlan);
-                       db.SaveChanges();
-
+                        db.SaveChanges();
                         #region remove transfered assessment
                         TrainingAssessmentViewModel train = new TrainingAssessmentViewModel();
                        // train.TrainingAssessmentViewModelId=check
@@ -239,6 +262,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                         {
                             assessment.IsTransfered = true;
                             assessment.NoOfStaff = check.NoOfStaff;
+                            assessment.IsSendForApproval = true;
 
                             db.Entry(assessment).State = EntityState.Modified;
                             db.SaveChanges();
@@ -248,7 +272,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     }
 
                 }
-
+                
             }
 
             return Json(planList.ToDataSourceResult(request, ModelState));
@@ -265,8 +289,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 {
                     AssesmentId = needAssessment.AssesmentId,
                     OrgStructureId = needAssessment.OrgStructureId,
-
-
                     NoOfStaff = needAssessment.NoOfStaff,
                     RequiredTraining = needAssessment.RequiredTraining,
                     GlFiscalYearId=needAssessment.GlFiscalYearId,

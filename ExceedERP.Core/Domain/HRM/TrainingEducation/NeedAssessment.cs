@@ -46,7 +46,10 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public int GlFiscalYearId { get; set; }
         public virtual GlFiscalYear GlFiscalYear { get; set; }
         public bool IsTransfered { get; set; }
+        public bool IsSummarized { get; set; }
         public bool IsSendForApproval { get; set; }
+        public bool IsSecondSendForApproval { get; set; }
+        public bool IsThirdSendForApproval { get; set; }
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    public class MaintainStructureController : Controller
+    public class MaintainStructureController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/MaintainStructure
@@ -39,6 +40,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var organizationUnits = db.MainCompanyStructures.ToList();
 
             ViewData["Parent"] = organizationUnits;
+           
 
             return Json(organizationUnits.Select(s => new
             {

@@ -26,6 +26,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
         public ActionResult Index()
         {
+            HRMInputs inputs = new HRMInputs();
+            ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
             GetCourse();
             GetProvider();
             PopulateViewData();
@@ -173,6 +175,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 OrgBranchName = needAssessment.OrgBranchName,
                 IsTransfered = needAssessment.IsTransfered,
                 IsSendForApproval = needAssessment.IsSendForApproval,
+                IsSecondSendForApproval = needAssessment.IsSecondSendForApproval,
+                IsThirdSendForApproval = needAssessment.IsThirdSendForApproval,
             });
 
             return Json(result);

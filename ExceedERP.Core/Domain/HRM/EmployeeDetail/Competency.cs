@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -8,6 +8,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 	/// <summary>   A competency. </summary>
 	///Used to Store Employees Comptency
 	/// <remarks>   Mekanehiwot, 10/31/2016. </remarks>
+	/// <remarks>   Modified by Kibrom Abera, 10/12/202023. </remarks>
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public class Competency:TrackUserOperation 
@@ -39,7 +40,9 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 		public DateTime To { get; set; }
 		[Display(Name = "HR_EmployeeDetail_Competency_To", ResourceType = typeof(Localization.Resources))]
 		public string ToCompAm { get; set; }
-		[Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
-		public string Remark { get; set; }
+		[Display(Name = "HR_TrainingEducation_CourseTracking_Organization", ResourceType = typeof(Localization.Resources))]
+		public string Organization { get; set; }
+        [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
+        public string Remark { get; set; }
 	}
 }

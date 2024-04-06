@@ -56,9 +56,9 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public string After { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
-        [Display(Name = "ቀን")]
+        [Display(Name = "Enum_Leave_Day", ResourceType = typeof(Localization.Resources))]
         public LeaveDay Day { get; set; }
-        [Display(Name = "ጊዜ")]
+        [Display(Name = "MorningOrAfternoon", ResourceType = typeof(Localization.Resources))]
         public MorningOrAfternoon MorningOrAfternoon { get; set; }
        
         [Display(Name = "HR_LeaveManagment_Leave_Hour", ResourceType = typeof(Localization.Resources))]

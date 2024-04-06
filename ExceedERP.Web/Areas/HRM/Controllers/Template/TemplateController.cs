@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
+﻿
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
@@ -12,10 +12,11 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.HRM.Templates;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Template
 {
-    public class TemplateController : Controller
+    public class TemplateController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/Template

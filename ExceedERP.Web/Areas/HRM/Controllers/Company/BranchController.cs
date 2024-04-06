@@ -38,6 +38,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         {
             var types = db.Lookups.Where(x => x.LookupType == LookUpTypes.PROJECT_TYPE);
             ViewData["types"] = types;
+
+            var branches = db.Branch;
+            ViewData["branches"] = branches;
         }
         public void GetAmharicName(string car)
         {
@@ -170,6 +173,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             DataSourceResult result = branchs.ToDataSourceResult(request, branch => new
             {
                 BranchId = branch.BranchId,
+                ParentBranchId = branch.ParentBranchId,
                 Name = branch.Name,
                 Remark = branch.Remark,
                 DateCreated = branch.DateCreated,
@@ -207,6 +211,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     var entity = new Branch
                     {
                         Name = branch.Name,
+                        ParentBranchId = branch.ParentBranchId,
                         Remark = branch.Remark,
                         DateCreated = DateTime.Now,
                         LastModified = branch.LastModified,
@@ -249,6 +254,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 var entity = new Branch
                 {
                     BranchId = branch.BranchId,
+                    ParentBranchId = branch.ParentBranchId,
                     Name = branch.Name,
                     Remark = branch.Remark,
                     DateCreated = branch.DateCreated,

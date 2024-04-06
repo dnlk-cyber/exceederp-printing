@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -23,23 +22,23 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-    public class CommitteMinuteDetailsController : Controller
+    public class CommitteMinuteDetailController : Controller
     {
         // GET: HRM/CommitteMinuteDetails
         private ExceedDbContext db = new ExceedDbContext();
         public static string DateAmharic { get; set; }
         public static DateTime Date { get; set; }
-        public ActionResult Index()
-        {
-            PopulateViewData();
-            return View();
-        }
-        private void PopulateViewData()
-        {
-            var committees = db.Committees;
+        //public ActionResult Index()
+        //{
+        //    PopulateViewData();
+        //    return View();
+        //}
+        //private void PopulateViewData()
+        //{
+        //    var committees = db.Committees;
 
-            ViewData["Committees"] = committees;
-        }
+        //    ViewData["Committees"] = committees;
+        //}
         public void SetDate(string name, string value)
         {
             if (name == "DateAmharic")
@@ -55,13 +54,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin, HrmConstants.HRDisciplineUser)]
         public ActionResult CommitteMinute_Read([DataSourceRequest]DataSourceRequest request, string committeeMinut, int id)
         {
-            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.DisciplinaryCaseId == id).AsQueryable();
+            IQueryable<CommitteMinute> committeminutes = db.CommitteMinutes.Where(x => x.CommitteeId == id).AsQueryable();
 
             DataSourceResult result = committeminutes.ToDataSourceResult(request, committeMinute => new {
 
-                DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
-                CommitteeId = committeMinute.CommitteeId,
+                //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                 CommitteMinuteId = committeMinute.CommitteMinuteId,
+                CommitteeId = committeMinute.CommitteeId,
                 FileNo = committeMinute.FileNo,
                 Agenda = committeMinute.Agenda,
                 PlaceOfMetting = committeMinute.PlaceOfMetting,
@@ -89,8 +88,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
                 var entity = new CommitteMinute
                 {
-                    DisciplinaryCaseId = id,
-                    CommitteeId = committeMinute.CommitteeId,
+                    //DisciplinaryCaseId = id,
+                    CommitteeId = id,
                     FileNo = committeMinute.FileNo,
                     Agenda = committeMinute.Agenda,
                     PlaceOfMetting = committeMinute.PlaceOfMetting,
@@ -136,7 +135,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 }
                 var entity = new CommitteMinute
                 {
-                    DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
+                    //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                     CommitteeId = committeMinute.CommitteeId,
                     CommitteMinuteId = committeMinute.CommitteMinuteId,
                     FileNo = committeMinute.FileNo,
@@ -177,7 +176,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
                 var entity = new CommitteMinute
                 {
-                    DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
+                    //DisciplinaryCaseId = committeMinute.DisciplinaryCaseId,
                     CommitteeId = committeMinute.CommitteeId,
                     CommitteMinuteId = committeMinute.CommitteMinuteId,
                     FileNo = committeMinute.FileNo,

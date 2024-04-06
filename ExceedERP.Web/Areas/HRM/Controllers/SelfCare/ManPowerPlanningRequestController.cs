@@ -187,8 +187,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var user = adb.Users.FirstOrDefault(x=>x.UserName == username);
             if(user != null)
             {
-              int  employeeId= user.EmployeeId;
-                var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employeeId && x.isCurrent);
+                var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == user.EmployeeId && x.isCurrent);
                 req.OrgStructureId = placement.OrgStructureId;
             }
 

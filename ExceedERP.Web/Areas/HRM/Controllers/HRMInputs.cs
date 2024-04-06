@@ -9,6 +9,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {
@@ -100,6 +101,48 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public List<EmployeeIdView> GetPayrollPlacmentEmployees(string user)
         {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(user);
+            List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(user);
+            List<EmployeeIdView> EmployeeIdViews = new List<EmployeeIdView>();
+            EmployeeIdView EmployeeIdView = new EmployeeIdView();
+            var employeeList = db.Person_Employee.Where(x => x.IsActive);
+            var placments = db.Placements.Where(x => x.isCurrent).
+                                        Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                placments = placments.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+
+                var lists = from e in employeeList
+                        join p in placments
+                            on e.EmployeeId equals p.EmployeeId
+                        select (new
+                        {
+                            EmployeeId = e.EmployeeId,
+                            EmployeeCode = e.EmployeeCode,
+                            FullName = e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish,
+                            FullNameCode = e.EmployeeCode + "- " + e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish,
+                            IsActive = e.IsActive,
+                        });
+            lists = lists.Distinct();
+            foreach (var emp in lists)
+            {
+                EmployeeIdView = new EmployeeIdView
+                {
+                    PersonId = emp.EmployeeId,
+                    EmployeeCode = emp.EmployeeCode,
+                    FullNameWithOutCode = emp.FullName,
+                    FullName = emp.FullNameCode,
+                    IsActive = emp.IsActive
+                };
+                EmployeeIdViews.Add(EmployeeIdView);
+            }
+            var list = EmployeeIdViews != null ? EmployeeIdViews.ToList() : new List<EmployeeIdView>();
+            return list;
+        }
+        public List<EmployeeIdView> GetPayrollPlacmentEmployees_ori(string user)
+        {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(user);
             List<EmployeeIdView> EmployeeIdViews = new List<EmployeeIdView>();
             EmployeeIdView EmployeeIdView = new EmployeeIdView();
@@ -134,6 +177,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
             var list = EmployeeIdViews != null ? EmployeeIdViews.ToList() : new List<EmployeeIdView>();
             return list;
+        }
+        //replacement for the below one
+        public List<int> GetUserBranchAndBusinessUnitEmployees(string user)
+        {
+            db.Database.CommandTimeout = 7200;//added
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(user);
+
+            List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(user);
+         
+            var placments = db.Placements.Where(x => x.isCurrent).
+                                        Where(x => mybraches.Contains(x.BranchId));
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                placments = placments.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
+            var list = from p in db.Placements
+                            join
+                                e in db.Person_Employee
+                                on p.EmployeeId equals e.EmployeeId
+                            where  p.isCurrent && e.IsActive
+                            select (new
+                            {
+                                EmployeeId = p.EmployeeId
+                            });
+            if (placments.Any())
+            {
+                var listOfEmployees = placments.Select(x => x.EmployeeId).ToList();
+                return listOfEmployees;
+            }
+            return new List<int>();
         }
         public List<string> GetUserBranchEmployees(string user)
         {
@@ -181,8 +255,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }
 
             return employeeIdLists;
-        }
-       
+        }       
 
         public List<string> GetAllUserBranchEmployees(string user)
         {

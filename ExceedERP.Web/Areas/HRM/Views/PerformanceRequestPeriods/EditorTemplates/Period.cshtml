@@ -1,0 +1,17 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                //.Name("Period")
+                //.Placeholder("Period")
+                .OptionLabel("---Select----")
+                .Filter("contains")
+                .DataTextField("Name")
+                .DataValueField("PeriodId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetPeriodList", "PerformanceRequestPeriods", new { area = "HRM" }).Data("filterPeriod"))
+                    .ServerFiltering(true);
+                })
+            .AutoBind(true)
+            .CascadeFrom("FiscalYearId")
+            .HtmlAttributes(new { style = "width: 150px;" })
+
+)

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.SelfCare
@@ -32,7 +29,11 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "Requeststatus_Approver", ResourceType = typeof(Localization.Resources))]
 
         public int? ApproverId { get; set; }
+        [Display(Name = "Requeststatus_ApproverDepartment", ResourceType = typeof(Localization.Resources))]
+
         [NotMapped]
         public int? ApproverDepartment { get; set; }
+        [NotMapped]
+        public bool IsApproved { get; set; }
     }
 }

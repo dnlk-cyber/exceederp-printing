@@ -23,10 +23,13 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime From { get; set; }
+        [Display(Name = "HR_SelfCare_LeaveRequest_From", ResourceType = typeof(Localization.Resources))]
         public string FromAm { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime To { get; set; }
+        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_ToAmharic", ResourceType = typeof(Localization.Resources))]
+
         public string ToAm { get; set; }
         //[Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
         //public bool IsForOther { get; set; }

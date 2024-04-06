@@ -117,4 +117,85 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="IdNum.Value" xml:space="preserve">
+    <value>Employee Id</value>
+  </data>
+  <data name="FullName.Value" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Sex.Value" xml:space="preserve">
+    <value>Sex</value>
+  </data>
+  <data name="RemainingYear.Value" xml:space="preserve">
+    <value>Remaining Days</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>Birth Date</value>
+  </data>
+  <data name="RetirementDate.Value" xml:space="preserve">
+    <value>Retirement Date</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.RemainingDays</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.RetirmentDate</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= IIf(Fields.Sex="Male","Male","Female")</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.IdNumber</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= Count(Fields.FullName)</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>= Fields.BirthDate</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Parameters.orgStructureId.Label</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Parameters.branchId.Label</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>am</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>No Of Year</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Work Unit</value>
+  </data>
 </root>

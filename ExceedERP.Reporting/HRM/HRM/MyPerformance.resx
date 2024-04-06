@@ -117,7 +117,82 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.Weight</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.Result</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Criteria</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
   <data name="htmlTextBox1.Value" xml:space="preserve">
     <value>&lt;p&gt;Name : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.FullName}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; Year : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.Year}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; Period : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Period}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;Evaluation Name : &lt;strong&gt;&lt;u&gt;{Fields.EvaluationCriteriaName}&lt;/u&gt;&lt;/strong&gt;&amp;nbsp; Evaluation Type : &amp;nbsp;&lt;u&gt;&lt;strong&gt;{Fields.EvaluationType}&lt;/strong&gt;&lt;/u&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;Role :&amp;nbsp;&lt;strong&gt;&lt;u&gt;{Fields.Role}&lt;/u&gt;&lt;/strong&gt;&amp;nbsp; Weight :&amp;nbsp;&lt;u&gt;&lt;strong&gt;{Fields.Weight}&lt;/strong&gt;&lt;/u&gt;&amp;nbsp; Result : &lt;strong&gt;&lt;u&gt;{Fields.Result}&lt;/u&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;</value>
   </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Measurment</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= RowNumber("table1")</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Weight</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.MeasurmentName</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>= Fields.Score</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>=Today()</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>id</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>page: {PageNumber}</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>= Fields.ActionName</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>Action Name</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>om</value>
+  </metadata>
 </root>

@@ -3,14 +3,16 @@
 @using ExceedERP.Core.Localization
 @(Html.Kendo().DropDownListFor(m => m)
 
-                            .DataTextField("FullNameaEnglish")
-                                        .DataValueField("EmployeeId")
-                                         .OptionLabel(Resources.Select)
+     .DataTextField("FullNameaEnglish")
+     .DataValueField("EmployeeId")
+     .OptionLabel(Resources.Select)
       .ValuePrimitive(true)
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }))
-              .ServerFiltering(false);
+          //GetActiveEmployeesForRInterview
+         // GetActiveEmployees
+          dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+              .ServerFiltering(true);
       })
                        
 )

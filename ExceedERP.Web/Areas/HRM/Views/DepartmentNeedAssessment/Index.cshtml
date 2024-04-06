@@ -8,47 +8,47 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<Legend>@Resources.NavigatorTraining_NeedAssessment</Legend>
+<Legend>@Resources.Navigator_Department_NeedAssessment</Legend>
 
 @(Html.Kendo().Grid<NeedAssessment>()
-                           .Name("NeedAssessmentgrid")
-                       .Columns(columns =>
-                       {
-     @*columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
-         .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(100);*@
+                .Name("NeedAssessmentgrid")
+                .Columns(columns =>
+                {
+                    
+                    @*  
+                        columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                        .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(100);
+                    *@
+                    columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                    columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                    columns.Bound(c => c.NoOfStaff).Width(100);
+                    columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                    columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                    columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                    // columns.Bound(c => c.MainCompanyId);
+                    // columns.Bound(c => c.DevelopmentRequired).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
+                    //columns.Bound(c => c.DevelopmentBy);
+                    columns.Bound(c => c.Remark).Width(100);
+                    columns.Command(
+                    command =>
+                    {
+                        command.Custom("send").Text("Send For Approval").Click("SendForApproval").HtmlAttributes(new { @class = "btn btn-success" });
+                        if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        }
+                        if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                        {
+                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                        }
+                    }).Width(200);
 
-                           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-                           columns.Bound(c => c.NoOfStaff).Width(100);
-                           columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-
-                           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                           columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                           // columns.Bound(c => c.MainCompanyId);
-                           // columns.Bound(c => c.DevelopmentRequired).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
-                           //columns.Bound(c => c.DevelopmentBy);
-                           columns.Bound(c => c.Remark).Width(100);
-                           columns.Command(
-                               command =>
-                               {
-                                   command.Custom("send").Text("Send For Approval").Click("SendForApproval").HtmlAttributes(new { @class = "btn btn-success" });
-
-                                   if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                                   {
-                                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                   }
-                                   if (HttpContext.Current.User.IsInRole("HR_Admin"))
-                                   {
-                                       command.Destroy().Text(Resources.ActionButton_Cancel);
-                                   }
-                               }).Width(200);
-                       })
+                })
                .ToolBar(toolbar =>
                {
 
                toolbar.Template(@<text>
              <div class="toolbar">
-
                  <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
                  @(Html.Kendo().ComboBox()
                             .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
@@ -58,7 +58,6 @@
                             .DataValueField("BranchId")
                             .Events(x => x.Change("Branch"))
                             .AutoBind(false)
-
                             .HtmlAttributes(new { style = "width: 200px;" })
 
                    )<br /><br />
@@ -69,12 +68,13 @@
                  }
                  @if (HttpContext.Current.User.IsInRole("HR_Training_User"))
                  {
+
                      // @item.SaveButton();
                      //toolbar.Save();
-
                      // toolbar.Save().SaveText(Resources.Button_Transfer_To_Plan);
                      //toolbar.Save().CancelText("dd");
                      // <button type="button" id="transferhButton" class="k-primary" style="width:100px">Transfer</button>
+
 
                  }
 
@@ -88,13 +88,12 @@
                  }
              </div>
              @*@item.Excel()*@
-         </text>);
-
+            </text>);
                })
-                         .Excel(excel => excel
+               .Excel(excel => excel
                              .FileName(Resources.NavigatorTraining_NeedAssessment + ".xlsx")
-                              .Filterable(true)
-                                    .AllPages(true)
+                             .Filterable(true)
+                             .AllPages(true)
                                   // .ProxyURL(Url.Action("Excel_Export_Save", "NeedAssessment"))
                                   )
                                      .Pdf(pdf => pdf
@@ -102,18 +101,18 @@
                                        .FileName(Resources.NavigatorTraining_NeedAssessment + ".pdf")
                                             // .ProxyURL(Url.Action("Pdf_Export_Save", "NeedAssessment"))
                                             )
-                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NeedAssessment").Window(window => { window.Title(Resources.NavigatorTraining_NeedAssessment); window.Scrollable(false); })
+                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NeedAssessment").Window(window => { window.Title(Resources.NavigatorTraining_NeedAssessment); window.Scrollable(false); })
                             )
                        .Scrollable(h => h.Height(500))
-                          .Groupable()
-                                   .Sortable(sortable =>
-                                   {
-                                       sortable.SortMode(GridSortMode.SingleColumn);
-                                   })
+                       .Sortable(sortable =>
+                       {
+                           sortable.SortMode(GridSortMode.SingleColumn);
+
+                       })
                        .Filterable()
                          .Excel(excel => excel
-                                                             .FileName("TrainingNeedAssessment.xlsx")
-                           .Filterable(true)
+                         .FileName("TrainingNeedAssessment.xlsx")
+                         .Filterable(true)
                        //.ProxyURL(Url.Action("Excel_Export_Save", "NeedAssessment"))
                        )
                        .Events(e =>
@@ -121,7 +120,7 @@
                            e.DataBound("onDataBound");
                            e.DetailExpand("onDetailExpandUser");
                        })
-                            .Pageable(pageable => pageable
+                       .Pageable(pageable => pageable
                                .Input(true)
                                .Numeric(false)
                                .Refresh(true)
@@ -143,22 +142,25 @@
                             model.Id(p => p.AssesmentId);
                         })
                   .Read(read => read.Action("DepartmentNeedAssessment_Read", "DepartmentNeedAssessment"))
-                  .Create(create => create.Action("NeedAssessments_Create", "NeedAssessment"))
-                  .Update(update => update.Action("NeedAssessments_Update", "NeedAssessment"))
-                   .Destroy(destroy => destroy.Action("NeedAssessments_Destroy", "NeedAssessment"))
+                  .Create(create => create.Action("DepartmentNeedAssessment_Create", "DepartmentNeedAssessment"))
+                  .Update(update => update.Action("DepartmentNeedAssessment_Update", "DepartmentNeedAssessment"))
+                   .Destroy(destroy => destroy.Action("DepartmentNeedAssessment_Destroy", "DepartmentNeedAssessment"))
             ).ClientDetailTemplateId("detailtemplate")
 )
 
 
 <script id="detailtemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                          .Name("tabstrip_#=AssesmentId#")
+                  .Name("tabstrip_#=AssesmentId#")
                   .SelectedIndex(0)
                   .Items(items =>
                   {
+                   items.Add().Text("Training Need Request").Content(
+                        @<text>
+                            @trainingNeedRequest()
+                        </text>);
                   items.Add().Text("Employees").Content(
                     @<text>
-
                         @(Html.Kendo().Grid<EmployeesInAssessment>()
                              .Name("EmployeesInAssessmentGrid#=AssesmentId#")
                         .Columns(columns =>
@@ -189,14 +191,14 @@
                         .DataSource(dataSource => dataSource
                             .Ajax()
                                     //.Events().Update()
-                                    .Events(events =>
-                                    {
-                                        events.Error("error_handler(\"EmployeesInAssessmentGrid#=AssesmentId#\")");
-                                        events.RequestStart("onRequestStart(\"EmployeesInAssessmentGrid#=AssesmentId#\")");
-                                        events.RequestEnd("onRequestEnd(\"EmployeesInAssessmentGrid#=AssesmentId#\")");
-                                    })
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"EmployeesInAssessmentGrid#=AssesmentId#\")");
+                                events.RequestStart("onRequestStart(\"EmployeesInAssessmentGrid#=AssesmentId#\")");
+                                events.RequestEnd("onRequestEnd(\"EmployeesInAssessmentGrid#=AssesmentId#\")");
 
-                               .Model(model =>
+                            })
+                            .Model(model =>
                                {
                                    model.Id(p => p.EmployeesInAssessmentId);
                                    model.Field(p => p.JobtitleId).Editable(false);
@@ -216,7 +218,59 @@
 </script>
 
 
+@helper trainingNeedRequest()
+{ 
 
+  @(Html.Kendo().Grid<TrainingNeedRequest>()
+                .Name("Training_Need_Requestgrid#=AssesmentId#")
+                .Columns(columns =>
+                {
+
+                    columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                    columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("EmployeeList").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                    columns.Bound(c => c.Prerequest).Width(150);
+                    columns.Bound(c => c.EmployeePerformanceGap).Width(200);
+                    columns.Bound(c => c.TrainingNeedForEmployeePerformanceGap).Width(200);
+                    columns.Bound(c => c.TheNeedForTrainingRelatedToInistitution).Width(200);
+                    columns.Bound(c => c.ExpectedResultFromTraining).Width(200);
+                    columns.Command(command =>
+                    {
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                    }).Width(200);
+                })
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest")
+                    .Window(window => 
+                    { window.Title("Training Need Request form");
+                        window.Scrollable(false);
+                    })
+                        
+                    )
+                    .Scrollable(h=>h.Height(550))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"Training_Need_Requestgrid#=AssesmentId#\")");
+                            events.RequestStart("onRequestStart(\"Training_Need_Requestgrid#=AssesmentId#\")");
+                            events.RequestEnd("onRequestEnd(\"Training_Need_Requestgrid#=AssesmentId#\")");
+                        })
+                        .Model(model =>
+                        {
+                            model.Id(p => p.TrainingNeedRequestId);
+                        })
+                        .Read(read => read.Action("TrainingNeedRequests_Read", "TrainingNeedRequests", new { aId = "#=AssesmentId#" }))
+                        .Create(create => create.Action("TrainingNeedRequests_Create", "TrainingNeedRequests", new { assesId = "#=AssesmentId#" }))
+                        .Update(update => update.Action("TrainingNeedRequests_Update", "TrainingNeedRequests"))
+                        .Destroy(destroy => destroy.Action("TrainingNeedRequests_Destroy", "TrainingNeedRequests"))
+                    ).ToClientTemplate()
+    )   
+}
 
 
 

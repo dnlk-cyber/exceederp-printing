@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
@@ -10,14 +10,15 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
     public class LeaveRequest : DepartmentOperations
     {
         [Key]
+        [Display(Name = "Leave_Request_Id", ResourceType = typeof(Localization.Resources))]
         public int LeaveRequestId { get; set; }
         [Display(Name = "HR_Prohibition_Prohibition_EmployeeCode", ResourceType = typeof(Localization.Resources))]
         public string EmployeeCode { get; set; }
         [Display(Name = "HR_SelfCare_LeaveRequest_PersonEmployee", ResourceType = typeof(Localization.Resources))]
-        [Required ]
+        [Required]
         public int EmployeeId { get; set; }
         public virtual Person_Employee Employee { get; set; }
-        [Required ]
+        [Required]
         [Display(Name = "HR_SelfCare_LeaveRequest_PeriodId", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
         public virtual GlFiscalYear GlFiscalYear { get; set; }
@@ -49,6 +50,12 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public LeaveType Type { get; set; }
         [Display(Name = "HR_SelfCare_LeaveRequest_Reason", ResourceType = typeof(Localization.Resources))]
         public string Reason { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
+
+        public int BranchId { get; set; }
+        [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
+
+        public int BusinessUnitId { get; set; }
 
         [Display(Name = "HR_SelfCare_LeaveRequest_LeaveBalance", ResourceType = typeof(Localization.Resources))]
         public decimal LeaveBalance { get; set; }
@@ -58,15 +65,19 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
         public bool IsForOther { get; set; }
         public DateTime? DateCreated { get; set; }
-        [Display(Name = "ቀን")]
+        [Display(Name = "Enum_Leave_Day", ResourceType = typeof(Localization.Resources))]
         public LeaveDay Day { get; set; }
-        [Display(Name = "ጊዜ")]
+        [Display(Name = "MorningOrAfternoon", ResourceType = typeof(Localization.Resources))]
+
+        // [Display(Name = "ጊዜ")]
         public MorningOrAfternoon MorningOrAfternoon { get; set; }
 
         [Display(Name = "HR_LeaveManagment_Leave_Hour", ResourceType = typeof(Localization.Resources))]
         public int Hours { get; set; }
         [NotMapped]
         public bool IsApproved { get; set; }
+        [NotMapped]
+        public bool IsChangeInDepartment { get; set; }
         public int? RequesterId { get; set; }
         public LeaveActionTypes LeaveActionTypes { get; set; }
     }

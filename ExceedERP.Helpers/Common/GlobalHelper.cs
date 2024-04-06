@@ -1,8 +1,10 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static ExceedERP.Core.Domain.Global.GlobalEnum;
 
@@ -81,5 +83,25 @@ namespace ExceedERP.Helpers.Common
 
             return FiscalYearTypeAttribute.Unknown;
         }
+
+        public static bool IsElectronicSignatureEnabled()
+        {
+            return InventoryConfigurationHelper.IsElectronicSignatureEnabled();
+        }
+
+        public static string GetCurrentCulture()
+        {
+            ExceedDbContext db = new ExceedDbContext();
+
+
+            //var conf = db.GlobalCultures.FirstOrDefault();
+            //if (conf != null)
+            //{
+            //    return conf.Culture;
+            //}
+
+            return Thread.CurrentThread.CurrentCulture.Name;
+        }
     }
+  
 }

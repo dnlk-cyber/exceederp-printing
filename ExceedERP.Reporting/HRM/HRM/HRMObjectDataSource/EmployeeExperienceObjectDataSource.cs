@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,16 +16,20 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeExperience> GetEmployeeExperience(string dept, string branchId, string id, string type, string fromE, string toE, string status)
+        public List<EmployeeExperience> GetEmployeeExperience(string dept, string branchId,string businessUnitId, string id, string type, string fromE, string toE, string status)
         {
             List<Person_Employee> employees = db.Person_Employee.ToList();
-
             var placements = db.Placements.ToList();
-
             if(branchId != null)
             {
                 int.TryParse(branchId, out int braId);
                var placeEmpIds = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).Select(x=>x.EmployeeId).ToList();
+                employees = employees.Where(x=>placeEmpIds.Contains(x.EmployeeId)).ToList();
+            }
+            if (businessUnitId != null)
+            {
+                int.TryParse(businessUnitId, out int bussUnitId);
+               var placeEmpIds = placements.Where(x=>x.BusinessUnitId == bussUnitId).Select(x=>x.EmployeeId).ToList();
                 employees = employees.Where(x=>placeEmpIds.Contains(x.EmployeeId)).ToList();
             }
             if(dept != null)
@@ -51,35 +55,34 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if (type == "External")
             {
-                return GetExperiences.GetExternalExperience(employees);
+                return GetExternalExperience(employees);
             }
             else if (type == "Internal")
             {
-                return GetExperiences.GetInternalExperience(employees);
+                return GetInternalExperience(employees);
             }
             else
             {
-                return GetExperiences.GetBothExperience(employees);
+                return GetBothExperience(employees);
             }
         }
-    }
-
-    public static class GetExperiences
-    {
-        static ExceedDbContext db = new ExceedDbContext();
-        public static List<EmployeeExperience> GetExternalExperience(List<Person_Employee> employees)
+    
+        
+        public  List<EmployeeExperience> GetExternalExperience(List<Person_Employee> employees)
         {
             List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
 
             foreach (var emp in employees)
             {
-                var experience = new EmployeeExperience();
-                experience.EmployeeExperienceList = new List<EmployeeExperienceList>();
-                experience.EmployeeEducationList = new List<EmployeeEducationList>();
+                var experience = new EmployeeExperience
+                {
+                    EmployeeExperienceList = new List<EmployeeExperienceList>(),
+                    EmployeeEducationList = new List<EmployeeEducationList>(),
 
-                experience.EmployeeId = emp.EmployeeCode;
-                experience.FullName = emp.FullNameaEnglish;
-                experience.Sex = emp.Gender.ToString();
+                    EmployeeId = emp.EmployeeCode,
+                    FullName = emp.FullNameaEnglish,
+                    Sex = emp.Gender.ToString()
+                };
 
                 var department = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
                 if (department != null)
@@ -145,7 +148,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return experienceList;
         }
 
-        public static List<EmployeeExperience> GetInternalExperience(List<Person_Employee> employees)
+        public  List<EmployeeExperience> GetInternalExperience(List<Person_Employee> employees)
         {
             List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
 
@@ -177,10 +180,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 foreach (var place in placementHistories)
                 {
                     var intExp = new EmployeeExperienceList();
+                    intExp.Responsibility = place.JobTitle;
+                    var jobtitle = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId );
+                    if (jobtitle != null)
+                    {
+                        intExp.Responsibility = jobtitle.Description;
 
+                    }
                     intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(place.From.Day, place.From.Month, place.From.Year);
                     intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(place.To.Day, place.To.Month, place.To.Year);
-                    intExp.Responsibility = place.JobTitle;
                     intExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
 
                     totalExperience = totalExperience + (place.To - place.From).Days;
@@ -266,7 +274,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return experienceList;
         }
 
-        public static List<EmployeeExperience> GetBothExperience(List<Person_Employee> employees)
+        public  List<EmployeeExperience> GetBothExperience(List<Person_Employee> employees)
         {
             List<EmployeeExperience> experienceList = new List<EmployeeExperience>();
 
@@ -311,11 +319,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                 foreach (var place in placementHistories)
                 {
+
                     var intExp = new EmployeeExperienceList();
+                    intExp.Responsibility = place.JobTitle;
+                    var jobtitle = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+                    if(jobtitle != null)
+                    {
+                        intExp.Responsibility = jobtitle.Description;
+
+                    }
 
                     intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(place.From.Day, place.From.Month, place.From.Year);
                     intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(place.To.Day, place.To.Month, place.To.Year);
-                    intExp.Responsibility = place.JobTitle;
                     intExp.Totalyear = EmployeeHelper.GetDaystoWordsAmharic(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
 
                     experience.EmployeeExperienceList.Add(intExp);

@@ -57,7 +57,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                         if (leaveTakenM != null)
                         {
-                            if (leaveTakenM.Day == LeaveDay.ግማሽ_ቀን && leaveTakenM.MorningOrAfternoon == MorningOrAfternoon.ጥዋት)
+                            if (leaveTakenM.Day == LeaveDay.Half_Day && leaveTakenM.MorningOrAfternoon == MorningOrAfternoon.Morning)
                             {
                                 attendanceMorning.Value = GetLeaveInAbbrvation(leaveTakenM.LeaveType);
                             }
@@ -92,7 +92,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                         if (leaveTakenA != null)
                         {
-                            if (leaveTakenA.Day == LeaveDay.ግማሽ_ቀን && leaveTakenA.MorningOrAfternoon == MorningOrAfternoon.ጥዋት)
+                            if (leaveTakenA.Day == LeaveDay.Half_Day && leaveTakenA.MorningOrAfternoon == MorningOrAfternoon.Morning)
                             {
                                 attendanceAfternoon.Value = GetLeaveInAbbrvation(leaveTakenA.LeaveType);
                             }

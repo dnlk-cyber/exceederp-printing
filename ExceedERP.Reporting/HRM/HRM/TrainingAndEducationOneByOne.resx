@@ -117,4 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>Training</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>Remark</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= RowNumber("tblTrainingAndEducation")</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.EmployeeName</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.Branch</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.WorkUnit</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>=Fields.Name</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>=Fields.EduType</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>=Fields.TrainingType</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Parameters.id.Label</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>Employee Id</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Parameters.year.Label</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value> {PageNumber}</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Year</value>
+  </data>
 </root>

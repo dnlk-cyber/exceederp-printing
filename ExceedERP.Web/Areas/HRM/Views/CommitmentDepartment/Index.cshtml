@@ -21,37 +21,42 @@
                       columns.Bound(c => c.ToCometAm).EditorTemplateName("Calander").Width(170);
                       columns.Bound(c => c.Value).Width(130);
                       columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100); ;
-
-                      //columns.Bound(c => c.Remark);
-                      //columns.Command(command =>
-                      //{
-                      //    if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                      //    {
-
-                      //       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                      //    }
-                      //    if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                      //    {
-                      //         command.Destroy().Text(Resources.ActionButton_Cancel);
-                      //    }
-                      //}).Width(190);
-                  })
-                                 //.ToolBar(toolbar =>
-                                 //{
-                                 //if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                 //{
-
-                                 // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                 //}
-                                 //})
-                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeCommitment").Window(window => { window.Title(Resources.Navigator_Employee_Commitment); window.Scrollable(false); }))
-                     .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
+                      columns.Bound(c => c.Remark);
+                      columns.Command(command =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
                           {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
+
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          }
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                          {
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }
+                      }).Width(190);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                      {
+
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      }
+
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeCommitment")
+                                         .Window(window => {
+                                             window.Title(Resources.Navigator_Employee_Commitment);
+                                             window.Scrollable(false);
+                                         }))
+                  .Scrollable(h => h.Height(500))
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+
+
+                  })
+                  .Filterable()
                   .Events(events =>
                   {
                       events.Save("GetDate");
@@ -65,73 +70,78 @@
                                             .ButtonCount(5))
                   .DataSource(dataSource => dataSource
                       .Ajax()
-                                                          .Events(events =>
-                                                          {
-                                                              events.Error("error_handler(\"Commitment\")");
-                                                              events.RequestStart("onRequestStart(\"Commitment\")");
-                                                              events.RequestEnd("onRequestEnd(\"Commitment\")");
-                                                          })
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"Commitment\")");
+                          events.RequestStart("onRequestStart(\"Commitment\")");
+                          events.RequestEnd("onRequestEnd(\"Commitment\")");
 
-                      .Model(model => model.Id(p => p.CommitmentId))
-                                      .Read(read => read.Action("Commitments_Read", "CommitmentDepartment"))
-                                                  .Create(create => create.Action("Commitments_Create", "CommitmentDepartment"))
-                                  .Update(update => update.Action("Commitments_Update", "CommitmentDepartment"))
-                                  .Destroy(destroy => destroy.Action("Commitments_Destroy", "CommitmentDepartment"))
+                      })
+                        .Model(model => model.Id(p => p.CommitmentId))
+                        .Read(read => read.Action("Commitments_Read", "CommitmentDepartment"))
+                        .Create(create => create.Action("Commitments_Create", "CommitmentDepartment"))
+                        .Update(update => update.Action("Commitments_Update", "CommitmentDepartment"))
+                        .Destroy(destroy => destroy.Action("Commitments_Destroy", "CommitmentDepartment"))
                       ).ClientDetailTemplateId("template")
 )
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                            .Name("tabstrip_#=CommitmentId#")
+          .Name("tabstrip_#=CommitmentId#")
             .SelectedIndex(0)
             .Items(items =>
             {
 
-                items.Add().Text(Resources.HR_Cosign).Content(
+            items.Add().Text(Resources.HR_Cosign).Content(
             @<text>
                 @(Html.Kendo().Grid<Cosign>()
-                                          .Name("Cosigngrid_#=CommitmentId#")
-                          .Columns(columns =>
-                          {
-              // columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(120);
-              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CosignType"], "LookupId", "Description").EditorTemplateName("CosignType").Width(120);
-                          columns.Bound(c => c.AgreementDateAm).Width(170).EditorTemplateName("Calander");
-                          columns.Bound(c => c.FullName).Width(120);
-                          columns.Bound(c => c.BirthPlace).Width(120);
-              //columns.Bound(c => c.Occupation).Width (120);
-              columns.Bound(c => c.Workorganization).Width(150);
-              //columns.Bound(c => c.Remark);
-              //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
-                      })
-                         // .ToolBar(toolbar =>
-                         // {
-                         // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                     // })
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Scrollable(h => h.Height(500))
+                     .Name("Cosigngrid_#=CommitmentId#")
+                     .Columns(columns =>
+                     {
+                         // columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(120);
+                         columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CosignType"], "LookupId", "Description").EditorTemplateName("CosignType").Width(120);
+                         columns.Bound(c => c.AgreementDateAm).Width(170).EditorTemplateName("Calander");
+                         columns.Bound(c => c.FullName).Width(120);
+                         columns.Bound(c => c.Workorganization).Width(150);
+                         columns.Bound(c => c.Remark);
+                         columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
 
-                                 .Events(events =>
-                                          {
-                                          events.Save("GetCosignDate");
-                                          events.Edit("GetCosignDate");
-                                      })
-                            .ClientDetailTemplateId("AddressTemplate")
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
+
+                     })
+                     .ToolBar(toolbar =>
+                     {
+                         if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                         {
+
+                             toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                         }
+
+
+                     })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable(h => h.Height(500))
+                    .Events(events =>
+                    {
+                        events.Save("GetCosignDate");
+                        events.Edit("GetCosignDate");
+
+                    })
+                    .ClientDetailTemplateId("AddressTemplate")
+                    .DataSource(dataSource => dataSource
+                       .Ajax()
                        .Events(events =>
-                                              {
-                                              events.Error("error_handler(\"Cosigngrid_#=CommitmentId#\")");
-                                              events.RequestStart("onRequestStart(\"Cosigngrid_#=CommitmentId#\")");
-                                              events.RequestEnd("onRequestEnd(\"Cosigngrid_#=CommitmentId#\")");
-                                          })
+                       {
+                           events.Error("error_handler(\"Cosigngrid_#=CommitmentId#\")");
+                           events.RequestStart("onRequestStart(\"Cosigngrid_#=CommitmentId#\")");
+                           events.RequestEnd("onRequestEnd(\"Cosigngrid_#=CommitmentId#\")");
+                       })
 
-
-                              .Model(model => model.Id(p => p.CosignId))
-                                                              .Read(read => read.Action("Cosigns_Read", "CommitmentCosign", new { id = "#=EmployeeId#" }))
-                                                              .Create(create => create.Action("Cosigns_Create", "CommitmentCosign", new { id = "#=EmployeeId#" }))
-                                              .Update(update => update.Action("Cosigns_Update", "CommitmentCosign"))
-                                              .Destroy(destroy => destroy.Action("Cosigns_Destroy", "CommitmentCosign"))
-                          ).ToClientTemplate()
+                        .Model(model => model.Id(p => p.CosignId))
+                        .Read(read => read.Action("Cosigns_Read", "CommitmentCosign", new { id = "#=EmployeeId#" }))
+                        .Create(create => create.Action("Cosigns_Create", "CommitmentCosign", new { id = "#=EmployeeId#" }))
+                        .Update(update => update.Action("Cosigns_Update", "CommitmentCosign"))
+                        .Destroy(destroy => destroy.Action("Cosigns_Destroy", "CommitmentCosign"))
+                        ).ToClientTemplate()
                 )
             </text>
  );
@@ -144,7 +154,7 @@
                     @<text>
 
                         @(Html.Kendo().Grid<Attachment>()
-                                          .Name("AttachmentGrid_#=CommitmentId#")
+                                  .Name("AttachmentGrid_#=CommitmentId#")
                                   .Columns(columns =>
                                   {
 
@@ -152,46 +162,42 @@
 
                                       columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=CommitmentId#" }).ToHtmlString());
 
-                                      //            columns.Command(command =>
-                                      //            {
-                                      //                command.Destroy().Text(Resources.ActionButton_Cancel);
-                                      //    // command.Custom("Download").Click("DownloadAttachmnets");
-                                      //}).Width(300);
+                                      columns.Command(command =>
+                                      {
+                                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                                          // command.Custom("Download").Click("DownloadAttachmnets");
+                                      }).Width(300);
 
                                   })
-                                                    .Events(e =>
-                                                    {
-                                                        e.Edit("onGridEdit");
-                                                        e.Change("onChange");
-                                                    })
-                                          //.ToolBar(toolbar =>
-                                          //{
-                                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                          //})
-                                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
-                                          {
-                                              window.Scrollable(false);
-                                              window.Title(Resources.HR_Upload_File);
-                                          }))
+                                  .Events(e =>
+                                  {
+                                      e.Edit("onGridEdit");
+                                      e.Change("onChange");
+
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                                  {
+                                      window.Scrollable(false);
+                                      window.Title(Resources.HR_Upload_File);
+
+                                  }))
                                   .Scrollable(h => h.Height(500))
-                                           .Selectable()
+                                  .Selectable()
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
-                                              .Events(events =>
-                                              {
-                                                  events.Error("error_handler(\"AttachmentGrid_#=CommitmentId#\")");
-                                                  events.RequestStart("onRequestStart(\"AttachmentGrid_#=CommitmentId#\")");
-                                                  events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=CommitmentId#\")");
-                                              })
+                                      .Events(events =>
+                                      {
+                                          events.Error("error_handler(\"AttachmentGrid_#=CommitmentId#\")");
+                                          events.RequestStart("onRequestStart(\"AttachmentGrid_#=CommitmentId#\")");
+                                          events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=CommitmentId#\")");
 
-
+                                      })
                                       .Model(model => model.Id(p => p.AttachmentId))
-                                                                                                      .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Commitment", id = "#=CommitmentId#", fileOwner = "#=CommitmentId#" }))
-                                                                                                     .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Commitment", id = "#=CommitmentId#", fileOwner = "#=CommitmentId#" }))
+                                      .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Commitment", id = "#=CommitmentId#", fileOwner = "#=CommitmentId#" }))
+                                      .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Commitment", id = "#=CommitmentId#", fileOwner = "#=CommitmentId#" }))
+                                     .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeCommitment"))
 
-                                                      .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeCommitment"))
-
-                                      ).ToClientTemplate()
+                                     ).ToClientTemplate()
                         )
                     </text>
                     );
@@ -203,7 +209,7 @@
 </script>
 <script id="AddressTemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                    .Name("tabstripadd_#=CosignId#")
+            .Name("tabstripadd_#=CosignId#")
             .SelectedIndex(0)
             .Items(items =>
              {
@@ -216,18 +222,19 @@
                     @<text>
 
                         @(Html.Kendo().Grid<Address>()
-                                      .Name("OrganizationAddresseGrid_#=CosignId#")
+
+                        .Name("OrganizationAddresseGrid_#=CosignId#")
                       .Columns(columns =>
                       {
                           columns.Bound(c => c.Category).EditorTemplateName("Enum");
                           columns.Bound(c => c.Value);
                           columns.Bound(c => c.Remark);
-                          //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
                       })
-                      //.ToolBar(toolbar =>
-                      //{
-                      //            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      //        })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Scrollable()
                                .Selectable()
@@ -242,8 +249,9 @@
 
 
                           .Model(model => model.Id(p => p.AddressId))
-                                                                  .Read(read => read.Action("Addresses_Read", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Normal" }))
-                                                                                  .Create(create => create.Action("Addresses_Create", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Normal" }))
+                                                                  
+                          .Read(read => read.Action("Addresses_Read", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Normal" }))
+                          .Create(create => create.Action("Addresses_Create", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Normal" }))
                           .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }))
                                   .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
                        ).ToClientTemplate()
@@ -261,12 +269,12 @@
                                   columns.Bound(c => c.Category).EditorTemplateName("Enum");
                                   columns.Bound(c => c.Value);
                                   columns.Bound(c => c.Remark);
-                                  //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                                  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
                               })
-                              //.ToolBar(toolbar =>
-                              //{
-                              //            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                              //        })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                               .Scrollable()
                                        .Selectable()
@@ -281,10 +289,12 @@
 
 
                                   .Model(model => model.Id(p => p.AddressId))
-                                                                                  .Read(read => read.Action("Addresses_Read", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Residence" }))
-                                                                                  .Create(create => create.Action("Addresses_Create", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Residence" }))
-                                          .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }))
-                                          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
+
+                                  .Read(read => read.Action("Addresses_Read", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Residence" }))
+                                  .Create(create => create.Action("Addresses_Create", "Addresse", new { Area = "Common", id = "#=CosignId#", addressReferenceType = "Residence" }))
+
+                                  .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }))
+                                  .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
                                ).ToClientTemplate()
                                 )
                             </text>
@@ -413,6 +423,10 @@
         var list = AssignDates();
         return list;
     }
-
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 </script>
 

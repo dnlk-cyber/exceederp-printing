@@ -157,6 +157,7 @@
 
                 @(Html.Kendo().DropDownListFor(m => m.Values)
                       .OptionLabel(Resources.Select)
+                      .Filter("containes")
                              .DataTextField("Description")
                                      .CascadeFrom("BranchId")
                                               .DataSource(source =>

@@ -1,0 +1,477 @@
+﻿@using ExceedERP.Core.Localization
+@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorBenefit_Delegation</legend>
+@(Html.Kendo().Grid<Delegation>()
+        .Name("Delegation")
+        .Columns(columns =>
+        {
+            //columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+            columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
+            columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
+            columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
+            //columns.Bound(c => c.Reason).Width(250);
+
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "delegationEdit" });
+                    command.Custom("").Click("Open").Text("  Open ").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Open delegation and set start date ", @id = "open" });
+                    command.Custom("").Click("Close").Text(" Close").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Close delegation and set end date ", @id = "close" });
+
+                }
+                if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                {
+                    command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { @id = "delegationDelete" }); ;
+                }
+            }).Width(300);
+        })
+        .ToolBar(toolbar =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            }
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Events(x =>
+             {
+                 x.DataBound("onDataBound");
+                 x.DetailExpand("onDetailExpand");
+                 x.Save("GetDate");
+                 x.Edit("GetDate");
+             })
+           .Scrollable(h => h.Height(500))
+
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+            .Filterable()
+               .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"Delegation\")");
+                     events.RequestStart("onRequestStart(\"Delegation\")");
+                     events.RequestEnd("onRequestEnd(\"Delegation\")");
+                 })
+
+            .Model(model =>
+            {
+                model.Id(p => p.DelegationId);
+                model.Field(p => p.FromDateTime).Editable(false);
+                //model.Field(p => p.ToDateTimeAm).Editable(false);
+                //model.Field(p => p.FromDateTimeAm).Editable(false);
+                model.Field(p => p.ToDateTime).Editable(false);
+            })
+                .Read(read => read.Action("Delegations_Read", "DelegationSelfcares"))
+                .Create(create => create.Action("Delegations_Create", "DelegationSelfcares"))
+                .Update(update => update.Action("Delegations_Update", "DelegationSelfcares"))
+                .Destroy(destroy => destroy.Action("Delegations_Destroy", "DelegationSelfcares"))
+
+        ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+               .Name("tabstrip_#=DelegationId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                 {
+
+
+         //*****************************************************************************************************//
+         items.Add().Text("CC").Content(
+         @<text>
+         @(Html.Kendo().Grid<DeligationCC>()
+          .Name("DeligationCC#=DelegationId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
+                  //columns.Bound(c => c.IsCurrent).Width(100);
+                  columns.Command(command =>
+                  {
+                     // if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                      //{
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "ccEditButton" });
+                          command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id="ccDeleteButton"});
+                      //}
+
+                  }).Width(100);
+              })
+
+                  .ToolBar(toolbar =>
+                  {
+                      //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                     // {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "ccAddButton" });
+                     // }
+                  })
+                  .Events(e=> 
+                  {
+                      e.DataBound("onDetailDataBound");
+                  })
+
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                         .Scrollable()
+                         .Selectable()
+                         .DataSource(dataSource => dataSource
+                             .Ajax()
+                                     .Events(events =>
+                                     {
+                                         events.Error("error_handler(\"DeligationCC#=DelegationId#\")");
+                                         events.RequestStart("onRequestStart(\"DeligationCC#=DelegationId#\")");
+                                         events.RequestEnd("onRequestEnd(\"DeligationCC#=DelegationId#\")");
+                                     })
+
+
+                                   .Model(model => model.Id(p => p.DeligationCCId))
+                                .Read(read => read.Action("DelegationCC_Read", "DelegationSelfcares", new { id = "#=DelegationId#" }))
+                                .Create(create => create.Action("DelegationCC_Create", "DelegationSelfcares", new { id = "#=DelegationId#" }))
+                               .Update(update => update.Action("DelegationCC_Update", "DelegationSelfcares"))
+                               .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "DelegationSelfcares"))
+
+                                                                                                         ).ToClientTemplate()
+                             )
+                             <a href='@Url.Action("Deligation", "PrintableLetter")/?id=#=DelegationId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                         </text>
+                                                                                                                                                          );
+
+                      //**********************************************************************************//
+                      items.Add().Text("Delegation Reason").Content(
+                         @<text>
+
+                             @(Html.Kendo().Grid<DelegationReason>()
+                              .Name("DelegationReason#=DelegationId#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.Reason).Width(200);
+                                columns.Command(command =>
+                                {
+                                  //  if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                                   // {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "reasonEditButton" });
+                                        command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id = "reasonDeleteButton" });
+                                  // }
+                                }).Width(100);
+                            })
+
+                 .ToolBar(toolbar =>
+                 {
+                    // if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                    // {
+                         toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "reasonAddButton" });
+                     //}
+                 })
+
+                .Events(e =>
+                {
+                    e.DataBound("onDetailDataBound");
+                })
+
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Scrollable(h=>h.Height("auto"))
+                  .Selectable()
+                  .DataSource(dataSource => dataSource
+                    .Ajax()
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"DelegationReason#=DelegationId#\")");
+                          events.RequestStart("onRequestStart(\"DelegationReason#=DelegationId#\")");
+                          events.RequestEnd("onRequestEnd(\"DelegationReason#=DelegationId#\")");
+                      })
+
+
+                            .Model(model => model.Id(p => p.DelegationReasonId))
+                             .Read(read => read.Action("DelegationReason_Read", "DelegationSelfcares", new { id = "#=DelegationId#" }))
+                             .Create(create => create.Action("DelegationReason_Create", "DelegationSelfcares", new { id = "#=DelegationId#" }))
+                             .Update(update => update.Action("DelegationReason_Update", "DelegationSelfcares"))
+                             .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "DelegationSelfcares"))
+
+                                 ).ToClientTemplate()
+                               )
+                                 </text> );
+                }).ToClientTemplate())
+</script>
+
+
+
+
+
+<script>  
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromDateTimeAm").trigger("change");
+        $("#ToDateTimeAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "DelegationSelfcares")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+
+
+
+<script>
+
+    function Open(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#Delegation").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.DelegationId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("OpenDelegation", "DelegationSelfcares")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+    ////////////////////////////////
+
+    function Close(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#Delegation").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.DelegationId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("CloseDelegation", "DelegationSelfcares")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+</script>
+
+
+<script>
+
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+
+            if (dataItem.IsOpen === false) {
+                row.find("#open").show();
+                row.find("#close").hide();
+                $("#ccAddButton").hide();
+                $("#ccEditButton").hide();
+                $("#ccDeleteButton").hide();
+            }
+            else if (dataItem.IsOpen === true) {
+               // row.css("background-color", "red");
+                row.find("#open").hide();
+                row.find("#close").show();
+            }           
+
+           if (dataItem.HideButtons === true) {
+                row.find("#open").hide();
+                row.find("#close").hide();
+                row.find("#delegationEdit").hide();
+                row.find("#delegationDelete").hide();
+
+                $("#ccAddButton").hide();
+                $("#ccEditButton").hide();
+                $("#ccDeleteButton").hide();
+            }
+        }
+
+    }
+
+</script>
+
+<script>
+    var isOpen_Global = false;
+    var hideButtons_Global = false;
+
+    function onDetailExpand(e) {
+
+        var grid = this;
+
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#Delegation").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.DelegationId;
+
+        isOpen_Global = masterDataItem.IsOpen;
+        hideButtons_Global = masterDataItem.HideButtons;
+
+        if (masterDataItem.IsOpen === false) {
+            $("#ccAddButton").hide();
+            $("#ccEditButton").hide();
+            $("#ccDeleteButton").hide();
+
+            $("#reasonAddButton").hide();
+            $("#reasonEditButton").hide();
+            $("#reasonDeleteButton").hide();
+        }
+
+        if (masterDataItem.IsOpen === true) {
+            $("#ccAddButton").show();
+            $("#ccEditButton").show();
+            $("#ccDeleteButton").show();
+
+            $("#reasonAddButton").show();
+            $("#reasonEditButton").show();
+            $("#reasonDeleteButton").show();
+        }
+
+        if (masterDataItem.HideButtons === true) {
+            $("#ccAddButton").hide();
+            $("#ccEditButton").hide();
+            $("#ccDeleteButton").hide();
+
+            $("#reasonAddButton").hide();
+            $("#reasonEditButton").hide();
+            $("#reasonDeleteButton").hide();
+        }
+        
+    }
+
+</script>
+
+
+<script>
+
+    function onDetailDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+
+            if (isOpen_Global === false) {
+                row.find("#ccAddButton").hide();
+                row.find("#ccEditButton").hide();
+                row.find("#ccDeleteButton").hide();
+
+                row.find("#reasonAddButton").hide();
+                row.find("#reasonEditButton").hide();
+                row.find("#reasonDeleteButton").hide();
+
+            }
+            else if (isOpen_Global === true) {
+                row.find("#ccAddButton").show();
+                row.find("#ccEditButton").show();
+                row.find("#ccDeleteButton").show();
+
+                row.find("#reasonAddButton").show();
+                row.find("#reasonEditButton").show();
+                row.find("#reasonDeleteButton").show();
+
+            }
+
+            if (hideButtons_Global === true) {
+                row.find("#ccAddButton").hide();
+                row.find("#ccEditButton").hide();
+                row.find("#ccDeleteButton").hide();
+
+                row.find("#reasonAddButton").hide();
+                row.find("#reasonEditButton").hide();
+                row.find("#reasonDeleteButton").hide();
+            }
+        }
+
+    }
+
+</script>

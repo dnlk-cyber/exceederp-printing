@@ -1,0 +1,30 @@
+﻿@using Kendo.Mvc
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Internal Customer Performance Evaluation </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.PerformanceManagment.InternalCustomerPerformanceEvaluation>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.NumberOfEmployee);
+              columns.Bound(c => c.OrgStructureId);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.InternalCustomerPerformanceEvaluationId))
+              .Read(read => read.Action("InternalCustomerPerformanceEvaluations_Read", "InternalCustomerPerformanceEvaluation"))
+              .Create(create => create.Action("InternalCustomerPerformanceEvaluations_Create", "InternalCustomerPerformanceEvaluation"))
+              .Update(update => update.Action("InternalCustomerPerformanceEvaluations_Update", "InternalCustomerPerformanceEvaluation"))
+              .Destroy(destroy => destroy.Action("InternalCustomerPerformanceEvaluations_Destroy", "InternalCustomerPerformanceEvaluation"))
+          )
+)

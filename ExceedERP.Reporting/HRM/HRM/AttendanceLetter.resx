@@ -117,7 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Fields.Shift</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.Day</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>= Fields.Date</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.Value</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>ማስታወሻ </value>
+  </data>
   <data name="textBox10.Value" xml:space="preserve">
     <value>የአመት ፈቃድ(Annual Leave A/L) የህመም ፈቃድ(Sick Leave S/L) የጋብቻ ፈቃድ(Marriage Leave MR/L) የወሊድ ፈቃድ(Maternity Leave MT/L) የአባትነት ፈቃድ(Paternity Leave P/L) የሀዘን ፈቃድ(Bereavement B/L Leave) ፈቃድ ያለክፍያ(Leave with out pay LWP/L) ሌላ ፈቃድ(Other Leave O/L)</value>
+  </data>
+  <data name="htmlTextBox1.Value" xml:space="preserve">
+    <value>ቀን&amp;nbsp; {Parameters.from.Value.toString("dd-MM-yyyy")} እስከ {Parameters.to.Value.toString("dd-MM-yyyy")}</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>= Parameters.depname.Label</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>Page: {PageNumber}</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>id</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>depname</value>
   </data>
 </root>

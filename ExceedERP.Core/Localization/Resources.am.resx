@@ -214,7 +214,7 @@
     <value>ምህፃረ ቃል</value>
   </data>
   <data name="Common_Company_MainCompany_AmharicName" xml:space="preserve">
-    <value>ስም በአማርኛ</value>
+    <value>ስም በሎካል</value>
   </data>
   <data name="Common_Company_MainCompany_BrandName" xml:space="preserve">
     <value>መለያ ስም</value>
@@ -364,7 +364,7 @@
     <value>የመታወቂያ ቁጥር</value>
   </data>
   <data name="Common_PersonEmployee_FirstName" xml:space="preserve">
-    <value>ስም (አማ)</value>
+    <value>ስም </value>
   </data>
   <data name="Common_PersonEmployee_FirstNameEnglish" xml:space="preserve">
     <value>ስም (እንግ)</value>
@@ -382,7 +382,7 @@
     <value>የመድህን ዋስትና ይገባለታል?</value>
   </data>
   <data name="Common_PersonEmployee_LastName" xml:space="preserve">
-    <value>የአያት ስም  (አማ)</value>
+    <value>የአያት ስም  </value>
   </data>
   <data name="Common_PersonEmployee_LastNameEnglish" xml:space="preserve">
     <value>የአያት ስም (እንግ)</value>
@@ -391,7 +391,7 @@
     <value>የጋብቻ ሁኔታ</value>
   </data>
   <data name="Common_PersonEmployee_MiddleName" xml:space="preserve">
-    <value>የአባት ስም  (አማ)</value>
+    <value>የአባት ስም  </value>
   </data>
   <data name="Common_PersonEmployee_MiddleNameEnglish" xml:space="preserve">
     <value>የአባት ስም  (እንግ)</value>
@@ -2545,7 +2545,7 @@
     <value>የቡድን ስም</value>
   </data>
   <data name="HR_HealthAndInsurance_InsuranceGroup_InsuranceGroupId" xml:space="preserve">
-    <value>Insurance Group Id</value>
+    <value>የዋስትና ቡድን መለያ</value>
   </data>
   <data name="HR_HealthAndInsurance_InsuranceGroup_JobTitle" xml:space="preserve">
     <value>የስራ መደብ</value>
@@ -2890,7 +2890,7 @@
     <value>ከ</value>
   </data>
   <data name="HR_LeaveManagment_LeaveTransfer_LeaveTransferId" xml:space="preserve">
-    <value>Leave Transfer Id</value>
+    <value>የተላለፈው  </value>
   </data>
   <data name="HR_LeaveManagment_LeaveTransfer_PersonEmployee" xml:space="preserve">
     <value>የሰራተኛ ስም</value>
@@ -3271,7 +3271,7 @@
     <value>ሰራተኛ</value>
   </data>
   <data name="HR_Payroll_PayrollSetting_PayrollEmployeeAccount_LocationAccCode" xml:space="preserve">
-    <value>ሎኬሽን ቁጥር</value>
+    <value>የሎኬሽን አካውንት ቁጥር</value>
   </data>
   <data name="HR_PerformanceManagment_EmployeeMeasurementDefinition_EmpMeasurementDefinitionId" xml:space="preserve">
     <value>Emp Measurement Definition Id</value>
@@ -3433,7 +3433,7 @@
     <value>ፎቶ</value>
   </data>
   <data name="HR_Prohibition_Prohibition_EmployeeCode" xml:space="preserve">
-    <value>ሰራተኛ</value>
+    <value>ሰራተኛ መ.ቁ</value>
   </data>
   <data name="HR_Prohibition_Prohibition_EndDate" xml:space="preserve">
     <value>የማብቂያ ቀን</value>
@@ -4534,7 +4534,7 @@
     <value>የክሊራንስ ደብዳቤ</value>
   </data>
   <data name="NavigatorPrintableDocument_ExperienceLetter" xml:space="preserve">
-    <value>የስራ ልምድ ደብዳቤ</value>
+    <value>የስራ ልምድ ደብዳቤ አንድ</value>
   </data>
   <data name="NavigatorPrintableDocument_ExternalApplicant" xml:space="preserve">
     <value>የውጭ አመልካቾች</value>
@@ -5586,6 +5586,9 @@
   <data name="Enum_Region_ADDISABEBA" xml:space="preserve">
     <value>አዲስ አበባ</value>
   </data>
+  <data name="String1" xml:space="preserve">
+    <value />
+  </data>
   <data name="Recruitment_Vacancy_MediaVacancyCode" xml:space="preserve">
     <value>ማስታወቂያ ቁጥር</value>
   </data>
@@ -5674,7 +5677,7 @@
     <value>እስከ</value>
   </data>
   <data name="NavigatorPrintableDocument_AmharicExperienceLetter" xml:space="preserve">
-    <value>አማርኛ የስራ ልምድ</value>
+    <value>የስራ ልምድ</value>
   </data>
   <data name="Enum_TrainingLocation_INTERNALTRAINING" xml:space="preserve">
     <value>የዉስጥ</value>
@@ -5967,7 +5970,1321 @@
   <data name="NavigatorTraining_DepartmentTrainingPlan" xml:space="preserve">
     <value>የዲፓርትመንት የስልጠና እቅድ</value>
   </data>
+  <data name="Archive_SenderName" xml:space="preserve">
+    <value>የላኪ ስም</value>
+  </data>
   <data name="HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode" xml:space="preserve">
     <value>ሰብ አካውንት ቁጥር</value>
+  </data>
+  <data name="AccountCode" xml:space="preserve">
+    <value>አካዉንት ኮድ</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>አድራሻ</value>
+  </data>
+  <data name="Afternoon" xml:space="preserve">
+    <value>ከሰአት</value>
+  </data>
+  <data name="ApplicantName" xml:space="preserve">
+    <value>የአመልካች ስም</value>
+  </data>
+  <data name="CurrentValue" xml:space="preserve">
+    <value>መጠን</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>ቀን</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>ዲፓርትመንት</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>ማብራሪያ</value>
+  </data>
+  <data name="EducationField" xml:space="preserve">
+    <value>የትምህርት አይነት</value>
+  </data>
+  <data name="EducationLevel" xml:space="preserve">
+    <value>የትምህርት ደረጃ</value>
+  </data>
+  <data name="Employee" xml:space="preserve">
+    <value>ሰራተኛ</value>
+  </data>
+  <data name="ExamSource" xml:space="preserve">
+    <value>ፈተናው የወጣው</value>
+  </data>
+  <data name="ExamType" xml:space="preserve">
+    <value>የፈተና አይነት</value>
+  </data>
+  <data name="Experience" xml:space="preserve">
+    <value>የስራ ልምድ</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>የፋልይ ስም</value>
+  </data>
+  <data name="FileName1" xml:space="preserve">
+    <value>የፋልይ ስም</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>ከ</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>ጾታ</value>
+  </data>
+  <data name="Institution" xml:space="preserve">
+    <value>የትምህርት ተቋም</value>
+  </data>
+  <data name="JobCode" xml:space="preserve">
+    <value>የስራ መደቡ መ.ቁጥር</value>
+  </data>
+  <data name="JobTitle" xml:space="preserve">
+    <value>የስራ መደብ</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>ቋንቋ</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>ቦታ</value>
+  </data>
+  <data name="Morning" xml:space="preserve">
+    <value>ጠዋት</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>ስም</value>
+  </data>
+  <data name="NoOfCurrentStaff" xml:space="preserve">
+    <value>አሁን ያለው ሰራተኛ ብዛት</value>
+  </data>
+  <data name="NoOfShouldBeStaff" xml:space="preserve">
+    <value>መሆን ያለበት የሰራተኛ ብዛት</value>
+  </data>
+  <data name="NoOfVacantPosition" xml:space="preserve">
+    <value>ክፍት የስራ ቦታ ብዛት</value>
+  </data>
+  <data name="OrganizationName" xml:space="preserve">
+    <value>የመስሪያ ቤቱ ስም</value>
+  </data>
+  <data name="OrganizationType" xml:space="preserve">
+    <value>የድርጅቱ አይነት</value>
+  </data>
+  <data name="PassScore" xml:space="preserve">
+    <value>የማለፊያ ነጥብ</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>ዉጤት</value>
+  </data>
+  <data name="RetireSetting" xml:space="preserve">
+    <value>የጡረታ ሴቲንግ</value>
+  </data>
+  <data name="SettingValue" xml:space="preserve">
+    <value>ሴቲንግ </value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>እስከ</value>
+  </data>
+  <data name="TotalExperience" xml:space="preserve">
+    <value>ጠቅላላ የስራ ልምድ</value>
+  </data>
+  <data name="TotalValue" xml:space="preserve">
+    <value>ጠቅላላ የስራ ልምድ</value>
+  </data>
+  <data name="Training" xml:space="preserve">
+    <value>ስልጠና</value>
+  </data>
+  <data name="UploadFile" xml:space="preserve">
+    <value>ፋይል</value>
+  </data>
+  <data name="Vacancy" xml:space="preserve">
+    <value>ክፍት የስራ ቦታ</value>
+  </data>
+  <data name="VacancyCode" xml:space="preserve">
+    <value>የማስታወቂያ ቁጥር</value>
+  </data>
+  <data name="ApplicationForm" xml:space="preserve">
+    <value>የማመልከቻ ቅጽ</value>
+  </data>
+  <data name="Attendance" xml:space="preserve">
+    <value>አቴንዳንስ</value>
+  </data>
+  <data name="BussinessUnit" xml:space="preserve">
+    <value>ቢዝነስ ዩኒት</value>
+  </data>
+  <data name="EmployeeType" xml:space="preserve">
+    <value>የሰራተኛው አይነት</value>
+  </data>
+  <data name="ExamTypeSetting" xml:space="preserve">
+    <value>የፈተና አይነት ሴቲንግ</value>
+  </data>
+  <data name="ExperienceOrganization" xml:space="preserve">
+    <value>የሰሩበት መስሪያ ቤት</value>
+  </data>
+  <data name="InternalApplicant" xml:space="preserve">
+    <value>የዉስጥ አመልካቾች</value>
+  </data>
+  <data name="JobTitleAndSalary" xml:space="preserve">
+    <value>የስራ መደብና ደሞዝ</value>
+  </data>
+  <data name="LeaveVoid" xml:space="preserve">
+    <value>ተመላሽ ፈቃድ</value>
+  </data>
+  <data name="ManPowerPlanning" xml:space="preserve">
+    <value>የሰው ሃብት እቅድ</value>
+  </data>
+  <data name="MonthlyLeavePlan" xml:space="preserve">
+    <value>ወርሀዊ የፈቃድ እቅድ</value>
+  </data>
+  <data name="OffDay" xml:space="preserve">
+    <value>ዝግ ቀናት</value>
+  </data>
+  <data name="PassSetting" xml:space="preserve">
+    <value>የማለፊያ ሴቲንግ</value>
+  </data>
+  <data name="RecruitmentRequest" xml:space="preserve">
+    <value>የምልመላ ጥያቄ</value>
+  </data>
+  <data name="RecruitmentSummary" xml:space="preserve">
+    <value>የምልመላ ማጠቃለያ</value>
+  </data>
+  <data name="RetirementSetting" xml:space="preserve">
+    <value>የጡረታ ሴቲንግ</value>
+  </data>
+  <data name="SalaryCalculator" xml:space="preserve">
+    <value>የደማዝ ማስያ</value>
+  </data>
+  <data name="SalarySetting" xml:space="preserve">
+    <value>የደሞዝ ሴቲንግ</value>
+  </data>
+  <data name="ScreeningSetting" xml:space="preserve">
+    <value>የማጣሪያ ሴቲንግ</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>ሴቲንግ</value>
+  </data>
+  <data name="SickLeaveSetting" xml:space="preserve">
+    <value>የህመም ፈቃድ ሴቲንግ</value>
+  </data>
+  <data name="TrainingAndNeedAssessment" xml:space="preserve">
+    <value>ስልጠናና ፍላጎት</value>
+  </data>
+  <data name="TrainingEvaluationSetting" xml:space="preserve">
+    <value>የስልጠና ግምገማ ሴቲንግ</value>
+  </data>
+  <data name="Common_Lookup_Description_Eng" xml:space="preserve">
+    <value>እንግሊዘኛ ስም</value>
+  </data>
+  <data name="CerteficateName" xml:space="preserve">
+    <value>ሰርተፊኬት ስም</value>
+  </data>
+  <data name="CerteficateType" xml:space="preserve">
+    <value>ሰርተፊኬት ዓይነት</value>
+  </data>
+  <data name="String2" xml:space="preserve">
+    <value>አድራሻ</value>
+  </data>
+  <data name="HR_EmployeeDetail_Placement_PersonEmployeeID" xml:space="preserve">
+    <value>ሰራተኞች</value>
+  </data>
+  <data name="Placement_Boss" xml:space="preserve">
+    <value>የሓላፊ ስም</value>
+  </data>
+  <data name="Placement_FullName" xml:space="preserve">
+    <value>ሙሉ ስም</value>
+  </data>
+  <data name="Enum_Self_Service_Request_Type_Expreience" xml:space="preserve">
+    <value>የሥራ_ልምድ</value>
+  </data>
+  <data name="Enum_Self_Service_Request_Type_Support_Letter" xml:space="preserve">
+    <value>ለሚመለከተው ሁሉ</value>
+  </data>
+  <data name="Enum_Self_Service_Request_Type_Warranty_Letter" xml:space="preserve">
+    <value>የዋስትና ደብዳቤ</value>
+  </data>
+  <data name="HR_Button_Refresh_Branch" xml:space="preserve">
+    <value>ቅርንጫፍ አዲስ</value>
+  </data>
+  <data name="HR_Contract_Below_15_day_left" xml:space="preserve">
+    <value>ውል ከ 15 ቀናት በታች የቀረው</value>
+  </data>
+  <data name="HR_Employee_profile_Address_Information" xml:space="preserve">
+    <value>የአድራሻ መረጃ</value>
+  </data>
+  <data name="HR_Employee_profile_Basic_Information" xml:space="preserve">
+    <value>መሰረታዊ መረጃ</value>
+  </data>
+  <data name="HR_Employee_profile_Other_Information" xml:space="preserve">
+    <value>ሌላ መረጃ</value>
+  </data>
+  <data name="HR_Probation_Period" xml:space="preserve">
+    <value>የአመክሮ ግዜ</value>
+  </data>
+  <data name="HR_Probation_Period_end_or_no_status" xml:space="preserve">
+    <value>የሙከራ ግዜ ማብቂያ /ምንም ሁኔታ የለም</value>
+  </data>
+  <data name="HR_SelfCare_LeaveRequest_RequestType" xml:space="preserve">
+    <value>የጥያቄው ዓይነት</value>
+  </data>
+  <data name="Navigator_Employee_Inactive_Employee" xml:space="preserve">
+    <value>ያቋረጡ ሰራተኞች</value>
+  </data>
+  <data name="Navigator_Employee_Not_Placed_Employee" xml:space="preserve">
+    <value>ያልተመደበ ሰራተኛ</value>
+  </data>
+  <data name="HR_SelfCare_LeaveRequest_RequestType1" xml:space="preserve">
+    <value>የጥያቄው ዐይነት</value>
+  </data>
+  <data name="Requeststatus_ApproverDepartment" xml:space="preserve">
+    <value>የሚያጸድቅ ዲፓርትመንት</value>
+  </data>
+  <data name="Button_Force_Open" xml:space="preserve">
+    <value>በሃይል ክፈት</value>
+  </data>
+  <data name="EmployeeCodeSetting_Index" xml:space="preserve">
+    <value>ኢንዴስ</value>
+  </data>
+  <data name="Enum_Employee_ID_Abbreviation_Type" xml:space="preserve">
+    <value>ዐይነት</value>
+  </data>
+  <data name="Generated_Media_Vacancy_Codes" xml:space="preserve">
+    <value>የወጡ የሚዲያ ክፍት የስራ ቦታ ኮዶች</value>
+  </data>
+  <data name="HR_Employee_Code_Sequence_setting_Index_Count" xml:space="preserve">
+    <value>የኢንዴስ ብዛት</value>
+  </data>
+  <data name="HR_Employee_Code_Sequence_setting_Item_Code_Trim" xml:space="preserve">
+    <value>የኮድ ርዝመት</value>
+  </data>
+  <data name="HR_RecruitmentManagment_Vacancy_Date_Posted" xml:space="preserve">
+    <value>ማስታወቂያ የወጣበት ቀን</value>
+  </data>
+  <data name="HR_RecruitmentManagment_Vacancy_Deadline_Date" xml:space="preserve">
+    <value>ማስታወዊያ የሚዘጋበት ቀን</value>
+  </data>
+  <data name="RecruitmentApplicantPassSetting_Vacancy" xml:space="preserve">
+    <value>ክፍት የስራ ቦታ</value>
+  </data>
+  <data name="Action_Button_Back_to_List" xml:space="preserve">
+    <value>ወደ ዝርዝር መልስ</value>
+  </data>
+  <data name="Approve_Attendance" xml:space="preserve">
+    <value>መገኘትን አጽድቅ</value>
+  </data>
+  <data name="Are_you_sure_you_want_to_delete_this" xml:space="preserve">
+    <value>እርግጠኛ ነዎት ይህን መሰረዝ ይፈልጋሉ?</value>
+  </data>
+  <data name="AttendanceDate" xml:space="preserve">
+    <value>የአቴዳንስ ቀን</value>
+  </data>
+  <data name="Button_Close" xml:space="preserve">
+    <value>ዝጋ</value>
+  </data>
+  <data name="Button_Open" xml:space="preserve">
+    <value>ክፈት</value>
+  </data>
+  <data name="Button_Paid" xml:space="preserve">
+    <value>የተከፈለ</value>
+  </data>
+  <data name="Button_Submit" xml:space="preserve">
+    <value>አስገባ</value>
+  </data>
+  <data name="Common_Lookup_Description_Eng_Information_one" xml:space="preserve">
+    <value>መረጃ አንድ</value>
+  </data>
+  <data name="Common_Lookup_Description_Eng_Information_Two" xml:space="preserve">
+    <value>መረጃ ሁለት</value>
+  </data>
+  <data name="Complain_Description" xml:space="preserve">
+    <value>የቅሬታ መግለጫ</value>
+  </data>
+  <data name="Create_Templates_here" xml:space="preserve">
+    <value>ቴምፕሌት እዚህ ፍጠር</value>
+  </data>
+  <data name="Edit_Templates" xml:space="preserve">
+    <value>ቴምፕሌት አስተካክል</value>
+  </data>
+  <data name="EducationType" xml:space="preserve">
+    <value>የትምህርት ዓይነት</value>
+  </data>
+  <data name="Enum_Languages_Afaan_Oromoo" xml:space="preserve">
+    <value>ኦሮምኛ</value>
+  </data>
+  <data name="Enum_Languages_Amharic" xml:space="preserve">
+    <value>አማርኛ</value>
+  </data>
+  <data name="Enum_Languages_Not_Required" xml:space="preserve">
+    <value>አያስፈልግም</value>
+  </data>
+  <data name="Enum_Languages_Somali" xml:space="preserve">
+    <value>ሶማሊኛ</value>
+  </data>
+  <data name="Enum_Languages_Tigrigna" xml:space="preserve">
+    <value>ትግርኛ</value>
+  </data>
+  <data name="Enum_Leave_Day" xml:space="preserve">
+    <value>ቀን</value>
+  </data>
+  <data name="Enum_Leave_Day_Full_Time" xml:space="preserve">
+    <value>ሙሉ ቀን</value>
+  </data>
+  <data name="Enum_Leave_Day_Half_Time" xml:space="preserve">
+    <value>ግማሽ ቀን</value>
+  </data>
+  <data name="Enum_PerformanceCriteriaActionType_Open" xml:space="preserve">
+    <value>ክፍት</value>
+  </data>
+  <data name="Enum_PerformanceCriteriaActionType_Open_Sum_Of_Actions" xml:space="preserve">
+    <value>የፍጻሜዎች ድምር</value>
+  </data>
+  <data name="Enum_RetireSetting_Heads" xml:space="preserve">
+    <value>ኅላፊ</value>
+  </data>
+  <data name="Enum_RetireSetting_Performers" xml:space="preserve">
+    <value>ፈጻሚዎች</value>
+  </data>
+  <data name="Enum_Template_Type" xml:space="preserve">
+    <value>የቴምፕሌት ዐይነት </value>
+  </data>
+  <data name="Enum_Template_Type_Experiance_Amharic" xml:space="preserve">
+    <value>የስራ ልምድ በአማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Experiance_English" xml:space="preserve">
+    <value>የስራ ልምድ በኢንግሊዝ</value>
+  </data>
+  <data name="Enum_Template_Type_Promotion_Amharic" xml:space="preserve">
+    <value>ፕሮሞሽን በአማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Recruitment_External_Letter_Amharic" xml:space="preserve">
+    <value>ምልመላ የውጭ ደብዳቤ አማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Termination_Acceptance_Amharic" xml:space="preserve">
+    <value>የስራ መልቀቂያ ቅቡልነት በአማርኛ </value>
+  </data>
+  <data name="Enum_Template_Type_Warranty_Amharic" xml:space="preserve">
+    <value>ዋስትና በአማርኛ</value>
+  </data>
+  <data name="Evaluation_Criteria_Action_Type" xml:space="preserve">
+    <value>የግምገማ መስፈርት የድርጊት አይነት</value>
+  </data>
+  <data name="Expereince_Organization" xml:space="preserve">
+    <value>የ ድርጅት ስራ ልምድ</value>
+  </data>
+  <data name="External_Applicant_Screening" xml:space="preserve">
+    <value>የውጭ አመልካች ማጣሪያ</value>
+  </data>
+  <data name="Family_Member" xml:space="preserve">
+    <value>የቤተሰብ አባላት</value>
+  </data>
+  <data name="FeedBack" xml:space="preserve">
+    <value>ግብረ መልስ</value>
+  </data>
+  <data name="Filter_Applicant" xml:space="preserve">
+    <value>አመልካቾች መለየት</value>
+  </data>
+  <data name="Fiscal_Year" xml:space="preserve">
+    <value>የበጀት አመት</value>
+  </data>
+  <data name="Generate_Leave_Entitlement" xml:space="preserve">
+    <value>የፍቃድ መብትን ፍጠር</value>
+  </data>
+  <data name="Get_Attendance" xml:space="preserve">
+    <value>አቴዳንስ ያግኙ</value>
+  </data>
+  <data name="HR_Allowance_AllowancePerEmployee_UnPend" xml:space="preserve">
+    <value>አይቋረጥ</value>
+  </data>
+  <data name="HR_DeActivate_Employees" xml:space="preserve">
+    <value>ሰራተኞችን ዲአክቲቬት አድርግ</value>
+  </data>
+  <data name="Interviewers" xml:space="preserve">
+    <value>ጠያቂዎች</value>
+  </data>
+  <data name="IsDepartmentApproved" xml:space="preserve">
+    <value>መምሪያ ጸድቋል</value>
+  </data>
+  <data name="IsGenerated" xml:space="preserve">
+    <value>የመነጨ ነው?</value>
+  </data>
+  <data name="Is_Job_Title_Included_In_Salary" xml:space="preserve">
+    <value>የሥራ ስምሪት በደመወዝ ውስጥ ተካትቷል?</value>
+  </data>
+  <data name="Leave_Entitle_Starting" xml:space="preserve">
+    <value>የፈቃድ መብት ጀምር</value>
+  </data>
+  <data name="Leave_entitle_start_date" xml:space="preserve">
+    <value>የፈቃድ መብት የሚጀምርበት ቀን</value>
+  </data>
+  <data name="Leave_new_declaration_start_year" xml:space="preserve">
+    <value>የዕረፍት አዲስ አዋጅ የሚጀመርበት ዓመት</value>
+  </data>
+  <data name="Leave_Plan_Detail" xml:space="preserve">
+    <value>የዕረፍት እቅድ ዝርዝርን</value>
+  </data>
+  <data name="Leave_Request_Id" xml:space="preserve">
+    <value>የፈቃድ ጥያቄ መለያ ቁጥር</value>
+  </data>
+  <data name="Leave_Voids" xml:space="preserve">
+    <value>የዕረፍት ክፍተቶች</value>
+  </data>
+  <data name="Man_power_Planning_Requests" xml:space="preserve">
+    <value>የሰው ኃይል ዕቅድ ጥያቄዎች</value>
+  </data>
+  <data name="MorningOrAfternoon" xml:space="preserve">
+    <value>ግዜ</value>
+  </data>
+  <data name="Navigator_Amharic_Experience_Letter_Three" xml:space="preserve">
+    <value>በአማርኛ የስራ ልምድ ደብዳቤ ሶስት</value>
+  </data>
+  <data name="Navigator_Amharic_Experience_Letter_Two" xml:space="preserve">
+    <value>በአማርኛ የየስራ ልምድ ደብዳቤ ሁለት</value>
+  </data>
+  <data name="Navigator_Company_Company_Structure" xml:space="preserve">
+    <value>የኩባንያው መዋቅር</value>
+  </data>
+  <data name="Navigator_English_Experience_Letter_Three" xml:space="preserve">
+    <value>በእንግሊዝኛ የየስራ ልምድ ደብዳቤ ሶስት</value>
+  </data>
+  <data name="Navigator_English_Experience_Letter_Two" xml:space="preserve">
+    <value>በእንግሊዝኛ የየስራ ልምድ ደብዳቤ ሁለት</value>
+  </data>
+  <data name="Navigator_In_Correct_Employees_Data" xml:space="preserve">
+    <value>ትክክል ያልሆነ የሰራተኞች መረጃ</value>
+  </data>
+  <data name="Navigator_Process" xml:space="preserve">
+    <value>ሂደት</value>
+  </data>
+  <data name="Navigator_Water_Mark_Setting" xml:space="preserve">
+    <value>የውሃ ምልክት ቅንብር</value>
+  </data>
+  <data name="PassOrFail" xml:space="preserve">
+    <value>ማለፈ/አላለፈም</value>
+  </data>
+  <data name="PerformanceCriteriaActionType" xml:space="preserve">
+    <value>የአፈጻጸም መስፈርት የድርጊት አይነት</value>
+  </data>
+  <data name="Recruitment_Reqeusts" xml:space="preserve">
+    <value>የቅጥር ጥያቄ</value>
+  </data>
+  <data name="Response" xml:space="preserve">
+    <value>ምላሽ</value>
+  </data>
+  <data name="Return_Attendance" xml:space="preserve">
+    <value>አቴዳንስን ይመልሱ</value>
+  </data>
+  <data name="Screen_and_Genderate_Applicants" xml:space="preserve">
+    <value>አመልካቾች መለየትና ማጣራት</value>
+  </data>
+  <data name="Select_Employee" xml:space="preserve">
+    <value>ሰራተኛ ምረጥ</value>
+  </data>
+  <data name="TrainingEvaluation" xml:space="preserve">
+    <value>የስልጠና ግምገማ</value>
+  </data>
+  <data name="TrainingFeedback" xml:space="preserve">
+    <value> የስልጠና ግብረ መልስ</value>
+  </data>
+  <data name="Training_Evaluation_Criteria" xml:space="preserve">
+    <value>የስልጠና ግምገማ መስፈርቶች</value>
+  </data>
+  <data name="Training_Evaluation_Criteria_Category" xml:space="preserve">
+    <value>የስልጠና ግምገማ መስፈርት ምድብ</value>
+  </data>
+  <data name="Button_Force_Treminate" xml:space="preserve">
+    <value>ማቋረጥ</value>
+  </data>
+  <data name="Select_Account" xml:space="preserve">
+    <value>አካውንት ምረጥ</value>
+  </data>
+  <data name="NavigatorReport_Peer_to_Peer_Evalution" xml:space="preserve">
+    <value>የእኩዮችን ግምገማ</value>
+  </data>
+  <data name="NavigatorReport_Personal_Evalution" xml:space="preserve">
+    <value>የግል ግምገማ</value>
+  </data>
+  <data name="HR_RecruitmentManagment_ApplicantExperience_Experience_Level" xml:space="preserve">
+    <value>የስራ ልምድ ደረጃ</value>
+  </data>
+  <data name="JobRequirement" xml:space="preserve">
+    <value>የሥራ መስፈርት</value>
+  </data>
+  <data name="Enum_LookUpTypes_CLEARANCE_TYPE" xml:space="preserve">
+    <value>የክሊራስ ዓይነት</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Five" xml:space="preserve">
+    <value>የስራ ልምድ ደብዳቤ አምስት</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Four" xml:space="preserve">
+    <value>የስራ ልምድ ደብዳቤ አራት</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Seven" xml:space="preserve">
+    <value>የስራ ልምድ ደብዳቤ ሰባት</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Six" xml:space="preserve">
+    <value>የስራ ልምድ ደብዳቤ ስድስት</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Three" xml:space="preserve">
+    <value>የስራ ልምድ ደብዳቤ ሰስት</value>
+  </data>
+  <data name="NavigatorPrintableDocument_ExperienceLetter_Two" xml:space="preserve">
+    <value>የስራ ልምድ ደብዳቤ ሁለት</value>
+  </data>
+  <data name="Navigator_Department_NeedAssessment" xml:space="preserve">
+    <value>የስልጠናው ስልጠና ፍላጎት</value>
+  </data>
+  <data name="Enum_AssignmentType_ANNUAL_SALARY_INCREMENT" xml:space="preserve">
+    <value>ዓመታዊ የደመወዝ ጭማሪ</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Company_level" xml:space="preserve">
+    <value>የኩባንያ ደረጃ</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Direct_Boss" xml:space="preserve">
+    <value>ቀጥተኛ አለቃ</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Internal_Customer" xml:space="preserve">
+    <value>የውስጥ የደንበኛ ግምገማ</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Others" xml:space="preserve">
+    <value>ሌሎች</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Peer_Evaluation" xml:space="preserve">
+    <value>የአቻ ግምገማ</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Self_Evaluation" xml:space="preserve">
+    <value>ራስ</value>
+  </data>
+  <data name="TERM_TYPE" xml:space="preserve">
+    <value />
+  </data>
+  <data name="HR_EmployeeDetail_Placement_ParentOrgStructureId" xml:space="preserve">
+    <value>ፓረንት የስራ ክፍል</value>
+  </data>
+  <data name="Navigator_Employee_External_Experience" xml:space="preserve">
+    <value>የውጭ የስራ ልምድ</value>
+  </data>
+  <data name="Navigator_Employee__Experience_After_System" xml:space="preserve">
+    <value>የስራ ልምድ ከሥስተም በኃላ ያለው</value>
+  </data>
+  <data name="Navigator_Employee__Experience_Before_System" xml:space="preserve">
+    <value>የስራ ልምድ ከሥስተም በፊት ያለው</value>
+  </data>
+  <data name="Enum_AssignmentType_TEMPORARY" xml:space="preserve">
+    <value>ጊዜያዊ</value>
+  </data>
+  <data name="Enum_Template_Type_Promotion_English" xml:space="preserve">
+    <value>ፕሮሞሽን በኢንግሊዝኛ</value>
+  </data>
+  <data name="HR_Employee_Age_To_Retired" xml:space="preserve">
+    <value>ጡረታ ለመውጣት ዝግጁ የሆነ ሰራተኛ</value>
+  </data>
+  <data name="String" xml:space="preserve">
+    <value>Beeksisa Soorama Bahuu</value>
+  </data>
+  <data name="Enum_Template_Type_Reemployement_Amharic" xml:space="preserve">
+    <value>የዳግም ሥራ ቅጥር ደብዳቤ በአማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Reemployement_English" xml:space="preserve">
+    <value>የዳግም ሥራ ቅጥር ደብዳቤ በእንግሊዝኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Salary_Incremen_Amharic" xml:space="preserve">
+    <value>የደመወዝ ጭማሪ ደብዳቤ በአማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Salary_Incremen_English" xml:space="preserve">
+    <value>የደመወዝ ጭማሪ ደብዳቤ በእንግሊዝኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Title_Change_Amharic" xml:space="preserve">
+    <value>ማዕረግ መቀየሪያ  ደብዳቤ በአማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Title_Change_English" xml:space="preserve">
+    <value>ማዕረግ መቀየሪያ  ደብዳቤ በእንግሊዝኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Transfer_Amharic" xml:space="preserve">
+    <value>የዝውውር ደብዳቤ በአማርኛ</value>
+  </data>
+  <data name="Enum_Template_Type_Transfer_English" xml:space="preserve">
+    <value>የዝውውር ደብዳቤ በእንግሊዝኛ</value>
+  </data>
+  <data name="NavigatorLeave_LeavePayable_Setting" xml:space="preserve">
+    <value>የሚከፈልበት የእረፍት ጊዜ ቅንብር</value>
+  </data>
+  <data name="Navigator_Severance_Payable" xml:space="preserve">
+    <value>Severance Payable</value>
+  </data>
+  <data name="Enum_AssignmentType_TEMPORARY_Job_Title_Change" xml:space="preserve">
+    <value>የስራ መደብ ለውጥ</value>
+  </data>
+  <data name="Enum_AssignmentType_TEMPORARY_REHIRE" xml:space="preserve">
+    <value>እንደገና ቅጥር</value>
+  </data>
+  <data name="Enum_AssignmentType_ACTING" xml:space="preserve">
+    <value>ACTING</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Corporate_Result" xml:space="preserve">
+    <value>የድርጅት ውጤት</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Sector_Result" xml:space="preserve">
+    <value>የሴክተር  ውጤት</value>
+  </data>
+  <data name="Enum_Evaluation_Type_Main_Department_Level" xml:space="preserve">
+    <value>መምሪያ /ዋና መምሪያ</value>
+  </data>
+  <data name="Decisions" xml:space="preserve">
+    <value>ውሳኔዎች</value>
+  </data>
+  <data name="Ecabinet_Agenda" xml:space="preserve">
+    <value>አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_AgendaContent" xml:space="preserve">
+    <value>የአጀንዳው ይዘት</value>
+  </data>
+  <data name="Ecabinet_Agendas" xml:space="preserve">
+    <value>አጀንዳዎች ዝርዝር</value>
+  </data>
+  <data name="Ecabinet_Agenda_btn_approve" xml:space="preserve">
+    <value>አረጋግጥ</value>
+  </data>
+  <data name="Ecabinet_Agenda_btn_reject" xml:space="preserve">
+    <value>አትቀበል</value>
+  </data>
+  <data name="Ecabinet_Agenda_Date_Assigned" xml:space="preserve">
+    <value>የተፈረመበት ቀን</value>
+  </data>
+  <data name="Ecabinet_Agenda_File" xml:space="preserve">
+    <value>ፋይል /ሰነድ</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_Attached_Date" xml:space="preserve">
+    <value>የተላከበት ቀን</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_DownLoad" xml:space="preserve">
+    <value>አውርድ</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_File" xml:space="preserve">
+    <value>ፋይል/ሰነድ</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_FileName" xml:space="preserve">
+    <value>የሰነዱ ስም</value>
+  </data>
+  <data name="Ecabinet_Agenda_File_FilePath" xml:space="preserve">
+    <value>የፋይል/ሰነድ ሁኔታ</value>
+  </data>
+  <data name="Ecabinet_Agenda_GeezDate" xml:space="preserve">
+    <value>የኢትዮጵያ ቀን</value>
+  </data>
+  <data name="Ecabinet_Agenda_Rejected" xml:space="preserve">
+    <value>ውድቅ የተደረገ</value>
+  </data>
+  <data name="Ecabinet_Agenda_Response_Reason_For_Rejection" xml:space="preserve">
+    <value>ውድቅ የተደረገበት ምክንያት</value>
+  </data>
+  <data name="Ecabinet_Agenda_Send" xml:space="preserve">
+    <value>ላክ</value>
+  </data>
+  <data name="Ecabinet_Agenda_Upload_File" xml:space="preserve">
+    <value>ፋይሉን  ጫን</value>
+  </data>
+  <data name="Ecabinet_Agenda_Window" xml:space="preserve">
+    <value>መስኮት</value>
+  </data>
+  <data name="Ecabinet_Attendance" xml:space="preserve">
+    <value>የስዓት መቆጣጠሪያ /አተንዳንስ</value>
+  </data>
+  <data name="Ecabinet_Attendance_CabinetMemberId" xml:space="preserve">
+    <value>ሙሉ ስም</value>
+  </data>
+  <data name="Ecabinet_Attendance_Signature" xml:space="preserve">
+    <value>ፊርማ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Address" xml:space="preserve">
+    <value>አድራሻ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_DateOfBirth" xml:space="preserve">
+    <value>የትውልድ ቀን</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Email" xml:space="preserve">
+    <value>ኢሜይል</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_BA" xml:space="preserve">
+    <value>BA</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Bsc" xml:space="preserve">
+    <value>Bsc</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Diploma" xml:space="preserve">
+    <value>ዲፕሎማ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_MA" xml:space="preserve">
+    <value>MA</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Msc" xml:space="preserve">
+    <value>Msc</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_Others" xml:space="preserve">
+    <value>ሌላ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Enum_Level_PHD" xml:space="preserve">
+    <value>ዶክተር</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Geneder_Female" xml:space="preserve">
+    <value>ሴት</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Geneder_Genders" xml:space="preserve">
+    <value>ጾታ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Geneder_Male" xml:space="preserve">
+    <value>ወንድ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_HouseNumber" xml:space="preserve">
+    <value>የቤት ቁጥር</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_IdentityCard" xml:space="preserve">
+    <value>የመለያ ቁጥር</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Level_EducLevel" xml:space="preserve">
+    <value>የትምህርት ደረጃ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_MemberName" xml:space="preserve">
+    <value>የአባሉ ስም</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_PhoneNumber" xml:space="preserve">
+    <value>ስልክ ቁጥር</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_ChairMan" xml:space="preserve">
+    <value>ሰብሳቢ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_DuptyChairMan" xml:space="preserve">
+    <value>ምክትል ሰብሳቢ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_Member" xml:space="preserve">
+    <value>አባል</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_Responsiblity" xml:space="preserve">
+    <value>ኃላፊነት</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Position_Secretary" xml:space="preserve">
+    <value>ጸሐፊ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_ProfileName" xml:space="preserve">
+    <value>የስም መገለጫ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Signature" xml:space="preserve">
+    <value>ፊርማ</value>
+  </data>
+  <data name="Ecabinet_CabinetMember_Title" xml:space="preserve">
+    <value>ማዕረግ</value>
+  </data>
+  <data name="Ecabinet_Cabinet_CabinetName" xml:space="preserve">
+    <value>የካቢኔው ስም</value>
+  </data>
+  <data name="Ecabinet_Cabinet_Members" xml:space="preserve">
+    <value>የካቢኔ አባላት</value>
+  </data>
+  <data name="Ecabinet_Committe_CommitteName" xml:space="preserve">
+    <value>የኮሚቴው ስም</value>
+  </data>
+  <data name="Ecabinet_Committe_CommResponsibility" xml:space="preserve">
+    <value>የኮሚቴው ኃላፊነት</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Approved_and_Rejected_Agendas" xml:space="preserve">
+    <value>የጸደቁ እና ውድቅ የተደረጉ አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Decided_Agenda" xml:space="preserve">
+    <value>ብይን የተሰጣቸው </value>
+  </data>
+  <data name="Ecabinet_DashBoard_E_Cabinet_Dashboard" xml:space="preserve">
+    <value>ኢ-ካቢኔት ዳሽቦርድ</value>
+  </data>
+  <data name="Ecabinet_DashBoard_More_info" xml:space="preserve">
+    <value>ተጨማሪ መረጃ</value>
+  </data>
+  <data name="Ecabinet_DashBoard_On_Meeting_Agendas" xml:space="preserve">
+    <value>በስብሰባ ላይ ያሉ አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_DashBoard_On_meeting_and_Decided_Agenda" xml:space="preserve">
+    <value>በስብሰባ ላይ ያሉ  እና ብይን የተሰጣቸው አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Pending_Agenda" xml:space="preserve">
+    <value>በመጠባበቅ ላይ ያለ አጀንዳ</value>
+  </data>
+  <data name="Ecabinet_DashBoard_RefreshData" xml:space="preserve">
+    <value>ገጽ አድስ</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Rejected_Agenda" xml:space="preserve">
+    <value>ውድቅ የተደረጉ አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_DashBoard_Total_Agendas" xml:space="preserve">
+    <value>ጠቅላላ አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_DashBoard_To_date_Agendas" xml:space="preserve">
+    <value>እስከ ዛሬ አጀንዳዎች</value>
+  </data>
+  <data name="Ecabinet_DateSubmitted" xml:space="preserve">
+    <value>ገቢ የሆነበት ቀን</value>
+  </data>
+  <data name="Ecabinet_Decisions" xml:space="preserve">
+    <value>ውሳኔዎች</value>
+  </data>
+  <data name="Ecabinet_Decision_Date" xml:space="preserve">
+    <value>ውሳኔ የተሰጠበት ቀን</value>
+  </data>
+  <data name="Ecabinet_Decision_Meeting_Date" xml:space="preserve">
+    <value>የስብሰባው ቀን</value>
+  </data>
+  <data name="Ecabinet_Decison_Content" xml:space="preserve">
+    <value>የውሳኔ ይዘት</value>
+  </data>
+  <data name="Ecabinet_ECabinet_DashBoard" xml:space="preserve">
+    <value>ዳሽቦርድ</value>
+  </data>
+  <data name="Ecabinet_ECabinet_MIS" xml:space="preserve">
+    <value>ኢ-ካቢኔት</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Approved" xml:space="preserve">
+    <value>ተቀባይነት ያገኘ ውሳኔ</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Decided" xml:space="preserve">
+    <value>የተሰጠ ውሳኔ</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_MeetingDateAssigned" xml:space="preserve">
+    <value>የስብሰባ ቀን ታውቋል</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_New" xml:space="preserve">
+    <value>አዲስ </value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Pending" xml:space="preserve">
+    <value>በሂደት ላይ ያለ</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_Rejected" xml:space="preserve">
+    <value>ውድቅ የተደረገ</value>
+  </data>
+  <data name="Ecabinet_Enum_AgendaStatus_SentToMayor" xml:space="preserve">
+    <value>ለከንቲባ ላክ</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Position" xml:space="preserve">
+    <value>ሓላፊነት</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Status" xml:space="preserve">
+    <value>የደረሰበት ደረጃ</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Status_Absent" xml:space="preserve">
+    <value>ቀሪ</value>
+  </data>
+  <data name="Ecabinet_Enum_Attendance_Status_Present" xml:space="preserve">
+    <value>የተገኘ</value>
+  </data>
+  <data name="Ecabinet_Enum_Priority_High" xml:space="preserve">
+    <value>አስቸኳይ</value>
+  </data>
+  <data name="Ecabinet_Enum_Priority_Low" xml:space="preserve">
+    <value>ዝቅተኛ</value>
+  </data>
+  <data name="Ecabinet_Enum_Priority_Middium" xml:space="preserve">
+    <value>መካከለኛ</value>
+  </data>
+  <data name="Ecabinet_Mayor_Agenda" xml:space="preserve">
+    <value>የከንቲባ አጀንዳ</value>
+  </data>
+  <data name="Ecabinet_Mayor_Office_Agenda" xml:space="preserve">
+    <value>ከንቲባ ጽ/ቤት አጀንዳ</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_CatalogNum" xml:space="preserve">
+    <value>መዝገብ ቁጥር</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_Content" xml:space="preserve">
+    <value>ይዘት</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_Date" xml:space="preserve">
+    <value>ቀን</value>
+  </data>
+  <data name="Ecabinet_MeetingMinute_MinuteName" xml:space="preserve">
+    <value>የቃለ ጉባኤው ስም</value>
+  </data>
+  <data name="Ecabinet_Meetings" xml:space="preserve">
+    <value>ስብሰባዎች</value>
+  </data>
+  <data name="Ecabinet_Meeting_Date_Place" xml:space="preserve">
+    <value>የስብሰባ ቀንና ቦታ</value>
+  </data>
+  <data name="Ecabinet_Meeting_Decision" xml:space="preserve">
+    <value>ስብሰባዎች እና ውሳኔዎች</value>
+  </data>
+  <data name="Ecabinet_Meeting_MeetingDate" xml:space="preserve">
+    <value>የስብሰባ ቀን</value>
+  </data>
+  <data name="Ecabinet_Meeting_MeetingTimeBegin" xml:space="preserve">
+    <value>ስብሰባው የሚጀምርበት ስዓት</value>
+  </data>
+  <data name="Ecabinet_Meeting_MeetingTimeEnd" xml:space="preserve">
+    <value>ስብሰባው የሚጠናቀቅበት ቀን</value>
+  </data>
+  <data name="Ecabinet_Meeting_Meeting_Place" xml:space="preserve">
+    <value>የስብሰባ ቦታ</value>
+  </data>
+  <data name="Ecabinet_Meeting_Motto" xml:space="preserve">
+    <value>መሪ ቃል</value>
+  </data>
+  <data name="Ecabinet_Meeting_Motto1" xml:space="preserve">
+    <value>Motto</value>
+  </data>
+  <data name="Ecabinet_Meeting_NumberofParticipants" xml:space="preserve">
+    <value>ተሳታፊዎች</value>
+  </data>
+  <data name="Ecabinet_Minutes" xml:space="preserve">
+    <value>ቃለ - ጉባኤዎች</value>
+  </data>
+  <data name="Ecabinet_Priority" xml:space="preserve">
+    <value>ቅደም  ተከተል</value>
+  </data>
+  <data name="Ecabinet_QuestionsandSuggesion" xml:space="preserve">
+    <value>ጥያቄ እና አስተያየት</value>
+  </data>
+  <data name="Ecabinet_Questions_Question" xml:space="preserve">
+    <value>ጥያቄ</value>
+  </data>
+  <data name="Ecabinet_Questions_Suggesion" xml:space="preserve">
+    <value>አስተያየት</value>
+  </data>
+  <data name="Ecabinet_Reports" xml:space="preserve">
+    <value>ሪፖርት</value>
+  </data>
+  <data name="Ecabinet_Reports_Agenda_Report" xml:space="preserve">
+    <value>የአጀንዳ ሪፖርት</value>
+  </data>
+  <data name="Ecabinet_Report_All_Cabinet_Memebers" xml:space="preserve">
+    <value>ሁሉም የካቢኔ አባላት </value>
+  </data>
+  <data name="Ecabinet_Report_Attendance" xml:space="preserve">
+    <value>የውሳኔ ርፖርት /ሙሉ ድምጽ /በድምጽ</value>
+  </data>
+  <data name="Ecabinet_Settings" xml:space="preserve">
+    <value>ቅንብር /አቀማመጥ</value>
+  </data>
+  <data name="Ecabinet_Settings_Committees" xml:space="preserve">
+    <value>ኮሚቴዎች</value>
+  </data>
+  <data name="Ecabinet_Settings_Members" xml:space="preserve">
+    <value>አባላት</value>
+  </data>
+  <data name="Ecabinet_Status" xml:space="preserve">
+    <value>ሁኔታ</value>
+  </data>
+  <data name="HeadOfficename" xml:space="preserve">
+    <value>የዋናው መስሪያ ቤት ስም</value>
+  </data>
+  <data name="LegalCase_Work_order_WorkordeIssueResponse" xml:space="preserve">
+    <value>የሥራ ትዕዛዝ ጉዳይ ምላሽ</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type" xml:space="preserve">
+    <value>የህግ ጉዳይ አይነት</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Advise" xml:space="preserve">
+    <value>ምክር</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Check" xml:space="preserve">
+    <value>አጽድቅ</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Draft" xml:space="preserve">
+    <value>ድራፍት</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Edit" xml:space="preserve">
+    <value>አስተካክል</value>
+  </data>
+  <data name="Legal_Advisory_Enum_Legal_Issue_Type_Other" xml:space="preserve">
+    <value>ሌሎች</value>
+  </data>
+  <data name="Legal_Case_Advisory_Request" xml:space="preserve">
+    <value>የሕግ አማካሪ ጥያቄ</value>
+  </data>
+  <data name="Legal_Case_Advocacy_Email" xml:space="preserve">
+    <value>ኢሜይል</value>
+  </data>
+  <data name="Legal_Case_Advocacy_Phone" xml:space="preserve">
+    <value>ስልክ</value>
+  </data>
+  <data name="Legal_case_Appintment" xml:space="preserve">
+    <value>ቀጠሮ</value>
+  </data>
+  <data name="Legal_Case_Awareness" xml:space="preserve">
+    <value>የጉዳዩ  ግንዛቤ </value>
+  </data>
+  <data name="Legal_Case_Awareness_Female" xml:space="preserve">
+    <value>ሴት</value>
+  </data>
+  <data name="Legal_Case_Awareness_Male" xml:space="preserve">
+    <value>ወንድ</value>
+  </data>
+  <data name="Legal_Case_Awareness_Total" xml:space="preserve">
+    <value>ድምር</value>
+  </data>
+  <data name="Legal_Case_Case" xml:space="preserve">
+    <value>ጉዳይ</value>
+  </data>
+  <data name="Legal_Case_Case_Category" xml:space="preserve">
+    <value>የጉዳዩ ምድብ</value>
+  </data>
+  <data name="Legal_Case_Case_Category_Name" xml:space="preserve">
+    <value>ስም</value>
+  </data>
+  <data name="Legal_Case_Case_Decision" xml:space="preserve">
+    <value>ውሳኔ</value>
+  </data>
+  <data name="Legal_Case_Case_Detail" xml:space="preserve">
+    <value>የጉዳዩ ይዘት</value>
+  </data>
+  <data name="Legal_Case_Case_IsCancelled" xml:space="preserve">
+    <value>ተሰርዛል</value>
+  </data>
+  <data name="Legal_Case_Case_Is_Seen" xml:space="preserve">
+    <value>ታይታል</value>
+  </data>
+  <data name="Legal_Case_Case_Price" xml:space="preserve">
+    <value>የ ፍርድ ክፍያ</value>
+  </data>
+  <data name="Legal_Case_Case_Status" xml:space="preserve">
+    <value>ጉዳዩ ያለበት ሁኔታ</value>
+  </data>
+  <data name="Legal_Case_Case_Status_Type" xml:space="preserve">
+    <value>የጉዳይ ሁኔታ አይነት</value>
+  </data>
+  <data name="Legal_Case_Case_Title" xml:space="preserve">
+    <value>የጉዳዩ ርእስ</value>
+  </data>
+  <data name="Legal_case_Contract_Claim" xml:space="preserve">
+    <value>የኮንትራት የይገባኛል ጥያቄ</value>
+  </data>
+  <data name="Legal_Case_Court_Type" xml:space="preserve">
+    <value>የፍርድ ቤት ዓይነት</value>
+  </data>
+  <data name="Legal_Case_Court_Type_Name" xml:space="preserve">
+    <value>የፍርድ ቤት ዓይነት ስም</value>
+  </data>
+  <data name="Legal_case_Created_By" xml:space="preserve">
+    <value>የጨመረው</value>
+  </data>
+  <data name="Legal_Case_Date" xml:space="preserve">
+    <value>ቀን</value>
+  </data>
+  <data name="Legal_Case_Defendant" xml:space="preserve">
+    <value>ተከሳሽ</value>
+  </data>
+  <data name="Legal_Case_Descrption" xml:space="preserve">
+    <value>ሪማርክ</value>
+  </data>
+  <data name="legal_Case_Enum_Appealing_Type" xml:space="preserve">
+    <value>የውሳኔ ይግባኝ አይነት</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_Against" xml:space="preserve">
+    <value>በመቃወም</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_InFavour_Of" xml:space="preserve">
+    <value>በ ሞገስ</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_Jointly_Against" xml:space="preserve">
+    <value>በጋራ መቃወም</value>
+  </data>
+  <data name="legal_Case_Enum_Appealing_Type_Remand" xml:space="preserve">
+    <value>ቀጠሮ</value>
+  </data>
+  <data name="legal_Case_Enum_Appealing_Type_Revised_Against" xml:space="preserve">
+    <value>ተሻሽሏል</value>
+  </data>
+  <data name="Legal_Case_Enum_Appealing_Type_Revised_InFavourOf" xml:space="preserve">
+    <value>የይግባኝ አይነት ተሻሽሏል</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant" xml:space="preserve">
+    <value>ይግባኝ አቅራቢ</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant_Both" xml:space="preserve">
+    <value>ሁለቱም</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant_Defendant" xml:space="preserve">
+    <value>ተከሳሽ</value>
+  </data>
+  <data name="Legal_Case_Enum_Appellant_Plaintiff" xml:space="preserve">
+    <value>ከሳሽ</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuses" xml:space="preserve">
+    <value>የማጽደቅ ሁኔታ</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuses_Pending" xml:space="preserve">
+    <value>በመጠባበቅ ላይ</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuse_Approve" xml:space="preserve">
+    <value>አጽድቅ</value>
+  </data>
+  <data name="Legal_Case_Enum_Approval_Statuse_Reject" xml:space="preserve">
+    <value>ውድቅ አድርግ</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type" xml:space="preserve">
+    <value>የጉዳይ ዓይነት</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Appeal" xml:space="preserve">
+    <value>ይግባኝ</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Claim" xml:space="preserve">
+    <value>የይገባኛል</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_CounterClaim" xml:space="preserve">
+    <value>የይገባኛል ጥያቄ፣</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Defence" xml:space="preserve">
+    <value>መከላከል</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Executions" xml:space="preserve">
+    <value>አስፈጻሚ</value>
+  </data>
+  <data name="legal_Case_Enum_Case_Type_Intervention" xml:space="preserve">
+    <value>ጣልቃ ገብነት</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type" xml:space="preserve">
+    <value>የማስፈጸሚያ ዓይነት</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Against" xml:space="preserve">
+    <value>በመቃወም</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority" xml:space="preserve">
+    <value>የጉዳይ ቅድሚያ</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority_High" xml:space="preserve">
+    <value>በጣም</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority_Low" xml:space="preserve">
+    <value>ዝቅተኛ</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Case_Priority_Medium" xml:space="preserve">
+    <value>መከከለኛ </value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_InFavourOf" xml:space="preserve">
+    <value>በ ሞገስ</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Jointly_Against" xml:space="preserve">
+    <value>በጋራ መቃወም</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Jointly_Infavour" xml:space="preserve">
+    <value>በጋራ በመደገፍ</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_None_Excution" xml:space="preserve">
+    <value>ምንም ማስፈጸሚያ የለም</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_WaitingInFavour" xml:space="preserve">
+    <value>በመጠበቅ ላይ (በአመቺነት)</value>
+  </data>
+  <data name="legal_Case_Enum_Executions_Type_Waiting_Against" xml:space="preserve">
+    <value>በመጠባበቅ ላይ</value>
+  </data>
+  <data name="Legal_Case_File_Number" xml:space="preserve">
+    <value>የመዝገብ ቁጥር</value>
+  </data>
+  <data name="Legal_Case_Hearing_Date" xml:space="preserve">
+    <value>ጉዳዩ የሚታይበት ቀን</value>
+  </data>
+  <data name="Legal_Case_Judgment_Creditor" xml:space="preserve">
+    <value>የአበዳሪው ፍርድ</value>
+  </data>
+  <data name="Legal_Case_Judgment_Debitor" xml:space="preserve">
+    <value>የተበዳሪው ፍርድ</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory" xml:space="preserve">
+    <value>የህግ አማካሪ</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Amount" xml:space="preserve">
+    <value>የህግ አማካሪ የክፍያ መጠን</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Engineering_Decision" xml:space="preserve">
+    <value>የምህንድስና ውሳኔ</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Issue" xml:space="preserve">
+    <value>ወጪ</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Number_Of_Pages" xml:space="preserve">
+    <value>የገጾች ብዛት</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Resopnse" xml:space="preserve">
+    <value>የሕግ አማካሪ ምላሽ</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Transaction_Amount" xml:space="preserve">
+    <value>መጠን</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Type" xml:space="preserve">
+    <value>የምክር ዓይነት</value>
+  </data>
+  <data name="Legal_Case_Legal_Advisory_Type_Requester_Name" xml:space="preserve">
+    <value>የጠያቂ ስም</value>
+  </data>
+  <data name="Legal_Case_Legal_Attorney" xml:space="preserve">
+    <value>የህግ ጠበቃ</value>
+  </data>
+  <data name="Legal_Case_Legal_Draft" xml:space="preserve">
+    <value>የህግ ረቂቅ</value>
+  </data>
+  <data name="Legal_Case_Legal_Opinion" xml:space="preserve">
+    <value>የህግ አስተያየት</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order" xml:space="preserve">
+    <value>የሕግ ሥራ ትዕዛዝ</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_assigned_for" xml:space="preserve">
+    <value>የተመደበው</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_Idea_Of_Experts" xml:space="preserve">
+    <value>በባለሙያዎች የሚሞላ</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_Kind_of_work" xml:space="preserve">
+    <value>የስራው አይነት</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_main_issue" xml:space="preserve">
+    <value>ዋና ጉዳይ</value>
+  </data>
+  <data name="Legal_Case_Legal_Work_Order_Recommendation" xml:space="preserve">
+    <value>ምክረ፟ ሐሳብ </value>
+  </data>
+  <data name="Legal_case_Management" xml:space="preserve">
+    <value>አመራር</value>
+  </data>
+  <data name="Legal_Case_Name" xml:space="preserve">
+    <value>ስም</value>
+  </data>
+  <data name="Legal_Case_Payment_Service_Fee" xml:space="preserve">
+    <value>የአገልግሎት ክፍያ</value>
+  </data>
+  <data name="Legal_Case_Payment_Transaction_Number" xml:space="preserve">
+    <value>የክፍያ ቁጥር</value>
+  </data>
+  <data name="Legal_Case_Plaintiff" xml:space="preserve">
+    <value>ከሳሽ</value>
+  </data>
+  <data name="Legal_case_Proposal" xml:space="preserve">
+    <value>ፕሮፖዛል </value>
+  </data>
+  <data name="Legal_Case_Remark" xml:space="preserve">
+    <value>ረማርክ</value>
+  </data>
+  <data name="Legal_Case_Research" xml:space="preserve">
+    <value>ምርምር</value>
+  </data>
+  <data name="Legal_Case_Serial_Number" xml:space="preserve">
+    <value>ተ .ቁ</value>
+  </data>
+  <data name="Legal_Case_Time_Begin" xml:space="preserve">
+    <value>የሚጀመርበት ሰዓት</value>
+  </data>
+  <data name="Legal_Case_Time_End" xml:space="preserve">
+    <value>የሚያልቅበት ሰዓት</value>
+  </data>
+  <data name="OfficeLocation" xml:space="preserve">
+    <value>የቢሮ ቦታ</value>
+  </data>
+  <data name="Enum_EmployeeStatus_NOTSELECTED" xml:space="preserve">
+    <value>አልተመረጠም</value>
+  </data>
+  <data name="ActionButton_Action" xml:space="preserve">
+    <value>ድርጊት</value>
+  </data>
+  <data name="ActionButton_Action_Appove" xml:space="preserve">
+    <value>አረጋግጥ</value>
+  </data>
+  <data name="ActionButton_Action_Decide" xml:space="preserve">
+    <value>ተግባር</value>
+  </data>
+  <data name="ActionButton_Delete" xml:space="preserve">
+    <value>ሰርዝ</value>
+  </data>
+  <data name="ActionButton_submit" xml:space="preserve">
+    <value>አስረክብ</value>
   </data>
 </root>

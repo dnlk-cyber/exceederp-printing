@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                    .Name("FiscalYearId")
+                    //.Placeholder("Period")
+                    .OptionLabel("---Select---")
+                    .Filter("contains")
+                    .DataTextField("Name")
+                    .DataValueField("FiscalYearId")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetFiscalYear", "EvaluatorsRequest", new { area = "HRM" }))
+                            .ServerFiltering(false);
+                    })
+)

@@ -117,4 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Parent</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Child</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= RowNumber("table1")</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Parent</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.Child</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

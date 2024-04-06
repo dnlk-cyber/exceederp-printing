@@ -11,10 +11,10 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(180);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameAmharic").Filterable(g=>g.Search(true).Multi(true)).EditorTemplateName("ListOfEmployee").Width(180);
           columns.Bound(c => c.LeaveType).EditorTemplateName("Enum").Width( 120);
           columns.Bound(c => c.Amount).Width( 90);
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLPeriodSelector").Width(80);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Filterable(g => g.Search(true).Multi(true)).EditorTemplateName("GLPeriodSelector").Width(80);
           columns.Bound(c => c.FromAmharic).Width(120);
           columns.Bound(c => c.ToAmharic).Width( 120);
           columns.Bound(c => c.Day).Width(80);
@@ -25,35 +25,35 @@
           {
               //if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
               //{
-               //   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-             // }
-             // if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
-             // {
-             //     command.Destroy().Text(Resources.ActionButton_Cancel);
-             // }
+              //   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              // }
+              // if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+              // {
+              //     command.Destroy().Text(Resources.ActionButton_Cancel);
+              // }
           }).Width(200);
       })
       .ToolBar(toolbar =>
       {
           if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
           {
-            //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           }
       })
                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveTaken").Window(window => { window.Title(Resources.NavigatorLeave_Leave); window.Scrollable(false); }))
           .Scrollable(h => h.Height(500))
-             .Groupable()
+            
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
                       })
-                          //.Events(x => x.Edit("onGridEdit(e)")                      )
+          //.Events(x => x.Edit("onGridEdit(e)")                      )
           .Filterable()
                .Events(x =>
-                           {
-                               x.Edit("GetDate");
-                               x.Save("GetDate");
-                           })
+               {
+                   x.Edit("GetDate");
+                   x.Save("GetDate");
+               })
              .Pageable(pageable => pageable
                                         .Input(true)
                                         .Numeric(false)
@@ -62,15 +62,15 @@
                                         .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
-              .Sort(sort => sort.Add("DateCreated").Descending()) 
+              .Sort(sort => sort.Add("DateCreated").Descending())
                .Events(events =>
-                                        {
+               {
 
-                                            events.Error("error_handler(\"Leavegrid\")");
-                                            events.RequestStart("onRequestStart(\"Leavegrid\")");
-                                            events.RequestEnd("onRequestEnd(\"Leavegrid\")");
-                                        })
-                      
+                   events.Error("error_handler(\"Leavegrid\")");
+                   events.RequestStart("onRequestStart(\"Leavegrid\")");
+                   events.RequestEnd("onRequestEnd(\"Leavegrid\")");
+               })
+
           .Model(model =>
           {
               model.Id(p => p.TakenLeaveId);

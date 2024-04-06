@@ -1,11 +1,20 @@
-﻿using ExceedERP.Core.Domain.Production;
+﻿using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Production;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Helpers.Production;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ExceedERP.Helpers.Production
 {
     public  class ProductionDistributionHelper
     {
-        private readonly ProductionStaticDistributionHelper _staticDistributionHelper = new ProductionStaticDistributionHelper();
+        //private readonly ProductionStaticDistributionHelper _staticDistributionHelper = new ProductionStaticDistributionHelper();
         private readonly ProductionDynamicDistributionHelper _dynamicDistributionHelper = new ProductionDynamicDistributionHelper();
         AccountHelper _accountHelper = new AccountHelper();
         // inventory
@@ -17,7 +26,7 @@ namespace ExceedERP.Helpers.Production
             }
             else
             {
-                _staticDistributionHelper.UpdateRawGoodReceiveDistribution(record);
+                //_staticDistributionHelper.UpdateRawGoodReceiveDistribution(record);
             }
 
         }
@@ -29,7 +38,7 @@ namespace ExceedERP.Helpers.Production
             }
             else
             {
-                _staticDistributionHelper.UpdateFinishedGoodReceiveDistribution(record);
+                //_staticDistributionHelper.UpdateFinishedGoodReceiveDistribution(record);
             }
 
         }
@@ -41,7 +50,7 @@ namespace ExceedERP.Helpers.Production
             }
             else
             {
-                _staticDistributionHelper.UpdateIssueDistribution(record);
+                //_staticDistributionHelper.UpdateIssueDistribution(record);
             }
 
         }

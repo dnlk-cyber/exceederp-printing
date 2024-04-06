@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -7,11 +7,12 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
     // [AuthorizeRoles(HRCon)]
-    public class BusinessUnitController : Controller
+    public class BusinessUnitController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 

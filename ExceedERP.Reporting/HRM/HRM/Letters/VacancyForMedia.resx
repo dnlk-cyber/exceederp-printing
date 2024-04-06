@@ -117,7 +117,71 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="l.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>__________________________________</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Addis Ababa</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>With Regards</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>To Inform፡- </value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>Copy፡-  </value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>=  Fields. Abbreviation</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>=  Fields. Abbreviation</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>The issue: - About asking for a vacancy announcement to be published in the newspaper</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>As we have tried to describe in the title above, our company has sent you a one-page vacancy announcement as an attachment to this letter.</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>=Fields.Date</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>Since we want to issue a publication, we are asking for a normal work cooperation,</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>so please send us the payment
+We humbly state that we will execute on the basis of the credit vendor's receipt.</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="$this.ShowDimensions" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Vacancy Number</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>With Header?</value>
+  </data>
 </root>

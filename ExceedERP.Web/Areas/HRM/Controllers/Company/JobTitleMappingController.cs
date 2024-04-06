@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -31,7 +31,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             PopulateViewData();
             return View();
         }
-
         private void PopulateViewData()
         {
             var jobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
@@ -130,16 +129,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             #endregion
             return true;
         }
-
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult JobTitleMapping_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<JobTitleMapping> jobtitlemapping = db.JobTitleMapping;
+           var jobtitlemapping = db.JobTitleMapping.ToList();
             DataSourceResult result = jobtitlemapping.ToDataSourceResult(request, jobTitleMapping => new
             {
                 JobTitleMappingId = jobTitleMapping.JobTitleMappingId,
                 OrgStructureId = jobTitleMapping.OrgStructureId,
                 LookupId = jobTitleMapping.LookupId,
+                BusinessUnitId = jobTitleMapping.BusinessUnitId,
                 //MainFunction = jobTitleMapping.MainFunction,
                 Quntity = jobTitleMapping.Quntity,
                 Remark = jobTitleMapping.Remark,
@@ -150,6 +149,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 ModifiedBy = jobTitleMapping.ModifiedBy,
                 BranchId = jobTitleMapping.BranchId,
                 WorkUnitId = jobTitleMapping.WorkUnitId,
+                IsActive = jobTitleMapping.IsActive,
                 OrgBranchName = jobTitleMapping.OrgBranchName
             });
 
@@ -170,11 +170,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 }
                 else
                 {
-
                     var entity = new JobTitleMapping
                     {
                         OrgStructureId = jobTitleMapping.OrgStructureId,
                         LookupId = jobTitleMapping.LookupId,
+                        BusinessUnitId = jobTitleMapping.BusinessUnitId,
                         Quntity = jobTitleMapping.Quntity,
                         Remark = jobTitleMapping.Remark,
                         PlanType = jobTitleMapping.PlanType,
@@ -183,6 +183,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         CreatedBy = User.Identity.Name,
                         ModifiedBy = jobTitleMapping.ModifiedBy,
                         BranchId = jobTitleMapping.BranchId,
+                        IsActive = true,
                         WorkUnitId = jobTitleMapping.WorkUnitId,
                         OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     };
@@ -190,6 +191,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     db.JobTitleMapping.Add(entity);
                     db.SaveChanges();
                     jobTitleMapping.JobTitleMappingId = entity.JobTitleMappingId;
+
+                    // Get Job Title Main Function Datas from Lookup
+                    var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == entity.LookupId);
+                    if (lookup != null)
+                    {
+                        var mainFunction = new JobTitleMappingMain
+                        {
+                            JobTitleMappingId = entity.JobTitleMappingId,
+                            MainFunction = lookup.MainFunction
+                        };
+
+                        db.JobTitleMappingMian.Add(mainFunction);
+
+                        var experience = new JobTitleMappingDetail
+                        {
+                            JobTitleMappingId = entity.JobTitleMappingId,
+                            RelevantExp = lookup.InformationOne,
+                            Experience = lookup.InformationTwo
+                        };
+
+                        db.JobTitleMappingDetail.Add(experience);
+                        db.SaveChanges();
+                    }
 
                     #region operation log
 
@@ -226,6 +250,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     JobTitleMappingId = jobTitleMapping.JobTitleMappingId,
                     OrgStructureId = jobTitleMapping.OrgStructureId,
                     LookupId = jobTitleMapping.LookupId,
+                    BusinessUnitId = jobTitleMapping.BusinessUnitId,
                     //MainFunction = jobTitleMapping.MainFunction,
                     Quntity = jobTitleMapping.Quntity,
                     Remark = jobTitleMapping.Remark,
@@ -236,6 +261,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     ModifiedBy = User.Identity.Name,
                     BranchId = jobTitleMapping.BranchId,
                     WorkUnitId = jobTitleMapping.WorkUnitId,
+                    IsActive = jobTitleMapping.IsActive,
                     OrgBranchName = jobTitleMapping.OrgBranchName
                 };
 
@@ -283,6 +309,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         JobTitleMappingId = jobTitleMapping.JobTitleMappingId,
                         OrgStructureId = jobTitleMapping.OrgStructureId,
                         LookupId = jobTitleMapping.LookupId,
+                        BusinessUnitId = jobTitleMapping.BusinessUnitId,
                         //MainFunction = jobTitleMapping.MainFunction,
                         Quntity = jobTitleMapping.Quntity,
                         Remark = jobTitleMapping.Remark,
@@ -293,6 +320,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         ModifiedBy = jobTitleMapping.ModifiedBy,
                         BranchId = jobTitleMapping.BranchId,
                         WorkUnitId = jobTitleMapping.WorkUnitId,
+                        IsActive = jobTitleMapping.IsActive,
                         OrgBranchName = jobTitleMapping.OrgBranchName
 
                     };
@@ -355,7 +383,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             // var orgs = db.MainCompanyStructures.Where(x => x.Parent == WorkUnitId).ToList();
             //var selfOrg = db.MainCompanyStructures.Where(x => x.OrgStructureId == WorkUnitId).ToList();
 
-            var both = db.MainCompanyStructures.Where(x => x.OrgStructureId == WorkUnitId || x.Parent == WorkUnitId).ToList();
+            var both = db.MainCompanyStructures.Where(x => x.OrgStructureId == WorkUnitId&&x.IsActive || x.Parent == WorkUnitId).ToList();
             if (both.Any())
             {
                 //selfOrg.AddRange(orgs);
@@ -381,7 +409,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var branchCostCenter = db.BranchCostCenter.ToList();
             foreach (var b in branchCostCenter)
             {
-                var oneWorkUnit = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
+                var oneWorkUnit = db.MainCompanyStructures.Where(x=>x.IsActive).Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
                 if (oneWorkUnit != null)
                 {
                     workUnits.Add(oneWorkUnit);
@@ -391,14 +419,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             return Json(workUnits.Select(e => e.Name).Distinct(), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult CreateJobTitleMapping(int typeId, int branchId)
+        public JsonResult CreateJobTitleMapping(int typeId, int branchId,int businessUnitId)
         {
             var oneBranch = db.JobTitleMappingTemp.Where(x => x.ProjectType == typeId).ToList();
             if (oneBranch.Any())
             {
                 foreach (var o in oneBranch)
                 {
-                    var checkExistance = db.JobTitleMapping.FirstOrDefault(x => x.BranchId == branchId && x.OrgStructureId == o.OrgStructureId && x.LookupId == o.LookupId && x.WorkUnitId == o.WorkUnitId);
+                    var checkExistance = db.JobTitleMapping.FirstOrDefault(x => x.BranchId == branchId&&x.BusinessUnitId ==businessUnitId && x.OrgStructureId == o.OrgStructureId && x.LookupId == o.LookupId && x.WorkUnitId == o.WorkUnitId);
                     if (checkExistance == null)
                     {
                         db = new ExceedDbContext();
@@ -406,6 +434,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         {
                             OrgStructureId = o.OrgStructureId,
                             LookupId = o.LookupId,
+                            BusinessUnitId = businessUnitId,
                             Quntity = o.Quntity,
                             Remark = o.Remark,
                             PlanType = o.PlanType,
@@ -485,7 +514,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Message = "Manpower Planning successfully generated",
                     Status = "OK"
                 };
-                return Json(formatedData,JsonRequestBehavior.AllowGet);
+                return Json(formatedData, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -496,7 +525,91 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 };
                 return Json(formatedData, JsonRequestBehavior.AllowGet);
             }
-           
+
+        }
+        public ActionResult EnableOrDisable(int id)
+        {
+            var jobTitle = db.JobTitleMapping.Find(id);
+
+            if (jobTitle != null && jobTitle.IsActive)
+            {
+
+                jobTitle.IsActive = false;
+
+                db.JobTitleMapping.Attach(jobTitle);
+                db.Entry(jobTitle).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+
+                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                if(empId != 0)
+                {
+                    var employee = db.Person_Employee.Find(empId);
+                    if(employee != null)
+                    {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Company Structure ", "Success", User.Identity.Name, employee.FullNameaEnglish + " Add new comopany Sturucture " + jobTitle.Lookup.Description + "IsActive" + jobTitle.IsActive, Modules.HRM);
+
+                    }
+                }
+                else
+                {
+                    UserHelper.OperationLog(Request.UserHostAddress, "Company Structure ", "Success", User.Identity.Name, User.Identity.Name + " Add new comopany Sturucture " + jobTitle.Lookup.Description + "IsActive" + jobTitle.IsActive, Modules.HRM);
+
+                }
+
+
+                #endregion
+                var formattedData = new
+                {
+                    Message = "You successfully Disabled this Job Title.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (jobTitle != null && jobTitle.IsActive==false)
+            {
+
+                jobTitle.IsActive = true;
+
+                db.JobTitleMapping.Attach(jobTitle);
+                db.Entry(jobTitle).State = EntityState.Modified;
+                db.SaveChanges();
+                #region operation log
+
+                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+                if (empId != 0)
+                {
+                    var employee = db.Person_Employee.Find(empId);
+                    if (employee != null)
+                    {
+                        UserHelper.OperationLog(Request.UserHostAddress, "Job Title ", "Success", User.Identity.Name, employee.FullNameaEnglish + " Add new Job Title " + jobTitle.Lookup.Description + "IsActive" + jobTitle.IsActive, Modules.HRM);
+
+                    }
+                }
+                else
+                {
+                    UserHelper.OperationLog(Request.UserHostAddress, "JobTitle ", "Success", User.Identity.Name, User.Identity.Name + " Add new Job title " + jobTitle.Lookup.Description + "IsActive" + jobTitle.IsActive, Modules.HRM);
+
+                }
+
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "You successfully enabled this JobTitle.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData1 = new
+            {
+                Message = "this job title Not Found .",
+                Status = "FAIL"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
         }
         protected override void Dispose(bool disposing)
         {

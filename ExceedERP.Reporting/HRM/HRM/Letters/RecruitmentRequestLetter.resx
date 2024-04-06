@@ -117,4 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>____________________</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>Recruitment Request Letter</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>ቁጥር：</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>With Header?</value>
+  </data>
+  <data name="reportParameter5.Text" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="htmlTextBox5.Value" xml:space="preserve">
+    <value>&lt;strong&gt;Approver&lt;/strong&gt; &amp;nbsp;&lt;span style="text-decoration: underline"&gt;{=Fields.Approver}&lt;/span&gt;</value>
+  </data>
+  <data name="htmlTextBox4.Value" xml:space="preserve">
+    <value>&lt;strong&gt;Department Approver&lt;/strong&gt; &amp;nbsp;&lt;span style="text-decoration: underline"&gt;{=Fields.DepApprover}&lt;/span&gt;</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>=Fields.Date</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>= Fields.Pobox</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <data name="htmlTextBox1.Value" xml:space="preserve">
+    <value>&lt;strong&gt;Branch&lt;/strong&gt; &amp;nbsp;&lt;span style="text-decoration: underline"&gt;{=Fields.Branch}&lt;/span&gt;</value>
+  </data>
+  <data name="htmlTextBox3.Value" xml:space="preserve">
+    <value>&lt;strong&gt;Jobtitle&lt;/strong&gt; &amp;nbsp;&lt;span style="text-decoration: underline"&gt;{=Fields.JobTitle}&lt;/span&gt;</value>
+  </data>
+  <data name="htmlTextBox2.Value" xml:space="preserve">
+    <value>&lt;strong&gt;Department&lt;/strong&gt; &amp;nbsp;&lt;span style="text-decoration: underline"&gt;{=Fields.Department}&lt;/span&gt;</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>ቀን፡</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Email</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>ሰራተኛ</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>እንዲያውቁት</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Fax</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Tel</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>ግልባጭ</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>om</value>
+  </metadata>
 </root>

@@ -9,6 +9,9 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Report
 {
@@ -60,7 +63,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
             }
             return View();
         }
+        public ActionResult LeavePlan()
+        {
+            return View();
+        }
+        public ActionResult LeaveRequestStatusReport()
+        {
+            return View();
+        }
 
+        public ActionResult LeavePayableReport(int id)
+        {
+            ViewBag.id = id;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Leave_Payable_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -11,6 +11,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -38,7 +39,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             ViewData["Jobtitle"] = jobtitle;
 
         }
-        public void SendForApproval(int id)
+        public JsonResult SendForApproval(int id)
         {
             var accident = db.EmployeeAccidents.FirstOrDefault(x => x.EmployeeAccidentId == id);
             if (accident != null)
@@ -49,6 +50,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 db.Entry(accident).State = EntityState.Modified;
                 db.SaveChanges();
             }
+         return Json( RedirectToActionPermanent("index"),JsonRequestBehavior.AllowGet);
 
         }
         public decimal GetSalary(int id)
@@ -100,7 +102,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         [AcceptVerbs(HttpVerbs.Post)]
    
-        public ActionResult EmployeeAccidentRequest_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.HealthAndInsurance.EmployeeAccident accident)
+        public ActionResult EmployeeAccidentRequest_Create([DataSourceRequest]DataSourceRequest request, EmployeeAccident accident)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -112,7 +114,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 }
 
-                var entity = new Core.Domain.HRM.HealthAndInsurance.EmployeeAccident
+                var entity = new EmployeeAccident
                 {
                     EmployeeAccidentId = accident.EmployeeAccidentId,
                     EmployeeId = accident.EmployeeId,
@@ -146,12 +148,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         [AcceptVerbs(HttpVerbs.Post)]
         
-        public ActionResult EmployeeAccidentRequest_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.HealthAndInsurance.EmployeeAccident accident)
+        public ActionResult EmployeeAccidentRequest_Update([DataSourceRequest]DataSourceRequest request, EmployeeAccident accident)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new Core.Domain.HRM.HealthAndInsurance.EmployeeAccident
+                var entity = new EmployeeAccident
                 {
                     EmployeeAccidentId = accident.EmployeeAccidentId,
                     EmployeeId = accident.EmployeeId,
@@ -188,12 +190,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         [AcceptVerbs(HttpVerbs.Post)]
       
-        public ActionResult EmployeeAccidentRequest_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.HealthAndInsurance.EmployeeAccident accident)
+        public ActionResult EmployeeAccidentRequest_Destroy([DataSourceRequest]DataSourceRequest request, EmployeeAccident accident)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new Core.Domain.HRM.HealthAndInsurance.EmployeeAccident
+                var entity = new EmployeeAccident
                 {
                     EmployeeAccidentId = accident.EmployeeAccidentId,
                     EmployeeId = accident.EmployeeId,

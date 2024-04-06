@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
@@ -13,9 +9,9 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
         public int VacancyForMediaId { get; set; }
         [Display(Name = "HR_RecruitmentManagment_Vacancy_VaccancyCode", ResourceType = typeof(Localization.Resources))]
         public int VacancyId { get; set; }
-       // [Display(Name = "HR_HRMPlan_RecruitmentPlan_OrgStructureId", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "Department", ResourceType = typeof(Localization.Resources))]
         public string Department { get; set; }
-        [Display(Name = "HR_RecruitmentManagment_Vacancy_VaccancyCode", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "HR_RecruitmentManagment_ApplicantRegistration_VaccancyCode", ResourceType = typeof(Localization.Resources))]
         public string VacancyCode { get; set; }
         [Display(Name = "HR_RecruitmentManagment_Vacancy_MediaVacancyCode", ResourceType = typeof(Localization.Resources))]
         public string MediaVacancyCode { get; set; }

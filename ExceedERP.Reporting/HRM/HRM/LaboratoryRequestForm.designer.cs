@@ -473,7 +473,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             // LaboratoryRequestFormODS
             // 
             this.LaboratoryRequestFormODS.DataMember = "GetComplain";
-            this.LaboratoryRequestFormODS.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LaboratoryRequestFormObjectDataSource);
+            this.LaboratoryRequestFormODS.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LaboratoryFormRequestHeadersObjectDataSource);
             this.LaboratoryRequestFormODS.Name = "LaboratoryRequestFormODS";
             this.LaboratoryRequestFormODS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});

@@ -12,8 +12,8 @@ using System.Web.Mvc;
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
- using ExceedERP.Core.Domain.HRM.Company;
- using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.HRM.Company;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
  using ExceedERP.Web.Helpers;
@@ -34,6 +34,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public void PopulateViewData()
         {
             ViewData["Department"] = db.MainCompanyStructures.ToList();
+            ViewData["clearanceType"] = db.Lookups.Where(x=>x.LookupType ==LookUpTypes.CLEARANCE_TYPE).ToList();
         }
         public JsonResult GetDepartments()
         {
@@ -63,7 +64,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             //    }
             //}
             ViewData["Departments"] = allDepartment;
-            return Json(allDepartment.Select(p => new
+            return Json(db.MainCompanyStructures.Select(p => new
             {
                 OrgStructureId = p.OrgStructureId,
                 Name = p.Name
@@ -77,8 +78,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             IQueryable<ClearanceProvider> clearanceprovideres = db.ClearanceProvideres;
             DataSourceResult result = clearanceprovideres.ToDataSourceResult(request, clearanceProvider => new {
                 ClearanceProviderId = clearanceProvider.ClearanceProviderId,
-                WorkUnit = clearanceProvider.WorkUnit,
+                OrgStructureId = clearanceProvider.OrgStructureId,
                 Name = clearanceProvider.Name,
+                LookupId = clearanceProvider.LookupId,
                 Remark = clearanceProvider.Remark,
                 DateCreated = clearanceProvider.DateCreated,
                 LastModified = clearanceProvider.LastModified,
@@ -93,19 +95,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public ActionResult ClearanceProvideres_Create([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
             ModelState.Clear();
+            var exists = db.ClearanceProvideres.Where(x =>x.OrgStructureId ==clearanceProvider.OrgStructureId&&x.LookupId==clearanceProvider.LookupId).Any();
+            if (exists)
+            {
+                ModelState.AddModelError("exists", "Duplication is not allowed!!");
+            }
             if (ModelState.IsValid)
             {
                 //not working
 
                 //var salsries = db.ClearanceProvideres.Where(x => x.Name.ToUpper(XAPI.Common.exceedculture) == clearanceProvider.Name.ToUpper(XAPI.Common.exceedculture) || x.WorkUnit.ToUpper(XAPI.Common.exceedculture) == clearanceProvider.WorkUnit.ToUpper(XAPI.Common.exceedculture)).FirstOrDefault();
-                //if (salsries != null)
-                //{
-                //    ModelState.AddModelError("", "Work unit or name must be unique!!");
-                //}
+               
                 var entity = new ClearanceProvider
                 {
-                    WorkUnit = clearanceProvider.WorkUnit,
+                    OrgStructureId = clearanceProvider.OrgStructureId,
                     Name = clearanceProvider.Name,
+                    LookupId = clearanceProvider.LookupId,
                     Remark = clearanceProvider.Remark,
                     DateCreated = DateTime.Now,
                     LastModified = clearanceProvider.LastModified,
@@ -121,7 +126,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Clearance Provider ", "Success", User.Identity.Name, User.Identity.Name + " Create Clearance Provider Named " + entity.WorkUnit,Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Clearance Provider ", "Success", User.Identity.Name, User.Identity.Name + " Create Clearance Provider Named " + entity.Name,Modules.HRM);
                 
                 
                 #endregion
@@ -135,13 +140,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public ActionResult ClearanceProvideres_Update([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
             ModelState.Clear();
+            var exists = db.ClearanceProvideres.Where(x => x.OrgStructureId == clearanceProvider.OrgStructureId && x.LookupId ==clearanceProvider.LookupId && x.ClearanceProviderId != clearanceProvider.ClearanceProviderId).Any();
+            if (exists)
+            {
+                ModelState.AddModelError("exists", "The same Record exists!!");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new ClearanceProvider
                 {
                     ClearanceProviderId = clearanceProvider.ClearanceProviderId,
-                    WorkUnit = clearanceProvider.WorkUnit,
+                    OrgStructureId = clearanceProvider.OrgStructureId,
                     Name = clearanceProvider.Name,
+                    LookupId = clearanceProvider.LookupId,
                     Remark = clearanceProvider.Remark,
                     DateCreated = clearanceProvider.DateCreated,
                     LastModified = DateTime .Now ,
@@ -157,7 +168,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                
-                    UserHelper.OperationLog(Request.UserHostAddress, "Clearance Provider ", "Success", User.Identity.Name, User.Identity.Name + " Update Clearance Provider Info of " + entity.WorkUnit,Modules.HRM);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Clearance Provider ", "Success", User.Identity.Name, User.Identity.Name + " Update Clearance Provider Info of " + entity.Name,Modules.HRM);
                 
 
                 #endregion
@@ -176,8 +187,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 var entity = new ClearanceProvider
                 {
                     ClearanceProviderId = clearanceProvider.ClearanceProviderId,
-                    WorkUnit = clearanceProvider.WorkUnit,
+                    OrgStructureId = clearanceProvider.OrgStructureId,
                     Name = clearanceProvider.Name,
+                    LookupId = clearanceProvider.LookupId,
                     Remark = clearanceProvider.Remark,
                     DateCreated = clearanceProvider.DateCreated,
                     LastModified = clearanceProvider.LastModified,

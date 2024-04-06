@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
@@ -166,110 +166,110 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             GetNationality();
             var skillTypes = db.Lookups.Where(l => l.LookupType == LookUpTypes.SKILL_TYPE);
             ViewData["SkillTypes"] = skillTypes;
-            //CheckEmployeeRetirment();
+           // CheckEmployeeRetirment();
         }
-        public void CheckEmployeeRetirment()
-        {
-            int maxAge;
-            var employees = db.Person_Employee.Where(x=>!x.IsReHired);
-            db = new ExceedDbContext();
-            var setting = db.Configurations.Where(x => x.Reference == "PENSION" && x.Attribute == "RETIREMENT_AGE").FirstOrDefault();
-            if (setting != null)
-            {
-                maxAge = Convert.ToInt32(setting.CurrentValue);
-                foreach (var e in employees)
-                {
-                    int age = DateTime.Now.Year - e.DateOfBirth.Year;
-                    if (age >= maxAge)
-                    {
-                        if (e.IsActive)
-                        {
-                            db = new ExceedDbContext();
-                            var entity = new Person_Employee
-                            {
-                                EmployeeId = e.EmployeeId,
-                                EmployeeCode = e.EmployeeCode,
-                                MothersFullName = e.MothersFullName,
-                                BirthPlace = e.BirthPlace,
-                                Nation = e.Nation,
-                                Region = e.Region,
-                                Religion = e.Religion,
-                                MartialStatus = e.MartialStatus,
-                                Status = e.Status,
-                                HiredDate = e.HiredDate,
-                                FirstName = e.FirstName,
-                                MiddleName = e.MiddleName,
-                                LastName = e.LastName,
-                                Nationality = e.Nationality,
-                                DateOfBirth = e.DateOfBirth,
-                                Title = e.Title,
-                                Gender = e.Gender,
-                                CategoryID = e.CategoryID,
-                                IsActive = false,
-                                Remark = "Retirement ",
-                                DateCreated = e.DateCreated,
-                                LastModified = DateTime.Now,
-                                CreatedBy = e.CreatedBy,
-                                ModifiedBy = User.Identity.Name,
-                                FirstNameEnglish = e.FirstNameEnglish,
-                                MiddleNameEnglish = e.MiddleNameEnglish,
-                                LastNameEnglish = e.LastNameEnglish,
-                                DateOfBirthAm = e.DateOfBirthAm,
-                                HiredDateAmharic = e.HiredDateAmharic,
-                            };
-                            db = new ExceedDbContext();
-                            db.Person_Employee.Attach(entity);
-                            db.Entry(entity).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                    }
-                    else
-                    {
-                        if (e.IsActive == false && e.Remark == "Retirement")
-                        {
-                            db = new ExceedDbContext();
-                            var entity = new Person_Employee
-                            {
-                                EmployeeId = e.EmployeeId,
-                                EmployeeCode = e.EmployeeCode,
-                                MothersFullName = e.MothersFullName,
-                                BirthPlace = e.BirthPlace,
-                                Nation = e.Nation,
-                                Region = e.Region,
-                                Religion = e.Religion,
-                                MartialStatus = e.MartialStatus,
-                                Status = e.Status,
-                                HiredDate = e.HiredDate,
-                                FirstName = e.FirstName,
-                                MiddleName = e.MiddleName,
-                                LastName = e.LastName,
-                                Nationality = e.Nationality,
-                                DateOfBirth = e.DateOfBirth,
-                                Title = e.Title,
-                                Gender = e.Gender,
-                                CategoryID = e.CategoryID,
-                                IsActive = true,
-                                Remark = "Retirement",
-                                DateCreated = e.DateCreated,
-                                LastModified = DateTime.Now,
-                                CreatedBy = e.CreatedBy,
-                                ModifiedBy = User.Identity.Name,
-                                FirstNameEnglish = e.FirstNameEnglish,
-                                MiddleNameEnglish = e.MiddleNameEnglish,
-                                LastNameEnglish = e.LastNameEnglish,
-                                DateOfBirthAm = e.DateOfBirthAm,
-                                HiredDateAmharic = e.HiredDateAmharic,
-                            };
-                            db = new ExceedDbContext();
-                            db.Person_Employee.Attach(entity);
-                            db.Entry(entity).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-                    }
-                }
-            }
+        //public void CheckEmployeeRetirment()
+        //{
+        //    int maxAge;
+        //    var employees = db.Person_Employee.Where(x=>!x.IsReHired && x.Status != EmployeeStatus.CONTRACT);
+        //    db = new ExceedDbContext();
+        //    var setting = db.Configurations.Where(x => x.Reference == "PENSION" && x.Attribute == "RETIREMENT_AGE").FirstOrDefault();
+        //    if (setting != null)
+        //    {
+        //        maxAge = Convert.ToInt32(setting.CurrentValue);
+        //        foreach (var e in employees)
+        //        {
+        //            int age = DateTime.Now.Year - e.DateOfBirth.Year;
+        //            if (age >= maxAge)
+        //            {
+        //                if (e.IsActive)
+        //                {
+        //                    db = new ExceedDbContext();
+        //                    var entity = new Person_Employee
+        //                    {
+        //                        EmployeeId = e.EmployeeId,
+        //                        EmployeeCode = e.EmployeeCode,
+        //                        MothersFullName = e.MothersFullName,
+        //                        BirthPlace = e.BirthPlace,
+        //                        Nation = e.Nation,
+        //                        Region = e.Region,
+        //                        Religion = e.Religion,
+        //                        MartialStatus = e.MartialStatus,
+        //                        Status = e.Status,
+        //                        HiredDate = e.HiredDate,
+        //                        FirstName = e.FirstName,
+        //                        MiddleName = e.MiddleName,
+        //                        LastName = e.LastName,
+        //                        Nationality = e.Nationality,
+        //                        DateOfBirth = e.DateOfBirth,
+        //                        Title = e.Title,
+        //                        Gender = e.Gender,
+        //                        CategoryID = e.CategoryID,
+        //                        IsActive = false,
+        //                        Remark = "Retirement ",
+        //                        DateCreated = e.DateCreated,
+        //                        LastModified = DateTime.Now,
+        //                        CreatedBy = e.CreatedBy,
+        //                        ModifiedBy = User.Identity.Name,
+        //                        FirstNameEnglish = e.FirstNameEnglish,
+        //                        MiddleNameEnglish = e.MiddleNameEnglish,
+        //                        LastNameEnglish = e.LastNameEnglish,
+        //                        DateOfBirthAm = e.DateOfBirthAm,
+        //                        HiredDateAmharic = e.HiredDateAmharic,
+        //                    };
+        //                    db = new ExceedDbContext();
+        //                    db.Person_Employee.Attach(entity);
+        //                    db.Entry(entity).State = EntityState.Modified;
+        //                    db.SaveChanges();
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (e.IsActive == false && e.Remark == "Retirement")
+        //                {
+        //                    db = new ExceedDbContext();
+        //                    var entity = new Person_Employee
+        //                    {
+        //                        EmployeeId = e.EmployeeId,
+        //                        EmployeeCode = e.EmployeeCode,
+        //                        MothersFullName = e.MothersFullName,
+        //                        BirthPlace = e.BirthPlace,
+        //                        Nation = e.Nation,
+        //                        Region = e.Region,
+        //                        Religion = e.Religion,
+        //                        MartialStatus = e.MartialStatus,
+        //                        Status = e.Status,
+        //                        HiredDate = e.HiredDate,
+        //                        FirstName = e.FirstName,
+        //                        MiddleName = e.MiddleName,
+        //                        LastName = e.LastName,
+        //                        Nationality = e.Nationality,
+        //                        DateOfBirth = e.DateOfBirth,
+        //                        Title = e.Title,
+        //                        Gender = e.Gender,
+        //                        CategoryID = e.CategoryID,
+        //                        IsActive = true,
+        //                        Remark = "Retirement",
+        //                        DateCreated = e.DateCreated,
+        //                        LastModified = DateTime.Now,
+        //                        CreatedBy = e.CreatedBy,
+        //                        ModifiedBy = User.Identity.Name,
+        //                        FirstNameEnglish = e.FirstNameEnglish,
+        //                        MiddleNameEnglish = e.MiddleNameEnglish,
+        //                        LastNameEnglish = e.LastNameEnglish,
+        //                        DateOfBirthAm = e.DateOfBirthAm,
+        //                        HiredDateAmharic = e.HiredDateAmharic,
+        //                    };
+        //                    db = new ExceedDbContext();
+        //                    db.Person_Employee.Attach(entity);
+        //                    db.Entry(entity).State = EntityState.Modified;
+        //                    db.SaveChanges();
+        //                }
+        //            }
+        //        }
+        //    }
 
-        }
+        //}
         private IQueryable<Person_Employee> ModifyFilters(IEnumerable<IFilterDescriptor> filters, IQueryable<Person_Employee> person_employee)
         {
             IQueryable<Person_Employee> person_employees = new Person_Employee[] { }.AsQueryable(); ;

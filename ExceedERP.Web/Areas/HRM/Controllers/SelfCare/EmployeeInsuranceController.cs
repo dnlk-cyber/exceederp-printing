@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -19,7 +19,7 @@ using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
-    public class EmployeeInsuranceController : Controller
+    public class EmployeeInsuranceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
         public static DateTime From { get; set; }
@@ -35,8 +35,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public void PopulateViewDate()
         {
-            var insurance = db.InsuranceCategory.ToList();
-            ViewData["InsuranceCatagory"] = insurance;
+            var insurance = db.InsuranceCategory.Select(x=>new { x.InsuranceCategoryId,x.Name}).ToList();
+            ViewData["insuranceCatagory"] = insurance;
         }
         public void SetDate(string name, string value)
         {
@@ -105,10 +105,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             ViewData["insuraceGroup"] = insurace;
             return Json(insurace.Select(s => new { InsuranceGroupId = s.InsuranceGroupId, GroupName = s.GroupName }), JsonRequestBehavior.AllowGet);
         }
+        private List<(decimal, int)> GetNumberAndSalary(int categoryId)
+        {
+            List<(decimal, int)> listValues = new List<(decimal, int)>();
+            decimal salaryAmount = 0;
+            int number = 0;
+            var times = 1;
+            var insuranceGroups = db.InsuranceGroup.Where(x => x.InsuranceCategoryId == categoryId).ToList();
+
+            foreach (var insuranceGroup in insuranceGroups)
+            {
+                var placements = db.Placements.Where(x => x.LookupId == insuranceGroup.LookupId && x.isCurrent).ToList();
+                number += placements.Count;
+                times = placements.Count();
+
+                var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == insuranceGroup.LookupId);
+
+                if (lookup != null)
+                {
+                    var salary = db.SalariesJobTitles.FirstOrDefault(x => x.LookupId == lookup.LookupId);
+
+                    if (salary != null)
+                    {
+                        salaryAmount += salary.Salary * times;
+                    }
+                }
+            }
+
+            listValues.Add((salaryAmount, number));
+            return listValues;
+        }
         [AuthorizeRoles(HrmConstants.HRInsuranceAdmin, HrmConstants.HRInsuranceUser)]
         public ActionResult Insurance_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Core.Domain.HRM.HealthAndInsurance.Insurance> insurances = db.Insurance;
+            IQueryable<Core.Domain.Insurance.Insurance> insurances = db.Insurance;
             DataSourceResult result = insurances.ToDataSourceResult(request, insurance => new
             {
                 InsuranceId = insurance.InsuranceId,
@@ -134,12 +164,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         [AcceptVerbs(HttpVerbs.Post)]
         [AuthorizeRoles(HrmConstants.HRInsuranceUser)]
-        public ActionResult Insurance_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.HealthAndInsurance.Insurance insurance)
+        public ActionResult Insurance_Create([DataSourceRequest]DataSourceRequest request, Core.Domain.Insurance.Insurance insurance)
         {
             ModelState.Clear();
+            Salary = 0;
+            number = 0;
+            List<(decimal, int)> listValues = GetNumberAndSalary(insurance.InsuranceCategoryId);
+            if (listValues.Count > 0)
+            {
+                ( Salary, number) = listValues[0];
+
+                
+            }
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null || ToAmharic == null)
+                if (insurance.FromAmharic == null || insurance.ToAmharic == null)
                 {
                     ModelState.AddModelError("", "Date values are mandatory!!");
                 }
@@ -157,7 +196,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
 
 
-                    var entity = new Core.Domain.HRM.HealthAndInsurance.Insurance
+                    var entity = new Core.Domain.Insurance.Insurance
                     {
                         //InsuranceGroupId = insurance.InsuranceGroupId,
                         InsuranceCategoryId = insurance.InsuranceCategoryId,
@@ -192,9 +231,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         [AcceptVerbs(HttpVerbs.Post)]
         [AuthorizeRoles(HrmConstants.HRInsuranceUser)]
-        public ActionResult Insurance_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.HealthAndInsurance.Insurance insurance)
+        public ActionResult Insurance_Update([DataSourceRequest]DataSourceRequest request, Core.Domain.Insurance.Insurance insurance)
         {
             ModelState.Clear();
+            Salary = 0;
+            number = 0;
+            List<(decimal, int)> listValues = GetNumberAndSalary(insurance.InsuranceCategoryId);
+            if (listValues.Count > 0)
+            {
+                (Salary, number) = listValues[0];
+
+
+            }
             if (ModelState.IsValid)
             {
                 if (FromAmharic == null)
@@ -209,7 +257,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     var splitDate = ToAmharic.Split('/');
                     To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
                 }
-                var entity = new Core.Domain.HRM.HealthAndInsurance.Insurance
+                var entity = new Core.Domain.Insurance.Insurance
                 {
                     InsuranceId = insurance.InsuranceId,
                     //InsuranceGroupId = insurance.InsuranceGroupId,
@@ -245,12 +293,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
         [AcceptVerbs(HttpVerbs.Post)]
         [AuthorizeRoles(HrmConstants.HRInsuranceAdmin)]
-        public ActionResult Insurance_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.HRM.HealthAndInsurance.Insurance insurance)
+        public ActionResult Insurance_Destroy([DataSourceRequest]DataSourceRequest request, Core.Domain.Insurance.Insurance insurance)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new Core.Domain.HRM.HealthAndInsurance.Insurance
+                var entity = new Core.Domain.Insurance.Insurance
                 {
                     InsuranceId = insurance.InsuranceId,
                     //InsuranceGroupId = insurance.InsuranceGroupId,
@@ -278,6 +326,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(new[] { insurance }.ToDataSourceResult(request, ModelState));
         }
+        
         static decimal ClassofBussiness
         {
             get;

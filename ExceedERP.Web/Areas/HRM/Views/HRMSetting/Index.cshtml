@@ -13,11 +13,11 @@
                       effect.Fade(FadeDirection.In)))
               .Items(tabstrip =>
               {
-                  tabstrip.Add().Text("HRM Setting")
+                  tabstrip.Add().Text(Resources.NavigatorHRMSetting)
                       .Selected(true)
                       .Content(@<text>
 
-                        <legend>HRM Setting</legend>
+                        <legend>@Resources.NavigatorHRMSetting</legend>
                         @(Html.Kendo().Grid<Configuration>()
                                           .Name("ConfigurationGrid")
                                       .Columns(columns =>
@@ -73,10 +73,10 @@
 
                     </text>);
 
-                        tabstrip.Add().Text("Employee Code Setting")
+                        tabstrip.Add().Text(Resources.NavigatorEmployeeCodeSetting)
                             .Content(@<text>
 
-                                <legend>Employee Code Setting</legend>
+                                <legend>@Resources.NavigatorEmployeeCodeSetting</legend>
                                 @(Html.Kendo().Grid<EmployeeCodeSetting>()
                                                   .Name("EmployeeCodeSettinggrid")
                                               .Columns(columns =>
@@ -137,7 +137,7 @@
                                 tabstrip.Add().Text("Employee Code Sequence")
                                     .Content(@<text>
                                        
-<legend>Employee Code Setting</legend>
+<legend>@Resources.NavigatorEmployeeCodeSequence</legend>
 @(Html.Kendo().Grid<EmployeeCodeSequenceSetting>()
                   .Name("EmployeeCodeSequenceSettingggrid")
               .Columns(columns =>

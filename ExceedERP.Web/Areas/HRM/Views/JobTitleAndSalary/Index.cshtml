@@ -19,9 +19,9 @@
           .Items(tabstrip =>
           {
               tabstrip.Add()
-                      .Text("Job Title")
+                      .Text(Resources.HR_RecruitmentManagment_ApplicantRegistration_LookupId)
                       .Selected(true)
-                      .Content(@<text> Maintain Job Title
+                      .Content(@<text>@Resources.Navigator_Company_MaintainJobTitle
                         @(Html.Kendo().Grid<Lookup>()
                             .Name("Lookupgrid")
                             .Columns(columns =>
@@ -38,7 +38,7 @@
                             })
                                .ToolBar(toolbar =>
                                {
-                                   toolbar.Create();
+                                   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
                                })
                                      .Excel(excel => excel
                                      .FileName(Resources.Navigator_Company_MaintainJobTitle + ".xlsx")
@@ -86,8 +86,8 @@
                     </text>);
 
 tabstrip.Add()
-.Text("Grade")
-.Content(@<text>Grade
+.Text(Resources.HR_RecruitmentManagment_ApplicantResult_Rank)
+.Content(@<text>@Resources.HR_RecruitmentManagment_ApplicantResult_Rank
                         @(Html.Kendo().Grid<Rank>()
                         .Name("Rankgrid")
                         .Columns(columns =>
@@ -110,7 +110,7 @@ tabstrip.Add()
                         })
                                           .ToolBar(toolbar =>
                                           {
-                                              toolbar.Create();
+                                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
                                           })
                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
                                     .Selectable(selectable =>
@@ -151,8 +151,8 @@ tabstrip.Add()
 
 
 tabstrip.Add()
-.Text("Step")
-.Content(@<text>Step
+.Text(Resources.HR_EmployeeDetail_Placement_Step)
+.Content(@<text>@Resources.HR_EmployeeDetail_Placement_Step
     @(Html.Kendo().Grid<Step>()
         .Name("Stepgrid")
         .Columns(columns =>
@@ -174,7 +174,7 @@ tabstrip.Add()
         })
              .ToolBar(toolbar =>
              {
-                 toolbar.Create();
+                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
              })
                .Editable(editable => editable.Mode(GridEditMode.InLine))
                   .Selectable(selectable =>
@@ -212,10 +212,10 @@ tabstrip.Add()
     )
 </text>);
 tabstrip.Add()
-.Text("Salary Job Title")
+.Text(Resources.HR_SalaryStructure_SalaryJobTitle_Salary)
 .Content(@<text>
 <div class="form-group">
-        <label>Is Job Title Included In Salary ? &nbsp;&nbsp;</label>
+        <label>@Resources.Is_Job_Title_Included_In_Salary &nbsp;&nbsp;</label>
         <input type="checkbox" name="IsJobTitleIncludedInSalary" id="IsJobTitleIncludedInSalary" class="checkboxsize" style="display:inline;" onchange="ChangeSalarySetting()"/>
     <br />
 </div>

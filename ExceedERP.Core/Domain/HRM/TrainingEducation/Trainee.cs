@@ -18,6 +18,7 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public bool IsCompleteTraining { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "EducationLevel", ResourceType = typeof(Localization.Resources))]
         public int? EducationLevel { get; set; }
 
     }

@@ -175,12 +175,12 @@
     <Compile Include="Fleet\FleetMaintenaceHelper.cs" />
     <Compile Include="Fleet\FleetReportHelper.cs" />
     <Compile Include="HR\HRHelper.cs" />
+    <Compile Include="HR\HRMIsoDocumentHelper.cs" />
     <Compile Include="Inventory\AccountCustomExtension.cs" />
     <Compile Include="Inventory\InventoryBalanceHelper.cs" />
     <Compile Include="Inventory\InventoryConfigurationHelper.cs" />
     <Compile Include="Inventory\InventoryValidationHelper.cs" />
     <Compile Include="Inventory\PropertyCountHelper.cs" />
-    <Compile Include="Inventory\StaticDistributionHelper.cs" />
     <Compile Include="Inventory\DynamicDistributionHelper.cs" />
     <Compile Include="Inventory\DistributionHelper.cs" />
     <Compile Include="Inventory\InventoryHelper.cs" />
@@ -205,7 +205,6 @@
     <Compile Include="Production\ProductionOrderHelper.cs" />
     <Compile Include="Production\ProductionReportsHelper.cs" />
     <Compile Include="Production\ProductionSettingHelper.cs" />
-    <Compile Include="Production\ProductionStaticDistributionHelper.cs" />
     <Compile Include="Production\ProductionStoreHelper.cs" />
     <Compile Include="Production\StoreHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

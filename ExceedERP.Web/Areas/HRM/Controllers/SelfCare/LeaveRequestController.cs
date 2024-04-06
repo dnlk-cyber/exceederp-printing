@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
@@ -22,6 +22,7 @@ using ExceedERP.Core.Domain.Common.HRM;
  using ExceedERP.Web.Hubs;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.Global;
+using System.IO;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -61,7 +62,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             ViewData["EmployeeName"] = employeName;
 
             ViewData["UserName"] = dbApplication.Users.ToList();
-            ViewData["Department"] = db.MainCompanyStructures.ToList();
+            ViewData["Department"] = db.MainCompanyStructures.Where(x=>x.IsActive).ToList();
+            var branches = db.Branch;
+            ViewData["branches"] = branches;
+            var businessUnits = db.BusinessUnits;
+            ViewData["businessUnits"] = businessUnits;
         }
         public void SetDate(string name, string value)
         {
@@ -87,7 +92,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (x == "true")
             {
                   var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                  var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
+                  var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
                
                 IsForOther = true;
                 return list.Count();
@@ -199,6 +204,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return false;
         }
+        public bool ChangeInDepartmentForBackColor(int leaveId)
+        {
+            var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status != RequestStatus.APPROVE && (x.Status == RequestStatus.DEPARTMENT_APPROVAL || x.Status == RequestStatus.PEND || x.Status == RequestStatus.REJECT) && x.ReferenceType == "Leave").FirstOrDefault();
+            if (reques != null)
+            {
+                return true;
+            }
+            return false;
+        }
         public string GetEmployeeCode(int id)
         {
             string code = "";
@@ -211,25 +225,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult LeaveRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-           var  employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
-            employeeids.Remove(employeeid);
-            List<LeaveRequest> leaveRequestLists = new List<LeaveRequest>();
-            List<LeaveRequest> leaverequests = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) && x.IsForOther).OrderBy(x => x.RequestDate).ToList();
-            List<LeaveRequest> leaverequestSelf = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) && !x.IsForOther).OrderBy(x => x.RequestDate).ToList();
-            foreach (var lrs in leaverequestSelf)
-            {
-                var sentRequest = db.RequestesStatus.FirstOrDefault(x => x.RequestId == lrs.LeaveRequestId);
-                if (sentRequest != null)
-                {
-                    leaverequests.Add(lrs);
-                }
-            }
+            var  employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByHead(employeeid);
+            //employeeids.Remove(employeeid);
+            //List<LeaveRequest> leaveRequestLists = new List<LeaveRequest>();
+            List<LeaveRequest> leaverequests = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) /*&& x.IsForOther*/).OrderBy(x => x.RequestDate).ToList();
+           // List<LeaveRequest> leaverequestSelf = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) && !x.IsForOther).OrderBy(x => x.RequestDate).ToList();
+            //foreach (var lrs in leaverequestSelf)
+            //{
+            //    var sentRequest = db.RequestesStatus.FirstOrDefault(x => x.RequestId == lrs.LeaveRequestId);
+            //    if (sentRequest != null)
+            //    {
+            //        leaverequests.Add(lrs);
+            //    }
+            //}
 
             DataSourceResult result = leaverequests.ToDataSourceResult(request, leaveRequest => new
             {
                 LeaveRequestId = leaveRequest.LeaveRequestId,
                 EmployeeId = leaveRequest.EmployeeId,
+                BranchId = leaveRequest.BranchId,
+                BusinessUnitId = leaveRequest.BusinessUnitId,
                 From = leaveRequest.From,
                 IsForOther = leaveRequest.IsForOther,
                 To = leaveRequest.To,
@@ -245,8 +261,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Day = leaveRequest.Day,
                 MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
                 Hours = leaveRequest.Hours,
+                Status = leaveRequest.Status,
                 EmployeeCode = GetEmployeeCode(leaveRequest.EmployeeId),
                 IsApproved = CheckStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsChangeInDepartment = ChangeInDepartmentForBackColor(leaveRequest.LeaveRequestId),
                 DepartmentSendForApprovalBy = leaveRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = leaveRequest.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = leaveRequest.IsDepartmentSendForApproval,
@@ -341,6 +359,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         ModelState.AddModelError("", "Leave Days must be greater than 0!!");
                         // return new JavaScriptResult() { Script = "alert('" + messages + "');" };
                     }
+                    if (leaveRequest.EmployeeId != 0)
+                    {
+                        var placemnt = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                        if (placemnt != null)
+                        {
+                            leaveRequest.BranchId = placemnt.BranchId;
+                            leaveRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("placement", "Employee has not current placemnt");
+                        }
+                    }
                     if (ModelState.IsValid)
                     {
                        
@@ -363,6 +394,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
                             Hours = leaveRequest.Hours,
                             IsForOther = leaveRequest.IsForOther,
+                            BranchId =leaveRequest.BranchId,
+                            BusinessUnitId = leaveRequest.BusinessUnitId,
                             EmployeeCode =
                             inputs.GetEmployeeCode(EmployeeId)
                         };
@@ -611,6 +644,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
             }
+            if (leaveRequest.EmployeeId != 0)
+            {
+                var placemnt = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    leaveRequest.BranchId = placemnt.BranchId;
+                    leaveRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+            if (leaveRequest.EmployeeId != 0)
+            {
+                var placemnt = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    leaveRequest.BranchId = placemnt.BranchId;
+                    leaveRequest.BusinessUnitId = placemnt.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
             if (ModelState.IsValid)
             {
                 var total = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId);
@@ -622,11 +681,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     leaveRequest.LeaveActionTypes = LeaveActionTypes.Without_Plan;
                 }
-
+               
                 var entity = new LeaveRequest
                 {
                     LeaveRequestId = leaveRequest.LeaveRequestId,
                     EmployeeId = leaveRequest.EmployeeId,
+                    BranchId = leaveRequest.BranchId,
+                    BusinessUnitId = leaveRequest.BusinessUnitId,
                     From = leaveRequest.From,
                     To = leaveRequest.To,
                     LeaveDays = leaveRequest.LeaveDays,
@@ -679,6 +740,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     {
                         LeaveRequestId = leaveRequest.LeaveRequestId,
                         EmployeeId = leaveRequest.EmployeeId,
+                        BranchId = leaveRequest.BranchId,
+                        BusinessUnitId = leaveRequest.BusinessUnitId,
                         From = leaveRequest.From,
                         To = leaveRequest.To,
                         LeaveDays = leaveRequest.LeaveDays,
@@ -705,6 +768,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
 
             return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        }
+        public string CheckStatus(int masterId)
+        {
+            var reques = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave").FirstOrDefault();
+            if (reques != null)
+            {
+                var checkApprove = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave" && x.Status == RequestStatus.APPROVE).FirstOrDefault();
+                if (checkApprove != null)
+                {
+                    return "approved";
+                }
+                var deptApproval = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave" && x.Status == RequestStatus.DEPARTMENT_APPROVAL).FirstOrDefault();
+                if (deptApproval != null)
+                {
+                    return "Dapproved";
+                }
+                return "false";
+            }
+            return "false";
         }
         public double GetWeekDays(DateTime startDate, DateTime endDate)
         {
@@ -862,7 +944,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 leaveDays = to.Subtract(from).Days + 1 - holiday;
                 leaveDays = leaveDays - Convert.ToDecimal(weekDays);
-                if (day == LeaveDay.ግማሽ_ቀን)
+                if (day == LeaveDay.Half_Day)
                 {
                     decimal checkWeekEnd = to.Subtract(from).Days + 1 - holiday;
                     double amt = GetHalf(from, to);
@@ -882,7 +964,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             else
             {
                 leaveDays = to.Subtract(from).Days + 1;
-                if (day == LeaveDay.ግማሽ_ቀን)
+                if (day == LeaveDay.Half_Day)
                 {
                     leaveDays = leaveDays / 2;
                 }
@@ -1153,6 +1235,66 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
             }
             return isHalf;
+        }
+        public ActionResult UploadDocument(int leaveRequestId, HttpPostedFileBase file, string txtValue)
+        {
+            try
+            {
+                if (file.ContentLength > 0)
+                {
+
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/" + leaveRequestId.ToString() + "-" + AttachmentType.DOCUMENT), leaveRequestId.ToString() + "-" + txtValue + "-" + fileName);
+
+                    var mainPath = Path.Combine(Server.MapPath("~/Content/Images/" + leaveRequestId.ToString() + "-" + AttachmentType.DOCUMENT));
+
+                    if (!Directory.Exists(mainPath))
+                    {
+                        Directory.CreateDirectory(mainPath);
+                    }
+                    if (!System.IO.File.Exists(path))
+                    {
+                        file.SaveAs(path);
+
+                        var entity = new Attachment
+                        {
+
+                            Reference = leaveRequestId.ToString(),
+                            Description = leaveRequestId.ToString() + "-" + txtValue + "-" + fileName,
+                            FileName = txtValue,
+                            FileType = file.ContentType,
+                            ReferenceType = AttachmentType.DOCUMENT,
+                            Index = 0,
+                            URL = path,
+                            Remark = leaveRequestId.ToString()
+                        };
+                        db.Attachments.Add(entity);
+
+                        db.SaveChanges();
+                        ViewBag.Message = "Upload successful";
+                    }
+
+                }
+                else
+                {
+
+                    ViewBag.Message = "The file is existed";
+
+                }
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewBag.Message = "Upload failed";
+                return RedirectToAction("Upload");
+            }
+        }
+        public ActionResult DownloadDoument(string filename, string attachId)
+        {
+            int.TryParse(attachId, out int attachmentId);
+            var record = db.Attachments.Find(attachmentId);
+
+            return File(record.URL, "application/force-download", Path.GetFileName(record.URL));
         }
         protected override void Dispose(bool disposing)
         {

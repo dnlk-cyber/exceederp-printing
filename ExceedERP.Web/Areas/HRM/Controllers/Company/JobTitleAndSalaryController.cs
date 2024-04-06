@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -12,7 +13,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    public class JobTitleAndSalaryController : Controller
+    public class JobTitleAndSalaryController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/JobTitleAndSalary
@@ -37,8 +38,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             else
             {
                 ViewBag.IsJobTitleIncludedInSalary = false;
-            }
-            
+            }            
 
             return View();
         }

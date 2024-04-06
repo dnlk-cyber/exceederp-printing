@@ -28,12 +28,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult Index()
         {
             PopulateViewData();
+            GenerateSettingValue();
             return View();
         }
         private void PopulateViewData()
         {
             var types = db.Lookups.Where(l => l.LookupType == LookUpTypes.EVALUATION_TYPE);
             ViewData["EvaluationTypes"] = types;
+            ViewData["CriteriaCategory"] = db.CriteriaCategories.Select(x => new { x.CriteriaCategoryId, x.Name }).ToList();
+            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
+            ViewData["workunits"] = workunits;
+            ViewData["jobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+
+        }
+        public void GenerateSettingValue()
+        {
+            var evaluationTypes = db.EvaluationCriteriaActionTypes.ToList();
+            if (!evaluationTypes.Any())
+            {
+                var eval1 = new EvaluationCriteriaActionType()
+                {
+                    PerformanceCriteriaActionType = PerformanceCriteriaActionType.Open,
+                    IsActive = false
+                };
+
+                db.EvaluationCriteriaActionTypes.Add(eval1);
+
+                var eval2 = new EvaluationCriteriaActionType()
+                {
+                    PerformanceCriteriaActionType = PerformanceCriteriaActionType.Sum_Of_Actions,
+                    IsActive = true
+                };
+
+                db.EvaluationCriteriaActionTypes.Add(eval2);
+
+                db.SaveChanges();
+            }
         }
         private bool CheckPerformanceValidation(int id)
         {
@@ -75,15 +105,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 MeasurementDefinitionId = measurementDefinition.MeasurementDefinitionId,
                 EvaluationCriteria = measurementDefinition.EvaluationCriteria,
                 LookupId = measurementDefinition.LookupId,
+                CriteriaCategoryId = measurementDefinition.CriteriaCategoryId,
+                EvalutionType = measurementDefinition.EvalutionType,
                 DefnPercentageofWeight = measurementDefinition.DefnPercentageofWeight,
                 Result = measurementDefinition.Result,
                 Role = measurementDefinition.Role,
                 Remark = measurementDefinition.Remark,
                 EmployeeId = measurementDefinition.EmployeeId,
+                IsDepartmentLevel = measurementDefinition.IsDepartmentLevel,
+                IsMainCompanyLevel = measurementDefinition.IsMainCompanyLevel,
                 DateCreated = measurementDefinition.DateCreated,
                 LastModified = measurementDefinition.LastModified,
                 CreatedBy = measurementDefinition.CreatedBy,
-                IsDepartmentLevel = measurementDefinition.IsDepartmentLevel,
                 ModifiedBy = measurementDefinition.ModifiedBy
             });
 
@@ -94,17 +127,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult EvaluationCritetias_Create([DataSourceRequest]DataSourceRequest request, MeasurementDefinition measurementDefinition)
         {
             ModelState.Clear();
+
             if (ModelState.IsValid)
             {
+                var lookup = db.Lookups.Find(measurementDefinition.LookupId);
+                if (lookup != null
+                    && (lookup.EvalutionType == EvaluationType.MainDepartmentLevel
+                    || lookup.EvalutionType == EvaluationType.Project_Manager))
+                {
+                    measurementDefinition.IsMainCompanyLevel = true;
+                }
+                else
+                {
+                    measurementDefinition.IsMainCompanyLevel = false;
+                }
                 var entity = new MeasurementDefinition
                 {
                     EvaluationCriteria = measurementDefinition.EvaluationCriteria,
                     DefnPercentageofWeight = measurementDefinition.DefnPercentageofWeight,
                     LookupId = measurementDefinition.LookupId,
+                    CriteriaCategoryId = measurementDefinition.CriteriaCategoryId,
+                    EvalutionType = measurementDefinition.EvalutionType,
                     Result = measurementDefinition.Result,
                     Role = measurementDefinition.Role,
                     Remark = measurementDefinition.Remark,
                     EmployeeId = measurementDefinition.EmployeeId,
+                    IsMainCompanyLevel = measurementDefinition.IsMainCompanyLevel,
                     DateCreated = DateTime.Now,
                     LastModified = measurementDefinition.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -134,15 +182,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             ModelState.Clear();
             if (ModelState.IsValid)
             {
+                var lookup = db.Lookups.Find(measurementDefinition.LookupId);
+                if(lookup !=null 
+                    &&(lookup.EvalutionType== EvaluationType.MainDepartmentLevel
+                    || lookup.EvalutionType == EvaluationType.Project_Manager))
+                {
+                    measurementDefinition.IsMainCompanyLevel = true;
+                }
+                else
+                {
+                    measurementDefinition.IsMainCompanyLevel = false;
+                }
+
                 var entity = new MeasurementDefinition
                 {
                     MeasurementDefinitionId = measurementDefinition.MeasurementDefinitionId,
                     EvaluationCriteria = measurementDefinition.EvaluationCriteria,
                     DefnPercentageofWeight = measurementDefinition.DefnPercentageofWeight,
                     LookupId = measurementDefinition.LookupId,
+                    CriteriaCategoryId = measurementDefinition.CriteriaCategoryId,
+                    EvalutionType = measurementDefinition.EvalutionType,
                     Result = measurementDefinition.Result,
                     Role = measurementDefinition.Role,
                     EmployeeId = measurementDefinition.EmployeeId,
+                    IsMainCompanyLevel = measurementDefinition.IsMainCompanyLevel,
                     Remark = measurementDefinition.Remark,
                     DateCreated = measurementDefinition.DateCreated,
                     LastModified = DateTime.Now,
@@ -184,6 +247,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         EvaluationCriteria = measurementDefinition.EvaluationCriteria,
                         DefnPercentageofWeight = measurementDefinition.DefnPercentageofWeight,
                         LookupId = measurementDefinition.LookupId,
+                        CriteriaCategoryId = measurementDefinition.CriteriaCategoryId,
+                        EvalutionType = measurementDefinition.EvalutionType,
                         Result = measurementDefinition.Result,
                         Role = measurementDefinition.Role,
                         Remark = measurementDefinition.Remark,
@@ -191,6 +256,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         DateCreated = measurementDefinition.DateCreated,
                         LastModified = measurementDefinition.LastModified,
                         IsDepartmentLevel = measurementDefinition.IsDepartmentLevel,
+                        IsMainCompanyLevel = measurementDefinition.IsMainCompanyLevel,
                         CreatedBy = measurementDefinition.CreatedBy,
                         ModifiedBy = measurementDefinition.ModifiedBy
                     };

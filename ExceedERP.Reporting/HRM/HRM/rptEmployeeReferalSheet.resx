@@ -117,4 +117,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>No.</value>
+  </data>
+  <data name="CardNo.Value" xml:space="preserve">
+    <value>Card No.</value>
+  </data>
+  <data name="FullName.Value" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Age.Value" xml:space="preserve">
+    <value>Age</value>
+  </data>
+  <data name="Sex.Value" xml:space="preserve">
+    <value>Sex</value>
+  </data>
+  <data name="Department.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="TDate.Value" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Hospital.Value" xml:space="preserve">
+    <value>HoSpital Sent from</value>
+  </data>
+  <data name="DrName.Value" xml:space="preserve">
+    <value>Dr Name</value>
+  </data>
+  <data name="Diagnosis.Value" xml:space="preserve">
+    <value>Diagnosis </value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Today()</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>= Parameters.from.Label</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Hospital</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.Age</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.Doctor</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.Diagnosis</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.CardNo</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Departement</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>=Fields.Date</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>=Fields.Sex</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Count(Fields.FullName)</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Hospital</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Parameters.hospital.Label</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value>= Parameters.to.Label</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Hospital</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>To</value>
+  </data>
 </root>

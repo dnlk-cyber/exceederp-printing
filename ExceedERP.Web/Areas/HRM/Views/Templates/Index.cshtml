@@ -1,16 +1,17 @@
-﻿@model IEnumerable<ExceedERP.Core.Domain.HRM.Templates.Template>
+﻿@using ExceedERP.Core.Localization
+@model IEnumerable<ExceedERP.Core.Domain.HRM.Templates.Template>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<legend>Templates</legend>
+<legend>@Resources.Templates </legend>
 
 <div class="col-md-12">
     <div class="col-md-1">
     </div>
     <div class="col-md-10">
-        @Html.ActionLink(" Add New Template", "Create", null, new { @class = "fa fa-plus" })
+        @Html.ActionLink(Resources.ActionButton_AddNewRecord, "Create", null, new { @class = "fa fa-plus" })
 
     </div>
     <div class="col-md-1">
@@ -40,11 +41,11 @@
                     <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
 
                         <span class="k-card-action">
-                            <span class="k-button k-flat">  @Html.ActionLink(" Edit", "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit" }) </span>
+                            <span class="k-button k-flat">  @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit" }) </span>
                             @*@Html.ActionLink("Edit ", "Edit", "Templates", new { id = item.TemplateId }, new { @class = "btn btn-success fa fa-edit" })*@
                         </span>
                         <span class="k-card-action">
-                            <span class="k-button k-flat k-primary"> @Html.ActionLink(" Delete", "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash", style = "color:red;" })</span>
+                            <span class="k-button k-flat k-primary"> @Html.ActionLink(Resources.ActionButton_Cancel, "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash", style = "color:red;" })</span>
                         </span>
                     </div>
                 </div>

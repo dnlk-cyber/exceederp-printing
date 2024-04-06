@@ -112,7 +112,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (applicantHeader.Salary == "0")
                     {
-                        applicantHeader.Salary = "በድርጅቱ ስኬል ";
+                        //applicantHeader.Salary = "በድርጅቱ ስኬል ";
+                        applicantHeader.Salary = "By The company's scale ";
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
@@ -123,11 +124,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     // applicantHeader.RecruitmentType = vacancy.VacancyType;
                     if (vacancy.VacancyType == VacancyType.PERMANENT)
                     {
-                        applicantHeader.RecruitmentType = "ቋሚ";
+                        //applicantHeader.RecruitmentType = "ቋሚ";
+                        applicantHeader.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
                     }
                     else
                     {
-                        applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        //applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        applicantHeader.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+
                     }
 
                     //var rank = db.Ranks.FirstOrDefault(x => x.RankId == vacancy.RankId);
@@ -232,7 +236,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (applicantHeader.Salary == "0")
                     {
-                        applicantHeader.Salary = "በድርጅቱ ስኬል";
+                        //applicantHeader.Salary = "በድርጅቱ ስኬል";
+                        applicantHeader.Salary = "By The company's scale ";
+
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
@@ -243,11 +249,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     //applicantHeader.RecruitmentType = vacancy.VacancyType;
                     if (vacancy.VacancyType == VacancyType.PERMANENT)
                     {
-                        applicantHeader.RecruitmentType = "ቋሚ";
+                       // applicantHeader.RecruitmentType = "ቋሚ";
+                        applicantHeader.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+
+
                     }
                     else
                     {
-                        applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        // applicantHeader.RecruitmentType = "ጊዜያዊ";
+                        applicantHeader.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+
                     }
 
                     //var rank = db.Ranks.FirstOrDefault(x => x.RankId == vacancy.RankId);

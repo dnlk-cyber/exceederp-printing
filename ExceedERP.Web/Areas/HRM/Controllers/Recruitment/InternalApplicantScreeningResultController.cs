@@ -311,9 +311,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             {
                 var applicants = db.ApplicantionFormes.Where(x => x.VacancyId == screeningSetting.VacancyId).ToList();
 
-                if (screeningSetting.Gender == Gender.MALE || screeningSetting.Gender == Gender.FEMALE)
+                if (screeningSetting.Gender == GenderForVacancyGender.MALE || screeningSetting.Gender == GenderForVacancyGender.FEMALE)
                 {
-                    var employeeByGender = db.Person_Employee.Where(x => x.Gender == screeningSetting.Gender)?.Select(x => x.EmployeeId).ToList();
+                    var employeeByGender = db.Person_Employee.Where(x => x.Gender.ToString() == screeningSetting.Gender.ToString())?.Select(x => x.EmployeeId).ToList();
 
                     if (employeeByGender.Any())
                     {
@@ -323,7 +323,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
                 var eduLevelScreening = db.ScreeningEducationLevels.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).ToList().Select(x => x.EducationLevelId);
                 var eduFieldScreening = db.ScreeningEducationFields.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).ToList().Select(x => x.EducationFieldId);
-                var expJobtitle = db.ScreeningExperienceJobtitleForInternals.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).ToList().Select(x => x.ExperienceJobTitleId);
+                var expJobtitle = db.ScreeningExperienceJobtitleForInternals.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).Select(x => x.ExperienceJobTitleId).ToList();
 
                 foreach (var app in applicants)
                 {
@@ -340,7 +340,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                         {
                             sumOfExp = DateTime.Now.Subtract(person.HiredDate).TotalDays;
 
-                            var empExps = db.Experiences.Where(x => x.EmployeeId == person.EmployeeId && expJobtitle.Contains(x.JobTitleId)).ToList();
+                            var empExps = db.Experiences.Where(x => x.EmployeeId == person.EmployeeId /*&& expJobtitle.Contains(x.JobTitleId)*/).ToList();
 
                             foreach (var ex in empExps)
                             {

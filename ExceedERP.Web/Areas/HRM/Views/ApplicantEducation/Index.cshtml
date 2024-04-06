@@ -21,14 +21,14 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                .Events(events =>
-                                                                                                  {
-                                                                                                      events.Error("error_handler(\"grid\")");
-                                                                                                      events.RequestStart("onRequestStart(\"grid\")");
-                                                                                                      events.RequestEnd("onRequestEnd(\"grid\")");
-                                                                                                  }
-                                                                                                  )
+                   {
+                       events.Error("error_handler(\"grid\")");
+                       events.RequestStart("onRequestStart(\"grid\")");
+                       events.RequestEnd("onRequestEnd(\"grid\")");
+                   }
+                   )
                
-
+                                                                                                 
           .Model(model => model.Id(p => p.ApplicantExpId))
           .Read(read => read.Action("ApplicantExperience_Read", "ApplicantExperience"))
           .Create(create => create.Action("ApplicantExperience_Create", "ApplicantExperience"))

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult Commitments_Read([DataSourceRequest]DataSourceRequest request)
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> subordinates = EmployeeHelper.GetSubordinates(empId);
+            List<int> subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             IQueryable<Commitment> commitments = db.Commitments.Where(x => subordinates.Contains(x.EmployeeId));
             DataSourceResult result = commitments.ToDataSourceResult(request, commitment => new
             {
@@ -102,19 +102,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (ModelState.IsValid)
             {
                 var commitmentTable = db.Commitments.Where(x => x.CommitmentId == commitment.CommitmentId).ToList();
-                if (AmharicStartDate == null)
+
+                if(commitment.FromCometAm == null)
                 {
                     ModelState.AddModelError("", "Start Date is mandatory!!");
                 }
-                else if (AmharicEndDate == null)
+                var splitDate = commitment.FromCometAm.Split('/');
+                commitment.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if(commitment.ToCometAm == null)
                 {
                     ModelState.AddModelError("", "End Date is mandatory!!");
                 }
-                else if (StartDate.Date > EndDate.Date)
+                splitDate = commitment.ToCometAm.Split('/');
+                commitment.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (commitment.From > commitment.To)
                 {
-                    ModelState.AddModelError("", "Start Date should be lessthan or Equal to the End Date");
+                    ModelState.AddModelError("", "Start Date should be less than or Equal to the End Date");
                 }
-                else if (StartDate.Date > DateTime.Now.Date)
+                if (commitment.From.Date > DateTime.Now.Date)
                 {
 
                     ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
@@ -128,12 +133,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         // Employee = commitment.Employee,
                         Reason = commitment.Reason,
                         LookupId = commitment.LookupId,
-                        From = StartDate,
-                        To = EndDate,
+                        From = commitment.From,
+                        To = commitment.To,
                         Value = commitment.Value,
                         Remark = commitment.Remark,
-                        FromCometAm = AmharicStartDate,
-                        ToCometAm = AmharicEndDate,
+                        FromCometAm = commitment.FromCometAm,
+                        ToCometAm = commitment.ToCometAm,
                         EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == commitment.EmployeeId).FirstOrDefault().EmployeeCode,
                         DateCreated = DateTime.Now,
                         LastModified = commitment.LastModified,
@@ -148,9 +153,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     commitment.CommitmentId = entity.CommitmentId;
 
                     #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "CommitmentDepartment ", "Success", User.Identity.Name, User.Identity.Name + " add new Commitment at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
-                    
+
+                    UserHelper.OperationLog(Request.UserHostAddress, "CommitmentDepartment ", "Success", User.Identity.Name, User.Identity.Name + " add new Commitment at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
+
                     #endregion
 
                     //}

@@ -1,23 +1,21 @@
 ﻿@using System.Collections
-@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Domain.HealthAndInsurance
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>@Resources.NavigatorHealthAndInsurance_EmployeeInsurance</legend>
 @(Html.Kendo().Grid<Insurance>()
-          .Name("Insurancegrid")
+      .Name("Insurancegrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["InsuranceCatagory"], "InsuranceCategoryId", "Name").Width(200);//EditorTemplateName("Group").Width(200);
-                                                                                                                                               // columns.Bound(c => c.From);
-                                                                                                                                              // columns.Bound(c => c.InsuranceCorporation);
-          columns.Bound(c => c.FromAmharic);
-          columns.Bound(c => c.ToAmharic);
-          columns.Bound(c => c.Number);
-          columns.Bound(c => c.Salary);
-          columns.Bound(c => c.SumofInsured);
-          columns.Bound(c => c.Premium);
+          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["insuranceCatagory"], "InsuranceCategoryId", "Name").Width(200);//EditorTemplateName("Group").Width(200);                                                                                                                                     // columns.Bound(c => c.From);                                                                                                                                              // columns.Bound(c => c.InsuranceCorporation);
+          columns.Bound(c => c.FromAmharic).Width(100);
+          columns.Bound(c => c.ToAmharic).Width(100);
+          columns.Bound(c => c.Number).Width(100);
+          columns.Bound(c => c.Salary).Width(100);
+          columns.Bound(c => c.SumofInsured).Width(150);
+          columns.Bound(c => c.Premium).Width(270);
           // columns.Bound(c => c.Remark);
           columns.Command(command =>
           {
@@ -40,34 +38,33 @@
               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           }
       })
-                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Insurance").Window(window => { window.Title(Resources.NavigatorHealthAndInsurance_EmployeeInsurance); window.Scrollable(false); }))
-         .Scrollable(h => h.Height(500))
-                     .Groupable()
-                     .Events(x =>
-                     {
-                         x.Edit("GetDate");
-                         x.Save("GetDate");
-                     })
-                              .Sortable(sortable =>
-                              {
-                                  sortable.SortMode(GridSortMode.SingleColumn);
-                              })
-                  .Filterable()
-                     .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Insurance").Window(window => { window.Title(Resources.NavigatorHealthAndInsurance_EmployeeInsurance); window.Scrollable(false); }))
+        .Scrollable(h => h.Height(500))
+        .Events(x =>
+        {
+            x.Edit("GetDate");
+            x.Save("GetDate");
+        })
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
       .DataSource(dataSource => dataSource
-          .Ajax()
-                            .Events(events =>
-                            {
+            .Ajax()
+            .Events(events =>
+            {
 
-                                events.Error("error_handler(\"Insurancegrid\")");
-                                events.RequestStart("onRequestStart(\"Insurancegrid\")");
-                                events.RequestEnd("onRequestEnd(\"Insurancegrid\")");
-                            })
+                events.Error("error_handler(\"Insurancegrid\")");
+                events.RequestStart("onRequestStart(\"Insurancegrid\")");
+                events.RequestEnd("onRequestEnd(\"Insurancegrid\")");
+            })
 
           .Model(model =>
           {
@@ -77,10 +74,10 @@
               model.Field(p => p.Premium).Editable(false);
               model.Field(p => p.SumofInsured).Editable(false);
           })
-          .Read(read => read.Action("Insurance_Read", "Insurance"))
-          .Create(create => create.Action("Insurance_Create", "Insurance"))
-          .Update(update => update.Action("Insurance_Update", "Insurance"))
-          .Destroy(destroy => destroy.Action("Insurance_Destroy", "Insurance"))
+          .Read(read => read.Action("Insurance_Read", "EmployeeInsurance"))
+          .Create(create => create.Action("Insurance_Create", "EmployeeInsurance"))
+          .Update(update => update.Action("Insurance_Update", "EmployeeInsurance"))
+          .Destroy(destroy => destroy.Action("Insurance_Destroy", "EmployeeInsurance"))
       )
 )
 <script>
@@ -130,8 +127,8 @@
                 var num = filds[1];
                 var si = filds[2];
                 //var pi = filds[2];
-                $("#Number").val(num);
-                $("#Salary").val(sal);
+                $("#Number").val(num).trigger("change");
+                $("#Salary").val(sal).trigger("change");
                 //$("#Salary").val(sal);
                 //$("#Premium").val(pi);
                 //$("#SumofInsured").val(si);

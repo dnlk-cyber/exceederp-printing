@@ -29,6 +29,7 @@ namespace ExceedERP.Reporting.SharedDataSources
                     Name =x.Name,DateFrom=x.DateFrom,
                     DateTo=x.DateTo
                })
+                .OrderByDescending(x => x.DateFrom)
                 .ToList();
            
         }

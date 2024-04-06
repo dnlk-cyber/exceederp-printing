@@ -40,81 +40,87 @@
           {
           toolbar.Template(@<text>
 
-                <div class="toolbar">
-                    @if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
-                                {
-                        @item.CreateButton(Resources.ActionButton_AddNewRecord);
-                                }
-                    @(Html.Kendo().CheckBox()
-                           .Name("chkIsInclude")
-                           //.HtmlAttributes(new { @checked  = "Check" } )
-                           .Label(Resources.IncludeExternalExperience))
+<div class="toolbar">
+    @if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+                {
+        @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                }
+    @(Html.Kendo().CheckBox()
+                   .Name("chkIsInclude")
+                   //.HtmlAttributes(new { @checked  = "Check" } )
+                   .Label(Resources.IncludeExternalExperience))
 
-                    @(Html.Kendo().DropDownList()
-                                 .Name("GlFiscalYear")
+    @(Html.Kendo().DropDownList()
+                         .Name("GlFiscalYear")
 
-                                 .ValuePrimitive(true)
-                                 .OptionLabel(Resources.Select)
-                                 .DataTextField("Name")
-                                  .DataValueField("GlFiscalYearId")
-                             .Filter("contains")
-                             .DataSource(dataSource =>
-                             {        
-                                 dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
-.ServerFiltering(false);
-                       }))
-
-
+                         .ValuePrimitive(true)
+                         .OptionLabel(Resources.Select)
+                         .DataTextField("Name")
+                          .DataValueField("GlFiscalYearId")
+                     .Filter("contains")
+                     .DataSource(dataSource =>
+                     {
+                                       dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+      .ServerFiltering(false);
+                                   }))
 
 
-                    @(Html.Kendo().Button()
+
+    @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+    {
+        @(Html.Kendo().Button()
                            .Name("btnRefresh")
                             .HtmlAttributes(new { type = "button", @class = "k-primary" })
                               .Events(e => e.Click("Refresh"))
                                    .Content("Generate Leave Entitlement"))
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+    }
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-                    @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
-                                {
-                        @(Html.Kendo().Button()
+           @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
+                    {
+                    @(Html.Kendo().Button()
 
-                             .Name("btnExpire")
-                              .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                  .Events(e => e.Click("Expire"))
-                                   .Content("Expire Leave"))
-                        }
-
-
-                    @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse"))
-                                {
-                        @(Html.Kendo().Button()
-
-                            .Name("btnReverseExpire")
-                             .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                 .Events(e => e.Click("ReverseExpire"))
-                                  .Content("Reverse Expire Leave"))
-                        }
-                  
-
-                    @if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
-                                {
-                        @*@item.Excel. (Resources.ActionButton_ExportExcel);
-                            @item.Pdf(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });*@
-
-                                }
-                   
+                         .Name("btnExpire")
+                          .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                              .Events(e => e.Click("Expire"))
+                               .Content("Expire Leave"))
+                    }
+        /**/
 
 
+        @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse"))
+                    {
+            @(Html.Kendo().Button()
 
-                </div>
+                        .Name("btnReverseExpire")
+                         .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                             .Events(e => e.Click("ReverseExpire"))
+                              .Content("Reverse Expire Leave"))
+                    }
+        /**/
+
+
+        @if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+                    {
+            @*@item.Excel. (Resources.ActionButton_ExportExcel);
+                @item.Pdf(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });*@
+                                          }
+                        /**/
+
+
+
+
+
+
+    </div>
             </text>);                 
 
 

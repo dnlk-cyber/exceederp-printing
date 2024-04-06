@@ -8,6 +8,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
+using System.Threading;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
@@ -17,7 +18,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeInfo> GetEmployeeBirthDate(/*string branchId,*/ object[] branchId, string orgStructureId, int agemin, int ageMax, string status)
+        public List<EmployeeInfo> GetEmployeeBirthDate(/*string branchId,*/ object[] branchId,string bussinessUnitId, string orgStructureId, int agemin, int ageMax, string status)
         {
             List<EmployeeInfo> EmployeeInfoList = new List<EmployeeInfo>();
             EmployeeInfo EmployeeInfo = new EmployeeInfo();
@@ -48,6 +49,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 int.TryParse(orgStructureId, out int orgId);
                 placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
             }
+            if (bussinessUnitId != null)
+            {
+                int.TryParse(bussinessUnitId, out int bUId);
+                placements = placements.Where(x=>x.BusinessUnitId ==bUId).ToList();
+            }
             if (!string.IsNullOrEmpty(status) && status.ToLower() == "active")
             {
                 placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements).Where(x => x.isCurrent).DistinctByField(x => x.EmployeeId).ToList();
@@ -62,7 +68,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId);
                 if (employee != null)
                 {
-                    int diff = (DateTime.Now.Year - employee.DateOfBirth.Year);
+                    int diff = (int)(DateTime.Now - employee.DateOfBirth).TotalDays/365;
                     if (ageMax != 0 && agemin != 0)
                     {
                         if (diff >= agemin && diff <= ageMax)
@@ -71,7 +77,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             EmployeeInfo.IdNumber = employee.EmployeeCode;
                             EmployeeInfo.BirthDate = employee.DateOfBirthAm;
-                            EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                           
+                            EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
 
                             EmployeeInfo.FullName = employee.FullNameAmharic;
 
@@ -87,19 +94,47 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             {
                                 EmployeeInfo.Department = deptt.Name;
                             }
+                            //// calculating age 
+                            //DateTime currentDate = DateTime.Now;
+                            //DateTime birthDate = employee.DateOfBirth;
 
-                            EmployeeInfo.CriteriaName = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                            //int years = currentDate.Year - birthDate.Year;
+                            //int months = currentDate.Month - birthDate.Month;
+                            //int days = currentDate.Day - birthDate.Day;
+
+                            //// Adjust for negative values
+                            //if (days < 0)
+                            //{
+                            //    // Borrow from the month
+                            //    months--;
+                            //    int daysInLastMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month - 1);
+                            //    days += daysInLastMonth;
+                            //}
+
+                            //// Adjust for negative or zero months
+                            //if (months < 0)
+                            //{
+                            //    // Borrow from the year
+                            //    years--;
+                            //    months += 12;
+                            //}
+
+                            //string result = $"{years} year(s), {months} month(s), {days} day(s)";
+                            //EmployeeInfo.CriteriaName = result;
+                            //EmployeeInfo.CriteriaName = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                            EmployeeInfo.CriteriaName = HrHelper.GetEmployeeAge(employee.EmployeeId).ToString();
 
                             EmployeeInfoList.Add(EmployeeInfo);
                         }
                     }
                     else
                     {
+                        
                         EmployeeInfo = new EmployeeInfo();
 
                         EmployeeInfo.IdNumber = employee.EmployeeCode;
                         EmployeeInfo.BirthDate = employee.DateOfBirthAm;
-                        EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                        EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
 
                         EmployeeInfo.FullName = employee.FullNameAmharic;
 
@@ -117,7 +152,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             EmployeeInfo.Department = deptt.Name;
                         }
 
-                        EmployeeInfo.CriteriaName = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                        //EmployeeInfo.CriteriaName = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                        EmployeeInfo.CriteriaName = HrHelper.GetEmployeeAge(employee.EmployeeId).ToString();
 
                         EmployeeInfoList.Add(EmployeeInfo);
                     }

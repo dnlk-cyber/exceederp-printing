@@ -52,6 +52,7 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public bool IsOnJob { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "HR_HRMPlan_TrainingPlan_NoofTrainee", ResourceType = typeof(Localization.Resources))]
         public int NoOfTrainee { get; set; }
         public TrainingRequestType TrainingRequestType { get; set; }
 

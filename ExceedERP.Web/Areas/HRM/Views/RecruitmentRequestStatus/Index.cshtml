@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<Legend>Recruitment Reqeusts</Legend>
+<Legend>@Resources.Recruitment_Reqeusts</Legend>
 @(Html.Kendo().Grid<RecruitmentRequest>()
               .Name("RecruitmentRequestgrid")
           .Columns(columns =>

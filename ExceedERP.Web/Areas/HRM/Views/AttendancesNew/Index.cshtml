@@ -6,59 +6,67 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@*<div class="form-horizontal">
+@*
+        <div class="form-horizontal">
    
-    @if (TempData["Error"] != null)
-    {
-        <div class="btn-danger">
-            <p style="text-align:center;font-size:20px;font-weight:bold;"> @TempData["Error"].ToString()</p>
-        </div>
-    }
-    @if (TempData["Success"] != null)
-    {
-        <div class="btn-success" style="padding:10px;">
-            <p style="text-align:center"> @TempData["Success"].ToString()</p>
-        </div>
-    }
-</div>*@
+        @if (TempData["Error"] != null)
+        {
+            <div class="btn-danger">
+                <p style="text-align:center;font-size:20px;font-weight:bold;"> @TempData["Error"].ToString()</p>
+            </div>
+        }
+        @if (TempData["Success"] != null)
+        {
+            <div class="btn-success" style="padding:10px;">
+                <p style="text-align:center"> @TempData["Success"].ToString()</p>
+            </div>
+        }
+    </div>
 
+    
+*@
+
+<legend>@Resources.Attendance </legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Attendance.AttendanceNew>()
-                        .Name("grid")
-                        .Columns(columns =>
-                        {
-                            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-                            // columns.Bound(c => c.Date);
-                            columns.Bound(c => c.DateAm).Width(120);
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
 
-                            columns.Group(group => group
+            columns.Bound(c => c.DateAm).Width(120);
+            //columns.Group(group => group
 
-                            .Title("Day")
+            //  .Title(Resources.Enum_Leave_Day)
 
-                          .Columns(info =>
-                          {
-                              info.Bound(x => x.IsPresentMorning).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentMorning #' " + " # if (IsPresentMorning) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("Morning");
-                              info.Bound(x => x.IsPresentAfternoon).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentAfternoon #' " + " # if (IsPresentAfternoon) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("Afternoon");
-                          }));
+            // .Columns(info =>
+            // {
+            //     info.Bound(x => x.IsPresentMorning).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentMorning #' " + " # if (IsPresentMorning) { #" + "checked='checked'" + "# } #" + " />").Width(130);
+            //     info.Bound(x => x.IsPresentAfternoon).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentAfternoon #' " + " # if (IsPresentAfternoon) { #" + "checked='checked'" + "# } #" + " />").Width(130);
 
-                            columns.Bound(c => c.IsDepartmentApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsDepartmentApproved ? checked='checked' :'' # >").Width(100);
-                            columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >").Width(100);
-                            columns.Bound(c=>c.IsGenerated).Visible(false);
-                            // columns.Command(command =>
-                            // {
+            // }));
+            columns.Bound(c => c.MorningAttendance).EditorTemplateName("AttendanceEnums").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.Bound(c => c.AfternoonAttendance).EditorTemplateName("AttendanceEnums").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.Bound(c => c.IsDepartmentApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsDepartmentApproved ? checked='checked' :'' # >").Width(100);
+            columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >").Width(100);
+            columns.Bound(c=>c.IsGenerated).Visible(false);
+            // columns.Command(command =>
+            // {
 
-                            //   //command.Edit();
-                            //   //command.Destroy();
-                            //}).Width(180);
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                        // toolbar.Create();
-                        //toolbar.Save();
+            //   //command.Edit();
+            //   //command.Destroy();
+            //}).Width(180);
 
-                        toolbar.Template(@<text>
+        })
+        .ToolBar(toolbar =>
+        {
+        // toolbar.Create();
+        //toolbar.Save();
+
+        toolbar.Template(@<text>
 
                         @item.SaveButton()
+                        <label for="AttendanceDate">Select Attendance Date:</label>
 
                         @Html.TextBox("AttendanceDate", "", new { disabled = "disabled", @class = "et-popup-picker" });<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
@@ -66,42 +74,44 @@
                                               .Name("btnGetAttendance")
                                                .HtmlAttributes(new { type = "button", @class = "k-primary", title="Get attendance for selected date" })
                                                  .Events(e => e.Click("GetAttendance"))
-                                                      .Content("Get Attendance"))
+                                                      .Content(Resources.Get_Attendance))
                             
                          @item.CustomCommandToolBarButton("AttendanceLet", "Print Attendance", Url.Action("AttendanceLetter", "PrintableLetter"), new { @class = "btn-success" })
                            
-                       @*<button class="btn btn-success fa fa-print fa-1x" style="border-radius:5px;" title="Print Attendances" onclick="printAttendance()"></button>*@
+                           @*<button class="btn btn-success fa fa-print fa-1x" style="border-radius:5px;" title="Print Attendances" onclick="printAttendance()"></button>*@
 
-                             @*@(Html.Kendo().Button()
-                                     .Name("btnReturnAttendance33")
-                                      .HtmlAttributes(new { type = "button", @class = "btn-success fa fa-print fa-5x" })
-                                        //.Events(e => e.Click("ReturnAttendance"))
-                                            // .Content("Return Attendance")
-                                             )*@
+                                 @*@(Html.Kendo().Button()
+                                         .Name("btnReturnAttendance33")
+                                          .HtmlAttributes(new { type = "button", @class = "btn-success fa fa-print fa-5x" })
+                                            //.Events(e => e.Click("ReturnAttendance"))
+                                                // .Content("Return Attendance")
+                                                 )*@
 
-                        @(Html.Kendo().Button()
+                          @(Html.Kendo().Button()
                                      .Name("btnReturnAttendance")
-                                      .HtmlAttributes(new { type = "button", @class = "btn-danger", style = "float:right;margin-right:50px;color:white;", title="Return Attendances" })
+                                      .HtmlAttributes(new { type = "button", @class = "btn-danger", style = "float:right;margin-right:50px;color:white;"/*, title="Return Attendances"*/ })
                                         .Events(e => e.Click("ReturnAttendance"))
-                                             .Content("Return Attendance"))
+                                             .Content(Resources.Return_Attendance))
 
-
-                        @(Html.Kendo().Button()
+ 
+                          @(Html.Kendo().Button()
                                               .Name("btnApproveAttendance")
-                                               .HtmlAttributes(new { type = "button", @class = "btn-danger", style = "float:right;margin-right:50px;color:white;", title="Approve Attendances" })
+                                               .HtmlAttributes(new { type = "button", @class = "btn-danger", style = "float:right;margin-right:50px;color:white;"/*, title="Approve Attendances"*/ })
                                                  .Events(e => e.Click("ApproveAttendance"))
-                                                      .Content("Approve Attendance"))
+                                                      .Content(Resources.Approve_Attendance))
 
 
-                </text>);
+                         </text>);
 
-                        })
+
+
+        })
      .Events(e =>
      {
 
          e.Save("GetDate");
          e.Edit("GetDate");
-        // e.DataBound("onDataBound");
+         // e.DataBound("onDataBound");
      })
         .Editable(editable => editable.Mode(GridEditMode.InCell))
            .Scrollable(h => h.Height(500))

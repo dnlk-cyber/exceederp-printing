@@ -1,0 +1,20 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel(Resources.Select)
+            .OptionLabel(Resources.Select)
+                .Filter("contains")
+                .DataTextField("FullNameaEnglish")
+                .DataValueField("EmployeeId")
+
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetEmployeesByUserForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
+                        .ServerFiltering(false);
+                    })
+
+                .HtmlAttributes(new { style = "width: 150px;" })
+                .ValuePrimitive(true)
+)

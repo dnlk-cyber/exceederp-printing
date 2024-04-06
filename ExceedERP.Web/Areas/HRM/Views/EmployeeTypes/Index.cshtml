@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Employee Types</legend>
+<legend>@Resources.EmployeeType</legend>
 @(Html.Kendo().Grid<EmployeeType>()
               .Name("grid")
               .Columns(columns =>

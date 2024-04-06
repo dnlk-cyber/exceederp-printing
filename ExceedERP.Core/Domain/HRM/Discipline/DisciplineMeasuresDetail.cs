@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.HRM.Discipline
 {
@@ -13,7 +13,7 @@ namespace ExceedERP.Core.Domain.HRM.Discipline
         //public virtual DisciplineMeasures DisciplineMeasures { get; set; }
         [Required]
         [Display(Name = "HR_Discipline_DisciplineMeasuresDetail_Level", ResourceType = typeof(Localization.Resources))]
-        public int Level { get; set; }
+        public string Level { get; set; }
         [Required]
         [Display(Name = "HR_Discipline_DisciplineMeasuresDetail_Description", ResourceType = typeof(Localization.Resources))]
         public string Description { get; set; }

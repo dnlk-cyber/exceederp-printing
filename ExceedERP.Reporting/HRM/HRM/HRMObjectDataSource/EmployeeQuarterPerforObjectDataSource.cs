@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeQuarterPerfromance> GetEmployeeQuarterPerformance(string fiscalYear, string branchId, string orgStructureId, string status)
+        public List<EmployeeQuarterPerfromance> GetEmployeeQuarterPerformance(string fiscalYear, string branchId, string orgStructureId,string businessUnitId,  string status)
         {
             List<EmployeeQuarterPerfromance> employeePerformanceList = new List<EmployeeQuarterPerfromance>();
 
@@ -32,6 +32,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(branchId, out int braId);
                 placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).OrderByDescending(x => x.AssignmentDate).ToList();
+            }
+
+            if (businessUnitId != null)
+            {
+                int.TryParse(businessUnitId, out int unitId);
+                placements = placements.Where(x=>x.BusinessUnitId == unitId).ToList();
             }
 
             if (orgStructureId != null)
@@ -95,7 +101,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         empPerformance.QurterList.Add(quarter);
                     }
 
-                    empPerformance.Total = empPerformance.QurterList.Sum(x=>x.Score);
+                    empPerformance.Total = empPerformance.QurterList.Average(x=>x.Score);
                 }
 
                 if (status == "Reviewed" && totalResult > 0)

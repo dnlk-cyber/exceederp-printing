@@ -117,9 +117,96 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>With Best Regards</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>To be Informed</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>To be Informed</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>= Fields.Address</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>____________________</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>= Fields.Pobox</value>
+  </data>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>Date፡</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Number：</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Fields.FullName</value>
+  </data>
   <data name="textBox5.Value" xml:space="preserve">
-    <value>በድርጅታችን    በ {=Fields.CurrentDepartement} የስራ ሂደት /ፕሮጀክት/ {=Fields.CurrentJobTitle} ውስጥ በስራ መደብ እንዲቀጠሩ ተወስኗል፡፡ 
-ስለሆነም በድርጅቱ የደመወዝ ስኬል በደረጃ ከፍታ {=Fields.CurrentRank}      ለሥራ መደቡ በተወሰነው  ደመወዝ  በወር ያልተጣራ ብር   {=Fields.CurrentSalary} (  {=Fields.CurrentAmount}   ብር) እየተከፈልዎ  እ.ኤ.አ ከ  {=Fields.AssignmentDate} ቀን ጀምሮ በአሠሪና ሠራተኛ ጉዳይ አዋጅ ቁጥር 377/96 አንቀጽ 10 ተ.ቁ 1/  መሠረት በ {=Fields.CurrentDepartement}        ስራ ሂደት/ፕሮጀክት/  {=Fields.CurrentJobTitle}    የሥራ መደብ ለ45 ተከታታይ የሙከራ ጊዜ በኮንትራት የተቀጠሩ መሆኑን እያስታወቅሁ፤ የተቀጠሩበት የሥራ ኃላፊነት ከፍተኛ የሙያ ብቃትን፣ ታማኝነትን ጥንቃቄንና ታታሪነትን የሚጠይቅ መሆኑን ተገንዝበው የተጣለብዎትን የስራ ኃላፊነት በብቃት እንዲወጡ እያሳሰብን፤ የተቀጠሩበት የስራ ሂደትም /ፕሮጀክትም/ በየወሩ በተጠቃሹ ስም ፔሮል እያዘጋጀ የደመወዝ ክፍያ እንዲፈጽም እንዲሁም የተቀጣሪው የሙከራ ጊዜ ከመጠናቀቁ በፊት የሥራ አፈፃፀም ምዘና ሞልቶ እንዲያሳውቅ በዚሁ ደብዳቤ ግልባጭ እንዲያውቁት የተደረገ መሆኑን እናሳስባለን፡፡
+    <value>It has been decided that you will be hired for a position in  {=Fields.CurrentDepartement} Workflow /Project/  {=Fields.CurrentJobTitle} in our company. 
+Therefore, in the company's salary scale according to the rank   {=Fields.CurrentRank}      You will be paid monthly unfiltered Birr   {=Fields.CurrentSalary} (  {=Fields.CurrentAmount}   Birr) from  {=Fields.AssignmentDate}  in the Employer and Employee Affairs Proclamation No. 377/96 Article 10 No. 1/ I am announcing that according to the   {=Fields.CurrentDepartement}        Prject  {=Fields.CurrentJobTitle}    I have been hired on a contract basis for 45 consecutive probationary periods.; Realizing that the work responsibilities you have been hired for require high professional competence, honesty, caution and hard work, reminding you to carry out the work responsibilities assigned to you effectively; We would like to remind you that the work process / project / for which you have been hired, to prepare payroll and make salary payments every month, and to inform the employee of the work performance evaluation before the end of the trial period.
 </value>
   </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>= Fields.Fax</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>The case:- deals with contract employment;</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>To：</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>With Header?</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Tel</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>= Fields.Abbreviation</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>= Fields.Abbreviation</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.Email</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>=Fields.Date</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>CCC</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>om</value>
+  </metadata>
 </root>

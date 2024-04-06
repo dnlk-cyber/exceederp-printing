@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 
@@ -25,8 +26,10 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public string Remark { get; set; }
         [Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
         public bool IsForOther { get; set; }
-        [Display(Name = "የጥያቄው ዓይነት")]
+        [Display(Name = "HR_SelfCare_LeaveRequest_RequestType", ResourceType = typeof(Localization.Resources))]
         public SelfServiceRequestType RequestType { get; set; }
         public bool IsDirect { get; set; }
+        [NotMapped]
+        public bool IsApproved { get; set; }
     }
 }

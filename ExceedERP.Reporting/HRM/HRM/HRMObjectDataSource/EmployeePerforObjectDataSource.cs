@@ -19,35 +19,35 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeePerfromanceVM> GetEmployeePerformance(string branchId, string orgStructureId, string year, string status, string empId)
+        public List<EmployeePerfromanceVM> GetEmployeePerformance(string branchId, string orgStructureId, string year, string status, string empId,string businessUnit)
         {
             List<EmployeePerfromanceVM> employeePerformanceList = new List<EmployeePerfromanceVM>();
 
             int.TryParse(year, out int yearId);
 
             decimal totalResult = 0;
-
             var placements = db.Placements.Where(x => x.isCurrent).ToList();
 
             if (branchId != null)
             {
                 int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).OrderByDescending(x => x.AssignmentDate).ToList();
+                placements = placements.Where(x=>x.BranchId==braId).OrderByDescending(x => x.AssignmentDate).ToList();
             }
-
             if (orgStructureId != null)
             {
                 int.TryParse(orgStructureId, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_FromPlacement(placements, orgId).OrderByDescending(x => x.AssignmentDate).ToList();
+                placements = placements.Where(x=>x.OrgStructureId==orgId).ToList();
             }
-
             if (empId != null)
             {
                 int.TryParse(empId, out int employeeId);
                 placements = placements.Where(x => x.EmployeeId == employeeId).ToList();
             }
-
-
+            if (businessUnit != null)
+            {
+                int.TryParse(businessUnit, out int businessUnitId);
+                placements = placements.Where(x => x.BusinessUnitId == businessUnitId).ToList();
+            }
             foreach (var place in placements)
             {
                 totalResult = 0;

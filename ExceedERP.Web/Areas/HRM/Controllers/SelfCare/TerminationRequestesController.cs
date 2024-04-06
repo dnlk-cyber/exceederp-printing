@@ -84,6 +84,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = termination.OnlineApprovedBy,
                 OnlineApprovedTime = termination.OnlineApprovedTime,
                 IsOnlineApproved = termination.IsOnlineApproved,
+                IsForciblyTerminated = termination.IsForciblyTerminated
             });
 
             return Json(result);

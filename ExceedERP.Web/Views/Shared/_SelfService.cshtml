@@ -1,8 +1,11 @@
-﻿@if (HttpContext.Current.User.IsInRole("HR_Employee_SelfService") || HttpContext.Current.User.IsInRole("HR_Recruitment_Requester") || HttpContext.Current.User.IsInRole("HR_Training_Requester"))
+@using ExceedERP.Core.Localization
+@if (HttpContext.Current.User.IsInRole("HR_Employee_SelfService")
+    || HttpContext.Current.User.IsInRole("HR_Recruitment_Requester")
+    || HttpContext.Current.User.IsInRole("HR_Training_Requester")
+    || HttpContext.Current.User.IsInRole("HR_Training_Requester")
+ 
+    )
 {
-
-
-
     <li class="">
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-user"></i>
@@ -18,31 +21,143 @@
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
                     @ExceedERP.Core.Localization.Resources.SelfCare_Personal_Self_Service
-
-
                     <b class="arrow fa fa-angle-down"></b>
                 </a>
 
                 <b class="arrow"></b>
 
                 <ul class="submenu">
-                    <li id="selfservice76" class="actionlinlk">
-                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_Myprofile, "MyProfile", "MyProfile", new { area = "HRM" }, null)<b class="arrow"></b>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-user-secret"></i>
+                            Evaluate Performance
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+
+                            <li id="selfservice76" class="actionlinlk">
+                                @Html.ActionLink("Personal Evalution", "Index", "PersonalEmployeePerformance", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice77" class="actionlinlk">
+                                @Html.ActionLink("Peer Evaluation", "Index", "PeerToPeerEmployeePerformance", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice78" class="actionlinlk">
+                                @Html.ActionLink("Internal Customer Evaluation", "Index", "InternalCustomerEmployeePerformance", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice79" class="actionlinlk">
+                                @Html.ActionLink("My Evaluation Reults", "Index", "EmployeePerformancePersonalSummaries", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
                     </li>
                     <li id="selfservice76" class="actionlinlk">
                         @Html.ActionLink("My Performance", "MyPerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="selfservice76" class="actionlinlk">
-                        @Html.ActionLink("Date Converter", "Index", "DateConverter", new { area = "HRM" }, null)<b class="arrow"></b>
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_Myprofile, "MyProfile", "MyProfile", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
+                    <li id="selfservice76" class="actionlinlk">
+                        @Html.ActionLink("Date Converter", "Index", "DateConverter", new { area = "Common" }, null)<b class="arrow"></b>
+                    </li>
+
                     <li id="selfservice07127" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeeLeaveUsage, "EmployeeLeaveUsageSelfCare", "LeaveReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
+
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-archive"></i>
+                            Archive
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="selfservice090letersforStaff" class="actionlinlk">
+                                @Html.ActionLink("From Department", "Index_Receiver", "OutGoing_DepartmentToStaff", new { area = "Archive" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice090letersforemployee" class="actionlinlk">
+                                @Html.ActionLink("Letters For Employee", "Index", "LettersSentForEmployee", new { area = "Archive" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="selfservice090letersbroadcast" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAnnouncment_Announcment, "Index", "BroadcastedLetters", new { area = "Archive" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-list"></i>
+                            Material
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+
+                            <li id="selfservice0109str" class="actionlinlk">
+                                @Html.ActionLink("Stock Store Request", "Index", "StoreRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice0109strf" class="actionlinlk">
+                                @Html.ActionLink("Fuel Request", "Index", "FuelRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice74109str" class="actionlinlk">
+                                @Html.ActionLink("Stock Store Request for Sub Con", "Index", "StoreRequisitionSubSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice0109sts" class="actionlinlk">
+                                @Html.ActionLink("Stock Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="selfservice0109fisr" class="actionlinlk">
+                                @Html.ActionLink("PPE Store Request", "Index", "FixedAssetRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="selfservice013439fisr" class="actionlinlk">
+                                @Html.ActionLink("PPE Return Request", "Index", "FixedAssetReturnSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="selfservice0109fis" class="actionlinlk">
+                                @Html.ActionLink("PPE Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="selfservice0109s" class="actionlinlk">
+                                @Html.ActionLink("Service Request", "Index", "ServiceRequisitionSelfCare", new { area = "Procurement" }, null)<b class="arrow"></b>
+                            </li>
+
+
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-car"></i>
+                            Payment Request
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="selfservice0103" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Request, "Index", "TravelOrderRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice0104" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Expense_Claim, "Index", "TravelExpenseClaimRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice095" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Finance_Selfcare_Payment, "Index", "PaymentRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservicepf0957" class="actionlinlk">
+                                @Html.ActionLink("Fund Transfer", "Index", "FundTransferRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                   
                     <li id="selfservice077" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_LeaveRequest, "Index", "LeaveRequestPersonal", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>
-                    <li id="selfservice0106rtr6575" class="actionlinlk">
-                        @Html.ActionLink("Leave Void", "Index", "LeaveReturnPersonal", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="selfservice078" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_TerminationRequest, "Index", "TerminationRequest", new { area = "HRM" }, null)<b class="arrow"></b>
@@ -60,18 +175,19 @@
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_EducationRequest, "Index", "EducationRequest", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
 
-
-                    <li id="hrm0sdfd79" class="actionlinlk">
+                    @*<li id="hrm0sdfd79" class="actionlinlk">
                         @Html.ActionLink("Health Payment Self", "EmployeeHealthPaymentSelfCare", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>
-                    <li id="selfservice083" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_EmpRecivedLetter, "Index", "SelfCareEmployeeIncoming", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                    </li>*@
+
                     <li id="selfservice84" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.Printable_Vacancy_For_Internal, "InternalVacancyForSelfCare", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="selfservice085" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPrintableDocument_ExternalVacancy, "InternalVacancy", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
-
+                    <li id="selfservice086" class="actionlinlk">
+                        @Html.ActionLink("Training Evaluation & Feedback", "Index", "TrainingEvaluationAndFeedback", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
                     <li id="selfservice086" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAnnouncment_Announcment, "Index", "SelfCareAccouncment", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
@@ -87,13 +203,27 @@
                     <li id="selfservice090" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PaySlip, "PaySlipByEmployee", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
-                    <li id="selfservice-op-ticket" class="actionlinlk">
-                        @Html.ActionLink("Open Ticket", "Index", "SelfCareOpenTickets", new { area = "InfoDesk" }, null)<b class="arrow"></b>
-                    </li>
+                    @*<li id="selfservice476" class="actionlinlk">
+                        @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
+                    </li>*@
+
+                  
+
                 </ul>
 
             </li>
-            @if (HttpContext.Current.User.IsInRole("HR_Department_Head") || HttpContext.Current.User.IsInRole("OverTime_Request_Approver"))
+
+
+
+            @*/////// Department Service*@
+
+
+
+            @if (HttpContext.Current.User.IsInRole("HR_Department_Head")
+                || HttpContext.Current.User.IsInRole("OverTime_Request_Approver")
+                // || HttpContext.Current.User.IsInRole(PlanningRoles.Planning_Admin)
+                // || HttpContext.Current.User.IsInRole(PlanningRoles.Planning_User)
+                )
             {
                 <li class="">
                     <a href="#" class="dropdown-toggle">
@@ -109,39 +239,275 @@
                         @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
                         {
 
-                            @*@if (HttpContext.Current.User.IsInRole("HR_Recruitment_Requester") || HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-archive"></i>
+                                    Archive
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
 
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+
+                                    <li id="selfservicearchive12" class="actionlinlk">
+                                        @Html.ActionLink("External Letters", "Index", "DepartmentSentLetter", new { area = "Archive" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservicearchive14" class="actionlinlk">
+                                        @Html.ActionLink("Department Folder", "Index", "DepartmentFolders", new { area = "Archive" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservicearchive15ToDepartment" class="actionlinlk">
+                                        @Html.ActionLink("To Department", "Index", "OutGoing_DepartmentToDepartments", new { area = "Archive" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservicearchive15FromDepartment" class="actionlinlk">
+                                        @Html.ActionLink("From Department", "Index_Receiver", "OutGoing_DepartmentToDepartments", new { area = "Archive" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservicearchive15ToStaff" class="actionlinlk">
+                                        @Html.ActionLink("To Staff", "Index", "OutGoing_DepartmentToStaff", new { area = "Archive" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservicearchive15ToStaff" class="actionlinlk">
+                                        @Html.ActionLink("Subject Type", "Index", "SubjectTypeForDepartmentLevels", new { area = "Archive" }, null)<b class="arrow"></b>
+                                    </li>
+                                    @if (HttpContext.Current.User.IsInRole("Announcement"))
+                                    {
+                                        <li id="archive12745" class="actionlinlk">
+                                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAnnouncment_Announcment, "Index", "LetterForMultipleStaffs", new { area = "Archive" }, null)<b class="arrow"></b>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-list"></i>
+                                    Department Needs
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+                                    @*<li id="selfservice091" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest + "Updated", "Index", "EmployeeTransferRequests", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>*@
+                                    <li id="selfservice0911" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest, "Index", "RecruitmentRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="hrm205" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Manpower_PlanningRequest, "Index", "ManPowerPlanningRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice092" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_TrainingApplicant, "Index", "TrainingApplicant", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice069873" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingPlan, "Index", "TrainingPlanDepartmentRead", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice093" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_DepartmentTrainingPlan, "Index", "DepartmentNeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice0108" class="actionlinlk">
+                                        @Html.ActionLink("Procurement Need", "Index", "ProcurementNeedSelfService", new { area = "Procurement" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice0109strd" class="actionlinlk">
+                                        @Html.ActionLink("Stock Store Request", "Index", "StoreRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice0109strds" class="actionlinlk">
+                                        @Html.ActionLink("Fuel Request", "Index", "FuelRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                                    </li>
+                                    @*<li id="selfservice741093str" class="actionlinlk">
+                                        @Html.ActionLink("Stock Store Request for Sub Con", "Index", "StoreRequisitionSubSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                                    </li>*@
+                                    <li id="selfservice0109fisrd" class="actionlinlk">
+                                        @Html.ActionLink("PPE Store Request", "Index", "FixedAssetRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfserviced013439fisr" class="actionlinlk">
+                                        @Html.ActionLink("PPE Return Request", "Index", "FixedAssetReturnSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice0109st" class="actionlinlk">
+                                        @Html.ActionLink("Stock Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0109" class="actionlinlk">
+                                        @Html.ActionLink("Service Request", "Index", "ServiceRequisitionSelfCare", new { area = "Procurement" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0109fi" class="actionlinlk">
+                                        @Html.ActionLink("Fixed Asset Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="prc0007788serrec" class="actionlinlk">
+                                        @Html.ActionLink("Service Receive", "Index", "ServiceReceive", new { area = "Procurement" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                </ul>
+                            </li>
+
+                            ////////////////////////////
+
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-clock-o"></i>
+                                    Attendance Mng
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+                                    <li id="selfservice096" class="actionlinlk">
+                                        @Html.ActionLink(Resources.Attendance, "Index", "AttendancesNew", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice097" class="actionlinlk">
+                                        @Html.ActionLink(Resources.NavigatorAttendance_WeeklyAttendance, "Index", "AttendancesNewForWeeK", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice098" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_AttendanceReport, "DepartmentAttendanceReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice098" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateComming, "Index", "DeptLateComming", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice100" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateComingSummary, "Index", "DeptLateComingSummary", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0101" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateCommingReport, "DepartmentLateComingReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                </ul>
+                            </li>
+
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-list"></i>
+                                    Leave Mng
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+
+                                    <li id="selfservice010leaverequest6" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveRequests, "Index", "LeaveRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0106rtrleavevoid" class="actionlinlk">
+                                        @Html.ActionLink("Leave Voids", "Index", "LeaveReturn", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0101leaveplan" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeavePlan, "Index", "LeavePlan", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0107medicalreaquest" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_MedicalRequests, "Index", "MedicalRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-car"></i>
+                                    Payment Request
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+                                    <li id="selfservice0103" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Request, "Index", "TravelOrderRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0104" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Expense_Claim, "Index", "TravelExpenseClaimRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice095" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.Finance_Selfcare_Payment, "Index", "PaymentRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservicef0957" class="actionlinlk">
+                                        @Html.ActionLink("Fund Transfer", "Index", "FundTransferRequest", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-clock-o"></i>
+                                    Over Time
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+                                    @if (HttpContext.Current.User.IsInRole("OverTime_Request_Approver"))
+                                    {
+                                        <li id="selfservice0102" class="actionlinlk">
+                                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_OverTimeRequest, "Index", "OverTimeRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                        </li>
+                                    }
+                                    <li id="selfservice21448" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTimeTransferMaintain, "Index", "OverTimeTransferMaintain", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-list"></i>
+                                    Delegation
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+                                    <li id="hrm025001fdg00" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorBenefit_Delegation, "Index", "DelegationSelfcares", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="hrm025001fdg00" class="actionlinlk">
+                                        @Html.ActionLink("Delegation CC", "Index", "DelegationCCs", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="selfservice0111345" class="actionlinlk">
+                                        @Html.ActionLink("Complain Response", "Index", "ComplainResponseDepartment", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0111345" class="actionlinlk">
+                                        @Html.ActionLink("Complain CC", "Index", "ComplainCC", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+                        }
+                      
+
+                       
+                        @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                        {
+
+                            <li id="selfservice0105" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_EmployeeAccident, "Index", "EmployeeAccidentRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice76fleet23" class="actionlinlk">
+                                @Html.ActionLink("Fleet Requisition", "Index", "EquipmentDemandSelfCare", new { area = "FleetManagement" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="selfservice0111345" class="actionlinlk">
+                                @Html.ActionLink("Commitment", "Index", "CommitmentDepartment", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="hrm01600100" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_Committee, "Index", "Committee", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="budget010100" class="actionlinlk">
+                                @Html.ActionLink("Budget", "Index", "BudgetPlanRegiBalance", new { area = "Budget" }, null)<b class="arrow"></b>
+                            </li>
                             <li id="selfservice091" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest, "Index", "RecruitmentRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                @Html.ActionLink("Employee Transfer Request", "Index", "EmployeeTransferRequests", new { area = "HRM" }, null)<b class="arrow"></b>
                             </li>
-                            <li id="hrm205" class="actionlinlk">
-                                @Html.ActionLink("Manpower Planning Request", "Index", "ManPowerPlanningRequest", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}
-                                @if (HttpContext.Current.User.IsInRole("HR_Training_Requester") || HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
-                            <li id="selfservice092" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_TrainingApplicant, "Index", "TrainingApplicant", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}
-                                @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
-                            <li id="selfservice069873" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingPlan, "Index", "TrainingPlan", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice093" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_NeedAssessment, "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="hrm025001fdg00" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorBenefit_Delegation, "Index", "Delegation", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="hrm025001fdg00" class="actionlinlk">
-                                @Html.ActionLink("Delegation CC", "IndexForCC", "Delegation", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}
-                                @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
                             <li class="">
                                 <a href="#" class="dropdown-toggle">
                                     <i class="menu-icon fa fa-male"></i>
@@ -152,8 +518,20 @@
                                 <b class="arrow"></b>
 
                                 <ul class="submenu">
+                                    <li id="selfservice76" class="actionlinlk">
+                                        @Html.ActionLink("Evaluators Request", "Index", "EvaluatorsRequest", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservicearchive12" class="actionlinlk">
+                                        @Html.ActionLink("Evaluators Response", "Index", "AssignEvaluators", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
                                     <li id="selfservice094performance" class="actionlinlk">
-                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EmployeePerformance, "Index", "EmployeePerformance", new { area = "HRM" }, null)<b class="arrow fa-"></b>
+                                        @Html.ActionLink("Employee Evaluation", "Index", "EmployeePerformance", new { area = "HRM" }, null)<b class="arrow fa-"></b>
+                                    </li>
+                                    <li id="selfservice094performance" class="actionlinlk">
+                                        @Html.ActionLink("Evaluation Approval", "Index", "EmployeePerformanceSummaries", new { area = "HRM" }, null)<b class="arrow fa-"></b>
+                                    </li>
+                                    <li id="selfservice0945performance" class="actionlinlk">
+                                        @Html.ActionLink("Evaluation 2nd Level Approval", "Index", "EmployeePerformanceSecondLevelSummaries", new { area = "HRM" }, null)<b class="arrow fa-"></b>
                                     </li>
                                     <li id="selfservice0110performance" class="actionlinlk">
                                         @Html.ActionLink("Department Level Criteria", "Index", "DepartmentDefineMeasurment", new { area = "HRM" }, null)<b class="arrow"></b>
@@ -164,115 +542,16 @@
                                     <li id="selfservice0112performance" class="actionlinlk">
                                         @Html.ActionLink("Employee Performance", "EmployeePerformanceDepartment", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
                                     </li>
+                                    <li id="selfserdfvice0sdf11fgf1345" class="actionlinlk">
+                                        @Html.ActionLink("Probation Performance Setting", "Index", "ProbationPerformanceSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice011fgf1345" class="actionlinlk">
+                                        @Html.ActionLink("Probation Performance", "Index", "ProbationPerformance", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
                                 </ul>
                             </li>
-                            <li id="selfservice095" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Finance_Selfcare_Payment, "Index", "PaymentRequest", new { area = "Finance" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}
-                                @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
-                            <li id="selfservice096" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_WeeklyAttendance, "Index", "WeeklyAttendance", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice097" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_AttendanceReport, "DepartmentAttendanceReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice098" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateComming, "Index", "DeptLateComming", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice099" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateComingSummary, "Index", "DeptLateComingSummary", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0100" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateCommingReport, "DepartmentLateComingReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice21448" class="actionlinlk">
+                        }
 
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTimeTransferMaintain, "Index", "OverTimeTransferMaintain", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}
-                                @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
-                            <li id="selfservice0101" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeavePlan, "Index", "LeavePlan", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}
-                                @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
-                        }
-                        @if (HttpContext.Current.User.IsInRole("OverTime_Request_Approver"))
-                        {
-                            <li id="selfservice0102" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_OverTimeRequest, "Index", "OverTimeRequest", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                        }
-                        @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                        {
-                            @*}*@
-                            <li id="selfservice0103" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Request, "Index", "TravelOrderRequest", new { area = "Finance" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0104" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Expense_Claim, "Index", "TravelExpenseClaimRequest", new { area = "Finance" }, null)<b class="arrow"></b>
-                            </li>
-                            @*<li id="hrm079" class="actionlinlk">
-                                  @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Expense_Claim, "Index", "TravelExpenseClaimRequest", new { area = "Finance" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="hrm079" class="actionlinlk">
-                                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.AP_Travel_Expence_Expence, "Index", "TravelExpenseExpenseRequest", new { area = "Finance" }, null)<b class="arrow"></b>
-                                </li>*@
-
-                            @*@if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                {*@
-                            <li id="selfservice0105" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_EmployeeAccident, "Index", "EmployeeAccidentRequest", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0106" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveRequests, "Index", "LeaveRequest", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0106rtr" class="actionlinlk">
-                                @Html.ActionLink("Leave Voids", "Index", "LeaveReturn", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0107" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_MedicalRequests, "Index", "MedicalRequest", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0108" class="actionlinlk">
-                                @Html.ActionLink("Procurement Need", "Index", "ProcurementNeedSelfService", new { area = "Procurement" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0109fi" class="actionlinlk">
-                                @Html.ActionLink("Fixed Asset Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0109st" class="actionlinlk">
-                                @Html.ActionLink("Stock Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0109" class="actionlinlk">
-                                @Html.ActionLink("Service Request", "Index", "ServiceRequisitionSelfCare", new { area = "Procurement" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="prc0007788serrec" class="actionlinlk">
-                                @Html.ActionLink("Service Receive", "Index", "ServiceReceive", new { area = "Procurement" }, null)<b class="arrow"></b>
-                            </li>
-                           
-                            <li id="selfservice0111345" class="actionlinlk">
-                                @Html.ActionLink("Complain Response", "Index", "ComplainResponseDepartment", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0111345" class="actionlinlk">
-                                @Html.ActionLink("Complain CC", "Index", "ComplainCC", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0111345" class="actionlinlk">
-                                @Html.ActionLink("Commitment", "Index", "CommitmentDepartment", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice011fgf1345" class="actionlinlk">
-                                @Html.ActionLink("Probation Performance", "Index", "ProbationPerformance", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfserdfvice0sdf11fgf1345" class="actionlinlk">
-                                @Html.ActionLink("Probation Performance Setting", "Index", "ProbationPerformanceSetting", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice011fgf1345sedfdg" class="actionlinlk">
-                                @Html.ActionLink("Department Sent Letter", "Index", "DepartmentSentLetter", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            @*}*@
-                        }
                     </ul>
                 </li>
             }

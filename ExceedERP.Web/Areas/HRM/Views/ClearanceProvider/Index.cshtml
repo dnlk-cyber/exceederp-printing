@@ -9,9 +9,10 @@
           .Name("ClearanceProviderGrid")
       .Columns(columns =>
       {
-         // columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["Department"], "Name", "Name").EditorTemplateName("Organization").Width(300);
-          columns.Bound(c => c.Name).EditorTemplateName("DepartmentAutoComplate").Width(300);
-          columns.Bound(c => c.Remark);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["clearanceType"], "LookupId", "Description").EditorTemplateName("ClearanceType").Width(200);
+          columns.Bound(c => c.Name).EditorTemplateName("DepartmentAutoComplate").Width(170);
+          columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
           {
               if (HttpContext.Current.User.IsInRole("HR_Company_User"))

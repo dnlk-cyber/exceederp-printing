@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetTerminationReasonSummary(DateTime from, DateTime to, string branchId, string orgStructureId)
+        public List<EmployeeSummary> GetTerminationReasonSummary(DateTime? from, DateTime? to, string branchId, string orgStructureId)
         {
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             EmployeeSummary employee = new EmployeeSummary();
@@ -38,9 +38,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var empIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId).Select(x => x.EmployeeId);
                 terminations = terminations.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-            if (from.Date <= to.Date)
+            if (from.HasValue)
             {
-                terminations = terminations.Where(x => x.TerminationDate.Date >= from.Date && x.TerminationDate.Date <= to.Date).ToList();
+                terminations = terminations.Where(x => x.TerminationDate.Date >= from.Value.Date ).ToList();
+            }
+            if (to.HasValue)
+            {
+                terminations = terminations.Where(x => x.TerminationDate.Date <= to.Value.Date ).ToList();
             }
 
             var males = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId);
@@ -50,12 +54,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             foreach (var type in types)
             {
                 employee = new EmployeeSummary();
-
                 employee.Criteria = type.Description;
-
                 employee.NumberOfMaleEmployee = terminations.Where(x => males.Contains(x.EmployeeId)).Where(x => x.LookupId == type.LookupId).Count();
                 employee.NumberOfFemaleEmployee = terminations.Where(x => females.Contains(x.EmployeeId)).Where(x => x.LookupId == type.LookupId).Count();
-
                 employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
 
                 list.Add(employee);

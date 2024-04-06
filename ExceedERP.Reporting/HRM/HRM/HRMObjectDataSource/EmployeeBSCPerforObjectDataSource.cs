@@ -19,7 +19,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeBscPerfromanceVM> GetEmployeeBSCPerformance(string branchId, string orgStructureId, string year, string status)
+        public List<EmployeeBscPerfromanceVM> GetEmployeeBSCPerformance(string branchId, string orgStructureId, string year, string status,string BusinessUnit,string rankName)
         {
             List<EmployeeBscPerfromanceVM> employeePerformanceList = new List<EmployeeBscPerfromanceVM>();
 
@@ -157,7 +157,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
 
             }
-
+            if (!string.IsNullOrEmpty(rankName))
+            {
+                employeePerformanceList = employeePerformanceList.Where(x => x.Rank == rankName).ToList();
+            }
             return employeePerformanceList;
         }
 

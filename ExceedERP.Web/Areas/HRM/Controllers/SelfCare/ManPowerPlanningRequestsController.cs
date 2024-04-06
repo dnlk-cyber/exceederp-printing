@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -15,7 +16,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
-    public class ManPowerPlanningRequestsController : Controller
+    public class ManPowerPlanningRequestsController : BaseController
     {
         // GET: HRM/ManPowerPlanningRequests
         ExceedDbContext db = new ExceedDbContext();

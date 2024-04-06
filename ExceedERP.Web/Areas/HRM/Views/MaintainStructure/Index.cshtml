@@ -8,69 +8,67 @@
 @(Html.Kendo().TabStrip()
         .Name("tabstrip")
         .Animation(animation =>
-            animation.Open(effect =>
+         animation.Open(effect =>
                 effect.Fade(FadeDirection.In)))
         .Items(tabstrip =>
         {
-            tabstrip.Add().Text("Maintain Company")
+            tabstrip.Add().Text(Resources.Navigator_Company_MaintianCompany)
                 .Selected(true)
                 .Content(@<text>
-
-
                   @(Html.Kendo().Grid<MainCompany>()
-                              .Name("MainCompanygrid")
-                          .Columns(columns =>
-                          {
-                                    columns.Bound(c => c.TradeName);
-                                    columns.Bound(c => c.BrandName);
+                    .Name("MainCompanygrid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.TradeName);
+                        columns.Bound(c => c.BrandName);
                         //columns.ForeignKey(c => c.BusinessType, (System.Collections.IEnumerable)ViewData["BusinessTypes"], "Value", "Text").EditorTemplateName("BusinessType").Width(150);
                         columns.Bound(c => c.AmharicName);
-                         columns.Bound(c => c.Abbreviation);
-                         columns.Command(command =>
-                      {                       
-                                 if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                 {
-                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                 }
-                                 if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                        columns.Bound(c => c.Abbreviation);
+                        columns.Command(command =>
+                        {
+                            if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            }
+                            if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
 
-                                 {
-                                     command.Destroy().Text(Resources.ActionButton_Cancel);
-                                 }
-                     }).Width(200);
-                                                                  })
-                                                            .ToolBar(toolbar =>
-                                              {
-                                                        if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                                        {
-                                                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                        }
-                                                    })
-                                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Company").Window(window => { window.Title(Resources.Navigator_Company_MaintianCompany); window.Scrollable(false); }))
+                            {
+                               // command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }
+                        }).Width(200);
+                    })
+                                   .ToolBar(toolbar =>
+                                   {
+                                       if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                       {
+                                           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                       }
+                                   })
+                                                                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Company").Window(window => { window.Title(Resources.Navigator_Company_MaintianCompany); window.Scrollable(false); }))
                                                                 .Scrollable(h => h.Height(500))
-                                                                   .Groupable()
-                                                                            .Sortable(sortable =>
-                                                                            {
-                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                  })
+                                                                .Groupable()
+                                                                .Sortable(sortable =>
+                                                                {
+                                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                                })
                                                               .ClientDetailTemplateId("template")
                                                                 .Filterable()
                                                                    .Pageable(pageable => pageable
-                                                                                              .Input(true)
-                                                                                              .Numeric(false)
-                                                                                              .Refresh(true)
-                                                                                              .PageSizes(true)
-                                                                                              .ButtonCount(5))
+                                                                  .Input(true)
+                                                                  .Numeric(false)
+                                                                  .Refresh(true)
+                                                                  .PageSizes(true)
+                                                                  .ButtonCount(5))
                                                             // .Events(x => x.DataBound("onDataBound"))
 
                                                             .DataSource(dataSource => dataSource
                                                                 .Ajax()
                                                                                              .Events(events =>
-                                                                   {
-                                                                             events.Error("error_handler(\"MainCompanygrid\")");
-                                                                             events.RequestStart("onRequestStart(\"MainCompanygrid\")");
-                                                                             events.RequestEnd("onRequestEnd(\"MainCompanygrid\")");
-                                                                         })
+                                                                                             {
+                                                                                                 events.Error("error_handler(\"MainCompanygrid\")");
+                                                                                                 events.RequestStart("onRequestStart(\"MainCompanygrid\")");
+                                                                                                 events.RequestEnd("onRequestEnd(\"MainCompanygrid\")");
+                                                                                             })
 
                                                                 .Model(model => model.Id(p => p.MainCompanyId))
                                                                 .Read(read => read.Action("Companies_Read", "Company"))
@@ -82,7 +80,7 @@
 
               </text>);
 
-                  tabstrip.Add().Text("Maintain Structure")
+                  tabstrip.Add().Text(Resources.Navigator_Company_MaintainStructure)
                  .Content(@<text>
 
 
@@ -103,7 +101,7 @@
                                       if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
 
                                       {
-                                          command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                          //command.Destroy().Text(Resources.ActionButton_Cancel);//
                           }
                                   }).Width(200);
                                       })
@@ -132,30 +130,29 @@
                                                             .ProxyURL(Url.Action("Pdf_Export_Save", "Structure"))
                                             )
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                     .Scrollable(h => h.Height(500))
-                                         .Groupable()
-                                                  .Sortable(sortable =>
-                                                  {
-                                                              sortable.SortMode(GridSortMode.SingleColumn);
-                                                          })
+                              .Scrollable(h => h.Height(500))
+                              .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
                                       .Filterable()
-                                         .Pageable(pageable => pageable
-                                                                    .Input(true)
-                                                                    .Numeric(false)
-                                                                    .Refresh(true)
-                                                                    .PageSizes(true)
-                                                                    .ButtonCount(5))
-
-                              .DataSource(dataSource => dataSource
+                                      .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                                                 
+                                  .DataSource(dataSource => dataSource
                                   .Ajax()
-                                       .Events(events =>
-                                                                             {
-                                                                                         events.Error("error_handler(\"Structuregrid\")");
-                                                                                         events.RequestStart("onRequestStart(\"Structuregrid\")");
-                                                                                         events.RequestEnd("onRequestEnd(\"Structuregrid\")");
-                                                                                     })
-
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"Structuregrid\")");
+                                      events.RequestStart("onRequestStart(\"Structuregrid\")");
+                                      events.RequestEnd("onRequestEnd(\"Structuregrid\")");
+                                  })
+                                                            
                                   .Model(model => model.Id(p => p.StructureId))
                                   .Read(read => read.Action("Structure_Read", "Structure"))
                                   .Create(create => create.Action("Structure_Create", "Structure"))
@@ -165,82 +162,89 @@
                                   ))
                 </text>);
 
-                                                          tabstrip.Add().Text("Maintain Company Structure")
+                    tabstrip.Add().Text(Resources.Navigator_Company_MaintainCompanyStructure)
                           .Content(@<text>
 
                             @(Html.Kendo().Grid<MainCompanyStructure>()
-                                          .Name("MainCompanyStructuregrid")
+                                      .Name("MainCompanyStructuregrid")
                                       .Columns(columns =>
                                       {
-                                                  columns.Bound(c => c.Name).Width(150);//, (System.Collections.IEnumerable)ViewData["structures"], "LookupId", "Description").Width(120).EditorTemplateName("structures");
-                                      columns.ForeignKey(c => c.StructureId, (System.Collections.IEnumerable)ViewData["structures"], "StructureId", "Name").Width(120).EditorTemplateName("structures");
-                                                  columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["Parent"], "OrgStructureId", "Name").EditorTemplateName("Sections").Width(150);
-                                                  columns.Bound(c => c.Remark).Width(100).Visible(false);
-                                                  columns.Command(command =>
-                                                  {
-                                                      if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                          columns.Bound(c => c.Name).Width(150);//, (System.Collections.IEnumerable)ViewData["structures"], "LookupId", "Description").Width(120).EditorTemplateName("structures");
+                                          columns.ForeignKey(c => c.StructureId, (System.Collections.IEnumerable)ViewData["structures"], "StructureId", "Name").Width(120).EditorTemplateName("structures").Filterable(ftb => ftb.Multi(true).Search(true));
+                                          columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["Parent"], "OrgStructureId", "Name").EditorTemplateName("Sections").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                                          columns.Bound(c => c.Remark).Width(100).Visible(false);
+                                          columns.Bound(c => c.IsActive).ClientTemplate(
+                                                        "<input type='checkbox' disabled = 'true' value='#= IsActive#' " +
+                                                        "# if (IsActive) { #" +
+                                                        "checked='checked'" +
+                                                        "# } #" +
+                                                        "/>"
+                                                        ).Width(130);
+                                          columns.Command(command =>
+                                          {
+                                              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                              {
+                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                  command.Custom("").Click("EnableOrDisableActive").Text("Approve Structure").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "EnableDisable ", @id = "enableDisable" });
 
-                                                      {
-                                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                      }
-                                                      if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-
-                                                      {
-                                                          command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                          }
-                                                  }).Width(100);
-                                              })
+                                              }
+                                              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                                              {
+                                                 // command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                              }
+                                          }).Width(100);
+                                      })
                                       // .Events(e => e.Edit("cokclick"))
                                       .ToolBar(toolbar =>
                                       {
-                                                  if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-
-                                                  {
-                                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                  }
-                                                  if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-
-
-                                                  {
-                                                      toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                                                      toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                                                  }
-                                              })
+                                          if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                          {
+                                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                          }
+                                          if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                                          {
+                                              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                                              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                                          }
+                                      })
                                            .Excel(excel => excel
-                                                                            .FileName(Resources.Navigator_Company_MaintainCompanyStructure + ".xlsx")
-                                                                .Filterable(true)
-                                                                    .AllPages(true)
-                                                                                    .ProxyURL(Url.Action("Excel_Export_Save", "CreateStructure"))
-                                                            )
-                                                                 .Pdf(pdf => pdf
-                                                                .AllPages()
-                                                                                .FileName(Resources.Navigator_Company_MaintainCompanyStructure + ".pdf")
-                                                                                    .ProxyURL(Url.Action("Pdf_Export_Save", "CreateStructure"))
-                                                            )
-                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CreateStructure").Window(window => { window.Title(Resources.Navigator_Company_MaintainCompanyStructure); window.Scrollable(false); }))
+                                           .FileName(Resources.Navigator_Company_MaintainCompanyStructure + ".xlsx")
+                                           .Filterable(true)
+                                           .AllPages(true)
+                                           .ProxyURL(Url.Action("Excel_Export_Save", "CreateStructure"))
+                                             )
+                                           .Pdf(pdf => pdf
+                                           .AllPages()
+                                           .FileName(Resources.Navigator_Company_MaintainCompanyStructure + ".pdf")
+                                           .ProxyURL(Url.Action("Pdf_Export_Save", "CreateStructure"))
+                                             )
+                                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CreateStructure").Window(window => { window.Title(Resources.Navigator_Company_MaintainCompanyStructure); window.Scrollable(false); }))
                                           .Scrollable(h => h.Height(500))
-                                             .Groupable()
-                                                      .Sortable(sortable =>
-                                                      {
-                                                                  sortable.SortMode(GridSortMode.SingleColumn);
-                                                              })
+                                          .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
                                           .Filterable()
-                                             .Pageable(pageable => pageable
-                                                                        .Input(true)
-                                                                        .Numeric(false)
-                                                                        .Refresh(true)
-                                                                        .PageSizes(true)
-                                                                        .ButtonCount(5))
+                                          .Pageable(pageable => pageable
+                                          .Input(true)
+                                          .Numeric(false)
+                                          .Refresh(true)
+                                          .PageSizes(true)
+                                          .ButtonCount(5))
                                       .DataSource(dataSource => dataSource
                                           .Ajax()
                                               .Events(events =>
-                                                        {
-                                                                    events.Error("error_handler(\"MainCompanyStructuregrid\")");
-                                                                    events.RequestStart("onRequestStart(\"MainCompanyStructuregrid\")");
-                                                                    events.RequestEnd("onRequestEnd(\"MainCompanyStructuregrid\")");
-                                                                })
+                                              {
+                                                  events.Error("error_handler(\"MainCompanyStructuregrid\")");
+                                                  events.RequestStart("onRequestStart(\"MainCompanyStructuregrid\")");
+                                                  events.RequestEnd("onRequestEnd(\"MainCompanyStructuregrid\")");
+                                              })
 
-                                          .Model(model => model.Id(p => p.OrgStructureId))
+                                          .Model(model => {
+                                              model.Id(p => p.OrgStructureId);
+                                              model.Field(p => p.IsActive).Editable(false);
+                                          })
                                           .Read(read => read.Action("MainCompanyStructures_Read", "CreateStructure"))
                                           .Create(create => create.Action("MainCompanyStructures_Create", "CreateStructure"))
                                           .Update(update => update.Action("MainCompanyStructures_Update", "CreateStructure"))
@@ -406,14 +410,14 @@
                                                         @<text>
 
                                                             @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Address>()
-                                                                                                          .Name("AddresseGrid_#=MainCompanyId#")
-                                                                                                  .Columns(columns =>
-                                                                                                  {
-                                                                                                              columns.Bound(c => c.Category).EditorTemplateName("Enum");
-                                                                                                              columns.Bound(c => c.Value);
-                                                                                                              columns.Bound(c => c.Remark);
-                                                                                                              columns.Command(command =>
+                                                                       .Name("AddresseGrid_#=MainCompanyId#")
+                                                                         .Columns(columns =>
                                                                           {
+                                                                               columns.Bound(c => c.Category).EditorTemplateName("Enum");
+                                                                               columns.Bound(c => c.Value);
+                                                                               columns.Bound(c => c.Remark);
+                                                                               columns.Command(command =>
+                                                                          {                                 
                                                                                                   if (HttpContext.Current.User.IsInRole("HR_Company_User"))
                                                                                                   {
                                                                                                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -1284,4 +1288,34 @@
             //});
         }
     }
-                            </script>
+  </script>
+<script>
+      function EnableOrDisableActive(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#MainCompanyStructuregrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.OrgStructureId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("EnableOrDisable", "CreateStructure")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+</script>

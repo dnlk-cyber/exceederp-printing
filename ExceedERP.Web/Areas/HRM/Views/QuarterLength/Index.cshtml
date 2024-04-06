@@ -14,9 +14,15 @@
           columns.Bound(c => c.Length);
 
           columns.Bound(c => c.Remark);
-          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
-      .ToolBar(toolbar => {
+      .ToolBar(toolbar => 
+      {
           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -28,11 +34,11 @@
                           })
               .Filterable()
                  .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
+                      .ButtonCount(5))
       .DataSource(dataSource => dataSource
               .Ajax()
                    .Events(events =>
@@ -64,7 +70,7 @@
                           .Columns(columns =>
                           {
                               columns.Bound(c => c.Name);
-                              columns.Bound(c => c.AmharicName);
+                              //columns.Bound(c => c.AmharicName);
                               columns.Bound(c => c.Sequence);
                               columns.Bound(c => c.Remark);
                               columns.Command(command =>
@@ -78,7 +84,7 @@
                               //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
                           })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Scrollable(h => h.Height(500))
+                          .Scrollable(h => h.Height("auto"))
                           .DataSource(dataSource => dataSource
                               .Ajax()
                               .Events(events =>

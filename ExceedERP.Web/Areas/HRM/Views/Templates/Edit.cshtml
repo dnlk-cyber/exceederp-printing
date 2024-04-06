@@ -1,10 +1,11 @@
-﻿@model ExceedERP.Core.Domain.HRM.Templates.Template
+﻿@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.Templates.Template
 
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Edit Templates </legend>
+<legend>@Resources.Edit_Templates </legend>
 
 @using (Html.BeginForm())
 {
@@ -35,12 +36,12 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="@Resources.Button_Submit" class="btn btn-default" />
             </div>
         </div>
     </div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index")
 </div>

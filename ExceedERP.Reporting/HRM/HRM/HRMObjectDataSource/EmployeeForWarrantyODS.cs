@@ -21,7 +21,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<WarrantyLetterViewModel> warrantyList = new List<WarrantyLetterViewModel>();
        
 
-            var requestedWarrantys = db.ExprianceRequests.Where(x=>x.RequestType == Core.Domain.Common.SelfServiceRequestType.የዋስትና_ደብዳቤ).ToList();
+            var requestedWarrantys = db.ExprianceRequests.Where(x=>x.RequestType == Core.Domain.Common.SelfServiceRequestType.Warranty_Letter).ToList();
             foreach(var requestedWarranty in requestedWarrantys)
             {
                 var waranty = new WarrantyLetterViewModel();

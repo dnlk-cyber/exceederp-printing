@@ -107,11 +107,10 @@
                 @Html.LabelFor(model => model.Day, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.Day)
-                                                     .ValuePrimitive(true)
-                                                     .DataTextField("Text")
-                                                     .DataValueField("Value")
-
-                                                     .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveDay)))
+                                     .ValuePrimitive(true)
+                                     .DataTextField("Text")
+                                     .DataValueField("Value")
+                                     .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveDay)))
                     )
                     @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
                 </div>

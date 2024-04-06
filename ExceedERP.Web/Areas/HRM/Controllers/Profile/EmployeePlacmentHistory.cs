@@ -66,6 +66,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
 
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
+        public ActionResult PlacementHistoriesCollections_Read([DataSourceRequest]DataSourceRequest request, int empId)
+        {
+            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            IQueryable<PlacementHistory> placementhistories = db.PlacementHistories.Where(x => x.EmployeeId == empId);
+            DataSourceResult result = placementhistories.ToDataSourceResult(request, placementHistory => new
+            {
+                PlacementHistoryId = placementHistory.PlacementHistoryId,
+                EmployeeId = placementHistory.EmployeeId,
+                From = placementHistory.From,
+                To = placementHistory.To,
+                JobTitle = placementHistory.JobTitle,
+                Rank = placementHistory.Rank,
+                Step = placementHistory.Step,
+                Salary = placementHistory.Salary,
+                LookupId = placementHistory.LookupId,
+                Remark = placementHistory.Remark,
+                DateCreated = placementHistory.DateCreated,
+                LastModified = placementHistory.LastModified,
+                CreatedBy = placementHistory.CreatedBy,
+                ModifiedBy = placementHistory.ModifiedBy,
+                FromAmharic = placementHistory.FromAmharic,
+                ToAmharic = placementHistory.ToAmharic,
+                EmployeeCode = placementHistory.EmployeeCode,
+                OrgBranchName = placementHistory.OrgBranchName,
+                EmployementType = placementHistory.EmployementType
+            });
+
+            return Json(result);
+        }
+        [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
         public ActionResult PlacementHistories_Read([DataSourceRequest]DataSourceRequest request, int empId)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
@@ -77,7 +107,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 From = placementHistory.From,
                 To = placementHistory.To,
                 JobTitle = placementHistory.JobTitle,
-
                 Rank = placementHistory.Rank,
                 Step = placementHistory.Step,
                 Salary = placementHistory.Salary,
@@ -138,7 +167,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 ModelState.AddModelError("", "End date should be less or equal to the current date!!");
             }
-
+            
             var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == placementHistory.EmployeeId);
             if(person != null)
             {
@@ -171,7 +200,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 placementHistory.EmployeeCode = emp.EmployeeCode;
             }
+            var histories = db.PlacementHistories.AsNoTracking().ToList().Where(x =>x.EmployeeId==empIdT&& x.From.Date >= placementHistory.From.Date && x.To.Date <= placementHistory.To.Date /*&& x.JobTitle.ToLower().Trim() == placementHistory.JobTitle.ToLower().Trim()&&x.LookupId==placementHistory.LookupId*/);
+            if (histories.Any())
+            {
+                ModelState.AddModelError("", "you have already Registered");
 
+            }
             if (ModelState.IsValid)
             {
                
@@ -211,7 +245,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult PlacementHistories_Update([DataSourceRequest]DataSourceRequest request, PlacementHistory placementHistory)
         {
             ModelState.Clear();
-
             if (placementHistory.FromAmharic != null)
             {
                 var splitDate = placementHistory.FromAmharic.Split('/');
@@ -274,7 +307,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     From = placementHistory.From,
                     To = placementHistory.To,
                     JobTitle = placementHistory.JobTitle,
-
                     Rank = placementHistory.Rank,
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,

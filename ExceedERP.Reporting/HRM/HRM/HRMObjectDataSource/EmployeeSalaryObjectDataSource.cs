@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -16,7 +17,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeJob> GetEmployeeSalary(int min, int max, string branchId, string orgStructureId, DateTime from, DateTime to, string status)
+        public List<EmployeeJob> GetEmployeeSalary(int min, int max, string branchId,string bussinessUnitId, string orgStructureId, DateTime from, DateTime to, string status)
         {
             List<EmployeeJob> EmployeeInfoList = new List<EmployeeJob>();
 
@@ -26,6 +27,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(branchId, out int braId);
                 placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            }
+            if (bussinessUnitId != null)
+            {
+                int.TryParse(bussinessUnitId, out int uId);
+                placements = placements.Where(x=>x.BusinessUnitId==uId).ToList();
             }
             if (orgStructureId != null)
             {
@@ -61,15 +67,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
-                        if (employee.Gender == Gender.MALE)
-                        {
-                            EmployeeInfo.Sex = "ወንድ";
-                        }
-                        else
-                        {
-                            EmployeeInfo.Sex = "ሴት";
-                        }
-
+                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
                         EmployeeInfo.FullName = employee.FullNameAmharic;
 
                         var rank = db.Ranks.FirstOrDefault(x => x.RankId == l.RankId);
@@ -104,14 +102,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
-                        if (employee.Gender == Gender.MALE)
-                        {
-                            EmployeeInfo.Sex = "ወንድ";
-                        }
-                        else
-                        {
-                            EmployeeInfo.Sex = "ሴት";
-                        }
+                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
                         EmployeeInfo.FullName = employee.FullNameAmharic;
 
                         var rank = db.Ranks.FirstOrDefault(x => x.RankId == l.RankId);

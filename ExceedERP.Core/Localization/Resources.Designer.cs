@@ -19,7 +19,7 @@ namespace ExceedERP.Core.Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -57,6 +57,51 @@ namespace ExceedERP.Core.Localization {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account Code.
+        /// </summary>
+        public static string AccountCode {
+            get {
+                return ResourceManager.GetString("AccountCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to List.
+        /// </summary>
+        public static string Action_Button_Back_to_List {
+            get {
+                return ResourceManager.GetString("Action_Button_Back_to_List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Action.
+        /// </summary>
+        public static string ActionButton_Action {
+            get {
+                return ResourceManager.GetString("ActionButton_Action", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appove.
+        /// </summary>
+        public static string ActionButton_Action_Appove {
+            get {
+                return ResourceManager.GetString("ActionButton_Action_Appove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decide.
+        /// </summary>
+        public static string ActionButton_Action_Decide {
+            get {
+                return ResourceManager.GetString("ActionButton_Action_Decide", resourceCulture);
             }
         }
         
@@ -102,6 +147,15 @@ namespace ExceedERP.Core.Localization {
         public static string ActionButton_CopyTemp {
             get {
                 return ResourceManager.GetString("ActionButton_CopyTemp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ActionButton_Delete {
+            get {
+                return ResourceManager.GetString("ActionButton_Delete", resourceCulture);
             }
         }
         
@@ -178,11 +232,38 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        public static string ActionButton_submit {
+            get {
+                return ResourceManager.GetString("ActionButton_submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update.
         /// </summary>
         public static string ActionButton_Update {
             get {
                 return ResourceManager.GetString("ActionButton_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Address.
+        /// </summary>
+        public static string Address {
+            get {
+                return ResourceManager.GetString("Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Afternoon.
+        /// </summary>
+        public static string Afternoon {
+            get {
+                return ResourceManager.GetString("Afternoon", resourceCulture);
             }
         }
         
@@ -250,11 +331,155 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applicant Name.
+        /// </summary>
+        public static string ApplicantName {
+            get {
+                return ResourceManager.GetString("ApplicantName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application Form.
+        /// </summary>
+        public static string ApplicationForm {
+            get {
+                return ResourceManager.GetString("ApplicationForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approve Attendance.
+        /// </summary>
+        public static string Approve_Attendance {
+            get {
+                return ResourceManager.GetString("Approve_Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sender Name.
+        /// </summary>
+        public static string Archive_SenderName {
+            get {
+                return ResourceManager.GetString("Archive_SenderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete this?.
+        /// </summary>
+        public static string Are_you_sure_you_want_to_delete_this {
+            get {
+                return ResourceManager.GetString("Are_you_sure_you_want_to_delete_this", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attendance.
+        /// </summary>
+        public static string Attendance {
+            get {
+                return ResourceManager.GetString("Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attendance Date.
+        /// </summary>
+        public static string AttendanceDate {
+            get {
+                return ResourceManager.GetString("AttendanceDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bussiness Unit.
+        /// </summary>
+        public static string BussinessUnit {
+            get {
+                return ResourceManager.GetString("BussinessUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Button_Close {
+            get {
+                return ResourceManager.GetString("Button_Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Force Open.
+        /// </summary>
+        public static string Button_Force_Open {
+            get {
+                return ResourceManager.GetString("Button_Force_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Force Terminate.
+        /// </summary>
+        public static string Button_Force_Treminate {
+            get {
+                return ResourceManager.GetString("Button_Force_Treminate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string Button_Open {
+            get {
+                return ResourceManager.GetString("Button_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paid.
+        /// </summary>
+        public static string Button_Paid {
+            get {
+                return ResourceManager.GetString("Button_Paid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to submit.
+        /// </summary>
+        public static string Button_Submit {
+            get {
+                return ResourceManager.GetString("Button_Submit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Transfer to Plan.
         /// </summary>
         public static string Button_Transfer_To_Plan {
             get {
                 return ResourceManager.GetString("Button_Transfer_To_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Certeficate Name.
+        /// </summary>
+        public static string CerteficateName {
+            get {
+                return ResourceManager.GetString("CerteficateName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Certeficate Type.
+        /// </summary>
+        public static string CerteficateType {
+            get {
+                return ResourceManager.GetString("CerteficateType", resourceCulture);
             }
         }
         
@@ -430,7 +655,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Amharic Name.
+        ///   Looks up a localized string similar to Local Name.
         /// </summary>
         public static string Common_Company_MainCompany_AmharicName {
             get {
@@ -835,6 +1060,33 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to English Name.
+        /// </summary>
+        public static string Common_Lookup_Description_Eng {
+            get {
+                return ResourceManager.GetString("Common_Lookup_Description_Eng", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information One.
+        /// </summary>
+        public static string Common_Lookup_Description_Eng_Information_one {
+            get {
+                return ResourceManager.GetString("Common_Lookup_Description_Eng_Information_one", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information Two.
+        /// </summary>
+        public static string Common_Lookup_Description_Eng_Information_Two {
+            get {
+                return ResourceManager.GetString("Common_Lookup_Description_Eng_Information_Two", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string Common_Lookup_LookupType {
@@ -925,7 +1177,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Name  (Am).
+        ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Common_PersonEmployee_FirstName {
             get {
@@ -979,7 +1231,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Grand Father Name (Am).
+        ///   Looks up a localized string similar to Grand Father Name.
         /// </summary>
         public static string Common_PersonEmployee_LastName {
             get {
@@ -1006,7 +1258,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Father Name  (Am).
+        ///   Looks up a localized string similar to Father Name.
         /// </summary>
         public static string Common_PersonEmployee_MiddleName {
             get {
@@ -1105,6 +1357,78 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Complain Description.
+        /// </summary>
+        public static string Complain_Description {
+            get {
+                return ResourceManager.GetString("Complain_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Templates here.
+        /// </summary>
+        public static string Create_Templates_here {
+            get {
+                return ResourceManager.GetString("Create_Templates_here", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Value.
+        /// </summary>
+        public static string CurrentValue {
+            get {
+                return ResourceManager.GetString("CurrentValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dashboard.
+        /// </summary>
+        public static string Dashboard {
+            get {
+                return ResourceManager.GetString("Dashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string Date {
+            get {
+                return ResourceManager.GetString("Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decisions.
+        /// </summary>
+        public static string Decisions {
+            get {
+                return ResourceManager.GetString("Decisions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department.
+        /// </summary>
+        public static string Department {
+            get {
+                return ResourceManager.GetString("Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Details.
         /// </summary>
         public static string Details {
@@ -1123,6 +1447,1059 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Agenda.
+        /// </summary>
+        public static string Ecabinet_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to approve.
+        /// </summary>
+        public static string Ecabinet_Agenda_btn_approve {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_btn_approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to reject.
+        /// </summary>
+        public static string Ecabinet_Agenda_btn_reject {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_btn_reject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date Assigned.
+        /// </summary>
+        public static string Ecabinet_Agenda_Date_Assigned {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_Date_Assigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string Ecabinet_Agenda_File {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attached Date.
+        /// </summary>
+        public static string Ecabinet_Agenda_File_Attached_Date {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_File_Attached_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string Ecabinet_Agenda_File_DownLoad {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_File_DownLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string Ecabinet_Agenda_File_File {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_File_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Name.
+        /// </summary>
+        public static string Ecabinet_Agenda_File_FileName {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_File_FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Path.
+        /// </summary>
+        public static string Ecabinet_Agenda_File_FilePath {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_File_FilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GeezDate.
+        /// </summary>
+        public static string Ecabinet_Agenda_GeezDate {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_GeezDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rejected.
+        /// </summary>
+        public static string Ecabinet_Agenda_Rejected {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_Rejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reason For Rejection.
+        /// </summary>
+        public static string Ecabinet_Agenda_Response_Reason_For_Rejection {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_Response_Reason_For_Rejection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to send.
+        /// </summary>
+        public static string Ecabinet_Agenda_Send {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload File.
+        /// </summary>
+        public static string Ecabinet_Agenda_Upload_File {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_Upload_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Window.
+        /// </summary>
+        public static string Ecabinet_Agenda_Window {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agenda_Window", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Agenda Content.
+        /// </summary>
+        public static string Ecabinet_AgendaContent {
+            get {
+                return ResourceManager.GetString("Ecabinet_AgendaContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Agendas.
+        /// </summary>
+        public static string Ecabinet_Agendas {
+            get {
+                return ResourceManager.GetString("Ecabinet_Agendas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attendance.
+        /// </summary>
+        public static string Ecabinet_Attendance {
+            get {
+                return ResourceManager.GetString("Ecabinet_Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FullName.
+        /// </summary>
+        public static string Ecabinet_Attendance_CabinetMemberId {
+            get {
+                return ResourceManager.GetString("Ecabinet_Attendance_CabinetMemberId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signature.
+        /// </summary>
+        public static string Ecabinet_Attendance_Signature {
+            get {
+                return ResourceManager.GetString("Ecabinet_Attendance_Signature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cabinet Name.
+        /// </summary>
+        public static string Ecabinet_Cabinet_CabinetName {
+            get {
+                return ResourceManager.GetString("Ecabinet_Cabinet_CabinetName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cabinet Members.
+        /// </summary>
+        public static string Ecabinet_Cabinet_Members {
+            get {
+                return ResourceManager.GetString("Ecabinet_Cabinet_Members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Address.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Address {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date  Birth.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_DateOfBirth {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_DateOfBirth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Email {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BA.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_BA {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_BA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bsc.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_Bsc {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_Bsc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Diploma.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_Diploma {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_Diploma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MA.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_MA {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_MA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Msc.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_Msc {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_Msc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_Others {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_Others", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PHD.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Enum_Level_PHD {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Enum_Level_PHD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Female.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Geneder_Female {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Geneder_Female", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gender.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Geneder_Genders {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Geneder_Genders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Male.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Geneder_Male {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Geneder_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to House Number.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_HouseNumber {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_HouseNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ID Card.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_IdentityCard {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_IdentityCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Education Level.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Level_EducLevel {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Level_EducLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member Name.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_MemberName {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_MemberName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone Number.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_PhoneNumber {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_PhoneNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chair Man.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Position_ChairMan {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Position_ChairMan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dupty Chair Man.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Position_DuptyChairMan {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Position_DuptyChairMan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Position_Member {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Position_Member", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Responsiblity.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Position_Responsiblity {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Position_Responsiblity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secretary.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Position_Secretary {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Position_Secretary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profile Name.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_ProfileName {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_ProfileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signature.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Signature {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Signature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Ecabinet_CabinetMember_Title {
+            get {
+                return ResourceManager.GetString("Ecabinet_CabinetMember_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Committe Name.
+        /// </summary>
+        public static string Ecabinet_Committe_CommitteName {
+            get {
+                return ResourceManager.GetString("Ecabinet_Committe_CommitteName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Committe Responsibility.
+        /// </summary>
+        public static string Ecabinet_Committe_CommResponsibility {
+            get {
+                return ResourceManager.GetString("Ecabinet_Committe_CommResponsibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approved &amp; Rejected Agends.
+        /// </summary>
+        public static string Ecabinet_DashBoard_Approved_and_Rejected_Agendas {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_Approved_and_Rejected_Agendas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decided Agendas.
+        /// </summary>
+        public static string Ecabinet_DashBoard_Decided_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_Decided_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to E-Cabinet   Dashboard.
+        /// </summary>
+        public static string Ecabinet_DashBoard_E_Cabinet_Dashboard {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_E_Cabinet_Dashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More info.
+        /// </summary>
+        public static string Ecabinet_DashBoard_More_info {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_More_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On Meeting Agendas.
+        /// </summary>
+        public static string Ecabinet_DashBoard_On_Meeting_Agendas {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_On_Meeting_Agendas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On Meeting And Decided Agendas.
+        /// </summary>
+        public static string Ecabinet_DashBoard_On_meeting_and_Decided_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_On_meeting_and_Decided_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending Agenda.
+        /// </summary>
+        public static string Ecabinet_DashBoard_Pending_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_Pending_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh Data.
+        /// </summary>
+        public static string Ecabinet_DashBoard_RefreshData {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_RefreshData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rejected Agenda.
+        /// </summary>
+        public static string Ecabinet_DashBoard_Rejected_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_Rejected_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Date Agendas.
+        /// </summary>
+        public static string Ecabinet_DashBoard_To_date_Agendas {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_To_date_Agendas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Agendas.
+        /// </summary>
+        public static string Ecabinet_DashBoard_Total_Agendas {
+            get {
+                return ResourceManager.GetString("Ecabinet_DashBoard_Total_Agendas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Submitted Date.
+        /// </summary>
+        public static string Ecabinet_DateSubmitted {
+            get {
+                return ResourceManager.GetString("Ecabinet_DateSubmitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision Date.
+        /// </summary>
+        public static string Ecabinet_Decision_Date {
+            get {
+                return ResourceManager.GetString("Ecabinet_Decision_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meeting Date.
+        /// </summary>
+        public static string Ecabinet_Decision_Meeting_Date {
+            get {
+                return ResourceManager.GetString("Ecabinet_Decision_Meeting_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decisions.
+        /// </summary>
+        public static string Ecabinet_Decisions {
+            get {
+                return ResourceManager.GetString("Ecabinet_Decisions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision&apos;s  Content.
+        /// </summary>
+        public static string Ecabinet_Decison_Content {
+            get {
+                return ResourceManager.GetString("Ecabinet_Decison_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DashBoard.
+        /// </summary>
+        public static string Ecabinet_ECabinet_DashBoard {
+            get {
+                return ResourceManager.GetString("Ecabinet_ECabinet_DashBoard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to E-Cabinet-MIS.
+        /// </summary>
+        public static string Ecabinet_ECabinet_MIS {
+            get {
+                return ResourceManager.GetString("Ecabinet_ECabinet_MIS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approved.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_Approved {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_Approved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decided.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_Decided {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_Decided", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date Assigned.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_MeetingDateAssigned {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_MeetingDateAssigned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_New {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_Pending {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rejected.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_Rejected {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_Rejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sent to Mayor.
+        /// </summary>
+        public static string Ecabinet_Enum_AgendaStatus_SentToMayor {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_AgendaStatus_SentToMayor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position.
+        /// </summary>
+        public static string Ecabinet_Enum_Attendance_Position {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Attendance_Position", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Ecabinet_Enum_Attendance_Status {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Attendance_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Absent.
+        /// </summary>
+        public static string Ecabinet_Enum_Attendance_Status_Absent {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Attendance_Status_Absent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Present.
+        /// </summary>
+        public static string Ecabinet_Enum_Attendance_Status_Present {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Attendance_Status_Present", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High.
+        /// </summary>
+        public static string Ecabinet_Enum_Priority_High {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Priority_High", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low.
+        /// </summary>
+        public static string Ecabinet_Enum_Priority_Low {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Priority_Low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Middium.
+        /// </summary>
+        public static string Ecabinet_Enum_Priority_Middium {
+            get {
+                return ResourceManager.GetString("Ecabinet_Enum_Priority_Middium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mayor&apos;s Agenda.
+        /// </summary>
+        public static string Ecabinet_Mayor_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_Mayor_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mayor Office&apos;s Agenda.
+        /// </summary>
+        public static string Ecabinet_Mayor_Office_Agenda {
+            get {
+                return ResourceManager.GetString("Ecabinet_Mayor_Office_Agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meeting Date &amp; Place.
+        /// </summary>
+        public static string Ecabinet_Meeting_Date_Place {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_Date_Place", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meeting &amp; Decisions.
+        /// </summary>
+        public static string Ecabinet_Meeting_Decision {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_Decision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meeting Place.
+        /// </summary>
+        public static string Ecabinet_Meeting_Meeting_Place {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_Meeting_Place", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meeting Date.
+        /// </summary>
+        public static string Ecabinet_Meeting_MeetingDate {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_MeetingDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting Time.
+        /// </summary>
+        public static string Ecabinet_Meeting_MeetingTimeBegin {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_MeetingTimeBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ending Time.
+        /// </summary>
+        public static string Ecabinet_Meeting_MeetingTimeEnd {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_MeetingTimeEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Motto.
+        /// </summary>
+        public static string Ecabinet_Meeting_Motto {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_Motto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Participants .
+        /// </summary>
+        public static string Ecabinet_Meeting_NumberofParticipants {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meeting_NumberofParticipants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Catalog Number.
+        /// </summary>
+        public static string Ecabinet_MeetingMinute_CatalogNum {
+            get {
+                return ResourceManager.GetString("Ecabinet_MeetingMinute_CatalogNum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content.
+        /// </summary>
+        public static string Ecabinet_MeetingMinute_Content {
+            get {
+                return ResourceManager.GetString("Ecabinet_MeetingMinute_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string Ecabinet_MeetingMinute_Date {
+            get {
+                return ResourceManager.GetString("Ecabinet_MeetingMinute_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minute Name.
+        /// </summary>
+        public static string Ecabinet_MeetingMinute_MinuteName {
+            get {
+                return ResourceManager.GetString("Ecabinet_MeetingMinute_MinuteName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meetings.
+        /// </summary>
+        public static string Ecabinet_Meetings {
+            get {
+                return ResourceManager.GetString("Ecabinet_Meetings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minutes.
+        /// </summary>
+        public static string Ecabinet_Minutes {
+            get {
+                return ResourceManager.GetString("Ecabinet_Minutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Priority.
+        /// </summary>
+        public static string Ecabinet_Priority {
+            get {
+                return ResourceManager.GetString("Ecabinet_Priority", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Question.
+        /// </summary>
+        public static string Ecabinet_Questions_Question {
+            get {
+                return ResourceManager.GetString("Ecabinet_Questions_Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suggesion.
+        /// </summary>
+        public static string Ecabinet_Questions_Suggesion {
+            get {
+                return ResourceManager.GetString("Ecabinet_Questions_Suggesion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Questions &amp; Suggesion.
+        /// </summary>
+        public static string Ecabinet_QuestionsandSuggesion {
+            get {
+                return ResourceManager.GetString("Ecabinet_QuestionsandSuggesion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Cabinet Memebers.
+        /// </summary>
+        public static string Ecabinet_Report_All_Cabinet_Memebers {
+            get {
+                return ResourceManager.GetString("Ecabinet_Report_All_Cabinet_Memebers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Attendance Report.
+        /// </summary>
+        public static string Ecabinet_Report_Attendance {
+            get {
+                return ResourceManager.GetString("Ecabinet_Report_Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reports.
+        /// </summary>
+        public static string Ecabinet_Reports {
+            get {
+                return ResourceManager.GetString("Ecabinet_Reports", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Agenda Report.
+        /// </summary>
+        public static string Ecabinet_Reports_Agenda_Report {
+            get {
+                return ResourceManager.GetString("Ecabinet_Reports_Agenda_Report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string Ecabinet_Settings {
+            get {
+                return ResourceManager.GetString("Ecabinet_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Committees.
+        /// </summary>
+        public static string Ecabinet_Settings_Committees {
+            get {
+                return ResourceManager.GetString("Ecabinet_Settings_Committees", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Members.
+        /// </summary>
+        public static string Ecabinet_Settings_Members {
+            get {
+                return ResourceManager.GetString("Ecabinet_Settings_Members", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Ecabinet_Status {
+            get {
+                return ResourceManager.GetString("Ecabinet_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Ecabinet_Title {
+            get {
+                return ResourceManager.GetString("Ecabinet_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mayor Office Agenda.
+        /// </summary>
+        public static string Ecobinet_Mayor_Office_agenda {
+            get {
+                return ResourceManager.GetString("Ecobinet_Mayor_Office_agenda", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Templates.
+        /// </summary>
+        public static string Edit_Templates {
+            get {
+                return ResourceManager.GetString("Edit_Templates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Education Field.
+        /// </summary>
+        public static string EducationField {
+            get {
+                return ResourceManager.GetString("EducationField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Education Level.
+        /// </summary>
+        public static string EducationLevel {
+            get {
+                return ResourceManager.GetString("EducationLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Education Type.
+        /// </summary>
+        public static string EducationType {
+            get {
+                return ResourceManager.GetString("EducationType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee Master.
         /// </summary>
         public static string Employe_Master_Report {
@@ -1132,11 +2509,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Employee.
+        /// </summary>
+        public static string Employee {
+            get {
+                return ResourceManager.GetString("Employee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total.
         /// </summary>
         public static string Employee_LeavePlan_Total {
             get {
                 return ResourceManager.GetString("Employee_LeavePlan_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index.
+        /// </summary>
+        public static string EmployeeCodeSetting_Index {
+            get {
+                return ResourceManager.GetString("EmployeeCodeSetting_Index", resourceCulture);
             }
         }
         
@@ -1218,6 +2613,15 @@ namespace ExceedERP.Core.Localization {
         public static string EmployeeDetail_Committee_Role {
             get {
                 return ResourceManager.GetString("EmployeeDetail_Committee_Role", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Type.
+        /// </summary>
+        public static string EmployeeType {
+            get {
+                return ResourceManager.GetString("EmployeeType", resourceCulture);
             }
         }
         
@@ -1627,6 +3031,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ACTING.
+        /// </summary>
+        public static string Enum_AssignmentType_ACTING {
+            get {
+                return ResourceManager.GetString("Enum_AssignmentType_ACTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Annual Salary Increment.
+        /// </summary>
+        public static string Enum_AssignmentType_ANNUAL_SALARY_INCREMENT {
+            get {
+                return ResourceManager.GetString("Enum_AssignmentType_ANNUAL_SALARY_INCREMENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ASSIGNMENT.
         /// </summary>
         public static string Enum_AssignmentType_ASSIGNMENT {
@@ -1695,6 +3117,33 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_AssignmentType_STRUCTURE_CHANGE {
             get {
                 return ResourceManager.GetString("Enum_AssignmentType_STRUCTURE_CHANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TEMPORARY.
+        /// </summary>
+        public static string Enum_AssignmentType_TEMPORARY {
+            get {
+                return ResourceManager.GetString("Enum_AssignmentType_TEMPORARY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JOB TITLE CHANGE.
+        /// </summary>
+        public static string Enum_AssignmentType_TEMPORARY_Job_Title_Change {
+            get {
+                return ResourceManager.GetString("Enum_AssignmentType_TEMPORARY_Job_Title_Change", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to REHIRE.
+        /// </summary>
+        public static string Enum_AssignmentType_TEMPORARY_REHIRE {
+            get {
+                return ResourceManager.GetString("Enum_AssignmentType_TEMPORARY_REHIRE", resourceCulture);
             }
         }
         
@@ -1987,6 +3436,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string Enum_Employee_ID_Abbreviation_Type {
+            get {
+                return ResourceManager.GetString("Enum_Employee_ID_Abbreviation_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CONTRACT.
         /// </summary>
         public static string Enum_EmployeeStatus_CONTRACT {
@@ -2014,6 +3472,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NOT SELECTED.
+        /// </summary>
+        public static string Enum_EmployeeStatus_NOTSELECTED {
+            get {
+                return ResourceManager.GetString("Enum_EmployeeStatus_NOTSELECTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PERMANENT.
         /// </summary>
         public static string Enum_EmployeeStatus_PERMANENT {
@@ -2037,6 +3504,87 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_EVALUATION_PERIOD {
             get {
                 return ResourceManager.GetString("Enum_EVALUATION_PERIOD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company level.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Company_level {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Company_level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Corporate Level Result.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Corporate_Result {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Corporate_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direct Boss.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Direct_Boss {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Direct_Boss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal Customer Evaluation.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Internal_Customer {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Internal_Customer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Main Department Level.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Main_Department_Level {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Main_Department_Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Others.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Others {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Others", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Peer  Evaluation.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Peer_Evaluation {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Peer_Evaluation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sector Level Result.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Sector_Result {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Sector_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Self Evaluation.
+        /// </summary>
+        public static string Enum_Evaluation_Type_Self_Evaluation {
+            get {
+                return ResourceManager.GetString("Enum_Evaluation_Type_Self_Evaluation", resourceCulture);
             }
         }
         
@@ -2419,6 +3967,51 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Afaan Oromoo.
+        /// </summary>
+        public static string Enum_Languages_Afaan_Oromoo {
+            get {
+                return ResourceManager.GetString("Enum_Languages_Afaan_Oromoo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amharic.
+        /// </summary>
+        public static string Enum_Languages_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Languages_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not Required.
+        /// </summary>
+        public static string Enum_Languages_Not_Required {
+            get {
+                return ResourceManager.GetString("Enum_Languages_Not_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Somali.
+        /// </summary>
+        public static string Enum_Languages_Somali {
+            get {
+                return ResourceManager.GetString("Enum_Languages_Somali", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tigrigna.
+        /// </summary>
+        public static string Enum_Languages_Tigrigna {
+            get {
+                return ResourceManager.GetString("Enum_Languages_Tigrigna", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INTERNATIONAL LANGUAGE.
         /// </summary>
         public static string Enum_LanguageType_INTERNATIONAL_LANGUAGE {
@@ -2433,6 +4026,33 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_LanguageType_LOCAL_LANGUAGE {
             get {
                 return ResourceManager.GetString("Enum_LanguageType_LOCAL_LANGUAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Day.
+        /// </summary>
+        public static string Enum_Leave_Day {
+            get {
+                return ResourceManager.GetString("Enum_Leave_Day", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Time.
+        /// </summary>
+        public static string Enum_Leave_Day_Full_Time {
+            get {
+                return ResourceManager.GetString("Enum_Leave_Day_Full_Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Half Time.
+        /// </summary>
+        public static string Enum_Leave_Day_Half_Time {
+            get {
+                return ResourceManager.GetString("Enum_Leave_Day_Half_Time", resourceCulture);
             }
         }
         
@@ -2613,6 +4233,15 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_LookUpTypes_ADDITION_TYPE {
             get {
                 return ResourceManager.GetString("Enum_LookUpTypes_ADDITION_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CLEARANCE TYPE.
+        /// </summary>
+        public static string Enum_LookUpTypes_CLEARANCE_TYPE {
+            get {
+                return ResourceManager.GetString("Enum_LookUpTypes_CLEARANCE_TYPE", resourceCulture);
             }
         }
         
@@ -3234,6 +4863,24 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_PensionAttribute_RETIREMENT_AGE {
             get {
                 return ResourceManager.GetString("Enum_PensionAttribute_RETIREMENT_AGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string Enum_PerformanceCriteriaActionType_Open {
+            get {
+                return ResourceManager.GetString("Enum_PerformanceCriteriaActionType_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sum Of Actions.
+        /// </summary>
+        public static string Enum_PerformanceCriteriaActionType_Open_Sum_Of_Actions {
+            get {
+                return ResourceManager.GetString("Enum_PerformanceCriteriaActionType_Open_Sum_Of_Actions", resourceCulture);
             }
         }
         
@@ -4084,6 +5731,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Heads.
+        /// </summary>
+        public static string Enum_RetireSetting_Heads {
+            get {
+                return ResourceManager.GetString("Enum_RetireSetting_Heads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performers.
+        /// </summary>
+        public static string Enum_RetireSetting_Performers {
+            get {
+                return ResourceManager.GetString("Enum_RetireSetting_Performers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SEASON.
         /// </summary>
         public static string Enum_SEASON {
@@ -4093,11 +5758,182 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expreience.
+        /// </summary>
+        public static string Enum_Self_Service_Request_Type_Expreience {
+            get {
+                return ResourceManager.GetString("Enum_Self_Service_Request_Type_Expreience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To Whon It May Concern.
+        /// </summary>
+        public static string Enum_Self_Service_Request_Type_Support_Letter {
+            get {
+                return ResourceManager.GetString("Enum_Self_Service_Request_Type_Support_Letter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warranty Letter.
+        /// </summary>
+        public static string Enum_Self_Service_Request_Type_Warranty_Letter {
+            get {
+                return ResourceManager.GetString("Enum_Self_Service_Request_Type_Warranty_Letter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SEMI_ANNUAL.
         /// </summary>
         public static string Enum_SEMI_ANNUAL {
             get {
                 return ResourceManager.GetString("Enum_SEMI_ANNUAL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template Type.
+        /// </summary>
+        public static string Enum_Template_Type {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experiance Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Experiance_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Experiance_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experiance English.
+        /// </summary>
+        public static string Enum_Template_Type_Experiance_English {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Experiance_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promotion Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Promotion_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Promotion_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promotion English.
+        /// </summary>
+        public static string Enum_Template_Type_Promotion_English {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Promotion_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recruitment External Letter Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Recruitment_External_Letter_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Recruitment_External_Letter_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reemployement Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Reemployement_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Reemployement_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reemployement English.
+        /// </summary>
+        public static string Enum_Template_Type_Reemployement_English {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Reemployement_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Salary Incremen Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Salary_Incremen_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Salary_Incremen_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Salary Incremen English.
+        /// </summary>
+        public static string Enum_Template_Type_Salary_Incremen_English {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Salary_Incremen_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Termination Acceptance Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Termination_Acceptance_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Termination_Acceptance_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title Change Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Title_Change_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Title_Change_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title Change English.
+        /// </summary>
+        public static string Enum_Template_Type_Title_Change_English {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Title_Change_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Transfer_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Transfer_Amharic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer English.
+        /// </summary>
+        public static string Enum_Template_Type_Transfer_English {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Transfer_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warranty Amharic.
+        /// </summary>
+        public static string Enum_Template_Type_Warranty_Amharic {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Warranty_Amharic", resourceCulture);
             }
         }
         
@@ -4219,6 +6055,78 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Evaluation Criteria Action Type.
+        /// </summary>
+        public static string Evaluation_Criteria_Action_Type {
+            get {
+                return ResourceManager.GetString("Evaluation_Criteria_Action_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exam Source.
+        /// </summary>
+        public static string ExamSource {
+            get {
+                return ResourceManager.GetString("ExamSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exam Type.
+        /// </summary>
+        public static string ExamType {
+            get {
+                return ResourceManager.GetString("ExamType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exam Type Setting.
+        /// </summary>
+        public static string ExamTypeSetting {
+            get {
+                return ResourceManager.GetString("ExamTypeSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expereince Organization.
+        /// </summary>
+        public static string Expereince_Organization {
+            get {
+                return ResourceManager.GetString("Expereince_Organization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience.
+        /// </summary>
+        public static string Experience {
+            get {
+                return ResourceManager.GetString("Experience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Organization.
+        /// </summary>
+        public static string ExperienceOrganization {
+            get {
+                return ResourceManager.GetString("ExperienceOrganization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External Applicant Screening.
+        /// </summary>
+        public static string External_Applicant_Screening {
+            get {
+                return ResourceManager.GetString("External_Applicant_Screening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to External Vacancy.
         /// </summary>
         public static string External_Vacancy {
@@ -4237,11 +6145,101 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Family Member.
+        /// </summary>
+        public static string Family_Member {
+            get {
+                return ResourceManager.GetString("Family_Member", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FeedBack.
+        /// </summary>
+        public static string FeedBack {
+            get {
+                return ResourceManager.GetString("FeedBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FileName.
+        /// </summary>
+        public static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter Applicant.
+        /// </summary>
+        public static string Filter_Applicant {
+            get {
+                return ResourceManager.GetString("Filter_Applicant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Payment Request.
         /// </summary>
         public static string Finance_Selfcare_Payment {
             get {
                 return ResourceManager.GetString("Finance_Selfcare_Payment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fiscal Year.
+        /// </summary>
+        public static string Fiscal_Year {
+            get {
+                return ResourceManager.GetString("Fiscal_Year", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        public static string From {
+            get {
+                return ResourceManager.GetString("From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gender.
+        /// </summary>
+        public static string Gender {
+            get {
+                return ResourceManager.GetString("Gender", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generate Leave Entitlement.
+        /// </summary>
+        public static string Generate_Leave_Entitlement {
+            get {
+                return ResourceManager.GetString("Generate_Leave_Entitlement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Koodii Duwwaa Miidiyaa Uumaman.
+        /// </summary>
+        public static string Generated_Media_Vacancy_Codes {
+            get {
+                return ResourceManager.GetString("Generated_Media_Vacancy_Codes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get Attendance.
+        /// </summary>
+        public static string Get_Attendance {
+            get {
+                return ResourceManager.GetString("Get_Attendance", resourceCulture);
             }
         }
         
@@ -4278,6 +6276,15 @@ namespace ExceedERP.Core.Localization {
         public static string GLPeriod_Name {
             get {
                 return ResourceManager.GetString("GLPeriod_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Head Office name.
+        /// </summary>
+        public static string HeadOfficename {
+            get {
+                return ResourceManager.GetString("HeadOfficename", resourceCulture);
             }
         }
         
@@ -4440,6 +6447,15 @@ namespace ExceedERP.Core.Localization {
         public static string HR_Allowance_AllowancePerEmployee_PersonEmployee {
             get {
                 return ResourceManager.GetString("HR_Allowance_AllowancePerEmployee_PersonEmployee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UnPend.
+        /// </summary>
+        public static string HR_Allowance_AllowancePerEmployee_UnPend {
+            get {
+                return ResourceManager.GetString("HR_Allowance_AllowancePerEmployee_UnPend", resourceCulture);
             }
         }
         
@@ -4775,15 +6791,7 @@ namespace ExceedERP.Core.Localization {
                 return ResourceManager.GetString("HR_ArchiveManagement_LetterSender", resourceCulture);
             }
         }
-
-        public static string HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode
-        {
-            get
-            {
-                return ResourceManager.GetString("HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Book No.
         /// </summary>
@@ -5892,6 +7900,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Refresh Branch.
+        /// </summary>
+        public static string HR_Button_Refresh_Branch {
+            get {
+                return ResourceManager.GetString("HR_Button_Refresh_Branch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         public static string HR_Company_Announcment_Date {
@@ -6144,11 +8161,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contract Below 15 day left.
+        /// </summary>
+        public static string HR_Contract_Below_15_day_left {
+            get {
+                return ResourceManager.GetString("HR_Contract_Below_15_day_left", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cosign.
         /// </summary>
         public static string HR_Cosign {
             get {
                 return ResourceManager.GetString("HR_Cosign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to De-Activate Employees.
+        /// </summary>
+        public static string HR_DeActivate_Employees {
+            get {
+                return ResourceManager.GetString("HR_DeActivate_Employees", resourceCulture);
             }
         }
         
@@ -6567,11 +8602,65 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Employee ready to be retire.
+        /// </summary>
+        public static string HR_Employee_Age_To_Retired {
+            get {
+                return ResourceManager.GetString("HR_Employee_Age_To_Retired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index Count.
+        /// </summary>
+        public static string HR_Employee_Code_Sequence_setting_Index_Count {
+            get {
+                return ResourceManager.GetString("HR_Employee_Code_Sequence_setting_Index_Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code Length.
+        /// </summary>
+        public static string HR_Employee_Code_Sequence_setting_Item_Code_Trim {
+            get {
+                return ResourceManager.GetString("HR_Employee_Code_Sequence_setting_Item_Code_Trim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee Insurance.
         /// </summary>
         public static string Hr_Employee_Insurance {
             get {
                 return ResourceManager.GetString("Hr_Employee_Insurance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Address Information.
+        /// </summary>
+        public static string HR_Employee_profile_Address_Information {
+            get {
+                return ResourceManager.GetString("HR_Employee_profile_Address_Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Basic Information.
+        /// </summary>
+        public static string HR_Employee_profile_Basic_Information {
+            get {
+                return ResourceManager.GetString("HR_Employee_profile_Basic_Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Information.
+        /// </summary>
+        public static string HR_Employee_profile_Other_Information {
+            get {
+                return ResourceManager.GetString("HR_Employee_profile_Other_Information", resourceCulture);
             }
         }
         
@@ -6765,7 +8854,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commitment start date.
+        ///   Looks up a localized string similar to Start date.
         /// </summary>
         public static string HR_EmployeeDetail_Commitment_From {
             get {
@@ -6792,7 +8881,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Commitment end date.
+        ///   Looks up a localized string similar to End date.
         /// </summary>
         public static string HR_EmployeeDetail_Commitment_To {
             get {
@@ -7530,11 +9619,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parent Structure Name.
+        /// </summary>
+        public static string HR_EmployeeDetail_Placement_ParentOrgStructureId {
+            get {
+                return ResourceManager.GetString("HR_EmployeeDetail_Placement_ParentOrgStructureId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee.
         /// </summary>
         public static string HR_EmployeeDetail_Placement_PersonEmployee {
             get {
                 return ResourceManager.GetString("HR_EmployeeDetail_Placement_PersonEmployee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee.
+        /// </summary>
+        public static string HR_EmployeeDetail_Placement_PersonEmployeeID {
+            get {
+                return ResourceManager.GetString("HR_EmployeeDetail_Placement_PersonEmployeeID", resourceCulture);
             }
         }
         
@@ -8673,7 +10780,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vacc.Ann.From.
+        ///   Looks up a localized string similar to From.
         /// </summary>
         public static string HR_HRMPlan_RecruitmentPlan_From {
             get {
@@ -8799,7 +10906,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vacc.Ann.To.
+        ///   Looks up a localized string similar to To.
         /// </summary>
         public static string HR_HRMPlan_RecruitmentPlan_To {
             get {
@@ -9002,6 +11109,24 @@ namespace ExceedERP.Core.Localization {
         public static string HR_LeaveManagment_Leave_OrgName {
             get {
                 return ResourceManager.GetString("HR_LeaveManagment_Leave_OrgName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payable Balance.
+        /// </summary>
+        public static string HR_LeaveManagment_Leave_Payable__Balance {
+            get {
+                return ResourceManager.GetString("HR_LeaveManagment_Leave_Payable__Balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave Payable Days.
+        /// </summary>
+        public static string HR_LeaveManagment_Leave_Payable__Days {
+            get {
+                return ResourceManager.GetString("HR_LeaveManagment_Leave_Payable__Days", resourceCulture);
             }
         }
         
@@ -10212,11 +12337,20 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Per Employee Account/Sub Account.
+        ///   Looks up a localized string similar to Location Account.
         /// </summary>
         public static string HR_Payroll_PayrollSetting_PayrollEmployeeAccount_LocationAccCode {
             get {
                 return ResourceManager.GetString("HR_Payroll_PayrollSetting_PayrollEmployeeAccount_LocationAccCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sub Account Code.
+        /// </summary>
+        public static string HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode {
+            get {
+                return ResourceManager.GetString("HR_Payroll_PayrollSetting_PayrollEmployeeAccount_SubAccountCode", resourceCulture);
             }
         }
         
@@ -10707,7 +12841,25 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Employee.
+        ///   Looks up a localized string similar to Probation Period.
+        /// </summary>
+        public static string HR_Probation_Period {
+            get {
+                return ResourceManager.GetString("HR_Probation_Period", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probation Period End/ No Status.
+        /// </summary>
+        public static string HR_Probation_Period_end_or_no_status {
+            get {
+                return ResourceManager.GetString("HR_Probation_Period_end_or_no_status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Id.
         /// </summary>
         public static string HR_Prohibition_Prohibition_EmployeeCode {
             get {
@@ -10883,6 +13035,15 @@ namespace ExceedERP.Core.Localization {
         public static string HR_RecruitmentManagment_ApplicantExperience_Experience {
             get {
                 return ResourceManager.GetString("HR_RecruitmentManagment_ApplicantExperience_Experience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Level.
+        /// </summary>
+        public static string HR_RecruitmentManagment_ApplicantExperience_Experience_Level {
+            get {
+                return ResourceManager.GetString("HR_RecruitmentManagment_ApplicantExperience_Experience_Level", resourceCulture);
             }
         }
         
@@ -11355,6 +13516,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date Posted.
+        /// </summary>
+        public static string HR_RecruitmentManagment_Vacancy_Date_Posted {
+            get {
+                return ResourceManager.GetString("HR_RecruitmentManagment_Vacancy_Date_Posted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deadline Date.
+        /// </summary>
+        public static string HR_RecruitmentManagment_Vacancy_Deadline_Date {
+            get {
+                return ResourceManager.GetString("HR_RecruitmentManagment_Vacancy_Deadline_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to From.
         /// </summary>
         public static string HR_RecruitmentManagment_Vacancy_From {
@@ -11756,6 +13935,15 @@ namespace ExceedERP.Core.Localization {
         public static string HR_SelfCare_LeaveRequest_RequestDate {
             get {
                 return ResourceManager.GetString("HR_SelfCare_LeaveRequest_RequestDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Request Type.
+        /// </summary>
+        public static string HR_SelfCare_LeaveRequest_RequestType {
+            get {
+                return ResourceManager.GetString("HR_SelfCare_LeaveRequest_RequestType", resourceCulture);
             }
         }
         
@@ -12714,6 +14902,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Institution.
+        /// </summary>
+        public static string Institution {
+            get {
+                return ResourceManager.GetString("Institution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Insurance Catagory.
         /// </summary>
         public static string Insurance_Insurance_Catagory {
@@ -12728,6 +14925,141 @@ namespace ExceedERP.Core.Localization {
         public static string Insurance_Insurance_Type {
             get {
                 return ResourceManager.GetString("Insurance_Insurance_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal Applicant.
+        /// </summary>
+        public static string InternalApplicant {
+            get {
+                return ResourceManager.GetString("InternalApplicant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interviewers.
+        /// </summary>
+        public static string Interviewers {
+            get {
+                return ResourceManager.GetString("Interviewers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Job Title Included In Salary ?.
+        /// </summary>
+        public static string Is_Job_Title_Included_In_Salary {
+            get {
+                return ResourceManager.GetString("Is_Job_Title_Included_In_Salary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Department Approved.
+        /// </summary>
+        public static string IsDepartmentApproved {
+            get {
+                return ResourceManager.GetString("IsDepartmentApproved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Generated.
+        /// </summary>
+        public static string IsGenerated {
+            get {
+                return ResourceManager.GetString("IsGenerated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Job Code.
+        /// </summary>
+        public static string JobCode {
+            get {
+                return ResourceManager.GetString("JobCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Job Requirement.
+        /// </summary>
+        public static string JobRequirement {
+            get {
+                return ResourceManager.GetString("JobRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JobTitle.
+        /// </summary>
+        public static string JobTitle {
+            get {
+                return ResourceManager.GetString("JobTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Job Title and Salary.
+        /// </summary>
+        public static string JobTitleAndSalary {
+            get {
+                return ResourceManager.GetString("JobTitleAndSalary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave entitle start date.
+        /// </summary>
+        public static string Leave_entitle_start_date {
+            get {
+                return ResourceManager.GetString("Leave_entitle_start_date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave Entitle Starting.
+        /// </summary>
+        public static string Leave_Entitle_Starting {
+            get {
+                return ResourceManager.GetString("Leave_Entitle_Starting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave new declaration start year.
+        /// </summary>
+        public static string Leave_new_declaration_start_year {
+            get {
+                return ResourceManager.GetString("Leave_new_declaration_start_year", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave Plan Detail.
+        /// </summary>
+        public static string Leave_Plan_Detail {
+            get {
+                return ResourceManager.GetString("Leave_Plan_Detail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave Request Id.
+        /// </summary>
+        public static string Leave_Request_Id {
+            get {
+                return ResourceManager.GetString("Leave_Request_Id", resourceCulture);
             }
         }
         
@@ -12755,6 +15087,15 @@ namespace ExceedERP.Core.Localization {
         public static string Leave_Usage_Status {
             get {
                 return ResourceManager.GetString("Leave_Usage_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave Voids.
+        /// </summary>
+        public static string Leave_Voids {
+            get {
+                return ResourceManager.GetString("Leave_Voids", resourceCulture);
             }
         }
         
@@ -12867,11 +15208,1055 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leave Void.
+        /// </summary>
+        public static string LeaveVoid {
+            get {
+                return ResourceManager.GetString("LeaveVoid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Issue Type.
+        /// </summary>
+        public static string Legal_Advisory_Enum_Legal_Issue_Type {
+            get {
+                return ResourceManager.GetString("Legal_Advisory_Enum_Legal_Issue_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advise.
+        /// </summary>
+        public static string Legal_Advisory_Enum_Legal_Issue_Type_Advise {
+            get {
+                return ResourceManager.GetString("Legal_Advisory_Enum_Legal_Issue_Type_Advise", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check,.
+        /// </summary>
+        public static string Legal_Advisory_Enum_Legal_Issue_Type_Check {
+            get {
+                return ResourceManager.GetString("Legal_Advisory_Enum_Legal_Issue_Type_Check", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draft,.
+        /// </summary>
+        public static string Legal_Advisory_Enum_Legal_Issue_Type_Draft {
+            get {
+                return ResourceManager.GetString("Legal_Advisory_Enum_Legal_Issue_Type_Draft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit,.
+        /// </summary>
+        public static string Legal_Advisory_Enum_Legal_Issue_Type_Edit {
+            get {
+                return ResourceManager.GetString("Legal_Advisory_Enum_Legal_Issue_Type_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        public static string Legal_Advisory_Enum_Legal_Issue_Type_Other {
+            get {
+                return ResourceManager.GetString("Legal_Advisory_Enum_Legal_Issue_Type_Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Advisory Request.
+        /// </summary>
+        public static string Legal_Case_Advisory_Request {
+            get {
+                return ResourceManager.GetString("Legal_Case_Advisory_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        public static string Legal_Case_Advocacy_Email {
+            get {
+                return ResourceManager.GetString("Legal_Case_Advocacy_Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone.
+        /// </summary>
+        public static string Legal_Case_Advocacy_Phone {
+            get {
+                return ResourceManager.GetString("Legal_Case_Advocacy_Phone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Case Appintment.
+        /// </summary>
+        public static string Legal_case_Appintment {
+            get {
+                return ResourceManager.GetString("Legal_case_Appintment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appointment.
+        /// </summary>
+        public static string Legal_Case_Appointment {
+            get {
+                return ResourceManager.GetString("Legal_Case_Appointment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Awareness.
+        /// </summary>
+        public static string Legal_Case_Awareness {
+            get {
+                return ResourceManager.GetString("Legal_Case_Awareness", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Female.
+        /// </summary>
+        public static string Legal_Case_Awareness_Female {
+            get {
+                return ResourceManager.GetString("Legal_Case_Awareness_Female", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Male.
+        /// </summary>
+        public static string Legal_Case_Awareness_Male {
+            get {
+                return ResourceManager.GetString("Legal_Case_Awareness_Male", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string Legal_Case_Awareness_Total {
+            get {
+                return ResourceManager.GetString("Legal_Case_Awareness_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case.
+        /// </summary>
+        public static string Legal_Case_Case {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Category.
+        /// </summary>
+        public static string Legal_Case_Case_Category {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Legal_Case_Case_Category_Name {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Category_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision.
+        /// </summary>
+        public static string Legal_Case_Case_Decision {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Decision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Content.
+        /// </summary>
+        public static string Legal_Case_Case_Detail {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Detail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Seen.
+        /// </summary>
+        public static string Legal_Case_Case_Is_Seen {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Is_Seen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Cancelled.
+        /// </summary>
+        public static string Legal_Case_Case_IsCancelled {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_IsCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Court Amount.
+        /// </summary>
+        public static string Legal_Case_Case_Price {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Price", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Status.
+        /// </summary>
+        public static string Legal_Case_Case_Status {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Status Type.
+        /// </summary>
+        public static string Legal_Case_Case_Status_Type {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Status_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case-Title.
+        /// </summary>
+        public static string Legal_Case_Case_Title {
+            get {
+                return ResourceManager.GetString("Legal_Case_Case_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed Case Repor.
+        /// </summary>
+        public static string Legal_Case_Closed_Case_Report {
+            get {
+                return ResourceManager.GetString("Legal_Case_Closed_Case_Report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract Claim.
+        /// </summary>
+        public static string Legal_case_Contract_Claim {
+            get {
+                return ResourceManager.GetString("Legal_case_Contract_Claim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Court Type.
+        /// </summary>
+        public static string Legal_Case_Court_Type {
+            get {
+                return ResourceManager.GetString("Legal_Case_Court_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Court Type Name.
+        /// </summary>
+        public static string Legal_Case_Court_Type_Name {
+            get {
+                return ResourceManager.GetString("Legal_Case_Court_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created By.
+        /// </summary>
+        public static string Legal_case_Created_By {
+            get {
+                return ResourceManager.GetString("Legal_case_Created_By", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string Legal_Case_Date {
+            get {
+                return ResourceManager.GetString("Legal_Case_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defendant.
+        /// </summary>
+        public static string Legal_Case_Defendant {
+            get {
+                return ResourceManager.GetString("Legal_Case_Defendant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descrption.
+        /// </summary>
+        public static string Legal_Case_Descrption {
+            get {
+                return ResourceManager.GetString("Legal_Case_Descrption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decision Appeal Type.
+        /// </summary>
+        public static string legal_Case_Enum_Appealing_Type {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Appealing_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Against.
+        /// </summary>
+        public static string Legal_Case_Enum_Appealing_Type_Against {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appealing_Type_Against", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In Favour Of.
+        /// </summary>
+        public static string Legal_Case_Enum_Appealing_Type_InFavour_Of {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appealing_Type_InFavour_Of", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jointly Against.
+        /// </summary>
+        public static string Legal_Case_Enum_Appealing_Type_Jointly_Against {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appealing_Type_Jointly_Against", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remand.
+        /// </summary>
+        public static string legal_Case_Enum_Appealing_Type_Remand {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Appealing_Type_Remand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Revised Against.
+        /// </summary>
+        public static string legal_Case_Enum_Appealing_Type_Revised_Against {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Appealing_Type_Revised_Against", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Revised In Favour Of.
+        /// </summary>
+        public static string Legal_Case_Enum_Appealing_Type_Revised_InFavourOf {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appealing_Type_Revised_InFavourOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appellant.
+        /// </summary>
+        public static string Legal_Case_Enum_Appellant {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appellant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Both.
+        /// </summary>
+        public static string Legal_Case_Enum_Appellant_Both {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appellant_Both", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defendant.
+        /// </summary>
+        public static string Legal_Case_Enum_Appellant_Defendant {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appellant_Defendant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plaintiff.
+        /// </summary>
+        public static string Legal_Case_Enum_Appellant_Plaintiff {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Appellant_Plaintiff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approve.
+        /// </summary>
+        public static string Legal_Case_Enum_Approval_Statuse_Approve {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Approval_Statuse_Approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reject.
+        /// </summary>
+        public static string Legal_Case_Enum_Approval_Statuse_Reject {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Approval_Statuse_Reject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approval Status.
+        /// </summary>
+        public static string Legal_Case_Enum_Approval_Statuses {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Approval_Statuses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pending.
+        /// </summary>
+        public static string Legal_Case_Enum_Approval_Statuses_Pending {
+            get {
+                return ResourceManager.GetString("Legal_Case_Enum_Approval_Statuses_Pending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Type.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appeal.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type_Appeal {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type_Appeal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Claim,.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type_Claim {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type_Claim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CounterClaim,.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type_CounterClaim {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type_CounterClaim", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defence,.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type_Defence {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type_Defence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executions.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type_Executions {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type_Executions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Intervention.
+        /// </summary>
+        public static string legal_Case_Enum_Case_Type_Intervention {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Case_Type_Intervention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executions Types.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Against.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Against {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Against", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Case Priority.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Case_Priority {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Case_Priority", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Case_Priority_High {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Case_Priority_High", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Case_Priority_Low {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Case_Priority_Low", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Case_Priority_Medium {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Case_Priority_Medium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In Favour Of.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_InFavourOf {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_InFavourOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jointly Against.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Jointly_Against {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Jointly_Against", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jointly Infavour.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Jointly_Infavour {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Jointly_Infavour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None Execution.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_None_Excution {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_None_Excution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting Against.
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_Waiting_Against {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_Waiting_Against", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting(InFavour).
+        /// </summary>
+        public static string legal_Case_Enum_Executions_Type_WaitingInFavour {
+            get {
+                return ResourceManager.GetString("legal_Case_Enum_Executions_Type_WaitingInFavour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Number.
+        /// </summary>
+        public static string Legal_Case_File_Number {
+            get {
+                return ResourceManager.GetString("Legal_Case_File_Number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HearingdDate.
+        /// </summary>
+        public static string Legal_Case_Hearing_Date {
+            get {
+                return ResourceManager.GetString("Legal_Case_Hearing_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Judgment Creditor.
+        /// </summary>
+        public static string Legal_Case_Judgment_Creditor {
+            get {
+                return ResourceManager.GetString("Legal_Case_Judgment_Creditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Judgment Debitor.
+        /// </summary>
+        public static string Legal_Case_Judgment_Debitor {
+            get {
+                return ResourceManager.GetString("Legal_Case_Judgment_Debitor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Advisory.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Amount {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Engineering Decision.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Engineering_Decision {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Engineering_Decision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Issue.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Issue {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Issue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Pages.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Number_Of_Pages {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Number_Of_Pages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Advisory Resopnse.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Resopnse {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Resopnse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transaction Amount.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Transaction_Amount {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Transaction_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advisory Type.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Type {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requester Name.
+        /// </summary>
+        public static string Legal_Case_Legal_Advisory_Type_Requester_Name {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Advisory_Type_Requester_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Attorney.
+        /// </summary>
+        public static string Legal_Case_Legal_Attorney {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Attorney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Case.
+        /// </summary>
+        public static string Legal_Case_Legal_Case {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Case", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Draft.
+        /// </summary>
+        public static string Legal_Case_Legal_Draft {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Draft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Opinion.
+        /// </summary>
+        public static string Legal_Case_Legal_Opinion {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Opinion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Research &amp; Draft.
+        /// </summary>
+        public static string Legal_Case_Legal_Research_Draft {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Research_Draft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Legal Work Order.
+        /// </summary>
+        public static string Legal_Case_Legal_Work_Order {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Work_Order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assigned For&quot;.
+        /// </summary>
+        public static string Legal_Case_Legal_Work_Order_assigned_for {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Work_Order_assigned_for", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To be Filled by Experts.
+        /// </summary>
+        public static string Legal_Case_Legal_Work_Order_Idea_Of_Experts {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Work_Order_Idea_Of_Experts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to kind of work.
+        /// </summary>
+        public static string Legal_Case_Legal_Work_Order_Kind_of_work {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Work_Order_Kind_of_work", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Main Issue.
+        /// </summary>
+        public static string Legal_Case_Legal_Work_Order_main_issue {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Work_Order_main_issue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recommendation.
+        /// </summary>
+        public static string Legal_Case_Legal_Work_Order_Recommendation {
+            get {
+                return ResourceManager.GetString("Legal_Case_Legal_Work_Order_Recommendation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Management.
+        /// </summary>
+        public static string Legal_case_Management {
+            get {
+                return ResourceManager.GetString("Legal_case_Management", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Legal_Case_Name {
+            get {
+                return ResourceManager.GetString("Legal_Case_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Case Report.
+        /// </summary>
+        public static string Legal_case_New_Case_report {
+            get {
+                return ResourceManager.GetString("Legal_case_New_Case_report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Fee.
+        /// </summary>
+        public static string Legal_Case_Payment_Service_Fee {
+            get {
+                return ResourceManager.GetString("Legal_Case_Payment_Service_Fee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transaction Number.
+        /// </summary>
+        public static string Legal_Case_Payment_Transaction_Number {
+            get {
+                return ResourceManager.GetString("Legal_Case_Payment_Transaction_Number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plaintiff.
+        /// </summary>
+        public static string Legal_Case_Plaintiff {
+            get {
+                return ResourceManager.GetString("Legal_Case_Plaintiff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress Report.
+        /// </summary>
+        public static string Legal_case_Progress_report {
+            get {
+                return ResourceManager.GetString("Legal_case_Progress_report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Proposal.
+        /// </summary>
+        public static string Legal_case_Proposal {
+            get {
+                return ResourceManager.GetString("Legal_case_Proposal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remark.
+        /// </summary>
+        public static string Legal_Case_Remark {
+            get {
+                return ResourceManager.GetString("Legal_Case_Remark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Research.
+        /// </summary>
+        public static string Legal_Case_Research {
+            get {
+                return ResourceManager.GetString("Legal_Case_Research", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S.N.
+        /// </summary>
+        public static string Legal_Case_Serial_Number {
+            get {
+                return ResourceManager.GetString("Legal_Case_Serial_Number", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time Begin.
+        /// </summary>
+        public static string Legal_Case_Time_Begin {
+            get {
+                return ResourceManager.GetString("Legal_Case_Time_Begin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time End.
+        /// </summary>
+        public static string Legal_Case_Time_End {
+            get {
+                return ResourceManager.GetString("Legal_Case_Time_End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Work order Issue Response.
+        /// </summary>
+        public static string LegalCase_Work_order_WorkordeIssueResponse {
+            get {
+                return ResourceManager.GetString("LegalCase_Work_order_WorkordeIssueResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Location {
+            get {
+                return ResourceManager.GetString("Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manpower Planning Requests.
+        /// </summary>
+        public static string Man_power_Planning_Requests {
+            get {
+                return ResourceManager.GetString("Man_power_Planning_Requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Man Power Planning.
+        /// </summary>
+        public static string ManPowerPlanning {
+            get {
+                return ResourceManager.GetString("ManPowerPlanning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monthly Leave Plan.
+        /// </summary>
+        public static string MonthlyLeavePlan {
+            get {
+                return ResourceManager.GetString("MonthlyLeavePlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Morning.
+        /// </summary>
+        public static string Morning {
+            get {
+                return ResourceManager.GetString("Morning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string MorningOrAfternoon {
+            get {
+                return ResourceManager.GetString("MorningOrAfternoon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Insurance.
         /// </summary>
         public static string Nav_Employee_Insurance {
             get {
                 return ResourceManager.GetString("Nav_Employee_Insurance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amhric Experience Letter Three.
+        /// </summary>
+        public static string Navigator_Amharic_Experience_Letter_Three {
+            get {
+                return ResourceManager.GetString("Navigator_Amharic_Experience_Letter_Three", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amhric Experience Letter Two.
+        /// </summary>
+        public static string Navigator_Amharic_Experience_Letter_Two {
+            get {
+                return ResourceManager.GetString("Navigator_Amharic_Experience_Letter_Two", resourceCulture);
             }
         }
         
@@ -12917,6 +16302,15 @@ namespace ExceedERP.Core.Localization {
         public static string Navigator_Company_Company {
             get {
                 return ResourceManager.GetString("Navigator_Company_Company", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company Structure.
+        /// </summary>
+        public static string Navigator_Company_Company_Structure {
+            get {
+                return ResourceManager.GetString("Navigator_Company_Company_Structure", resourceCulture);
             }
         }
         
@@ -13047,6 +16441,33 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Department Need Assessment.
+        /// </summary>
+        public static string Navigator_Department_NeedAssessment {
+            get {
+                return ResourceManager.GetString("Navigator_Department_NeedAssessment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience After System.
+        /// </summary>
+        public static string Navigator_Employee__Experience_After_System {
+            get {
+                return ResourceManager.GetString("Navigator_Employee__Experience_After_System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Before System.
+        /// </summary>
+        public static string Navigator_Employee__Experience_Before_System {
+            get {
+                return ResourceManager.GetString("Navigator_Employee__Experience_Before_System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Application Form.
         /// </summary>
         public static string Navigator_Employee_ApplicationForm {
@@ -13128,11 +16549,38 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to External Experience.
+        /// </summary>
+        public static string Navigator_Employee_External_Experience {
+            get {
+                return ResourceManager.GetString("Navigator_Employee_External_Experience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminated Employees.
+        /// </summary>
+        public static string Navigator_Employee_Inactive_Employee {
+            get {
+                return ResourceManager.GetString("Navigator_Employee_Inactive_Employee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal Experience.
         /// </summary>
         public static string Navigator_Employee_InternalExperience {
             get {
                 return ResourceManager.GetString("Navigator_Employee_InternalExperience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not Placed Employees.
+        /// </summary>
+        public static string Navigator_Employee_Not_Placed_Employee {
+            get {
+                return ResourceManager.GetString("Navigator_Employee_Not_Placed_Employee", resourceCulture);
             }
         }
         
@@ -13155,6 +16603,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to English Experience Letter Three.
+        /// </summary>
+        public static string Navigator_English_Experience_Letter_Three {
+            get {
+                return ResourceManager.GetString("Navigator_English_Experience_Letter_Three", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to English Experience Letter Two.
+        /// </summary>
+        public static string Navigator_English_Experience_Letter_Two {
+            get {
+                return ResourceManager.GetString("Navigator_English_Experience_Letter_Two", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Holiday.
         /// </summary>
         public static string Navigator_Holiday {
@@ -13173,6 +16639,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to InCorrect Employees Data.
+        /// </summary>
+        public static string Navigator_In_Correct_Employees_Data {
+            get {
+                return ResourceManager.GetString("Navigator_In_Correct_Employees_Data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manpower Planning Request.
         /// </summary>
         public static string Navigator_Manpower_PlanningRequest {
@@ -13187,6 +16662,15 @@ namespace ExceedERP.Core.Localization {
         public static string Navigator_PrintableLetter_TerminationLetter {
             get {
                 return ResourceManager.GetString("Navigator_PrintableLetter_TerminationLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process.
+        /// </summary>
+        public static string Navigator_Process {
+            get {
+                return ResourceManager.GetString("Navigator_Process", resourceCulture);
             }
         }
         
@@ -13304,6 +16788,24 @@ namespace ExceedERP.Core.Localization {
         public static string Navigator_Recruitment_Vacancy {
             get {
                 return ResourceManager.GetString("Navigator_Recruitment_Vacancy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Severance Payable.
+        /// </summary>
+        public static string Navigator_Severance_Payable {
+            get {
+                return ResourceManager.GetString("Navigator_Severance_Payable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Mark Setting.
+        /// </summary>
+        public static string Navigator_Water_Mark_Setting {
+            get {
+                return ResourceManager.GetString("Navigator_Water_Mark_Setting", resourceCulture);
             }
         }
         
@@ -14127,6 +17629,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leave Payable Setting.
+        /// </summary>
+        public static string NavigatorLeave_LeavePayable_Setting {
+            get {
+                return ResourceManager.GetString("NavigatorLeave_LeavePayable_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Leave Plan.
         /// </summary>
         public static string NavigatorLeave_LeavePlan {
@@ -14829,7 +18340,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Amharic Experience Letter.
+        ///   Looks up a localized string similar to Experience Letter.
         /// </summary>
         public static string NavigatorPrintableDocument_AmharicExperienceLetter {
             get {
@@ -14838,7 +18349,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clearance Letter.
+        ///   Looks up a localized string similar to Clearance Form.
         /// </summary>
         public static string NavigatorPrintableDocument_ClearanceLetter {
             get {
@@ -14847,11 +18358,65 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Experience Letter.
+        ///   Looks up a localized string similar to Experience Letter One.
         /// </summary>
         public static string NavigatorPrintableDocument_ExperienceLetter {
             get {
                 return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Letter Five.
+        /// </summary>
+        public static string NavigatorPrintableDocument_ExperienceLetter_Five {
+            get {
+                return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter_Five", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Letter Four.
+        /// </summary>
+        public static string NavigatorPrintableDocument_ExperienceLetter_Four {
+            get {
+                return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter_Four", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Letter Seven.
+        /// </summary>
+        public static string NavigatorPrintableDocument_ExperienceLetter_Seven {
+            get {
+                return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter_Seven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Letter Six.
+        /// </summary>
+        public static string NavigatorPrintableDocument_ExperienceLetter_Six {
+            get {
+                return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter_Six", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Letter Three.
+        /// </summary>
+        public static string NavigatorPrintableDocument_ExperienceLetter_Three {
+            get {
+                return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter_Three", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Letter Two.
+        /// </summary>
+        public static string NavigatorPrintableDocument_ExperienceLetter_Two {
+            get {
+                return ResourceManager.GetString("NavigatorPrintableDocument_ExperienceLetter_Two", resourceCulture);
             }
         }
         
@@ -15342,6 +18907,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Peer To Peer Evalution.
+        /// </summary>
+        public static string NavigatorReport_Peer_to_Peer_Evalution {
+            get {
+                return ResourceManager.GetString("NavigatorReport_Peer_to_Peer_Evalution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Personal Evaluation.
+        /// </summary>
+        public static string NavigatorReport_Personal_Evalution {
+            get {
+                return ResourceManager.GetString("NavigatorReport_Personal_Evalution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Report.
         /// </summary>
         public static string NavigatorReport_Report {
@@ -15810,6 +19393,96 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No of current staff.
+        /// </summary>
+        public static string NoOfCurrentStaff {
+            get {
+                return ResourceManager.GetString("NoOfCurrentStaff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No of should be staff.
+        /// </summary>
+        public static string NoOfShouldBeStaff {
+            get {
+                return ResourceManager.GetString("NoOfShouldBeStaff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No of vacant position.
+        /// </summary>
+        public static string NoOfVacantPosition {
+            get {
+                return ResourceManager.GetString("NoOfVacantPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Off Day.
+        /// </summary>
+        public static string OffDay {
+            get {
+                return ResourceManager.GetString("OffDay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Office  Location.
+        /// </summary>
+        public static string OfficeLocation {
+            get {
+                return ResourceManager.GetString("OfficeLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OrganizationName.
+        /// </summary>
+        public static string OrganizationName {
+            get {
+                return ResourceManager.GetString("OrganizationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OrganizationType.
+        /// </summary>
+        public static string OrganizationType {
+            get {
+                return ResourceManager.GetString("OrganizationType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pass Or Fail.
+        /// </summary>
+        public static string PassOrFail {
+            get {
+                return ResourceManager.GetString("PassOrFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pass Score.
+        /// </summary>
+        public static string PassScore {
+            get {
+                return ResourceManager.GetString("PassScore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pass Setting.
+        /// </summary>
+        public static string PassSetting {
+            get {
+                return ResourceManager.GetString("PassSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Process All Branch.
         /// </summary>
         public static string Payroll_Process_All {
@@ -15873,11 +19546,38 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Performance Criteria Action Type.
+        /// </summary>
+        public static string PerformanceCriteriaActionType {
+            get {
+                return ResourceManager.GetString("PerformanceCriteriaActionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Head Name.
+        /// </summary>
+        public static string Placement_Boss {
+            get {
+                return ResourceManager.GetString("Placement_Boss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Business Unit.
         /// </summary>
         public static string Placement_BusinessUnit {
             get {
                 return ResourceManager.GetString("Placement_BusinessUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Name.
+        /// </summary>
+        public static string Placement_FullName {
+            get {
+                return ResourceManager.GetString("Placement_FullName", resourceCulture);
             }
         }
         
@@ -15927,6 +19627,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Recruitment Reqeusts.
+        /// </summary>
+        public static string Recruitment_Reqeusts {
+            get {
+                return ResourceManager.GetString("Recruitment_Reqeusts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Of Request.
         /// </summary>
         public static string Recruitment_Requested_Vacancy {
@@ -15941,6 +19650,33 @@ namespace ExceedERP.Core.Localization {
         public static string Recruitment_Vacancy_MediaVacancyCode {
             get {
                 return ResourceManager.GetString("Recruitment_Vacancy_MediaVacancyCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vacancy.
+        /// </summary>
+        public static string RecruitmentApplicantPassSetting_Vacancy {
+            get {
+                return ResourceManager.GetString("RecruitmentApplicantPassSetting_Vacancy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recruitment Request.
+        /// </summary>
+        public static string RecruitmentRequest {
+            get {
+                return ResourceManager.GetString("RecruitmentRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recruitment Summary.
+        /// </summary>
+        public static string RecruitmentSummary {
+            get {
+                return ResourceManager.GetString("RecruitmentSummary", resourceCulture);
             }
         }
         
@@ -15986,6 +19722,60 @@ namespace ExceedERP.Core.Localization {
         public static string Requeststatus_Approver {
             get {
                 return ResourceManager.GetString("Requeststatus_Approver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approver Department.
+        /// </summary>
+        public static string Requeststatus_ApproverDepartment {
+            get {
+                return ResourceManager.GetString("Requeststatus_ApproverDepartment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Response.
+        /// </summary>
+        public static string Response {
+            get {
+                return ResourceManager.GetString("Response", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result.
+        /// </summary>
+        public static string Result {
+            get {
+                return ResourceManager.GetString("Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retirement Setting.
+        /// </summary>
+        public static string RetirementSetting {
+            get {
+                return ResourceManager.GetString("RetirementSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retire Setting.
+        /// </summary>
+        public static string RetireSetting {
+            get {
+                return ResourceManager.GetString("RetireSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return Attendance.
+        /// </summary>
+        public static string Return_Attendance {
+            get {
+                return ResourceManager.GetString("Return_Attendance", resourceCulture);
             }
         }
         
@@ -17430,11 +21220,65 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Salary Calculator.
+        /// </summary>
+        public static string SalaryCalculator {
+            get {
+                return ResourceManager.GetString("SalaryCalculator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Salary Setting.
+        /// </summary>
+        public static string SalarySetting {
+            get {
+                return ResourceManager.GetString("SalarySetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screen and Genderate Applicants.
+        /// </summary>
+        public static string Screen_and_Genderate_Applicants {
+            get {
+                return ResourceManager.GetString("Screen_and_Genderate_Applicants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screening Setting.
+        /// </summary>
+        public static string ScreeningSetting {
+            get {
+                return ResourceManager.GetString("ScreeningSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select.
         /// </summary>
         public static string Select {
             get {
                 return ResourceManager.GetString("Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Account.
+        /// </summary>
+        public static string Select_Account {
+            get {
+                return ResourceManager.GetString("Select_Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Employee....
+        /// </summary>
+        public static string Select_Employee {
+            get {
+                return ResourceManager.GetString("Select_Employee", resourceCulture);
             }
         }
         
@@ -17457,11 +21301,38 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setting Value.
+        /// </summary>
+        public static string SettingValue {
+            get {
+                return ResourceManager.GetString("SettingValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show.
         /// </summary>
         public static string Show {
             get {
                 return ResourceManager.GetString("Show", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sick Leave Setting.
+        /// </summary>
+        public static string SickLeaveSetting {
+            get {
+                return ResourceManager.GetString("SickLeaveSetting", resourceCulture);
             }
         }
         
@@ -17484,6 +21355,51 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Term Type.
+        /// </summary>
+        public static string TERM_TYPE {
+            get {
+                return ResourceManager.GetString("TERM_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To.
+        /// </summary>
+        public static string To {
+            get {
+                return ResourceManager.GetString("To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Experience.
+        /// </summary>
+        public static string TotalExperience {
+            get {
+                return ResourceManager.GetString("TotalExperience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TotalValue.
+        /// </summary>
+        public static string TotalValue {
+            get {
+                return ResourceManager.GetString("TotalValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training.
+        /// </summary>
+        public static string Training {
+            get {
+                return ResourceManager.GetString("Training", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Training Plan Approval.
         /// </summary>
         public static string Training_Assessement_Transfer {
@@ -17498,6 +21414,24 @@ namespace ExceedERP.Core.Localization {
         public static string Training_Cost_Amount {
             get {
                 return ResourceManager.GetString("Training_Cost_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training Evaluation Criteria.
+        /// </summary>
+        public static string Training_Evaluation_Criteria {
+            get {
+                return ResourceManager.GetString("Training_Evaluation_Criteria", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training Evaluation Criteria Category.
+        /// </summary>
+        public static string Training_Evaluation_Criteria_Category {
+            get {
+                return ResourceManager.GetString("Training_Evaluation_Criteria_Category", resourceCulture);
             }
         }
         
@@ -17556,6 +21490,69 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Training and Need Assessment.
+        /// </summary>
+        public static string TrainingAndNeedAssessment {
+            get {
+                return ResourceManager.GetString("TrainingAndNeedAssessment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training Evaluation.
+        /// </summary>
+        public static string TrainingEvaluation {
+            get {
+                return ResourceManager.GetString("TrainingEvaluation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training Evaluation Setting.
+        /// </summary>
+        public static string TrainingEvaluationSetting {
+            get {
+                return ResourceManager.GetString("TrainingEvaluationSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training Feedback.
+        /// </summary>
+        public static string TrainingFeedback {
+            get {
+                return ResourceManager.GetString("TrainingFeedback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UploadFile.
+        /// </summary>
+        public static string UploadFile {
+            get {
+                return ResourceManager.GetString("UploadFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vacancy.
+        /// </summary>
+        public static string Vacancy {
+            get {
+                return ResourceManager.GetString("Vacancy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vacancy Code.
+        /// </summary>
+        public static string VacancyCode {
+            get {
+                return ResourceManager.GetString("VacancyCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Employee Incoming Letter.
         /// </summary>
         public static string View_EmployeeIncommingLetterRegistration_Header {
@@ -17597,6 +21594,15 @@ namespace ExceedERP.Core.Localization {
         public static string Work_and_Cost_Summary {
             get {
                 return ResourceManager.GetString("Work_and_Cost_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Year.
+        /// </summary>
+        public static string Year {
+            get {
+                return ResourceManager.GetString("Year", resourceCulture);
             }
         }
     }

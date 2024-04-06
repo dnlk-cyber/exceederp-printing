@@ -69,9 +69,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     
         public ActionResult LeavePlans_Read([DataSourceRequest]DataSourceRequest request)
         {
+            var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<LeavePlan> leaveplans = db.LeavePlans.Where(x => employees.Contains(x.EmployeeId.ToString()));
+           // List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            IQueryable<LeavePlan> leaveplans = db.LeavePlans.Where(x => employeeids.Contains(x.EmployeeId));
             DataSourceResult result = leaveplans.ToDataSourceResult(request, leavePlan => new
             {
                 LeavePlanId = leavePlan.LeavePlanId,

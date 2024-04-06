@@ -111,7 +111,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var empExp = db.Experiences.FirstOrDefault(x=>x.EmployeeId == empId && x.ExperienceId == expId);
             if(empExp != null)
             {
-                return XAPI.Common.getDaystoWordsamharic((empExp.To - empExp.From).Days);
+                return XAPI.Common.getDaystoWords((empExp.To - empExp.From).Days);
             }
             return null;
         }
@@ -143,7 +143,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 TotalExp = GetTotalExp(experience.EmployeeId, experience.ExperienceId),
                 ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
                 IsPrivate = experience.IsPrivate,
-                JobTitleId = experience.JobTitleId,
+                //JobTitleId = experience.JobTitleId,
 
             });
 
@@ -182,10 +182,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 experience.ClearanceDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
             }
-            else
-            {
-                ModelState.AddModelError("", "Please Enter Clearance Date");
-            }
+            //else
+            //{
+            //    ModelState.AddModelError("", "Please Enter Clearance Date");
+            //}
 
             if (experience.From > experience.To)
             {
@@ -262,7 +262,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     ToExAmharic = experience.ToExAmharic,
                     ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
                     IsPrivate = experience.IsPrivate,
-                    JobTitleId = experience.JobTitleId,
+                    //JobTitleId = experience.JobTitleId,
                 };
 
                 db.Experiences.Add(entity);
@@ -374,7 +374,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     ToExAmharic = experience.ToExAmharic,
                     ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
                     IsPrivate = experience.IsPrivate,
-                    JobTitleId = experience.JobTitleId,
+                    //JobTitleId = experience.JobTitleId,
                 };
 
                 db.Experiences.Attach(entity);
@@ -425,7 +425,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     TotalExp = experience.TotalExp,
                     ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
                     IsPrivate = experience.IsPrivate,
-                    JobTitleId = experience.JobTitleId,
+                    //JobTitleId = experience.JobTitleId,
                 };
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Experience information of employee Id" + experience.EmployeeCode);

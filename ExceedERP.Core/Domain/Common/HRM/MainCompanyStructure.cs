@@ -9,8 +9,7 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public int OrgStructureId { get; set; }
         [Display(Name = "Common_Company_MainCompanyStructure_Name", ResourceType = typeof(Localization.Resources))]
         public string  Name { get; set; }
-        [Required]
-      
+        [Required]      
         [Display(Name = "Common_Company_MainCompanyStructure_Type", ResourceType = typeof(Localization.Resources))]
         public int StructureId { get; set; }
         public virtual Structure Structure { get; set; }
@@ -18,6 +17,8 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public int Parent { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "Common_PersonEmployee_IsActive", ResourceType = typeof(Localization.Resources))]
+        public bool IsActive { get; set; }
 
        
     }

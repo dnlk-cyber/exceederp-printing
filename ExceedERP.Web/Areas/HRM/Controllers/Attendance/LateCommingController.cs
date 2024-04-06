@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -81,7 +81,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 
                     ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
                 }
-
+                if (lateComming.Time > 8)
+                {
+                    ModelState.AddModelError("", "Time Field  not proceed 8 hours");
+                }
 
                 else
                 {
@@ -136,7 +139,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 
                     ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
                 }
-               
+                if (lateComming.Time > 8)
+                {
+                    ModelState.AddModelError("", "Time Field  not proceed 8 hours");
+                }
                 else
                 {
                     var entity = new LateComming

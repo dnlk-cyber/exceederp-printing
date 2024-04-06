@@ -2,221 +2,246 @@
 @using System.Security.AccessControl
 @using ExceedERP.Core.Domain.HRM.EmployeeDetail
 @using ExceedERP.Core.Localization
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
-
+<div class="row">
+    <p>
+        <span class="fa fa-circle" style="color:yellow;"></span>&nbsp;&nbsp;@Resources.Enum_RequestStatus_PEND,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:olive;"></span>&nbsp;&nbsp;@Resources.Rpt_RetirementNotification &nbsp;&nbsp;
+    </p>
+</div>
 @(Html.Kendo().Grid<Placement>()
-                  .Name("PlacementGrid")
-                  .Columns(columns =>
-                  {
-                      // columns.Bound(c => c.EmployeeCode).Width(150);
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+        .Name("PlacementGrid")
+        .Columns(columns =>
+        {
 
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                      columns.Bound(c => c.Boss).Width(150);
-                      // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
-                      columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+            // columns.Bound(c => c.EmployeeCode).Width(150);
+            //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+            //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
+            columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            // columns.Bound(c => c.FullName).Width(150);
+           // columns.Bound(c => c.Boss).Width(150);
+            // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+            columns.ForeignKey(c => c.ParentOrgStructureId, (System.Collections.IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Width(170);
+            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+            // columns.Bound(c => c.JobTitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+            columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
 
-                      columns.Bound(c => c.JobTitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
-                      columns.Bound(c => c.IsHead).Width(90).ClientTemplate(
-                       "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
-                       "# if (IsHead) { #" +
-                       "checked='checked'" +
-                       "# } #" +
-                       "/>"
-                       );
-                      columns.Bound(c => c.HireDate).Width(100);
-                      columns.Bound(c => c.AssignmentDateAmharic).Width(150);
-                  
-                      columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(100);
-                      columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(100);
-                      columns.Bound(c => c.Salary).Width(80);
-                      columns.Bound(c => c.AssignmentType).Width(150);
-                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+            columns.Bound(c => c.IsHead).Width(90).ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
+             "# if (IsHead) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             );
+            columns.Bound(c => c.HireDate).Width(100);
+            columns.Bound(c => c.AssignmentDateAmharic).Width(150);
+            columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+            columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+            columns.Bound(c => c.Salary).Width(80);
+            columns.Bound(c => c.AssignmentType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.Bound(c => c.EmployementType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+            columns.Bound(c => c.IsApprove).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
+                "# if (IsApprove) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>"
+                ).Width(100);
+            columns.Bound(c => c.IsPend).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#= IsPend#' " +
+                "# if (IsPend) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>"
+                ).Width(100);
+            columns.Bound(c => c.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            columns.Bound(c => c.Remark).Width(100);
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    command.Custom("").Click("Pend").Text("Pend ").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Pend the employee to stop payroll processing ", @id = "pend" });
+                    command.Custom("").Click("UnPend").Text("UnPend").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Remove the employee from pend lists to start payroll processing ", @id = "unpend" });
+                }
+                if (HttpContext.Current.User.IsInRole("PlacementApprover"))
+                {
+                    command.Custom("").Click("ApprovePlacement").Text(" Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Placement ", @id = "approveplacement" });
+                }
+                if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                }
 
-                      // columns.ForeignKey(c => c.ReportsTo, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(200);
-                      // columns.Bound(c => c.ResponsibilityLevel);
-                      columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-                      columns.Bound(c => c.IsApprove).ClientTemplate(
-                          "<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
-                          "# if (IsApprove) { #" +
-                          "checked='checked'" +
-                          "# } #" +
-                          "/>"
-                          ).Width(100);
-                      columns.Bound(c => c.Remark).Width(100);
-                      columns.Command(command =>
-                      {
-                          if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
-                          {
-                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                              command.Custom("").Click("Pend").Text("  Pend ").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Pend the employee to stop payroll processing ", @id = "pend" });
-                              command.Custom("").Click("UnPend").Text(" UnPend").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Remove the employee from pend lists to start payroll processing ", @id = "unpend" });
-                          }
-                          if (HttpContext.Current.User.IsInRole("PlacementApprover"))
-                          {
-                              command.Custom("").Click("ApprovePlacement").Text(" Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Placement ", @id = "approveplacement" });
-                          }
-                          if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                          {
-                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                          }
+            }).Width(350);
 
-                      }).Width(200);
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                      if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
-                      {
-                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      }
 
-                      if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
-                      {
-                          //toolbar.Custom()
-                          //  .Text("Update Salary")
-                          //  .Text(Resources.ActionButton_Refersh)
-                          //  .HtmlAttributes(new { id = "btnRefresh", onclick = "Refresh()" });
+        })
+        .ToolBar(toolbar =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            }
 
-                      }
-                      if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                      {
-                          toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                          toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                      }
+            if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
+            {
+                //toolbar.Custom()
+                //  .Text("Update Salary")
+                //  .Text(Resources.ActionButton_Refersh)
+                //  .HtmlAttributes(new { id = "btnRefresh", onclick = "Refresh()" });
 
-                  })
-                       .Excel(excel => excel
-                       .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
-                       .Filterable(true)
-                       .AllPages(true)
-                       .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithOJ"))
-                                 )
-                        .Pdf(pdf => pdf
-                        .AllPages()
-                        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
-                        .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithOJ"))
-                                 )
-                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
-                   .Scrollable(h => h.Height(500))
-                   .Groupable()
-                    .Sortable(sortable =>
+
+            }
+            if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+            {
+                toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+            }
+
+
+
+        })
+        .Excel(excel => excel
+        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+        .Filterable(true)
+        .AllPages(true)
+        .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithOJ")))
+        .Pdf(pdf => pdf
+        .AllPages()
+        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+        .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithOJ")))
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+
+        })
+        .Filterable()
+        .Events(e =>
+        {
+            e.Save("GetDate");
+            e.Edit("GetDate");
+            e.DataBound("onDataBound");
+            e.Cancel("onCancel");
+
+        })
+        .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+                .Ajax()
+                    .Sort(sort => sort.Add(s => s.PlacementId).Descending())
+                    .Events(events =>
                     {
-                        sortable.SortMode(GridSortMode.SingleColumn);
+                        events.Error("error_handler(\"PlacementGrid\")");
+                        events.RequestStart("onRequestStart(\"PlacementGrid\")");
+                        events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
                     })
-                    .Filterable()
-                          .Events(e =>
-                          {
-                              e.Save("GetDate");
-                              e.Edit("GetDate");
-                              e.DataBound("onDataBound");
-                              e.Cancel("onCancel");
-                          })
-                         .Pageable(pageable => pageable
-                           .Input(true)
-                           .Numeric(false)
-                           .Refresh(true)
-                           .PageSizes(true)
-                           .ButtonCount(5))
 
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                          .Sort(sort => sort.Add("EmployeeCode"))
-                           .Events(events =>
-                           {
-                               events.Error("error_handler(\"PlacementGrid\")");
-                               events.RequestStart("onRequestStart(\"PlacementGrid\")");
-                               events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
-                           })
+            .Model(model => {
+                model.Id(p => p.PlacementId);
+                model.Field(p => p.AssignmentType).DefaultValue(-1);
+                model.Field(p => p.ResponsibilityLevel).DefaultValue(-1);
+                model.Field(p => p.EmployementType).DefaultValue(-1);
 
-                      .Model(model => model.Id(p => p.PlacementId))
-                                      .Read(read => read.Action("Placements_Read", "EmployeePlacmentWithOJ"))
-                                                  .Create(create => create.Action("Placements_Create", "EmployeePlacmentWithOJ"))
-                                              .Update(update => update.Action("Placements_Update", "EmployeePlacmentWithOJ"))
-                                          .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentWithOJ"))
+            })
+            .Read(read => read.Action("Placements_Read", "EmployeePlacmentWithOJ"))
+            .Create(create => create.Action("Placements_Create", "EmployeePlacmentWithOJ"))
+            .Update(update => update.Action("Placements_Update", "EmployeePlacmentWithOJ"))
+            .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentWithOJ"))
 
-                  ).ClientDetailTemplateId("template")
+            ).ClientDetailTemplateId("template")
 )
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                       .Name("tabstrip_#=PlacementId#")
-               .SelectedIndex(0)
-               .Items(items =>
-               {
+            .Name("tabstrip_#=PlacementId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
 
-               items.Add().Text("Employees").Content(
-                @<text>
+             items.Add().Text("Employees").Content(
+             @<text>
+                @(Html.Kendo().Grid<EmployeesUnderBossVM>()
+                        .Name("EmployeesUnderBoss#=PlacementId#")
+                        .Columns(columns =>
+                        {
 
-
-                    @(Html.Kendo().Grid<EmployeesUnderBossVM>()
-                                   .Name("EmployeesUnderBoss#=PlacementId#")
-                   .Columns(columns =>
-                   {
-
-                       columns.Bound(c => c.EmployeeCode).Width(100);
-                       columns.Bound(c => c.FullName).Width(100);
-                       //columns.Bound(c => c.IsCurrent).Width(100);
-                       columns.Command(command =>
-                       {
-
-                       }).Width(300);
-                   })
+                            columns.Bound(c => c.EmployeeCode).Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                            columns.Bound(c => c.FullName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                            //columns.Bound(c => c.IsCurrent).Width(100);
+                            columns.Command(command =>
+                            {
 
 
-                       .Editable(editable => editable.Mode(GridEditMode.InLine))
-                       .Scrollable()
-                       .Selectable()
-                       .DataSource(dataSource => dataSource
-                           .Ajax()
-                                   .Events(events =>
-                                   {
-                                       events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
-                                       events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
-                                       events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
-                                   })
+                            }).Width(300);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Selectable()
+                        .Filterable()
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
+                                events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
+                                events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
+
+                            })
 
 
-                                                  .Model(model => model.Id(p => p.EmployeesUnderBossId))
-                                             .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+                            .Model(model => model.Id(p => p.EmployeesUnderBossId))
+                            .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
 
+                            ).ToClientTemplate()
+                )
 
-                                                               ).ToClientTemplate()
-                    )
+            </text>);
 
-                </text>
-                                                          );
+        items.Add().Text("Placement Before System").Content(
+        @<text>
+            @(Html.Kendo().Grid<PlacementHistory>()
+                    .Name("PlacementHistoryGrid_#=PlacementId#")
+                    .Columns(columns =>
+                    {
 
-               items.Add().Text("Placement Before System").Content(
-                @<text>
-                    @(Html.Kendo().Grid<PlacementHistory>()
-                          .Name("PlacementHistoryGrid_#=PlacementId#")
-                          .Columns(columns =>
-                          {
+                        columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(100);
+                        columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(100);
+                        //  columns.Bound(c => c.JobTitle).Width(120);//.EditorTemplateName("JobTitleAutoComplet").Width(120); //, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+                        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(120);
+                        columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
+                        columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
+                        columns.Bound(c => c.Salary).Width(80);
+                        columns.Bound(c => c.EmployementType).EditorTemplateName("Enum").Width(80);
+                        //columns.Bound(c => c.Remark);//
+                        columns.Command(command =>
+                        {
+                            if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            }
+                            if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                            {
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }
+                        }).Width(250);
 
-                              columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(60);
-                              columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(60);
-                              columns.Bound(c => c.JobTitle).Width(80); //EditorTemplateName("JobTitleAutoComplet").Width(120); //, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
-                              columns.Bound(c => c.Rank).Width(70); //, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
-                              columns.Bound(c => c.Step).Width(70); //, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
-                              columns.Bound(c => c.Salary).Width(80);
-                              columns.Bound(c => c.EmployementType).EditorTemplateName("Enum").Width(80);
-                              //columns.Bound(c => c.Remark);//
-                              columns.Command(command =>
-                              {
-                                  if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
-                                  {
-                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                  }
-                                  if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                                  {
-                                      command.Destroy().Text(Resources.ActionButton_Cancel);
-                                  }
-                              }).Width(250);
-                          })
+                    })
          .ToolBar(toolbar =>
          {
              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
@@ -259,77 +284,81 @@
                     .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
                 ).ToClientTemplate()
 
-                    )
+            )
 
-                </text>
-);
+        </text>);
 
-               items.Add().Text("Placement After System").Content(
-                @<text>
+          items.Add().Text("Placement After System").Content(
+          @<text>
 
+             @(Html.Kendo().Grid<ExceedERP.Web.Areas.HRM.Controllers.Profile.OldPlacementVM>()
+                    .Name("Old_Placement2_VM#=EmployeeId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Branch).Width(80);
+                        columns.Bound(c => c.Department).Width(80);
+                        columns.Bound(c => c.JobTitle).Width(80);
+                        //columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Title("Job Title").EditorTemplateName("JobTitles").Width(80);
+                        columns.Bound(c => c.AssignmentDate).Width(80);
+                        columns.Bound(c => c.AssignmentType).Width(80);
+                        columns.Bound(c => c.Salary).Width(80);
+                        columns.Bound(c => c.IsHead).ClientTemplate(
+                            "<input type='checkbox' disabled = 'true' value='\\#= IsHead\\#' " +
+                            "\\# if (IsHead) { \\#" +
+                            "checked='checked'" +
+                            "\\# } \\#" +
+                            "/>"
+                            ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+                        columns.Bound(c => c.IsCurrent).ClientTemplate(
+                            "<input type='checkbox' disabled = 'true' value='\\#= IsCurrent\\#' " +
+                            "\\# if (IsCurrent) { \\#" +
+                            "checked='checked'" +
+                            "\\# } \\#" +
+                            "/>"
+                            ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
 
-                    @(Html.Kendo().Grid<ExceedERP.Web.Areas.HRM.Controllers.Profile.OldPlacementVM>()
-                                   .Name("OldPlacementVM#=PlacementId#")
-                   .Columns(columns =>
-                   {
-                       columns.Bound(c => c.Branch).Width(80);
-                       columns.Bound(c => c.Department).Width(80);
-                       columns.Bound(c => c.JobTitle).Width(80);
-                       columns.Bound(c => c.AssignmentDate).Width(80);
-                       columns.Bound(c => c.AssignmentType).Width(80);
-                       columns.Bound(c => c.Salary).Width(80);
-                       columns.Bound(c => c.IsHead).ClientTemplate(
-                         "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
-                         "# if (IsHead) { #" +
-                         "checked='checked'" +
-                         "# } #" +
-                         "/>"
-                         ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+                        columns.Command(command =>
+                        {
 
-                       columns.Command(command =>
-                       {
-
-                       }).Width(300);
-                   })
-
-
-                       .Editable(editable => editable.Mode(GridEditMode.InLine))
-                       .Scrollable()
-                       .Selectable()
-                       .DataSource(dataSource => dataSource
-                           .Ajax()
-                                   .Events(events =>
-                                   {
-                                       events.Error("error_handler(\"OldPlacementVM#=PlacementId#\")");
-                                       events.RequestStart("onRequestStart(\"OldPlacementVM#=PlacementId#\")");
-                                       events.RequestEnd("onRequestEnd(\"OldPlacementVM#=PlacementId#\")");
-                                   })
+                        }).Width(300);
+                    })
 
 
-                                      .Model(model => model.Id(p => p.PlaceId))
-                                        .Read(read => read.Action("Placements_History_Read", "EmployeePlacmentManual", new { id = "#=EmployeeId#" }))
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Selectable()
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"Old_Placement2_VM#=EmployeeId#\")");
+                                events.RequestStart("onRequestStart(\"Old_Placement2_VM#=EmployeeId#\")");
+                                events.RequestEnd("onRequestEnd(\"Old_Placement2_VM#=EmployeeId#\")");
 
+                            })
+                            .Model(model => model.Id(p => p.PlaceId))
+                            .Read(read => read.Action("Placements_HistoryForProfile_Read", "EmployeeProfile", new { id = "#=EmployeeId#" }))
 
-                                            ).ToClientTemplate()
-                    )
+                            ).ToClientTemplate()
+                              )
 
-                </text>
-                                                           );
+                                                       
+             </text>);
 
-               items.Add().Text(Resources.Details).Content(
-                @<text>
+items.Add().Text(Resources.Details).Content(
+@<text>
 
-                    @(Html.Kendo().PanelBar()
-                .Name("panelbar_#=PlacementId#")
-                .ExpandMode(PanelBarExpandMode.Single)
-                .Items(panelbar =>
-                {
+    @(Html.Kendo().PanelBar()
+             .Name("panelbar_#=PlacementId#")
+             .ExpandMode(PanelBarExpandMode.Single)
+             .Items(panelbar =>
+             {
                     panelbar.Add().Text("Status")
                         .Expanded(true)
                         .Content(
 
                              "<div>" +
-                  "<table class='table'>" +
+                      "<table class='table'>" +
 
                    "<tr>" +
                       "<td>" + "<div class='employee-details'>" +
@@ -352,12 +381,60 @@
 
 
                 }).ToClientTemplate()
-                    )
-                    <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                </text>
-           );
+    )
+    <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+</text> );
 
-               }).ToClientTemplate())
+
+
+        items.Add().Text("Attachments").Content(
+        @<text>
+            <button onclick='UploadFile(#=EmployeeId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
+                                            .Name("AttachmentGrid#=PlacementId#")
+                                            .Columns(columns =>
+                                            {
+                                                columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/EmployeePlacmentWithOJ/DownloadAttachment?attachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                                    // columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+                                    columns.Bound(c => c.Description).Width(100);
+                                                columns.Template(e => { }).ClientTemplate("<a href='/HRM/EmployeePlacmentWithOJ/DownloadAttachment?attachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(80);
+                                                columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+                                                columns.Command(command =>
+                                                {
+                                                    command.Destroy().Text("Delete");
+                                                }).Width(300);
+                                            })
+                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                                            .Window(window =>
+                                            {
+                                                window.Title("");
+                                                window.Scrollable(false);
+                                            }))
+                                            .Scrollable(h => h.Height("auto"))
+                                            //.Events(ev=>
+                                            //{
+                                            //    ev.DataBound("onAttachmentDataBound");
+                                            //})
+                                            .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Sort(sort => sort.Add(c => c.AttachmentId).Descending())
+                                            .Events(events =>
+                                            {
+                                                events.Error("error_handler(\"AttachmentGrid#=PlacementId#\")");
+                                                events.RequestStart("onRequestStart(\"AttachmentGrid#=PlacementId#\")");
+                                                events.RequestEnd("onRequestEnd(\"AttachmentGrid#=PlacementId#\")");
+                                            })
+                                            .Model(model => model.Id(p => p.AttachmentId))
+                                              .Model(model => model.Id(p => p.AttachmentId))
+                                              .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }))
+                                              .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }))
+                                              .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile"))
+                                            ).ToClientTemplate())
+        </text>
+                );
+
+            }).ToClientTemplate())
 
 
 </script>
@@ -425,6 +502,46 @@
 
 </script>
 <script>
+     @*function AttachArchiveFiles() {
+        try {
+            var ac = '@ArchiveCategory.Institution';
+            var lt = '@LetterType.Incoming';
+            $.ajax({
+                url: '@Url.Action("UploadIncomingLetters_MultipleFile", "ArchiveAttachments")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                   // var kkk = $("#letter").get(0).files[0];
+                    $.each($("input[type=file]"), function (i, obj) {
+                        $.each(obj.files, function (j, file) {
+                            data.append('letter[' + j + ']', file);
+                        })
+                    });
+
+                    //data.append("file", $("#letter").get(0).files[0]);
+                    data.append("description", $("#description").val());
+                    data.append("masterId", institutionIncomingLetterId);
+                    data.append("ac", ac);
+                    data.append("lt", lt);
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+                    wnd.close();
+
+                    $("#ArchiveAttachementGrid" + institutionIncomingLetterId).data("kendoGrid").dataSource.read();
+                    //$("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                }
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+    }*@
     //function error_handler(e) {
     //    if (e.errors) {
     //        var message = "Errors:\n";
@@ -450,9 +567,15 @@
         $("#PlacementGrid").data("kendoGrid").dataSource.read();
     }
 
+    function filterBranch() {
+        return {
+            businessUnitId: $("#BusinessUnitId").val(),
+        };
+    }
     function filterDepartment() {
         return {
-            BranchId: $("#BranchId").val(),
+            branchId: $("#BranchId").val(),
+            businessUnitId: $("#BusinessUnitId").val(),
             searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
         };
     }
@@ -461,7 +584,7 @@
 
 <script>
     function GetSalary() {
-        //if (isNew_Global == "True") {        
+        //if (isNew_Global == "True") {
             var rank = $("#RankId").data("kendoDropDownList").value();
             var step = $("#StepId").data("kendoDropDownList").value();
             //var Jobs = $("#LookupId").data("kendoDropDownList");
@@ -487,7 +610,40 @@
 
 </script>
 
+@(Html.Kendo().Window()
+                    .Name("UploadDoc")
+                    .Title("Upload File")
+                    .Visible(false)
+                    .Modal(true)
+                    .Draggable(true)
+                    .Width(400).Content(
+                    @<text>
+                        <div class="form-group">
+                            <form action="@Url.Action("UploadDocument", "EmployeePlacmentWithOJ", new { })" method="post" , new { enctype="multipart/form-data" }>
+                                <input type="hidden" name="employeeId" id="employeeId">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        @Html.TextBox("file", "", new { type = "file", required = "true" })
+                                        <br />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="editor-field">
+                                        @Html.TextArea("txtValue", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-7"></div>
+                                    <input type="submit" class="btn-primary k-button" value=" Submit " />
+                                </div>
 
+                            </form>
+                            <div class="pull-right">
+
+                            </div>
+                        </div>
+                    </text>)
+)
 <script>
     function GetDepartment() {
 
@@ -524,24 +680,22 @@
 
     function filterStructure() {
         return {
-            OrgStructureId: $("#OrgStructureId").val()
+            OrgStructureId: $("#OrgStructureId").val(),
         };
     }
-</script>
-<script>
-
-    var isNew_Global = "";
-    function onDepartmentDataBound() {
-        if (isNew_Global === "True") {
-
-            $("#FullNameTextBox_Id").hide();
-            $("#EmpIdDropdown_Id").show();
-        }
-        else if (isNew_Global === "False") {
-            $("#FullNameTextBox_Id").show();
-            $("#EmpIdDropdown_Id").hide();
-        }
+    function filterReportToStructure() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val(),
+            isHead: $("#IsHead").is(":checked")
+        };
     }
+    function filterReportToStructurechange(e) {
+        filterReportToStructure();
+    }
+    function onHeadCheckBox(isChecked) {
+        $("#ReportsTo").data("kendoDropDownList").dataSource.read();
+    }
+
     function filterEmployees() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
@@ -680,7 +834,7 @@
                 row.find("#unpend").hide();
             }
             else if (dataItem.isCurrent === true && dataItem.IsPend === true) {
-                row.css("background-color", "red");
+                row.css("background-color", "gray");
                 row.find("#pend").hide();
                 row.find("#unpend").show();
             }
@@ -690,6 +844,11 @@
             }
             if (dataItem.IsApprove === true) {
                 row.find("#approveplacement").hide();
+            }
+            if (dataItem.Age > 60) {
+
+                row.css("background-color", "olive");
+
             }
         }
     }
@@ -722,4 +881,82 @@
         }
 
     }
+    function OpenAttachementWindow() {
+
+        $("#Attachement_InstitutionIncomingId").val(institutionIncomingLetterId);
+
+        var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+    function UploadFile(id) {
+        $("#employeeId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+
 </script>
+@*@(Html.Kendo().Window().Name("UploadDoc")
+        .Title(Resources.UploadFile)
+        .Visible(false)
+        .Modal(true)
+          .Content(@<text>
+
+            @using (Html.BeginForm("UploadDocument", "EmployeePlacmentWithOJ", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                @Html.AntiForgeryToken()
+                <fieldset>
+                    <input type="text" id="employeeId" name="employeeId" hidden />
+                    <div class="editor-field">
+                        @Html.TextBox("file", "", new { type = "file", accept = ".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf" })
+                    </div>
+
+                    <br />
+                    <div class="editor-field">
+                        @Html.TextArea("txtValue", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                    </div>
+                    <br />
+
+                </fieldset>
+                        }
+
+            <div class="pull-right">
+                <input type="submit" class="btn-primary k-button" value=" Submit " />
+
+
+            </div>
+
+        </text>)
+                .Pinned(true)
+                .Draggable(true)
+                .Width(300)
+)*@
+@*@(Html.Kendo().Window()
+            .Name("UploadDoc")
+            .Title(Resources.UploadFile)
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Width(400).Content(
+            @<text>
+                <div class="form-group">
+                    <form action="@Url.Action("UploadDocument", "EmployeePlacmentWithOJ", new { })" method="post" , new { enctype="multipart/form-data" }>
+                    <div>
+                        <fieldset>
+                                <input type="text" id="employeeId" name="employeeId" hidden />
+                                <div class="editor-field">
+                                    @Html.TextBox("file", "", new { type = "file", accept = ".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf" })
+                                </div>
+
+                                <br />
+                                <div class="editor-field">
+                                    @Html.TextArea("txtValue", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                                </div>
+                                <br />
+
+                        </fieldset>
+                    </form>
+
+                    <div class="pull-right"></div>
+                </div>
+            </text>)
+)*@

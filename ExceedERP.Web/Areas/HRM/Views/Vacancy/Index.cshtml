@@ -7,7 +7,7 @@
 <legend >@Resources.Navigator_Recruitment_Vacancy</legend>
 
 @(Html.Kendo().Grid<Vacancy>()
-                  .Name("VaccancyPlangrid")
+      .Name("VaccancyPlangrid")
       .Columns(columns =>
       {
           //columns.Bound(c => c.VacancyId).Width(130);
@@ -19,7 +19,6 @@
           //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           // columns.ForeignKey(c => c.RecruitmentPlanId, (IEnumerable)ViewData["Recruitments"], "RecruitmentPlanId", "JobTitle").EditorTemplateName("RecruitmentPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
-
           columns.Bound(c => c.RecruSource).EditorTemplateName("Enum").Width(150);
           //columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
           //columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
@@ -27,14 +26,12 @@
           columns.Bound(c => c.To).Width(150);
           // columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Media"], "LookupId", "Description").Width(90).EditorTemplateName("Media");
           columns.Bound(c => c.VacancyType).EditorTemplateName("Enum").Width(120);
-
-
           columns.Command(command =>
           {
               if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
               {
-                  command.Custom("open").Text("Force Open").Click("forchOpen");
-                  command.Custom("close").Text("Close").Click("terminate");
+                  command.Custom("open").Text(Resources.Button_Force_Open).Click("forchOpen");
+                  command.Custom("close").Text(Resources.Payroll_Process_Close).Click("terminate");
 
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               }
@@ -124,8 +121,8 @@
                  items.Add().Text("Interviewrs").Content(
                     @<text>
 
-                        @(Html.Kendo().Grid<RecruitmetnInterviewerPerseon>()
-                                  .Name("Interviewer#=VacancyId#")
+                   @(Html.Kendo().Grid<RecruitmetnInterviewerPerseon>()
+                      .Name("Interviewer#=VacancyId#")
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Width(150);
@@ -463,5 +460,9 @@
         });
         grid.refresh();
     }
-
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 </script>

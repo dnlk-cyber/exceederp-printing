@@ -31,6 +31,7 @@ using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Web.Hubs;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Web.Models;
+using ExceedERP.Core.Domain.ArchiveManagement;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -56,93 +57,114 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             GetEducationFiled();
             GetEducationLevel();
             SetInitialDatas();
-            ViewData["Branch"] = db.Branch.ToList();
+            ViewData["Branch"] = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
 
             ViewData["OldJobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.OLD_JOB_TITLE || x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-
+            ViewData["jobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            //var branches = db.Branch;
+            //ViewData["branches"] = branches;
+            //var workunits = db.MainCompanyStructures.ToList();
+            //ViewData["workunits"] = workunits;
+            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["branches"] = branches;
+            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["businessUnits"] = businessUnits;
+            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
+            ViewData["workunits"] = workunits;
             GetPlacementAfterSystem();
-            Notifications();
 
             return View();
         }
+     
+            
+
+        private int CalculateProbationAmount(DateTime hiringDate )
+        {
+            int probationAmount = 0;
+            var employeeProbationSetting = db.EmployeeProbationSettings.FirstOrDefault();
+            if(employeeProbationSetting !=null && employeeProbationSetting.IncludeWeekend&&employeeProbationSetting.IncludeHoliday)
+            {
+                for (DateTime currentDate = hiringDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
+                {
+                    // including weekends (Saturday and Sunday) and holidays
+                    probationAmount++;
+
+
+                  
+
+                }
+            }
+            if (employeeProbationSetting !=null && !employeeProbationSetting.IncludeWeekend&&employeeProbationSetting.IncludeHoliday)
+            {
+               
+                for (DateTime currentDate = hiringDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
+                {
+
+                    // Exclude weekends (Saturday and Sunday) and  include holliday
+                    if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        probationAmount++;
+
+
+                    }
+                   
+
+
+
+
+                }
+            }
+            if (employeeProbationSetting !=null && employeeProbationSetting.IncludeWeekend&& !employeeProbationSetting.IncludeHoliday)
+            {
+                List<DateTime> holidays = db.Holidays.Select(x => x.Date).ToList();
+                for (DateTime currentDate = hiringDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
+                {
+                    // include  weekends (Saturday and Sunday) and exclude  holidays
+
+                    if (!holidays.Contains(currentDate))
+                    {
+                        probationAmount++;
+
+
+                    }
+
+
+
+
+                }
+            }
+
+            else
+            {
+                List<DateTime> holidays = db.Holidays.Select(x => x.Date).ToList();
+                for (DateTime currentDate = hiringDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
+                {
+                    // Exclude weekends (Saturday and Sunday) and holidays
+                    if (currentDate.DayOfWeek != DayOfWeek.Saturday &&
+                    currentDate.DayOfWeek != DayOfWeek.Sunday &&
+                    !holidays.Contains(currentDate))
+                    {
+                        probationAmount++;
+
+
+                    }
+
+                }
+
+            }
+            
+
+            return probationAmount;
+        }
         public void GetPlacementAfterSystem()
         {
-            ViewData["branches"] = db.Branch.ToList();
-            ViewData["workunits"] = db.MainCompanyStructures.ToList();
-            ViewData["Jobtitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-            ViewData["RankList"] = db.Ranks.ToList();
-            ViewData["StepList"] = db.Steps.ToList();
+            ViewData["branches"] = db.Branch.Select(x=>new {x.BranchId,x.Name }).ToList();
+            ViewData["workunits"] = db.MainCompanyStructures.Select(x => new {x.OrgStructureId,x.Name }).ToList();
+            ViewData["Jobtitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).Select(x => new {x.LookupId,x.Description }).ToList();
+            ViewData["RankList"] = db.Ranks.Select(x => new {x.RankId,x.RankName}).ToList();
+            ViewData["StepList"] = db.Steps.Select(x => new {x.StepId,x.StepName }).ToList();
         }
-        private void Notifications()
-        {
-
-            var persons = db.Person_Employee.Where(x => x.IsActive).ToList();
-            var head = db.RetirementSettings.FirstOrDefault(x => x.RetireSetting == RetireSetting.Heads);
-            var performer = db.RetirementSettings.FirstOrDefault(x => x.RetireSetting == RetireSetting.Performers);
-            var placements = db.Placements.Where(x => x.isCurrent);
-
-            List<string> names = new List<string>();
-            foreach (var per in persons)
-            {
-
-                var placement = placements.FirstOrDefault(x => x.EmployeeId == per.EmployeeId);
-                var days = DateTime.Today.Date.Subtract(per.DateOfBirth.Date).Days;
-                var month = days / 30;
-                var year = (int)month / 12;
-
-                if (placement != null && placement.IsHead && head != null && month == head.CurrentValue)
-                {
-
-                    NotifModels notif = new NotifModels
-                    {
-                        UserId = per.FullNameaEnglish,
-                        Title = "Retiremtent Notification",
-                        Message = $" {per.FullNameaEnglish}  have left {month} months to retire",
-                        URL = "~/HRM/EmployeeProfile"
-                    };
-
-                    Notify.NotifyUser(notif);
-                }
-                else if (placement != null && !placement.IsHead && performer != null && month == performer.CurrentValue)
-                {
-                    NotifModels notif = new NotifModels
-                    {
-                        UserId = per.FullNameaEnglish,
-                        Title = "Retiremtent Notification",
-                        Message = $" {per.FullNameaEnglish}  have left {month} months to retire",
-                        URL = "~/HRM/EmployeeProfile"
-                    };
-
-                    Notify.NotifyUser(notif);
-                }
-
-            }
-            foreach (var per in persons.Where(x => x.Status == EmployeeStatus.PROBATION))
-            {
-                var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == ProbationSetting.Probation_Period.ToString());
-                if (config != null)
-                {
-                    // var dayss = DateTime.Today.Date.Subtract(per.HiredDate.Date).Days;
-                    var dayss = HrHelper.GetWorkingDays(per.HiredDate, DateTime.Today);
-                    var orginalday = Convert.ToInt32(config.CurrentValue);
-                    var day = Convert.ToInt32(config.CurrentValue) - 5;
-                    if (dayss >= day)
-                    {
-                        NotifModels notif = new NotifModels
-                        {
-                            UserId = per.FullNameaEnglish,
-                            Title = "Probation Notification",
-                            Message = $" {per.FullNameaEnglish}  have left few days for probation",
-                            URL = "~/HRM/EmployeeProfile"
-                        };
-
-                        Notify.NotifyUser(notif);
-                    }
-                }
-            }
-
-
-        }
+        
         public JsonResult GenerateProfile(string id, string text)
         {
             int EmployeeId = Convert.ToInt32(id);
@@ -580,35 +602,48 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Refresh()
         {
             var allEmployee = db.Person_Employee.ToList();
+            var placements = db.Placements.ToList();
 
             foreach (var p in allEmployee)
             {
-                if (p.IsActive)
+                try
                 {
-                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == p.EmployeeId && x.isCurrent);
-                    if (placement != null)
+                    if (p.IsActive)
                     {
-                        p.BranchId = placement.BranchId;
-                        p.OrgBranchName = placement.BranchId.ToString();
+                        var placement = placements.FirstOrDefault(x => x.EmployeeId == p.EmployeeId && x.isCurrent);
+                        if (placement != null)
+                        {
+                            p.BranchId = placement.BranchId;
+                            p.OrgBranchName = placement.BranchId.ToString();
 
-                        db.Entry(p).State = EntityState.Modified;
-                        db.SaveChanges();
+                            db.Entry(p).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        var placement = placements.Where(x => x.EmployeeId == p.EmployeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
+                        if (placement != null)
+                        {
+                            p.BranchId = placement.BranchId;
+                            p.OrgBranchName = placement.OrgBranchName.ToString();
+
+                            db.Entry(p).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                     }
                 }
-                else
+                catch(Exception ex)
                 {
-                    var placement = db.Placements.Where(x => x.EmployeeId == p.EmployeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
-                    if (placement != null)
+                    var formatedData1 = new
                     {
-                        p.BranchId = placement.BranchId;
-                        p.OrgBranchName = placement.OrgBranchName.ToString();
-
-                        db.Entry(p).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
+                        Message = $"Error occured on Emplyee {p.EmployeeCode} - {ex.Message}",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formatedData1, JsonRequestBehavior.AllowGet);
                 }
-
             }
+            
             var formatedData = new
             {
                 Message = "Branch successfully updated",
@@ -859,7 +894,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             int maxAge;
             List<string> employeesList = inputs.GetUserBranchEmployees(User.Identity.Name);
-            var employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString())).Where(x => x.IsActive && !x.IsReHired && x.Remark != "R-Active");
+            var employees = db.Person_Employee.Where(x => employeesList.Contains(x.EmployeeId.ToString())).Where(x => x.IsActive && !x.IsReHired && x.Remark != "R-Active" && x.Status != EmployeeStatus.CONTRACT);
             db = new ExceedDbContext();
             bool isActive = true;
             var terminations = db.Terminations;
@@ -1176,11 +1211,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var personEmploye = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id && x.IsActive);
             if (personEmploye != null)
             {
-                int probDate = (DateTime.Now - personEmploye.HiredDate).Days;
-                if (probDate > 40)
+                int probationAmount = 0;
+                // var  ProbationDays = db.ProbationPerformanceSettings.FirstOrDefault()?.EndWeight;
+                List<DateTime> holidays = db.Holidays.Select(x => x.Date).ToList();
+                for (DateTime currentDate = personEmploye.HiredDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
+                {
+                    // Exclude weekends (Saturday and Sunday) and holidays
+                    if (currentDate.DayOfWeek != DayOfWeek.Saturday &&
+                    currentDate.DayOfWeek != DayOfWeek.Sunday &&
+                    !holidays.Contains(currentDate))
+                    {
+                        probationAmount++;
+
+
+                    }
+
+                }
+                if(probationAmount >= 60)
                 {
                     return true;
                 }
+                return false;
+                //int probDate = (DateTime.Now - personEmploye.HiredDate).Days;
+                //if (probDate > 40)
+                //{
+                //    return true;
+                //}
             }
             return false;
         }
@@ -1240,68 +1296,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return null;
         }
-        [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
-        public ActionResult Person_Employee_Read([DataSourceRequest]DataSourceRequest request)
-        {
-
-            //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
-
-            //var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
-            //IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => employees.Contains(x.EmployeeId) && x.IsActive);
-
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            var person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced).ToList();
-
-
-            DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
-            {
-                EmployeeId = person_Employee.EmployeeId,
-                EmployeeCode = person_Employee.EmployeeCode,
-                MothersFullName = person_Employee.MothersFullName,
-                BirthPlace = person_Employee.BirthPlace,
-                Nation = person_Employee.Nation,
-                Region = person_Employee.Region,
-                Religion = person_Employee.Religion,
-                MartialStatus = person_Employee.MartialStatus,
-                Status = person_Employee.Status,
-                HiredDate = person_Employee.HiredDate,
-                FirstName = person_Employee.FirstName,
-                MiddleName = person_Employee.MiddleName,
-                LastName = person_Employee.LastName,
-                Nationality = person_Employee.Nationality,
-                DateOfBirth = person_Employee.DateOfBirth,
-                Title = person_Employee.Title,
-                Gender = person_Employee.Gender,
-                CategoryID = person_Employee.CategoryID,
-                IsActive = person_Employee.IsActive,
-                Remark = person_Employee.Remark,
-                DateCreated = person_Employee.DateCreated,
-                LastModified = person_Employee.LastModified,
-                CreatedBy = person_Employee.CreatedBy,
-                ModifiedBy = person_Employee.ModifiedBy,
-                //DateCreatedAM = person_Employee.DateCreatedAM,
-                //DateLastModifiedAM = person_Employee.DateLastModifiedAM,
-                OrgBranchName = person_Employee.OrgBranchName,
-                FirstNameEnglish = person_Employee.FirstNameEnglish,
-                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
-                LastNameEnglish = person_Employee.LastNameEnglish,
-                DateOfBirthAm = person_Employee.DateOfBirthAm,
-                HiredDateAmharic = person_Employee.HiredDateAmharic,
-                ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
-                BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
-                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false,
-                ContratLeftDay = GetContractLeftDay(person_Employee.EmployeeId),
-                PhoneNo = person_Employee.PhoneNo,
-                City = person_Employee.City,
-                SubCity = person_Employee.SubCity,
-                Wereda = person_Employee.Wereda,
-                EmployeeTypeId = person_Employee.EmployeeTypeId,
-                IsPlaced = person_Employee.IsPlaced
-            });
-
-            return Json(result);
-        }
         private void UpdateEmployeeBranch(List<Placement> placments)
         {
             foreach (var placement in placments)
@@ -1321,7 +1315,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
         private int CheckProhabition(int empId)
         {
-
+            
+            int probationAmount = 0;
             var employee = db.Person_Employee.Where(x => x.EmployeeId == empId).FirstOrDefault();
 
             if (employee != null)
@@ -1331,21 +1326,86 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     var prohabition = db.Prohibitions.Where(x => x.EmployeeId == empId).FirstOrDefault();
                     if (prohabition != null)
                     {
-                        double dateDiff = (prohabition.EndDate - employee.HiredDate).TotalDays;
-                        if (dateDiff >= 40 && dateDiff <= 45)
+                        List<DateTime> holidays = db.Holidays.Select(x => x.Date).ToList();
+                        for (DateTime currentDate = employee.HiredDate; probationAmount <= 60 && currentDate.Date <= prohabition.EndDate.Date; currentDate = currentDate.AddDays(1))
+                        {
+                            // Exclude weekends (Saturday and Sunday) and holidays
+                            if (currentDate.DayOfWeek != DayOfWeek.Saturday &&
+                            currentDate.DayOfWeek != DayOfWeek.Sunday &&
+                            !holidays.Contains(currentDate))
+                            {
+                                probationAmount++;
+
+
+                            }
+
+                        }
+
+                        if (probationAmount < 60)
                         {
                             return 2;
                         }
-                        if (dateDiff >= 45)
+                        if (probationAmount >= 60)
                         {
                             return 0;
                         }
+                        //double dateDiff = (prohabition.EndDate - employee.HiredDate).TotalDays;
+
+                        //if (dateDiff >= 40 && dateDiff <= 45)
+                        //{
+                        //    return 2;
+                        //}
+                        //if (dateDiff >= 45)
+                        //{
+                        //    return 0;
+                        //}
                     }
 
 
                 }
             }
             return 1;
+        }
+        private List<int> GetEmployeeIdInProhabition(List<Person_Employee> employees)
+        {
+            List<int> employeeIds = new List<int>(); 
+            int probationAmount = 0;
+            //var employee = db.Person_Employee.Where(x => x.EmployeeId == empId).FirstOrDefault();
+            employees = employees.Where(x => (DateTime.Now.Date-x.HiredDate.Date ).TotalDays < 90).ToList();
+           
+            foreach (var employee in employees)
+            {
+                
+                List<DateTime> holidays = db.Holidays.Select(x => x.Date).ToList();
+                probationAmount = Enumerable.Range(0, 60)
+               .Select(offset => employee.HiredDate.AddDays(1))
+               .Where(date => date.DayOfWeek != DayOfWeek.Sunday && !holidays.Contains(date))
+               .Count();
+                //for (DateTime currentDate = employee.HiredDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
+                //{
+                //    // Exclude weekends (Saturday and Sunday) and holidays
+
+                //    if ( currentDate.DayOfWeek != DayOfWeek.Sunday &&
+                //    !holidays.Contains(currentDate))
+                //    {
+                //        probationAmount++;
+
+
+                //    }
+
+                //}
+                if(probationAmount <= 60)
+                {
+
+                    employeeIds.Add(employee.EmployeeId);
+                }
+                        
+                    
+
+
+                
+            }
+            return employeeIds;
         }
         public void GetEmployeePhoto(IQueryable<Person_Employee> person_employee)
         {
@@ -1402,13 +1462,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                 if (setting.Any())
                                 {
                                     var last = (setting.OrderByDescending(x => x.IndexCount).FirstOrDefault().IndexCount + 1).ToString();
-                                    var length = setting.FirstOrDefault().ItemCodeTrim;
+                                    var length = setting.OrderByDescending(x => x.IndexCount).FirstOrDefault().ItemCodeTrim;
                                     //for (int i = 1; i <= length; i++)
                                     //{
                                     //    last = "0" + last;
                                     //}
-                                    last.PadLeft(length, '0');
-                                    emp.Add(last);
+                                    string newId=last.PadLeft(length, '0');
+                                    emp.Add(newId);
 
                                     sequenceNo = setting.OrderByDescending(x => x.IndexCount).FirstOrDefault().IndexCount + 1;
                                     digitLength = length;
@@ -1439,33 +1499,183 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         }
                         else
                         {
-                            empCode = empCode + emp[i] + "/";
+                            empCode = empCode + emp[i] + "-";
                         }
 
                     }
 
                 }
-
-                var idSequence = new EmployeeCodeSequenceSetting
+                var employeecode = db.EmployeeCodeSequenceSettings.Where(x => x.Name.Trim() == name.Trim()).FirstOrDefault();
+                if (employeecode !=null)
                 {
-                    ItemCodeTrim = digitLength,
-                    IndexCount = sequenceNo,
-                    Name = name,
-                    Status = true,
-                };
 
-                db.EmployeeCodeSequenceSettings.Add(idSequence);
-                db.SaveChanges();
+                    employeecode.ItemCodeTrim = digitLength;
+                    employeecode.IndexCount = sequenceNo;
+                    employeecode.Name = name;
+                    employeecode.Status = true;
+                   
+
+                    db.EmployeeCodeSequenceSettings.Attach(employeecode);
+                    db.Entry(employeecode).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    var idSequence = new EmployeeCodeSequenceSetting
+                    {
+                        ItemCodeTrim = digitLength,
+                        IndexCount = sequenceNo,
+                        Name = name,
+                        Status = true,
+                    };
+
+                    db.EmployeeCodeSequenceSettings.Add(idSequence);
+                    db.SaveChanges();
+                }
             }
 
             return empCode;
 
+        }
+        [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+        public ActionResult Person_Employee_InProbation_Read([DataSourceRequest]DataSourceRequest request)
+        {
+
+            //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
+
+            //var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
+            //IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => employees.Contains(x.EmployeeId) && x.IsActive);
+            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+
+            var person_employees = db.Person_Employee.AsNoTracking().ToList().Where(x => mybraches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced).Where(x=>(DateTime.Now.Date-x.HiredDate.Date).TotalDays<90).ToList();
+            List<int> employeeIds = GetEmployeeIdInProhabition(person_employees);
+            person_employees = person_employees.Where(x => employeeIds.Contains(x.EmployeeId)).ToList();
+            DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
+            {
+                EmployeeId = person_Employee.EmployeeId,
+                EmployeeCode = person_Employee.EmployeeCode,
+                MothersFullName = person_Employee.MothersFullName,
+                BirthPlace = person_Employee.BirthPlace,
+                Nation = person_Employee.Nation,
+                Region = person_Employee.Region,
+                Religion = person_Employee.Religion,
+                MartialStatus = person_Employee.MartialStatus,
+                Status = person_Employee.Status,
+                HiredDate = person_Employee.HiredDate,
+                FirstName = person_Employee.FirstName,
+                MiddleName = person_Employee.MiddleName,
+                LastName = person_Employee.LastName,
+                Nationality = person_Employee.Nationality,
+                DateOfBirth = person_Employee.DateOfBirth,
+                Title = person_Employee.Title,
+                Gender = person_Employee.Gender,
+                CategoryID = person_Employee.CategoryID,
+                IsActive = person_Employee.IsActive,
+                Remark = person_Employee.Remark,
+                DateCreated = person_Employee.DateCreated,
+                LastModified = person_Employee.LastModified,
+                CreatedBy = person_Employee.CreatedBy,
+                ModifiedBy = person_Employee.ModifiedBy,
+                OrgBranchName = person_Employee.OrgBranchName,
+                FirstNameEnglish = person_Employee.FirstNameEnglish,
+                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
+                LastNameEnglish = person_Employee.LastNameEnglish,
+                DateOfBirthAm = person_Employee.DateOfBirthAm,
+                HiredDateAmharic = person_Employee.HiredDateAmharic,
+                ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
+                BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
+                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false,
+                ContratLeftDay = GetContractLeftDay(person_Employee.EmployeeId),
+                PhoneNo = person_Employee.PhoneNo,
+                City = person_Employee.City,
+                SubCity = person_Employee.SubCity,
+                Wereda = person_Employee.Wereda,
+                EmployeeTypeId = person_Employee.EmployeeTypeId,
+                IsPlaced = person_Employee.IsPlaced,
+                Age = EmployeeHelper.GetAge(person_Employee.EmployeeId)
+            });
+
+            return Json(result);
+        }
+        [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+        public ActionResult Person_Employee_Read([DataSourceRequest]DataSourceRequest request)
+        {
+
+            //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
+
+            //var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
+            //IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => employees.Contains(x.EmployeeId) && x.IsActive);
+
+            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            var person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced).ToList();
+
+
+            DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
+            {
+                EmployeeId = person_Employee.EmployeeId,
+                EmployeeCode = person_Employee.EmployeeCode,
+                MothersFullName = person_Employee.MothersFullName,
+                BirthPlace = person_Employee.BirthPlace,
+                Nation = person_Employee.Nation,
+                Region = person_Employee.Region,
+                Religion = person_Employee.Religion,
+                MartialStatus = person_Employee.MartialStatus,
+                Status = person_Employee.Status,
+                HiredDate = person_Employee.HiredDate,
+                FirstName = person_Employee.FirstName,
+                MiddleName = person_Employee.MiddleName,
+                LastName = person_Employee.LastName,
+                Nationality = person_Employee.Nationality,
+                DateOfBirth = person_Employee.DateOfBirth,
+                Title = person_Employee.Title,
+                Gender = person_Employee.Gender,
+                CategoryID = person_Employee.CategoryID,
+                IsActive = person_Employee.IsActive,
+                Remark = person_Employee.Remark,
+                DateCreated = person_Employee.DateCreated,
+                LastModified = person_Employee.LastModified,
+                CreatedBy = person_Employee.CreatedBy,
+                ModifiedBy = person_Employee.ModifiedBy,
+                OrgBranchName = person_Employee.OrgBranchName,
+                FirstNameEnglish = person_Employee.FirstNameEnglish,
+                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
+                LastNameEnglish = person_Employee.LastNameEnglish,
+                DateOfBirthAm = person_Employee.DateOfBirthAm,
+                HiredDateAmharic = person_Employee.HiredDateAmharic,
+                ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
+                BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
+                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false,
+                ContratLeftDay = GetContractLeftDay(person_Employee.EmployeeId),
+                PhoneNo = person_Employee.PhoneNo,
+                City = person_Employee.City,
+                SubCity = person_Employee.SubCity,
+                Wereda = person_Employee.Wereda,
+                EmployeeTypeId = person_Employee.EmployeeTypeId,
+                IsPlaced = person_Employee.IsPlaced,
+                Age = EmployeeHelper.GetAge(person_Employee.EmployeeId)
+            });
+
+            return Json(result);
         }
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Person_Employee_Create([DataSourceRequest]DataSourceRequest request, Person_Employee person_Employee)
         {
             ModelState.Clear();
+
+            char [] nameFilter = "0123456789".ToArray();
+
+            if (person_Employee.FirstName.IndexOfAny(nameFilter) != -1 || 
+                person_Employee.MiddleName.IndexOfAny(nameFilter) != -1 ||
+                person_Employee.LastName.IndexOfAny(nameFilter) != -1  ||
+                person_Employee.FirstNameEnglish.IndexOfAny(nameFilter) != -1||
+                person_Employee.MiddleNameEnglish.IndexOfAny(nameFilter) != -1||
+                person_Employee.LastNameEnglish.IndexOfAny(nameFilter) != -1)
+            {
+                ModelState.AddModelError("Name", "Name should not contain numbers.");
+            }
 
             if (person_Employee.DateOfBirthAm != null)
             {
@@ -1488,17 +1698,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
 
             //this variable uses for if the setting is not added it helps to take manualy filled id
-            string empCode = person_Employee.EmployeeCode;
+           // string empCode = person_Employee.EmployeeCode;
 
-            person_Employee.EmployeeCode = GenerateEmployeeCode(person_Employee.HiredDate);
+            string generated_code= GenerateEmployeeCode(person_Employee.HiredDate);
 
-            if (string.IsNullOrEmpty(person_Employee.EmployeeCode))
+            if (!string.IsNullOrEmpty(generated_code))
             {
-                person_Employee.EmployeeCode = empCode;
+                person_Employee.EmployeeCode = generated_code;
             }
             else
             {
-                person_Employee.EmployeeCode = "---";
+                var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == EmployeeIdAttribute.Auto_Generate.ToString()&&x.Reference== "EmployeeID");
+                if(config != null)
+                {
+                    int.TryParse(config.CurrentValue, out int length);
+                    if(length != person_Employee.EmployeeCode.Length)
+                    {
+                        ModelState.AddModelError("exist", "The Employee Code  Must be Length Of "+length);
+                    }
+                }
+                //person_Employee.EmployeeCode = "---";
             }
 
             #region Validation 
@@ -1537,11 +1756,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Region = person_Employee.Region,
                     Religion = person_Employee.Religion,
                     MartialStatus = person_Employee.MartialStatus,
-                    Status = person_Employee.Status,
+                    Status = EmployeeStatus.NO_STATUS,
                     HiredDate = person_Employee.HiredDate,
-                    FirstName = person_Employee.FirstName,//FirstName,
-                    MiddleName = person_Employee.MiddleName, //MiddleName ,
-                    LastName = person_Employee.LastName,//LastName
+                    FirstName = person_Employee.FirstName,
+                    MiddleName = person_Employee.MiddleName, 
+                    LastName = person_Employee.LastName,
                     Nationality = person_Employee.Nationality,
                     DateOfBirth = person_Employee.DateOfBirth,
                     Title = person_Employee.Title,
@@ -1740,7 +1959,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Person_Employee_Update([DataSourceRequest]DataSourceRequest request, Person_Employee person_Employee)
         {
             ModelState.Clear();
+            char[] nameFilter = "0123456789".ToArray();
 
+            if (person_Employee.FirstName.IndexOfAny(nameFilter) != -1|| 
+                person_Employee.MiddleName.IndexOfAny(nameFilter) != -1 ||
+                person_Employee.LastName.IndexOfAny(nameFilter) != -1 || 
+                person_Employee.FirstNameEnglish.IndexOfAny(nameFilter) != -1 || 
+                person_Employee.MiddleNameEnglish.IndexOfAny(nameFilter) != -1 || 
+                person_Employee.LastNameEnglish.IndexOfAny(nameFilter) != -1)
+            {
+                ModelState.AddModelError("Name", "Name should not contain numbers.");
+            }
             if (person_Employee.DateOfBirthAm != null)
             {
                 var splitDateB = person_Employee.DateOfBirthAm.Split('/');
@@ -1774,7 +2003,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     ModelState.AddModelError("Probation Validation", "This employee didn't finish Probation period you can't change the status");
                 }
             }
-
+            
             int age = DateTime.Now.Year - person_Employee.DateOfBirth.Year;
 
             if (person_Employee.HiredDate < person_Employee.DateOfBirth)
@@ -1797,7 +2026,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 ModelState.AddModelError("", "This employee code is already taken by another employee");
             }
+            else if(checkCode != null
+                     &&checkCode.EmployeeId == person_Employee.EmployeeId 
+                     && checkCode.EmployeeCode != person_Employee.EmployeeCode)
 
+            {
+                var configForCode = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == EmployeeIdAttribute.Auto_Generate.ToString() && x.Reference == "EmployeeID");
+                if (configForCode != null)
+                {
+                    int.TryParse(configForCode.CurrentValue, out int length);
+                    if (length != person_Employee.EmployeeCode.Length)
+                    {
+                        ModelState.AddModelError("exist", "The Employee Code  Must be Length Of " + length);
+                    }
+                }
+                
+            }
             if (ModelState.IsValid)
             {
                 var emp = db.Person_Employee.Find(person_Employee.EmployeeId);
@@ -1892,6 +2136,136 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
 
             return Json(new[] { person_Employee }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Placements_HistoryForProfile_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            List<OldPlacementVM> placeList = new List<OldPlacementVM>();
+
+            var placements = db.Placements.Where(x => x.EmployeeId == id && !x.isCurrent).ToList();//.Where(x => mybraches.Contains(x.BranchId.ToString()));
+
+            foreach (var place in placements)
+            {
+                var pp = new OldPlacementVM();
+
+                pp.PlaceId = place.PlacementId;
+                var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
+                if (branch != null)
+                {
+                    pp.Branch = branch.Name;
+                }
+                var department = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                if (department != null)
+                {
+                    pp.Department = department.Name;
+                }
+                var jobtitle = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+                if (jobtitle != null)
+                {
+                    pp.JobTitle = jobtitle.Description;
+                }
+                pp.LookupId = place.LookupId;
+                pp.AssignmentDate = place.AssignmentDateAmharic;
+                pp.IsHead = place.IsHead;
+                pp.IsCurrent = place.isCurrent;
+                pp.Salary = place.Salary;
+                pp.AssignmentType = place.AssignmentType;
+
+                placeList.Add(pp);
+            }
+            DataSourceResult result = placeList.ToDataSourceResult(request, placement => new
+            {
+                PlaceId = placement.PlaceId,
+                Branch = placement.Branch,
+                Department = placement.Department,
+                LookupId = placement.LookupId,
+                JobTitle = placement.JobTitle,
+                IsHead = placement.IsHead,
+                IsCurrent = placement.IsCurrent,
+                AssignmentDate = placement.AssignmentDate,
+                Salary = placement.Salary,
+                AssignmentType = placement.AssignmentType
+
+            });
+
+            return Json(result);
+
+
+        }
+
+        //public ActionResult Placements_HistoryForProfile_Read([DataSourceRequest]DataSourceRequest request, int id)
+        //{
+        //    List<OldPlacementVM> placeList = new List<OldPlacementVM>();
+
+        //    var placements = db.Placements.Where(x => x.EmployeeId == id).OrderByDescending(x=>x.PlacementId).ToList();
+
+        //    foreach (var place in placements)
+        //    {
+        //        var pp = new OldPlacementVM();
+        //        pp.PlaceId = place.PlacementId;
+        //        pp.BranchId = place.BranchId;
+        //        pp.DepartmentId = place.OrgStructureId;
+        //        pp.LookupId = place.LookupId;
+        //        pp.AssignmentDate = place.AssignmentDateAmharic;
+        //        pp.IsHead = place.IsHead;
+        //        pp.IsCurrent = place.isCurrent;
+        //        pp.Salary = place.Salary;
+        //        pp.AssignmentType = place.AssignmentType;
+
+        //        placeList.Add(pp);
+        //    }
+        //    DataSourceResult result = placeList.ToDataSourceResult(request, placement => new
+        //    {
+        //        PlaceId = placement.PlaceId,
+        //        BranchId = placement.BranchId,
+        //        DepartmentId = placement.DepartmentId,
+        //        LookupId = placement.LookupId,
+        //        JobTitle = placement.JobTitle,
+        //        IsHead = placement.IsHead,
+        //        IsCurrent = placement.IsCurrent,
+        //        AssignmentDate = placement.AssignmentDate,
+        //        Salary = placement.Salary,
+        //        AssignmentType = placement.AssignmentType
+
+        //    });
+
+        //    return Json(result);
+
+
+        //}
+        public ActionResult Placements_HistoryForProfile_Update([DataSourceRequest]DataSourceRequest request, OldPlacementVM oldPlacement, int id)
+        {
+            if (oldPlacement.IsCurrent)
+            {
+                ModelState.AddModelError("exist", "This is the current Placement could you can edit it in Placement ");
+            }
+            var placement = db.Placements.Where(x => x.EmployeeId == id &&x.PlacementId==oldPlacement.PlaceId&& !x.isCurrent).FirstOrDefault();
+
+            if ( placement !=null)
+            {
+
+               // placement.BranchId = oldPlacement.BranchId;
+               // placement.OrgStructureId = oldPlacement.DepartmentId;
+                placement.LookupId = oldPlacement.LookupId;
+                if(oldPlacement.AssignmentDate != null)
+                {
+
+                    var splitDateH = oldPlacement.AssignmentDate.Split('/');
+                    placement.AssignmentDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateH[0]), Convert.ToInt32(splitDateH[1]), Convert.ToInt32(splitDateH[2]));
+
+                }
+                placement.IsHead = oldPlacement.IsHead;
+                placement.Salary = oldPlacement.Salary;
+                placement.AssignmentType = oldPlacement.AssignmentType;
+
+                db.Entry(placement).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+           
+
+            return Json(new[] { oldPlacement }.ToDataSourceResult(request, ModelState));
+
+
+
         }
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
@@ -2136,11 +2510,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             viewModel.Add(data);
             return Json(viewModel);
         }
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
-        }
         public ActionResult Employee_Import([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file)
         {
             string errors = "Employee Id";
@@ -2312,6 +2681,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         LastNameEnglish = person_Employee.LastNameEnglish,
                         DateOfBirthAm = person_Employee.DateOfBirthAm,
                         HiredDateAmharic = person_Employee.HiredDateAmharic,
+                        PhoneNo = person_Employee.PhoneNo,
                         OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     };
 
@@ -2552,5 +2922,50 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return "Successfully ReHired";
         }
+        public ActionResult EmployeeFolderAttachmentForEmployeeProfiles_Read([DataSourceRequest]DataSourceRequest request, int empId)
+        {
+            var personalArchiveNoIds = db.PersonalArchiveNo.Where(x => x.EmployeeId == empId).Select(x => x.PersonalArchiveNoId);
+            var employeefolderattachments = db.EmployeeFolderAttachments.Where(x => personalArchiveNoIds.Contains(x.PersonalArchiveNoId)).ToList();
+
+            DataSourceResult result = employeefolderattachments.ToDataSourceResult(request, employeeFolderAttachment => new
+            {
+                EmployeeFolderAttachmentId = employeeFolderAttachment.EmployeeFolderAttachmentId,
+                PersonalArchiveNoId = employeeFolderAttachment.PersonalArchiveNoId,
+                FileName = employeeFolderAttachment.FileName,
+                FilePath = employeeFolderAttachment.FilePath,
+                ShortPath = employeeFolderAttachment.ShortPath,
+                FileExtension = employeeFolderAttachment.FileExtension,
+                Description = employeeFolderAttachment.Description,
+                Remark = employeeFolderAttachment.Remark
+            });
+
+            return Json(result);
+        }
+        public ActionResult EmployeeFolderAttachments_Destroy([DataSourceRequest]DataSourceRequest request, EmployeeFolderAttachment employeeFolderAttachment)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new EmployeeFolderAttachment
+                {
+                    EmployeeFolderAttachmentId = employeeFolderAttachment.EmployeeFolderAttachmentId,
+                    PersonalArchiveNoId = employeeFolderAttachment.PersonalArchiveNoId,
+                    FileName = employeeFolderAttachment.FileName,
+                    FilePath = employeeFolderAttachment.FilePath,
+                    Remark = employeeFolderAttachment.Remark
+                };
+
+                db.EmployeeFolderAttachments.Attach(entity);
+                db.EmployeeFolderAttachments.Remove(entity);
+                db.SaveChanges();
+            }
+
+            return Json(new[] { employeeFolderAttachment }.ToDataSourceResult(request, ModelState));
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+
     }
 }

@@ -17,15 +17,18 @@ namespace ExceedERP.Core.Domain.Common.HRM
         // [Index("IMEIIndex",IsUnique = true)]
         public string EmployeeCode { get; set; }
         [Display(Name = "Common_PersonEmployee_Title", ResourceType = typeof(Localization.Resources))]
-        public int Title { get; set; }
+        public int Title { get; set; }       
         [Required]
         [Display(Name = "Common_PersonEmployee_FirstName", ResourceType = typeof(Localization.Resources))]
+       // [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Please enter a valid name, should not containe numbers and special characters.")]
         public string FirstName { get; set; }
         [Required]
         [Display(Name = "Common_PersonEmployee_MiddleName", ResourceType = typeof(Localization.Resources))]
+       // [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Please enter a valid name, should not containe numbers and special characters.")]
         public string MiddleName { get; set; }
         [Display(Name = "Common_PersonEmployee_LastName", ResourceType = typeof(Localization.Resources))]
         [Required]
+       // [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Please enter a valid name, should not containe numbers and special characters.")]
         public string LastName { get; set; }
         [Display(Name = "Common_PersonEmployee_Nationality", ResourceType = typeof(Localization.Resources))]
         public string Nationality { get; set; }
@@ -41,9 +44,7 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public int CategoryID { get; set; }
         [Display(Name = "Common_PersonEmployee_IsActive", ResourceType = typeof(Localization.Resources))]
         public bool IsActive { get; set; }
-
         [Display(Name = "Common_PersonEmployee_MothersFullName", ResourceType = typeof(Localization.Resources))]
-
         public string MothersFullName { get; set; }
         [Display(Name = "Common_PersonEmployee_BirthPlace", ResourceType = typeof(Localization.Resources))]
         public string BirthPlace { get; set; }
@@ -54,7 +55,6 @@ namespace ExceedERP.Core.Domain.Common.HRM
         [Display(Name = "Common_PersonEmployee_Religion", ResourceType = typeof(Localization.Resources))]
         public ReligionList Religion { get; set; }
         [Display(Name = "Common_PersonEmployee_MartialStatus", ResourceType = typeof(Localization.Resources))]
-
         public MartialStatus MartialStatus { get; set; }
         [Required]
         [Display(Name = "Common_PersonEmployee_Status", ResourceType = typeof(Localization.Resources))]
@@ -70,13 +70,16 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public string Remark { get; set; }
         [Required]
         [Display(Name = "Common_PersonEmployee_FirstNameEnglish", ResourceType = typeof(Localization.Resources))]
+       // [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Please enter a valid name, should not containe numbers and special characters.")]
         public string FirstNameEnglish { get; set; }
         [Required]
         [Display(Name = "Common_PersonEmployee_MiddleNameEnglish", ResourceType = typeof(Localization.Resources))]
-
+        //
+       // [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Please enter a valid name, should not containe numbers and special characters.")]
         public string MiddleNameEnglish { get; set; }
         [Display(Name = "Common_PersonEmployee_LastNameEnglish", ResourceType = typeof(Localization.Resources))]
         [Required]
+       // [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Please enter a valid name, should not containe numbers and special characters.")]
         public string LastNameEnglish { get; set; }
         [NotMapped]
         public int ProhabitionState { get; set; }
@@ -103,5 +106,7 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public int? EmployeeTypeId { get; set; }
         public bool IsPlaced { get; set; }
         public bool IsReHired { get; set; }
+        [NotMapped]
+        public int Age { get; set; }
     }
 }

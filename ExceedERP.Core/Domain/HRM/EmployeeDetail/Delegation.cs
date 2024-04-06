@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -17,6 +17,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Display(Name = "HR_Attendance_Attendance_FromDateTime", ResourceType = typeof(Localization.Resources))]
         public DateTime? FromDateTime { get; set; }
         [Display(Name = "HR_Attendance_Attendance_FromDateTime", ResourceType = typeof(Localization.Resources))]
+        [Required]
         public string FromDateTimeAm { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
@@ -28,10 +29,10 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required]
         [Display(Name = "HR_Allowance_Delegation_ToEmployee", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
-        [Required]
-        [Display(Name = "HR_Payroll_EmployeePayroll_Advance_PeriodId", ResourceType = typeof(Localization.Resources))]
-        public int GLPeriodId { get; set; }
-        public virtual GLPeriod Period { get; set; }
+        //[Required]
+        //[Display(Name = "HR_Payroll_EmployeePayroll_Advance_PeriodId", ResourceType = typeof(Localization.Resources))]
+        //public int GLPeriodId { get; set; }
+        //public virtual GLPeriod Period { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
         public bool IsOpen { get; set; }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,6 +9,10 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Models;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Report
 {
@@ -26,7 +30,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         [AuthorizeRoles(HrmConstants.HREmployeeSelfService)]
         public ActionResult EmployeeFixedAsset()
         {
-
             var users = new ApplicationDbContext();
             var db = new ExceedDbContext();
             var user = users.Users.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
@@ -54,111 +57,180 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         }
         public ActionResult LongTermEducation()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Long_Term_Education, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeSummary()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult TerminationSummary()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Termination_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult TerminationReasonSummary()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Termination_Reason_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult DisciplineMeasureSummary()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Discipline_Measure_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult RetirementNotification()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Retirement_Notification, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult EmployeeBirthDate()
         {
-
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Birth_Date, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult EmployeeDisciplinaryMeasure()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Disciplinary_Measure, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeJobTitle()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Job_Title, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult EmployeeSalary()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Salary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 
         public ActionResult EmployeePension()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Pension, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult Age()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Summary_by_Age, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmploymentType()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employment_Type, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult JobTitle()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Job_Title, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EducationalLevel()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Educational_Level, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EducationalField()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Educational_Field, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult Nation()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Summary_By_Nation, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult Rank()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Summary_By_Rank, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeTermination()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Termination, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeTraining()
         {
-
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Training, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeEducation()
         {
 
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Education, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeExperience()
         {
-
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Experience, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeByBranch()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_By_Branch, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
       
         [AuthorizeRoles(HrmConstants.HRRecruitmentReport)]
         public ActionResult VacantPostion()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Vacant_Postion, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeCourtInsuranceReport()
@@ -167,6 +239,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         }
         public ActionResult EmployeeJudgeByRegion()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Judge_By_Region, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult JudgeStatistics()
@@ -187,6 +262,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         }
         public ActionResult EmployeePromotionPerYear()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Promotion_PerYear, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult JudgebyBranchCount()
@@ -212,6 +290,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         public ActionResult AttendanceReport()
         {
             ViewBag.UserName = User.Identity.Name;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Attendance_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult DayAbsentAndLateComingReport()
+        {
+            ViewBag.UserName = User.Identity.Name;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Day_Absent_And_Late_Coming_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult DepartmentAttendanceReport()
@@ -244,15 +333,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         }
         public ActionResult WorkandCostSummary()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Work_and_Cost_Summary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeMasterReport()
         {
+
             return View();
         }
         public ActionResult TobePromoted()
         {
-
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_to_be_Promoted, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult Clinic()
@@ -261,37 +356,125 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         }
         public ActionResult EmployeeHealthPayment()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Health_and_Value_Payment, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EmployeeHealthPaymentSelfCare()
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             ViewBag.id = empId;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Health_and_Value_Payment_selfCare, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult EducationAndTrainingOneByOne()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Education_and_Training_One_By_One, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult TrainingOneByOne()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Training_One_By_One, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult TrainingRequestReport()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Training_Request_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult NotPlacedEmployees()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Not_Placed_Employees, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult CompanyStructure()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Company_Structure, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
         public ActionResult MonthlySalaryPerPeriod()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Monthly_Salary_Per_Period, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
+        }
+        public ActionResult EmployeePlacement()
+        {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Placement_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult EmployeeProfileReport()
+        {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Profile_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult SeverancePayableReport(int id)
+        {
+            ViewBag.id = id;
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Severance_Payable_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult OverTimeHours()
+        {
+            GetBranchList();
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Over_Time_Hours, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult BenefitReport()
+        {
+            GetBranchList();
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Benefit_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult NotEvaluatedEmployeeReport()
+        {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Not_Evaluated_Employee_Report, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public void GetBranchList()
+        {
+            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            string branch = "";
+            foreach (var b in mybraches)
+            {
+                if (branch != "")
+                {
+                    branch += "-" + b;
+                }
+                else
+                {
+                    branch = b;
+                }
+
+            }
+            ViewBag.Branches = branch;
+            ViewBag.UserName = User.Identity.Name;
         }
 
     }

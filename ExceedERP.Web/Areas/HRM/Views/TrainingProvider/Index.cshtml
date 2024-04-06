@@ -8,28 +8,30 @@
       .Name("TrainingProvidergrid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.TradeName);
-        columns.Bound(c => c.BrandName);
-        //columns.ForeignKey(c => c.BusinessType, (System.Collections.IEnumerable)ViewData["BusinessTypes"], "Value", "Text").EditorTemplateName("BusinessType").Width(150);
-        columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive? checked='checked' :'' \\# />").Width(100);
-        columns.Command(command =>
-        {
-            if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-            {
+          columns.Bound(c => c.TradeName);
+          columns.Bound(c => c.BrandName);
+          //columns.ForeignKey(c => c.BusinessType, (System.Collections.IEnumerable)ViewData["BusinessTypes"], "Value", "Text").EditorTemplateName("BusinessType").Width(150);
+          //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive? checked='checked' :'' \\# />").Width(100);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # />").Width(100);
 
-                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-            }
-            if (HttpContext.Current.User.IsInRole("HR_Admin"))
-            {
-                command.Destroy().Text(Resources.ActionButton_Cancel);
-            }
-        }).Width(200);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+              {
+
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
       })
       .ToolBar(toolbar => {
-                              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
-                              {
-                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                              }
+          if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
           .Selectable(selectable =>
@@ -52,14 +54,14 @@
                                             .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
-              .Sort(sort => sort.Add("DateCreated").Descending()) 
+              .Sort(sort => sort.Add("DateCreated").Descending())
                    .Events(events =>
-                                 {
-                                     events.Error("error_handler(\"TrainingProvidergrid\")");
-                                     events.RequestStart("onRequestStart(\"TrainingProvidergrid\")");
-                                     events.RequestEnd("onRequestEnd(\"TrainingProvidergrid\")");
-                                 })
-                      
+                   {
+                       events.Error("error_handler(\"TrainingProvidergrid\")");
+                       events.RequestStart("onRequestStart(\"TrainingProvidergrid\")");
+                       events.RequestEnd("onRequestEnd(\"TrainingProvidergrid\")");
+                   })
+
           .Model(model => model.Id(p => p.MainCompanyId))
           .Read(read => read.Action("Companies_Read", "TrainingProvider"))
           .Create(create => create.Action("Companies_Create", "TrainingProvider"))

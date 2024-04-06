@@ -42,8 +42,8 @@
                                                       source.Read(read =>
                                                       {
                                                           read.Action("GetEmployeesAskForOther", "HRMDataProvider");
-                                                              //.Data("IsforOthers");
-                                                          })
+                                                          //.Data("IsforOthers");
+                                                      })
                                                           .ServerFiltering(false);
                                                   })
                                                   .Enable(false)
@@ -51,12 +51,12 @@
 
 
                                                   .Height(400)
-                                                  .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                                                  "<span>Photo</span>" +
-                                                                  "<span>Full Name</span>" +
-                                                                  "</div>")
-                                                  .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#." + "#:data.ImageType#" + ");'></div>" +
-                                                            "<div class='Employee-name'>#:FullName#</div>")
+                    //.HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                    //                "<span>Photo</span>" +
+                    //                "<span>Full Name</span>" +
+                    //                "</div>")
+                    //.Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#." + "#:data.ImageType#" + ");'></div>" +
+                    //          "<div class='Employee-name'>#:FullName#</div>")
                     )
 
 
@@ -101,11 +101,11 @@
                 @Html.LabelFor(model => model.Day, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.Day)
-                                                                             .ValuePrimitive(true)
-                                                                             .DataTextField("Text")
-                                                                             .DataValueField("Value")
-                                                                              .Events(e => e.Change("GetRequestedAmount"))
-                                                                             .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveDay)))
+                                        .ValuePrimitive(true)
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .Events(e => e.Change("GetRequestedAmount"))
+                                        .BindTo(EnumExtension.EnumToSelectList(typeof(LeaveDay)))
                     )
                     @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
                 </div>

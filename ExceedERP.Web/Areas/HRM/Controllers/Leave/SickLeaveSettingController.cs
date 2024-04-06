@@ -20,7 +20,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
-    public class SickLeaveSettingController : Controller
+    public class SickLeaveSettingController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
         // GET: HRM/SickLeaveSetting

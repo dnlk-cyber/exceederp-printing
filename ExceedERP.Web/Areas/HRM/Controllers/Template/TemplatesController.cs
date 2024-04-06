@@ -8,10 +8,11 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.HRM.Templates;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Template
 {
-    public class TemplatesController : Controller
+    public class TemplatesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 

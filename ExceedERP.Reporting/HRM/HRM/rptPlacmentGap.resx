@@ -117,4 +117,121 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Work Unit</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.ToBeStaff</value>
+  </data>
+  <data name="VacantPositions.Value" xml:space="preserve">
+    <value>Vacant Positions</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="VacantPostion.Value" xml:space="preserve">
+    <value>Vacant Postion</value>
+  </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="TotalEmployee.Value" xml:space="preserve">
+    <value>Total Employee</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>Page: {PageNumber}</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>= Sum(Fields.VacantPos)</value>
+  </data>
+  <data name="CurrentStaff.Value" xml:space="preserve">
+    <value>Current Staff</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Parameters.branchId.Label</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>= Sum(Fields.NumberOfFemaleEmployee)</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= Sum(Fields.TotalEmployee)</value>
+  </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>= Fields.Status</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>= Sum(Fields.ToBeStaff)</value>
+  </data>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.TotalEmployee</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= Sum(Fields.NumberOfMaleEmployee)</value>
+  </data>
+  <data name="reportParameter4.Text" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>=Today()</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Parameters.title.Label</value>
+  </data>
+  <data name="NoOfMaleEmployee.Value" xml:space="preserve">
+    <value>No Of Male Employee</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>= Parameters.org.Label</value>
+  </data>
+  <data name="NoOfFemaleEmployee.Value" xml:space="preserve">
+    <value>No Of Female Employee</value>
+  </data>
+  <data name="reportParameter3.Text" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox23.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.NumberOfFemaleEmployee</value>
+  </data>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value>Remark</value>
+  </data>
+  <data name="ToBeStaff.Value" xml:space="preserve">
+    <value>To Be Staff</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>Branch</value>
+  </data>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Fields.VacantPos</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.NumberOfMaleEmployee</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>om</value>
+  </metadata>
 </root>

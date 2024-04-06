@@ -1,0 +1,78 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Payroll
+@{
+    ViewBag.Title = "PeriodStatus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Period Status</legend>
+@(Html.Kendo().Grid<PeriodStatus>()
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.PeriodStatusId).Title("#").Width(60);
+                        columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").Title("Period").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Title("Branch").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                        if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
+                        {
+                            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "BusinessUnitId", "Name").Title("Business Unit").Width(150);
+                        }
+                        columns.Bound(c => c.Status).Title("Status").Width(120);
+                        columns.Bound(c => c.Remark).Title("Remark").Width(100);
+                        columns.Bound(c => c.IsLocked).Width(90).Title("Locked ?").ClientTemplate(
+                         "<input type='checkbox' disabled = 'true' value='#= IsLocked #' " +
+                         "# if (IsLocked) { #" +
+                         "checked='checked'" +
+                         "# } #" +
+                         "/>"
+                         );
+                        columns.Command(command => {  command.Custom("Unlock").Click("Enable"); }).Title("Action").Width(200);
+                    })
+                   
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Pageable()
+                    .Filterable()
+                    .Scrollable(s => s.Height(550))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(p => p.PeriodStatusId);
+                            model.Field(p => p.PeriodStatusId).Editable(false);
+                            model.Field(p => p.GLPeriodId).Editable(false);
+                            model.Field(p => p.BranchId).Editable(false);
+                            model.Field(p => p.BusinessUnitId).Editable(false);
+                            model.Field(p => p.Status).Editable(false);
+                        })
+                        .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Read(read => read.Action("PeriodStatus_Read", "PeriodStatus"))
+                       
+                    )
+)
+
+
+<script>
+     function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+         $.ajax({
+             type: "POST",
+             data: { id: dataItem.PeriodStatusId },
+             url: '@Url.Action("Unlock", "PeriodStatus")',
+            success: function (result) {
+                alert(result.Message);
+                //console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+</script>

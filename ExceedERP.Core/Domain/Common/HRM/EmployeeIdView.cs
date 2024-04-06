@@ -14,9 +14,16 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public EmployeeStatus Status { get; set; }
         public int Age { get; set; }
         public DateTime PlacmentDate { get; set; }
+        public decimal BasicSalary { get; set; }
         public AssignmentType AssignmentType { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime HiredDate { get; set; }
-        
+        //for DCDE only
+        public bool IsMilitary { get; set; }
+        public int BranchId { get; set; }
+        public int BusinessUnitId { get; set; }
+        public int RankId { get; set; }
+        public int JobTitleId { get; set; }
+
     }
 }

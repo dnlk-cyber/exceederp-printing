@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
 namespace ExceedERP.Reporting.SharedDataSources
@@ -69,6 +71,25 @@ namespace ExceedERP.Reporting.SharedDataSources
                 MemoryStream ms = new MemoryStream(byteArrayIn);
                 Image returnImage = Image.FromStream(ms);
                 return returnImage;
+            }
+            return null;
+
+        }
+
+        public  Image GetUserSignature(string userName)
+        {
+            // var user = db.
+            byte[] byteArrayIn = null;
+           var IsDigitallySigned = InventoryConfigurationHelper.IsElectronicSignatureEnabled();
+           if(IsDigitallySigned)
+            {               
+                byteArrayIn = UserHelper.GetUserSignature(userName);
+            if (byteArrayIn != null)
+            {
+                MemoryStream ms = new MemoryStream(byteArrayIn);
+                Image returnImage = Image.FromStream(ms);
+                return returnImage;
+            }
             }
             return null;
 

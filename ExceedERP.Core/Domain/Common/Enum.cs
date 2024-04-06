@@ -1,11 +1,170 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Core.Domain.Common
 {
+    public enum HealthAndInsuranceModuleReportType
+    {
+        Employee_Health_and_Value_Payment,
+        Clinic_Report,
+        Patient_Referral_Report
+    }
+    public enum InternalAuditModuleReportType
+    {
+        Internal_Audit_Finding_Report,
+        Audit_Finding_FollowUp_CheckList_Report,
+        Performance_Audit_Finding_Follow_Up_Report,
+        Consumable_Item_Count_Report,
+        Bank_Statement_Balance_Report,
+        Cash_Book_Balance_Report,
+        Cash_And_Property_Document_Cut_Off_Report,
+        Audit_Narrative_Report,
+        Audit_OverView_Report,
+        Feasibility_Study_Work_Report,
+        Fixed_Asset_Count_Report,
+        Fixed_Asset_Balance_Report,
+        Fixed_Asset_Ledger_Balance_Report,
+        Vehicle_Usage_Report,
+        Machinery_Count_Report,
+        Vehicle_Count_Report,
+        Bank_Book_Balance_Report,
+        Employee_Ledger_Balance_Report,
+        Ledger_Balance_Report,
+        Receivable_and_Payable_Ledger_Balance_Report,
+        Receivable_And_Payable_Ledger_Balance_Long_Stayed
+
+
+    }
+    public enum ArchiveModuleReportType
+    {
+        Incoming_Letters_Report,
+        Outgoing_Letters_Report,
+    }
+    public enum LegalCaseModuleReportType
+    {
+        Case_Report,
+        Auditor_Report,
+        Case_Summary,
+        Case_Progress,
+        Case_Summary_By_Category_Report,
+        Research_Report,
+        Legal_Advisory_Request_Report,
+        Legal_Awareness,
+        Legal_Advisory_Contract_Claim_Report,
+        Get_Response,
+        Legal_Case_Report,
+        Closed_Legal_Case_Files_Report,
+        Hearing_Proceedings_Report,
+        New_Case_Report,
+        Decided_Case_Report
+    }
+    public enum ProductionModuleReportType
+    {
+        Work_Order_sheet_Report,
+        Production_Report,
+        Quality_Test_Record,
+        HCB,
+        HCB_Quaity_Test_Report,
+        Compressive_Strength_Report,
+        Balasting_Material_Utilazation_Report,
+        Production_Summary,
+        Production_Details_Report,
+        Machine_Work_Time_Sheet,
+        Plat_Work_Time_Sheet,
+        Explosive_Material_Utilization_Report
+
+    }
+
+    public enum PlanningModuleReportType
+    {
+        Excutive_Summary_Report,
+        Project_Excutive_Summary,
+        Project_Information_Plan_Quartery_Report,
+        Project_Qurterly_Summary_Report,
+        Plan_Report,
+        Actual_Report,
+        Project_Plan_Report,
+        Project_Actual_Report,
+        Planning_And_Actual_Report,
+        Project_Plan_VS_Actual_Report,
+        Risk_Mitigation_Plan_Report,
+        Risk_Follow_Up_Report,
+        Project_Summary_By_Sectors,
+        Plan_Vs_Actual_for_Weekly_Report,
+        Project_Plan_Vs_Project_Actual_for_Weekly_Report,
+        Project_Excutive_Summary_Per_Project,
+    }
+
+    public enum HRMModuleReportType
+    {
+        Employee_Placement_Report,
+        Employee_Summary_by_Age,
+        Employee_Performance_Total_Summary_Report,
+        Employment_Type,
+        Performance_Summary,
+        Employee_Performance,
+        Employee_Performance_Department,
+        Employee_Yearly_Performance,
+        Employee_Bsc_Performance,
+        Probation_Measure,
+        My_Performance,
+        Employee_Education,
+        Attendance_Report,
+        Employee_Salary,
+        Employee_Birth_Date,
+        Long_Term_Education,
+        Employee_Summary,
+        Termination_Summary,
+        Termination_Reason_Summary,
+        Job_Title,
+        Discipline_Measure_Summary,
+        Retirement_Notification,
+        Employee_Disciplinary_Measure,
+        Employee_Job_Title,
+        Employee_Pension,
+        Educational_Level,
+        Educational_Field,
+        Employee_Summary_By_Nation,
+        Employee_Summary_By_Rank,
+        Employee_Termination,
+        Employee_Training,
+        Employee_Experience,
+        Employee_By_Branch,
+        Vacant_Postion,
+        Employee_Judge_By_Region,
+        Employee_Promotion_PerYear,
+        Work_and_Cost_Summary,
+        Employee_to_be_Promoted,
+        Employee_Health_and_Value_Payment,
+        Employee_Health_and_Value_Payment_selfCare,
+        Education_and_Training_One_By_One,
+        Training_One_By_One,
+        Training_Request_Report,
+        Not_Placed_Employees,
+        Company_Structure,
+        Monthly_Salary_Per_Period,
+        Employee_Profile_Report,
+        Attendance_Letter,
+        Training_Evaluation,
+        Change_Of_Payroll,
+        Payable_Leave,
+        Leave_Plan,
+        Internal_Vacancy_For_SelfCare,
+        Internal_Applicant,
+        External_Applicant,
+        Vacancy_For_Media,
+        Day_Absent_And_Late_Coming_Report,
+        Leave_Payable_Report,
+        Severance_Payable_Report,
+        Over_Time_Hours,
+        Commitment_report,
+        Benefit_Report,
+        Not_Evaluated_Employee_Report
+    }
     public enum ProcurementModuleReportType
     {
-
+        
         Service_Requestion,
         Purchase_Order,
         Purchase_Requisition,
@@ -21,6 +180,40 @@ namespace ExceedERP.Core.Domain.Common
         CLOSED
 
     }
+    public enum EvaluationType
+    {
+        NA,
+        [Display(Name = "Enum_Evaluation_Type_Direct_Boss", ResourceType = typeof(Resources))]
+        DirectBoss,
+        [Display(Name = "Enum_Evaluation_Type_Self_Evaluation", ResourceType = typeof(Resources))]
+        SelfEvaluation,
+        [Display(Name = "Enum_Evaluation_Type_Peer_Evaluation", ResourceType = typeof(Resources))]
+        PeerEvaluation,
+        [Display(Name = "Enum_Evaluation_Type_Internal_Customer", ResourceType = typeof(Resources))]
+        InternalCustomer,
+        [Display(Name = "Enum_Evaluation_Type_Company_level", ResourceType = typeof(Resources))]
+        Companylevel,
+        [Display(Name = "Enum_Evaluation_Type_Corporate_Result", ResourceType = typeof(Resources))]
+        Corporate_Result,
+        [Display(Name = "Enum_Evaluation_Type_Sector_Result", ResourceType = typeof(Resources))]
+        Sector_Result,
+        [Display(Name = "Enum_Evaluation_Type_Main_Department_Level", ResourceType = typeof(Resources))]
+        MainDepartmentLevel,
+        [Display(Name = "Enum_LookUpTypes_PROJECT_MANAGER", ResourceType = typeof(Resources))]
+        Project_Manager,
+        [Display(Name = "Enum_Evaluation_Type_Others", ResourceType = typeof(Resources))]
+        Others
+
+    }
+    public enum ExamType
+    {
+        [Display(Name = "Enum_RecruitmentSetting_THEORY_EXAM", ResourceType = typeof(Resources))]
+        THEORY_EXAM,
+        [Display(Name = "Enum_RecruitmentSetting_PRACTICAL_EXAM", ResourceType = typeof(Resources))]
+        PRACTICAL_EXAM,
+        [Display(Name = "Enum_RecruitmentSetting_INTERVIEW", ResourceType = typeof(Resources))]
+        INTERVIEW,
+    }
     public enum RetireSetting
     {
         Heads,
@@ -34,20 +227,29 @@ namespace ExceedERP.Core.Domain.Common
     }
     public enum SelfServiceRequestType
     {
-        የሥራ_ልምድ,
-        የትብብር_ደብዳቤ,
-        የዋስትና_ደብዳቤ
+        [Display(Name = "Enum_Self_Service_Request_Type_Expreience", ResourceType = typeof(Resources))]
+        Expreience,
+        [Display(Name = "Enum_Self_Service_Request_Type_Support_Letter", ResourceType = typeof(Resources))]
+        [Description("Support Letter")]
+        Support_Letter,
+        [Display(Name = "Enum_Self_Service_Request_Type_Warranty_Letter", ResourceType = typeof(Resources))]
+        [Description("Warranty Letter")]
+        Warranty_Letter
     }
     public enum LeaveDay
     {
-        ሙሉ_ቀን,
-        ግማሽ_ቀን
+        [Display(Name = "Enum_Leave_Day_Full_Time", ResourceType = typeof(Resources))]
+        Full_Day,
+        [Display(Name = "Enum_Leave_Day_Half_Time", ResourceType = typeof(Resources))]
+        Half_Day
     }
 
     public enum MorningOrAfternoon
     {
-        ጥዋት,
-        ከሰዓት
+        [Display(Name = "Morning", ResourceType = typeof(Resources))]
+        Morning,
+        [Display(Name = "Afternoon", ResourceType = typeof(Resources))]
+        Afternoon
     }
 
     public enum BranchTypes
@@ -101,7 +303,8 @@ namespace ExceedERP.Core.Domain.Common
         CLOSED,
         [Display(Name = "Enum_PeriodStatusList_TRANSFERRED", ResourceType = typeof(Resources))]
         TRANSFERRED,
-        REVERSING
+        REVERSING,
+        PROOF_SHEET
     }
     public enum LetterType
     {
@@ -130,7 +333,8 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_LettersStatus_ANSWERED", ResourceType = typeof(Resources))]
         ANSWERED,
         [Display(Name = "Enum_LettersStatus_TRANSFERED", ResourceType = typeof(Resources))]
-        TRANSFERED
+        TRANSFERED,
+        WAITING
 
 
 
@@ -293,10 +497,15 @@ namespace ExceedERP.Core.Domain.Common
     public enum Gender
     {
         [Display(Name = "Enum_Male", ResourceType = typeof(Resources))]
-        MALE,
+        MALE = 5,
         [Display(Name = "Enum_Female", ResourceType = typeof(Resources))]
-        FEMALE
-
+        FEMALE = 6
+    }
+    //for those who have salaries from two companies
+    public enum PayrollCategory
+    {
+        Main_Category,
+        Seconday_category
     }
     public enum AllowanceType
     {
@@ -598,7 +807,7 @@ namespace ExceedERP.Core.Domain.Common
     }
     public enum LookUpTypes //in put for look up object-type attribute
     {
-        
+
         [Display(Name = "Enum_LookUpTypes_ADDITION_TYPE", ResourceType = typeof(Resources))]
         ADDITION_TYPE,
         [Display(Name = "Enum_LookUpTypes_OTHER_BENEFIT", ResourceType = typeof(Resources))]
@@ -662,7 +871,9 @@ namespace ExceedERP.Core.Domain.Common
         PROBATION_MEASUREMENT,
         [Display(Name = "Enum_LookUpTypes_OLD_JOB_TITLE", ResourceType = typeof(Resources))]
         OLD_JOB_TITLE,
-        Jobtitle_External_Experience
+        Jobtitle_External_Experience,
+        [Display(Name = "Enum_LookUpTypes_CLEARANCE_TYPE", ResourceType = typeof(Resources))]
+        CLEARANCE_TYPE
 
 
     }
@@ -720,6 +931,10 @@ namespace ExceedERP.Core.Domain.Common
         PROVIDENT_EXPENSE,
         [Display(Name = "Enum_PayrollAccountType_PENSION_PAYABLE", ResourceType = typeof(Resources))]
         PROVIDENT_PAYABLE,
+        CAMP_BENEFIT,
+        SOFT_BENEFIT,
+        MILK_BENEFIT,
+        HOUSE_RENT_BENEFIT
     }
     public enum LeaveSetting
     {
@@ -733,7 +948,8 @@ namespace ExceedERP.Core.Domain.Common
         LEAVE_ENTITLE_THRESHOLD,
         LEAVE_FOR_LEADRES_NEW,
         LEAVE_FOR_PERFORMERS_NEW,
-        Old_Initial_Leave_End_Year
+        Old_Initial_Leave_End_Year,
+        MAXIMUM_Leave_For_Leaders
 
     }
     public enum RecruitmentSetting
@@ -779,7 +995,12 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_PayrollSetting_ApplyProbationDayLength", ResourceType = typeof(Resources))]
         APPLY_PROBATION_DAY_LENGTH,
         DISABLE_PENSION_FOR_CONTRACT,
-        DEDUCT_LEAVE_WITHOUT_PAYMENT
+        DEDUCT_LEAVE_WITHOUT_PAYMENT,
+        DELEGATION_BENEFIT_ALLOWED,
+        DELEGATION_BENEFIT_RULE,
+        APPLY_PROOF_SHEET,
+       // DEDUCT_ALLOWANCE_BY_DAYS_ABSENT
+        //DESERT_APPLY_WORKING_DAYS //we have otehr setting on allowance type rule
     }
     
 
@@ -803,9 +1024,10 @@ namespace ExceedERP.Core.Domain.Common
         COMPANY_CONTRIBUTION,
         [Display(Name = "Enum_PensionAttribute_RETIREMENT_AGE", ResourceType = typeof(Resources))]
         RETIREMENT_AGE,
-
         [Display(Name = "Enum_PensionAttribute_PROBATION_DAY_LENGTH", ResourceType = typeof(Resources))]
-        PROBATION_DAY_LENGTH
+        PROBATION_DAY_LENGTH,
+        MILITARY_EMP_CONTRIBUTION,
+        MILITARY_COMPANY_CONTRIBUTION,
     }
     public enum BonusAttribute
     {
@@ -818,6 +1040,12 @@ namespace ExceedERP.Core.Domain.Common
         TAXABLE,
         [Display(Name = "Enum_BenefittAtribute_NONTAXABLE", ResourceType = typeof(Resources))]
         NON_TAXABLE,
+    }
+    public enum DelegationBenefittAtribute
+    {       
+        ELIGIBILITY_DAYS,
+        BASIC_SALARY_DIFFERENCE_PERCENT,
+        ALLOWANCE_PERCENT,
     }
     public enum OverTimeAttribute
     {
@@ -857,15 +1085,15 @@ namespace ExceedERP.Core.Domain.Common
     public enum MartialStatus
     {
         [Display(Name = "Enum_MartialStatus_SINGLE", ResourceType = typeof(Resources))]
-        SINGLE,
+        SINGLE = 10,
         [Display(Name = "Enum_MartialStatus_MARRIED", ResourceType = typeof(Resources))]
-        MARRIED,
+        MARRIED = 11,
         [Display(Name = "Enum_MartialStatus_SEPARATED", ResourceType = typeof(Resources))]
-        SEPARATED,
+        SEPARATED = 12,
         [Display(Name = "Enum_MartialStatus_DIVORCED", ResourceType = typeof(Resources))]
-        DIVORCED,
+        DIVORCED = 13,
         [Display(Name = "Enum_MartialStatus_OTHER", ResourceType = typeof(Resources))]
-        OTHER
+        OTHER = 14
         //  ,
         // [Display(Name = "Enum_MartialStatus_SINGLEF", ResourceType = typeof(Resources))]
         //SINGLEF,
@@ -879,20 +1107,22 @@ namespace ExceedERP.Core.Domain.Common
     }
     public enum EmployeeStatus
     {
+        [Display(Name = "Enum_EmployeeStatus_NOTSELECTED", ResourceType = typeof(Resources))]
+        NOTSELECTED = -1,
         [Display(Name = "Enum_EmployeeStatus_PERMANENT", ResourceType = typeof(Resources))]
-        PERMANENT,
+        PERMANENT = 0,
         [Display(Name = "Enum_EmployeeStatus_CONTRACT", ResourceType = typeof(Resources))]
-        CONTRACT,
+        CONTRACT = 1,
         [Display(Name = "Enum_EmployeeStatus_PROBATION", ResourceType = typeof(Resources))]
         PROBATION,
         FREELANCER,
         [Display(Name = "Enum_EmployeeStatus_NO_STATUS", ResourceType = typeof(Resources))]
-        NO_STATUS
-      
+        NO_STATUS,
+        SPECIAL
+
 
 
     }
-
     public enum LeaveType
     {
         [Display(Name = "Enum_LeaveType_ANNUAL", ResourceType = typeof(Resources))]
@@ -917,47 +1147,48 @@ namespace ExceedERP.Core.Domain.Common
     public enum ReligionList
     {
         [Display(Name = "Enum_ReligionList_ORTHODOX", ResourceType = typeof(Resources))]
-        ORTHODOX,
+        ORTHODOX = 10,
         [Display(Name = "Enum_ReligionList_MUSLIM", ResourceType = typeof(Resources))]
-        MUSLIM,
+        MUSLIM = 11,
         [Display(Name = "Enum_ReligionList_CATHOLIC", ResourceType = typeof(Resources))]
-        CATHOLIC,
+        CATHOLIC = 12,
         [Display(Name = "Enum_ReligionList_PROTESTANT", ResourceType = typeof(Resources))]
-        PROTESTANT,
+        PROTESTANT = 13,
         [Display(Name = "Enum_ReligionList_WAAQEFFATAA", ResourceType = typeof(Resources))]
-        WAAQEFFATAA,
+        WAAQEFFATAA = 14,
         [Display(Name = "Enum_ReligionList_OTHER", ResourceType = typeof(Resources))]
-        OTHER
+        OTHER = 20
 
     }
+
     public enum Region
     {
-       
+
         [Display(Name = "Enum_Region_TIGRAY", ResourceType = typeof(Resources))]
-        TIGRAY,
+        TIGRAY = 15,
         [Display(Name = "Enum_Region_AFAR", ResourceType = typeof(Resources))]
-        AFAR,
+        AFAR = 16,
         [Display(Name = "Enum_Region_AMHARA", ResourceType = typeof(Resources))]
-        AMHARA,
+        AMHARA = 17,
         [Display(Name = "Enum_Region_OROMO", ResourceType = typeof(Resources))]
-        OROMIA,
+        OROMIA = 18,
         [Display(Name = "Enum_Region_SOMALIA", ResourceType = typeof(Resources))]
-        SOMALIA,
+        SOMALIA = 19,
         [Display(Name = "Enum_Region_SOUTH_NATION_AND_NATIONALITIES", ResourceType = typeof(Resources))]
-        SOUTH_NATION_AND_NATIONALITIES,
+        SOUTH_NATION_AND_NATIONALITIES = 20,
         [Display(Name = "Enum_Region_BENSHANGUL_GUMUZ", ResourceType = typeof(Resources))]
-        BENSHANGUL_GUMUZ,
+        BENSHANGUL_GUMUZ = 21,
         [Display(Name = "Enum_Region_HARRARI", ResourceType = typeof(Resources))]
-        HARRARI,
+        HARRARI = 22,
         [Display(Name = "Enum_Region_GAMBELLA", ResourceType = typeof(Resources))]
-        GAMBELLA,
+        GAMBELLA = 23,
         [Display(Name = "Enum_Region_ADDISABEBA", ResourceType = typeof(Resources))]
-        ADDIS_ABEBA,
+        ADDIS_ABEBA = 24,
         [Display(Name = "Enum_Region_DIREDAWA", ResourceType = typeof(Resources))]
-        DIRE_DAWA,
+        DIRE_DAWA = 25,
         [Display(Name = "Enum_Region_OTHER", ResourceType = typeof(Resources))]
-        OTHER
-        
+        OTHER = 40
+
 
     }
 
@@ -1163,23 +1394,19 @@ namespace ExceedERP.Core.Domain.Common
         Other
     }
 
+
+
     // new enums
-    public enum ExamType
-    {
-        [Display(Name = "Enum_RecruitmentSetting_THEORY_EXAM", ResourceType = typeof(Resources))]
-        THEORY_EXAM,
-        [Display(Name = "Enum_RecruitmentSetting_PRACTICAL_EXAM", ResourceType = typeof(Resources))]
-        PRACTICAL_EXAM,
-        [Display(Name = "Enum_RecruitmentSetting_INTERVIEW", ResourceType = typeof(Resources))]
-        INTERVIEW,
-    }
     public enum TrainingScore
     {
-        በጣም_ከፍተኛ = 1,
-        ከፍተኛ = 2,
-        መካከለኛ = 3,
-        ዝቅተኛ = 4,
-        በጣም_ዝቅተኛ = 5
+        Very_High = 1,
+        [Display(Name = "Enum_AccidentLevel_HIGH", ResourceType = typeof(Resources))]
+        High = 2,
+        [Display(Name = "Enum_AccidentLevel_MEDIUM", ResourceType = typeof(Resources))]
+        Medium = 3,
+        [Display(Name = "Enum_AccidentLevel_LOW", ResourceType = typeof(Resources))]
+        Low = 4,
+        Very_Low = 5
     }
     public enum OrganizationType
     {
@@ -1188,13 +1415,28 @@ namespace ExceedERP.Core.Domain.Common
         Govermental = 2,
         Private = 3
     }
+
+    public enum GenderForVacancyGender
+    {
+        [Display(Name = "Enum_Male", ResourceType = typeof(Resources))]
+        MALE = 5,
+        [Display(Name = "Enum_Female", ResourceType = typeof(Resources))]
+        FEMALE = 6,
+        BOTH
+
+    }
     public enum Languages
     {
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Enum_Languages_Not_Required))]
         Not_Required = 1,
-        አማርኛ = 2,
-        ኦሮምኛ = 3,
-        ትግሬኛ = 4,
-        ሶማሊኛ = 5,
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Enum_Languages_Amharic))]
+        Amharic = 2,
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Enum_Languages_Afaan_Oromoo))]
+        Afaan_Oromoo = 3,
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Enum_Languages_Tigrigna))]
+        Tigrigna = 4,
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Enum_Languages_Somali))]
+        Somali = 5,
     }
     public enum ExperienceLevel
     {

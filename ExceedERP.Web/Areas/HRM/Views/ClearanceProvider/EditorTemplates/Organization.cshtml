@@ -4,8 +4,8 @@
 @(Html.Kendo().DropDownListFor(m => m)
  .OptionLabel( Resources.Select)
  .Filter("contains")
-                        .DataTextField("Name")
-                                    .DataValueField("Name")
+      .DataTextField("Name")
+      .DataValueField("OrgStructureId")
       .DataSource(dataSource =>
       {
           dataSource.Read(read => read.Action("GetDepartments", "ClearanceProvider", new { area = "HRM" }))

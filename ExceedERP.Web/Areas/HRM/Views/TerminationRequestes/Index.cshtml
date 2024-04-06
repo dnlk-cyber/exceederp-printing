@@ -7,7 +7,7 @@
 }
 <Legend>@Resources.NavigatorTermination_TerminationRequestes</Legend>
 @(Html.Kendo().Grid<Termination>()
-          .Name("TerminationGrid")
+      .Name("TerminationGrid")
       .Columns(columns =>
       {
 
@@ -15,43 +15,50 @@
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(200);
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Width (150);
           columns.Bound(c => c.ApplicationDateAm).Width(150);
-        columns.Bound(c => c.Reason).Width (150);
-        columns.Bound(c => c.TerminationDateAm).Width (150);
-       // columns.Bound(c => c.Remark).Width (120);
-      //  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Bound(c => c.Reason).Width (150);
+          columns.Bound(c => c.IsForciblyTerminated).ClientTemplate(
+                      "<input type='checkbox' disabled = 'true' value='#= IsForciblyTerminated#' " +
+                      "# if (IsForciblyTerminated) { #" +
+                      "checked='checked'" +
+                      "# } #" +
+                      "/>"
+                      ).Width(150);
+          columns.Bound(c => c.TerminationDateAm).Width (150);
+          // columns.Bound(c => c.Remark).Width (120);
+          //  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar => {
           //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Selectable(selectable => {
-            selectable.Mode(GridSelectionMode.Single);
-            selectable.Type(GridSelectionType.Row);
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
       })
-             .Events(events => events.DetailExpand("onDetailExpandUser"))
+      .Events(events => events.DetailExpand("onDetailExpandUser"))
       .Scrollable(h=> h.Height( 500))
-               .Groupable()
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
-          .Filterable()
-             .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+
+      })
+      .Filterable()
+      .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
-           .Sort(sort => sort.Add("ApplicationDate").Descending())
+          .Sort(sort => sort.Add("ApplicationDate").Descending())
                .Events(events =>
-     {
-         events.Error("error_handler(\"TerminationGrid\")");
-         events.RequestStart("onRequestStart(\"TerminationGrid\")");
-         events.RequestEnd("onRequestEnd(\"TerminationGrid\")");
-     })
-                       
+               {
+                   events.Error("error_handler(\"TerminationGrid\")");
+                   events.RequestStart("onRequestStart(\"TerminationGrid\")");
+                   events.RequestEnd("onRequestEnd(\"TerminationGrid\")");
+               })
+
           .Model(model => model.Id(p => p.TerminationId))
               .Read(read => read.Action("Terminations_Read", "TerminationRequestes"))
               .Create(create => create.Action("Terminations_Create", "TerminationRequestes"))
@@ -62,7 +69,7 @@
       )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstrip_#=TerminationId#")
+          .Name("tabstrip_#=TerminationId#")
           .SelectedIndex(0)
           .Items(items =>
           {
@@ -95,21 +102,21 @@
                           .Scrollable(h => h.Height(500))
                           .DataSource(dataSource => dataSource
                               .Ajax()
-                                              .Events(events =>
-                                              {
-                                                  events.Error("error_handler(\"RequestesStatusgrid_#=TerminationId#\")");
-                                                  events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TerminationId#\")");
-                                                  events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TerminationId#\")");
-                                              })
-
+                              .Events(events =>
+                              {
+                                    events.Error("error_handler(\"RequestesStatusgrid_#=TerminationId#\")");
+                                    events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TerminationId#\")");
+                                    events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TerminationId#\")");
+                              })
+                                
                               .Model(model =>
                               {
                                   model.Id(p => p.RequestStatusId);
                                   model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
                               })
 
-                                      .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TerminationId#", referenceType = "Termination" }))
-                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TerminationId#", referenceType2 = "Termination" }))
+                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TerminationId#", referenceType = "Termination" }))
+                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TerminationId#", referenceType2 = "Termination" }))
                               .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
                               .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
                           ).ToClientTemplate()

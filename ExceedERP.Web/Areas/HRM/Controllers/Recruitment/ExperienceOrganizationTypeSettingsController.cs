@@ -13,10 +13,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-    public class ExperienceOrganizationTypeSettingsController : Controller
+    public class ExperienceOrganizationTypeSettingsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 

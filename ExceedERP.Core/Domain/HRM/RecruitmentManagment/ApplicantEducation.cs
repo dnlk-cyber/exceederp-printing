@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {
@@ -9,9 +8,9 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
         public int ApplicantEducationId { get; set; }
         public int ApplicantRegistrationId { get; set; }
         public int ApplicantDetailId { get; set; }
-        [Display(Name = "Education Level")]
+        [Display(Name = "EducationLevel")]
         public int EducationLevelSettingId { get; set; }
-        [Display(Name = "Education Field")]
+        [Display(Name = "EducationField")]
         public int EducationFieldSettingId { get; set; }
         [Display(Name = "Institution")]
         public string EducationInstitution { get; set; }

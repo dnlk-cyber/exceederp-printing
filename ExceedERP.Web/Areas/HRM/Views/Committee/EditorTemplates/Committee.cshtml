@@ -20,12 +20,12 @@
 
 
             <div class="form-group">
-                @Html.LabelFor(model => model.CommitteeType, htmlAttributes: new { @class = "control-label col-md-8" })
+                @*@Html.LabelFor(model => model.CommitteeType, htmlAttributes: new { @class = "control-label col-md-8" })*@
                 <div class="col-md-3">
-                    @(Html.EnumDropDownListFor(m => m.CommitteeType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px", onchange = "Change(this)" })
+                    @*@(Html.EnumDropDownListFor(m => m.CommitteeType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px", onchange = "Change(this)" })
 
                     )
-                    @Html.ValidationMessageFor(model => model.CommitteeType, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.CommitteeType, "", new { @class = "text-danger" })*@
                 </div>
             </div>
         </div>

@@ -29,11 +29,11 @@
                               })
                   .Filterable()
                      .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
+                          .Input(true)
+                          .Numeric(false)
+                          .Refresh(true)
+                          .PageSizes(true)
+                          .ButtonCount(5))
           .DataSource(dataSource => dataSource
               .Ajax()
                    .Events(events =>
@@ -82,12 +82,12 @@
                           .Scrollable(h => h.Height(500))
                           .DataSource(dataSource => dataSource
                               .Ajax()
-                                                      .Events(events =>
-                                                      {
-                                                          events.Error("error_handler(\"Measurement_#=MeasurementDefinitionId#\")");
-                                                          events.RequestStart("onRequestStart(\"Measurement_#=MeasurementDefinitionId#\")");
-                                                          events.RequestEnd("onRequestEnd(\"Measurement_#=MeasurementDefinitionId#\")");
-                                                      })
+                                   .Events(events =>
+                                   {
+                                       events.Error("error_handler(\"Measurement_#=MeasurementDefinitionId#\")");
+                                       events.RequestStart("onRequestStart(\"Measurement_#=MeasurementDefinitionId#\")");
+                                       events.RequestEnd("onRequestEnd(\"Measurement_#=MeasurementDefinitionId#\")");
+                                   })
                               .Model(model => model.Id(p => p.MeasurementId))
                               .Read(read => read.Action("DepartmentMeasurment_Read", "DepartmentMeasurment", new { id = "#=MeasurementDefinitionId#" }))
                               .Create(create => create.Action("DepartmentMeasurment_Create", "DepartmentMeasurment", new { id = "#=MeasurementDefinitionId#" }))
@@ -140,12 +140,12 @@
                                                   .Scrollable(h => h.Height(500))
                                          .DataSource(dataSource => dataSource
                                              .Ajax()
-                                                                     .Events(events =>
-                                                                     {
-                                                                                 events.Error("error_handler(\"PerformanceAction_#=MeasurementId#\")");
-                                                                                 events.RequestStart("onRequestStart(\"PerformanceAction_#=MeasurementId#\")");
-                                                                                 events.RequestEnd("onRequestEnd(\"PerformanceAction_#=MeasurementId#\")");
-                                                                             })
+                                                .Events(events =>
+                                                {
+                                                   events.Error("error_handler(\"PerformanceAction_#=MeasurementId#\")");
+                                                   events.RequestStart("onRequestStart(\"PerformanceAction_#=MeasurementId#\")");
+                                                   events.RequestEnd("onRequestEnd(\"PerformanceAction_#=MeasurementId#\")");
+                                                })         
                                              .Model(model => model.Id(p => p.ActionId))
                                                                      .Read(read => read.Action("DepartmentPerformanceAction_Read", "DepartmentPerformanceAction", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }))
                                                              .Create(create => create.Action("DepartmentPerformanceAction_Create", "DepartmentPerformanceAction", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }))

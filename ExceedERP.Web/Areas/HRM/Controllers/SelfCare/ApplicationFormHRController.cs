@@ -12,10 +12,11 @@ using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
-    public class ApplicationFormHRController : Controller
+    public class ApplicationFormHRController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
 

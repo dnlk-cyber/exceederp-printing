@@ -7,7 +7,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
-
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
@@ -17,34 +17,43 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeJobTitle> GetEmployeeJob(string dept, string branchId, string orgStructureId)
+        public List<EmployeeJobTitle> GetEmployeeJob(string jobTitleId, string branchId, string orgStructureId)
         {
             List<EmployeeJobTitle> EmployeeInfoList = new List<EmployeeJobTitle>();
             EmployeeJobTitle EmployeeInfo = new EmployeeJobTitle();
 
-            var placements = db.Placements.Where(x => x.isCurrent).DistinctByField(x => x.OrgStructureId).ToList();
-            if (branchId != null)
-            {
-                int.TryParse(branchId, out int braId);
-                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
-            }
-            if (orgStructureId != null)
-            {
-                int.TryParse(orgStructureId, out int orgId);
-                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
-            }
-            if (dept != null)
-            {
-                int.TryParse(dept, out int lookUpId);
-                placements = placements.Where(x => x.LookupId == lookUpId).ToList();
-            }
+           // var placements = db.Placements.Where(x => x.isCurrent).ToList();//.DistinctByField(x => x.OrgStructureId).ToList();
 
-            foreach (var p in placements)
+            //var placements = db.Database
+            //    .SqlQuery<Placement>
+            //    (
+            //        "SELECT * " +
+            //        " FROM HRM.Placement " +
+            //        " WHERE IsCurrent = 'True'").ToList();
+
+            //if (branchId != null)
+            //{
+            //    int.TryParse(branchId, out int braId);
+            //    placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            //}
+            //if (orgStructureId != null)
+            //{
+            //    int.TryParse(orgStructureId, out int orgId);
+            //    placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            //}
+            //if (jobTitleId != null)
+            //{
+            //    int.TryParse(jobTitleId, out int lookUpId);
+            //    placements = placements.Where(x => x.LookupId == lookUpId).ToList();
+            //}
+
+            var departments = db.MainCompanyStructures.ToList();
+
+            foreach (var p in departments)
             {
                 db = new ExceedDbContext();
 
                 EmployeeInfo = new EmployeeJobTitle();
-                EmployeeInfo.EmployeeJobs = new List<EmployeeJob>();
 
                 var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == p.OrgStructureId);
                 if (deptt != null)
@@ -52,7 +61,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     EmployeeInfo.Department = deptt.Name;
                 }
 
-                var oneDepPlacements = db.Placements.Where(x => x.OrgStructureId == p.OrgStructureId && x.isCurrent).ToList();
+                var oneDepPlacements = db.Placements.Where(x => x.OrgStructureId == p.OrgStructureId).ToList();
+
+                if (branchId != null)
+                {
+                    int.TryParse(branchId, out int braId);
+                    oneDepPlacements = oneDepPlacements.Where(x => x.BranchId == braId).ToList();
+                }
+                if (orgStructureId != null)
+                {
+                    int.TryParse(orgStructureId, out int orgId);
+                    oneDepPlacements = oneDepPlacements.Where(x => x.OrgStructureId == orgId).ToList();
+                }
+                if (jobTitleId != null)
+                {
+                    int.TryParse(jobTitleId, out int lookUpId);
+                    oneDepPlacements = oneDepPlacements.Where(x => x.LookupId == lookUpId).ToList();
+                }
 
                 foreach (var place in oneDepPlacements)
                 {
@@ -83,11 +108,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     }
 
                     employeeJob.Salary = place.Salary;
+                    employeeJob.Remark = place.Remark;
 
                     EmployeeInfo.EmployeeJobs.Add(employeeJob);
                 }
 
-                EmployeeInfoList.Add(EmployeeInfo);
+                if(oneDepPlacements.Any())
+                {
+                    EmployeeInfoList.Add(EmployeeInfo);
+                }               
             }
 
             return EmployeeInfoList;

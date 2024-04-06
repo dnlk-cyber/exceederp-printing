@@ -2,7 +2,7 @@
 @using Kendo.Mvc.UI
 @using ExceedERP.Core.Localization
 @using ExceedERP.Core.Localization
-@model ExceedERP.Core.Domain.HRM.ArchiveManagement.EmployeeIncomingLetter
+@model ExceedERP.Core.Domain.Archive.EmployeeIncomingLetter
 
 <div class="form">
 <div class="row fullrow">
@@ -12,7 +12,6 @@
       .Animation(false)
       .Items(items =>
       {
-
           items.Add()
               .Text(Resources.View_Incomming)
               .Content(@<text>
@@ -68,23 +67,6 @@
             </div>
         </div>
 
-
-        @*<div class="col-md-3">
-            <div>
-                @Html.LabelFor(model => model.InstitutionTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
-            </div>
-            <div class="form-group">
-
-                @(Html.Kendo().DropDownListFor(model => model.InstitutionTypeId)
-
-                  .OptionLabel(Resources.Select)
-                                                   .BindTo((IEnumerable)ViewData["InstuType"])
-                                                  .DataTextField("InstitutionName")
-                                                  .DataValueField("InstitutionTypeId")
-                                           .ValuePrimitive(true)
-                )
-            </div>
-        </div>*@
         <div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -101,7 +83,7 @@
         <div class="col-md-1">
 
         </div>
-        <div class="col-md-3">
+        @*<div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.OwnerName, htmlAttributes: new { @class = "control-label col-md-8" })
             </div>
@@ -109,7 +91,7 @@
                 @Html.Kendo().TextBoxFor(model => model.OwnerName)
                 @Html.ValidationMessageFor(model => model.OwnerName, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
         <div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.Shelve, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -158,7 +140,7 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        @*<div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.NoOfAttachment, htmlAttributes: new { @class = "control-label col-md-8" })
             </div>
@@ -166,7 +148,7 @@
                 @Html.Kendo().TextBoxFor(model => model.NoOfAttachment)
                 @Html.ValidationMessageFor(model => model.NoOfAttachment, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
        
 
     </div>    
@@ -184,7 +166,7 @@
                 @Html.ValidationMessageFor(model => model.VolumeNo, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="col-md-3">
+        @*<div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.RefersTo, htmlAttributes: new { @class = "control-label col-md-8" })
             </div>
@@ -201,13 +183,13 @@
                 )
                 @Html.ValidationMessageFor(model => model.RefersTo, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
 
       
         </div>
 </text>);
 
-          items.Add()
+          @*items.Add()
               .Text(Resources.View_Outgoing)
               .Content(@<text>
 
@@ -354,7 +336,7 @@
 
 
                 </div>
-            </text>);
+            </text>);*@
 
 
       })

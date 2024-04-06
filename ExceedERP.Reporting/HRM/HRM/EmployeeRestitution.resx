@@ -117,4 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox6.Value" xml:space="preserve">
+    <value>= Fields.PeriodTwoCount</value>
+  </data>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>= Count(Fields.RestitutionName)</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>= Fields.RestitutionName</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>Number of accidents</value>
+  </data>
+  <data name="textBox11.Value" xml:space="preserve">
+    <value>= Sum(Fields.PeriodTwoCount)</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>= Parameters.period.Label</value>
+  </data>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>Num</value>
+  </data>
+  <data name="textBox2.Value" xml:space="preserve">
+    <value>= RowNumber("tblInsu")</value>
+  </data>
+  <data name="textBox3.Value" xml:space="preserve">
+    <value>Number of accidents</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>=Today()</value>
+  </data>
+  <data name="textBox4.Value" xml:space="preserve">
+    <value>= Fields.PeriodOneCount</value>
+  </data>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>sum</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>page: {PageNumber}</value>
+  </data>
+  <data name="reportParameter1.Text" xml:space="preserve">
+    <value>Fiscal year</value>
+  </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Sum(Fields.PeriodOneCount)</value>
+  </data>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>The list of accidents happened to the employees of our company</value>
+  </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Accident Type</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

@@ -1,16 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Core.Domain.HRM.SalaryStructure
 {
-    public class SalaryJobTitle : TrackUserOperation
+    public class SalaryJobTitle:TrackUserOperation 
     {
         [Key]
         public int SalJobTiId { get; set; }
         [Display(Name = "HR_SalaryStructure_SalaryJobTitle_RankId", ResourceType = typeof(Localization.Resources))]
         public int RankId { get; set; }
-
+        
         [Display(Name = "HR_SalaryStructure_SalaryJobTitle_StepId", ResourceType = typeof(Localization.Resources))]
         public int StepId { get; set; }
         [Display(Name = "HR_SalaryStructure_SalaryJobTitle_JobTitle", ResourceType = typeof(Localization.Resources))]

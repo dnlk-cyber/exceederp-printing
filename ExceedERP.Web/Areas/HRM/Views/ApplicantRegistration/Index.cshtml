@@ -46,7 +46,7 @@
                    
   <div class="row form-inline" >
       <div class="col-lg-2">
-          @item.CreateButton()
+          @item.CreateButton(Resources.ActionButton_AddNewRecord)
       </div>
       <div class="col-lg-8">
           <form method="post" action='@Url.Action("ImportApplicantsFromExcel", new { })' class="form-g">
@@ -63,7 +63,7 @@
 
                   </div>
                   <div class="col-lg-4">
-                      <input type="submit" value="Submit" class="k-button k-primary" />
+                      <input type="submit" value="@Resources.Button_Submit" class="k-button k-primary" />
 
                   </div>
               </div>
@@ -258,7 +258,8 @@
          })
                   .ToolBar(toolbar =>
                   {
-                      toolbar.Create();
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
                   })
 
 

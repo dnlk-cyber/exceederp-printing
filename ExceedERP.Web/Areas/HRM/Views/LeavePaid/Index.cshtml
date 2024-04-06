@@ -50,20 +50,19 @@
                                                 .FileName(Resources.NavigatorLeave_LeavePaidInCash + ".pdf")
                                                     .ProxyURL(Url.Action("Pdf_Export_Save", "LeavePaid"))
                             )
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-       .Scrollable(h => h.Height(500))
-             .Groupable()
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
-          .Filterable()
-             .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
               .Events(events =>

@@ -32,7 +32,9 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public string Remark { get; set; }
         [Display(Name = "HR_LeaveManagment_LeaveEntitle_IsExpired", ResourceType = typeof(Localization.Resources))]
         public bool IsExpired { get; set; }
+        [Display(Name = "Rpt_Leave_Balance", ResourceType = typeof(Localization.Resources))]
         public decimal Balance { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
         public int BranchId { get; set; }
         public string ExpiredBy { get; set; }
         public DateTime? ExpiredDate { get; set; }
@@ -43,7 +45,9 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         // sum of active balances or sum of not exprired balances
         [NotMapped]
         public decimal SumOfBalances { get; set; }
+        [Display(Name = "Rpt_HireDate", ResourceType = typeof(Localization.Resources))]
         [NotMapped]
         public string HireDate { get; set; }
+
     }
 }

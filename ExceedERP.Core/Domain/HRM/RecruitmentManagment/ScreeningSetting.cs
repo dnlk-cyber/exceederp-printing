@@ -1,23 +1,21 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using System;
-using System.Collections.Generic;
+using ExceedERP.Core.Localization;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
 {
-   public class ScreeningSetting
+    public class ScreeningSetting
     {
         public int ScreeningSettingId { get; set; }
-        [Display(Name ="Vacancy")]
-        public int VacancyId { get; set; }       
-        public Gender Gender { get; set; }
-        [Display(Name = "Organization Type")]
+        [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Vacancy))]
+        public int VacancyId { get; set; }
+        [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Gender))]
+        public GenderForVacancyGender Gender { get; set; }
+        [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.OrganizationType))]
         public OrganizationType OrganizationType { get; set; }
-        [Display(Name = "Experience Year")]
+        [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Experience))]
         public int ExperienceYear { get; set; }
+        [Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Language))]
         public Languages Language { get; set; }
     }
 }

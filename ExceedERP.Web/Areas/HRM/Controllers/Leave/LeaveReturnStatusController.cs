@@ -15,10 +15,11 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
-    public class LeaveReturnStatusController : Controller
+    public class LeaveReturnStatusController : BaseController
     {
         // GET: HRM/LeaveReturn
         private ExceedDbContext db = new ExceedDbContext();
@@ -82,7 +83,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
 
                 list.Remove(employeeId);
                 IsForOther = true;
@@ -284,7 +285,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             //employeeids.Remove(employeeid);
             //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId)).OrderBy(x => x.RequestDate);
             //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => x.EmployeeId == employeeid || x.RequesterId == employeeid).OrderBy(x => x.RequestDate);
-            IQueryable<LeaveReturn> leaveReturns = db.LeaveReturns.Where(x=>x.IsDepartmentOnlineApproved);
+            IQueryable<LeaveReturn> leaveReturns = db.LeaveReturns.Where(x => x.IsDepartmentOnlineApproved||x.IsOnlineApproved );
 
             DataSourceResult result = leaveReturns.ToDataSourceResult(request, leaveReturn => new
             {

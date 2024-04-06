@@ -35,7 +35,7 @@
       {
           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
-                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeExperience").Window(window => { window.Title("Employee Experience "); window.Scrollable(false); }))
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeExperience").Window(window => { window.Title("Employee Experience "); window.Scrollable(false); }))
           .Scrollable(h => h.Height(500))
              .Groupable()
                       .Sortable(sortable =>

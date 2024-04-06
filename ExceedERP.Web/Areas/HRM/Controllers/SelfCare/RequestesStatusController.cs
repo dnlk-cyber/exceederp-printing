@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -22,19 +22,19 @@ using ExceedERP.Web.Models;
 using Microsoft.Ajax.Utilities;
 using ExceedERP.Web.Areas.HRM.Controllers.Leave;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Core.Domain.HRM.Payroll;
+using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
     public class RequestesStatusController : BaseController
     {
-        private ExceedDbContext db = new ExceedDbContext();
 
+        private ExceedDbContext db = new ExceedDbContext();
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRDepartmentHead, HrmConstants.HRLeaveAdmin, HrmConstants.HRLeaveApprover,
             HrmConstants.HRRecruitmentApprover, HrmConstants.HRSelfServiceManager, HrmConstants.HREmployeeSelfService, HrmConstants.HROverTimeRequestApprover,
            HrmConstants.HRHealthApprover, HrmConstants.HRRecruitmentRequester, HrmConstants.HRTerminationUser, HrmConstants.HRTrainingRequester, HrmConstants.HRTrainingApprover)]
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public int GetApproverDept(int? id)
         {
-            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
+            var place = db.Placements.Where(x=>x.isCurrent).FirstOrDefault(x => x.EmployeeId == id);
             if (place != null)
             {
                 return place.OrgStructureId;
@@ -52,6 +52,84 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             return 0;
         }
 
+        public bool CheckStatusForBackColorAndAction(int leaveId,string referenceType)
+        {
+            if(referenceType == "Leave")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (referenceType == "Termination")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Termination").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (referenceType == "Experience")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Experience").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (referenceType == "Medical")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Experience").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (referenceType == "Recruitment")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Recruitment").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (referenceType == "Training")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Training").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (referenceType == "LeaveReturn")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "LeaveReturn").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            if (referenceType == "ManPowerPlanning")
+            {
+                var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "LeaveReturn").FirstOrDefault();
+                if (reques != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            
+            return false;
+        }
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRDepartmentHead, HrmConstants.HRLeaveAdmin, HrmConstants.HRLeaveApprover,
             HrmConstants.HRRecruitmentApprover, HrmConstants.HRSelfServiceManager, HrmConstants.HREmployeeSelfService, HrmConstants.HROverTimeRequestApprover,
             HrmConstants.HRHealthApprover, HrmConstants.HRRecruitmentRequester, HrmConstants.HRTerminationUser, HrmConstants.HRTrainingRequester, HrmConstants.HRTrainingApprover)]
@@ -59,7 +137,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult RequestesStatus_Read([DataSourceRequest]DataSourceRequest request, int id, string referenceType)
         {
             GetStatusType();
-
             HRMInputs.RequestId = id;
             HRMInputs.ReferenceType = referenceType;
             IQueryable<RequestesStatus> requestesstatus = db.RequestesStatus.Where(x => x.RequestId == id && x.ReferenceType == referenceType);
@@ -73,6 +150,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Remark = requestesStatus.Remark,
                 DateReqStatAm = requestesStatus.DateReqStatAm,
                 ApproverId = requestesStatus.ApproverId,
+                IsApproved = CheckStatusForBackColorAndAction(HRMInputs.RequestId, HRMInputs.ReferenceType),
                 ApproverDepartment = GetApproverDept(requestesStatus.ApproverId)
             });
             return Json(result);
@@ -94,7 +172,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
               HrmConstants.HRHealthApprover, HrmConstants.HRTrainingApprover, HrmConstants.HROverTimeRequestApprover, HrmConstants.HRDepartmentHead)]
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult RequestesStatus_Create([DataSourceRequest]DataSourceRequest request, RequestesStatus requestesStatus, int id, string referenceType2)
+        public ActionResult RequestesStatus_Create([DataSourceRequest]DataSourceRequest request, RequestesStatus requestesStatus, int id, string referenceType2,string reference)
         {
             requestesStatus.RequestId = id;
             requestesStatus.ReferenceType = referenceType2;
@@ -104,7 +182,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var checkDuplicate = db.RequestesStatus.FirstOrDefault(x => x.RequestId == requestesStatus.RequestId && x.ReferenceType == requestesStatus.ReferenceType && x.Status == requestesStatus.Status);
             if (checkDuplicate != null)
             {
-                ModelState.AddModelError("", "Don't Duplicate The Approve Process Pleas");
+                ModelState.AddModelError("", "Don't Duplicate The Approve Process Please");
             }
             #region Validation 
 
@@ -119,10 +197,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     var roleCheck = UserInformationHelper.CheckUserRole(User.Identity.Name, HrmConstants.HRDepartmentHead);
                     var roleCheckHR = UserInformationHelper.CheckUserRole(User.Identity.Name, HrmConstants.HRLeaveApprover);
                     var deptapp = db.RequestesStatus.FirstOrDefault(x =>
-                        x.RequestId == leaveReq.LeaveRequestId && x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave");
-                    var hrapprove = db.RequestesStatus.FirstOrDefault(x =>
-                       x.RequestId == leaveReq.LeaveRequestId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave");
-
+                        x.RequestId == leaveReq.LeaveRequestId && x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave");                    
                     if (deptapp == null && requestesStatus.Status == RequestStatus.APPROVE)
                     {
                         ModelState.AddModelError("", "This request is not approved by department so You can not approve");
@@ -131,6 +206,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     {
                         ModelState.AddModelError("", "You Approved This Request before so Cannot approve again");
                     }
+                    var hrapprove = db.RequestesStatus.FirstOrDefault(x =>
+                      x.RequestId == leaveReq.LeaveRequestId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave");
+
                     if (hrapprove != null && requestesStatus.Status == RequestStatus.APPROVE)
                     {
                         ModelState.AddModelError("", "You Approved This Request before so Cannot approve again");
@@ -140,30 +218,34 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         ModelState.AddModelError("", "you cannot approve as HR");
                     }
 
-                    if (requestesStatus.Status == RequestStatus.DEPARTMENT_APPROVAL && empId != supervisorId)
+                    if ((requestesStatus.Status == RequestStatus.DEPARTMENT_APPROVAL 
+                        || requestesStatus.Status == RequestStatus.PEND 
+                        || requestesStatus.Status == RequestStatus.REJECT) && empId != supervisorId && reference != "hrApprover")
                     {
-                        ModelState.AddModelError("", "You are not Head of This department you can not Approve as Head");
+                        ModelState.AddModelError("", "You are not Head of This department you can not reject,pend or Approve as Head");
                     }
-                    if (hrapprove == null && requestesStatus.Status == RequestStatus.APPROVE)
-                    {
-                        //var entity = new Core.Domain.HRM.LeaveManagment.Leave
-                        //{
-                        //    EmployeeId = leaveReq.EmployeeId,
-                        //    LeaveType = leaveReq.Type,
-                        //    Amount = leaveReq.LeaveDays,
-                        //    GlFiscalYearId = leaveReq.GlFiscalYearId,
-                        //    From = leaveReq.From,
-                        //    To = leaveReq.To,
-                        //    Remark = leaveReq.Remark,
-                        //    EmployeeCode = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == leaveReq.EmployeeId)?.EmployeeCode,
-                        //    FromAmharic = leaveReq.FromAmharic,
-                        //    ToAmharic = leaveReq.ToAmharic,
-                        //    DateCreated = leaveReq.DateCreated,
-                        //    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
-                        //};
-                        //db.Leaves.Add(entity);
-                        //db.SaveChanges();
-                    }
+                    //if (hrapprove == null && requestesStatus.Status == RequestStatus.APPROVE)
+                    //{
+                    //    ModelState.AddModelError("", "The Request is already approved");
+
+                    //    //var entity = new Core.Domain.HRM.LeaveManagment.Leave
+                    //    //{
+                    //    //    EmployeeId = leaveReq.EmployeeId,
+                    //    //    LeaveType = leaveReq.Type,
+                    //    //    Amount = leaveReq.LeaveDays,
+                    //    //    GlFiscalYearId = leaveReq.GlFiscalYearId,
+                    //    //    From = leaveReq.From,
+                    //    //    To = leaveReq.To,
+                    //    //    Remark = leaveReq.Remark,
+                    //    //    EmployeeCode = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == leaveReq.EmployeeId)?.EmployeeCode,
+                    //    //    FromAmharic = leaveReq.FromAmharic,
+                    //    //    ToAmharic = leaveReq.ToAmharic,
+                    //    //    DateCreated = leaveReq.DateCreated,
+                    //    //    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                    //    //};
+                    //    //db.Leaves.Add(entity);
+                    //    //db.SaveChanges();
+                    //}
                 }
             }
             if (referenceType2 == "Termination")
@@ -449,7 +531,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     }
                 }
             }
-
             if (referenceType2 == "ManPowerPlanning")
             {
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -488,7 +569,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         {
                             ModelState.AddModelError("", "you can't approve as HR");
                         }
-
+                        //var totalDays = (requestesStatus.Date - DateTime.Now.Date).TotalDays;
+                        //if (totalDays <= 180 && requestesStatus.Status == RequestStatus.APPROVE)
+                        //{
+                        //    ModelState.AddModelError("", "you cannot ask before Six(6) Months");
+                        //}
                         //if (requestesStatus.Status == RequestStatus.DEPARTMENT_APPROVAL && empId != supervisorId)
                         //{
                         //    ModelState.AddModelError("", "You are not Head of This department you can not Approve as Head");
@@ -557,6 +642,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     //    db.Entry(paymentRequest).State = EntityState.Modified;
                     //    db.SaveChanges();
                     //}
+                   
                 }
                 if (requestesStatus.ReferenceType == "Leave")
                 {
@@ -572,6 +658,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                             db.Entry(leaveRequest).State = EntityState.Modified;
                             db.SaveChanges();
+                               // var bossId = EmployeeHelper.GetSupervisor(promationRequest.);
+                                NotifModels notif = new NotifModels
+                                {
+                                    UserId = UserInformationHelper.GetEmployeeUserId(leaveRequest.EmployeeId),
+                                    Title = " Department has approved your Leave Request ",
+                                    Message = $" your  Leave  has been approved by Department Approver",
+                                    URL = "/HRM/LeaveRequestStatus/"
+
+                                };
+
+                                Notify.NotifyUser(notif);
+                            
                         }
                         else if (requestesStatus.Status == RequestStatus.WAITING_FOR_APPROVAL)
                         {
@@ -581,7 +679,39 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                             db.Entry(leaveRequest).State = EntityState.Modified;
                             db.SaveChanges();
+
+                            var bossId = EmployeeHelper.GetSupervisor(leaveRequest.EmployeeId);
+                            NotifModels notif = new NotifModels
+                            {
+                                UserId = UserInformationHelper.GetEmployeeUserId(bossId),
+                                Title = " there is Leave Request For Approval ",
+                                Message = $" you  have  Leave Request  waiting for your  Approval",
+                                URL = "/HRM/LeaveRequestStatus/"
+
+                            };
+
+                            Notify.NotifyUser(notif);
                         }
+                        else if (requestesStatus.Status == RequestStatus.APPROVE)
+                        {
+                            leaveRequest.OnlineApprovedBy   = User.Identity.Name;
+                            leaveRequest.OnlineApprovedTime = DateTime.Now;
+                            leaveRequest.IsOnlineApproved = true;
+
+                            db.Entry(leaveRequest).State = EntityState.Modified;
+                            db.SaveChanges();
+                            //NotifModels notif = new NotifModels
+                            //{
+                            //    UserId = UserInformationHelper.GetEmployeeUserId(leaveRequest.EmployeeId),
+                            //    Title = " HR has approved your Leave Request ",
+                            //    Message = $" your  Leave  has been approved by HR Approver",
+                            //    URL = "/HRM/LeaveRequestStatus/"
+
+                            //};
+
+                            //Notify.NotifyUser(notif);
+                        }
+
 
                     }
                 }
@@ -602,12 +732,34 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             terminationRequest.DepartmentSendForApprovalBy = User.Identity.Name;
                             terminationRequest.DepartmentSendForApprovalTime = DateTime.Now;
                             terminationRequest.IsDepartmentSendForApproval = true;
+                            //var bossId = EmployeeHelper.GetSupervisor(terminationRequest.EmployeeId);
+                            //NotifModels notif = new NotifModels
+                            //{
+                            //    UserId = UserInformationHelper.GetEmployeeUserId(bossId),
+                            //    Title = " there is termination Request For Approval ",
+                            //    Message = $" you  have  termination Request  waiting for your  Approval",
+                            //    URL = "/HRM/TerminationRequest/"
+
+                            //};
+
+                            //Notify.NotifyUser(notif);
                         }
                         else if (requestesStatus.Status == RequestStatus.APPROVE)
                         {
                             terminationRequest.OnlineApprovedBy = User.Identity.Name;
                             terminationRequest.OnlineApprovedTime = DateTime.Now;
                             terminationRequest.IsOnlineApproved = true;
+                            //NotifModels notif = new NotifModels
+                            //{
+                            //    UserId = UserInformationHelper.GetEmployeeUserId(terminationRequest.EmployeeId),
+                            //    Title = " HR has approved your termination Request ",
+                            //    Message = $" your  Termination Request  has been approved by HR Approver",
+                            //    URL = "/HRM/TeminationRequest/"
+
+                            //};
+
+                            //Notify.NotifyUser(notif);
+
                         }
 
                         db.Entry(terminationRequest).State = EntityState.Modified;
@@ -634,11 +786,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         }
                         else if (requestesStatus.Status == RequestStatus.APPROVE)
                         {
-                            experienceRequest.OnlineApprovedBy = User.Identity.Name;
+                            experienceRequest.OnlineApprovedBy   = User.Identity.Name;
                             experienceRequest.OnlineApprovedTime = DateTime.Now;
-                            experienceRequest.IsOnlineApproved = true;
+                            experienceRequest.IsOnlineApproved   = true;
                         }
-
+                       
                         db.Entry(experienceRequest).State = EntityState.Modified;
                         db.SaveChanges();
                     }
@@ -826,12 +978,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         if (requesterEmpId != null)
                         {
                             var userDept =
-                                db.Placements.FirstOrDefault(x => x.EmployeeId == requesterEmpId.EmployeeId && x.isCurrent);
+                                db.Placements.Where(x=>x.isCurrent).FirstOrDefault(x => x.EmployeeId == requesterEmpId.EmployeeId && x.isCurrent);
 
                             var deptName = db.MainCompanyStructures.FirstOrDefault(x =>
                                 x.OrgStructureId == userDept.OrgStructureId);
                             var requesterEmpName =
-                                db.Person_Employee.FirstOrDefault(x => x.EmployeeId == userDept.EmployeeId && x.IsActive);
+                                db.Person_Employee.Where(x=>x.IsActive).FirstOrDefault(x => x.EmployeeId == userDept.EmployeeId && x.IsActive);
 
                             NotifModels notif = new NotifModels
                             {
@@ -1360,14 +1512,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                 EmployeeCode = leaves.Employee.EmployeeCode,
                                 ModifiedBy = null,
                                 OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                                RequestId = leaves.LeaveRequestId
+                                RequestId = leaves.LeaveRequestId,
                             };
                             if (entityy.LeaveType == LeaveType.ANNUAL)
                             {
 
                                 entityy.Amount = entityy.To.Subtract(entityy.From).Days + 1 - count;
                                 entityy.Amount = entityy.Amount - Convert.ToDecimal(weekDays);
-                                if (leaves.Day == LeaveDay.ግማሽ_ቀን)
+                                if (leaves.Day == LeaveDay.Half_Day)
                                 {
                                     decimal checkWeekEnd = entityy.To.Subtract(entityy.From).Days + 1 - count;
                                     double amt = GetHalf(entityy.From, entityy.To);
@@ -1661,7 +1813,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                                     #region operation log                
 
-                                    UserHelper.OperationLog(Request.UserHostAddress, "Patient Card", "Success", User.Identity.Name, User.Identity.Name + " add Patient Card at date " + DateTime.Today + " card no " + medical.PatientCardId, Modules.HealthAndInsurance);
+                                    UserHelper.OperationLog(Request.UserHostAddress, "Patient Card", "Success", User.Identity.Name, User.Identity.Name + " add Patient Card at date " + DateTime.Today + " card no " + medical.PatientCardId, Modules.Health);
 
                                     #endregion
                                 }
@@ -1729,26 +1881,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     {
                         ModelState.AddModelError("", "You are not Head of This department you can not Approve as Head");
                     }
-                    if (hrapprove == null && requestesStatus.Status == RequestStatus.APPROVE)
-                    {
-                        //var entity = new Core.Domain.HRM.LeaveManagment.Leave
-                        //{
-                        //    EmployeeId = leaveReq.EmployeeId,
-                        //    LeaveType = leaveReq.Type,
-                        //    Amount = leaveReq.LeaveDays,
-                        //    GlFiscalYearId = leaveReq.GlFiscalYearId,
-                        //    From = leaveReq.From,
-                        //    To = leaveReq.To,
-                        //    Remark = leaveReq.Remark,
-                        //    EmployeeCode = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == leaveReq.EmployeeId)?.EmployeeCode,
-                        //    FromAmharic = leaveReq.FromAmharic,
-                        //    ToAmharic = leaveReq.ToAmharic,
-                        //    DateCreated = leaveReq.DateCreated,
-                        //    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
-                        //};
-                        //db.Leaves.Add(entity);
-                        //db.SaveChanges();
-                    }
+                    //if (hrapprove == null && requestesStatus.Status == RequestStatus.APPROVE)
+                    //{
+                    //    //var entity = new Core.Domain.HRM.LeaveManagment.Leave
+                    //    //{
+                    //    //    EmployeeId = leaveReq.EmployeeId,
+                    //    //    LeaveType = leaveReq.Type,
+                    //    //    Amount = leaveReq.LeaveDays,
+                    //    //    GlFiscalYearId = leaveReq.GlFiscalYearId,
+                    //    //    From = leaveReq.From,
+                    //    //    To = leaveReq.To,
+                    //    //    Remark = leaveReq.Remark,
+                    //    //    EmployeeCode = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == leaveReq.EmployeeId)?.EmployeeCode,
+                    //    //    FromAmharic = leaveReq.FromAmharic,
+                    //    //    ToAmharic = leaveReq.ToAmharic,
+                    //    //    DateCreated = leaveReq.DateCreated,
+                    //    //    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)
+                    //    //};
+                    //    //db.Leaves.Add(entity);
+                    //    //db.SaveChanges();
+                    //}
                 }
             }
             if (requestesStatus.ReferenceType == "Termination")
@@ -1790,7 +1942,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                 var requesteEmpId = requestesStatus.RequestId;
-                var expReq = db.ExprianceRequests.FirstOrDefault(x => x.ExperienceRequestId == requestesStatus.RequestId);
+                var expReq = db.ExprianceRequests.FirstOrDefault(x => x.ExperienceRequestId == requestesStatus.RequestId && x.RequestType ==SelfServiceRequestType.Expreience);
                 if (expReq != null)
                 {
                     var supervisorId = EmployeeHelper.GetSupervisor(expReq.EmployeeId);
@@ -1813,6 +1965,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     {
                         ModelState.AddModelError("", "you cannot approve as HR");
                     }
+                    //var totalDays = (requestesStatus.Date - DateTime.Now.Date).TotalDays;
+                    //if (totalDays <= 180 && requestesStatus.Status == RequestStatus.APPROVE)
+                    //{
+                    //    ModelState.AddModelError("", "you cannot ask before Six(6) Months");
+                    //}
                 }
             }
             if (requestesStatus.ReferenceType == "Medical")
@@ -2034,7 +2191,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     }
                 }
             }
-
             if (requestesStatus.ReferenceType == "ManPowerPlanning")
             {
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -2887,7 +3043,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                             }
                             else
                             {
-
                                 leaves.OnlineApprovedBy = User.Identity.Name;
                                 leaves.OnlineApprovedTime = DateTime.Now;
                                 leaves.IsOnlineApproved = true;
@@ -2934,7 +3089,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                 {
                                     entityy.Amount = entityy.To.Subtract(entityy.From).Days + 1 - count;
                                     entityy.Amount = entityy.Amount - Convert.ToDecimal(weekDays);
-                                    if (leaves.Day == LeaveDay.ግማሽ_ቀን)
+                                    if (leaves.Day == LeaveDay.Half_Day)
                                     {
 
                                         decimal checkWeekEnd = entityy.To.Subtract(entityy.From).Days + 1 - count;
@@ -3093,8 +3248,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                         #region Add Datas to Leave Taken
 
                                         #endregion
-
-
                                     }
                                 }
                                 else
@@ -3239,7 +3392,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                                     #region operation log                
 
-                                    UserHelper.OperationLog(Request.UserHostAddress, "Patient Card", "Success", User.Identity.Name, User.Identity.Name + " add Patient Card at date " + DateTime.Today + " card no " + medical.PatientCardId, Modules.HealthAndInsurance);
+                                    UserHelper.OperationLog(Request.UserHostAddress, "Patient Card", "Success", User.Identity.Name, User.Identity.Name + " add Patient Card at date " + DateTime.Today + " card no " + medical.PatientCardId, Modules.Health);
 
                                     #endregion
                                 }
@@ -3336,7 +3489,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                                 }
 
                                 #region operation log
-                                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime", "Success", User.Identity.Name, $"approve overtime requests form department  {department} period {periodName} normal {empOver.NormalHours} night {empOver.NightHours} holiday {empOver.HolidayHours} rest {empOver.RestdayHours} ", Modules.Payroll);
+                                  UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime", "Success", User.Identity.Name, $"approve overtime requests form department  {department} period {periodName} normal {empOver.NormalHours} night {empOver.NightHours} holiday {empOver.HolidayHours} rest {empOver.RestdayHours} ", Modules.Payroll);
                                 #endregion
 
                                 db.OverTimes.Add(empOver);

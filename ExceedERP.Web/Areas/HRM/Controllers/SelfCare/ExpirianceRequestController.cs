@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.Global;
 using System.Data.Entity;
@@ -165,10 +165,77 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return RedirectToAction("Index");
         }
+        public ActionResult SendForApprovalExperienceRequest(int id)
+        {
+            HRMInputs.RequestId = id;
+            RequestesStatus requestesStatus;
+            db = new ExceedDbContext();
+            requestesStatus =
+                db.RequestesStatus.FirstOrDefault(x => x.RequestId == HRMInputs.RequestId &&
+                        x.ReferenceType == HRMInputs.ReferenceType && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
+            db = new ExceedDbContext();
+            if (requestesStatus == null)
+            {
+                var entityy = new RequestesStatus
+                {
+                    RequestId = HRMInputs.RequestId,
+                    ReferenceType = HRMInputs.ReferenceType,
+                    Status = RequestStatus.WAITING_FOR_APPROVAL,
+                    Date = DateTime.Now,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
+                };
+
+                db.RequestesStatus.Add(entityy);
+                db.SaveChanges();
+            }
+            else
+            {
+                var entity = new RequestesStatus
+                {
+                    RequestStatusId = requestesStatus.RequestStatusId,
+                    RequestId = requestesStatus.RequestId,
+                    ReferenceType = requestesStatus.ReferenceType,
+                    Status = requestesStatus.Status,
+                    Date = requestesStatus.Date,
+                    Remark = requestesStatus.Remark,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(requestesStatus.Date.Day, requestesStatus.Date.Month, requestesStatus.Date.Year),
+
+                };
+
+                db.RequestesStatus.Attach(entity);
+                db.RequestesStatus.Remove(entity);
+                db.SaveChanges();
+                db = new ExceedDbContext();
+
+                var entityy = new RequestesStatus
+                {
+                    RequestId = HRMInputs.RequestId,
+                    ReferenceType = HRMInputs.ReferenceType,
+                    Status = RequestStatus.WAITING_FOR_APPROVAL,
+                    Date = DateTime.Now,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
+                };
+
+                db.RequestesStatus.Add(entityy);
+                db.SaveChanges();
+
+            }
+
+            return RedirectToAction("Index");
+        }
+        public bool CheckStatusForBackColor(int exId)
+        {
+            var reques = db.RequestesStatus.Where(x => x.RequestId == exId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Experience").FirstOrDefault();
+            if (reques != null)
+            {
+                return true;
+            }
+            return false;
+        }
         public ActionResult ExprianceRequests_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
             IQueryable<ExperienceRequest> expriancerequests = db.ExprianceRequests.Where(x => employeeids.Contains(x.EmployeeId));
 
             DataSourceResult result = expriancerequests.ToDataSourceResult(request, exprianceRequest => new
@@ -186,6 +253,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 ModifiedBy = exprianceRequest.ModifiedBy,
                 OrgBranchName = exprianceRequest.OrgBranchName,
                 IsForOther = exprianceRequest.IsForOther,
+                IsApproved = CheckStatusForBackColor(exprianceRequest.ExperienceRequestId),
                 DepartmentSendForApprovalBy = exprianceRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = exprianceRequest.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = exprianceRequest.IsDepartmentSendForApproval,
@@ -229,7 +297,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
             }
+            var RequestIds = db.ExprianceRequests.Where(x => x.EmployeeId == experienceRequest.EmployeeId).Select(x => x.ExperienceRequestId).ToList();
+            foreach (var RequestId in RequestIds)
+            {
+                var requestesStatus = db.RequestesStatus.FirstOrDefault(x =>
+                        x.RequestId == RequestId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Experience");
+                if (requestesStatus != null)
+                {
+                    var totalDays = (requestesStatus.Date - DateTime.Now.Date).TotalDays;
+                    if (totalDays < 180 && requestesStatus.Status == RequestStatus.APPROVE)
+                    {
+                        ModelState.AddModelError("", "you cannot ask before Six(6) Months");
+                    }
+                }
 
+            }
             if (ModelState.IsValid)
             {
                 var entity = new ExperienceRequest

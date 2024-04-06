@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.HRM.Controllers.Profile;
@@ -114,22 +113,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             if (ModelState.IsValid)
             {
 
-                {
-                    var entity = new LateComingSummary
-                    {
-                        EmployeeId = LateComingSummary.EmployeeId,
-                        TotalDays = LateComingSummary.TotalDays,
-                        GLPeriodId = LateComingSummary.GLPeriodId,
-                        TotalHours = LateComingSummary.TotalHours,
-                        Remark = LateComingSummary.Remark,
+             
+               var entity = new LateComingSummary
+               {
+                   EmployeeId = LateComingSummary.EmployeeId,
+                   TotalDays = LateComingSummary.TotalDays,
+                   GLPeriodId = LateComingSummary.GLPeriodId,
+                   TotalHours = LateComingSummary.TotalHours,
+                   Remark = LateComingSummary.Remark,
 
-                    };
+               };
 
 
-                    db.LateComingSummaries.Add(entity);
-                    db.SaveChanges();
-                    LateComingSummary.LateComingSummaryId = entity.LateComingSummaryId;
-                }
+               db.LateComingSummaries.Add(entity);
+               db.SaveChanges();
+               LateComingSummary.LateComingSummaryId = entity.LateComingSummaryId;
+             
             }
 
             return Json(new[] { LateComingSummary }.ToDataSourceResult(request, ModelState));
@@ -142,22 +141,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             if (ModelState.IsValid)
             {
 
+             
+                var entity = new LateComingSummary
                 {
-                    var entity = new LateComingSummary
-                    {
-                        LateComingSummaryId = LateComingSummary.LateComingSummaryId,
-                        EmployeeId = LateComingSummary.EmployeeId,
-                        TotalDays = LateComingSummary.TotalDays,
-                        GLPeriodId = LateComingSummary.GLPeriodId,
-                        TotalHours = LateComingSummary.TotalHours,
-                        Remark = LateComingSummary.Remark,
+                    LateComingSummaryId = LateComingSummary.LateComingSummaryId,
+                    EmployeeId = LateComingSummary.EmployeeId,
+                    TotalDays = LateComingSummary.TotalDays,
+                    GLPeriodId = LateComingSummary.GLPeriodId,
+                    TotalHours = LateComingSummary.TotalHours,
+                    Remark = LateComingSummary.Remark,
 
-                    };
+                };
 
-                    db.LateComingSummaries.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
+                db.LateComingSummaries.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+             
             }
 
             return Json(new[] { LateComingSummary }.ToDataSourceResult(request, ModelState));
@@ -285,7 +284,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 
                 foreach (var late in lateComings)
                 {
-                    var singleEmpLates = db.LateCommings.Where(x => x.EmployeeId == late.EmployeeId && x.Date >= period.DateFrom && x.Date <= period.DateTo).ToList();
+                    var singleEmpLates = lateComings.Where(x => x.EmployeeId == late.EmployeeId).ToList();
 
                     var checkExistance = db.LateComingSummaries.FirstOrDefault(x => x.EmployeeId == late.EmployeeId && x.GLPeriodId == period.GLPeriodId);
                     if (checkExistance != null)
@@ -295,7 +294,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                         {
                             checkExistance.TotalHours = singleEmpLates.Sum(x => x.Time);
                             checkExistance.TotalDays = (singleEmpLates.Sum(x => x.Time)) / 8;
-
                             db.Entry(checkExistance).State = EntityState.Modified;
                             db.SaveChanges();
                         }
@@ -304,15 +302,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                     {
                         var entity = new LateComingSummary
                         {
-                            EmployeeId = late.EmployeeId,
-                            TotalDays = 0,
-                            GLPeriodId = periodId,
-                            TotalHours = singleEmpLates.Sum(x => x.Time),
-                            Remark = null,
+                              EmployeeId = late.EmployeeId,
+                              TotalDays = (singleEmpLates.Sum(x => x.Time)) / 8,
+                              GLPeriodId = periodId,
+                              TotalHours = singleEmpLates.Sum(x => x.Time),
+                              Remark = null,
 
                         };
-                        entity.TotalDays = entity.TotalHours / 8;
-
                         db.LateComingSummaries.Add(entity);
                         db.SaveChanges();
                     }

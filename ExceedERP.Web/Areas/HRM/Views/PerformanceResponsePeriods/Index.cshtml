@@ -1,0 +1,245 @@
+﻿@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using System.Collections
+@using Kendo.Mvc
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Performance Response </legend>
+@(Html.Kendo().Grid<PerformanceRequestPeriod>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.FiscalYearId, (IEnumerable)ViewData["Fiscalyears"], "FiscalYearId", "Name").EditorTemplateName("fiscalYear").Width(200);
+          columns.ForeignKey(c => c.PeriodId,(IEnumerable)ViewData["Periods"], "PeriodId", "Name").EditorTemplateName("period").Width(200);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").EditorTemplateName("workUnit").Width(200);
+
+          //columns.Command(command =>
+          //{
+          //    command.Edit();
+          //    command.Destroy();
+          //});
+      })
+      //.ToolBar(toolbar => {
+      //    toolbar.Create();
+      //})
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h=>h.Height(550))
+      .Events(events => {
+          events.Cancel("onCancel");
+          events.Edit("onEdit");
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+              events.Error("error_handler(\"grid\")");
+              events.RequestStart("onRequestStart(\"grid\")");
+              events.RequestEnd("onRequestEnd(\"grid\")");
+          })
+          .Model(model => model.Id(p => p.PerformanceRequestPeriodId))
+          .Read(read => read.Action("PerformanceResponsePeriods_Read", "PerformanceResponsePeriods"))
+          .Create(create => create.Action("PerformanceResponsePeriods_Create", "PerformanceResponsePeriods"))
+          .Update(update => update.Action("PerformanceResponsePeriods_Update", "PerformanceResponsePeriods"))
+          .Destroy(destroy => destroy.Action("PerformanceResponsePeriods_Destroy", "PerformanceResponsePeriods"))
+      ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("tabstrip_#=PerformanceRequestPeriodId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+
+
+        @*items.Add().Text("Peer To Peer").Content(
+        @<text>
+            @peerToPeerEvaluation()
+        </text>
+        );*@
+        items.Add().Text("Internal Custemer").Content(
+        @<text>
+            @internalCustemerevaluation()
+        </text>
+        );
+
+    }).ToClientTemplate()
+    )
+</script>
+
+    @helper peerToPeerEvaluation()
+    {
+        @(Html.Kendo().Grid<PeerToPeerPerformanceEvaluation>()
+          .Name("PeerToPeergrid_#=PerformanceRequestPeriodId#")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.EvaluatorId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("getListOfEmployee").Width(260);
+              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("getListOfEmployee").Width(260);
+
+              columns.Command(command => { command.Edit(); command.Destroy(); });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Filterable()
+          .Scrollable(h => h.Height(550))
+          .Events(events =>
+          {
+              events.Cancel("onCancel");
+              events.Edit("onEdit");
+          })
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(events =>
+                         {
+                             events.Error("error_handler(\"PeerToPeergrid_#=PerformanceRequestPeriodId#\")");
+                             events.RequestStart("onRequestStart(\"PeerToPeergrid_#=PerformanceRequestPeriodId#\")");
+                             events.RequestEnd("onRequestEnd(\"PeerToPeergrid_#=PerformanceRequestPeriodId#\")");
+                         })
+              .Model(model => model.Id(p => p.PeerToPeerPerformanceEvaluationId))
+              .Read(read => read.Action("PeerToPeerPerformanceEvaluations_Read","PeerToPeerPerformanceEvaluations",  new { pPId = "#=PerformanceRequestPeriodId#" }))
+              .Create(create => create.Action(  "PeerToPeerPerformanceEvaluations_Create","PeerToPeerPerformanceEvaluations", new { pPId = "#=PerformanceRequestPeriodId#" }))
+              .Update(update => update.Action(  "PeerToPeerPerformanceEvaluations_Update","PeerToPeerPerformanceEvaluations"))
+              .Destroy(destroy => destroy.Action("PeerToPeerPerformanceEvaluations_Destroy","PeerToPeerPerformanceEvaluations"))
+          ).ToClientTemplate()
+        )
+
+    }
+    @helper internalCustemerevaluation()
+    {
+    @(Html.Kendo().Grid<InternalCustomerPerformanceEvaluation>()
+      .Name("InternalCustomergrid_#=PerformanceRequestPeriodId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.NumberOfEmployee).Width(200);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("workUnit").Width(200);
+
+          //columns.Command(command => { command.Edit(); command.Destroy(); });
+      })
+      //.ToolBar(toolbar =>
+      //{
+      //    toolbar.Create();
+      //})
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .Events(events =>
+      {
+          events.Cancel("onCancel");
+          events.Edit("onEdit");
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+              events.Error("error_handler(\"InternalCustomergrid_#=PerformanceRequestPeriodId#\")");
+              events.RequestStart("onRequestStart(\"InternalCustomergrid_#=PerformanceRequestPeriodId#\")");
+              events.RequestEnd("onRequestEnd(\"InternalCustomergrid_#=PerformanceRequestPeriodId#\")");
+          })
+          .Model(model => model.Id(p => p.InternalCustomerPerformanceEvaluationId))
+          .Read(read => read.Action("InternalCustomerPerformanceEvaluations_Read", "InternalCustomerPerformanceEvaluations", new { pId = "#=PerformanceRequestPeriodId#"}))
+          .Create(create => create.Action("InternalCustomerPerformanceEvaluations_Create", "InternalCustomerPerformanceEvaluations", new { pId = "#=PerformanceRequestPeriodId#" }))
+          .Update(update => update.Action("InternalCustomerPerformanceEvaluations_Update", "InternalCustomerPerformanceEvaluations"))
+          .Destroy(destroy => destroy.Action("InternalCustomerPerformanceEvaluations_Destroy", "InternalCustomerPerformanceEvaluations"))
+      ).ClientDetailTemplateId("internalCutomerTemplate")
+      .ToClientTemplate()
+    )
+
+}
+<script id="internalCutomerTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("internalCutomer_tabs_trip_#=InternalCustomerPerformanceEvaluationId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+
+
+    items.Add().Text("internal CuStomer").Content(
+        @<text>
+            @InternalCutomerEvaluation()
+        </text>
+        );
+       
+
+    }).ToClientTemplate()
+    )
+</script>
+@helper InternalCutomerEvaluation()
+{ 
+    @(Html.Kendo().Grid<InternalCustomer>()
+          .Name("InternalCustomer_#=InternalCustomerPerformanceEvaluationId#")
+          .Columns(columns =>
+          {
+              //columns.ForeignKey(c => c.EvaluatorId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("getListOfEmployee").Width(260);
+
+              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("getListOfEmployee").Width(260);
+
+              columns.Command(command =>
+                  {
+                      command.Edit();
+                      command.Destroy();
+                  });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Filterable()
+          .Scrollable(h => h.Height(550))
+          .Events(events =>
+          {
+              events.Cancel("onCancel");
+              events.Edit("onEdit");
+          })
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"InternalCustomer_#=InternalCustomerPerformanceEvaluationId#\")");
+                  events.RequestStart("onRequestStart(\"InternalCustomer_#=InternalCustomerPerformanceEvaluationId#\")");
+                  events.RequestEnd("onRequestEnd(\"InternalCustomer_#=InternalCustomerPerformanceEvaluationId#\")");
+              })
+              .Model(model => model.Id(p => p.InternalCustomerId))
+              .Read(read => read.Action("InternalCustomers_Read", "InternalCustomers", new { iCId = "#=InternalCustomerPerformanceEvaluationId#" }))
+              .Create(create => create.Action("InternalCustomers_Create", "InternalCustomers", new { iCId = "#=InternalCustomerPerformanceEvaluationId#" }))
+              .Update(update => update.Action("InternalCustomers_Update", "InternalCustomers"))
+              .Destroy(destroy => destroy.Action("InternalCustomers_Destroy", "InternalCustomers"))
+          ).ToClientTemplate()
+    )
+}
+<script>
+
+    function onCancel(e)
+    {
+
+
+    }
+
+    function onEdit(e)
+    {
+
+    }
+
+</script>
+    <script>
+        function filterPeriod() {
+            var fiscalYearId = $("#FiscalYearId").data("kendoDropDownList").value();
+            return {
+
+                fiscalYearId: fiscalYearId
+            };
+        }
+        function filterEmployeeData()
+        {
+
+        }
+    </script>

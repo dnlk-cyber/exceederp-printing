@@ -1,6 +1,6 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Common.HRM
-@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Domain.Archive
 @using ExceedERP.Core.Localization
 @{    
 Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,10 +14,10 @@ Layout = "~/Views/Shared/_Layout.cshtml";
           columns.Bound(c => c.LetterDate).Width(150);
           columns.Bound(c => c.LetterReferenceNo).Width(200);
           columns.Bound(c => c.RecivedDate).Width(150);
-          columns.Bound(c => c.OwnerName).Width(150);
+         // columns.Bound(c => c.OwnerName).Width(150);
           columns.Bound(c => c.Subject).Width(150);
           columns.Bound(c => c.FolderNo).Width(150);
-          columns.ForeignKey(c => c.RefersTo, (System.Collections.IEnumerable)ViewData["Users"], "UserName", "UserName").EditorTemplateName("Users").Width(200);
+         // columns.ForeignKey(c => c.RefersTo, (System.Collections.IEnumerable)ViewData["Users"], "UserName", "UserName").EditorTemplateName("Users").Width(200);
         
           //columns.Command(command =>
           //{
@@ -129,13 +129,13 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                       .Columns(columns =>
                       {
                           columns.Bound(c => c.DateAmharic);
-                          columns.Bound(c => c.OwnerName);
-                          columns.Bound(c => c.Sender);
-                          columns.ForeignKey(c => c.SenderDepartment, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+                          //columns.Bound(c => c.OwnerName);
+                         // columns.Bound(c => c.Sender);
+                         // columns.ForeignKey(c => c.SenderDepartment, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
                           columns.ForeignKey(c => c.Receiver, (System.Collections.IEnumerable)ViewData["Users"], "UserName", "UserName").EditorTemplateName("Users").Width(200);
                           columns.Bound(c => c.Description);
                           columns.Bound(c => c.Status).EditorTemplateName("Status");
-                          columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+                         // columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
                            columns.Command(command =>
                            {
                                command.Destroy().Text(Resources.ActionButton_Cancel);

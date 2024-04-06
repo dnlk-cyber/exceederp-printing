@@ -356,6 +356,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         #endregion
 
+        [AuthorizeRoles( HrmConstants.HRLeaveAdmin)]
         #region Entitlement By New Awaj ... add 1 day per two years and intial 16
         public JavaScriptResult GetEmployeeLeaveEntitlemntNewAwaj(bool check, int period)
         {
@@ -372,10 +373,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                         var leaveThrashold = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
 
                         int maximumValue = 0;
+                        int maximumForLeader = 0;
                         var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
                         if (maximumLeave != null)
                         {
                             maximumValue = Convert.ToInt32(maximumLeave.CurrentValue);
+                        }
+
+                        var maxLeader = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_Leave_For_Leaders.ToString());
+                        if (maxLeader != null)
+                        {
+                            maximumForLeader = Convert.ToInt32(maxLeader.CurrentValue);
                         }
 
                         var employeeList = db.Person_Employee.Where(x => x.IsActive).ToList();
@@ -452,6 +460,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                                 db.Entry(leaveEntitle).State = EntityState.Modified;
                                 db.SaveChanges();
+                                #region operation log
+
+                                UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + leaveEntitle.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
+                                #endregion
+
                             }
 
                             else if (leaveEntitle == null)
@@ -504,11 +518,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                                             decimal amount = Convert.ToDecimal(currentExpriance + externalExperience + LeaveBaseLine);
 
+                                            ResponsibilityLevel res = ResponsibilityLevel.STAFF;
                                             var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
                                             if (placement != null)
                                             {
                                                 entitle.BranchId = placement.BranchId;
                                                 entitle.OrgBranchName = placement.BranchId.ToString();
+                                                res = placement.ResponsibilityLevel;
                                             }
                                             entitle.Amount = amount;
                                             entitle.Balance = amount;
@@ -519,12 +535,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                             entitle.LastModified = null;
                                             entitle.CreatedBy = User.Identity.Name;
                                             entitle.ModifiedBy = null;
-
-                                            if (Convert.ToDecimal(maximumValue) < entitle.Amount)
+                                            
+                                            if (Convert.ToDecimal(maximumValue) < entitle.Amount && res == ResponsibilityLevel.TOP_MANAGMENT)
+                                            {
+                                                entitle.Amount = maximumForLeader;
+                                                entitle.Balance = maximumForLeader;
+                                            }
+                                            else if (Convert.ToDecimal(maximumValue) < entitle.Amount)
                                             {
                                                 entitle.Amount = maximumValue;
                                                 entitle.Balance = maximumValue;
                                             }
+                                        
                                             if (entitle.Amount < 0)
                                             {
                                                 entitle.Amount = 0;
@@ -532,6 +554,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                             }
                                             db.LeavesEntitle.Add(entitle);
                                             db.SaveChanges();
+                                            #region operation log
+
+                                            UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + entitle.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
+                                            #endregion
 
                                         }
                                         else
@@ -568,6 +595,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                                                 db.LeavesEntitle.Add(entitle);
                                                 db.SaveChanges();
+                                                #region operation log
+
+                                                UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + entitle.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
+                                                #endregion
                                             }
                                             else if (!leaveEntitlePrev.IsAdded)
                                             {
@@ -584,11 +616,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                                 entitle.EmployeeId = emp.EmployeeId;
                                                 entitle.EmployeeCode = emp.EmployeeCode;
 
+                                                ResponsibilityLevel res = ResponsibilityLevel.STAFF;
                                                 var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
                                                 if (placement != null)
                                                 {
                                                     entitle.BranchId = placement.BranchId;
                                                     entitle.OrgBranchName = placement.BranchId.ToString();
+                                                    res = placement.ResponsibilityLevel;
                                                 }
 
                                                 double LeaveBaseLine = GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear);
@@ -608,7 +642,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                                 entitle.CreatedBy = User.Identity.Name;
                                                 entitle.ModifiedBy = null;
 
-                                                if (Convert.ToDecimal(maximumValue) < entitle.Amount)
+                                                if (Convert.ToDecimal(maximumValue) < entitle.Amount && res == ResponsibilityLevel.TOP_MANAGMENT)
+                                                {
+                                                    entitle.Amount = maximumForLeader;
+                                                    entitle.Balance = maximumForLeader;
+                                                }
+                                                else if (Convert.ToDecimal(maximumValue) < entitle.Amount)
                                                 {
                                                     entitle.Amount = maximumValue;
                                                     entitle.Balance = maximumValue;
@@ -621,6 +660,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                                                 db.LeavesEntitle.Add(entitle);
                                                 db.SaveChanges();
+                                                #region operation log
+
+                                                UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + entitle.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
+                                                #endregion
                                             }
                                         }
                                     }
@@ -631,13 +675,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                         var noOfPeriodDefined = db.GLFiscalYears.ToList();
                                         var mindate = noOfPeriodDefined.Select(x => x.DateFrom).Min();
 
-                                        if (noOfPeriodDefined.Count() > 1 && currentPeriod.DateFrom > mindate)
-                                        {
-                                            string Message = "Check you budget year from and to value";
-                                            return new JavaScriptResult() { Script = "alert('" + Message + "');" };
-                                        }
-                                        else
-                                        {
+                                        //if (noOfPeriodDefined.Count() > 1 && currentPeriod.DateFrom > mindate)
+                                        //{
+                                        //    string Message = "Check you budget year from and to value";
+                                        //    return new JavaScriptResult() { Script = "alert('" + Message + "');" };
+                                        //}
+                                        //else
+                                        //{
                                             double currentExpriance = GetCurrentExperienceLeaveDaysNew(emp.EmployeeId, currentPeriod, initialGlFiscalYear);
 
                                             double externalExperience = 0;
@@ -651,11 +695,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                             entitle.EmployeeId = emp.EmployeeId;
                                             entitle.EmployeeCode = emp.EmployeeCode;
 
+                                            ResponsibilityLevel res = ResponsibilityLevel.STAFF;
                                             var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
                                             if (placement != null)
                                             {
                                                 entitle.BranchId = placement.BranchId;
                                                 entitle.OrgBranchName = placement.BranchId.ToString();
+                                                res = placement.ResponsibilityLevel;
                                             }
 
                                             double LeaveBaseLine = GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear);
@@ -674,7 +720,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                             entitle.CreatedBy = User.Identity.Name;
                                             entitle.ModifiedBy = null;
 
-                                            if (Convert.ToDecimal(maximumValue) < entitle.Amount)
+                                            if (Convert.ToDecimal(maximumValue) < entitle.Amount && res == ResponsibilityLevel.TOP_MANAGMENT)
+                                            {
+                                                entitle.Amount = maximumForLeader;
+                                                entitle.Balance = maximumForLeader;
+                                            }
+                                            else if (Convert.ToDecimal(maximumValue) < entitle.Amount)
                                             {
                                                 entitle.Amount = maximumValue;
                                                 entitle.Balance = maximumValue;
@@ -687,7 +738,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                                             db.LeavesEntitle.Add(entitle);
                                             db.SaveChanges();
-                                        }
+                                            #region operation log
+
+                                            UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + entitle.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
+                                            #endregion
+                                       // }
                                     }
                                 }
 
@@ -715,7 +771,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 return new JavaScriptResult() { Script = "alert('" + messagesPeriod + "');" };
             }
-
+          
             var messages = "Leave Successfully Generated";
 
             return new JavaScriptResult() { Script = "alert('" + messages + "');" };
@@ -737,12 +793,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var totalMonths = Math.Truncate((days % 365) / 30);
             var remainingDays = Math.Truncate((days % 365) % 30);
 
-            var role = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
+            var role = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
             if (role != null)
             {
                 if (emp.HiredDate < initialGlFiscalYear.DateFrom)
                 {
-                    if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                   // if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                    if (role.IsHead)
                     {
                         var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
                         if (leaders != null)
@@ -768,7 +825,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 {
                     var baseLine = 0;
 
-                    if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                   // if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                    if (role.IsHead)
                     {
                         var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
                         if (leaders != null)
@@ -860,7 +918,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     {
                         if (exp.From <= initialPeriod.DateFrom && exp.To <= initialPeriod.DateFrom)
                         {
-                            totalDays = (exp.To - exp.From).Days;
+                            totalDays += (exp.To - exp.From).Days;
                         }
                         else if (exp.From <= initialPeriod.DateFrom && exp.To >= initialPeriod.DateFrom)
                         {
@@ -870,7 +928,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                 double first = (initialPeriod.DateFrom - exp.From).Days;
                                 double second = ((exp.To - initialPeriod.DateFrom).Days) / Convert.ToInt32(frequency.CurrentValue);
 
-                                totalDays = first + second;
+                                totalDays += first + second;
                             }
 
                         }
@@ -879,7 +937,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                             var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
                             if (frequency != null)
                             {
-                                totalDays = ((exp.To - exp.From).Days) / Convert.ToInt32(frequency.CurrentValue);
+                                totalDays += ((exp.To - exp.From).Days) / Convert.ToInt32(frequency.CurrentValue);
                             }
                         }
                     }
@@ -1105,11 +1163,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return Json(result);
         }
+        public ActionResult LeavEntitleEmployee_Read([DataSourceRequest] DataSourceRequest request, string field)
+        {
+            int.TryParse(field, out int employeeId);
+            var result = db.LeavesEntitle.Where(x=>x.EmployeeId==employeeId).Distinct().ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        
         public ActionResult LeavesEntitle_New_Read([DataSourceRequest]DataSourceRequest request)
         {
+
             List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
 
-            var leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).DistinctByField(x => x.EmployeeId).Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.EmployeeCode, x.BranchId, x.HireDate, x.TotlalAmount, x.SumOfBalances }).ToList();
+            var leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).DistinctByField(x => x.EmployeeId).Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.EmployeeCode, x.BranchId, x.HireDate,x.Remark, x.TotlalAmount, x.SumOfBalances }).ToList();
 
             DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
             {
@@ -1119,7 +1186,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 BranchId = GetBranch(leaveEntitle.EmployeeId),
                 // GlFiscalYearId = leaveEntitle.GlFiscalYearId,
                 Amount = GetTotalEntitlement(leaveEntitle.EmployeeId),
-                // Remark = leaveEntitle.Remark,
+                Remark = leaveEntitle.Remark,
                 //  DateCreated = leaveEntitle.DateCreated,
                 //  LastModified = leaveEntitle.LastModified,
                 //  CreatedBy = leaveEntitle.CreatedBy,
@@ -1149,6 +1216,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 Balance = leaveEntitle.Balance,
                 GlFiscalYearId = leaveEntitle.GlFiscalYearId,
                 Amount = leaveEntitle.Amount,
+                Remark = leaveEntitle.Remark,
             });
 
             return Json(result);
@@ -1174,7 +1242,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 }
             }
 
-            var year = db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == leaveEntitle.GlFiscalYearId && x.EmployeeId == leaveEntitle.EmployeeId);
+            var year = db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == leaveEntitle.GlFiscalYearId&& !x.IsExpired && x.EmployeeId == leaveEntitle.EmployeeId);
             if (year != null)
             {
                 ModelState.AddModelError("", "Cannot Register more than once per ayear");
@@ -1241,10 +1309,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeavesEntitle_Update([DataSourceRequest]DataSourceRequest request, LeaveEntitle leaveEntitle)
         {
             ModelState.Clear();
-            if (leaveEntitle.Balance > leaveEntitle.Amount)
-            {
-                ModelState.AddModelError("", "Balance can't exceed entitle amount");
-            }
+            //if (leaveEntitle.Balance > leaveEntitle.Amount)
+            //{
+            //    ModelState.AddModelError("", "Balance can't exceed entitle amount");
+            //}
             var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
             if (maximumLeave != null && (leaveEntitle.Balance > Convert.ToDecimal(maximumLeave.CurrentValue) || leaveEntitle.Amount > Convert.ToDecimal(maximumLeave.CurrentValue)))
             {
@@ -1257,13 +1325,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 {
                     entitle.Amount = leaveEntitle.Amount;
                     entitle.Balance = leaveEntitle.Balance;
-
+                    entitle.Remark = leaveEntitle.Remark;
                     db.Entry(entitle).State = EntityState.Modified;
                     db.SaveChanges();
 
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle of " + entitle.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
                     #endregion
+                }
+                else
+                {
+
+
+                    var entity = new LeaveEntitle
+                    {
+                        LeaveEntitleId = leaveEntitle.LeaveEntitleId,
+                        EmployeeId = leaveEntitle.EmployeeId,
+                        BranchId = leaveEntitle.BranchId,
+                        Balance = leaveEntitle.Balance,
+                        TotlalAmount = leaveEntitle.TotlalAmount,
+                        GlFiscalYearId = leaveEntitle.GlFiscalYearId,
+                        Amount = leaveEntitle.Amount,
+                        Remark = leaveEntitle.Remark,
+                        DateCreated = leaveEntitle.DateCreated,
+                        LastModified = leaveEntitle.LastModified,
+                        CreatedBy = leaveEntitle.CreatedBy,
+                        ModifiedBy = leaveEntitle.ModifiedBy,
+                        EmployeeCode = leaveEntitle.EmployeeCode,
+                        OrgBranchName = leaveEntitle.OrgBranchName,
+
+
+                    };
+                    db.LeavesEntitle.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                    db.SaveChanges();
                 }
             }
 

@@ -48,8 +48,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             var costCenterSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.CostCenter);
             var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId);
-           
-            ViewData["costCenter"] = costcenters;
+
+            ViewData["costCenter"] = costcenters.Select(p => new { Values = p.Values, Description = p.Values+"-"+p.Description });
             var orgs = db.MainCompanyStructures;
             ViewData["Orgs"] = orgs;
         }

@@ -17,6 +17,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string MartialStatus { get; set; }
         public string PensionDate { get; set; }
         public string Expiriance { get; set; }
+        public string ExpirianceDetails { get; set; }
         public string PensionNo { get; set; }
         // public string EducationField { get; set; }
         public List<EmployeeEductaionList> Education { get; set; }
@@ -27,6 +28,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Rank { get; set; }
         public string Religion { get; set; }
         public string InternalExpriance { get; set; }
+        public string InternalExprianceDetail { get; set; }
         public string ExpTotalSum { get; set; }
         public decimal TotalLeave { get; set; }
         public string BranchName { get; set; }

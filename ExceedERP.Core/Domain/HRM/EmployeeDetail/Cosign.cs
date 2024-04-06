@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -26,9 +26,9 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required ]
         [Display(Name = "HR_EmployeeDetail_Cosign_FullName", ResourceType = typeof(Localization.Resources))]
         public string FullName { get; set; }
-        [Required]
-        [Display(Name = "HR_EmployeeDetail_Cosign_BirthPlace", ResourceType = typeof(Localization.Resources))]
-        public string BirthPlace { get; set; }
+        //[Required]
+        //[Display(Name = "HR_EmployeeDetail_Cosign_BirthPlace", ResourceType = typeof(Localization.Resources))]
+        //public string BirthPlace { get; set; }
         [Display(Name = "HR_EmployeeDetail_Cosign_Occupation", ResourceType = typeof(Localization.Resources))]
         public string Occupation { get; set; }
         [Display(Name = "HR_EmployeeDetail_Cosign_Workorganization", ResourceType = typeof(Localization.Resources))]

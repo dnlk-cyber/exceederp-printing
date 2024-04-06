@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace ExceedERP.Core.Domain.HRM.Company
 {
-   public class SalarySetting
+    public class SalarySetting
     {
         public int SalarySettingId { get; set; }
         [DisplayName("Is Job Title Included In Salary ?")]

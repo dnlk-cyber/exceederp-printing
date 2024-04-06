@@ -29,6 +29,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 TrainingEvaluationCriteriaId = trainingEvaluationCriteria.TrainingEvaluationCriteriaId,
                 TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId,
                 Criteria = trainingEvaluationCriteria.Criteria,
+                Weight = trainingEvaluationCriteria.Weight,
+                Result = trainingEvaluationCriteria.Result,
             });
 
             return Json(result);
@@ -44,6 +46,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 {
                     TrainingEvaluationSettingCategoryId = id,
                     Criteria = trainingEvaluationCriteria.Criteria,
+                    Weight = trainingEvaluationCriteria.Weight,
+                    Result = trainingEvaluationCriteria.Result,
                 };
 
                 db.TrainingEvaluationCriterias.Add(entity);
@@ -64,6 +68,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     TrainingEvaluationCriteriaId = trainingEvaluationCriteria.TrainingEvaluationCriteriaId,
                     TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId,
                     Criteria = trainingEvaluationCriteria.Criteria,
+                    Weight = trainingEvaluationCriteria.Weight,
+                    Result = trainingEvaluationCriteria.Result,
                 };
 
                 db.TrainingEvaluationCriterias.Attach(entity);
@@ -84,6 +90,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     TrainingEvaluationCriteriaId = trainingEvaluationCriteria.TrainingEvaluationCriteriaId,
                     TrainingEvaluationSettingCategoryId = trainingEvaluationCriteria.TrainingEvaluationSettingCategoryId,
                     Criteria = trainingEvaluationCriteria.Criteria,
+                    Weight = trainingEvaluationCriteria.Weight,
+                    Result = trainingEvaluationCriteria.Result,
                 };
 
                 db.TrainingEvaluationCriterias.Attach(entity);

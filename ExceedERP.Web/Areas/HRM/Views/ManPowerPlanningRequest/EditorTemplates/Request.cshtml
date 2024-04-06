@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            @*<div class="form-group">
+            <div class="form-group">
             <div>@Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
             <div class="col-md-6">
                 @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
@@ -64,7 +64,7 @@
                 )
                 @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
             </div>
-        </div>*@
+        </div>
 
 
             <div class="form-group" id="lookUpJobTitle">
@@ -81,8 +81,8 @@
                                           {
                                               dataSource.Read(read =>
                                               {
-                                                  read.Action("GetJobTitle", "HRMDataProvider");
-                                                      // .Data("filterCategories");
+                                                  read.Action("GetJobTitleForManPower", "HRMDataProvider")
+                                                      .Data("filterFormanPower");
                                                   })
                                                   .ServerFiltering(false);
                                           }).ValuePrimitive(true)

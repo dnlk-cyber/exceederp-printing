@@ -56,6 +56,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             ViewData["EmployeeListEnglish"] = db.Person_Employee.ToList();//inputs.GetEmployeesForPlacment(User.Identity.Name);
             var workunits = db.MainCompanyStructures.ToList();
             ViewData["workunits"] = workunits;
+            var organizationUnits = db.MainCompanyStructures.ToList();
+            ViewData["Parent"] = organizationUnits;
         }
         public void SetDate(string name, string value)
         {
@@ -217,6 +219,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 IsHead = placement.IsHead,
                 AssignmentDate = placement.AssignmentDate,
                 OrgStructureId = placement.OrgStructureId,
+                ParentOrgStructureId = placement.ParentOrgStructureId,
                 LookupId = placement.LookupId,
                 MappingId = placement.MappingId,
                 JobTitleName = GetTitleName(placement.LookupId),
@@ -264,6 +267,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Placements_Create([DataSourceRequest]DataSourceRequest request, Placement placement)
         {
             ModelState.Clear();
+            var orgStructure = db.MainCompanyStructures.Find(placement.OrgStructureId);
+            if (orgStructure != null)
+            {
+                placement.ParentOrgStructureId = orgStructure.Parent;
+            }
             int i = 0;
             db = new ExceedDbContext();
             var checkAssignment = db.Placements.Where(x => x.EmployeeId == placement.EmployeeId).FirstOrDefault();
@@ -328,6 +336,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                 LookupId = p.LookupId,
                                 JobTitleName = p.JobTitleName,
                                 OrgStructureId = p.OrgStructureId,
+                                ParentOrgStructureId = p.ParentOrgStructureId,
                                 ReportsTo = p.ReportsTo,
                                 BranchId = p.BranchId,
                                 RankId = p.RankId,
@@ -391,6 +400,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             StepId = Stepid,
                             LookupId = placement.LookupId,
                             OrgStructureId = placement.OrgStructureId,
+                            ParentOrgStructureId = placement.ParentOrgStructureId,
                             Salary = SalaryAmount,
                             ReportsTo = placement.ReportsTo,
                             BranchId = placement.BranchId,
@@ -452,6 +462,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             StepId = Stepid,
                             LookupId = placement.LookupId,
                             OrgStructureId = placement.OrgStructureId,
+                            ParentOrgStructureId = placement.ParentOrgStructureId,
                             Salary = SalaryAmount,
                             ReportsTo = placement.ReportsTo,
                             BranchId = placement.BranchId,
@@ -588,6 +599,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Placements_Update([DataSourceRequest]DataSourceRequest request, Placement placement)
         {
             ModelState.Clear();
+            var orgStructure = db.MainCompanyStructures.Find(placement.OrgStructureId);
+            if (orgStructure != null)
+            {
+                placement.ParentOrgStructureId = orgStructure.Parent;
+            }
             if (ModelState.IsValid)
             {
                 if (AssigmentDateAmharic == null)
@@ -615,6 +631,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         EmployementType = placement.EmployementType,
                         JobTitleName = placement.JobTitleName,
                         OrgStructureId = placement.OrgStructureId,
+                        ParentOrgStructureId = placement.ParentOrgStructureId,
                         ReportsTo = placement.ReportsTo,
                         BranchId = placement.BranchId,
                         RankId = Rankid,
@@ -659,6 +676,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Placements_Destroy([DataSourceRequest]DataSourceRequest request, Placement placement)
         {
             ModelState.Clear();
+           
             if (ModelState.IsValid)
             {
                 var entity = new Placement
@@ -671,6 +689,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     MappingId = placement.MappingId,
                     LookupId = placement.LookupId,
                     OrgStructureId = placement.OrgStructureId,
+                    ParentOrgStructureId = placement.ParentOrgStructureId,
                     ReportsTo = placement.ReportsTo,
                     JobTitleName = placement.JobTitleName,
                     BranchId = placement.BranchId,

@@ -5,7 +5,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Screening Setting</legend>
+<legend>@Resources.ScreeningSetting</legend>
 @(Html.Kendo().Grid<ScreeningSetting>()
           .Name("ConfigurationGrid")
       .Columns(columns =>

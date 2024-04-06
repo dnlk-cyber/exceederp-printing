@@ -57,18 +57,18 @@
 <div class="row">
     <div class="col-md-6 col-sm-6 col-lg-6">
 
-        <legend>Leave new awaj start year</legend>
+        <legend>@Resources.Leave_new_declaration_start_year</legend>
 
         @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveNewAwajStartYear>()
           .Name("LeaveNewAwajStartYearGrid")
           .Columns(columns =>
           {
-              columns.ForeignKey(c => c.GlFisicalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear").Title("Fiscal Year");
+              columns.ForeignKey(c => c.GlFisicalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
           
 
               columns.Command(command =>
               {
-                  command.Edit();
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                   command.Destroy().HtmlAttributes(new { id="deleteButtonId"});
               });
           })
@@ -109,7 +109,7 @@
 
     <div class="col-md-6 col-sm-6 col-lg-6">
 
-        <legend>Leave entitle start date</legend>
+        <legend>@Resources.Leave_entitle_start_date</legend>
 
         @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveEntitleStartingDate>()
           .Name("LeaveEntitleStartingDateGrid")
@@ -120,13 +120,13 @@
 
               columns.Command(command =>
               {
-                  command.Edit();
-                 // command.Destroy();
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  // command.Destroy();
               });
           })
           .ToolBar(toolbar =>
           {
-             // toolbar.Create();
+              // toolbar.Create();
           })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
            .Filterable()
