@@ -29,7 +29,6 @@ using System.Net.Mime;
 using System.Xml;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Helpers.Construction;
 using ExceedERP.Helpers.Procurement;

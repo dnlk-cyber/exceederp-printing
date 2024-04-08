@@ -17,7 +17,7 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
+using ExceedERP.Core.Domain.Archive;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {

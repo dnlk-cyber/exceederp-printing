@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.DepartmentToStaff.Answer_DepartmentToStaff>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.OutGoing_DepartmentToStaffId);
+        columns.Bound(c => c.Answer);
+        columns.Bound(c => c.EmployeeId);
+        columns.Bound(c => c.FilePath);
+        columns.Bound(c => c.ShortPath);
+        columns.Bound(c => c.FileName);
+        columns.Bound(c => c.FileExtension);
+        columns.Bound(c => c.IsAnswered);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.Answer_DepartmentToStaffId))
+          .Read(read => read.Action("Answer_DepartmentToStaffs_Read", "Answer_DepartmentToStaffs"))
+          .Create(create => create.Action("Answer_DepartmentToStaffs_Create", "Answer_DepartmentToStaffs"))
+          .Update(update => update.Action("Answer_DepartmentToStaffs_Update", "Answer_DepartmentToStaffs"))
+          .Destroy(destroy => destroy.Action("Answer_DepartmentToStaffs_Destroy", "Answer_DepartmentToStaffs"))
+      )
+)

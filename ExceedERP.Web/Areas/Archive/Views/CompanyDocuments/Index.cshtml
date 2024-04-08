@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.CompanyDocument>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.CompanyDocumentTypeId);
+        columns.Bound(c => c.FilePath);
+        columns.Bound(c => c.FileName);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CompanyDocumentId))
+          .Read(read => read.Action("CompanyDocuments_Read", "CompanyDocuments"))
+          .Create(create => create.Action("CompanyDocuments_Create", "CompanyDocuments"))
+          .Update(update => update.Action("CompanyDocuments_Update", "CompanyDocuments"))
+          .Destroy(destroy => destroy.Action("CompanyDocuments_Destroy", "CompanyDocuments"))
+      )
+)

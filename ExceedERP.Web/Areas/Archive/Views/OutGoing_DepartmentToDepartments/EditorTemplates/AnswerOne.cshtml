@@ -1,0 +1,39 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.ArchiveManagement.OutGoing_DepartmentToDepartment_Answer
+
+    @Html.AntiForgeryToken()
+
+    <div class="form">
+        @*<div class="row">
+            <div class="col-sm-10">
+                <div class="form-group">
+                    @Html.TextBox("AnswerFile", "", new { type = "file", @class = "form-control" })
+                </div>
+            </div>
+        </div>*@
+        @*<input type="hidden" id="MasterId" name="MasterId" value="@Model.MasterId" />*@
+
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Answer, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @(Html.Kendo().EditorFor(model => model.Answer))
+
+                        @Html.ValidationMessageFor(model => model.Answer, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>      
+      
+        <br />
+
+      
+      
+    </div>
+
+
+

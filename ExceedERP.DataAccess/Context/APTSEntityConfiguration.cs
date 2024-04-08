@@ -12,7 +12,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.ModelConfiguration.Configuration;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.Allowance;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.Discipline;

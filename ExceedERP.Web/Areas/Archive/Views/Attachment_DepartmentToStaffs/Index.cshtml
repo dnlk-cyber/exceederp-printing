@@ -1,0 +1,21 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.DepartmentToStaff.Attachment_DepartmentToStaff>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.OutGoing_DepartmentToStaffId);
+        columns.Bound(c => c.FilePath);
+        columns.Bound(c => c.ShortPath);
+        columns.Bound(c => c.FileName);
+        columns.Bound(c => c.FileExtension);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.Attachment_DepartmentToStaffId))
+          .Read(read => read.Action("Attachment_DepartmentToStaffs_Read", "Attachment_DepartmentToStaffs"))
+      )
+)

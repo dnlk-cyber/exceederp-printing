@@ -1,0 +1,52 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Localization
+@using ExceedERP.Web.Areas.Archive.Controllers
+@using ExceedERP.Core.Domain.Common
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    DepartmentOrSubjectType selection = HelperArchive.GetFolderStructureType();
+}
+<legend>Departments Folder</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.DepartmentFolder>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          if(selection == DepartmentOrSubjectType.Department)
+          {
+              columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").EditorTemplateName("DepartmentList");
+          }
+          if (selection == DepartmentOrSubjectType.SubjectType)
+          {
+              columns.ForeignKey(c => c.Department_SubjectTypeId, (IEnumerable)ViewData["DepSubjectType"], "SubjectTypeForDepartmentLevelId", "Name").EditorTemplateName("SubjectType");
+          }
+          columns.Bound(c => c.Room);
+          columns.Bound(c => c.Shelve);
+          columns.Bound(c => c.Row);
+          columns.Bound(c => c.Folder);
+          columns.Bound(c => c.Volume);
+          columns.Bound(c => c.FileNo);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h=>h.Height(600))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.DepartmentFolderId))
+          .Read(read => read.Action("DepartmentFolders_Read", "DepartmentFolders"))
+          .Create(create => create.Action("DepartmentFolders_Create", "DepartmentFolders"))
+          .Update(update => update.Action("DepartmentFolders_Update", "DepartmentFolders"))
+          .Destroy(destroy => destroy.Action("DepartmentFolders_Destroy", "DepartmentFolders"))
+      )
+)

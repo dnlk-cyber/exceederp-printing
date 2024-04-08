@@ -1,0 +1,76 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Domain.Archive
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.Setting.DepartmentOrSubjectTypeSelectionForFolderCreation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+         // columns.ForeignKey(c => c.Owner_OrgStructureId, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+          columns.Bound(c => c.DepartmentOrSubjectType);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          });
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+     // .Pageable()
+      //.Filterable()
+      .Scrollable(x=>x.Height("auto"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+            .Events(events =>
+             {
+                 events.Error("error_handler(\"grid\")");
+                 events.RequestStart("onRequestStart(\"grid\")");
+                 events.RequestEnd("onRequestEnd(\"grid\")");
+             })
+          .Model(model => model.Id(p => p.DepartmentOrSubjectTypeSelectionForFolderCreationId))
+          .Read(read => read.Action("DepartmentOrSubjectTypeSelectionForFolderCreations_Read", "DepartmentOrSubjectTypeSelectionForFolderCreation"))
+          .Create(create => create.Action("DepartmentOrSubjectTypeSelectionForFolderCreations_Create", "DepartmentOrSubjectTypeSelectionForFolderCreation"))
+          .Update(update => update.Action("DepartmentOrSubjectTypeSelectionForFolderCreations_Update", "DepartmentOrSubjectTypeSelectionForFolderCreation"))
+          .Destroy(destroy => destroy.Action("DepartmentOrSubjectTypeSelectionForFolderCreations_Destroy", "DepartmentOrSubjectTypeSelectionForFolderCreation"))
+      )
+)
+
+<br />
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.Setting.SubjectTypeForDepartmentLevel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Owner_OrgStructureId);
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable(s=>s.Height("auto"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SubjectTypeForDepartmentLevelId))
+          .Read(read => read.Action("SubjectTypeForDepartmentLevels_Read", "SubjectTypeForDepartmentLevels"))
+          .Create(create => create.Action("SubjectTypeForDepartmentLevels_Create", "SubjectTypeForDepartmentLevels"))
+          .Update(update => update.Action("SubjectTypeForDepartmentLevels_Update", "SubjectTypeForDepartmentLevels"))
+          .Destroy(destroy => destroy.Action("SubjectTypeForDepartmentLevels_Destroy", "SubjectTypeForDepartmentLevels"))
+      )
+)

@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Web.Areas.Archive.Controllers.LetterReceiver>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.LetterForMultipleStaffId);
+        columns.Bound(c => c.EmployeeId);
+        columns.Bound(c => c.IsForAllEmployee);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LetterReceiverId))
+          .Read(read => read.Action("LetterReceivers_Read", "LetterReceivers"))
+          .Create(create => create.Action("LetterReceivers_Create", "LetterReceivers"))
+          .Update(update => update.Action("LetterReceivers_Update", "LetterReceivers"))
+          .Destroy(destroy => destroy.Action("LetterReceivers_Destroy", "LetterReceivers"))
+      )
+)

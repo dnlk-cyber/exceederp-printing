@@ -1,0 +1,507 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Archive
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorArchiveManagement_SentLetter</legend>
+@(Html.Kendo().Grid<EmployeeLetterSender>()
+              .Name("RecivedLetters")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.OwnerName);
+          columns.Bound(c => c.Sender);
+          columns.Bound(c => c.Receiver);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Status).EditorTemplateName("Status") ;
+          columns.Bound(c => c.StatusName).Visible(false);
+          columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("#=FileName#", "DownloadFile", new { filename = "#=LetterSenderId#" }).ToHtmlString());
+
+          columns.Command(command =>
+          {
+              command.Custom("Answer").Text(Resources.HR_ArchiveManagement_Answer).Click("Answer");
+              command.Custom("Transfer").Text(Resources.HR_ArchiveManagement_Transfer).Click("Transfer");
+          }).Width(200);
+      })
+    
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  //.Events(ev => ev.DataBinding("onDataBound"))
+                            .Scrollable(h => h.Height(500))
+                                                  .Selectable(selectable =>
+                             {
+                                 selectable.Mode(GridSelectionMode.Single);
+                                 selectable.Type(GridSelectionType.Row);
+                             })
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+                                                                                        .Events(x =>
+                                                                                        {
+                                                                                            x.Change("CheckDisablity");
+                                                                                            x.DataBound("onDataBound");
+                                                                                        })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                               .Events(events =>
+                                                                {
+                                                                    events.Error("error_handler(\"RecivedLetters\")");
+                                                                    events.RequestStart("onRequestStart(\"RecivedLetters\")");
+                                                                    events.RequestEnd("onRequestEnd(\"RecivedLetters\")");
+                                                                })
+                                                                     
+          .Model(model => model.Id(p => p.LetterSenderId))
+                                                                                          .Read(read => read.Action("EmployeeLetterSender_Read", "EmployeeLetterSender"))
+                                                                                          .Create(create => create.Action("EmployeeLetterSender_Create", "EmployeeLetterSender"))
+                                                                                          .Update(update => update.Action("EmployeeLetterSender_Update", "EmployeeLetterSender"))
+                                                                                          .Destroy(destroy => destroy.Action("EmployeeLetterSender_Destroy", "EmployeeLetterSender"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentId;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "EmployeeLetterSender")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+    function onDataBound(e) {
+      
+        var grid = this;
+
+
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            //if (dataItem.EnableDisbale === false) {
+            //    //hide buttons using jQuery
+            //    row.find(".k-grid-edit").hide();
+            //    row.find(".k-grid-customAction").text('Enable');
+            //} else {
+
+            //    row.find(".k-grid-edit").show();
+            //    row.find(".k-grid-customAction").text('Disable');
+            //}
+            if (enableDisable === true) {
+                if (dataItem.CurrentStatus === 0) {
+                    //answer.hide(true);
+                    //transfer.hide(true);
+                    row.css("background-color", "green");
+                    row.find(".k-grid-delete").show();
+                    row.find(".k-grid-Answer").show();
+                    row.find(".k-grid-Transfer").show();
+
+                } else if (dataItem.CurrentStatus === 1) {
+                    //answer.show(true);
+                    //transfer.show(true);
+                    row.css("background-color", "grey");
+                    row.find(".k-grid-delete").hide();
+                    row.find(".k-grid-Answer").hide();
+                    row.find(".k-grid-Transfer").show();
+
+                } else if (dataItem.CurrentStatus === 2) {
+                    //answer.show(true);
+                    //transfer.show(true);
+                    row.css("background-color", "grey");
+                    row.find(".k-grid-delete").hide();
+                    row.find(".k-grid-Answer").hide();
+                    row.find(".k-grid-Transfer").hide();
+
+                } else {
+                    row.find(".k-grid-delete").show();
+                    row.find(".k-grid-Answer").show();
+                    row.find(".k-grid-Transfer").show();
+                }
+            } else {
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-Answer").hide();
+                row.find(".k-grid-Transfer").hide();
+            }
+        }
+       
+
+    }
+
+</script>
+
+
+<script>
+    function Download() {
+        try {
+            var grid = $("#RecivedLetters").data("kendoGrid");
+
+            var dataItem = grid.dataItem(grid.select());
+
+            var id = dataItem.LetterSenderId;
+
+
+            $.ajax({
+                url: '@Url.Action("DownloadFile", "EmployeeLetterSender")',
+                //contentType: "application/json; charset=utf-8",
+                data: { filename: id },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    // r = result;
+                }
+
+
+            });
+
+        } catch (e) {
+            alert("Please select the row!!");
+        }
+
+
+    }
+</script>
+
+
+<script>
+   
+</script>
+
+@(Html.Kendo().Window().Name("Answerw")
+        .Title(Resources.HR_ArchiveManagement_Answer)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+        @using (Html.BeginForm("UploadDocument", "EmployeeLetterSender", FormMethod.Post,
+    new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <fieldset>
+                <div class="editor-field">
+                    @Html.TextBox("file", "", new { type = "file" })
+                </div>
+                <br />
+                <div class="editor-field">
+                    @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName, required = true })
+                </div>
+                <div class="editor-field">
+                    @Html.TextArea("txtDecsion", null, new { placeholder = Resources.HR_ArchiveManagement_Decsion ,required=true})
+                </div>
+                <br />
+                @*<div class="editor-field">
+                         <input type="submit" id="submit" value="@Resources.HR_ActionButton_Upload" />
+                    </div>*@
+
+            </fieldset>
+        }
+
+
+
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("btnTo").Content(Resources.HR_ArchiveManagement_Answer).Events(e => e.Click("Answerm"))
+
+        </div>
+
+
+
+    </text>)
+                .Pinned(true)
+
+                                    .Draggable(true)
+                                    .Width(300)
+)
+
+@(Html.Kendo().Window().Name("Transferw")
+    .Title(Resources.HR_ArchiveManagement_Transfer)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+        @(Html.Kendo().ComboBox()
+                          .Name("Dept")
+                          .ValuePrimitive(true)
+                          .Placeholder(Resources.Select)
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                          .DataTextField("Name")
+                                          .DataValueField("OrgStructureId")
+                                                  .BindTo((IEnumerable)ViewData["Departments"])
+        )
+
+        @Html.ValidationMessageFor(m => m)
+        <br />
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("btnTo").Content(Resources.HR_ArchiveManagement_TransferTo).Events(e => e.Click("TransferClick"))
+
+        </div>
+
+
+    </text>)
+                                    .Draggable(true)
+                                    .Width(300)
+      )
+<script>
+    var statusId = "";
+    var popup;
+    var id = "";
+    function Answer(e) {
+        try {
+            statusId = e;
+            var row = $(e.target).closest("tr");
+            var grid = $("#RecivedLetters").data("kendoGrid");
+            var dataItem = grid.dataItem(row);
+             id = dataItem.LetterSenderId;
+            
+            var wnd = $("#Answerw").data("kendoWindow");
+            wnd.center().open();
+
+        } catch (ex) {
+            alert("Please select the row!!");
+        }
+
+    }
+    function Answerm() {
+        try {
+          
+            var url = "";
+            $.ajax({
+                url: '@Url.Action("UploadDocument", "EmployeeLetterSender")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                    data.append("file", $("#file").get(0).files[0]);
+                    data.append("url", url);
+                    data.append("txtValue", $("#txtValue").val());
+                    data.append("txtDecsion", $("#txtDecsion").val());
+                    data.append("id", id);
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#Answerw").data("kendoWindow");
+                    wnd.close();
+                    $("#RecivedLetters").data("kendoGrid").dataSource.read();
+                    $("#RecivedLetters").data("kendoGrid").refresh();
+                }
+
+
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+
+    }
+
+    function CheckDisablity(e) {
+        var answer = $("#btnAnswer");
+        var transfer = $("#btnTransfer");
+        var dwonload = $("#btnDownload");
+        var inputId = this.element.attr("id");
+        var grid = $("#RecivedLetters").data("kendoGrid");
+
+        var dataItem = grid.dataItem(grid.select());
+        var id = dataItem.BookNo;
+
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "EmployeeLetterSender")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r === "1") {
+                    answer.hide(true);
+                    transfer.hide(true);
+
+
+                } else {
+                    answer.show(true);
+                    transfer.show(true);
+
+
+                }
+            }
+
+        });
+
+
+    }
+
+    function onDataBoundSt(e) {
+
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.items[j]; //sender.dataItem(row);
+            if (dataItem.FileName === undefined) {
+                //row.readonly=true;
+            }
+
+
+        }
+
+
+    }
+
+    function Transfer(e) {
+        try {
+            var row = $(e.target).closest("tr");
+            var grid = $("#RecivedLetters").data("kendoGrid");
+            var dataItem = grid.dataItem(row);
+            id = dataItem.LetterSenderId;
+            var wnd = $("#Transferw").data("kendoWindow");
+            wnd.center().open();
+
+
+
+        } catch (ex) {
+            alert("Please select the row!!");
+        }
+    }
+
+    function TransferClick(e) {
+        try {
+
+
+          
+            var recivers = $("#Dept").data("kendoComboBox");
+            var reciver = recivers.value();
+            $.ajax({
+                url: '@Url.Action("SetTransfer", "EmployeeLetterSender")',
+                //contentType: "application/json; charset=utf-8",
+                data: { id: id, reciver: reciver },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#Transferw").data("kendoWindow");
+                    wnd.close();
+                    $("#RecivedLetters").data("kendoGrid").dataSource.read();
+                    $("#RecivedLetters").data("kendoGrid").refresh();
+                }
+
+
+            });
+
+        } catch (ex) {
+            alert("Please select the row!!");
+        }
+
+    }
+</script>
+
+
+
+<script>
+    function customAction(e) {
+        // initiate call to a controller action
+        var grid = $("#RecivedLetters").data("kendoGrid");
+
+        var dataItem = grid.dataItem(grid.select());
+
+
+        try {
+            var BookNo = dataItem.LetterSenderId;
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("UpdateStatus", "EmployeeLetterSender")',
+                data: { 'BookNo': dataItem.LetterSenderId },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#RecivedLetters").data("kendoGrid").dataSource.read();
+                    $("#RecivedLetters").data("kendoGrid").refresh();
+                }
+
+            });
+        } catch (ee) {
+            alert("Please select the row first!!");
+        }
+    }
+
+
+    function onDataBound(e) {
+        var grid = this;
+        var answer = $("#btnAnswer");
+        var transfer = $("#btnTransfer");
+        var customAction = $("#customAction");
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.EnableDisbale === false) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-customAction").text('Enable');
+            } else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-customAction").text('Disable');
+            }
+
+
+            if (dataItem.Status === 0) {
+                //answer.hide(true);
+                //transfer.hide(true);
+                row.css("background-color", "cadetblue");
+
+            } else {
+                //answer.show(true);
+                //transfer.show(true);
+                row.css("background-color",  "gainsboro");
+
+            }
+
+
+        }
+    }
+</script>

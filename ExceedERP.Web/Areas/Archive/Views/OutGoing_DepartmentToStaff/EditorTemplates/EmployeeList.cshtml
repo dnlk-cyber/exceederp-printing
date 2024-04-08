@@ -1,0 +1,38 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.ArchiveManagement.DepartmentToStaff.Receiver_DepartmentToStaff
+
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-12 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReceiverSelected, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-10">
+                    @(Html.Kendo().MultiSelectFor(model => model.ReceiverSelected)
+                      .Placeholder(Resources.Select)
+                      .AutoClose(false)
+                      .Filter(FilterType.Contains)
+                      .DataTextField("FullNameAmharic")
+                      .DataValueField("EmployeeId")
+                      .DataSource(dataSource =>
+                      {
+                         dataSource.Read(read => read.Action("GetEmployeesInYourBranchAndDepartmentAndHeadsOneLevelBelow", "ArchiveDataProvider", new { area = "Archive" }))
+                         .ServerFiltering(false);
+                      })
+                       .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+            <div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    div.k-edit-form-container {
+        width: 300px;
+    }
+</style>

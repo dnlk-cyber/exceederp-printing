@@ -97,6 +97,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Archive\ArchiveIsoDocumentHelper.cs" />
     <Compile Include="Budget\BudgetCreateExcelFile.cs" />
     <Compile Include="Budget\BudgetGenericHelper.cs" />
     <Compile Include="Budget\BudgetGLJournalHelper.cs" />

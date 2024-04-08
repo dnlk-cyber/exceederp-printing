@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.ArchiveAttachement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.InstitutionIncomingLetterId);
+        columns.Bound(c => c.ArchiveCategory);
+        columns.Bound(c => c.LetterType);
+        columns.Bound(c => c.FilePath);
+        columns.Bound(c => c.FileName);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArchiveAttachementId))
+          .Read(read => read.Action("ArchiveAttachements_Read", "ArchiveAttachments"))
+          .Create(create => create.Action("ArchiveAttachements_Create", "ArchiveAttachments"))
+          .Update(update => update.Action("ArchiveAttachements_Update", "ArchiveAttachments"))
+          .Destroy(destroy => destroy.Action("ArchiveAttachements_Destroy", "ArchiveAttachments"))
+      )
+)

@@ -1,0 +1,496 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Department Sent Letter</legend>
+@(Html.Kendo().Grid<InstitutionIncomingLetter>()
+          .Name("IncommingLetterRegistration")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.BookNo).Width(150);
+              columns.Bound(c => c.LetterDateAmh).Width(150);
+              columns.Bound(c => c.RecivedTime).Width(150);
+              columns.Bound(c => c.LetterReferenceNo).Width(200);
+              columns.Bound(c => c.RecivedDateAmh).Width(150);
+              columns.Bound(c => c.SenderName).Width(150);
+              columns.Bound(c => c.Subject).Width(150);
+              columns.Bound(c => c.FolderNo).Width(150);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NewIncoming").Window(window => { window.Title(""); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+          .Filterable()
+          .Events(x =>
+          {
+              // x.Edit("GetDate");
+              x.DataBound("onDataBound");
+              x.DetailExpand("DetailExpand");
+              // x.Save("GetDate");
+          })
+          .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.InstitutionIncomingLetterId).Descending())
+          .Events(events =>
+          {
+              events.Error("error_handler(\"IncommingLetterRegistration\")");
+              events.RequestStart("onRequestStart(\"IncommingLetterRegistration\")");
+              events.RequestEnd("onRequestEnd(\"IncommingLetterRegistration\")");
+          })
+
+          .Model(model => model.Id(p => p.InstitutionIncomingLetterId))
+          .Read(read => read.Action("DepartmentSentLetter_Read", "DepartmentSentLetter"))
+
+          ).ClientDetailTemplateId("template"))
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+.Name("tabstrip_#=InstitutionIncomingLetterId#")
+.SelectedIndex(0)
+.Items(items =>
+{
+items.Add().Text("Attachments").Content(
+    @<text>
+        @(Html.Kendo().Grid<ArchiveAttachement>()
+                     .Name("ArchiveAttachementGrid#=InstitutionIncomingLetterId#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.FileName).ClientTemplate("<a href='/Archive/InstitutionIncomingLetters/DownloadAnswer?ArchiveAttachementId=\\#=ArchiveAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                         // columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+
+                         columns.Template(e => { }).ClientTemplate("<a href='/Archive/InstitutionIncomingLetters/DownloadArchiveAttachment?ArchiveAttachementId=\\#=ArchiveAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                         columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                         columns.Command(command =>
+                         {
+                             command.Destroy().Text("Delete");
+                         }).Width(300);
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                     .Window(window =>
+                     {
+                         window.Title("");
+                         window.Scrollable(false);
+                     }))
+                     .Scrollable(h => h.Height("auto"))
+                     .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sort => sort.Add(c => c.ArchiveAttachementId).Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"ArchiveAttachementGrid#=InstitutionIncomingLetterId#\")");
+                         events.RequestStart("onRequestStart(\"ArchiveAttachementGrid#=InstitutionIncomingLetterId#\")");
+                         events.RequestEnd("onRequestEnd(\"ArchiveAttachementGrid#=InstitutionIncomingLetterId#\")");
+                     })
+                     .Model(model => model.Id(p => p.ArchiveAttachementId))
+                     .Read(read => read.Action("ArchiveAttachments_Read", "ArchiveAttachments", new { id = "#=InstitutionIncomingLetterId#", area = "Archive", ac = ArchiveCategory.Institution, lt = LetterType.Incoming }))
+                     .Create(create => create.Action("ArchiveAttachments_Create", "ArchiveAttachments", new { id = "#=InstitutionIncomingLetterId#", area = "Archive", ac = ArchiveCategory.Institution, lt = LetterType.Incoming }))
+                     .Update(update => update.Action("ArchiveAttachments_Update", "ArchiveAttachments"))
+                     .Destroy(destroy => destroy.Action("ArchiveAttachments_Destroy", "ArchiveAttachments"))
+                     ).ToClientTemplate())
+    </text>
+    );
+
+items.Add().Text("Transfer").Content(
+    @<text>
+
+        @(Html.Kendo().Grid<LetterSender>()
+         .Name("RecivedLetters_#=InstitutionIncomingLetterId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.DateAmharic);
+             columns.Bound(c => c.Time);
+             //columns.Bound(c => c.FileName).ClientTemplate("<a href='/Archive/DepartmentSentLetter/DownloadAnswer?letterSenderId=\\#=LetterSenderId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download &nbsp;&nbsp; \\#=FileName\\# </a>").Width(100);
+             columns.ForeignKey(c => c.SenderDepartment, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+             columns.ForeignKey(c => c.Receiver, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+             columns.Bound(c => c.Description);
+             columns.Bound(c => c.CurrentStatus).Visible(false);
+             columns.Bound(c => c.Status).EditorTemplateName("Status");
+
+             columns.Command(command =>
+             {
+                 command.Custom("ReturnAssignement").Text("Return Assignment").Click("ReturenAssignment").HtmlAttributes(new { @class = "btnReturnAssignment" });
+                 command.Destroy().Text("Delete");
+             }).Width(250);
+         })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text("Send To Department").HtmlAttributes(new { id = "btn_SendToDepartment" });
+              toolbar.Custom().Action("FinishTransfer", "LetterSender", new { masterIdd = "#=InstitutionIncomingLetterId#" }).HtmlAttributes(new { @class = "", id = "btn_finishAssignment" });
+          })
+           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Transfer")
+           .Window(window =>
+           {
+               window.Title("");
+               window.Scrollable(false);
+           }))
+           .Events(ev =>
+           {
+               ev.DataBound("DetailDatabound");
+               //ev.Change("CheckDisablity");
+           })
+             .Scrollable(h => h.Height("auto"))
+             .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"RecivedLetters_#=InstitutionIncomingLetterId#\")");
+                 events.RequestStart("onRequestStart(\"RecivedLetters_#=InstitutionIncomingLetterId#\")");
+                 events.RequestEnd("onRequestEnd(\"RecivedLetters_#=InstitutionIncomingLetterId#\")");
+             })
+             .Model(model => model.Id(p => p.LetterSenderId))
+             .Read(read => read.Action("LetterSender_Read", "DepartmentSentLetter", new { id = "#=InstitutionIncomingLetterId#" }))
+             .Create(create => create.Action("LetterSender_Create", "LetterSender", new { id = "#=InstitutionIncomingLetterId#" }))
+             .Update(update => update.Action("LetterSender_Update", "LetterSender"))
+             .Destroy(destroy => destroy.Action("LetterSender_Destroy", "LetterSender"))
+             ).ToClientTemplate())
+    </text>
+);
+
+items.Add().Text("Answer").Content(
+    @<text>
+        @(Html.Kendo().Grid<InstitutionIncomingAnswer>()
+         .Name("InstitutionIncomingAnswer#=InstitutionIncomingLetterId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.Answer).ClientTemplate("<div>\\#= Answer\\#</div>").Width(400);
+             //columns.Bound(c => c.FileName).ClientTemplate("<i class = 'fa fa-folder-open'></i> <a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'>&nbsp;&nbsp; \\#=FileName\\#</a>").Width(100);
+             // columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+             columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(100);
+             columns.Bound(c => c.Date).Width(100);
+             columns.Bound(c => c.Time).Width(100);
+             columns.Command(command =>
+             {
+                 // command.Custom("UploadAnswer").Text(" ").Click("UploadAnswer").IconClass("fa fa-upload").HtmlAttributes(new { id = "btnUpload" });
+                 command.Custom("ApproveAnswer").Text("Approve Answer").Click("ApproveTheAnswer").HtmlAttributes(new { id = "btnApproveAnswer" });
+                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                 command.Destroy().Text("Delete");
+             }).Width(200);
+         })
+
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "answerCreate" });
+          })
+
+           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+           .Events(ev =>
+           {
+               ev.DataBound("DataBoundIncomingAnswer");
+               ev.DetailExpand("onAnswerDetailExpand");
+               //ev.Change("CheckDisablity");
+           })
+             .Scrollable(h => h.Height("auto"))
+             .ClientDetailTemplateId("AttachmentAnswerDetail")
+             .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"InstitutionIncomingAnswer#=InstitutionIncomingLetterId#\")");
+                 events.RequestStart("onRequestStart(\"InstitutionIncomingAnswer#=InstitutionIncomingLetterId#\")");
+                 events.RequestEnd("onRequestEnd(\"InstitutionIncomingAnswer#=InstitutionIncomingLetterId#\")");
+             })
+             .Model(model => model.Id(p => p.InstitutionIncomingAnswerId))
+             .Read(read => read.Action("InstitutionIncomingAnswers_Department_Read", "InstitutionIncomingAnswers", new { id = "#=InstitutionIncomingLetterId#", area = "Archive" }))
+             .Create(create => create.Action("InstitutionIncomingAnswers_Create", "InstitutionIncomingAnswers", new { id = "#=InstitutionIncomingLetterId#", area = "Archive" }))
+             .Update(update => update.Action("InstitutionIncomingAnswers_Update", "InstitutionIncomingAnswers", new { area = "Archive" }))
+             .Destroy(destroy => destroy.Action("InstitutionIncomingAnswers_Destroy", "InstitutionIncomingAnswers", new { area = "Archive" }))
+             ).ToClientTemplate())
+    </text>
+);
+
+}).ToClientTemplate())
+</script>
+
+
+
+<script id="AttachmentAnswerDetail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+      .Name("tabstrip_#InstitutionIncomingAnswerId#")
+      .SelectedIndex(0)
+      .Items(items =>
+      {
+      items.Add().Text("Attachment").Content(
+        @<text>
+         @(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.Institution.Attachment_Answer_InstitutionIncoming>()
+         .Name("Attachment_Answer_InstitutionIncomingGrid#=InstitutionIncomingAnswerId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.FileName).ClientTemplate(" <i class = 'fa fa-download'></i><a href='/Archive/Attachment_Answer_InstitutionIncomings/DownloadInstitutionIncomingAttachment_Answer?attachmentId=\\#=Attachment_Answer_InstitutionIncomingId\\#'>&nbsp;&nbsp; \\#=FileName\\# </a>");
+             columns.Template(e => { }).ClientTemplate(" <i class = 'fa fa-download'></i><a href='/Archive/Attachment_Answer_InstitutionIncomings/DownloadInstitutionIncomingAttachment_Answer?attachmentId=\\#=Attachment_Answer_InstitutionIncomingId\\#'>&nbsp;&nbsp; Download </a>");
+             columns.Template(e => { }).ClientTemplate(" <i class = 'fa fa-folder-open'></i><a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> &nbsp;&nbsp; Open</a>");
+
+             columns.Command(command =>
+             {
+                 command.Destroy().Text("Delete");
+             });
+         })
+           .ToolBar(toolbar =>
+           {
+               toolbar.Create().HtmlAttributes(new { @class = "answerattachmentclass" });
+           })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AttachAnswer"))
+          .Scrollable(h => h.Height("auto"))
+          .Events(e =>
+          {
+              e.DataBound("onAnswerAttachmentDataBound");
+          })
+          .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.Attachment_Answer_InstitutionIncomingId).Descending())
+          .Events(events =>
+          {
+              events.Error("error_handler(\"Attachment_Answer_InstitutionIncomingGrid#=InstitutionIncomingAnswerId#\")");
+              events.RequestStart("onRequestStart(\"Attachment_Answer_InstitutionIncomingGrid#=InstitutionIncomingAnswerId#\")");
+              events.RequestEnd("onRequestEnd(\"Attachment_Answer_InstitutionIncomingGrid#=InstitutionIncomingAnswerId#\")");
+          })
+          .Model(model =>
+          {
+              model.Id(p => p.Attachment_Answer_InstitutionIncomingId);
+              model.Field(p => p.MasterId).DefaultValue("#=InstitutionIncomingAnswerId#");
+          })
+           .Read(read => read.Action("Attachment_Answer_InstitutionIncomings_Read", "Attachment_Answer_InstitutionIncomings", new { id = "#=InstitutionIncomingAnswerId#" }))
+           .Create(create => create.Action("Attachment_Answer_InstitutionIncomings_Create", "Attachment_Answer_InstitutionIncomings", new { id = "#=InstitutionIncomingAnswerId#" }))
+           .Update(update => update.Action("Attachment_Answer_InstitutionIncomings_Update", "Attachment_Answer_InstitutionIncomings"))
+           .Destroy(destroy => destroy.Action("Attachment_Answer_InstitutionIncomings_Destroy", "Attachment_Answer_InstitutionIncomings"))
+           ).ToClientTemplate()
+            )
+        </text> );
+      }).ToClientTemplate())
+</script>
+
+<style>
+    #btnApproveAnswer {
+        background-color: green;
+        color: white;
+    }
+
+    #btnUpload {
+        background-color: cadetblue;
+        color: white;
+    }
+</style>
+
+
+<script>
+
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+    }
+
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function GetDate() {
+
+        $("#OutgoingLetterDateAm").trigger("change");
+        $("#RecivedDateAmharic").trigger("change");
+        $("#LetterAmharic").trigger("change");
+    }
+
+</script>
+
+<script>
+
+    var institutionIncomingLetterId_Global;
+    var isAnswered_Global = false;
+
+    function DetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#IncommingLetterRegistration").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        institutionIncomingLetterId_Global = masterDataItem.InstitutionIncomingLetterId;
+    }
+
+    function onAnswerDetailExpand(e) {
+        try {
+            var detailRow = e.masterRow;
+            var answerGrid = $("#InstitutionIncomingAnswer" + institutionIncomingLetterId_Global).data("kendoGrid");
+            var answerDataItem = answerGrid.dataItem(detailRow);
+
+            var isAnswered = answerDataItem.IsAnswered;
+            isAnswered_Global = answerDataItem.IsAnswered;
+
+            if (isAnswered == true) {
+                $(".answerattachmentclass").hide();
+            }
+        } catch{}
+    }
+
+    function DetailDatabound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsTransfered == true) {
+                row.find(".k-grid-delete").hide();
+            }
+        }
+    }
+
+    function onAnswerAttachmentDataBound(e) {
+        try {
+            var grid = this;
+            var gridRows = grid.tbody.find("tr");
+            for (var i = 0; i < gridRows.length; i++) {
+                var row = $(gridRows[i]);
+                var dataItem = grid.dataItem(row);
+
+                if (isAnswered_Global == true) {
+                    row.find(".k-grid-delete").hide();
+                }
+
+            }
+        } catch{}
+
+    }  
+
+</script>
+
+
+
+<script>
+
+    function onDataBound(e) {
+        var grid = this;
+
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+        }
+    }
+
+
+
+    function DataBoundIncomingAnswer(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+
+            if (dataItem.IsAnswered == true) {
+                //row.css("background-color", "green");
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-ApproveAnswer").hide(); 
+                row.find(".k-grid-UploadAnswer").hide();
+                row.find(".btnReturnAssignment").hide();
+                $("#answerCreate").hide();
+            }
+        }
+    }
+
+
+</script>
+
+<script>
+
+    function ApproveTheAnswer(e) {
+
+        var answerId = this.dataItem($(e.currentTarget).closest("tr")).InstitutionIncomingAnswerId;
+        var institutionId = this.dataItem($(e.currentTarget).closest("tr")).InstitutionIncomingId
+
+        $.ajax({
+            url: '@Url.Action("ApproveInstitutionIncomingAnswer", "DepartmentSentLetter")',
+                data: { id: answerId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+
+                    alert(result.Message);
+
+                    $("#InstitutionIncomingAnswer" + institutionId).data("kendoGrid").dataSource.read();
+                }
+            });
+    }
+
+    function ReturenAssignment(e) {
+        var letterSenderId = this.dataItem($(e.currentTarget).closest("tr")).LetterSenderId;
+        var institutionId = this.dataItem($(e.currentTarget).closest("tr")).InstitutionIncomingId
+
+        $.ajax({
+            url: '@Url.Action("ReturenAssignment", "DepartmentSentLetter")',
+            data: { id: letterSenderId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+
+                    alert(result.Message); 
+
+                    $("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                    $("#RecivedLetters_" + institutionId).data("kendoGrid").dataSource.read();
+                }
+            });
+    }
+
+   function UploadAnswer(e) {
+
+        var answerId = this.dataItem($(e.currentTarget).closest("tr")).InstitutionIncomingAnswerId;
+        var institutionId = this.dataItem($(e.currentTarget).closest("tr")).InstitutionIncomingId
+        $("#Incoming_AnswerId").val(answerId);
+        $("#Institution_Incoming_Id").val(institutionId);
+        var wnd = $("#UploadAnswerFileWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+
+    function UploadAnswerFile() {
+
+            $.ajax({
+                url: '@Url.Action("UploadAnswerFile", "DepartmentSentLetter")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                    data.append("FileAnswer", $("#FileAnswer").get(0).files[0]);
+                    data.append("Incoming_AnswerId", $("#Incoming_AnswerId").val());
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#UploadAnswerFileWindow").data("kendoWindow").close();
+                    var id = $("#Institution_Incoming_Id").val();
+                    alert(result.Message);
+                    $("#InstitutionIncomingAnswer" + id).data("kendoGrid").dataSource.read();
+                }
+            });
+    }
+</script>
+
+@(Html.Kendo().Window().Name("UploadAnswerFileWindow")
+        .Title("Upload Answer")
+        .Visible(false)
+        .Modal(true)
+        .Content(@<text>
+            <input type="hidden" id="Incoming_AnswerId" name="Incoming_AnswerId" />
+            <input type="hidden" id="Institution_Incoming_Id" name="Institution_Incoming_Id" />
+            @Html.TextBox("FileAnswer", "", new { type = "file", @class = "form-control" })
+
+            <br />
+            <div class="pull-right">
+                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadAnswerFile"))
+            </div>
+        </text>)
+         .Draggable(true)
+         .Width(300))

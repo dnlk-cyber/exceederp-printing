@@ -12,7 +12,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.ModelConfiguration.Configuration;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.Allowance;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.Discipline;
@@ -29,6 +28,7 @@ using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.HRM.Templates;
 using ExceedERP.Core.Domain.HRM.Payroll.Setting;
+using ExceedERP.Core.Domain.Archive;
 
 namespace ExceedERP.DataAccess
 {
@@ -1506,125 +1506,7 @@ public class PayrollEmployeeAccountEntityTypeConfiguration : EntityTypeConfigura
         }
     }
     #endregion
-    #region ArchiveManagement
-    public class NewIncommingLetterEntityTypeConfiguration : EntityTypeConfiguration<IncomingLetterRegistration>
-    {
-
-        public NewIncommingLetterEntityTypeConfiguration()
-        {
-            this.ToTable("IncomingLetter", "Archive");
-            this.HasKey<string>(o => o.BookNo);
-        }
-    }
-    //public class AttachmentArchiveEntityTypeConfiguration : EntityTypeConfiguration<AttachmentArchive>
-    //{
-
-    //    public AttachmentArchiveEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("AttachmentArchive", "Archive");
-    //        this.HasKey<string>(o => o.AttachmentArchiveId);
-    //    }
-    //}
-    public class EmployeeIncommingLetterEntityTypeConfiguration : EntityTypeConfiguration<EmployeeIncomingLetter>
-    {
-
-        public EmployeeIncommingLetterEntityTypeConfiguration()
-        {
-            this.ToTable("EmployeeIncommingLetter", "Archive");
-            this.HasKey<string>(o => o.BookNo);
-        }
-    }
-    public class NewOutgoingLetterEntityTypeConfiguration : EntityTypeConfiguration<OutgoingLetter>
-    {
-
-        public NewOutgoingLetterEntityTypeConfiguration()
-        {
-            this.ToTable("OutgoingLetter", "Archive");
-            this.HasKey<int>(o => o.NewOutgoingLetterLetterId);
-        }
-    }
-    public class InstitutionTypeEntityTypeConfiguration : EntityTypeConfiguration<InstitutionType>
-    {
-
-        public InstitutionTypeEntityTypeConfiguration()
-        {
-            this.ToTable("InstitutionType", "Archive");
-            this.HasKey<int>(o => o.InstitutionTypeId);
-        }
-    }
-    public class ZoneEntityTypeConfiguration : EntityTypeConfiguration<Zone>
-    {
-
-        public ZoneEntityTypeConfiguration()
-        {
-            this.ToTable("Zone", "Archive");
-            this.HasKey<int>(o => o.ZoneId);
-        }
-    }
-    public class PersonalArchiveNoEntityTypeConfiguration : EntityTypeConfiguration<PersonalArchiveNo>
-    {
-
-        public PersonalArchiveNoEntityTypeConfiguration()
-        {
-            this.ToTable("PersonalArchiveNo", "Archive");
-            this.HasKey<int>(o => o.PersonalArchiveNoId);
-        }
-    }
-    public class InstitutionArchiveNoEntityTypeConfiguration : EntityTypeConfiguration<InstitutionArchiveNo>
-    {
-
-        public InstitutionArchiveNoEntityTypeConfiguration()
-        {
-            this.ToTable("InstitutionArchiveNo", "Archive");
-            this.HasKey<int>(o => o.InstiArchiveNoId);
-        }
-    }
-
-    //public class ExprianceRequestEntityTypeConfiguration : EntityTypeConfiguration<ExperienceRequest>
-    //{
-    //    public ExprianceRequestEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("ExperienceRequest", "HRM");
-    //        this.HasKey<int>(o => o.ExperienceRequestId);
-    //    }
-    //}
-    public class LetterStatusEntityTypeConfiguration : EntityTypeConfiguration<LetterStatus>
-    {
-
-        public LetterStatusEntityTypeConfiguration()
-        {
-            this.ToTable("LetterStatus", "Archive");
-            this.HasKey<int>(o => o.LetterStatusId);
-        }
-    }
-    public class LetterSenderEntityTypeConfiguration : EntityTypeConfiguration<LetterSender>
-    {
-
-        public LetterSenderEntityTypeConfiguration()
-        {
-            this.ToTable("LetterSender", "Archive");
-            this.HasKey<int>(o => o.LetterSenderId);
-        }
-    }
-    public class EmployeeLetterSenderEntityTypeConfiguration : EntityTypeConfiguration<EmployeeLetterSender>
-    {
-
-        public EmployeeLetterSenderEntityTypeConfiguration()
-        {
-            this.ToTable("EmployeeLetterSender", "Archive");
-            this.HasKey<int>(o => o.LetterSenderId);
-        }
-    }
-    public class RecivedLettersEntityTypeConfiguration : EntityTypeConfiguration<RecivedLetters>
-    {
-
-        public RecivedLettersEntityTypeConfiguration()
-        {
-            this.ToTable("RecivedLetters", "Archive");
-            this.HasKey<int>(o => o.RecivedLetterId);
-        }
-    }
-    #endregion
+    
     #region Performance
     public class MeasurementDefinitionEntityTypeConfiguration : EntityTypeConfiguration<MeasurementDefinition>
     {

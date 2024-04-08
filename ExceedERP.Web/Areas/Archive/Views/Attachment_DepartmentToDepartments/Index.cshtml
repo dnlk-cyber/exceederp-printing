@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.Attachment_DepartmentToDepartment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.OutGoing_DepartmentToDepartmentId);
+        columns.Bound(c => c.FilePath);
+        columns.Bound(c => c.ShortPath);
+        columns.Bound(c => c.FileName);
+        columns.Bound(c => c.FileExtension);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.Attachment_DepartmentToDepartmentId))
+          .Read(read => read.Action("Attachment_DepartmentToDepartments_Read", "Attachment_DepartmentToDepartments"))
+          .Create(create => create.Action("Attachment_DepartmentToDepartments_Create", "Attachment_DepartmentToDepartments"))
+          .Destroy(destroy => destroy.Action("Attachment_DepartmentToDepartments_Destroy", "Attachment_DepartmentToDepartments"))
+      )
+)

@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\APTSEntityConfiguration.cs" />
+    <Compile Include="Context\ArchiveEntityConfiguration.cs" />
     <Compile Include="Context\CMSEntityConfiguration.cs" />
     <Compile Include="Context\ExceedDbContext.cs" />
     <Compile Include="Context\GlobalEntityConfiguration.cs" />
@@ -429,6 +430,10 @@
     <Compile Include="Migrations\202404081812307_furniturejobprod.Designer.cs">
       <DependentUpon>202404081812307_furniturejobprod.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404081828569_archiveupgrade.cs" />
+    <Compile Include="Migrations\202404081828569_archiveupgrade.Designer.cs">
+      <DependentUpon>202404081828569_archiveupgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -708,6 +713,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404081812307_furniturejobprod.resx">
       <DependentUpon>202404081812307_furniturejobprod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404081828569_archiveupgrade.resx">
+      <DependentUpon>202404081828569_archiveupgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

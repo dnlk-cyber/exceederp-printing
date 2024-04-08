@@ -1,0 +1,143 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.ArchiveManagement.EmployeeOutgoingLetter
+
+<div class="form">
+    <div class="row fullrow">
+       
+        <div class="col-md-3 ro1">
+           
+            <div class="form-group">
+                @Html.LabelFor(model => model.LetterReferenceNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.LetterReferenceNo)
+                    @Html.ValidationMessageFor(model => model.LetterReferenceNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @Html.Kendo().TextBoxFor(model => model.Subject)
+                    @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+                </div>
+            </div>   
+            <div class="form-group">
+                @Html.LabelFor(model => model.SenderOrgId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.SenderOrgId)
+                         .DataValueField("OrgStructureId")
+                         .DataTextField("Name")
+                         .OptionLabel(Resources.Select)
+                          .Filter("contains")
+                          .MinLength(2)
+                          .HtmlAttributes(new { style = "width:160px" })
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetDepartments", "ArchiveDataProvider", new { area = "Archive" }))
+                               .ServerFiltering(false);
+                          })
+                         .ValuePrimitive(true)
+                         .Height(400)
+                    )
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReceiverEmpId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ReceiverEmpId)
+                         .DataValueField("EmployeeId")
+                         .DataTextField("FullNameAmharic")
+                         .OptionLabel(Resources.Select)
+                          .Filter("contains")
+                          .MinLength(2)
+                          .HtmlAttributes(new { style = "width:160px" })
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAllEmployees", "ArchiveDataProvider", new { area = "Archive" }))
+                               .ServerFiltering(false);
+                          })
+                         .ValuePrimitive(true)
+                         .Height(400)
+                         .Events(e => e.Change("GetData"))
+                    )
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3 ro1">     
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.RoomNo).HtmlAttributes(new { @readonly = "readonly" })
+                </div>
+            </div>    
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Shelve, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Shelve).HtmlAttributes(new { @readonly = "readonly" })
+                </div>
+            </div>    
+         
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Row, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Row).HtmlAttributes(new { @readonly = "readonly" })
+                </div>
+            </div>
+                      <div class="form-group">
+                          @Html.LabelFor(model => model.FolderNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                          <div class="col-md-6">
+                              @Html.Kendo().TextBoxFor(model => model.FolderNo).HtmlAttributes(new { @readonly = "readonly" })
+                          </div>
+                      </div>    
+                           
+                     </div>
+         <div class="col-md-4 ro1">
+
+             <div class="form-group">
+                 @Html.LabelFor(model => model.Volume, htmlAttributes: new { @class = "control-label col-md-8" })
+                 <div class="col-md-6">
+                     @Html.Kendo().TextBoxFor(model => model.Volume).HtmlAttributes(new { @readonly = "readonly" })
+                 </div>
+             </div>
+             <div class="form-group">
+                 @Html.LabelFor(model => model.FileNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                 <div class="col-md-6">
+                     @Html.Kendo().TextBoxFor(model => model.FileNo).HtmlAttributes(new { @readonly = "readonly" })
+                 </div>
+             </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.OutgoingLetterDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.OutgoingLetterDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                    </div>
+                </div>
+              
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Time, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-10">
+                        @Html.Kendo().TextBoxFor(model => model.Time)
+                    </div>
+                </div>
+              
+                <div class="row"></div><br />
+            </div>        
+    </div>
+</div>
+
+
+<style>
+    input[readonly] {
+        /*background: white;*/
+        color: red;
+        /*border: 1px solid #666*/
+    }
+</style>

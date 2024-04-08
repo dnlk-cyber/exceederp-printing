@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.AttachedLettersForStaff>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.FilePath);
+        columns.Bound(c => c.FileName);
+        columns.Bound(c => c.Description);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AttachedLettersForStaffId))
+          .Read(read => read.Action("AttachedLettersForStaffs_Read", "AttachedLettersForStaffs"))
+          .Create(create => create.Action("AttachedLettersForStaffs_Create", "AttachedLettersForStaffs"))
+          .Update(update => update.Action("AttachedLettersForStaffs_Update", "AttachedLettersForStaffs"))
+          .Destroy(destroy => destroy.Action("AttachedLettersForStaffs_Destroy", "AttachedLettersForStaffs"))
+      )
+)

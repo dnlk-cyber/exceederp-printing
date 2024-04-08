@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+
+                        .DataTextField("ZoneName")
+                                    .DataValueField("ZoneId")
+                      .BindTo((IEnumerable)ViewData["Zones"])
+                         .ValuePrimitive(true)
+)

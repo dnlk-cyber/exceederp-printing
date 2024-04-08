@@ -1,0 +1,168 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.CompanyDocumentType>()
+      .Name("CompanyDocumentTypeGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.DocumentType);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          });
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(600))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CompanyDocumentTypeId))
+          .Read(read => read.Action("CompanyDocumentTypes_Read", "CompanyDocumentTypes"))
+          .Create(create => create.Action("CompanyDocumentTypes_Create", "CompanyDocumentTypes"))
+          .Update(update => update.Action("CompanyDocumentTypes_Update", "CompanyDocumentTypes"))
+          .Destroy(destroy => destroy.Action("CompanyDocumentTypes_Destroy", "CompanyDocumentTypes"))
+        ).ClientDetailTemplateId("template"))
+
+<script id="template" type="text/kendo-tmpl">
+@(Html.Kendo().TabStrip()
+.Name("tabstrip_#=CompanyDocumentTypeId#")
+.SelectedIndex(0)
+.Items(items =>
+{
+items.Add().Text("Answer").Content(
+    @<text>
+        <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=CompanyDocumentTypeId#)" />
+        @(Html.Kendo().Grid<CompanyDocument>()
+         .Name("CompanyDocument#=CompanyDocumentTypeId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.FileName).ClientTemplate("<a href='/Archive/CompanyDocuments/DownloadCompanyDocument?CompanyDocumentId=\\#=CompanyDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
+             columns.Bound(c => c.Description);
+
+             columns.Template(e => { }).ClientTemplate("<a href='/Archive/CompanyDocuments/DownloadCompanyDocument?CompanyDocumentId=\\#=CompanyDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
+             columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
+
+             columns.Command(command =>
+             {
+                 command.Destroy().Text("Delete");
+             });
+         })
+
+          .ToolBar(toolbar =>
+          {
+              // toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "answerCreate" });
+              // toolbar.Custom().Text("Upload Company Doc").HtmlAttributes(new { onClick = "UploadCompanyDoc" });
+          })
+
+           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+           .Events(ev =>
+           {
+               ev.DataBound("onDetailDataBound");
+               //ev.Change("CheckDisablity");
+           })
+             .Scrollable(h => h.Height("auto"))
+             .DataSource(dataSource => dataSource
+             .Ajax()
+              .Sort(sort => sort.Add(c => c.CompanyDocumentId).Descending())
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"CompanyDocument#=CompanyDocumentTypeId#\")");
+                 events.RequestStart("onRequestStart(\"CompanyDocument#=CompanyDocumentTypeId#\")");
+                 events.RequestEnd("onRequestEnd(\"CompanyDocument#=CompanyDocumentTypeId#\")");
+             })
+             .Model(model => model.Id(p => p.CompanyDocumentId))
+             .Read(read => read.Action("CompanyDocuments_Read", "CompanyDocuments", new { id = "#=CompanyDocumentTypeId#", area = "Archive" }))
+             .Destroy(destroy => destroy.Action("CompanyDocuments_Destroy", "CompanyDocuments", new { area = "Archive" }))
+             ).ToClientTemplate())
+    </text>
+);
+
+}).ToClientTemplate())
+</script>
+
+<script>
+
+    function onDetailDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+            //if (dataItem.IsTransfered == true) {
+            //    row.find(".k-grid-delete").hide();
+            //}
+        }
+    }
+
+    function UploadCompanyDoc(id) {
+
+        $("#CompanyDocumentTypeId").val(id);
+
+        var wnd = $("#UploadCompanyFileWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+
+    function UploadCompanyFile() {
+
+            $.ajax({
+                url: '@Url.Action("UploadCompanyFile", "CompanyDocuments")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+                    var kk = $("#CompanyFile");//.get(0).files[0];
+
+                    $.each($("input[type=file]"), function (i, obj) {
+                        $.each(obj.files, function (j, file) {
+                            data.append('CompanyFile[' + j + ']', file);
+                        })
+                    });
+
+                   // data.append("CompanyFile", $("#CompanyFile").get(0).files[0]);
+                    data.append("CompanyDocumentTypeId", $("#CompanyDocumentTypeId").val());
+                    data.append("Description", $("#Description").val());
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#UploadCompanyFileWindow").data("kendoWindow").close();
+                    var id = $("#CompanyDocumentTypeId").val();
+                    alert(result);
+                    $("#CompanyDocument" + id).data("kendoGrid").dataSource.read();
+                }
+            });
+    }
+</script>
+
+@(Html.Kendo().Window().Name("UploadCompanyFileWindow")
+        .Title("Upload Answer")
+        .Visible(false)
+        .Modal(true)
+        .Content(@<text>
+            <input type="hidden" id="CompanyDocumentTypeId" name="CompanyDocumentTypeId" />
+
+            @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
+            <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
+            <br />
+            <textarea id="Description" class="form-control"></textarea>
+            <br />
+            <div class="pull-right">
+                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
+            </div>
+        </text>)
+         .Draggable(true)
+         .Width(400))

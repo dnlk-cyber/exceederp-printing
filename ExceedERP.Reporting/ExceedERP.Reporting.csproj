@@ -135,6 +135,22 @@
     <Compile Include="APTS\ViewModel\DrugStoreViewModel.cs" />
     <Compile Include="APTS\ViewModel\ExpireDrugViewModel.cs" />
     <Compile Include="APTS\ViewModel\PatientRecotedViewModel.cs" />
+    <Compile Include="Archive\DataSource\IncomingLetterObjectDataSource.cs" />
+    <Compile Include="Archive\DataSource\OutgoingngLetterObjectDataSource.cs" />
+    <Compile Include="Archive\Design\IncomingLetterReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Archive\Design\IncomingLetterReport.Designer.cs">
+      <DependentUpon>IncomingLetterReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Archive\Design\OutgoingLetterReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Archive\Design\OutgoingLetterReport.Designer.cs">
+      <DependentUpon>OutgoingLetterReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Archive\ViewModel\IncomingLetterVM.cs" />
+    <Compile Include="Archive\ViewModel\OutgoingngLetterVM..cs" />
     <Compile Include="CMS\Printing\DataSources\FullRegistrationSlipDataSource.cs" />
     <Compile Include="CMS\Printing\DataSources\RegistrationSlipDataSource.cs" />
     <Compile Include="CMS\Printing\DataSources\WelderCertificatePrintDataSource.cs" />
@@ -4442,6 +4458,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="APTS\rptPetientRecored.resx">
       <DependentUpon>rptPetientRecored.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Archive\Design\IncomingLetterReport.resx">
+      <DependentUpon>IncomingLetterReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Archive\Design\OutgoingLetterReport.resx">
+      <DependentUpon>OutgoingLetterReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CMS\Printing\ReportDesigns\FullRegistrationSlipBackReportDesign.resx">
       <DependentUpon>FullRegistrationSlipBackReportDesign.cs</DependentUpon>

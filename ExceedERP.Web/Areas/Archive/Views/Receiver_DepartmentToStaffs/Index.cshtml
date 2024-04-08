@@ -1,0 +1,34 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.DepartmentToStaff.Receiver_DepartmentToStaff>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.OutGoing_DepartmentToDepartmentId);
+        columns.Bound(c => c.EmployeeId);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.DateEt);
+        columns.Bound(c => c.Room);
+        columns.Bound(c => c.Shelve);
+        columns.Bound(c => c.Row);
+        columns.Bound(c => c.Folder);
+        columns.Bound(c => c.Volume);
+        columns.Bound(c => c.FileNo);
+        columns.Bound(c => c.IsSent);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.Receiver_DepartmentToStaffId))
+          .Read(read => read.Action("Receiver_DepartmentToStaffs_Read", "Receiver_DepartmentToStaffs"))
+          .Create(create => create.Action("Receiver_DepartmentToStaffs_Create", "Receiver_DepartmentToStaffs"))
+          .Update(update => update.Action("Receiver_DepartmentToStaffs_Update", "Receiver_DepartmentToStaffs"))
+          .Destroy(destroy => destroy.Action("Receiver_DepartmentToStaffs_Destroy", "Receiver_DepartmentToStaffs"))
+      )
+)

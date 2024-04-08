@@ -1,0 +1,243 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Broadcast Letters</legend>
+
+@(Html.Kendo().Grid<LetterForMultipleStaff>()
+      .Name("LetterForMultipleStaffGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Title);
+          columns.Bound(c => c.SendingDateAm);
+          columns.Bound(c => c.IsTransfered);
+          // columns.Bound(c => c.Time);
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Events(ev=>
+      {
+          ev.DetailExpand("onDetailExpand");
+      })
+      .Scrollable(h => h.Height(600))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.LetterForMultipleStaffId);
+              model.Field(p => p.SendingDateAm).Editable(false);
+          })
+          .Read(read => read.Action("BroadcastedLetters_Read", "BroadcastedLetters"))
+    ).ClientDetailTemplateId("template"))
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("tabstrip_#=LetterForMultipleStaffId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+    items.Add().Text("Attachments").Content(
+        @<text>          
+
+            @(Html.Kendo().Grid<AttachedLettersForStaff>()
+                     .Name("AttachedLettersForStaffGrid#=LetterForMultipleStaffId#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.FileName).ClientTemplate("<a href='/Archive/LetterReceivers/DownloadEmployeeLetters?AttachedLettersForStaffId=\\#=AttachedLettersForStaffId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                         columns.Bound(c => c.Description).Width(100);
+
+                         columns.Template(e => { }).ClientTemplate("<a href='/Archive/LetterReceivers/DownloadEmployeeLetters?AttachedLettersForStaffId=\\#=AttachedLettersForStaffId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                         columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                         //columns.Command(command =>
+                         //{
+                         //    command.Destroy().Text("Delete");
+                         //}).Width(300);
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                     .Window(window =>
+                     {
+                         window.Title("");
+                         window.Scrollable(false);
+                     }))
+                     .Scrollable(h => h.Height("auto"))
+                     .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sort => sort.Add(c => c.AttachedLettersForStaffId).Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"AttachedLettersForStaffGrid#=LetterForMultipleStaffId#\")");
+                         events.RequestStart("onRequestStart(\"AttachedLettersForStaffGrid#=LetterForMultipleStaffId#\")");
+                         events.RequestEnd("onRequestEnd(\"AttachedLettersForStaffGrid#=LetterForMultipleStaffId#\")");
+                     })
+                     .Model(model => model.Id(p => p.AttachedLettersForStaffId))
+                     .Read(read => read.Action("AttachedLettersForStaffs_Read", "AttachedLettersForStaffs", new { id = "#=LetterForMultipleStaffId#", ac = ArchiveCategory.Institution, lt = LetterType.Incoming }))
+                     .Create(create => create.Action("AttachedLettersForStaffs_Create", "AttachedLettersForStaffs", new { id = "#=LetterForMultipleStaffId#", ac = ArchiveCategory.Institution, lt = LetterType.Incoming }))
+                     .Update(update => update.Action("AttachedLettersForStaffs_Update", "AttachedLettersForStaffs"))
+                     .Destroy(destroy => destroy.Action("AttachedLettersForStaffs_Destroy", "AttachedLettersForStaffs"))
+                     ).ToClientTemplate())
+        </text>
+    );
+
+    items.Add().Text("Receiver").Content(
+        @<text>
+            @(Html.Kendo().Grid<LetterReceiver>()
+                     .Name("LetterReceiver#=LetterForMultipleStaffId#")
+                     .Columns(columns =>
+                     {
+                         columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameAmharic");
+                         columns.Bound(c => c.IsForAllEmployee);//.HeaderHtmlAttributes(new { id = "IsForAllId" }).HtmlAttributes(new { id= "IsForAllId" });
+
+                         columns.Command(c => { });
+                     })
+
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Transfer")
+                     .Window(window =>
+                     {
+                         window.Title("");
+                         window.Scrollable(false);
+                     }))
+                     .Events(ev=>
+                     {
+                         //ev.DataBound("onReceiverDataBound");
+                     })
+                     .Scrollable(h => h.Height("auto"))
+                     .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sort => sort.Add(c => c.LetterReceiverId).Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"LetterReceiver#=LetterForMultipleStaffId#\")");
+                         events.RequestStart("onRequestStart(\"LetterReceiver#=LetterForMultipleStaffId#\")");
+                         events.RequestEnd("onRequestEnd(\"LetterReceiver#=LetterForMultipleStaffId#\")");
+                     })
+                     .Model(model => model.Id(p => p.LetterReceiverId))
+                     .Read(read => read.Action("LetterReceivers_Read", "LetterReceivers", new { id = "#=LetterForMultipleStaffId#" }))
+                     .Create(create => create.Action("LetterReceivers_Create", "LetterReceivers", new { id = "#=LetterForMultipleStaffId#" }))
+                     .Update(update => update.Action("LetterReceivers_Update", "LetterReceivers"))
+                     .Destroy(destroy => destroy.Action("LetterReceivers_Destroy", "LetterReceivers"))
+                     ).ToClientTemplate())
+        </text>
+    );
+
+
+
+    }).ToClientTemplate())
+</script>
+
+
+
+<script>
+
+    function onDetailExpand(e) {
+
+        var masterRow = e.masterRow;
+        var masterGrid = $("#LetterForMultipleStaffGrid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var masterId = masterDataItem.LetterForMultipleStaffId;
+        var isForAll = masterDataItem.IsForAllEmployee;
+
+        if (isForAll == true) {
+            $("#LetterReceiver" + masterId).data("kendoGrid").hideColumn('EmployeeId');
+        }
+        else {
+            $("#LetterReceiver" + masterId).data("kendoGrid").hideColumn('IsForAllEmployee');
+        }
+
+       // //var masterId = this.dataItem($(e.currentTarget).closest("tr")).LetterForMultipleStaffId;
+
+       //// var columns = e.sender.columns;
+       // var rows = e.sender.tbody.children();
+       // var row = $(rows[0]);
+       // var dataItem = e.sender.dataItem(row);
+
+       // if (dataItem.IsForAllEmployee == true)
+       // {
+       //     $("#LetterReceiver" + masterId).data("kendoGrid").hideColumn('EmployeeId');
+            
+       //    // $("#IsForAllId").hide();
+       //    // columns[0].hidden = true;
+       //    // var kkd = columns[0];
+       //    //// columns[0].hide();// = false;
+       //    // columns[1].hidden = true;
+       // }
+       // else {
+       //     $("#LetterReceiver" + masterId).data("kendoGrid").hideColumn('IsForAllEmployee');
+       // }
+    }
+
+  function OpenAttachementWindow(id) {
+
+      $("#Attachement_MultipleEmployeeId").val(id);
+
+      var wnd = $("#MultipleEmployeeAttachementWindow").data("kendoWindow");
+            wnd.center().open();
+    }
+
+
+    function AttachEmployeeLetter() {
+        try {
+
+            $.ajax({
+                url: '@Url.Action("UploadEmployeeLetters", "LetterReceivers")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                    data.append("file", $("#empLetter").get(0).files[0]);
+                    data.append("description", $("#description").val());
+                    data.append("masterId", $("#Attachement_MultipleEmployeeId").val());
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#MultipleEmployeeAttachementWindow").data("kendoWindow");
+                    wnd.close();
+
+                    $("#ArchiveAttachementGrid" + institutionIncomingLetterId).data("kendoGrid").dataSource.read();
+                }
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+    }
+
+</script>
+
+
+@(Html.Kendo().Window().Name("MultipleEmployeeAttachementWindow")
+    .Title(Resources.HR_ArchiveManagement_Answer)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+        <input type="text" id="Attachement_MultipleEmployeeId" name="Attachement_MultipleEmployeeId" hidden />
+        <div class="editor-field">
+            @Html.TextBox("empLetter", "", new { type = "file" })
+        </div>
+
+        <br />
+        <div class="editor-field">
+            @Html.TextArea("description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+        </div>
+        <br />
+
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("AttachEmployeeLetter"))
+
+        </div>
+
+    </text>)
+      .Pinned(true)
+      .Draggable(true)
+      .Width(300)
+)

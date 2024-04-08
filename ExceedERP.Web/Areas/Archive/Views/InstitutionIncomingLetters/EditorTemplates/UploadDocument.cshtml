@@ -1,0 +1,49 @@
+﻿
+@using ExceedERP.Core.Localization
+
+<div class="row fullrow">
+    <div class="col-md-9 ro1">
+        <div class="form-group">
+
+            @using (Html.BeginForm("UploadDocument", "ArchiveAttachments", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <fieldset>
+                    <input type="text" hidden id="incomingId" name="incomingId" />
+
+                    <div class="editor-field">
+                        @Html.TextBox("file", "", new { type = "file", @class = "form-control" })
+                    </div>
+                    <br />
+                    <div class="editor-field">
+                        @Html.TextArea("description", null, new { placeholder = "Description" })
+                    </div>
+
+                    <br />
+                    <div class="editor-field">
+                        <input id="uploadBut" class="btn btn-primary" type="button" value="@Resources.HR_ActionButton_Upload" onclick="AttachArchiveFiles()" />
+                    </div>
+
+                </fieldset>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    div.k-edit-form-container {
+        width: 400px;
+    }
+    /*to hide edit and cancel button container*/
+    .k-edit-form-container .k-edit-buttons {
+        display: none;
+    }
+
+    button, html input[type=button], input[type=reset], input[type=submit] {
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+</style>

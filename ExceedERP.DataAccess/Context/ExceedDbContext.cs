@@ -62,7 +62,6 @@ using ExceedERP.Core.Domain.HRM.Payroll;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.HRM.Allowance;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.Discipline;
@@ -108,6 +107,12 @@ using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.Core.Domain.Manufacturing.Production;
 using ExceedERP.Core.Domain.HRM.Severance;
 using ExceedERP.Core.Domain.ArchiveManagement;
+using ExceedERP.Core.Domain.ArchiveManagement.DepartmentToStaff;
+using ExceedERP.Core.Domain.ArchiveManagement.DepartmentToDepartment;
+using ExceedERP.Core.Domain.ArchiveManagement.Institution;
+using ExceedERP.Core.Domain.ArchiveManagement.Employee;
+using ExceedERP.Core.Domain.ArchiveManagement.Setting;
+using ExceedERP.Core.Domain.Archive;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -521,6 +526,47 @@ namespace ExceedERP.DataAccess.Context
             #endregion
             #endregion
 
+            #region Archive Management
+            modelBuilder.Configurations.Add(new InstitutionArchiveNoEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PersonalArchiveNoEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeIncommingLetterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InstitutionOutgoingLetterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InstitutionTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InstitutionIncomingAnswerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LetterStatusEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LetterSenderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeLetterSenderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ArchiveAttachementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InstitutionIncomingLetterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeFolderAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeIncomingAnswerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeOutgoingLetterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeOutgoingAnswerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new CompanyDocumentTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new CompanyDocumentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LetterReceiverEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AttachedLettersForStaffEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LetterForMultipleStaffEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new OutGoing_DepartmentToDepartmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OutGoing_DepartmentToDepartment_AnswerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Attachment_DepartmentToDepartmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Receiver_DepartmentToDepartmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DepartmentFolderEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new OutGoing_DepartmentToStaffEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Attachment_DepartmentToStaffEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Receiver_DepartmentToStaffEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Answer_DepartmentToStaffEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new Attachment_Answer_DepartmentToDepartmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Attachment_Answer_DepartmentToStaffEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Attachment_Answer_InstitutionIncomingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Attachment_Answer_LetterSentForEmployeeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SubjectTypeForDepartmentLevelEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DepartmentOrSubjectTypeSelectionForFolderCreationEntityTypeConfiguration());
+            #endregion
+
             #region HRM
             modelBuilder.Configurations.Add(new SalarySettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
@@ -667,20 +713,7 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
 
-            #region ArchiveManagement
-            modelBuilder.Configurations.Add(new InstitutionArchiveNoEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PersonalArchiveNoEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new NewIncommingLetterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmployeeIncommingLetterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new NewOutgoingLetterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new InstitutionTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ZoneEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LetterStatusEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LetterSenderEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmployeeLetterSenderEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new RecivedLettersEntityTypeConfiguration());
-            // modelBuilder.Configurations.Add(new AttachmentArchiveEntityTypeConfiguration());
-            #endregion
+            
             #region Performance
 
             modelBuilder.Configurations.Add(new EmployeePerformanceEntityTypeConfiguration());
@@ -2622,22 +2655,44 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<OverTimeJobResult> OverTimeJobResults { get; set; }
         #endregion
 
-        #region ArchiveManagement
+        #region Archive Management
+        public DbSet<SubjectType> SubjectTypes { get; set; }
+        public DbSet<InstitutionIncomingLetter> InstitutionIncomingLetters { get; set; }
+        public DbSet<EmployeeIncomingLetter> EmployeeIncommingLetter { get; set; }
+        public DbSet<InstitutionOutgoingLetter> InstitutionOutgoingLetters { get; set; }
+        public DbSet<PersonalArchiveNo> PersonalArchiveNo { get; set; }
+        public DbSet<InstitutionArchiveNo> InstitutionArchiveNo { get; set; }
+        public DbSet<InstitutionType> InstitutionType { get; set; }
+        public DbSet<LetterStatus> LetterStatus { get; set; }
+        public DbSet<LetterSender> LetterSender { get; set; }
+        public DbSet<EmployeeLetterSender> EmployeeLetterSender { get; set; }
+        public DbSet<ArchiveAttachement> ArchiveAttachements { get; set; }
+        public DbSet<InstitutionIncomingAnswer> InstitutionIncomingAnswers { get; set; }
         public DbSet<EmployeeFolderAttachment> EmployeeFolderAttachments { get; set; }
-        public System.Data.Entity.DbSet<SubjectType> SubjectTypes { get; set; }
-        public System.Data.Entity.DbSet<IncomingLetterRegistration> NewIncommingLetter { get; set; }
-        public System.Data.Entity.DbSet<EmployeeIncomingLetter> EmployeeIncommingLetter { get; set; }
-        public System.Data.Entity.DbSet<OutgoingLetter> NewOutgoingLetter { get; set; }
-        public System.Data.Entity.DbSet<PersonalArchiveNo> PersonalArchiveNo { get; set; }
-        public System.Data.Entity.DbSet<InstitutionArchiveNo> InstitutionArchiveNo { get; set; }
-        public System.Data.Entity.DbSet<InstitutionType> InstitutionType { get; set; }
-        public System.Data.Entity.DbSet<Zone> Zone { get; set; }
+        public DbSet<EmployeeIncomingAnswer> EmployeeIncomingAnswers { get; set; }
+        public DbSet<EmployeeOutgoingLetter> EmployeeOutgoingLetters { get; set; }
+        public DbSet<EmployeeOutgoingAnswer> EmployeeOutgoingAnswers { get; set; }
+        public DbSet<CompanyDocumentType> CompanyDocumentTypes { get; set; }
+        public DbSet<CompanyDocument> CompanyDocuments { get; set; }
+        public DbSet<LetterReceiver> LetterReceivers { get; set; }
+        public DbSet<LetterForMultipleStaff> LetterFolMultipleStaffs { get; set; }
+        public DbSet<AttachedLettersForStaff> AttachedLettersForStaffs { get; set; }
 
-        public System.Data.Entity.DbSet<LetterStatus> LetterStatus { get; set; }
-        public System.Data.Entity.DbSet<LetterSender> LetterSender { get; set; }
-        public System.Data.Entity.DbSet<EmployeeLetterSender> EmployeeLetterSender { get; set; }
-        public System.Data.Entity.DbSet<RecivedLetters> RecivedLetters { get; set; }
-        public System.Data.Entity.DbSet<AttachmentArchive> AttachmentArchives { get; set; }
+        public DbSet<OutGoing_DepartmentToDepartment> OutGoing_DepartmentToDepartments { get; set; }
+        public DbSet<OutGoing_DepartmentToDepartment_Answer> OutGoing_DepartmentToDepartment_Answers { get; set; }
+        public DbSet<Attachment_DepartmentToDepartment> Attachment_DepartmentToDepartments { get; set; }
+        public DbSet<Receiver_DepartmentToDepartment> Receiver_DepartmentToDepartments { get; set; }
+        public DbSet<DepartmentFolder> DepartmentFolders { get; set; }
+        public DbSet<OutGoing_DepartmentToStaff> OutGoing_DepartmentToStaffs { get; set; }
+        public DbSet<Attachment_DepartmentToStaff> Attachment_DepartmentToStaffs { get; set; }
+        public DbSet<Receiver_DepartmentToStaff> Receiver_DepartmentToStaffs { get; set; }
+        public DbSet<Answer_DepartmentToStaff> Answer_DepartmentToStaffs { get; set; }
+        public DbSet<Attachment_Answer_DepartmentToDepartment> Attachment_Answer_DepartmentToDepartments { get; set; }
+        public DbSet<Attachment_Answer_DepartmentToStaff> Attachment_Answer_DepartmentToStaffs { get; set; }
+        public DbSet<Attachment_Answer_InstitutionIncoming> Attachment_Answer_InstitutionIncomings { get; set; }
+        public DbSet<Attachment_Answer_LetterSentForEmployee> Attachment_Answer_LetterSentForEmployees { get; set; }
+        public DbSet<SubjectTypeForDepartmentLevel> SubjectTypeForDepartmentLevels { get; set; }
+        public DbSet<DepartmentOrSubjectTypeSelectionForFolderCreation> DepartmentOrSubjectTypeSelectionForFolderCreations { get; set; }
         #endregion
 
         #region APTS

@@ -26,7 +26,7 @@ using ExceedERP.Core.Domain.HRM.Payroll.Vm;
 using ExceedERP.Core.Domain.Finance;
 using DocumentFormat.OpenXml.Drawing;
 using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
+using ExceedERP.Core.Domain.Archive;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {

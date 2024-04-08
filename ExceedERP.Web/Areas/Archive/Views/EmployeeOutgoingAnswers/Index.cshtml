@@ -1,0 +1,24 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.EmployeeOutgoingAnswer>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.EmployeeOutgoingId);
+        columns.Bound(c => c.Answer);
+        columns.Bound(c => c.IsAnswered);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(scrollable => scrollable.Enabled(false))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.EmployeeOutgoingAnswerId))
+          .Read(read => read.Action("EmployeeOutgoingAnswers_Read", "EmployeeOutgoingAnswers"))
+          .Create(create => create.Action("EmployeeOutgoingAnswers_Create", "EmployeeOutgoingAnswers"))
+          .Update(update => update.Action("EmployeeOutgoingAnswers_Update", "EmployeeOutgoingAnswers"))
+          .Destroy(destroy => destroy.Action("EmployeeOutgoingAnswers_Destroy", "EmployeeOutgoingAnswers"))
+      )
+)

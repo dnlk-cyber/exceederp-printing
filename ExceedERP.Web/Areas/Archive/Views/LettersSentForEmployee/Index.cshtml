@@ -1,0 +1,316 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Letters Sent For Employee</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.EmployeeOutgoingLetter>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.SenderOrgId, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(150);
+          columns.ForeignKey(c => c.ReceiverEmpId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameAmharic").Width(150);
+          columns.Bound(c => c.OutgoingLetterDateAm).Width(100);
+          columns.Bound(c => c.Time).Width(100);
+          columns.Bound(c => c.Subject).Width(100);
+          columns.Bound(c => c.RoomNo).Width(100);
+          columns.Bound(c => c.Shelve).Width(100);
+          columns.Bound(c => c.Row).Width(100);
+          columns.Bound(c => c.FolderNo).Width(100);
+          columns.Bound(c => c.Volume).Width(100);
+          columns.Bound(c => c.FileNo).Width(100);
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Navigatable()
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s=>s.Add(x=>x.EmployeeOutgoingLetterId).Descending())
+          .Model(model => model.Id(p => p.EmployeeOutgoingLetterId))
+          .Read(read => read.Action("LettersSentForEmployee_Read", "LettersSentForEmployee"))
+
+    ).ClientDetailTemplateId("template"))
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_#=EmployeeOutgoingLetterId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Attachments").Content(
+                @<text>                  
+
+                    @(Html.Kendo().Grid<ArchiveAttachement>()
+                     .Name("ArchiveAttachementGrid#=EmployeeOutgoingLetterId#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.FileName).ClientTemplate("<a href='/Archive/EmployeeOutgoingLetters/DownloadArchiveAttachment?ArchiveAttachementId=\\#=ArchiveAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                         columns.Bound(c => c.Description).Width(100);
+
+                         columns.Template(e => { }).ClientTemplate("<a href='/Archive/EmployeeOutgoingLetters/DownloadArchiveAttachment?ArchiveAttachementId=\\#=ArchiveAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                         columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                     .Window(window =>
+                     {
+                         window.Title("");
+                         window.Scrollable(false);
+                     }))
+                     .Scrollable(h => h.Height("auto"))
+                     .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sort => sort.Add(c => c.ArchiveAttachementId).Descending())
+
+                     .Model(model => model.Id(p => p.ArchiveAttachementId))
+                     .Read(read => read.Action("ArchiveAttachments_Read", "ArchiveAttachments", new { id = "#=EmployeeOutgoingLetterId#", ac = ArchiveCategory.Employee, lt = LetterType.OutGoing }))
+
+                     ).ToClientTemplate())
+                </text>);
+
+     items.Add().Text("Answer").Content(
+       @<text>
+        @(Html.Kendo().Grid<EmployeeOutgoingAnswer>()
+         .Name("EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.Answer).ClientTemplate("<div>\\#= Answer\\#</div>").Width(300);
+             columns.Bound(c => c.Date).Width(50);
+             columns.Bound(c => c.Time).Width(50);
+             // columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/DepartmentSentLetter/DownloadAnswer?EmployeeOutgoingAnswerId=\\#=EmployeeOutgoingAnswerId\\#'> <i class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(100);
+
+
+             columns.Command(command =>
+             {
+                 //  command.Custom("UploadAnswer").Text(" ").Click("UploadAnswer").IconClass("fa fa-upload").HtmlAttributes(new { id = "btnUpload" });
+                 command.Custom("ApproveAnswer").Text("Approve Answer").Click("ApproveTheAnswer").HtmlAttributes(new { id = "btnApproveAnswer" });
+                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                 command.Destroy().Text("Delete");
+             }).Width(150);
+         })
+
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "answerCreate" });
+          })
+
+           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+           .Events(ev =>
+           {
+               ev.DataBound("DataBoundOutgoingAnswer");
+           })
+           .ClientDetailTemplateId("AttachmentAnswerDetail")
+             .Scrollable(h => h.Height("auto"))
+             .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#\")");
+                 events.RequestStart("onRequestStart(\"EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#\")");
+                 events.RequestEnd("onRequestEnd(\"EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#\")");
+             })
+             .Model(model => model.Id(p => p.EmployeeOutgoingAnswerId))
+             .Read(read => read.Action("EmployeeOutgoingAnswers_Read", "EmployeeOutgoingAnswers", new { id = "#=EmployeeOutgoingLetterId#", area = "Archive" }))
+             .Create(create => create.Action("EmployeeOutgoingAnswers_Create", "EmployeeOutgoingAnswers", new { id = "#=EmployeeOutgoingLetterId#", area = "Archive" }))
+             .Update(update => update.Action("EmployeeOutgoingAnswers_Update", "EmployeeOutgoingAnswers", new { area = "Archive" }))
+             .Destroy(destroy => destroy.Action("EmployeeOutgoingAnswers_Destroy", "EmployeeOutgoingAnswers", new { area = "Archive" }))
+             ).ToClientTemplate())
+                    </text>
+);
+
+            }).ToClientTemplate())
+</script>
+
+
+<script id="AttachmentAnswerDetail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+      .Name("tabstrip_#=EmployeeOutgoingAnswerId#")
+      .SelectedIndex(0)
+      .Items(items =>
+      {
+      items.Add().Text("Attachment").Content(
+        @<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.Employee.Attachment_Answer_LetterSentForEmployee>()
+         .Name("Attachment_Answer_LetterSentForEmployeeGrid#=EmployeeOutgoingAnswerId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.FileName).ClientTemplate(" <i class = 'fa fa-download'></i><a href='/Archive/Attachment_Answer_DepartmentToDepartments/DownloadDepartmentToDepartmentAttachment_Answer?attachmentId=\\#=Attachment_Answer_LetterSentForEmployeeId\\#'>&nbsp;&nbsp; \\#=FileName\\# </a>");
+             columns.Template(e => { }).ClientTemplate(" <i class = 'fa fa-download'></i><a href='/Archive/Attachment_Answer_DepartmentToDepartments/DownloadDepartmentToDepartmentAttachment_Answer?attachmentId=\\#=Attachment_Answer_LetterSentForEmployeeId\\#'>&nbsp;&nbsp; Download </a>");
+             columns.Template(e => { }).ClientTemplate(" <i class = 'fa fa-folder-open'></i><a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> &nbsp;&nbsp; Open</a>");
+
+             columns.Command(command =>
+             {
+                 command.Destroy().Text("Delete");
+             });
+         })
+           .ToolBar(toolbar =>
+           {
+               toolbar.Create().HtmlAttributes(new { id = "answerattachmentid" });
+           })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AttachAnswer"))
+          .Scrollable(h => h.Height("auto"))
+          .Events(e =>
+          {
+              e.DataBound("onAnswerAttachmentDataBound");
+          })
+          .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.Attachment_Answer_LetterSentForEmployeeId).Descending())
+          .Events(events =>
+          {
+              events.Error("error_handler(\"Attachment_Answer_LetterSentForEmployeeGrid#=EmployeeOutgoingAnswerId#\")");
+              events.RequestStart("onRequestStart(\"Attachment_Answer_LetterSentForEmployeeGrid#=EmployeeOutgoingAnswerId#\")");
+              events.RequestEnd("onRequestEnd(\"Attachment_Answer_LetterSentForEmployeeGrid#=EmployeeOutgoingAnswerId#\")");
+          })
+          .Model(model =>
+          {
+              model.Id(p => p.Attachment_Answer_LetterSentForEmployeeId);
+              model.Field(p => p.MasterId).DefaultValue("#=EmployeeOutgoingAnswerId#");
+          })
+           .Read(read => read.Action("Attachment_Answer_LetterSentForEmployees_Read", "Attachment_Answer_LetterSentForEmployees", new { id = "#=EmployeeOutgoingAnswerId#" }))
+           .Create(create => create.Action("AttachmentLetterForEmployeeAnswer_MultipleFile", "Attachment_Answer_LetterSentForEmployees", new { id = "#=EmployeeOutgoingAnswerId#" }))
+           .Update(update => update.Action("Attachment_Answer_LetterSentForEmployees_Update", "Attachment_Answer_LetterSentForEmployees"))
+           .Destroy(destroy => destroy.Action("Attachment_Answer_LetterSentForEmployees_Destroy", "Attachment_Answer_LetterSentForEmployees"))
+           ).ToClientTemplate()
+            )
+        </text> );
+      }).ToClientTemplate())
+</script>
+
+
+
+
+
+<script>
+    var isAnswered_Global = false;
+    var employeeOutgoingLetterId = 0;
+
+    function onDetailExpand(e) {
+
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        var id = masterDataItem.EmployeeOutgoingLetterId;
+        employeeOutgoingLetterId = masterDataItem.EmployeeOutgoingLetterId;
+        isSent_Global = masterDataItem.IsSent;
+
+        //if (masterDataItem.IsSent == true) {
+        //    $("#btnAttachmentId").hide();
+        //    $("#btnFinishSending").hide();
+        //}
+    } 
+
+    function DataBoundOutgoingAnswer(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+
+            if (dataItem.IsAnswered == true) {
+                //row.css("background-color", "green");
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-ApproveAnswer").hide();
+                row.find(".k-grid-UploadAnswer").hide();
+                $("answerCreate").hide();
+            }
+        }
+    }
+
+    function onAnswerAttachmentDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+
+            if (isAnswered_Global == true) {
+                row.find(".k-grid-delete").hide();
+            }
+
+        }
+    }  
+
+    function ApproveTheAnswer(e) {
+
+         var answerId = this.dataItem($(e.currentTarget).closest("tr")).EmployeeOutgoingAnswerId;
+         var outgoingId = this.dataItem($(e.currentTarget).closest("tr")).EmployeeOutgoingId;
+
+        $.ajax({
+            url: '@Url.Action("ApproveInstitutionIncomingAnswer", "LettersSentForEmployee")',
+                data: { id: answerId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+
+                    alert(result.Message);
+
+                    $("#EmployeeOutgoingAnswer" + outgoingId).data("kendoGrid").dataSource.read();
+                }
+            });
+    }
+
+     function UploadAnswer(e) {
+
+         var answerId = this.dataItem($(e.currentTarget).closest("tr")).EmployeeOutgoingAnswerId;
+         var employeeOutgoingId = this.dataItem($(e.currentTarget).closest("tr")).EmployeeOutgoingId
+        $("#Outgoing_AnswerId").val(answerId);
+        $("#Institution_Outgoing_Id").val(employeeOutgoingId);
+        var wnd = $("#UploadAnswerFileWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+
+    function UploadAnswerFile() {
+
+            $.ajax({
+                url: '@Url.Action("UploadAnswerFile", "LettersSentForEmployee")',
+             //contentType: "application/json; charset=utf-8",
+             data: function () {
+                 var data = new FormData();
+
+                 data.append("FileAnswer", $("#FileAnswer").get(0).files[0]);
+                 data.append("Outgoing_AnswerId", $("#Outgoing_AnswerId").val());
+                 return data;
+             }(),
+             type: 'POST',
+             contentType: false,
+             processData: false,
+             cache: false,
+             success: function (result) {
+                 var wnd = $("#UploadAnswerFileWindow").data("kendoWindow").close();
+                 var id = $("#Institution_Outgoing_Id").val();
+                 alert(result.Message);
+                 $("#EmployeeOutgoingAnswer" + id).data("kendoGrid").dataSource.read();
+             }
+         });
+     }
+</script>
+
+@(Html.Kendo().Window().Name("UploadAnswerFileWindow")
+        .Title("Upload Answer")
+        .Visible(false)
+        .Modal(true)
+        .Content(@<text>
+            <input type="hidden" id="Outgoing_AnswerId" name="Outgoing_AnswerId" />
+            <input type="hidden" id="Institution_Outgoing_Id" name="Institution_Outgoing_Id" />
+            @Html.TextBox("FileAnswer", "", new { type = "file", @class = "form-control" })
+
+            <br />
+            <div class="pull-right">
+                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadAnswerFile"))
+            </div>
+        </text>)
+         .Draggable(true)
+         .Width(300))

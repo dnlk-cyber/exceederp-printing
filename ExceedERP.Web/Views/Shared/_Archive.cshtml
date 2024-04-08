@@ -1,4 +1,4 @@
-﻿
+@using ExceedERP.Core.Localization
 <li class="">
     <a href="#" class="dropdown-toggle">
         <i class="menu-icon fa fa-archive"></i>
@@ -31,10 +31,10 @@
 
                         <ul class="submenu">
 
-                            <li id="archive119" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_InstitutionIncommingAndOutgoingLetter, "Index", "InstitutionIncoming", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                            <li id="archive120" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_InstitutionOutgoingLetter, "Index", "NewOutgoingLetter", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                            <li id="archive124" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_InstitutionFolder, "Index", "InstitutionArchiveNo", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                            <li id="archive179" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_InstitutionFolderExplorer, "Index", "InstitutionFolderExplorer", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                            <li id="archive119" class="actionlinlk">@Html.ActionLink("Incoming", "Index", "InstitutionIncomingLetters", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                            <li id="archive120" class="actionlinlk">@Html.ActionLink("Outgoing", "Index", "InstitutionOutgoingLetter", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                            <li id="archive121" class="actionlinlk">@Html.ActionLink("Folder", "Index", "InstitutionArchiveNo", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                            <li id="archive122" class="actionlinlk">@Html.ActionLink("Folder Explorer", "Index", "InstitutionFolderExplorer", new { area = "Archive" }, null)<b class="arrow"></b></li>
                         </ul>
 
                     </li>
@@ -53,30 +53,86 @@
 
                         <ul class="submenu">
 
-                            <li id="archive121" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_EmployeeIncomming, "Index", "EmployeeIncoming", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                            <li id="archive122" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_EmployeeOutgoing, "Index", "EmployeeOutgoingLetter", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                            <li id="archive125" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_EmployeeFolder, "Index", "PersonalArchiveNo", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                            <li id="archive126" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_PersonalFolderExplorer, "Index", "PersonalFolderExplorer", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                            @*<li id="archive123" class="actionlinlk">@Html.ActionLink("Incoming", "Index", "EmployeeIncoming", new { area = "Archive" }, null)<b class="arrow"></b></li>*@
+                            <li id="archive124" class="actionlinlk">@Html.ActionLink("Outgoing", "Index", "EmployeeOutgoingLetters", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                            <li id="archive125" class="actionlinlk">@Html.ActionLink("Folder", "Index", "PersonalArchiveNo", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                            <li id="archive126" class="actionlinlk">@Html.ActionLink("Folder Explorer", "Index", "PersonalFolderExplorer", new { area = "Archive" }, null)<b class="arrow"></b></li>
                         </ul>
 
                     </li>
 
                 }
 
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-archive"></i>
+                        Department
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
 
+                    <b class="arrow"></b>
 
-
+                    <ul class="submenu">
+                        <li id="selfservicearchive15ToDepartment" class="actionlinlk">
+                            @Html.ActionLink("To Department", "Index", "OutGoing_DepartmentToDepartments", new { area = "Archive" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="selfservice090letersforStaff" class="actionlinlk">
+                            @Html.ActionLink("From Department", "Index_Receiver", "OutGoing_DepartmentToStaff", new { area = "Archive" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="selfservice090letersforemployee" class="actionlinlk">
+                            @Html.ActionLink("Letters For Employee", "Index", "LettersSentForEmployee", new { area = "Archive" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="selfservice090letersbroadcast" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAnnouncment_Announcment, "Index", "BroadcastedLetters", new { area = "Archive" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
 
             }
             if (HttpContext.Current.User.IsInRole("Archive_Admin"))
             {
-                <li id="archive127" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_Zone, "Index", "Zone", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                <li id="archive128" class="actionlinlk">@Html.ActionLink("Subject Type", "Index", "SubjectType", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                <li id="archive128" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_InstitutionType, "Index", "InstitutionType", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                <li id="archive127" class="actionlinlk">@Html.ActionLink("Company Documents", "Index", "CompanyDocumentTypes", new { area = "Archive" }, null)<b class="arrow"></b></li>
+
+
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Setting
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                        <li id="archive128" class="actionlinlk">@Html.ActionLink("Subject Type", "Index", "SubjectType", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                        <li id="archive129" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_InstitutionType, "Index", "InstitutionType", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                    </ul>
+
+                </li>
             }
             if (HttpContext.Current.User.IsInRole("Archive_Report"))
             {
-                <li id="archive129" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_LetterReport, "LetterReport", "LetterReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        @Resources.NavigatorReport_Report
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                        @*<li id="archive-report-130" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorArchiveManagement_LetterReport, "LetterReport", "LetterReport", new { area = "Archive" }, null)<b class="arrow"></b></li>*@
+                        <li id="archive-report-131" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLetter_IncommingLetter + " " + Resources.NavigatorReport_Report, "IncomingLettersReport", "ArchiveReport", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                        <li id="archive-report-132" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLetter_OutgoingLetter + " " + Resources.NavigatorReport_Report, "OutgoingLettersReport", "ArchiveReport", new { area = "Archive" }, null)<b class="arrow"></b></li>
+                    </ul>
+
+                </li>
+               
             }
 
 

@@ -1,0 +1,32 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.ArchiveManagement.DepartmentFolder
+
+<div class="form">
+    <div class="row fullrow">
+       
+        <div class="col-md-12 ro1">
+
+            <div class="form-group">
+                <div class="col-md-10">
+                    @(Html.Kendo().DropDownListFor(model => model)
+                      .OptionLabel(Resources.Select)
+                      .Filter("contains")
+                      .DataTextField("Name")
+                      .DataValueField("SubjectTypeForDepartmentLevelId")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetDepartmentLevel_SubjectTypes", "ArchiveDataProvider", new { area = "Archive" }))
+                         .ServerFiltering(false);
+                      })
+
+                       .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+
+        </div>     
+    </div>
+</div>
+

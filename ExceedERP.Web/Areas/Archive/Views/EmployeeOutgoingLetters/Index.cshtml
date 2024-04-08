@@ -1,0 +1,314 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.Archive
+@using ExceedERP.Core.Domain.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Employee Outgoing Letters</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ArchiveManagement.EmployeeOutgoingLetter>()
+              .Name("EmployeeOutgoingLetterGrid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.SenderOrgId, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(150);
+                  columns.ForeignKey(c => c.ReceiverEmpId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameAmharic").Width(150);
+                  columns.Bound(c => c.OutgoingLetterDate).Width(100);
+                  columns.Bound(c => c.Time).Width(100);
+                  columns.Bound(c => c.Subject).Width(100);
+                  columns.Bound(c => c.RoomNo).Width(100);
+                  columns.Bound(c => c.Shelve).Width(100);
+                  columns.Bound(c => c.Row).Width(100);
+                  columns.Bound(c => c.FolderNo).Width(100);
+                  columns.Bound(c => c.Volume).Width(100);
+                  columns.Bound(c => c.FileNo).Width(100);
+
+                  columns.Command(command =>
+                  {
+                      command.Custom("sendToEmployee").Click("SendToEmployee").Text("Send").HtmlAttributes(new { @class = "btn btn-primary" });
+                      command.Edit();
+                      command.Destroy();
+                  }).Width(230);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Events(ev =>
+              {
+                  ev.DataBound("onDataBound");
+                  ev.DetailExpand("onDetailExpand");
+              })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OutgoingLetter").Window(window => { window.Title(""); window.Scrollable(false); }))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.EmployeeOutgoingLetterId))
+          .Read(read => read.Action("EmployeeOutgoingLetters_Read", "EmployeeOutgoingLetters"))
+          .Create(create => create.Action("EmployeeOutgoingLetters_Create", "EmployeeOutgoingLetters"))
+          .Update(update => update.Action("EmployeeOutgoingLetters_Update", "EmployeeOutgoingLetters"))
+          .Destroy(destroy => destroy.Action("EmployeeOutgoingLetters_Destroy", "EmployeeOutgoingLetters"))
+      ).ClientDetailTemplateId("template"))
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_#=EmployeeOutgoingLetterId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Attachments").Content(
+                @<text>
+                    #if(!IsTransfered){#
+                      <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="OpenAttachementWindow(#=EmployeeOutgoingLetterId#)" />
+                    #}#
+
+                    @(Html.Kendo().Grid<ArchiveAttachement>()
+                     .Name("ArchiveAttachementGrid#=EmployeeOutgoingLetterId#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.FileName).ClientTemplate("<a href='/Archive/EmployeeOutgoingLetters/DownloadArchiveAttachment?ArchiveAttachementId=\\#=ArchiveAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                         // columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+                         columns.Bound(c => c.Description).Width(100);
+
+                         columns.Template(e => { }).ClientTemplate("<a href='/Archive/EmployeeOutgoingLetters/DownloadArchiveAttachment?ArchiveAttachementId=\\#=ArchiveAttachementId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(80);
+                         columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+
+                         columns.Command(command =>
+                         {
+                             command.Destroy().Text("Delete");
+                         }).Width(300);
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                     .Window(window =>
+                     {
+                         window.Title("");
+                         window.Scrollable(false);
+                     }))
+                     .Events(x =>
+                     {
+                         x.DataBound("onDetailDataBound");
+                     })
+                     .Scrollable(h => h.Height("auto"))
+                     .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sort => sort.Add(c => c.ArchiveAttachementId).Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"ArchiveAttachementGrid#=EmployeeOutgoingLetterId#\")");
+                         events.RequestStart("onRequestStart(\"ArchiveAttachementGrid#=EmployeeOutgoingLetterId#\")");
+                         events.RequestEnd("onRequestEnd(\"ArchiveAttachementGrid#=EmployeeOutgoingLetterId#\")");
+                     })
+                     .Model(model => model.Id(p => p.ArchiveAttachementId))
+                     .Read(read => read.Action("ArchiveAttachments_Read", "ArchiveAttachments", new { id = "#=EmployeeOutgoingLetterId#", ac = ArchiveCategory.Employee, lt = LetterType.OutGoing }))
+                     .Create(create => create.Action("ArchiveAttachments_Create", "ArchiveAttachments", new { id = "#=EmployeeOutgoingLetterId#", ac = ArchiveCategory.Employee, lt = LetterType.OutGoing }))
+                     .Update(update => update.Action("ArchiveAttachments_Update", "ArchiveAttachments"))
+                     .Destroy(destroy => destroy.Action("ArchiveAttachments_Destroy", "ArchiveAttachments"))
+                     ).ToClientTemplate())
+                </text>
+      );
+
+                items.Add().Text("Answer").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<EmployeeOutgoingAnswer>()
+         .Name("EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#")
+         .Columns(columns =>
+         {
+             columns.Bound(c => c.Answer).ClientTemplate("<div>\\#= Answer\\#</div>").Width(300);
+             columns.Bound(c => c.FileName).ClientTemplate("<a href='/HRM/DepartmentSentLetter/DownloadAnswer?EmployeeOutgoingAnswerId=\\#=EmployeeOutgoingAnswerId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(100);
+             columns.Bound(c => c.Date).Width(100);
+             columns.Bound(c => c.Time).Width(100);
+         })
+
+
+           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+
+             .Scrollable(h => h.Height("auto"))
+             .DataSource(dataSource => dataSource
+             .Ajax()
+             .Events(events =>
+             {
+                 events.Error("error_handler(\"EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#\")");
+                 events.RequestStart("onRequestStart(\"EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#\")");
+                 events.RequestEnd("onRequestEnd(\"EmployeeOutgoingAnswer#=EmployeeOutgoingLetterId#\")");
+             })
+             .Model(model => model.Id(p => p.EmployeeOutgoingAnswerId))
+             .Read(read => read.Action("EmployeeOutgoingAnswers_Archive_Read", "EmployeeOutgoingLetters", new { id = "#=EmployeeOutgoingLetterId#", area = "Archive" }))
+             ).ToClientTemplate())
+                    </text>
+);
+            }).ToClientTemplate())
+</script>
+
+
+<script>
+
+    var IsTransfered_Global = false;
+    var expandedRow;
+
+    function onDataBound(e) {
+        var grid = this;
+       // this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+
+            if (dataItem.IsTransfered == true)
+            {
+                row.find(".k-grid-sendToEmployee").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-edit").hide(); 
+            }
+        }
+    }
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#EmployeeOutgoingLetterGrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var id = masterDataItem.EmployeeOutgoingLetterId;
+        IsTransfered_Global = masterDataItem.IsTransfered;
+
+        // Only one open at a time
+        if (expandedRow != null && expandedRow[0] != e.masterRow[0]) {
+            masterGrid.collapseRow(expandedRow);
+        }
+        expandedRow = e.masterRow;
+    }
+
+    function onDetailDataBound(e) {
+        var grid = this;
+
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+
+            if (IsTransfered_Global == true) {
+                row.find(".k-grid-delete").hide();
+            }
+        }
+    }
+
+    function GetData() {
+
+        var employee = $("#ReceiverEmpId").data("kendoDropDownList");
+        var empId = employee.value();
+        $.ajax({
+            url: '@Url.Action("GetData", "EmployeeIncoming")',
+            data: { empId: empId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#RoomNo").val(result.Shelve).trigger("change");
+                $("#Shelve").val(result.Shelve).trigger("change");
+                $("#Row").val(result.Row).trigger("change");
+                $("#FileNo").val(result.FileNo).trigger("change");
+                $("#FolderNo").val(result.Folder).trigger("change");
+                $("#Volume").val(result.Volume).trigger("change");
+                
+            }
+        });
+    }
+
+     function SendToEmployee(e) {
+
+         var empOutGoingId = this.dataItem($(e.currentTarget).closest("tr")).EmployeeOutgoingLetterId;
+
+         $.ajax({
+            url: '@Url.Action("SendToEmployee", "EmployeeOutgoingLetters")',
+            data: { empOutGoingId: empOutGoingId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                alert(result.Message);
+                $("#EmployeeOutgoingLetterGrid").data("kendoGrid").dataSource.read();
+            }
+        });
+    }
+
+function OpenAttachementWindow(id) {
+
+    $("#Attachement_EmployeeOutgoingId").val(id);
+
+     var wnd = $("#OutgoingAttachementWindow").data("kendoWindow");
+            wnd.center().open();
+    }
+
+
+    function AttachArchiveFiles() {
+        try {
+            var ac = '@ArchiveCategory.Employee';
+            var lt = '@LetterType.OutGoing';
+            $.ajax({
+                url: '@Url.Action("UploadIncomingLetters_MultipleFile", "ArchiveAttachments")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                   // var kkk = $("#letter").get(0).files[0];
+                    var ins = document.getElementById('letter').files.length;
+                    for (var x = 0; x < ins; x++) {
+                        data.append("letter[" + x + "]", document.getElementById('letter').files[x]);
+                    }
+                   // data.append("file", $("#letter").get(0).files[0]);
+                    data.append("description", $("#description").val());
+                    data.append("masterId", $("#Attachement_EmployeeOutgoingId").val());
+                    data.append("ac", ac);
+                    data.append("lt", lt);
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#OutgoingAttachementWindow").data("kendoWindow");
+                    wnd.close();
+
+                    var id = $("#Attachement_EmployeeOutgoingId").val();
+                    $("#ArchiveAttachementGrid" + id).data("kendoGrid").dataSource.read();
+                }
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+    }
+
+</script>
+
+
+@(Html.Kendo().Window().Name("OutgoingAttachementWindow")
+    .Title(Resources.HR_ArchiveManagement_Answer)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+        <input type="text" id="Attachement_EmployeeOutgoingId" name="Attachement_EmployeeOutgoingId" hidden />
+        <div class="editor-field">
+            @*@Html.TextBox("letter", "", new { type = "file" })*@
+            <input type="file" name="letter" id="letter" class="form-control" multiple />
+        </div>
+
+        <br />
+        <div class="editor-field">
+            @Html.TextArea("description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+        </div>
+        <br />
+
+
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("AttachArchiveFiles"))
+
+        </div>
+
+    </text>)
+      .Pinned(true)
+      .Draggable(true)
+      .Width(300)
+)
