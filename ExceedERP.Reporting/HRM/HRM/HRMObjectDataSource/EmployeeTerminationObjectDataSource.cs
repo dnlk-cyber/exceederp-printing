@@ -66,7 +66,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     EmployeeInfo.EmployeeId = e.EmployeeCode;
 
-                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
+                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(e.Gender);
                     EmployeeInfo.FullName = e.FullNameAmharic;
 
                     var look = db.Lookups.FirstOrDefault(x => x.LookupId == l.LookupId);

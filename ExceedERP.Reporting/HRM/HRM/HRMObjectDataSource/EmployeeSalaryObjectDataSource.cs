@@ -67,7 +67,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
-                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
                         EmployeeInfo.FullName = employee.FullNameAmharic;
 
                         var rank = db.Ranks.FirstOrDefault(x => x.RankId == l.RankId);
@@ -102,7 +102,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo.EmployeeId = employee.EmployeeCode;
 
-                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
                         EmployeeInfo.FullName = employee.FullNameAmharic;
 
                         var rank = db.Ranks.FirstOrDefault(x => x.RankId == l.RankId);

@@ -18,6 +18,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
     public class EmployeeMasterObjectDataSource : List<EmployeeMasterViewModel>
     {
         private ExceedDbContext db = new ExceedDbContext();
+        string cultureName = GlobalHelper.GetCurrentCulture();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<EmployeeMasterViewModel> GetEmployeeMasterInfo(/*string branchId,*/ object[] branchId,string BussinessUnitId, string orgStructureId, string employeeType, string status, string employee, string from, string to, string hireFrom, string hireTo)
@@ -290,11 +291,32 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     double expSum = 0;
                     string PlaceWorked = "";
                     string PlaceWorkedInternal = "";
-                    foreach (var ex in empExtExps)
+                    if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
                     {
-                        expSum = expSum + (ex.To - ex.From).Days;
-                        PlaceWorked += "  From: " + ex.FromExAmharic + " " + "to:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> "; 
+                        foreach (var ex in empExtExps)
+                        {
+                            expSum = expSum + (ex.To - ex.From).Days;
+                            PlaceWorked += "  ከ: " + ex.FromExAmharic + " " + "እስከ:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
+                        }
                     }
+                    if (cultureName.ToLower() == "om")
+                    {
+                        foreach (var ex in empExtExps)
+                        {
+                            expSum = expSum + (ex.To - ex.From).Days;
+                            PlaceWorked += "  irraa: " + ex.FromExAmharic + " " + "gara:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
+                        }
+                    }
+                    if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                    {
+                        foreach (var ex in empExtExps)
+                        {
+                            expSum = expSum + (ex.To - ex.From).Days;
+                            PlaceWorked += "  From: " + ex.FromExAmharic + " " + "to:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
+                        }
+
+                    }
+                   
                     EmployeeMasterViewModel.Expiriance = EmployeeHelper.GetDaystoWordsAmharic(expSum);
                     EmployeeMasterViewModel.ExpirianceDetails = PlaceWorked;
                     EmployeeMasterViewModel.MartialStatus = HrHelper.GetMartialStatus(e);
@@ -303,11 +325,36 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     var individualPlacements = db.Placements.Where(x => x.EmployeeId == pl.EmployeeId).OrderByDescending(x=>x.AssignmentDate).ToList();
                     DateTime today = DateTime.Now;
                     var fromdatestr = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-                    foreach (var perPl in individualPlacements)
+                   
+                    if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
                     {
+                        
+                        foreach (var perPl in individualPlacements)
+                        {
 
-                        PlaceWorkedInternal += "  From: " + perPl.AssignmentDateAmharic + " " + "to:" + fromdatestr + " " + perPl.JobTitleName  + "<br /> ";
-                        fromdatestr = perPl.AssignmentDateAmharic;
+                            PlaceWorkedInternal += "  ከ: " + perPl.AssignmentDateAmharic + " " + "እስከ:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
+                            fromdatestr = perPl.AssignmentDateAmharic;
+                        }
+                    }
+                    if (cultureName.ToLower() == "om")
+                    {
+                        
+                        foreach (var perPl in individualPlacements)
+                        {
+
+                            PlaceWorkedInternal += "  Irraa: " + perPl.AssignmentDateAmharic + " " + "Gara:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
+                            fromdatestr = perPl.AssignmentDateAmharic;
+                        }
+                    }
+                    if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                    {
+                        foreach (var perPl in individualPlacements)
+                        {
+
+                            PlaceWorkedInternal += "  From: " + perPl.AssignmentDateAmharic + " " + "to:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
+                            fromdatestr = perPl.AssignmentDateAmharic;
+                        }
+
                     }
                     EmployeeMasterViewModel.InternalExprianceDetail = PlaceWorkedInternal;
                     var ExpTotalSum = totalInternalDays + expSum;
@@ -470,11 +517,42 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (e.Status == EmployeeStatus.CONTRACT)
                     {
+
                         EmployeeMasterViewModel.Employement = Resources.Enum_EmployeeStatus_CONTRACT.ToLower();
+                        if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                        {
+
+                            EmployeeMasterViewModel.Employement = "ግዝያዊ";
+                        }
+                        if (cultureName.ToLower() == "om")
+                        {
+
+                            EmployeeMasterViewModel.Employement = "Waliigaltee";
+                        }
+                        if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                        {
+                            EmployeeMasterViewModel.Employement = "Contract";
+
+                        }
                     }
                     else if (e.Status == EmployeeStatus.PERMANENT)
                     {
                         EmployeeMasterViewModel.Employement = Resources.Enum_EmployeeStatus_PERMANENT.ToLower();
+                        if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                        {
+
+                            EmployeeMasterViewModel.Employement = "ቋሚ";
+                        }
+                        if (cultureName.ToLower() == "om")
+                        {
+
+                            EmployeeMasterViewModel.Employement = "Dhaabbataa";
+                        }
+                        if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                        {
+                            EmployeeMasterViewModel.Employement = "Permanent";
+
+                        }
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == pl.BranchId);

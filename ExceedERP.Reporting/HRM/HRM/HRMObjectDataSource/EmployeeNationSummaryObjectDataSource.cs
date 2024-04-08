@@ -19,6 +19,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<EmployeeSummary> GetEmployeeNationSummary(string branchId, string orgStructureId, string nation, string status)
         {
+            string cultureName = GlobalHelper.GetCurrentCulture();
             var employees = db.Person_Employee.ToList();
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             EmployeeSummary employee = new EmployeeSummary();
@@ -74,7 +75,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             foreach (var n in lookups)
             {
                 employee = new EmployeeSummary();
-                employee.Criteria = "Nation";
+                if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                {
+                    employee.Criteria = "ብሄር";
+                }
+                if (cultureName.ToLower() == "om")
+                {
+                    employee.Criteria = "Saba";
+                }
+                if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                {
+                    employee.Criteria = "Nation";
+                }
                 employee.SummaryName = n.Description;
                 employee.index = index;
 
@@ -97,8 +109,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 employee = new EmployeeSummary();
 
-                employee.Criteria = "Nation";
-                employee.SummaryName = "Unfilled";
+                if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                {
+                    employee.Criteria = "ብሄር";
+                    employee.SummaryName = "ያልተሞላ";
+
+                }
+                if (cultureName.ToLower() == "om")
+                {
+                    employee.Criteria = "Saba";
+                    employee.SummaryName = "Hin guutamne";
+                }
+                if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                {
+                    employee.Criteria = "Nation";
+                    employee.SummaryName = "Unfilled";
+
+                }
                 employee.index = index + 1;
 
                 employee.NumberOfFemaleEmployee = employees.Count(x => x.Gender == Gender.FEMALE && x.Nation == null);

@@ -151,7 +151,7 @@
     <value>= Fields.JobTitle</value>
   </data>
   <data name="textBox8.Value" xml:space="preserve">
-    <value>= IIf(Fields.Sex="Male","Male","Female")</value>
+    <value>= Fields.Sex</value>
   </data>
   <data name="textBox2.Value" xml:space="preserve">
     <value>= Fields.FullName</value>
@@ -204,9 +204,6 @@
   <data name="Page.Value" xml:space="preserve">
     <value>Page:</value>
   </data>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>am</value>
-  </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>

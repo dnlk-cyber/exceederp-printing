@@ -42,6 +42,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 placements = EmployeeHelper.GetEmployees_ByDepartment_FromPlacement(placements, orgId).OrderByDescending(x => x.AssignmentDate).ToList();
             }
 
+            if (BusinessUnit != null)
+            {
+                int.TryParse(BusinessUnit, out int businessUnitId);
+                placements = placements.Where(x=>x.BusinessUnitId==businessUnitId).OrderByDescending(x => x.AssignmentDate).ToList();
+            }
+
 
             var performances = db.EmployeePerformanceScores.ToList();
 

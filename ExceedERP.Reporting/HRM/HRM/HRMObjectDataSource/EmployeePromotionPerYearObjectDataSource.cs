@@ -52,7 +52,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     EmployeeInfo = new EmployeePromotion();
 
-                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
                     EmployeeInfo.FullName = employee.FullNameAmharic;
                     EmployeeInfo.EmployeeId = employee.EmployeeCode;
 

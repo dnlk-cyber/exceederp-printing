@@ -22,7 +22,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<EmployeeInfo> EmployeeInfoList = new List<EmployeeInfo>();
             EmployeeInfo EmployeeInfo = new EmployeeInfo();
-
+            string cultureName = GlobalHelper.GetCurrentCulture();
             var placements = db.Placements.ToList();
 
             var branches = branchId.ToList();

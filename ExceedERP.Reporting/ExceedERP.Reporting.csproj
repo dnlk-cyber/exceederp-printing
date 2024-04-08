@@ -1968,7 +1968,7 @@
     <Compile Include="HRM\HRM\BenefitReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HRM\HRM\BenefitReport.designer.cs">
+    <Compile Include="HRM\HRM\BenefitReport.Designer.cs">
       <DependentUpon>BenefitReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Commitment.cs">
@@ -2013,10 +2013,22 @@
     <Compile Include="HRM\HRM\Design\TrainingNeedRequestReport.designer.cs">
       <DependentUpon>TrainingNeedRequestReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\EmployeeBirthDate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\EmployeeBirthDate.designer.cs">
+      <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\EmployeePerformanceSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\EmployeePerformanceSummary.designer.cs">
+      <DependentUpon>EmployeePerformanceSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\EmployeePerformanceTotalSummary.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HRM\HRM\EmployeePerformanceTotalSummary.designer.cs">
+    <Compile Include="HRM\HRM\EmployeePerformanceTotalSummary.Designer.cs">
       <DependentUpon>EmployeePerformanceTotalSummary.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\EmployeePlacementReport.cs">
@@ -2031,6 +2043,12 @@
     <Compile Include="HRM\HRM\EmployeeProfileReport.designer.cs">
       <DependentUpon>EmployeeProfileReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\EmployeeRestitution.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\EmployeeRestitution.designer.cs">
+      <DependentUpon>EmployeeRestitution.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\HealthPaymentSelfCare.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2038,111 +2056,309 @@
       <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\HRMObjectDataSource\AllDepartmentsListODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\AmharicExperienceLetterObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceDayAbsentAndLateCommingListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceLetterODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\BenefitODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\BranchObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ChangeOfPayrollBenefitObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ChangeOfPayrollObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ClearanceProviderObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ClinicObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\CommitmentODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\CommitteeListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\CompanyStructureObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ComplainODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DelegationCCODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DeligationODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DepartmentAttendanceListObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\DisciplinaryMeasureObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeBirthDateObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeBSCPerforObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeByBranchObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeCourtInsuranceObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeDisciplinaryMeasureObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEductaionObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEduFieldSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEduLevelSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEmploymentTypeSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeExperienceObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeFixedAssetListObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeForWarrantyODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeJobObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeJobTitleSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeLeaveObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeLeavePlanObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeMasterColumnsODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeMasterObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeNationSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePensionObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceDepartmentODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceParametrODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforNotEvaluatedEmployeeObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePlacementObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeProfileObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePromotionPerYearObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeQuarterPerforObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRankSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRecruitmentObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRestitutionListObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeSalaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeesInOneDepartmentODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeStatusObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTerminationObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTrainingObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationCriteriaODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationPeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationStatusODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationTypeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationTypeSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExperienceAmharicTwoODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExperienceEnglishTwoODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ExternalApplicanHeaderObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ExternalApplicantDetailObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\FiscalYearObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\FiscalYearTrainingPlanActionPlanODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthAndValueObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthPaymentLimit.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthPaymentSelfCareObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\HospitalObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\HRMObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\IncommingOutgoingObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalApplicantDetailObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalApplicantHeaderObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalVacancyForSelfCareObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalVacancyObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\InVacVMODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByAgeEducationObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByAgeObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByAssignemntObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByCourtObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByRegionObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeDetailInfoObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeListByCourseObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeListByJobTitleObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LaboratoryFormRequestHeadersObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LaboratoryRequestFormObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailSelfCareObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePayableObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePeriodsObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePlanObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveRequestStatusObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LetThemKnowObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LetThemKowWorkUnitObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LongTermEducationObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ManPowerPlanningRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\MonthlySalaryPerPeriodObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\MyEmployeePerformanceODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\MyProfileObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\NewHeaderObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\NotifyRetirmentObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\NotPlacedEmployeesObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\OvertimeHoursListObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\PayableLeaveSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\PersonTitleObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProbationPerformanceMeasureODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProjectObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\PromotedEmployeeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\QuarterLengthODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\QuarterODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RankODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentHeaderObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ReferralSheetObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\RestitutionListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\SeverancePayableObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationReasonObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingAndEducationOneByOneODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationEvaluaterInfoODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingNeedRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingOneByOneObjectDataSourse.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingRequestODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\TranscriptObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VacancyaForInternalObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VacancyForMediaObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VacancyIdObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VacantPostionsByDepartmentObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VacantPostionsObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VehicleAccidentByProjectObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VehicleAccidentRecordInsuranceObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\VehicleAccRecordInsuraceByTypeObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\WarrantyLetterObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\WorkandCostSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\WorkandCostSummaryPeriodODS.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ApplicantName.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\AttendanceHeaderVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\AttendanceLeterVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\Behaviours.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\BenefitVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ChangeOfPayrollBenefitVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ChangeOfPayrollVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\Children.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ClearanceLetterData.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ClinicViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CommitmentVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\CommitteeList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CompanyStructureVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ComplainVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CosignVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\CourtAllEmployeeList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\CourtEmployees.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\CourtWorkUnit.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\csvColumnHidingVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\CurrentEmployeeExpriance.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\DelegationCCVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\DeligationVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmpApplicantTraining.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeBscPerfromance.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeByBranch.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeCodeViewModel.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeCourtInsurance.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeDicipline.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeEducation.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeEductaion.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeEductaionList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeExperience.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeExperienceLetter.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeExperienceList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeFixedAsset.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeHealthPayment.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeInfo.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeJob.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeLeave.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeLeavePlan.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeMasterViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceSummaryVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceTotalVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerfromance.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePlacementVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeePromotion.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeQuarterPerfromance.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRecruitment.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRecruitmentExternalVaccLetter.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRestitutionList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRetirment.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeSummary.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTermination.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTerminationLetter.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTraining.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeTypeReportParameterViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployementTypeVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EvaluationTypes.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExperienceVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantDetail.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantEducation.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantExpriance.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\FiscalYearTrainingPlanActionPlanVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthPaymentDetaiList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthValueListViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthValueViewModel.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\HighLevelAccident.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HospitalVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\HRMViewModel.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\IncommingOutgoingLetterReport.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\InternalApplicantDetail.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\InternalVacancy.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\InVacVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeByAge.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeByAgeAndEducation.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeByCourt.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeByRegion.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeDetailInformation.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeEduaction.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeListByCourse.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\JudgeListByJobTitle.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LaboratoryRequestCatagoryVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LaboratoryRequestFormEmployeeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LaboratoryRequestTestsVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveBalanceViewModel.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeaveFromOther.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeaveOneByOne.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePayableVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeavePlan.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeavePlanList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestStatusVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeaveSummary.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeaveSummaryList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeaveTakenDetail.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LetThemKnow.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LongTermEducation.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LowLevelAccident.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ManPowerRequestVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\MediumLevelAccident.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\MonthlySalaryPerPeriodVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\Nation.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\NotPlacedEmployeeVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\OtherEmployeeExpriance.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\PayableLeave.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\PaybaleLeaveList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\PerformanceSummary.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\PersonTitleViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ProbationMeasureDetailVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ProbationMeasureVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\PromotedEmployee.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\PromotionVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\QuarterLengthVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\QuarterVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\RecruitmentSummary.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ReferalSheetVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ReferralSheet.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\RestitutionList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\SeverancePayablesVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\Structure.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TerminationAcceptanceLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingAndEducationOneByeOneVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingEvaluationVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingNeedRequestVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingOneByeOneViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingReqeustVM.cs" />
-    <Compile Include="HRM\HRM\LaboratoryRequestForm.cs">
+    <Compile Include="HRM\HRM\HRMViewModel\TransferToClinic.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\TransferVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\UserCardItemsList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VacancyForMedias.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VacantDetail.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VacantPostionByDept.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VacantPostions.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VehicleAccidentByProject.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VehicleAccidentRecordInsurace.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\VehicleAccRecordInsuraceByType.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\WarrantyLetterViewModel.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\WorkandCostSummary.cs" />
+    <Compile Include="HRM\HRM\IncomOutcommingLetter.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HRM\HRM\LaboratoryRequestForm.designer.cs">
-      <DependentUpon>LaboratoryRequestForm.cs</DependentUpon>
+    <Compile Include="HRM\HRM\IncomOutcommingLetter.designer.cs">
+      <DependentUpon>IncomOutcommingLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\InsurancePayment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\InsurancePayment.designer.cs">
+      <DependentUpon>InsurancePayment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\InVacRpt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\InVacRpt.designer.cs">
+      <DependentUpon>InVacRpt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\LeaveOnebyOne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\LeaveOnebyOne.designer.cs">
+      <DependentUpon>LeaveOnebyOne.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\LeaveOnebyOneSelfCare.cs">
       <SubType>Component</SubType>
@@ -2162,6 +2378,12 @@
     <Compile Include="HRM\HRM\LeaveRequestStatusReport.designer.cs">
       <DependentUpon>LeaveRequestStatusReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.Designer.cs">
+      <DependentUpon>AmharicExperienceLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\AmharicExperienceLetterReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2174,7 +2396,20 @@
     <Compile Include="HRM\HRM\Letters\ChangeOfPayroll.designer.cs">
       <DependentUpon>ChangeOfPayroll.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Letters\ClearanceLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\ClearanceLetter.Designer.cs">
+      <DependentUpon>ClearanceLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\ClearanceLetterObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\ContarctObjectDataSource .cs" />
+    <Compile Include="HRM\HRM\Letters\ContractLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\ContractLetter.designer.cs">
+      <DependentUpon>ContractLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\ExperienceAmharicFBC.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2189,6 +2424,12 @@
       <DependentUpon>ExperienceEnglishFBC.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\ExperienceEnglishObjectDataSourceFBC.cs" />
+    <Compile Include="HRM\HRM\Letters\ExperienceLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\ExperienceLetter.Designer.cs">
+      <DependentUpon>ExperienceLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\ExperienceLetterAmharicTwo.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2216,6 +2457,18 @@
     <Compile Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.Designer.cs">
       <DependentUpon>ManPowerPlanningRequestLetter.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Letters\PatientTransfer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\PatientTransfer.Designer.cs">
+      <DependentUpon>PatientTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\PromotionLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\PromotionLetter.designer.cs">
+      <DependentUpon>PromotionLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\PromotionLetterTwo.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2223,6 +2476,25 @@
       <DependentUpon>PromotionLetterTwo.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\PromotionLetterTwoObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\PromotionObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\RecruitmentForExVacLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentForExVacLetter.Designer.cs">
+      <DependentUpon>RecruitmentForExVacLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentForProject.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentForProject.Designer.cs">
+      <DependentUpon>RecruitmentForProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentLetter.designer.cs">
+      <DependentUpon>RecruitmentLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\RecruitmentLetterTwo.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2230,6 +2502,7 @@
       <DependentUpon>RecruitmentLetterTwo.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\RecruitmentLetterTwoObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\RecruitmentObjectDataSource .cs" />
     <Compile Include="HRM\HRM\Letters\RecruitmentRequestLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2249,6 +2522,18 @@
     <Compile Include="HRM\HRM\Letters\rptAttendanceLetter.designer.cs">
       <DependentUpon>rptAttendanceLetter.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Letters\rptMyProfile.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\rptMyProfile.designer.cs">
+      <DependentUpon>rptMyProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\rptVacancyInternal.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\rptVacancyInternal.designer.cs">
+      <DependentUpon>rptVacancyInternal.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\SalaryIncreementLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2263,6 +2548,12 @@
       <DependentUpon>TerminationAcceptanceLetter.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\TerminationAcceptanceLetterObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\TerminationLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\TerminationLetter.Designer.cs">
+      <DependentUpon>TerminationLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\TrainingRequest.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2270,6 +2561,12 @@
       <DependentUpon>TrainingRequest.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\TrainingRequestObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\TransferLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\TransferLetter.designer.cs">
+      <DependentUpon>TransferLetter.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Letters\TransferLetterTwo.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2277,7 +2574,14 @@
       <DependentUpon>TransferLetterTwo.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\TransferLetterTwoObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\TransferObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\TransferToClinicObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\VacancyForMedia.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\VacancyForMedia.Designer.cs">
+      <DependentUpon>VacancyForMedia.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\MyPerformance.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2296,11 +2600,143 @@
     <Compile Include="HRM\HRM\Report1.designer.cs">
       <DependentUpon>Report1.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Restitution.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Restitution.designer.cs">
+      <DependentUpon>Restitution.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\RetirementNote.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\RetirementNote.designer.cs">
+      <DependentUpon>RetirementNote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptAmharicExperience.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptAmharicExperience.designer.cs">
+      <DependentUpon>rptAmharicExperience.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\rptClinicReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\rptClinicReport.designer.cs">
       <DependentUpon>rptClinicReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptDisciplineReason.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptDisciplineReason.designer.cs">
+      <DependentUpon>rptDisciplineReason.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpAge.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpAge.designer.cs">
+      <DependentUpon>rptEmpAge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpByStatus.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpByStatus.designer.cs">
+      <DependentUpon>rptEmpByStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpEduField.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpEduField.designer.cs">
+      <DependentUpon>rptEmpEduField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpEduLevel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpEduLevel.designer.cs">
+      <DependentUpon>rptEmpEduLevel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpJobTitle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpJobTitle.designer.cs">
+      <DependentUpon>rptEmpJobTitle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeBSCPerformance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeBSCPerformance.designer.cs">
+      <DependentUpon>rptEmployeeBSCPerformance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeByBranch.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeByBranch.designer.cs">
+      <DependentUpon>rptEmployeeByBranch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeCourtInsurance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeCourtInsurance.designer.cs">
+      <DependentUpon>rptEmployeeCourtInsurance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.designer.cs">
+      <DependentUpon>rptEmployeeDisciplinaryMeasure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeEductions.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeEductions.designer.cs">
+      <DependentUpon>rptEmployeeEductions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeExperience.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeExperience.designer.cs">
+      <DependentUpon>rptEmployeeExperience.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeFixedAsset.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeFixedAsset.designer.cs">
+      <DependentUpon>rptEmployeeFixedAsset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeInLeave.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeInLeave.designer.cs">
+      <DependentUpon>rptEmployeeInLeave.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeJobTitle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeJobTitle.designer.cs">
+      <DependentUpon>rptEmployeeJobTitle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeLeavePlan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeLeavePlan.designer.cs">
+      <DependentUpon>rptEmployeeLeavePlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeMaster.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeMaster.designer.cs">
+      <DependentUpon>rptEmployeeMaster.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeNationByRegion.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeNationByRegion.designer.cs">
+      <DependentUpon>rptEmployeeNationByRegion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeePerformance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeePerformance.designer.cs">
+      <DependentUpon>rptEmployeePerformance.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\rptEmployeePerformanceDepartment.cs">
       <SubType>Component</SubType>
@@ -2320,11 +2756,155 @@
     <Compile Include="HRM\HRM\rptEmployeePerformanceSummaryDepartment.designer.cs">
       <DependentUpon>rptEmployeePerformanceSummaryDepartment.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\rptEmployeePesion.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeePesion.designer.cs">
+      <DependentUpon>rptEmployeePesion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeePromotionStep.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeePromotionStep.designer.cs">
+      <DependentUpon>rptEmployeePromotionStep.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeQuarterPerformance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeQuarterPerformance.designer.cs">
+      <DependentUpon>rptEmployeeQuarterPerformance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeRecruitment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeRecruitment.designer.cs">
+      <DependentUpon>rptEmployeeRecruitment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeReferalSheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeReferalSheet.designer.cs">
+      <DependentUpon>rptEmployeeReferalSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeSalary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeSalary.designer.cs">
+      <DependentUpon>rptEmployeeSalary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeTermination.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeTermination.designer.cs">
+      <DependentUpon>rptEmployeeTermination.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeTraining.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmployeeTraining.designer.cs">
+      <DependentUpon>rptEmployeeTraining.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpNation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpNation.designer.cs">
+      <DependentUpon>rptEmpNation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpRank.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptEmpRank.designer.cs">
+      <DependentUpon>rptEmpRank.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptExternalApplicantList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptExternalApplicantList.designer.cs">
+      <DependentUpon>rptExternalApplicantList.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\rptHealthandValue.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\rptHealthandValue.designer.cs">
       <DependentUpon>rptHealthandValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptInternalApplicantList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptInternalApplicantList.designer.cs">
+      <DependentUpon>rptInternalApplicantList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptInternalVaccancies.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptInternalVaccancies.designer.cs">
+      <DependentUpon>rptInternalVaccancies.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeByAge.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeByAge.designer.cs">
+      <DependentUpon>rptJudgeByAge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeByAgeAndEducation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeByAgeAndEducation.designer.cs">
+      <DependentUpon>rptJudgeByAgeAndEducation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgebyBranchCount.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgebyBranchCount.designer.cs">
+      <DependentUpon>rptJudgebyBranchCount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgebyCourse.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgebyCourse.designer.cs">
+      <DependentUpon>rptJudgebyCourse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeByJobTitle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeByJobTitle.designer.cs">
+      <DependentUpon>rptJudgeByJobTitle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeDetailInformation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeDetailInformation.designer.cs">
+      <DependentUpon>rptJudgeDetailInformation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptJudgeList.designer.cs">
+      <DependentUpon>rptJudgeList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLeave.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLeave.designer.cs">
+      <DependentUpon>rptLeave.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLeavePlan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLeavePlan.designer.cs">
+      <DependentUpon>rptLeavePlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLeaveSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLeaveSummary.designer.cs">
+      <DependentUpon>rptLeaveSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLongTermEducation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptLongTermEducation.designer.cs">
+      <DependentUpon>rptLongTermEducation.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\rptMonthlySalaryPerPeriod.cs">
       <SubType>Component</SubType>
@@ -2335,14 +2915,80 @@
     <Compile Include="HRM\HRM\rptOvertimeHoursUnProcessedLists.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HRM\HRM\rptOvertimeHoursUnProcessedLists.designer.cs">
+    <Compile Include="HRM\HRM\rptOvertimeHoursUnProcessedLists.Designer.cs">
       <DependentUpon>rptOvertimeHoursUnProcessedLists.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptPaidLeave.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptPaidLeave.designer.cs">
+      <DependentUpon>rptPaidLeave.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptPlacmentGap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptPlacmentGap.designer.cs">
+      <DependentUpon>rptPlacmentGap.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\rptProbationPerformanceMeasure.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\rptProbationPerformanceMeasure.designer.cs">
       <DependentUpon>rptProbationPerformanceMeasure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptRecruitment.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptRecruitment.designer.cs">
+      <DependentUpon>rptRecruitment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptRecruitmentSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptRecruitmentSummary.designer.cs">
+      <DependentUpon>rptRecruitmentSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptTermination.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptTermination.designer.cs">
+      <DependentUpon>rptTermination.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptTerminationReason.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptTerminationReason.designer.cs">
+      <DependentUpon>rptTerminationReason.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptTobePromotedEmployee.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptTobePromotedEmployee.designer.cs">
+      <DependentUpon>rptTobePromotedEmployee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptVacantPostion.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptVacantPostion.designer.cs">
+      <DependentUpon>rptVacantPostion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptWarrantyLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptWarrantyLetter.designer.cs">
+      <DependentUpon>rptWarrantyLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rptWorkandCostSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rptWorkandCostSummary.designer.cs">
+      <DependentUpon>rptWorkandCostSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.designer.cs">
+      <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\SeverancePayableReport.cs">
       <SubType>Component</SubType>
@@ -2373,6 +3019,24 @@
     </Compile>
     <Compile Include="HRM\HRM\TrainingRequest.designer.cs">
       <DependentUpon>TrainingRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\VehicleAccidentRecord.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\VehicleAccidentRecord.designer.cs">
+      <DependentUpon>VehicleAccidentRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\VehicleAccidentRecordByLocation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\VehicleAccidentRecordByLocation.designer.cs">
+      <DependentUpon>VehicleAccidentRecordByLocation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\VehicleAccidentRecordByType.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\VehicleAccidentRecordByType.designer.cs">
+      <DependentUpon>VehicleAccidentRecordByType.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\Payroll\DataSource\AdvanceObjectDataSource.cs" />
     <Compile Include="HRM\Payroll\DataSource\AllowanceReportObjectDataSource.cs" />
@@ -2679,676 +3343,6 @@
     </Compile>
     <Compile Include="HRM\CustomExpression\CustomExpression.cs">
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeeBirthDate.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeeBirthDate.designer.cs">
-      <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePerformanceSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePerformanceSummary.designer.cs">
-      <DependentUpon>EmployeePerformanceSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeeRestitution.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeeRestitution.designer.cs">
-      <DependentUpon>EmployeeRestitution.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\HRMObjectDataSource\AmharicExperienceLetterObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\BranchObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\ClearanceProviderObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\CommitteeListObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\DisciplinaryMeasureObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeBirthDateObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeBSCPerforObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeByBranchObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeCourtInsuranceObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeDisciplinaryMeasureObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEductaionObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEduFieldSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEduLevelSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeEmploymentTypeSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeExperienceObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeFixedAssetListObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeForWarrantyODS.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeJobObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeJobTitleSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeLeaveObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeLeavePlanObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeMasterObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeNationSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePensionObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePromotionPerYearObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeQuarterPerforObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRankSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRecruitmentObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRestitutionListObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeSalaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeStatusObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTerminationObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeTrainingObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationPeriodsObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationTypeObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\ExternalApplicanHeaderObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\ExternalApplicantDetailObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\FiscalYearObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\HospitalObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\HRMObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\IncommingOutgoingObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalApplicantDetailObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalApplicantHeaderObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalVacancyForSelfCareObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\InternalVacancyObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\InVacVMODS.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByAgeEducationObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByAgeObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByAssignemntObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByCourtObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeByRegionObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeDetailInfoObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeListByCourseObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\JudgeListByJobTitleObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePeriodsObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePlanObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LetThemKnowObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LetThemKowWorkUnitObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LongTermEducationObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\MyProfileObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\NewHeaderObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\NotifyRetirmentObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\PayableLeaveSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\PersonTitleObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\PromotedEmployeeObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentHeaderObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\ReferralSheetObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\RestitutionListObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationReasonObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\TranscriptObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VacancyaForInternalObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VacancyForMediaObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VacancyIdObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VacantPostionsByDepartmentObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VacantPostionsObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VehicleAccidentByProjectObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VehicleAccidentRecordInsuranceObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\VehicleAccRecordInsuraceByTypeObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\WarrantyLetterObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\WorkandCostSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\WorkandCostSummaryPeriodODS.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ApplicantName.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\Behaviours.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\Children.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ClearanceLetterData.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\CommitteeList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\CourtAllEmployeeList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\CourtEmployees.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\CourtWorkUnit.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\CurrentEmployeeExpriance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmpApplicantTraining.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeBscPerfromance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeByBranch.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeCodeViewModel.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeCourtInsurance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeDicipline.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeEducation.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeEductaion.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeEductaionList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeExperience.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeExperienceLetter.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeExperienceList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeFixedAsset.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeInfo.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeJob.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeLeave.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeLeavePlan.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeMasterViewModel.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerfromance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeePromotion.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeQuarterPerfromance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRecruitment.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRecruitmentExternalVaccLetter.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRestitutionList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeRetirment.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeSummary.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTermination.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTerminationLetter.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTraining.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EvaluationTypes.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantDetail.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantEducation.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantExpriance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\HighLevelAccident.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\HRMViewModel.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\IncommingOutgoingLetterReport.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\InternalApplicantDetail.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\InternalVacancy.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\InVacVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeByAge.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeByAgeAndEducation.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeByCourt.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeByRegion.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeDetailInformation.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeEduaction.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeListByCourse.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\JudgeListByJobTitle.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeaveFromOther.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeaveOneByOne.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeavePlan.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeavePlanList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeaveSummary.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeaveSummaryList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeaveTakenDetail.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LetThemKnow.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LongTermEducation.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LowLevelAccident.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\MediumLevelAccident.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\Nation.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\OtherEmployeeExpriance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\PayableLeave.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\PaybaleLeaveList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\PerformanceSummary.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\PersonTitleViewModel.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\PromotedEmployee.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\PromotionVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\RecruitmentSummary.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ReferralSheet.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\RestitutionList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\Structure.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\TransferToClinic.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\TransferVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\UserCardItemsList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VacancyForMedias.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VacantDetail.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VacantPostionByDept.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VacantPostions.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VehicleAccidentByProject.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VehicleAccidentRecordInsurace.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\VehicleAccRecordInsuraceByType.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\WarrantyLetterViewModel.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\WorkandCostSummary.cs" />
-    <Compile Include="HRM\HRM\IncomOutcommingLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\IncomOutcommingLetter.designer.cs">
-      <DependentUpon>IncomOutcommingLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\InsurancePayment.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\InsurancePayment.designer.cs">
-      <DependentUpon>InsurancePayment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\InVacRpt.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\InVacRpt.designer.cs">
-      <DependentUpon>InVacRpt.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\LeaveOnebyOne.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\LeaveOnebyOne.designer.cs">
-      <DependentUpon>LeaveOnebyOne.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.Designer.cs">
-      <DependentUpon>AmharicExperienceLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\ClearanceLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\ClearanceLetter.Designer.cs">
-      <DependentUpon>ClearanceLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\ContarctObjectDataSource .cs" />
-    <Compile Include="HRM\HRM\Letters\ContractLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\ContractLetter.designer.cs">
-      <DependentUpon>ContractLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\ExperienceLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\ExperienceLetter.Designer.cs">
-      <DependentUpon>ExperienceLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PatientTransfer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PatientTransfer.Designer.cs">
-      <DependentUpon>PatientTransfer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PromotionLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PromotionLetter.designer.cs">
-      <DependentUpon>PromotionLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PromotionObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\Letters\RecruitmentForExVacLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentForExVacLetter.Designer.cs">
-      <DependentUpon>RecruitmentForExVacLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentForProject.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentForProject.Designer.cs">
-      <DependentUpon>RecruitmentForProject.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentLetter.designer.cs">
-      <DependentUpon>RecruitmentLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentObjectDataSource .cs" />
-    <Compile Include="HRM\HRM\Letters\rptMyProfile.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\rptMyProfile.designer.cs">
-      <DependentUpon>rptMyProfile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\rptVacancyInternal.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\rptVacancyInternal.designer.cs">
-      <DependentUpon>rptVacancyInternal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TerminationLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TerminationLetter.Designer.cs">
-      <DependentUpon>TerminationLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TransferLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TransferLetter.designer.cs">
-      <DependentUpon>TransferLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TransferObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\Letters\VacancyForMedia.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\VacancyForMedia.Designer.cs">
-      <DependentUpon>VacancyForMedia.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Restitution.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Restitution.designer.cs">
-      <DependentUpon>Restitution.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\RetirementNote.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\RetirementNote.designer.cs">
-      <DependentUpon>RetirementNote.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptAmharicExperience.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptAmharicExperience.designer.cs">
-      <DependentUpon>rptAmharicExperience.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptDisciplineReason.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptDisciplineReason.designer.cs">
-      <DependentUpon>rptDisciplineReason.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpAge.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpAge.designer.cs">
-      <DependentUpon>rptEmpAge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpByStatus.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpByStatus.designer.cs">
-      <DependentUpon>rptEmpByStatus.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpEduField.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpEduField.designer.cs">
-      <DependentUpon>rptEmpEduField.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpEduLevel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpEduLevel.designer.cs">
-      <DependentUpon>rptEmpEduLevel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpJobTitle.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpJobTitle.designer.cs">
-      <DependentUpon>rptEmpJobTitle.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeBSCPerformance.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeBSCPerformance.designer.cs">
-      <DependentUpon>rptEmployeeBSCPerformance.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeByBranch.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeByBranch.designer.cs">
-      <DependentUpon>rptEmployeeByBranch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeCourtInsurance.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeCourtInsurance.designer.cs">
-      <DependentUpon>rptEmployeeCourtInsurance.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.designer.cs">
-      <DependentUpon>rptEmployeeDisciplinaryMeasure.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeEductions.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeEductions.designer.cs">
-      <DependentUpon>rptEmployeeEductions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeExperience.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeExperience.designer.cs">
-      <DependentUpon>rptEmployeeExperience.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeFixedAsset.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeFixedAsset.designer.cs">
-      <DependentUpon>rptEmployeeFixedAsset.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeInLeave.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeInLeave.designer.cs">
-      <DependentUpon>rptEmployeeInLeave.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeJobTitle.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeJobTitle.designer.cs">
-      <DependentUpon>rptEmployeeJobTitle.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeLeavePlan.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeLeavePlan.designer.cs">
-      <DependentUpon>rptEmployeeLeavePlan.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeMaster.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeMaster.designer.cs">
-      <DependentUpon>rptEmployeeMaster.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeNationByRegion.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeNationByRegion.designer.cs">
-      <DependentUpon>rptEmployeeNationByRegion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePerformance.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePerformance.designer.cs">
-      <DependentUpon>rptEmployeePerformance.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePesion.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePesion.designer.cs">
-      <DependentUpon>rptEmployeePesion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePromotionStep.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePromotionStep.designer.cs">
-      <DependentUpon>rptEmployeePromotionStep.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeQuarterPerformance.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeQuarterPerformance.designer.cs">
-      <DependentUpon>rptEmployeeQuarterPerformance.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeRecruitment.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeRecruitment.designer.cs">
-      <DependentUpon>rptEmployeeRecruitment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeReferalSheet.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeReferalSheet.designer.cs">
-      <DependentUpon>rptEmployeeReferalSheet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeSalary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeSalary.designer.cs">
-      <DependentUpon>rptEmployeeSalary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeTermination.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeTermination.designer.cs">
-      <DependentUpon>rptEmployeeTermination.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeTraining.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeeTraining.designer.cs">
-      <DependentUpon>rptEmployeeTraining.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpNation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpNation.designer.cs">
-      <DependentUpon>rptEmpNation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpRank.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmpRank.designer.cs">
-      <DependentUpon>rptEmpRank.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptExternalApplicantList.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptExternalApplicantList.designer.cs">
-      <DependentUpon>rptExternalApplicantList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptInternalApplicantList.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptInternalApplicantList.designer.cs">
-      <DependentUpon>rptInternalApplicantList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptInternalVaccancies.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptInternalVaccancies.designer.cs">
-      <DependentUpon>rptInternalVaccancies.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeByAge.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeByAge.designer.cs">
-      <DependentUpon>rptJudgeByAge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeByAgeAndEducation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeByAgeAndEducation.designer.cs">
-      <DependentUpon>rptJudgeByAgeAndEducation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgebyBranchCount.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgebyBranchCount.designer.cs">
-      <DependentUpon>rptJudgebyBranchCount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgebyCourse.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgebyCourse.designer.cs">
-      <DependentUpon>rptJudgebyCourse.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeByJobTitle.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeByJobTitle.designer.cs">
-      <DependentUpon>rptJudgeByJobTitle.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeDetailInformation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeDetailInformation.designer.cs">
-      <DependentUpon>rptJudgeDetailInformation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeList.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptJudgeList.designer.cs">
-      <DependentUpon>rptJudgeList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLeave.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLeave.designer.cs">
-      <DependentUpon>rptLeave.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLeavePlan.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLeavePlan.designer.cs">
-      <DependentUpon>rptLeavePlan.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLeaveSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLeaveSummary.designer.cs">
-      <DependentUpon>rptLeaveSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLongTermEducation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptLongTermEducation.designer.cs">
-      <DependentUpon>rptLongTermEducation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptPaidLeave.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptPaidLeave.designer.cs">
-      <DependentUpon>rptPaidLeave.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptPlacmentGap.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptPlacmentGap.designer.cs">
-      <DependentUpon>rptPlacmentGap.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptRecruitment.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptRecruitment.designer.cs">
-      <DependentUpon>rptRecruitment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptRecruitmentSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptRecruitmentSummary.designer.cs">
-      <DependentUpon>rptRecruitmentSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptTermination.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptTermination.designer.cs">
-      <DependentUpon>rptTermination.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptTerminationReason.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptTerminationReason.designer.cs">
-      <DependentUpon>rptTerminationReason.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptTobePromotedEmployee.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptTobePromotedEmployee.designer.cs">
-      <DependentUpon>rptTobePromotedEmployee.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptVacantPostion.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptVacantPostion.designer.cs">
-      <DependentUpon>rptVacantPostion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptWarrantyLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptWarrantyLetter.designer.cs">
-      <DependentUpon>rptWarrantyLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptWorkandCostSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptWorkandCostSummary.designer.cs">
-      <DependentUpon>rptWorkandCostSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.designer.cs">
-      <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\VehicleAccidentRecord.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\VehicleAccidentRecord.designer.cs">
-      <DependentUpon>VehicleAccidentRecord.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\VehicleAccidentRecordByLocation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\VehicleAccidentRecordByLocation.designer.cs">
-      <DependentUpon>VehicleAccidentRecordByLocation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\VehicleAccidentRecordByType.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\VehicleAccidentRecordByType.designer.cs">
-      <DependentUpon>VehicleAccidentRecordByType.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\Payroll\DynamicPayrollDetail.cs">
       <SubType>Component</SubType>
@@ -4427,7 +4421,6 @@
     <None Include="Fleet\ViewModel\EquipmentInspectionViewModel.cs~RFa0320e3.TMP" />
     <None Include="HRM\CustomExpression\bin\Debug\ExceedERP.Reporting.dll.config" />
     <None Include="HRM\CustomExpression\bin\Release\ExceedERP.Reporting.dll.config" />
-    <None Include="HRM\HRM\Letters\ExperienceLetter.zip" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -5391,9 +5384,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\InVacRpt.resx">
       <DependentUpon>InVacRpt.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LaboratoryRequestForm.resx">
-      <DependentUpon>LaboratoryRequestForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\LeaveOnebyOne.am.resx">
       <DependentUpon>LeaveOnebyOne.cs</DependentUpon>

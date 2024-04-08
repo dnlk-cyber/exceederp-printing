@@ -24,8 +24,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         public List<PromotedEmployee> GetPromotedEmployeeProfile(string id,string bussinessUnitId)
         {
 
-
-
+            string cultureName = GlobalHelper.GetCurrentCulture();
             List<PromotedEmployee> PromotedEmployees = new List<PromotedEmployee>();
 
             var lookups = db.Lookups;
@@ -259,7 +258,21 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empCurrrEx[e].AssignmentDate, DateTime.Now);
                             currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e].AssignmentDate.Day, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Year).ToString();
                             //currentEmployeeExpriance.ToString = " አሁን";
-                            currentEmployeeExpriance.ToString = " Now";
+
+                            if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                            {
+                                currentEmployeeExpriance.ToString = " አሁን";
+
+                            }
+                            if (cultureName.ToLower() == "om")
+                            {
+                                currentEmployeeExpriance.ToString = " Amma";
+                            }
+                            if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                            {
+                                currentEmployeeExpriance.ToString = " Now";
+
+                            }
                         }
 
                         currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
@@ -320,6 +333,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         PromotedEmployee.DMonth = PromotedEmployee.DMonth % 12;
                         PromotedEmployee.DYear += TotalCurrentMonth / 12;
+
                     }
 
                     #endregion

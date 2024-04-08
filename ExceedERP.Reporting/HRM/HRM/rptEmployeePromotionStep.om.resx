@@ -148,7 +148,7 @@
     <value>miinda</value>
   </data>
   <data name="textBox8.Value" xml:space="preserve">
-    <value>= IIf(Fields.Sex="Male","Dhiira","Dhalaa")</value>
+    <value>= Fields.Sex</value>
   </data>
   <data name="textBox1.Value" xml:space="preserve">
     <value>idaa'ama</value>
