@@ -425,6 +425,10 @@
     <Compile Include="Migrations\202404060655289_hrmupgrademig.Designer.cs">
       <DependentUpon>202404060655289_hrmupgrademig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404081812307_furniturejobprod.cs" />
+    <Compile Include="Migrations\202404081812307_furniturejobprod.Designer.cs">
+      <DependentUpon>202404081812307_furniturejobprod.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -701,6 +705,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404060655289_hrmupgrademig.resx">
       <DependentUpon>202404060655289_hrmupgrademig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404081812307_furniturejobprod.resx">
+      <DependentUpon>202404081812307_furniturejobprod.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

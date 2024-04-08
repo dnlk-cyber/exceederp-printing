@@ -10,6 +10,8 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
 {
     public class FurnitureProformaInvoice : Operations
     {
+        [Key]
+        [Display(Name ="Proforma No.")]
         public int FurnitureProformaInvoiceId { get; set; }
         
         [Display(Name ="Customer")]

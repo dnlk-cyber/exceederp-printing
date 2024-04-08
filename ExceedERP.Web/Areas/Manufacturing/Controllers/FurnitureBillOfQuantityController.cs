@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             ViewData["JobType"] = db.FurnitureStandardJobTypes.Select(s => new
             {
                 Value = s.FurnitureStandardJobTypeId,
-                Text = s.JobTypeName + "/" + s.JobNo
+                Text = s.JobTypeName + "/" + s.JobCode
             }).ToList();
             ViewData["Customer"] = db.OrganizationCustomers.Select(s => new
             {
@@ -150,7 +150,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                                 IsCustomizedJob = true,
                                 Unit = jobType.Unit,
                                 JobTypeName = jobType.JobTypeName,
-                                JobNo = jobType.JobNo                  
+                                
                             };
 
                             db.FurnitureBillOfQuantities.Add(entity);
@@ -426,7 +426,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         {
             var jobType = new FurnitureStandardJobType
             {
-                JobNo = furnitureBillOfQuantity.JobNo,
+                JobCode = furnitureBillOfQuantity.JobNo,
                 JobTypeName = furnitureBillOfQuantity.JobTypeName,
                 Unit = furnitureBillOfQuantity.Unit,
                 Remark = furnitureBillOfQuantity.Remark,

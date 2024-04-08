@@ -14,6 +14,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
    public class FurnitureEstimationForm : Operations
     {
         [Key]
+        [Display(Name ="Estimation No")]
         public int FurnitureEstimationId { get; set;}
         public int FurnitureBillOfQuantityId { get; set; }
         public int CustomerId { get; set; }

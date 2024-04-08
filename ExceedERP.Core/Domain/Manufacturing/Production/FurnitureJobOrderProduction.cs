@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.Manufacturing.Setting;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,12 +9,15 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Manufacturing.Production
 {
-    public class FurnitureJobOrderProduction
+    public class FurnitureJobOrderProduction : Operations
     {
         [Key]
         public int FurnitureJobOrderProductionId { get; set; }
+        [Display(Name ="Customer")]
         public int CustomerId { get; set; }
+        [Display(Name ="Job Name")]
         public int JobTypeId { get; set; }
+        [Display(Name ="Job.No")]
         public string JobNo { get; set; }
         public string Unit { get; set; }
         public decimal Quantity { get; set; } 
@@ -21,7 +25,14 @@ namespace ExceedERP.Core.Domain.Manufacturing.Production
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DeliveryDate { get; set; }
 
-        public int FurnitureJobOrderFormId { get; set; } 
+        public int FurnitureJobOrderFormId { get; set; }
+        public bool IsSendForFinishing { get; set; }
+        public string SendForFinishingBy { get; set; }
+        public DateTime? SendForFinishingDate { get; set; } 
+        public bool IsClosed { get; set; }
+        public string ClosedBy { get; set; }
+        public DateTime? DateClosed { get; set; } 
+
     }
     public class FurnitureProductionBillOfMaterial
     {

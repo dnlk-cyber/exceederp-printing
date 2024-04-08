@@ -1,0 +1,207 @@
+﻿
+<label>Finishing/Assembly</label>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobOrderProduction>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.JobNo).Width(100);
+                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+
+                  columns.Bound(c => c.Unit).Width(100);
+                  columns.Bound(c => c.Quantity).Width(100);
+                  columns.Bound(c => c.DeliveryDate).Width(120);
+                  columns.Command(command =>
+                  {
+
+                      command.Custom("close").Text("Close Job").IconClass("fa fa-check").HtmlAttributes(new { @class = "close", title = "" }).Click("handleJobClose");
+
+                  }).Width(180);
+              })
+              .Filterable()
+              .Scrollable(s => s.Height(400))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Read(read => read.Action("FurnitureJobOrderProductionsFinishing_Read", "FurnitureFinishing"))
+              ).ClientDetailTemplateId("tabstrip")
+)
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                .Name("tab_#=FurnitureJobOrderProductionId#")
+                                .Items(item1 =>
+                                {
+
+                                    item1.Add().Text("Assembly/Finishing").Content(
+                            @<text>
+                                @Finishing()
+                            </text>);
+                                            item1.Add().Text("Unfinished Goods").Content(
+                        @<text>
+                           @UnfinishedMaterialTransfer()
+                        </text>);
+                            }).ToClientTemplate())
+</script>
+
+
+
+
+@helper Finishing()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureDailyProductionFollowUp>()
+                                       .Name("finishing_#=FurnitureJobOrderProductionId#")
+                                       .Columns(columns =>
+                                       {
+                                           columns.Bound(c => c.WorkShop).EditorTemplateName("WorkShop");
+                                           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+
+                                           columns.ForeignKey(c => c.ManifucturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+
+                                           columns.Bound(c => c.DailyProductionPlan);
+                                           columns.Bound(c => c.DailyProductionActual);
+
+                                           columns.Bound(c => c.DateExcuted);
+                                           columns.Command(command => { }).Width(180);
+                                       })
+                                       .ToolBar(toolbar =>
+                                       {
+                                           toolbar.Save();
+                                       })
+                                       .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                       .Filterable()
+                                       .Scrollable()
+                                       .DataSource(dataSource => dataSource
+                                           .Ajax()
+                                           .Batch(true)
+                                           .Model(model =>
+                                           {
+                                               model.Id(p => p.FurnitureDailyProductionFollowUpId);
+                                               model.Field(p => p.EmployeeId).Editable(false);
+                                               model.Field(p => p.DailyProductionPlan).Editable(false);
+                                               model.Field(p => p.ManifucturingTaskCategoryId).Editable(false);
+                                               model.Field(p => p.WorkShop).Editable(false);
+
+                                           })
+                                           .Read(read => read.Action("FurnitureDailyProductionFollowUps_Read", "FurnitureDailyFollowupBatch", new { id = "#=FurnitureJobOrderProductionId#", workShop = "#=3#" }))
+                                           .Update(update => update.Action("FurnitureDailyProductionFollowUps_Update", "FurnitureDailyFollowupBatch"))
+                                       ).ToClientTemplate()
+    )
+
+}
+@helper UnfinishedMaterialTransfer()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureUnfinishedMaterialTransferForm>()
+                              .Name("Transfer_#=FurnitureJobOrderProductionId#")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                                  columns.Bound(c => c.Quantity).Width(100);
+                                  columns.Bound(c => c.TransferDate).Width(100);
+                                  columns.ForeignKey(c => c.TransfererId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+                                  columns.ForeignKey(c => c.ReceiverId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+                                  columns.Bound(c => c.QualityGrade).EditorTemplateName("QualityGradeTemplate").Width(100);
+                                  //columns.Bound(c => c.WorkProgressInPercentage);
+
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit();
+                                      command.Custom("receive").Text("Received").IconClass("fa fa-check").HtmlAttributes(new { @class = "receive", title = "received" }).Click("handleReceive");
+                                      
+                                  }).Width(180);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Filterable()
+                              .Events(ev => ev.DataBound("onChildDataBound"))
+                              .Scrollable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev.Error("error_handler(\"Transfer_#=FurnitureJobOrderProductionId#\")")
+                            .RequestStart("onRequestStart(\"Transfer_#=FurnitureJobOrderProductionId#\")")
+                            .RequestEnd("onRequestEnd(\"Transfer_#=FurnitureJobOrderProductionId#\")"))
+                                  .Model(model => 
+                                  {
+                                      model.Id(p => p.FurnitureUnfinishedMaterialTransferFormId);
+                                      model.Field(p => p.JobTypeId).Editable(false);
+                                      model.Field(p => p.Quantity).Editable(false);
+                                      model.Field(p => p.TransferDate).Editable(false);
+                                      model.Field(p => p.TransfererId).Editable(false);
+                                      model.Field(p => p.ReceiverId).Editable(false);
+                                      
+                                  })
+                                  .Read(read => read.Action("FurnitureUnfinishedMaterialTransferForms_Read", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  //.Create(create => create.Action("FurnitureUnfinishedMaterialTransferForms_Create", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  .Update(update => update.Action("FurnitureUnfinishedMaterialTransferForms_Update", "FurnitureUnfinishedMaterialTransferForm"))
+                              //.Destroy(destroy => destroy.Action("FurnitureUnfinishedMaterialTransferForms_Destroy", "FurnitureUnfinishedMaterialTransferForm"))
+                              ).ToClientTemplate()
+    )
+}
+
+<script type="text/javascript">
+
+    function handleJobClose(e) {
+
+        if (confirm("Are you sure you want to close this job?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.FurnitureJobOrderProductionId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CloseJob", "FurnitureFinishing", new { Area = "Manufacturing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+    function handleReceive(e) {
+      
+        if (confirm("Are you sure you want to accept this?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.FurnitureUnfinishedMaterialTransferFormId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ReceiveUnfinishedGood", "FurnitureUnfinishedMaterialTransferForm", new { Area = "Manufacturing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsReceived) {
+                $(this).find(".k-grid-receive").hide();
+                $(this).find(".k-grid-edit").hide();
+                
+            }
+
+        });
+
+    }
+</script>

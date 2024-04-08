@@ -1,0 +1,27 @@
+﻿
+
+@helper DelayReason() { 
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionDailyFollowUpDelayReason>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ProductionDelayReason);
+            columns.Bound(c => c.Remark);
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable()
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => model.Id(p => p.FurnitureProductionDailyFollowUpDelayReasonId))
+            .Read(read => read.Action("FurnitureProductionDailyFollowUpDelayReasons_Read", "FurnitureDailyFollowUpDelayReason"))
+            .Create(create => create.Action("FurnitureProductionDailyFollowUpDelayReasons_Create", "FurnitureDailyFollowUpDelayReason"))
+            .Update(update => update.Action("FurnitureProductionDailyFollowUpDelayReasons_Update", "FurnitureDailyFollowUpDelayReason"))
+            .Destroy(destroy => destroy.Action("FurnitureProductionDailyFollowUpDelayReasons_Destroy", "FurnitureDailyFollowUpDelayReason"))
+        )
+    )
+}

@@ -12,7 +12,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
     {
         public int FurnitureStandardJobTypeId { get; set; }
         public bool IsStandard { get; set; }
-        public string JobNo { get; set; }
+        [Display(Name ="Job-Code")]
+        public string JobCode { get; set; } 
+        [Display(Name ="Job Title")]
         public string JobTypeName { get; set; }
         public string Unit { get; set; }
         public string Remark { get; set; }

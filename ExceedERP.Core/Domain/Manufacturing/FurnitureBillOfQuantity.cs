@@ -26,7 +26,7 @@ namespace ExceedERP.Core.Domain.Manufacturing
         // If JobCategory == Customized
         [Display(Name ="Job.No")]
         public string JobNo { get; set; }
-        [Display(Name ="JobType Name")]
+        [Display(Name ="Type Of Job")]
         public string JobTypeName { get; set; }
         public string Unit { get; set; }
         

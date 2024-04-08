@@ -2,13 +2,69 @@ using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
+using ExceedERP.Core.Domain.Manufacturing.Production;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
 using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
-
+    class FurnitureJobOrderProductionEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderProduction>
+    {
+        public FurnitureJobOrderProductionEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureJobOrderProduction", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureJobOrderProductionId);
+        }
+    }
+    class FurnitureProductionBillOfMaterialEntityTypeConfiguration : EntityTypeConfiguration<FurnitureProductionBillOfMaterial>
+    {
+        public FurnitureProductionBillOfMaterialEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureProductionBillOfMaterial", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureProductionBillOfMaterialId);
+        }
+    }
+    class FurnitureProductionBillOfLaborEntityTypeConfiguration : EntityTypeConfiguration<FurnitureProductionBillOfLabor>
+    {
+        public FurnitureProductionBillOfLaborEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureProductionBillOfLabor", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureProductionBillOfLaborId);
+        }
+    }
+    class FurnitureJobAssignmentEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobAssignment>
+    {
+        public FurnitureJobAssignmentEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureJobAssignment", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureJobAssignmentId);
+        }
+    }
+    class FurnitureDailyProductionFollowUpEntityTypeConfiguration : EntityTypeConfiguration<FurnitureDailyProductionFollowUp>
+    {
+        public FurnitureDailyProductionFollowUpEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureDailyProductionFollowUp", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureDailyProductionFollowUpId);
+        }
+    }
+    class FurnitureProductionDailyFollowUpDelayReasonEntityTypeConfiguration : EntityTypeConfiguration<FurnitureProductionDailyFollowUpDelayReason>
+    {
+        public FurnitureProductionDailyFollowUpDelayReasonEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureProductionDailyFollowUpDelayReason", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureProductionDailyFollowUpDelayReasonId); 
+        }
+    }
+    class FurnitureUnfinishedMaterialTransferFormEntityTypeConfiguration : EntityTypeConfiguration<FurnitureUnfinishedMaterialTransferForm>
+    {
+        public FurnitureUnfinishedMaterialTransferFormEntityTypeConfiguration() 
+        {
+            this.ToTable("FurnitureUnfinishedMaterialTransferForm", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureUnfinishedMaterialTransferFormId);
+        }
+    }
     class FurnitureStandardJobTypeEntityTypeConfiguration : EntityTypeConfiguration<FurnitureStandardJobType>
     {
         public FurnitureStandardJobTypeEntityTypeConfiguration()

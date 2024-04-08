@@ -56,23 +56,103 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             ViewData["Employee"] = db.Person_Employee.Select(s => new
             {
-                Text = s.FirstName,
+                Text = s.FirstName + "-" + s.MiddleName + "-" + s.LastName,
                 Value = s.EmployeeId
             });
+
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var costCenter = db.BranchCostCenter;
+            var branches = db.Branch;
+
+            var inventoryPeriods = db.InventoryPeriods;
+            var selectedinventoryPeriods = inventoryPeriods.Select(
+             i => new
+             {
+                 Name = i.Name,
+                 GLPeriodId = i.InventoryPeriodId
+             }).AsQueryable();
+            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            ViewData["Branches"] = branches;
+
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+
+
+            var employee = db.Person_Employee;
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
+
+            var selectedcostCenter = costCenter.Select(
+                i => new
+                {
+                    Name = i.MainCompanyStructure.Name,
+                    Code = i.OrgStructureId
+                }).AsQueryable();
+
+            ViewData["costCenters"] = selectedcostCenter;
+            PopulateViewData();
             return View();
         }
+        private void PopulateViewData()
+        {
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var stores = db.InventoryStores;
+            var branches = db.Branch;
+            var costCenter = db.BranchCostCenter;
+            var selectedcostCenter = costCenter.Select(
+              i => new
+              {
+                  Name = i.MainCompanyStructure.Name,
+                  Code = i.OrgStructureId
+              }).AsQueryable();
 
+            var inventoryPeriods = db.InventoryPeriods;
+
+
+            ViewData["costCenters"] = selectedcostCenter;
+            ViewData["stores"] = stores;
+            ViewData["Branches"] = branches;
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+        }
         public ActionResult FurnitureJobOrderProductions_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FurnitureJobOrderProduction> furniturejoborderproductions = db.FurnitureJobOrderProductions;
-            DataSourceResult result = furniturejoborderproductions.ToDataSourceResult(request, furnitureJobOrderProduction => new {
+            DataSourceResult result = furniturejoborderproductions.ToDataSourceResult(request, furnitureJobOrderProduction => new FurnitureJobOrderProduction
+            {
                 FurnitureJobOrderProductionId = furnitureJobOrderProduction.FurnitureJobOrderProductionId,
                 CustomerId = furnitureJobOrderProduction.CustomerId,
                 JobTypeId = furnitureJobOrderProduction.JobTypeId,
                 JobNo = furnitureJobOrderProduction.JobNo,
                 Unit = furnitureJobOrderProduction.Unit,
                 Quantity = furnitureJobOrderProduction.Quantity,
-                DeliveryDate = furnitureJobOrderProduction.DeliveryDate
+                DeliveryDate = furnitureJobOrderProduction.DeliveryDate,
+                IsSendForApproval = furnitureJobOrderProduction.IsSendForApproval,
+                IsOnlineApproved = furnitureJobOrderProduction.IsOnlineApproved
             });
 
             return Json(result);
@@ -149,6 +229,92 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return Json(new[] { furnitureJobOrderProduction }.ToDataSourceResult(request, ModelState));
         }
 
+
+        #region Approval
+        public JsonResult CheckProduction(int id)
+        {
+            object response = null;
+            var production = db.FurnitureJobOrderProductions.Find(id);
+            
+            if (production != null)
+            {
+                var jobAssignments = db.FurnitureJobAssignments.Where(x => x.FurnitureJobOrderProductionId == production.FurnitureJobOrderProductionId).ToList();
+                if (jobAssignments.Any())
+                {
+                    production.IsSendForApproval = true;
+                    production.SendForApprovalBy = User.Identity.Name;
+                    production.SendForApprovalTime = DateTime.Today;
+
+                    db.FurnitureJobOrderProductions.Attach(production);
+                    db.Entry(production).State = EntityState.Modified;
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Furniture Production Checked Successfully!" };
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Something is wrong! You haven't assigned a job to any employee!" };
+                }
+                
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+
+        public JsonResult ApproveProduction(int id)
+        {
+            object response = null;
+            var production = db.FurnitureJobOrderProductions.Find(id);
+            if (production != null)
+            {
+                //--Generate Production--//
+                GenerateProductionFollowUp(production.FurnitureJobOrderProductionId);
+
+                production.IsOnlineApproved = true;
+                production.OnlineApprovedBy = User.Identity.Name;
+                production.OnlineApprovedTime = DateTime.Today;
+
+
+                db.FurnitureJobOrderProductions.Attach(production);
+                db.Entry(production).State = EntityState.Modified;
+                db.SaveChanges();
+                
+                response = new { Success = true, Message = "Successfully Approved and Created Daily Production follow-up!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+
+        private void GenerateProductionFollowUp(int furnitureJobOrderProductionId)
+        {
+            var jobAssignments = db.FurnitureJobAssignments.Where(x => x.FurnitureJobOrderProductionId == furnitureJobOrderProductionId).ToList();
+            foreach (var jobAssignment in jobAssignments)
+            {
+                var assignedWorkDays = (jobAssignment.TaskEndDate.Date - jobAssignment.TaskAssignedDate.Date).Days;
+                for (int i = 0; i < assignedWorkDays; i++)
+                {
+                    var entity = new FurnitureDailyProductionFollowUp
+                    {
+                        DailyProductionPlan = jobAssignment.DailyProductionPlan,
+                        EmployeeId = jobAssignment.EmployeeId,                       
+                        WorkShop = jobAssignment.Type,
+                        ManifucturingTaskCategoryId = jobAssignment.TaskCategoryId,
+                        FurnitureJobOrderProductionId = jobAssignment.FurnitureJobOrderProductionId,
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Today,
+                        
+                    };
+                    db.FurnitureDailyProductionFollowUps.Add(entity);                 
+                }             
+            }
+            db.SaveChanges();
+        }
+        #endregion
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

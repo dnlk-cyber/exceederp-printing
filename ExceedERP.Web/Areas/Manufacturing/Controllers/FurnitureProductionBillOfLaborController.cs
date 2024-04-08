@@ -22,22 +22,24 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return View();
         }
 
-        public ActionResult FurnitureProductionBillOfLabors_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult FurnitureProductionBillOfLabors_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<FurnitureProductionBillOfLabor> furnitureproductionbilloflabors = db.FurnitureProductionBillOfLabors;
-            DataSourceResult result = furnitureproductionbilloflabors.ToDataSourceResult(request, furnitureProductionBillOfLabor => new {
+            IQueryable<FurnitureProductionBillOfLabor> furnitureproductionbilloflabors = db.FurnitureProductionBillOfLabors.Where(x => x.FurnitureJobOrderProductionId == id);
+            DataSourceResult result = furnitureproductionbilloflabors.ToDataSourceResult(request, furnitureProductionBillOfLabor => new FurnitureProductionBillOfLabor
+            {
                 FurnitureProductionBillOfLaborId = furnitureProductionBillOfLabor.FurnitureProductionBillOfLaborId,
                 ManufacturingTaskCategoryId = furnitureProductionBillOfLabor.ManufacturingTaskCategoryId,
                 WorkShopType = furnitureProductionBillOfLabor.WorkShopType,
                 NumberOfEmloyees = furnitureProductionBillOfLabor.NumberOfEmloyees,
                 EstimatedMinute = furnitureProductionBillOfLabor.EstimatedMinute,
+                FurnitureJobOrderProductionId = furnitureProductionBillOfLabor.FurnitureJobOrderProductionId
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureProductionBillOfLabors_Create([DataSourceRequest]DataSourceRequest request, FurnitureProductionBillOfLabor furnitureProductionBillOfLabor)
+        public ActionResult FurnitureProductionBillOfLabors_Create([DataSourceRequest]DataSourceRequest request, FurnitureProductionBillOfLabor furnitureProductionBillOfLabor, int id)
         {
             if (ModelState.IsValid)
             {
@@ -47,6 +49,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     WorkShopType = furnitureProductionBillOfLabor.WorkShopType,
                     NumberOfEmloyees = furnitureProductionBillOfLabor.NumberOfEmloyees,
                     EstimatedMinute = furnitureProductionBillOfLabor.EstimatedMinute,
+                    FurnitureJobOrderProductionId = id
                 };
 
                 db.FurnitureProductionBillOfLabors.Add(entity);

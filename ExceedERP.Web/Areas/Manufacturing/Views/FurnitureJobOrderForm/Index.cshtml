@@ -65,7 +65,7 @@
                   columns.Bound(c => c.UnitOfMeasurment);
                   columns.Bound(c => c.Quantity);
                   columns.Bound(c => c.UnitPriceBeforeVAT);
-                  //columns.Bound(c => c.VAT);
+                  
                   columns.Bound(c => c.UnitPriceWithVAT);
 
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -74,15 +74,24 @@
               {
                   toolbar.Create();
               })
-              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderItemEditorTemplate"))
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
               .Filterable()
+              .Events(ev => ev.DataBound("onChildDataBound"))
               .Scrollable()
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Events(ev => ev.Error("error_handler(\"grid_#=FurnitureJobOrderFormId#\")")
                             .RequestStart("onRequestStart(\"grid_#=FurnitureJobOrderFormId#\")")
                             .RequestEnd("onRequestEnd(\"grid_#=FurnitureJobOrderFormId#\")"))
-                  .Model(model => model.Id(p => p.FurnitureJobOrderItemId))
+                  .Model(model =>
+                  {
+                      model.Id(p => p.FurnitureJobOrderItemId);
+                      model.Field(p => p.JobTypeId).Editable(false);
+                      model.Field(p => p.UnitOfMeasurment).Editable(false);
+                      model.Field(p => p.Quantity).Editable(false);
+                      model.Field(p => p.UnitPriceBeforeVAT).Editable(false);
+                      model.Field(p => p.UnitPriceWithVAT).Editable(false);
+                  })
                   .Read(read => read.Action("FurnitureJobOrderItems_Read", "FurnitureJobOrderItem", new { id = "#=FurnitureJobOrderFormId#" }))
                   .Create(create => create.Action("FurnitureJobOrderItems_Create", "FurnitureJobOrderItem", new { id = "#=FurnitureJobOrderFormId#" }))
                   .Update(update => update.Action("FurnitureJobOrderItems_Update", "FurnitureJobOrderItem"))
@@ -94,9 +103,9 @@
 
 <script type="text/javascript">
 
-    function filterCustomer() {
+    function filterProformaNo() {
         return {
-            text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
+            text: $("#FurnitureProformaInvoiceId").data("kendoDropDownList").filterInput.val(),
         }
     }
 
@@ -154,7 +163,19 @@
 
 
     }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isChecked == true || isApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
 
+        });
+
+    }
     function handleChecked(e) {
         
         if (confirm("Are you sure you this form is checked?")) {

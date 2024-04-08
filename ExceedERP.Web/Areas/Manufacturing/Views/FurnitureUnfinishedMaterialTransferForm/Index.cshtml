@@ -1,0 +1,34 @@
+﻿
+@helper UnfinishedMaterialTransfer() { 
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureUnfinishedMaterialTransferForm>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.JobTypeId);
+                  columns.Bound(c => c.Quantity);
+                  columns.Bound(c => c.TransferDate);
+                  columns.Bound(c => c.TransfererId);
+                  columns.Bound(c => c.ReceiverId);
+                  columns.Bound(c => c.QualityGrade);
+                  columns.Bound(c => c.WorkProgressInPercentage);
+                  columns.Bound(c => c.FurnitureJobOrderProductionId);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.FurnitureUnfinishedMaterialTransferFormId))
+                  .Read(read => read.Action("FurnitureUnfinishedMaterialTransferForms_Read", "FurnitureUnfinishedMaterialTransferForm"))
+                  .Create(create => create.Action("FurnitureUnfinishedMaterialTransferForms_Create", "FurnitureUnfinishedMaterialTransferForm"))
+                  .Update(update => update.Action("FurnitureUnfinishedMaterialTransferForms_Update", "FurnitureUnfinishedMaterialTransferForm"))
+                  .Destroy(destroy => destroy.Action("FurnitureUnfinishedMaterialTransferForms_Destroy", "FurnitureUnfinishedMaterialTransferForm"))
+              ).ToClientTemplate()
+    )
+}

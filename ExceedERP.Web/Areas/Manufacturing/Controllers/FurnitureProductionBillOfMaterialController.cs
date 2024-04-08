@@ -22,10 +22,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return View();
         }
 
-        public ActionResult FurnitureProductionBillOfMaterials_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult FurnitureProductionBillOfMaterials_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<FurnitureProductionBillOfMaterial> furnitureproductionbillofmaterials = db.FurnitureProductionBillOfMaterials;
-            DataSourceResult result = furnitureproductionbillofmaterials.ToDataSourceResult(request, furnitureProductionBillOfMaterial => new {
+            IQueryable<FurnitureProductionBillOfMaterial> furnitureproductionbillofmaterials = db.FurnitureProductionBillOfMaterials.Where(x => x.FurnitureJobOrderProductionId == id);
+            DataSourceResult result = furnitureproductionbillofmaterials.ToDataSourceResult(request, furnitureProductionBillOfMaterial => new FurnitureProductionBillOfMaterial
+            {
                 FurnitureProductionBillOfMaterialId = furnitureProductionBillOfMaterial.FurnitureProductionBillOfMaterialId,
                 ManufacturingMaterialCategoryId = furnitureProductionBillOfMaterial.ManufacturingMaterialCategoryId,
                 ManufacturingMaterialCategoryItemId = furnitureProductionBillOfMaterial.ManufacturingMaterialCategoryItemId,
@@ -34,13 +35,14 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 Quantity = furnitureProductionBillOfMaterial.Quantity,
                 Remark = furnitureProductionBillOfMaterial.Remark,
                 WorkshopType = furnitureProductionBillOfMaterial.WorkshopType,
+                FurnitureJobOrderProductionId = furnitureProductionBillOfMaterial.FurnitureJobOrderProductionId
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureProductionBillOfMaterials_Create([DataSourceRequest]DataSourceRequest request, FurnitureProductionBillOfMaterial furnitureProductionBillOfMaterial)
+        public ActionResult FurnitureProductionBillOfMaterials_Create([DataSourceRequest]DataSourceRequest request, FurnitureProductionBillOfMaterial furnitureProductionBillOfMaterial, int id)
         {
             if (ModelState.IsValid)
             {
@@ -53,6 +55,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     Quantity = furnitureProductionBillOfMaterial.Quantity,
                     Remark = furnitureProductionBillOfMaterial.Remark,
                     WorkshopType = furnitureProductionBillOfMaterial.WorkshopType,
+                    FurnitureJobOrderProductionId = id
                 };
 
                 db.FurnitureProductionBillOfMaterials.Add(entity);

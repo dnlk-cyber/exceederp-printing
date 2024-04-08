@@ -36,7 +36,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         public ActionResult FurnitureProformaInvoices_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices.OrderBy(x => x.FurnitureProformaInvoiceId);
+            List<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices.OrderBy(x => x.FurnitureProformaInvoiceId).ToList();
             DataSourceResult result = furnitureproformainvoices.ToDataSourceResult(request, furnitureProformaInvoice => new FurnitureProformaInvoice
             {
                 FurnitureProformaInvoiceId = furnitureProformaInvoice.FurnitureProformaInvoiceId,
@@ -141,14 +141,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             if (ModelState.IsValid)
             {
                 var proformaInvoice = db.FurnitureProformaInvoices.Find(furnitureProformaInvoice.FurnitureProformaInvoiceId);
+                if(proformaInvoice != null)
+                {
+                    var proformaItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId);
+                    if(proformaItems.Any())
+                    {
+                        db.FurnitureProformaInvoiceItems.RemoveRange(proformaItems);
 
-                var proformaItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId);
+                        db.FurnitureProformaInvoices.Remove(proformaInvoice);
 
-                db.FurnitureProformaInvoiceItems.RemoveRange(proformaItems);
-
-                db.FurnitureProformaInvoices.Remove(proformaInvoice);
-
-                db.SaveChanges();
+                        db.SaveChanges();
+                    }
+                    
+                }
+                
             }
 
             return Json(new[] { furnitureProformaInvoice }.ToDataSourceResult(request, ModelState));
@@ -193,43 +199,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     proformaInvoice.OnlineApprovedTime = DateTime.Now;
 
                     db.Entry(proformaInvoice).State = EntityState.Modified;
-
-
-                    var jobOrder = new FurnitureJobOrderForm
-                    {
-                        CustomerId = proformaInvoice.CustomerId,
-                        AdvancePaymentInPercent = proformaInvoice.AdvancePaymentInPercent,
-
-                        PaymentType = proformaInvoice.PaymentType,
-                        FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
-
-                        DateCreated = DateTime.Today,
-                        CreatedBy = User.Identity.Name,
-
-                    };
-                    jobOrder.DeliveryDate = DateTime.Today.AddDays(proformaInvoice.DeliveryPeriod);
-                    db.FurnitureJobOrderForms.Add(jobOrder);
                     db.SaveChanges();
-                    foreach (var proformaItem in proformaItems)
-                    {
-                        var jobOrderItem = new FurnitureJobOrderItem
-                        {
-                            CreatedBy = User.Identity.Name,
-                            DateCreated = DateTime.Today,
-                            Quantity = proformaItem.Quantity,
-                            JobTypeId = proformaItem.JobTypeId,
-                            UnitOfMeasurment = proformaItem.UnitOfMeasurment,
-                            UnitPriceBeforeVAT = proformaItem.UnitPriceBeforeVAT,
-                            VAT = proformaItem.VAT,
-                            UnitPriceWithVAT = proformaItem.UnitPriceWithVAT,
-                            FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId,
-                            
-                        };
-                        db.FurnitureJobOrderItems.Add(jobOrderItem);
-                        db.SaveChanges();
-                    }
 
-                    response = new { Success = true, Message = "Successfully Created Job-Order Form" };
+                    
+                    response = new { Success = true, Message = "Proforma Successfully Approved" };
 
                 }
                 else

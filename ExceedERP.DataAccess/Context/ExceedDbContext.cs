@@ -1621,6 +1621,13 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP
+            modelBuilder.Configurations.Add(new FurnitureJobOrderProductionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureProductionBillOfMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureProductionBillOfLaborEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureJobAssignmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureDailyProductionFollowUpEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureProductionDailyFollowUpDelayReasonEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureUnfinishedMaterialTransferFormEntityTypeConfiguration());
 
             modelBuilder.Configurations.Add(new StandardBillOfLaborEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new StandardBillOfMaterialEntityTypeConfiguration());
@@ -2163,6 +2170,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FurnitureProductionBillOfMaterial> FurnitureProductionBillOfMaterials { get; set; }
         public DbSet<FurnitureProductionBillOfLabor> FurnitureProductionBillOfLabors { get; set; }
         public DbSet<FurnitureJobAssignment> FurnitureJobAssignments { get; set; }
+        public DbSet<FurnitureDailyProductionFollowUp> FurnitureDailyProductionFollowUps { get; set; }
+        public DbSet<FurnitureProductionDailyFollowUpDelayReason> FurnitureProductionDailyFollowUpDelayReasons { get; set; }
+        public DbSet<FurnitureUnfinishedMaterialTransferForm> FurnitureUnfinishedMaterialTransferForms { get; set; }
         public DbSet<FurnitureStandardJobType> FurnitureStandardJobTypes { get; set; }
         public DbSet<StandardBillOfMaterial> StandardBillOfMaterials { get; set; }
         public DbSet<StandardBillOfLabor> StandardBillOfLabors { get; set; }

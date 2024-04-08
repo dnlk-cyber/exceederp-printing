@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.Manufacturing.Setting;
+﻿using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        
+
 
         public JsonResult GetUoM()
         {
@@ -93,7 +94,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 customers = customers.Where(x => x.TradeName.Contains(text)).AsQueryable();
             }
-            var result = customers.Select(s => new {
+            var result = customers.Select(s => new
+            {
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
@@ -148,19 +150,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var jobType = db.FurnitureStandardJobTypes.AsQueryable();
             if (!string.IsNullOrWhiteSpace(text))
             {
-                jobType = jobType.Where(x => x.JobTypeName.Contains(text) || x.JobNo.Contains(text)).AsQueryable();
+                jobType = jobType.Where(x => x.JobTypeName.Contains(text) || x.JobCode.Contains(text)).AsQueryable();
             }
             var result = jobType.Select(s => new
             {
                 Value = s.FurnitureStandardJobTypeId,
-                Text = s.JobNo + "/" + s.JobTypeName
+                Text = s.JobCode + "/" + s.JobTypeName
             }).ToList();
-            return Json(result, JsonRequestBehavior.AllowGet); 
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        // Get Approved Estimations
         public JsonResult GetFurnitureEstimation(string text)
         {
-            var estimation = db.FurnitureEstimationForms.AsQueryable();
+            var estimation = db.FurnitureEstimationForms.Where(x => x.IsOnlineApproved).AsQueryable();
             if (!string.IsNullOrEmpty(text))
             {
                 estimation = estimation.Where(x => x.FurnitureEstimationId == int.Parse(text)).AsQueryable();
@@ -168,9 +171,48 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var result = estimation.Select(s => new
             {
                 Value = s.FurnitureEstimationId,
-                Text = s.FurnitureEstimationId /*+ db.FurnitureStandardJobTypes.Find(s.JobTypeId).JobTypeName*/
+                Text = s.FurnitureEstimationId + "/" + db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == s.JobTypeId).JobTypeName
             }).ToList();
 
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetEmployees(string text)
+        {
+            var employees = db.Person_Employee.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                employees = employees.Where(x => x.FirstName.Contains(text) || x.MiddleName.Contains(text) || x.LastName.Contains(text)).AsQueryable();
+            }
+            var result = employees.Select(s => new
+            {
+                Value = s.EmployeeId,
+                Text = s.FirstName + "-" + s.MiddleName + "-" + s.LastName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProformaInvoiceNo(string text)
+        {
+           
+            var jobOrder = db.FurnitureJobOrderForms.ToList();
+            var proformaInvoice = db.FurnitureProformaInvoices.Where(x => x.IsOnlineApproved).ToList();
+            
+            foreach (var item in jobOrder)
+            {
+
+                proformaInvoice.RemoveAll(x => x.FurnitureProformaInvoiceId == item.FurnitureProformaInvoiceId);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                proformaInvoice = proformaInvoice.Where(x => x.FurnitureProformaInvoiceId == int.Parse(text)).ToList();
+            }
+            var result = proformaInvoice.Select(s => new
+            {
+                Value = s.FurnitureProformaInvoiceId,
+                Text = s.FurnitureProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId).TradeName
+            }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

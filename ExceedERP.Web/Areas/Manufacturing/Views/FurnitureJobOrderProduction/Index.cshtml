@@ -1,91 +1,100 @@
-﻿
-<label>Production</label>
+﻿@using ExceedERP.Core.Domain.Inventory
+<label>Furniture Production And Job Assignment</label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobOrderProduction>()
-                  .Name("grid")
-                  .Columns(columns =>
-                  {
-                      columns.Bound(c => c.JobNo).Width(100);
-                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
-                      columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.JobNo).Width(100);
+                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
 
-                      columns.Bound(c => c.Unit).Width(100);
-                      columns.Bound(c => c.Quantity).Width(100);
-                      columns.Bound(c => c.DeliveryDate).Width(120);
-                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                      toolbar.Create();
-                  })
-                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                  .Filterable()
-                  .Scrollable()
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                      .Model(model => model.Id(p => p.FurnitureJobOrderProductionId))
-                      .Read(read => read.Action("FurnitureJobOrderProductions_Read", "FurnitureJobOrderProduction"))
-                      .Create(create => create.Action("FurnitureJobOrderProductions_Create", "FurnitureJobOrderProduction"))
-                      .Update(update => update.Action("FurnitureJobOrderProductions_Update", "FurnitureJobOrderProduction"))
-                      .Destroy(destroy => destroy.Action("FurnitureJobOrderProductions_Destroy", "FurnitureJobOrderProduction"))
-                  ).ClientDetailTemplateId("tabstrip")
+                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.Quantity).Width(100);
+                          columns.Bound(c => c.DeliveryDate).Width(120);
+                          columns.Command(command =>
+                          {
+                              //command.Edit().Text(" ");
+                              command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                              command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                              //command.Destroy().Text(" ");
+
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      
+                      .Events(e => e.DetailExpand("MasterOnExpand"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Filterable()
+                      .Events(ev => ev.DataBound("dataBound"))
+                      .Scrollable(s => s.Height(500))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                          .Model(model => model.Id(p => p.FurnitureJobOrderProductionId))
+                          .Read(read => read.Action("FurnitureJobOrderProductions_Read", "FurnitureJobOrderProduction"))
+                          .Create(create => create.Action("FurnitureJobOrderProductions_Create", "FurnitureJobOrderProduction"))
+                          .Update(update => update.Action("FurnitureJobOrderProductions_Update", "FurnitureJobOrderProduction"))
+                          .Destroy(destroy => destroy.Action("FurnitureJobOrderProductions_Destroy", "FurnitureJobOrderProduction"))
+                      ).ClientDetailTemplateId("tabstrip")
 )
 
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                        .Name("tab_#=FurnitureJobOrderProductionId#")
-                        .Items(item1 =>
-                        {
-                            item1.Add().Text("Bill Of Quantity").Content(
-                                @<text>
-                                    @BillOfMaterial();
-                                </text>);
-                                    item1.Add().Text("Material Requisition").Content(
-                            @<text>
+                                .Name("tab_#=FurnitureJobOrderProductionId#")
+                                .Items(item1 =>
+                                {
+                                    item1.Add().Text("Bill Of Quantity").Content(
+                                        @<text>
+                                            @BillOfMaterial()
+                                        </text>);
+                                            item1.Add().Text("Material Requisition").Content(
+                        @<text>
+    @StoreRequisition()
+                        </text>);
+                                item1.Add().Text("Bill Of Labor").Content(
+            @<text>
+                @Labor()
+            </text>);
+                                item1.Add().Text("Job Assignment").Content(
+    @<text>
+        @JobAssignment()
+    </text>);
 
-                            </text>);
-                        item1.Add().Text("Bill Of Labor").Content(
-                @<text>
-                    @Labor();
-                </text>);
-    item1.Add().Text("Job Assignment").Content(
-@<text>
-    @JobAssignment();
-</text>);
-
-}).ToClientTemplate())
+                                    }).ToClientTemplate())
 </script>
 @helper BillOfMaterial()
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfMaterial>()
-                                  .Name("Material_#=FurnitureJobOrderProductionId#")
-                                  .Columns(columns =>
-                                  {
-                                      columns.Bound(c => c.WorkshopType);
-                                      columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
-                                      columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
-                                      columns.Bound(c => c.UnitOfMeasurement);
-                                      columns.Bound(c => c.Quantity);
-                                      columns.Bound(c => c.Remark);
-                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                  })
-                                  .ToolBar(toolbar =>
-                                  {
-                                      toolbar.Create();
-                                  })
-                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                  .Filterable()
-                                  .Scrollable()
-                                  .DataSource(dataSource => dataSource
-                                      .Ajax()
-                                      .Model(model => model.Id(p => p.FurnitureProductionBillOfMaterialId))
-                                      .Read(read => read.Action("FurnitureProductionBillOfMaterials_Read", "FurnitureProductionBillOfMaterial", new { Id = "#=FurnitureJobOrderProductionId#" }))
-                                      .Create(create => create.Action("FurnitureProductionBillOfMaterials_Create", "FurnitureProductionBillOfMaterial", new { id = "#=FurnitureJobOrderProductionId#" }))
-                                      .Update(update => update.Action("FurnitureProductionBillOfMaterials_Update", "FurnitureProductionBillOfMaterial"))
-                                      .Destroy(destroy => destroy.Action("FurnitureProductionBillOfMaterials_Destroy", "FurnitureProductionBillOfMaterial"))
-                                  ).ToClientTemplate()
+                                          .Name("Material_#=FurnitureJobOrderProductionId#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.Bound(c => c.WorkshopType);
+                                              columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
+                                              columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
+                                              columns.Bound(c => c.UnitOfMeasurement);
+                                              columns.Bound(c => c.Quantity);
+                                              columns.Bound(c => c.Remark);
+                                              
+                                          })
+                                          
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Filterable()
+                                          .Scrollable()
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+
+                                              .Model(model => model.Id(p => p.FurnitureProductionBillOfMaterialId))
+                                              .Read(read => read.Action("FurnitureProductionBillOfMaterials_Read", "FurnitureProductionBillOfMaterial", new { Id = "#=FurnitureJobOrderProductionId#" }))
+                                              
+                                          ).ToClientTemplate()
     )
 }
 
@@ -93,13 +102,43 @@
 @helper Labor()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfLabor>()
-                              .Name("labor_#=FurnitureJobOrderProductionId#")
+                                      .Name("labor_#=FurnitureJobOrderProductionId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.WorkShopType).Width(120);
+                                          columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+                                          columns.Bound(c => c.NumberOfEmloyees).Width(100);
+                                          columns.Bound(c => c.EstimatedMinute).Width(100);
+                                          
+                                      })
+                                      
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Filterable()
+                                      .Scrollable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Model(model => model.Id(p => p.FurnitureProductionBillOfLaborId))
+                                          .Read(read => read.Action("FurnitureProductionBillOfLabors_Read", "FurnitureProductionBillOfLabor", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                          
+                                      ).ToClientTemplate()
+    )
+}
+
+@helper JobAssignment()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobAssignment>()
+                              .Name("JobAssign_#=FurnitureJobOrderProductionId#")
                               .Columns(columns =>
                               {
-                                  columns.Bound(c => c.WorkShopType).Width(120);
-                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
-                                  columns.Bound(c => c.NumberOfEmloyees).Width(100);
-                                  columns.Bound(c => c.EstimatedMinute).Width(100);
+                                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+                                  columns.Bound(c => c.Type).EditorTemplateName("Type").Width(100);
+                                  columns.ForeignKey(c => c.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120).EditorTemplateName("TaskCategoryTemplate").Width(100);
+
+                                  columns.Bound(c => c.TaskAssignedDate).Width(120);
+                                  columns.Bound(c => c.TaskEndDate).Width(100);
+                                  
+
                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                               })
                               .ToolBar(toolbar =>
@@ -108,48 +147,678 @@
                               })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                               .Filterable()
+                              .Events(ev => ev.DataBound("onChildDataBound"))
                               .Scrollable()
                               .DataSource(dataSource => dataSource
                                   .Ajax()
-                                  .Model(model => model.Id(p => p.FurnitureProductionBillOfLaborId))
-                                  .Read(read => read.Action("FurnitureProductionBillOfLabors_Read", "FurnitureProductionBillOfLabor", new { id = "#=FurnitureJobOrderProductionId#" }))
-                                  .Create(create => create.Action("FurnitureProductionBillOfLabors_Create", "FurnitureProductionBillOfLabor", new { id = "#=FurnitureJobOrderProductionId#" }))
-                                  .Update(update => update.Action("FurnitureProductionBillOfLabors_Update", "FurnitureProductionBillOfLabor"))
-                                  .Destroy(destroy => destroy.Action("FurnitureProductionBillOfLabors_Destroy", "FurnitureProductionBillOfLabor"))
+                                  .Events(ev => ev.Error("error_handler(\"JobAssign_#=FurnitureJobOrderProductionId#\")")
+                                    .RequestStart("onRequestStart(\"JobAssign_#=FurnitureJobOrderProductionId#\")")
+                                    .RequestEnd("onRequestEnd(\"JobAssign_#=FurnitureJobOrderProductionId#\")"))
+                                  .Model(model => model.Id(p => p.FurnitureJobAssignmentId))
+                                  .Read(read => read.Action("FurnitureJobAssignments_Read", "FurnitureJobAssignment", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  .Create(create => create.Action("FurnitureJobAssignments_Create", "FurnitureJobAssignment", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  .Update(update => update.Action("FurnitureJobAssignments_Update", "FurnitureJobAssignment"))
+                                  .Destroy(destroy => destroy.Action("FurnitureJobAssignments_Destroy", "FurnitureJobAssignment"))
                               ).ToClientTemplate()
     )
 }
 
-@helper JobAssignment()
+
+@helper StoreRequisition()
 {
 
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobAssignment>()
-                      .Name("JobAssign_#=FurnitureJobOrderProductionId#")
-                      .Columns(columns =>
-                      {
-                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
-                          columns.Bound(c => c.Type).EditorTemplateName("Type");
-                          columns.ForeignKey(c => c.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+    @(Html.Kendo().Grid<StoreRequisition>()
+                                                       .Name("ProductionStoreRequisitionGrid_#=FurnitureJobOrderProductionId#")
+                                                       .Columns(columns =>
+                                                       {
+                                            // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+                                            columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                                                           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                           columns.Bound(c => c.RequestDate).Width(110);
+                                                           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
+                                                           columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
+                                            columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
+                                                           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+                                                           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+                                                           columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
+                                                           "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
+                                            //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
+                                            columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                                                           columns.Bound(c => c.PlateNo).Width(100);
+                                                           columns.Bound(c => c.Remark).Width(120);
+                                                           columns.Bound(c => c.Status).Width(100);
+                                                           columns.Command(command =>
+                                                           {
+                                                               command.Edit();
+                                                               command.Destroy();
+                                                           }).Width(280);
+                                                       }).Filterable()
+                                                       .Pageable(pageable => pageable
+                                                           .Input(true)
+                                                           .Numeric(false)
+                                                           .Refresh(true)
+                                                           .PageSizes(true)
+                                                           .ButtonCount(5))
 
-                          columns.Bound(c => c.TimeSpent);
-                          columns.Bound(c => c.TaskAssignedDate);
-                          columns.Bound(c => c.TaskEndDate);
-                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Filterable()
-                      .Scrollable()
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Model(model => model.Id(p => p.FurnitureJobAssignmentId))
-                          .Read(read => read.Action("FurnitureJobAssignments_Read", "FurnitureJobAssignment", new { id = "#=FurnitureJobOrderProductionId#" }))
-                          .Create(create => create.Action("FurnitureJobAssignments_Create", "FurnitureJobAssignment", new { id = "#=FurnitureJobOrderProductionId#" }))
-                          .Update(update => update.Action("FurnitureJobAssignments_Update", "FurnitureJobAssignment"))
-                          .Destroy(destroy => destroy.Action("FurnitureJobAssignments_Destroy", "FurnitureJobAssignment"))
-                      ).ToClientTemplate()
-    )
+                                                       .ToolBar(toolbar =>
+                                                       {
+                                                           toolbar.Create();
+                                                       })
+
+                                                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProductionStoreRequisition").Window(w => w.Title("Store Requisition").Width(900)))
+                                                       .HtmlAttributes(new { style = "height: 550px;" })
+                                                       .Pageable(pageable => pageable
+                                                           .Input(true)
+                                                           .Numeric(false)
+                                                           .Refresh(true)
+                                                           .PageSizes(true)
+                                                           .ButtonCount(20))
+                                                       .Scrollable()
+
+                                                       .Filterable()
+                                                       .Selectable(selectable =>
+                                                       {
+                                                           selectable.Mode(GridSelectionMode.Single);
+                                                           selectable.Type(GridSelectionType.Row);
+
+                                                       })
+                                                       .Sortable(sortable =>
+                                                       {
+                                                           sortable.SortMode(GridSortMode.SingleColumn);
+                                                       })
+                                                       .Groupable()
+                                                       .Events(ev => ev.DetailExpand("detailExpand"))
+                                                       //.Events(ev => ev.Edit("onMasterEdit"))
+
+                                                       .Scrollable(h => h.Height(500))
+                                                       .Events(x => x.DataBound("onDataBoundMaster"))
+                                                       .DataSource(dataSource => dataSource
+                                                           .Ajax()
+                                                           .Sort(sort => sort.Add(x => x.StoreRequisitionID).Descending())
+                                                           .Events(ev => ev
+                                                               .Error("error_handler(\"ProductionStoreRequisitionGrid_#=FurnitureJobOrderProductionId#\")")
+                                                               .RequestStart("onRequestStart(\"ProductionStoreRequisitionGrid_#=FurnitureJobOrderProductionId#\")")
+                                                               .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionGrid_#=FurnitureJobOrderProductionId#\")"))
+                                                           .PageSize(20)
+                                                           .Model(model =>
+                                                           {
+                                                               model.Id(p => p.StoreRequisitionID);
+                                                               model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                               model.Field(p => p.BranchId).Editable(false);
+                                                
+                                                               model.Field(p => p.OrgStructureId).Editable(false);
+                                                
+                                                               model.Field(p => p.Status).Editable(false);
+                                               
+                                                               model.Field(p => p.CreatedBy).Editable(false);
+                                                               model.Field(p => p.DateCreated).Editable(false);
+                                                               model.Field(p => p.ModifiedBy).Editable(false);
+                                                               model.Field(p => p.LastModified).Editable(false);
+                                                           })
+                                                           .Read(read => read.Action("ProductionStoreRequisitions_Read", "ProductionStoreRequisition", new { Id = "#=FurnitureJobOrderProductionId#" }))
+                                                           .Create(create => create.Action("ProductionStoreRequisitions_Create", "ProductionStoreRequisition", new { Id = "#=FurnitureJobOrderProductionId#" }))
+                                                           .Update(update => update.Action("ProductionStoreRequisitions_Update", "ProductionStoreRequisition"))
+                                                           .Destroy(destroy => destroy.Action("ProductionStoreRequisitions_Destroy", "ProductionStoreRequisition"))
+
+                                                       ).Resizable(resize => resize.Columns(true))
+                                                       .ClientDetailTemplateId("ProductionStoreRequisitions")
+                                                       .ToClientTemplate())
+
 }
+
+
+<script id="ProductionStoreRequisitions" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStrip_#=StoreRequisitionID#")
+                .SelectedIndex(0)
+                .Items(items =>
+
+                {
+
+                    items.Add().Text("Detail").Content(
+            @<text>
+
+                # if (!IsSendForApproval&&!IsSendForApproval)
+
+                {#
+
+                <a onclick='return sendForApprovalStoreRequisition("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                <br />
+                # } #
+
+                # if (IsOnlineApproved)
+                {#
+                <a href='@Url.Action("ProductionStoreRequisitionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                <br />
+                # } #
+                <div>
+                    <hr>
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            Request Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                            Status
+                        </dt>
+                        <dd>
+                            #= Status #
+                        </dd>
+                        <dt>
+                            Is Transfer
+                        </dt>
+                        <dd>
+                            #= IsTransfer #
+                        </dd>
+                        <dt>
+                            Receiver Store
+                        </dt>
+                        <dd>
+                            #= ToStoreCode #
+                        </dd>
+                        <dt>
+                            CreatedOn
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                        </dd>
+                        <dt>
+                            CreatedBy
+                        </dt>
+                        <dd>
+                            #= CreatedBy #
+                        </dd>
+                        <dt>
+                            Modified By
+                        </dt>
+                        <dd>
+                            #= ModifiedBy #s
+                        </dd>
+                        <dt>
+                            Modified Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                            Approved By
+                        </dt>
+                        <dd>
+                            #= OnlineApprovedBy #s
+                        </dd>
+                        <dt>
+                            Approval Time
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                        </dd>
+                    </dl>
+                </div>
+
+                <hr>
+
+                # if (IsOnlineApproved&&!IsVoid)
+                {#
+                @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                            {
+                    <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                            }
+                /**/
+                /**/
+                /**/
+                /**/
+                /**/
+                /**/
+                /**/
+                /**/
+                # } #
+
+            </text>);
+
+
+                 items.Add().Text("Items").Content(
+    @<text>
+        @(Html.Kendo().Grid<StoreRequisitionItem>()
+                        .Name("ProductionStoreRequisitionItem_#=StoreRequisitionID#")
+                        .Columns(columns =>
+                        {
+                                columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategory").Width(200);
+                                columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("Item").Width(300);
+                                columns.Bound(c => c.Unit).Width(120);
+                                columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                columns.Bound(c => c.ModelNo).Width(120);
+                                columns.Bound(c => c.SerialNo).Width(120);
+                                columns.Bound(c => c.ChasisNo).Width(120);
+                                columns.Bound(c => c.RequestedQuantity).Width(120);
+                                columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                                columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                                columns.Bound(c => c.ItemSpecification).Width(120);
+                                columns.Bound(c => c.CurrentBalance).Hidden();
+                                columns.Command(command =>
+                                {
+                                    command.Edit();
+                                    command.Destroy();
+                                    command.Edit().Text("Return").IconClass("fa fa-share").UpdateText("Save");
+
+
+                                });
+
+                            })
+                        .ToolBar(toolbar =>
+                        {
+                                toolbar.Create();
+
+                            })
+                        .Events(ev => ev.Edit("onItemEdit"))
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Events(x => x.DataBound("onDataBoundLines"))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(ev => ev
+                                .Error("error_handler(\"ProductionStoreRequisitionItem_#=StoreRequisitionID#\")")
+                                .RequestStart("onRequestStart(\"ProductionStoreRequisitionItem_#=StoreRequisitionID#\")")
+                                .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionItem_#=StoreRequisitionID#\")"))
+                            .Model(model =>
+                            {
+                                    model.Id(p => p.StoreRequisitionItemID);
+                                    model.Field(p => p.IssuedQuantity).Editable(false);
+                                    model.Field(p => p.PurchaseQuantity).Editable(false);
+                                    model.Field(p => p.PartNo).Editable(false);
+                                    model.Field(p => p.Unit).Editable(false);
+                                    model.Field(p => p.CreatedBy).Editable(false);
+                                    model.Field(p => p.DateCreated).Editable(false);
+                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                    model.Field(p => p.LastModified).Editable(false);
+
+
+                                })
+                            .Read(read => read.Action("ProductionStoreRequisitionItems_Read", "ProductionStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
+                            .Create(create => create.Action("ProductionStoreRequisitionItems_Create", "ProductionStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
+                            .Update(update => update.Action("ProductionStoreRequisitionItems_Update", "ProductionStoreRequisitionItem"))
+                            .Destroy(destroy => destroy.Action("ProductionStoreRequisitionItems_Destroy", "ProductionStoreRequisitionItem"))
+                        ).ToClientTemplate())
+    </text>);
+
+                items.Add().Text("Validation").Content(
+        @<text>
+
+            @(Html.Kendo().Grid<StoreRequisitionValidation>()
+                            .Name("ProductionStoreRequisitionValidation_#=StoreRequisitionID#")
+                            .Columns(columns =>
+                            {
+                                        columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                        columns.Bound(c => c.Remark).Width(170);
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit();
+                                //command.Destroy();
+                            });
+
+                                    })
+                            .ToolBar(toolbar =>
+                            {
+                                        toolbar.Create();
+
+                                    })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable()
+                            .Events(x => x.DataBound("onDataBoundFisrtValidation").Save("refresh"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                    .Error("error_handler(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")")
+                                    .RequestStart("onRequestStart(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")")
+                                    .RequestEnd("onRequestEnd(\"ProductionStoreRequisitionValidation_#=StoreRequisitionID#\")"))
+                                .Model(model =>
+                                {
+                                            model.Id(p => p.StoreRequisitionValidationID);
+                                        })
+                                .Read(read => read.Action("ProductionStoreRequisitionValidations_Read", "ProductionStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
+                                .Create(create => create.Action("ProductionStoreRequisitionValidations_Create", "ProductionStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
+                                .Update(update => update.Action("ProductionStoreRequisitionValidations_Update", "ProductionStoreRequisitionValidation"))
+                                .Destroy(destroy => destroy.Action("ProductionStoreRequisitionValidations_Destroy", "ProductionStoreRequisitionValidation"))
+
+                            ).ToClientTemplate())
+
+        </text>);
+
+
+
+
+            }).ToClientTemplate())
+
+
+
+</script>
+
+
+
+
+<script type="text/javascript">
+
+    
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isChecked == true || isApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+
+        });
+
+    }
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    function filterTaskCategory() {
+        return {
+            taskType: $("#Type").val()
+        }
+    }
+    function filterStoresByBranch() {
+        return {
+            BranchId: $("#BranchId").val()
+        };
+    }
+    function filterPeriodsByStore() {
+        return {
+            store: $("#StoreCode").val()
+        };
+    }
+    function onSelectedPeriod(flag) {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "FurnitureProductionDataProvider")',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;                
+                var datepicker = $("#ReturnDate").data("kendoDatePicker");           
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+           });
+           }
+
+    }
+    
+    var unitPrice;
+    var jobStatusId;
+    var jobPhase;
+    var jobState;
+    var storeReqId;
+
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function MasterOnExpand(e) {
+
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        
+        codeid = masterDataItem.FurnitureJobOrderProductionId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsSendForApproval;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#Material_" + codeid).hide();
+            $(".k-grid-add", "#labor_" + codeid).hide();
+            $(".k-grid-add", "#JobAssign_" + codeid).hide();
+            $(".k-grid-add", "#ProductionStoreRequisitionGrid_" + codeid).hide();
+        }
+        //unitPrice = masterDataItem.TotalPrice / masterDataItem.Quantity;
+    }
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+        var masterGrid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        storeReqId = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+
+    }
+
+
+    function onDataBoundMaster() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+
+
+
+
+    var storeCode;
+    var storeid;
+    var isapproved;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#ProductionStoreRequisitionGrid_" + codeid).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        storeid = masterDataItem.StoreRequisitionID;
+
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+        }
+        //edit
+        if (e.model.isNew() !== true) {
+
+            //$("#RequestedQuantity").attr("readonly", true);
+            //$("#ItemCategoryCode").attr("readonly", true);
+        }
+
+
+
+    }
+
+
+
+    function onDataBoundLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#ProductionStoreRequisitionItem_" + codeid;
+        if (isapproved) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    var i = 0;
+    function onDataBoundFisrtValidation(e) {
+        i++;
+        var detailGrid = "#" + e.sender.element[0].id;// "#ProductionStoreRequisitionValidation_" + codeid;
+
+        if (isapproved) {
+
+            // $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+        var masterGrid = $("#ProductionStoreRequisitionValidation_" + storeReqId).data("kendoGrid");
+
+    }
+
+    function refresh() {
+        var masterGrid = $("#ProductionStoreRequisitionValidation_" + storeReqId).data("kendoGrid");
+        masterGrid.dataSource.read();
+    }
+
+    function sendForApprovalStoreRequisition(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ProductionStoreRequisition")',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+
+     function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ProductionStoreReturn")',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+
+
+    /*------------------------------------------Approval for production job order---------------------------------------------*/
+
+    function handleChecked(e) {
+        
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.FurnitureJobOrderProductionId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckProduction", "FurnitureJobOrderProduction", new { Area = "Manufacturing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+    function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveProduction", "FurnitureJobOrderProduction", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureJobOrderProductionId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

@@ -5,7 +5,7 @@
               .Name("grid")
               .Columns(columns =>
               {
-                  columns.Bound(c => c.JobNo);
+                  columns.Bound(c => c.JobCode);
                   columns.Bound(c => c.JobTypeName);
                   columns.Bound(c => c.Unit);                
                   columns.Bound(c => c.DateCreated);
@@ -18,7 +18,7 @@
               })
               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobTypeEditorTemplate"))
               .Filterable()
-              .Scrollable()
+              .Scrollable(s => s.Height(400))
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Events(ev => ev.Error("error_handler(\"grid\")")
@@ -39,10 +39,10 @@
                                                                 .Items(item1 =>
                                                                 {
                                                                     item1.Add().Text("Bill of Material").Content(@<text>
-    @Material();
+    @Material()
                                                                     </text>);
                                                                             item1.Add().Text("Bill of Labor").Content(@<text>
-    @Labor();
+    @Labor()
                                                                             </text>);
                                                                                 }).ToClientTemplate())
 </script>

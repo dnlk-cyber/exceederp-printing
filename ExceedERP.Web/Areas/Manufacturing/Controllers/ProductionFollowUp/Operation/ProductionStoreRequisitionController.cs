@@ -88,58 +88,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.ProductionFollowUp.Opera
 
         public ActionResult ProductionStoreRequisitions_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
-            var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
-            //if(user!=null)
-            //    {
-            //    var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
-
-            //}
-            //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
-            List<int> userworkunit = UserInformationHelper.GetUserReportsToAndChildWorkUnits(User.Identity.Name);
-            List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsFuel == false).Where(x => mybraches.Contains(x.OrgBranchName));
-            var job = _db.FurnitureJobs.Where(q=>q.FurnitureJobId == id).FirstOrDefault()?.FurnitureJobId;
+           
+            var job = _db.FurnitureJobOrderProductions.Where(q=>q.FurnitureJobOrderProductionId == id).FirstOrDefault()?.FurnitureJobOrderProductionId;
             var storeRequisitions = _db.StoreRequisitions.Where(q=>q.JobOrderNo == job.ToString()).Where(x => x.IsFuel == false)
                 .AsQueryable();
 
-            //if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment)
-            //&& System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
-            //{
-            //    if (!storekeepers.Any() && userworkunit.Any())
-            //    {
-            //        storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
-            //                                                         || x.CreatedBy == User.Identity.Name).AsQueryable();
-            //    }
-            //    else
-            //    {
-            //        storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode)
-            //                                                         || x.CreatedBy == User.Identity.Name);
-            //    }
-            //}
-
-            //else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment))
-            //{
-            //    if (!storekeepers.Any() && userworkunit.Any())
-            //    {
-            //        storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
-            //                                                         || x.CreatedBy == User.Identity.Name).AsQueryable();
-            //    }
-            //    else
-            //    {
-            //        storeRequisitions = storeRequisitions.Where(x => userStores.Contains(x.StoreCode) || x.CreatedBy == User.Identity.Name);
-            //    }
-            //}
-            //else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
-            //{
-            //    storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name).AsQueryable();
-            //}
-
-
-            //old
-            //List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            //IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsFuel == false).Where(x => userStores.Contains(x.StoreCode));
+            
             var result = storeRequisitions.ToDataSourceResult(request, storeRequisition => new
                 {
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
@@ -266,7 +220,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.ProductionFollowUp.Opera
             #endregion
             if (ModelState.IsValid)
             {
-                var jobOrderNum = _db.FurnitureJobs.Where(q=>q.FurnitureJobId == id).FirstOrDefault()?.FurnitureJobId;
+                var jobOrderProduction = _db.FurnitureJobOrderProductions.FirstOrDefault(x => x.FurnitureJobOrderProductionId == id);
 
                     var entity = new StoreRequisition
                     {
@@ -286,9 +240,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.ProductionFollowUp.Opera
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
                         ModelNo = storeRequisition.ModelNo,
-                        JobOrderNo = jobOrderNum.ToString(),
+                        JobOrderNo = jobOrderProduction.FurnitureJobOrderProductionId.ToString(),
                         PlateNo = storeRequisition.PlateNo,
-
+                        
                         VoidBy = storeRequisition.VoidBy,
                         VoidTime = storeRequisition.VoidTime,
                         IsOnlineApproved = storeRequisition.IsOnlineApproved,

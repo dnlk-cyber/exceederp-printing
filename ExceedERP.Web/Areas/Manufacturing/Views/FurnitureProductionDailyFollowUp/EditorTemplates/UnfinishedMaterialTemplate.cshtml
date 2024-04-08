@@ -1,0 +1,73 @@
+﻿
+@model ExceedERP.Core.Domain.Manufacturing.Production.FurnitureUnfinishedMaterialTransferForm
+
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Transferer Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.TransfererId)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select...")
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .Filter("contains")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetEmployees", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterEmployee")
+                                                        )
+                                                        .ServerFiltering(true);
+                                                    }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Receiver Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ReceiverId)
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select...")
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .Filter("contains")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetEmployees", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterEmployee")
+                                                        )
+                                                        .ServerFiltering(true);
+                                                    }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Quantity</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Quantity).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Quality Grade</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.QualityGrade)
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Production.QualityGrade))
+                                                    )
+                                                .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+
+</div>
+

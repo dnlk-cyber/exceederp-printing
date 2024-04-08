@@ -1,0 +1,38 @@
+﻿
+
+@helper Metal() { 
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureDailyProductionFollowUp>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.WorkShop).EditorTemplateName("WorkShop");
+            columns.ForeignKey(c => c.ManifucturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+
+            columns.Bound(c => c.DailyProductionPlan);
+            columns.Bound(c => c.DailyProductionActual);
+
+            columns.Bound(c => c.DateExcuted);
+            columns.Command(command => { }).Width(180);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InCell))
+        .Filterable()
+        .Scrollable()
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Batch(true)
+            .Model(model => 
+            {
+                model.Id(p => p.FurnitureDailyProductionFollowUpId);
+                model.Field(p => p.EmployeeId).Editable(false);
+                model.Field(p => p.DailyProductionPlan).Editable(false);
+                model.Field(p => p.ManifucturingTaskCategoryId).Editable(false);
+                model.Field(p => p.WorkShop).Editable(false);
+                
+            })
+            .Read(read => read.Action("FurnitureDailyProductionFollowUps_Read", "FurnitureDailyFollowupBatch", new { id = "#=FurnitureJobOrderProductionId#", workShop = "#=1#" }))
+            .Update(update => update.Action("FurnitureDailyProductionFollowUps_Update", "FurnitureDailyFollowupBatch"))
+        )
+    )
+}

@@ -21,8 +21,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
     }
     public enum WorkShop
     {
+        
         Metal = 1,
         WoodWork,
-        Finishing        
+        [Display(Name = "Finishing/Assembly")]
+        Finishing_Assembly        
     }
 }

@@ -22,10 +22,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             return View();
         }
 
-        public ActionResult FurnitureJobAssignments_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult FurnitureJobAssignments_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<FurnitureJobAssignment> furniturejobassignments = db.FurnitureJobAssignments;
-            DataSourceResult result = furniturejobassignments.ToDataSourceResult(request, furnitureJobAssignment => new {
+            IQueryable<FurnitureJobAssignment> furniturejobassignments = db.FurnitureJobAssignments.Where(x => x.FurnitureJobOrderProductionId == id);
+            DataSourceResult result = furniturejobassignments.ToDataSourceResult(request, furnitureJobAssignment => new FurnitureJobAssignment
+            {
                 FurnitureJobAssignmentId = furnitureJobAssignment.FurnitureJobAssignmentId,
                 EmployeeId = furnitureJobAssignment.EmployeeId,
                 Type = furnitureJobAssignment.Type,
@@ -33,16 +34,24 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 TimeSpent = furnitureJobAssignment.TimeSpent,
                 TaskAssignedDate = furnitureJobAssignment.TaskAssignedDate,
                 TaskEndDate = furnitureJobAssignment.TaskEndDate,
+                FurnitureJobOrderProductionId = furnitureJobAssignment.FurnitureJobOrderProductionId,
+                DailyProductionPlan = furnitureJobAssignment.DailyProductionPlan,
+                CreatedBy = furnitureJobAssignment.CreatedBy,
+                DateCreated = furnitureJobAssignment.DateCreated,
+                LastModified = furnitureJobAssignment.LastModified,
+                ModifiedBy = furnitureJobAssignment.ModifiedBy
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureJobAssignments_Create([DataSourceRequest]DataSourceRequest request, FurnitureJobAssignment furnitureJobAssignment)
+        public ActionResult FurnitureJobAssignments_Create([DataSourceRequest]DataSourceRequest request, FurnitureJobAssignment furnitureJobAssignment, int id)
         {
             if (ModelState.IsValid)
             {
+                var production = db.FurnitureJobOrderProductions.Find(id);
+                
                 var entity = new FurnitureJobAssignment
                 {
                     EmployeeId = furnitureJobAssignment.EmployeeId,
@@ -51,7 +60,15 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     TimeSpent = furnitureJobAssignment.TimeSpent,
                     TaskAssignedDate = furnitureJobAssignment.TaskAssignedDate,
                     TaskEndDate = furnitureJobAssignment.TaskEndDate,
+                    FurnitureJobOrderProductionId = id,
+                   
+                    DateCreated = DateTime.Today,
+                    CreatedBy = User.Identity.Name,
+                    
+                    
                 };
+                var totalDays = (entity.TaskEndDate - entity.TaskAssignedDate).Days;
+                entity.DailyProductionPlan = Math.Round(production.Quantity / totalDays, 2);
 
                 db.FurnitureJobAssignments.Add(entity);
                 db.SaveChanges();
@@ -75,6 +92,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     TimeSpent = furnitureJobAssignment.TimeSpent,
                     TaskAssignedDate = furnitureJobAssignment.TaskAssignedDate,
                     TaskEndDate = furnitureJobAssignment.TaskEndDate,
+                    CreatedBy = furnitureJobAssignment.CreatedBy,
+                    DateCreated = furnitureJobAssignment.DateCreated,
+                    DailyProductionPlan = furnitureJobAssignment.DailyProductionPlan,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Today,
+                    FurnitureJobOrderProductionId = furnitureJobAssignment.FurnitureJobOrderProductionId
                 };
 
                 db.FurnitureJobAssignments.Attach(entity);
@@ -99,6 +122,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     TimeSpent = furnitureJobAssignment.TimeSpent,
                     TaskAssignedDate = furnitureJobAssignment.TaskAssignedDate,
                     TaskEndDate = furnitureJobAssignment.TaskEndDate,
+                    FurnitureJobOrderProductionId = furnitureJobAssignment.FurnitureJobOrderProductionId,
+                    LastModified = furnitureJobAssignment.LastModified,
+                    ModifiedBy = furnitureJobAssignment.ModifiedBy,
+                    DailyProductionPlan = furnitureJobAssignment.DailyProductionPlan,
+                    CreatedBy = furnitureJobAssignment.CreatedBy,
+                    DateCreated = furnitureJobAssignment.DateCreated
                 };
 
                 db.FurnitureJobAssignments.Attach(entity);

@@ -1,0 +1,69 @@
+﻿
+
+<label>Daily Production Follow-Up Form</label>
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureDailyProductionFollowUp>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.WorkShop).EditorTemplateName("WorkShop");
+          columns.ForeignKey(c => c.ManifucturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
+          
+          columns.Bound(c => c.DailyProductionPlan);
+          columns.Bound(c => c.DailyProductionActual);
+          
+          columns.Bound(c => c.DateCreated);
+          
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ManufacturingDailyFollowUpTemplate"))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FurnitureDailyProductionFollowUpId))
+          .Read(read => read.Action("FurnitureDailyProductionFollowUps_Read", "FurnitureDailyProductionFollowUp"))
+          .Create(create => create.Action("FurnitureDailyProductionFollowUps_Create", "FurnitureDailyProductionFollowUp"))
+          .Update(update => update.Action("FurnitureDailyProductionFollowUps_Update", "FurnitureDailyProductionFollowUp"))
+          .Destroy(destroy => destroy.Action("FurnitureDailyProductionFollowUps_Destroy", "FurnitureDailyProductionFollowUp"))
+      )
+)
+
+<script type="text/javascript">
+    function filterTaskCategory() {
+        return {
+            taskType: $("#WorkShop").val()
+        }
+    }
+
+    function filterEmployee() {
+        return {
+            text: $("#EmployeeId").val()
+        }
+    }
+
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").val()
+        }
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

@@ -28,7 +28,7 @@
                       .Pageable()
                       .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
                       .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
-                      .Scrollable()
+                      .Scrollable(s => s.Height(400))
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Events(ev => ev.Error("error_handler(\"grid\")")
@@ -80,6 +80,7 @@
                                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MaterialBOQTemplate"))
                                       .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
                                       .Scrollable()
+                                      .Events(e => e.DataBound("onChildDataBound"))
                                       .DataSource(dataSource => dataSource
                                           .Ajax()
                                           .Events(ev => ev.Error("error_handler(\"material_#=FurnitureBillOfQuantityId#\")")
@@ -116,6 +117,7 @@
                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LaborBOQTemplate"))
                               .Filterable(filterable => filterable.Mode(GridFilterMode.Menu))
                               .Scrollable()
+                              .Events(e => e.DataBound("onChildDataBound"))
                               .DataSource(dataSource => dataSource
                                   .Ajax()
                                   .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureBillOfQuantityId#\")")
@@ -210,8 +212,7 @@
 
     }
     function handleChecked(e) {
-        //var id = $("#FurnitureBillOfQuantityId").data("kendoNumericTextBox").value();
-
+        
         if (confirm("Are you sure you this form is checked?")) {
             var grid = this;
             var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
@@ -272,6 +273,19 @@
             $(".custom-made").show();
             
         }
+    }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isChecked == true || isApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+
+        });
+
     }
 </script>
 <style>

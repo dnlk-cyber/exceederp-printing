@@ -1,14 +1,11 @@
-﻿using ExceedERP.Core.Domain.Manufacturing.Setting;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Manufacturing.Setting;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Manufacturing.Production
 {
-    public class FurnitureJobAssignment
+    public class FurnitureJobAssignment : TrackUserSettingOperation
     {
         [Key]
         public int FurnitureJobAssignmentId { get; set; }   
@@ -20,11 +17,12 @@ namespace ExceedERP.Core.Domain.Manufacturing.Production
         public int TaskCategoryId { get; set; }               
         [Display(Name = "Time Spent")]
         public decimal TimeSpent { get; set; }
-        [Display(Name ="Task Assigned Date"), DataType(DataType.DateTime)]
+        [Display(Name ="Task Assigned Date"), DataType(DataType.Date)]
         public DateTime TaskAssignedDate { get; set; }
-        [Display(Name = "Task End Date"), DataType(DataType.DateTime)]
+        [Display(Name = "Task End Date"), DataType(DataType.Date)]
         public DateTime TaskEndDate { get; set; }
-
+        [Display(Name ="Daily Production Plan")]
+        public decimal DailyProductionPlan { get; set; }
         public int FurnitureJobOrderProductionId { get; set; } 
         public FurnitureJobOrderProduction FurnitureJobOrderProduction { get; set; } 
     }

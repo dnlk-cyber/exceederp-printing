@@ -1,0 +1,92 @@
+﻿
+@model ExceedERP.Core.Domain.Manufacturing.Production.FurnitureDailyProductionFollowUp
+
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Employee Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                            .ValuePrimitive(true)
+                            .OptionLabel("Select Employee...")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetEmployees", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterEmployee")
+                                )
+                                .ServerFiltering(true);
+                            }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Work Shop</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.WorkShop)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Setting.WorkShop))
+                            )
+                        .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Task Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ManifucturingTaskCategoryId)
+                            .ValuePrimitive(true)
+                            .OptionLabel("Select task category...")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetTaskCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterTaskCategory")
+                                )
+                                .ServerFiltering(true);
+                            }).CascadeFrom("WorkShop")
+                            .HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Production Plan</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.DailyProductionPlan).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+   
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Production Actual</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.DailyProductionActual).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Date</label>
+            <div>
+                @(Html.Kendo().DateTimePickerFor(model => model.DateExcuted).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

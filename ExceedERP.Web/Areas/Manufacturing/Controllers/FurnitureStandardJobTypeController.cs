@@ -52,7 +52,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             DataSourceResult result = furniturestandardjobtypes.ToDataSourceResult(request, furnitureStandardJobType => new FurnitureStandardJobType
             {
                 FurnitureStandardJobTypeId = furnitureStandardJobType.FurnitureStandardJobTypeId,
-                JobNo = furnitureStandardJobType.JobNo,
+                JobCode = furnitureStandardJobType.JobCode,
                 JobTypeName = furnitureStandardJobType.JobTypeName,
                 Unit = furnitureStandardJobType.Unit,
                 Remark = furnitureStandardJobType.Remark,
@@ -74,7 +74,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 var entity = new FurnitureStandardJobType
                 {
-                    JobNo = furnitureStandardJobType.JobNo,
+                    JobCode = furnitureStandardJobType.JobCode,
                     JobTypeName = furnitureStandardJobType.JobTypeName,
                     Unit = furnitureStandardJobType.Unit,
                     Remark = furnitureStandardJobType.Remark,
@@ -101,7 +101,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 var entity = new FurnitureStandardJobType
                 {
                     FurnitureStandardJobTypeId = furnitureStandardJobType.FurnitureStandardJobTypeId,
-                    JobNo = furnitureStandardJobType.JobNo,
+                    JobCode = furnitureStandardJobType.JobCode,
                     JobTypeName = furnitureStandardJobType.JobTypeName,
                     Unit = furnitureStandardJobType.Unit,
                     Remark = furnitureStandardJobType.Remark,

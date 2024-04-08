@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -40,7 +40,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             DataSourceResult result = furniturejoborderforms.ToDataSourceResult(request, furnitureJobOrderForm => new FurnitureJobOrderForm
             {
                 FurnitureJobOrderFormId = furnitureJobOrderForm.FurnitureJobOrderFormId,
-                CustomerId = furnitureJobOrderForm.CustomerId,                
+                CustomerId = furnitureJobOrderForm.CustomerId,
                 DeliveryDate = furnitureJobOrderForm.DeliveryDate,
                 CRVNo = furnitureJobOrderForm.CRVNo,
                 AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
@@ -63,7 +63,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 DateCreated = furnitureJobOrderForm.DateCreated,
                 LastModified = furnitureJobOrderForm.LastModified,
                 CreatedBy = furnitureJobOrderForm.CreatedBy,
-                ModifiedBy = furnitureJobOrderForm.ModifiedBy,                
+                ModifiedBy = furnitureJobOrderForm.ModifiedBy,
             });
 
             return Json(result);
@@ -72,42 +72,25 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureJobOrderForms_Create([DataSourceRequest]DataSourceRequest request, FurnitureJobOrderForm furnitureJobOrderForm)
         {
+            #region Validation
+            var existingJob = db.FurnitureJobOrderForms.Where(x => x.FurnitureProformaInvoiceId == furnitureJobOrderForm.FurnitureProformaInvoiceId).ToList();
+            if (existingJob.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Proforma Invoice No Exists");
+            }
+            var exisitngCrvNo = db.FurnitureJobOrderForms.Where(x => x.CRVNo == furnitureJobOrderForm.CRVNo).ToList();
+            if (exisitngCrvNo.Any())
+            {
+                ModelState.AddModelError(string.Empty, "CRv.No Exists");
+            }
+            #endregion
             if (ModelState.IsValid)
             {
-                var entity = new FurnitureJobOrderForm
+                if (!GenerateJobOrder(furnitureJobOrderForm))
                 {
-                    CustomerId = furnitureJobOrderForm.CustomerId,
-                    
-                    DeliveryDate = furnitureJobOrderForm.DeliveryDate,
-                    CRVNo = furnitureJobOrderForm.CRVNo,
-                    AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
-                    FurnitureProformaInvoiceId = furnitureJobOrderForm.FurnitureProformaInvoiceId,
-                    Status = furnitureJobOrderForm.Status,
-                    Remark = furnitureJobOrderForm.Remark,
-                    IsVoid = furnitureJobOrderForm.IsVoid,
-                    VoidBy = furnitureJobOrderForm.VoidBy,
-                    VoidTime = furnitureJobOrderForm.VoidTime,
-                    IsOnlineApproved = furnitureJobOrderForm.IsOnlineApproved,
-                    OnlineApprovedBy = furnitureJobOrderForm.OnlineApprovedBy,
-                    OnlineApprovedTime = furnitureJobOrderForm.OnlineApprovedTime,
-                    IsOnlineTransferred = furnitureJobOrderForm.IsOnlineTransferred,
-                    IsOnlineTransferredBy = furnitureJobOrderForm.IsOnlineTransferredBy,
-                    OnlineTransferredTime = furnitureJobOrderForm.OnlineTransferredTime,
-                    IsSendForApproval = furnitureJobOrderForm.IsSendForApproval,
-                    OrgBranchName = furnitureJobOrderForm.OrgBranchName,
-                    SendForApprovalBy = furnitureJobOrderForm.SendForApprovalBy,
-                    SendForApprovalTime = furnitureJobOrderForm.SendForApprovalTime,
-                    DateCreated = furnitureJobOrderForm.DateCreated,
-                    LastModified = furnitureJobOrderForm.LastModified,
-                    CreatedBy = furnitureJobOrderForm.CreatedBy,
-                    ModifiedBy = furnitureJobOrderForm.ModifiedBy
-                };
-
-                db.FurnitureJobOrderForms.Add(entity);
-                db.SaveChanges();
-                furnitureJobOrderForm.FurnitureJobOrderFormId = entity.FurnitureJobOrderFormId;
+                    ModelState.AddModelError("", "Something's wrong!");
+                }
             }
-
             return Json(new[] { furnitureJobOrderForm }.ToDataSourceResult(request, ModelState));
         }
 
@@ -120,7 +103,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 {
                     FurnitureJobOrderFormId = furnitureJobOrderForm.FurnitureJobOrderFormId,
                     CustomerId = furnitureJobOrderForm.CustomerId,
-                    
+
                     DeliveryDate = furnitureJobOrderForm.DeliveryDate,
                     CRVNo = furnitureJobOrderForm.CRVNo,
                     AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
@@ -159,42 +142,69 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         {
             if (ModelState.IsValid)
             {
-                var entity = new FurnitureJobOrderForm
+                var jobOrder = db.FurnitureJobOrderForms.FirstOrDefault(x => x.FurnitureJobOrderFormId == furnitureJobOrderForm.FurnitureJobOrderFormId);
+                if (jobOrder != null)
                 {
-                    FurnitureJobOrderFormId = furnitureJobOrderForm.FurnitureJobOrderFormId,
-                    CustomerId = furnitureJobOrderForm.CustomerId,
-                    
-                    DeliveryDate = furnitureJobOrderForm.DeliveryDate,
-                    CRVNo = furnitureJobOrderForm.CRVNo,
-                    AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
-                    FurnitureProformaInvoiceId = furnitureJobOrderForm.FurnitureProformaInvoiceId,
-                    Status = furnitureJobOrderForm.Status,
-                    Remark = furnitureJobOrderForm.Remark,
-                    IsVoid = furnitureJobOrderForm.IsVoid,
-                    VoidBy = furnitureJobOrderForm.VoidBy,
-                    VoidTime = furnitureJobOrderForm.VoidTime,
-                    IsOnlineApproved = furnitureJobOrderForm.IsOnlineApproved,
-                    OnlineApprovedBy = furnitureJobOrderForm.OnlineApprovedBy,
-                    OnlineApprovedTime = furnitureJobOrderForm.OnlineApprovedTime,
-                    IsOnlineTransferred = furnitureJobOrderForm.IsOnlineTransferred,
-                    IsOnlineTransferredBy = furnitureJobOrderForm.IsOnlineTransferredBy,
-                    OnlineTransferredTime = furnitureJobOrderForm.OnlineTransferredTime,
-                    IsSendForApproval = furnitureJobOrderForm.IsSendForApproval,
-                    OrgBranchName = furnitureJobOrderForm.OrgBranchName,
-                    SendForApprovalBy = furnitureJobOrderForm.SendForApprovalBy,
-                    SendForApprovalTime = furnitureJobOrderForm.SendForApprovalTime,
-                    DateCreated = furnitureJobOrderForm.DateCreated,
-                    LastModified = furnitureJobOrderForm.LastModified,
-                    CreatedBy = furnitureJobOrderForm.CreatedBy,
-                    ModifiedBy = furnitureJobOrderForm.ModifiedBy
-                };
-
-                db.FurnitureJobOrderForms.Attach(entity);
-                db.FurnitureJobOrderForms.Remove(entity);
-                db.SaveChanges();
+                    var jobItems = db.FurnitureJobOrderItems.Where(x => x.FurnitureJobOrderFormId == jobOrder.FurnitureJobOrderFormId);
+                    if (jobItems.Any())
+                    {
+                        db.FurnitureJobOrderItems.RemoveRange(jobItems);
+                        db.FurnitureJobOrderForms.Remove(jobOrder);
+                        db.SaveChanges();
+                    }
+                }
             }
 
             return Json(new[] { furnitureJobOrderForm }.ToDataSourceResult(request, ModelState));
+        }
+
+        private bool GenerateJobOrder(FurnitureJobOrderForm furnitureJobOrderForm)
+        {
+            var proformaInvoice = db.FurnitureProformaInvoices.Find(furnitureJobOrderForm.FurnitureProformaInvoiceId);
+            if (proformaInvoice != null)
+            {
+                var proformaItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId).ToList();
+                if (proformaItems.Any())
+                {
+                    var jobOrder = new FurnitureJobOrderForm
+                    {
+                        CustomerId = proformaInvoice.CustomerId,                                               
+                        FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
+                        DateCreated = DateTime.Today,
+                        CreatedBy = User.Identity.Name,
+                        CRVNo = furnitureJobOrderForm.CRVNo,
+                        PaymentType = furnitureJobOrderForm.PaymentType,
+                        AdvancePaymentInPercent = furnitureJobOrderForm.AdvancePaymentInPercent,
+                        Remark = furnitureJobOrderForm.Remark
+
+                    };
+                    jobOrder.DeliveryDate = DateTime.Today.AddDays(proformaInvoice.DeliveryPeriod);
+                    db.FurnitureJobOrderForms.Add(jobOrder);
+                    db.SaveChanges();
+                    foreach (var proformaItem in proformaItems)
+                    {
+                        var jobOrderItem = new FurnitureJobOrderItem
+                        {
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Today,
+                            Quantity = proformaItem.Quantity,
+                            JobTypeId = proformaItem.JobTypeId,
+                            UnitOfMeasurment = proformaItem.UnitOfMeasurment,
+                            UnitPriceBeforeVAT = proformaItem.UnitPriceBeforeVAT,
+                            VAT = proformaItem.VAT,
+                            UnitPriceWithVAT = proformaItem.UnitPriceWithVAT,
+                            FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId,
+
+                        };
+                        db.FurnitureJobOrderItems.Add(jobOrderItem);
+                        db.SaveChanges();
+                        furnitureJobOrderForm.FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId;
+                        return true;
+                    }
+                }
+            }
+            return false;
+
         }
         public JsonResult CheckJob(int id)
         {
@@ -202,14 +212,22 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var jobOrder = db.FurnitureJobOrderForms.Find(id);
             if (jobOrder != null)
             {
-                jobOrder.IsSendForApproval = true;
-                jobOrder.SendForApprovalBy = User.Identity.Name;
-                jobOrder.SendForApprovalTime = DateTime.Today;
+                var validity = CheckJobItemValidity(jobOrder.FurnitureJobOrderFormId);
+                if (validity)
+                {
+                    jobOrder.IsSendForApproval = true;
+                    jobOrder.SendForApprovalBy = User.Identity.Name;
+                    jobOrder.SendForApprovalTime = DateTime.Today;
 
-                db.FurnitureJobOrderForms.Attach(jobOrder);
-                db.Entry(jobOrder).State = EntityState.Modified;
-                db.SaveChanges();
-                response = new { Success = true, Message = "Job Order Checked Successfully!" };
+                    db.FurnitureJobOrderForms.Attach(jobOrder);
+                    db.Entry(jobOrder).State = EntityState.Modified;
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Job Order Checked Successfully!" };
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Something is wrong! Please assign Job.No under job items!" };
+                }
             }
             else
             {
@@ -217,13 +235,27 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }
             return Json(response);
         }
+        private bool CheckJobItemValidity(int id)
+        {
+            var jobItems = db.FurnitureJobOrderItems.Where(x => x.FurnitureJobOrderFormId == id).ToList();
+            if (!jobItems.Any())
+            {
+                return false;
+            }
+            foreach (var item in jobItems)
+            {
+                if (string.IsNullOrWhiteSpace(item.JobNo))
+                    return false;
+            }
+            return true;
+        }
         public JsonResult ApproveJobOrder(int id)
         {
             object response = null;
             var jobOrder = db.FurnitureJobOrderForms.Find(id);
             if (jobOrder != null)
             {
-                
+
 
 
                 jobOrder.IsOnlineApproved = true;
@@ -254,7 +286,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 foreach (var item in jobItems)
                 {
                     var billOfQuantity = db.FurnitureBillOfQuantities.FirstOrDefault(x => x.JobTypeId == item.JobTypeId);
-                    if(billOfQuantity != null)
+                    if (billOfQuantity != null)
                     {
                         var billOfMaterial = db.FurnitureBOQMaterials.FirstOrDefault(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
                         var billOfLabor = db.FurnitureBOQLabors.FirstOrDefault(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
@@ -286,7 +318,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                                 FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
                             };
                             db.FurnitureProductionBillOfMaterials.Add(productionBoQMaterial);
-                            
+
 
                             var productionBoqLabor = new FurnitureProductionBillOfLabor
                             {
@@ -302,7 +334,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         }
                     }
                 }
-                
+
             }
         }
         protected override void Dispose(bool disposing)

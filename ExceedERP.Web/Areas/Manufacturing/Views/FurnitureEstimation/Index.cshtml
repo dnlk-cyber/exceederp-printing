@@ -6,6 +6,7 @@
                     .Name("grid")
                     .Columns(columns =>
                     {
+                        columns.Bound(c => c.FurnitureEstimationId).Width(70);
                         columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
                         columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
 
@@ -25,9 +26,9 @@
                     .ToolBar(toolbar =>
                     {
                         toolbar.Create();
-            //toolbar.Excel();
-            //toolbar.Pdf();
-        })
+                        //toolbar.Excel();
+                        //toolbar.Pdf();
+                    })
                     .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
                     .Scrollable(s => s.Height(400))
                     .ClientDetailTemplateId("cost_estimation")
