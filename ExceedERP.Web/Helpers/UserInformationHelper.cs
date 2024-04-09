@@ -164,9 +164,9 @@ namespace ExceedERP.Web.Helpers
 
         }
 
-        internal static List<int> GetUserBusinessUnits(string name)
+        public static List<int> GetUserBusinessUnits(string name)
         {
-            throw new NotImplementedException();
+            return new List<int>();
         }
 
         public static string GetEmployeeCostCenter(string userName)
