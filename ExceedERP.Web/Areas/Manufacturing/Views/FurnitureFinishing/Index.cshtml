@@ -14,15 +14,17 @@
                   columns.Bound(c => c.DeliveryDate).Width(120);
                   columns.Command(command =>
                   {
-
-                      command.Custom("close").Text("Close Job").IconClass("fa fa-check").HtmlAttributes(new { @class = "close", title = "" }).Click("handleJobClose");
+                      command.Custom("approve").Text("Close Job").IconClass("").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleJobClose");
 
                   }).Width(180);
               })
               .Filterable()
+              .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
               .Scrollable(s => s.Height(400))
               .DataSource(dataSource => dataSource
                   .Ajax()
+                  .Sort(sort => sort.Add(e => e.FurnitureJobOrderProductionId).Descending())
+                  .Model(m => m.Id(p => p.FurnitureJobOrderProductionId))
                   .Read(read => read.Action("FurnitureJobOrderProductionsFinishing_Read", "FurnitureFinishing"))
               ).ClientDetailTemplateId("tabstrip")
 )
@@ -30,6 +32,7 @@
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
                                 .Name("tab_#=FurnitureJobOrderProductionId#")
+                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
                                 .Items(item1 =>
                                 {
 
@@ -37,7 +40,7 @@
                             @<text>
                                 @Finishing()
                             </text>);
-                                            item1.Add().Text("Unfinished Goods").Content(
+                                            item1.Add().Text("Unfinished Goods Transfer").Content(
                         @<text>
                            @UnfinishedMaterialTransfer()
                         </text>);
@@ -97,30 +100,36 @@
                               .Columns(columns =>
                               {
                                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                                  columns.Bound(c => c.Quantity).Width(100);
+
                                   columns.Bound(c => c.TransferDate).Width(100);
                                   columns.ForeignKey(c => c.TransfererId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
                                   columns.ForeignKey(c => c.ReceiverId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
                                   columns.Bound(c => c.QualityGrade).EditorTemplateName("QualityGradeTemplate").Width(100);
+                                  columns.Bound(c => c.Quantity).ClientFooterTemplate("Total Quantity: \\#=sum\\# ").Width(100);
                                   //columns.Bound(c => c.WorkProgressInPercentage);
 
                                   columns.Command(command =>
                                   {
                                       command.Edit();
                                       command.Custom("receive").Text("Received").IconClass("fa fa-check").HtmlAttributes(new { @class = "receive", title = "received" }).Click("handleReceive");
-                                      
+
                                   }).Width(180);
                               })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                               .Filterable()
+                              .Pageable(pageable => pageable
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
                               .Events(ev => ev.DataBound("onChildDataBound"))
                               .Scrollable()
                               .DataSource(dataSource => dataSource
                                   .Ajax()
                                   .Events(ev => ev.Error("error_handler(\"Transfer_#=FurnitureJobOrderProductionId#\")")
-                            .RequestStart("onRequestStart(\"Transfer_#=FurnitureJobOrderProductionId#\")")
-                            .RequestEnd("onRequestEnd(\"Transfer_#=FurnitureJobOrderProductionId#\")"))
-                                  .Model(model => 
+                                    .RequestStart("onRequestStart(\"Transfer_#=FurnitureJobOrderProductionId#\")")
+                                    .RequestEnd("onRequestEnd(\"Transfer_#=FurnitureJobOrderProductionId#\")"))
+                                    .Aggregates(a => a.Add(s => s.Quantity).Sum())
+                                  .Model(model =>
                                   {
                                       model.Id(p => p.FurnitureUnfinishedMaterialTransferFormId);
                                       model.Field(p => p.JobTypeId).Editable(false);
@@ -128,9 +137,9 @@
                                       model.Field(p => p.TransferDate).Editable(false);
                                       model.Field(p => p.TransfererId).Editable(false);
                                       model.Field(p => p.ReceiverId).Editable(false);
-                                      
+
                                   })
-                                  .Read(read => read.Action("FurnitureUnfinishedMaterialTransferForms_Read", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
+                                  .Read(read => read.Action("FurnitureUnfinishedMaterialReceive_Read", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
                                   //.Create(create => create.Action("FurnitureUnfinishedMaterialTransferForms_Create", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
                                   .Update(update => update.Action("FurnitureUnfinishedMaterialTransferForms_Update", "FurnitureUnfinishedMaterialTransferForm"))
                               //.Destroy(destroy => destroy.Action("FurnitureUnfinishedMaterialTransferForms_Destroy", "FurnitureUnfinishedMaterialTransferForm"))
@@ -140,6 +149,31 @@
 
 <script type="text/javascript">
 
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    var IsClosed;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        codeid = masterDataItem.FurnitureJobOrderProductionId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        IsClosed = masterDataItem.IsClosed;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#grid_" + codeid).hide();
+            if (IsClosed) {
+                $(".k-grid-top", "#finishing_" + codeid).hide();
+            }
+        }
+
+
+    }
     function handleJobClose(e) {
 
         if (confirm("Are you sure you want to close this job?")) {
@@ -178,7 +212,9 @@
                 success: function (result) {
                     if (result.Success) {
                         toastr.success(result.Message);
-                        $("#grid").data("kendoGrid").dataSource.read();
+                        
+                        var grid = $("#Transfer_" + codeid).data("kendoGrid");
+                        grid.dataSource.read();
                     }
                     else {
                         toastr.error(result.Message);
@@ -190,18 +226,47 @@
             });
         }
     }
-    function onChildDataBound(e) {
+    function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (dataItem.IsReceived) {
-                $(this).find(".k-grid-receive").hide();
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsClosed) {
                 $(this).find(".k-grid-edit").hide();
-                
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
             }
 
         });
+    }
+    
+    function onChildDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem)
+            if (dataItem.IsReceived == true) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-receive").remove();
+            }
+        });
+        
 
     }
 </script>

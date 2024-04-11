@@ -36,7 +36,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         public ActionResult FurnitureProformaInvoices_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices.OrderBy(x => x.FurnitureProformaInvoiceId).ToList();
+            IQueryable<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices;
             DataSourceResult result = furnitureproformainvoices.ToDataSourceResult(request, furnitureProformaInvoice => new FurnitureProformaInvoice
             {
                 FurnitureProformaInvoiceId = furnitureProformaInvoice.FurnitureProformaInvoiceId,

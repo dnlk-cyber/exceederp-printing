@@ -33,6 +33,7 @@
                       .Scrollable(s => s.Height(500))
                       .DataSource(dataSource => dataSource
                           .Ajax()
+                          .Sort(sort => sort.Add(e => e.FurnitureJobOrderProductionId).Descending())
                           .Events(ev => ev.Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))

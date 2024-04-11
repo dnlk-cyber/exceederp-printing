@@ -16,15 +16,18 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal MaterialCost { get; set; }
         [Display(Name ="Direct labour Cost")]
         public decimal LabourCost { get; set; }
-        [Display(Name ="OverHead Cost")]
+        [Display(Name ="OverHead Cost(%)")]
+        [Required]
         public decimal OverHeadCost { get; set; }
         [Display(Name = "Manuf. Cost")]
         public decimal ManufacturingCost { get; set; }
-        [Display(Name = "Administrative Cost")]
+        [Display(Name = "Admin Cost(%)")]
+        [Required]
         public decimal AdministrativeCost { get; set; }
         [Display(Name ="Total Cost")]
         public decimal GrandTotalCost { get; set; }
-        [Display(Name = "Profit Margin")]
+        [Display(Name = "Profit Margin(%)")]
+        [Required]
         public decimal ProfitMargin { get; set; }
         [Display(Name = "Final Price")]
         public decimal FinalPriceIncludingProfit { get; set; }

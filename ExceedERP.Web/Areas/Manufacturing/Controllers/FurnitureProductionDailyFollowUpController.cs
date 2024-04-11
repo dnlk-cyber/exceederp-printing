@@ -45,7 +45,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureJobOrderProductions_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FurnitureJobOrderProduction> furniturejoborderproductions = db.FurnitureJobOrderProductions.Where(x => x.IsOnlineApproved);
-            DataSourceResult result = furniturejoborderproductions.ToDataSourceResult(request, furnitureJobOrderProduction => new
+            DataSourceResult result = furniturejoborderproductions.ToDataSourceResult(request, furnitureJobOrderProduction => new FurnitureJobOrderProduction
             {
                 FurnitureJobOrderProductionId = furnitureJobOrderProduction.FurnitureJobOrderProductionId,
                 CustomerId = furnitureJobOrderProduction.CustomerId,
@@ -54,30 +54,57 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 Unit = furnitureJobOrderProduction.Unit,
                 Quantity = furnitureJobOrderProduction.Quantity,
                 DeliveryDate = furnitureJobOrderProduction.DeliveryDate,
-                FurnitureJobOrderFormId = furnitureJobOrderProduction.FurnitureJobOrderFormId
+                FurnitureJobOrderFormId = furnitureJobOrderProduction.FurnitureJobOrderFormId,
+                IsClosed = furnitureJobOrderProduction.IsClosed,
+                IsOnlineApproved = furnitureJobOrderProduction.IsOnlineApproved,
+                
             });
 
             return Json(result);
         }
 
         #region Approval
-        public JsonResult SendForFinishing(int id)
-        {
-            object response = null;
+        public void ActivateAssembly(int id)
+        {           
             var production = db.FurnitureJobOrderProductions.Find(id);
 
             if (production != null)
             {
+                if (!production.IsSendForFinishing)
+                {
+                    production.IsSendForFinishing = true;
+                    production.SendForFinishingBy = User.Identity.Name;
+                    production.SendForFinishingDate = DateTime.Today;
 
-                production.IsSendForFinishing = true;
-                production.SendForFinishingBy = User.Identity.Name;
-                production.SendForFinishingDate = DateTime.Today;
+                    db.FurnitureJobOrderProductions.Attach(production);
+                    db.Entry(production).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                         
+            }
+            
+        }
 
-                db.FurnitureJobOrderProductions.Attach(production);
-                db.Entry(production).State = EntityState.Modified;
+        public JsonResult SendUnfinishedGoodsForAssembly(int id)
+        {
+            object response = null;
+            var unFinishedGood = db.FurnitureUnfinishedMaterialTransferForms.Find(id);
+
+            if (unFinishedGood != null)
+            {
+
+                unFinishedGood.IsSent = true;
+                unFinishedGood.SentBy = User.Identity.Name;
+                unFinishedGood.SentDate = DateTime.Today;
+
+                db.FurnitureUnfinishedMaterialTransferForms.Attach(unFinishedGood);
+                db.Entry(unFinishedGood).State = EntityState.Modified;
                 db.SaveChanges();
-                response = new { Success = true, Message = "Furniture production sent for finishing successfully!" };
-                
+                // Activates Assembly/Finshing
+                ActivateAssembly(unFinishedGood.FurnitureJobOrderProductionId);
+
+                response = new { Success = true, Message = "Sent for Assembly/Finishing Success!" };
+
             }
             else
             {

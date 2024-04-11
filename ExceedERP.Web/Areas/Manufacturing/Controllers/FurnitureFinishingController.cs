@@ -84,6 +84,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         }
 
         #region Approval
+        /// <summary>
+        /// This method first iterates through all the jobItems in the jobOrder and if a
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JsonResult CloseJob(int id)
         {
             object response = null;
@@ -91,7 +96,26 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             if (production != null)
             {
-
+                var jobOrder = db.FurnitureJobOrderForms.FirstOrDefault(x => x.FurnitureJobOrderFormId == production.FurnitureJobOrderFormId);
+                var jobItems = db.FurnitureJobOrderItems.Where(x => x.FurnitureJobOrderFormId == jobOrder.FurnitureJobOrderFormId).ToList();
+                
+                int i = 1;
+                foreach (var item in jobItems)
+                {                          
+                    if (item.IsClosed)
+                    {
+                        i++;
+                    }
+                }
+                if(i == jobItems.Count())
+                {
+                    jobOrder.JobClosed = true;
+                    db.Entry(jobOrder).State = EntityState.Modified;
+                }
+                var jobItem = db.FurnitureJobOrderItems.FirstOrDefault(x => x.FurnitureJobOrderFormId == jobOrder.FurnitureJobOrderFormId && x.JobNo == production.JobNo);
+                jobItem.IsClosed = true;
+                db.Entry(jobItem).State = EntityState.Modified;
+               
                 production.IsClosed = true;
                 production.ClosedBy = User.Identity.Name;
                 production.DateClosed = DateTime.Today;

@@ -99,6 +99,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     ModifiedBy = User.Identity.Name,
                     ManufacturingMaterialCategoryItemId = furnitureBOQMaterial.ManufacturingMaterialCategoryItemId,
                     ManufacturingMaterialCategoryId = furnitureBOQMaterial.ManufacturingMaterialCategoryId,
+                    FurnitureBillOfQuantityId = furnitureBOQMaterial.FurnitureBillOfQuantityId
                 };
 
                 db.FurnitureBOQMaterials.Attach(entity);

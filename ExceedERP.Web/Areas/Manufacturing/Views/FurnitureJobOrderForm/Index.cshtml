@@ -27,10 +27,11 @@
               })
               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FurnitureJoborderEditorTemplate"))
               .Filterable()
-              .Scrollable()
+              .Scrollable(s => s.Height(400))
               .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
               .DataSource(dataSource => dataSource
                   .Ajax()
+                  .Sort(sort => sort.Add(e => e.FurnitureJobOrderFormId).Descending())
                   .Events(ev => ev.Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
@@ -48,7 +49,7 @@
                                                         .Items(item1 =>
                                                         {
                                                             item1.Add().Text("job Item").Content(@<text>
-                                                                @JobOrderItem();
+                                                                @JobOrderItem()
                                                             </text>);
 
                                                                 }).ToClientTemplate())
@@ -127,6 +128,9 @@
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
+                if (dataItem.JobClosed) {
+                    $(this).addClass("Job-Closed");
+                }
             }
             else if (dataItem.IsSendForApproval) {
                 $(this).find(".k-grid-edit").hide();
@@ -136,6 +140,7 @@
 
                 $(this).find(".k-grid-approve").show();
             }
+            
             else {
                 $(this).find(".k-grid-approve").hide();
             }
@@ -171,7 +176,12 @@
             if (isChecked == true || isApproved) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-delete").hide();
+                if (dataItem.IsClosed) {
+
+                    $(this).addClass("Job-Closed");
+                }
             }
+            
 
         });
 
@@ -242,5 +252,8 @@
 
     .row {
         margin: auto;
+    }
+    .Job-Closed {
+        background-color: #CCCCCC;
     }
 </style>

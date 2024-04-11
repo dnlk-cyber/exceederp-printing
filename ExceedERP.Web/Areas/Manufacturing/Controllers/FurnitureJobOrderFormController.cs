@@ -64,6 +64,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 LastModified = furnitureJobOrderForm.LastModified,
                 CreatedBy = furnitureJobOrderForm.CreatedBy,
                 ModifiedBy = furnitureJobOrderForm.ModifiedBy,
+                JobClosed = furnitureJobOrderForm.JobClosed
             });
 
             return Json(result);
@@ -199,8 +200,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         db.FurnitureJobOrderItems.Add(jobOrderItem);
                         db.SaveChanges();
                         furnitureJobOrderForm.FurnitureJobOrderFormId = jobOrder.FurnitureJobOrderFormId;
-                        return true;
+                        
                     }
+                    return true;
                 }
             }
             return false;

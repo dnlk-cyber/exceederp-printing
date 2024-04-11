@@ -13,19 +13,23 @@
                                               columns.Bound(c => c.Unit).Width(100);
                                               columns.Bound(c => c.Quantity).Width(100);
                                               columns.Bound(c => c.DeliveryDate).Width(120);
-                                              columns.Command(command =>
-                                              {
-
-                                                  command.Custom("check").Text("Send For Assembly/Finishing").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "" }).Click("handleChecked");
-
-                                              }).Width(180);
+                                              
                                           })
                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
                                           .Filterable()
+                                          .Pageable(pageable => pageable
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+                                          .Pageable(pageable => pageable
+                                          .Refresh(true)
+                                          .PageSizes(true)
+                                          .ButtonCount(5))
                                           .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
                                           .Scrollable(s => s.Height(400))
                                           .DataSource(dataSource => dataSource
                                               .Ajax()
+                                              .Sort(sort => sort.Add(e => e.FurnitureJobOrderProductionId).Descending())
                                               .Events(ev => ev.Error("error_handler(\"grid\")")
                                                 .RequestStart("onRequestStart(\"grid\")")
                                                 .RequestEnd("onRequestEnd(\"grid\")"))
@@ -77,26 +81,31 @@
                                                 })
                                                 .Editable(editable => editable.Mode(GridEditMode.InCell))
                                                 .Filterable()
-                                                .ClientDetailTemplateId("tabstrip2")
-                                                .Scrollable()
-                                                .DataSource(dataSource => dataSource
-                                                    .Ajax()
-                                                    .Events(ev => ev.Error("error_handler(\"metal_#=FurnitureJobOrderProductionId#\")")
-                    .RequestStart("onRequestStart(\"metal_#=FurnitureJobOrderProductionId#\")")
-                    .RequestEnd("onRequestEnd(\"metal_#=FurnitureJobOrderProductionId#\")"))
-                                                    .Batch(true)
-                                                    .Model(model =>
-                                                    {
-                                                        model.Id(p => p.FurnitureDailyProductionFollowUpId);
-                                                        model.Field(p => p.EmployeeId).Editable(false);
-                                                        model.Field(p => p.DailyProductionPlan).Editable(false);
-                                                        model.Field(p => p.ManifucturingTaskCategoryId).Editable(false);
-                                                        model.Field(p => p.WorkShop).Editable(false);
+                                                .Events(e => e.DetailExpand("detailExpandMetal"))
+                                                .Pageable(pageable => pageable
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
+                                     .ClientDetailTemplateId("tabstrip2")
+                                     .Scrollable()
+                                     .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(ev => ev.Error("error_handler(\"metal_#=FurnitureJobOrderProductionId#\")")
+                                            .RequestStart("onRequestStart(\"metal_#=FurnitureJobOrderProductionId#\")")
+                                            .RequestEnd("onRequestEnd(\"metal_#=FurnitureJobOrderProductionId#\")"))
+                                        .Batch(true)
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.FurnitureDailyProductionFollowUpId);
+                                            model.Field(p => p.EmployeeId).Editable(false);
+                                            model.Field(p => p.DailyProductionPlan).Editable(false);
+                                            model.Field(p => p.ManifucturingTaskCategoryId).Editable(false);
+                                            model.Field(p => p.WorkShop).Editable(false);
 
-                                                    })
-                                                    .Read(read => read.Action("FurnitureDailyProductionFollowUps_Read", "FurnitureDailyFollowupBatch", new { id = "#=FurnitureJobOrderProductionId#", workShop = "#=1#" }))
-                                                    .Update(update => update.Action("FurnitureDailyProductionFollowUps_Update", "FurnitureDailyFollowupBatch"))
-                                                ).ToClientTemplate()
+                                        })
+                                        .Read(read => read.Action("FurnitureDailyProductionFollowUps_Read", "FurnitureDailyFollowupBatch", new { id = "#=FurnitureJobOrderProductionId#", workShop = "#=1#" }))
+                                        .Update(update => update.Action("FurnitureDailyProductionFollowUps_Update", "FurnitureDailyFollowupBatch"))
+                                    ).ToClientTemplate()
 
     )
 
@@ -138,6 +147,11 @@
                                                })
                                                .Editable(editable => editable.Mode(GridEditMode.InCell))
                                                .Filterable()
+                                               .Events(e => e.DetailExpand("detailExpandWood"))
+                                               .Pageable(pageable => pageable
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
                                                .ClientDetailTemplateId("tabstrip3")
                                                .Scrollable()
                                                .DataSource(dataSource => dataSource
@@ -193,7 +207,7 @@
                         })
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .Scrollable()
-                        .Events(ev => ev.DataBound("onChildDataBound"))
+                        .Events(ev => ev.DataBound("delayResonDataBound"))
                         .DataSource(dataSource => dataSource
                             .Ajax()
                             .Events(ev => ev.Error("error_handler(\"reason_#=FurnitureDailyProductionFollowUpId#\")")
@@ -211,25 +225,35 @@
 
 @helper UnfinishedMaterialTransfer()
 {
-
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureUnfinishedMaterialTransferForm>()
                       .Name("Transfer_#=FurnitureJobOrderProductionId#")
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                          columns.Bound(c => c.Quantity);
-                          columns.Bound(c => c.TransferDate);
+
+                          columns.Bound(c => c.TransferDate).Width(120);
                           columns.ForeignKey(c => c.TransfererId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
                           columns.ForeignKey(c => c.ReceiverId, (IEnumerable)ViewData["Employee"], "Value", "Text").Width(150);
-                          columns.Bound(c => c.QualityGrade);
-                          columns.Bound(c => c.WorkProgressInPercentage);
+                          columns.Bound(c => c.QualityGrade).Width(100);
 
-                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                          columns.Bound(c => c.Quantity).Width(100).ClientFooterTemplate("Total Quantity: \\#=sum\\# ");
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" }); 
+                              command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" }); 
+                              command.Custom("send").Text("Send").IconClass("").HtmlAttributes(new { @class = "send", title = "" }).Click("handleSend");
+
+                          }).Width(200);
                       })
                       .ToolBar(toolbar =>
                       {
                           toolbar.Create();
                       })
+
+                      .Pageable(pageable => pageable
+                                     .Refresh(true)
+                                     .PageSizes(true)
+                                     .ButtonCount(5))
                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UnfinishedMaterialTemplate"))
                       .Filterable()
                       .Events(ev => ev.DataBound("onChildDataBound"))
@@ -237,8 +261,9 @@
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Events(ev => ev.Error("error_handler(\"Transfer_#=FurnitureJobOrderProductionId#\")")
-                    .RequestStart("onRequestStart(\"Transfer_#=FurnitureJobOrderProductionId#\")")
-                    .RequestEnd("onRequestEnd(\"Transfer_#=FurnitureJobOrderProductionId#\")"))
+                            .RequestStart("onRequestStart(\"Transfer_#=FurnitureJobOrderProductionId#\")")
+                            .RequestEnd("onRequestEnd(\"Transfer_#=FurnitureJobOrderProductionId#\")"))
+                            .Aggregates(a => a.Add(s => s.Quantity).Sum())
                           .Model(model => model.Id(p => p.FurnitureUnfinishedMaterialTransferFormId))
                           .Read(read => read.Action("FurnitureUnfinishedMaterialTransferForms_Read", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
                           .Create(create => create.Action("FurnitureUnfinishedMaterialTransferForms_Create", "FurnitureUnfinishedMaterialTransferForm", new { id = "#=FurnitureJobOrderProductionId#" }))
@@ -274,14 +299,28 @@
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
-            var dataItem = grid.dataItem(this);
-            if (isChecked == true || isApproved) {
-                $(this).find(".k-grid-edit").hide();
-                $(this).find(".k-grid-delete").hide();
+            var dataItem = grid.dataItem(this);           
+            if (dataItem.IsSent) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-send").remove();
             }
 
         });
 
+    }
+    function delayResonDataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            
+            if (IsClosed) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                
+            }
+
+        });
     }
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -316,6 +355,7 @@
     var codeid;
     var isApproved;
     var isChecked;
+    var IsClosed;
     function detailExpand(e) {
         masterRow = e.masterRow;
         masterGrid = $("#grid").data("kendoGrid");
@@ -323,27 +363,53 @@
         codeid = masterDataItem.FurnitureJobOrderProductionId;
         isApproved = masterDataItem.IsOnlineApproved;
         isChecked = masterDataItem.IsOnlineTransferred;
+        IsClosed = masterDataItem.IsClosed;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#grid_" + codeid).hide();
-
+            if (IsClosed) {
+                $(".k-grid-top", "#metal_" + codeid).hide();
+                $(".k-grid-top", "#wood_" + codeid).hide();
+                $(".k-grid-top", "#Transfer_" + codeid).hide();
+            }
         }
 
 
     }
-    function handleChecked(e) {
+    function detailExpandMetal(e) {
+        masterRow = e.masterRow;
+        var grid = $("#metal_" + codeid).data("kendoGrid");
+        masterDataItem = grid.dataItem(masterRow);
+        var id = masterDataItem.FurnitureDailyProductionFollowUpId
+            if(IsClosed){
+                $(".k-grid-top", "#reason_" + id).hide();
+            }
+    }
+    function detailExpandWood(e) {
+        masterRow = e.masterRow;
+        var grid = $("#wood_" + codeid).data("kendoGrid");
+        masterDataItem = grid.dataItem(masterRow);
+        var id = masterDataItem.FurnitureDailyProductionFollowUpId
+        if (IsClosed) {
+            $(".k-grid-top", "#reason_" + id).hide();
+        }
+    }
 
-        if (confirm("Are you sure you this form is checked?")) {
-            var grid = this;
+    function handleSend(e) {
+
+        if (confirm("Are you sure you want to send this to assembly/finishing")) {
+            //var grid = this;
+            var grid = $("#Transfer_" + codeid).data("kendoGrid");
             var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-            var id = dataItem.FurnitureJobOrderProductionId;
+            var id = dataItem.FurnitureUnfinishedMaterialTransferFormId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("SendForFinishing", "FurnitureProductionDailyFollowUp", new { Area = "Manufacturing" })',
+                url: '@Url.Action("SendUnfinishedGoodsForAssembly", "FurnitureProductionDailyFollowUp", new { Area = "Manufacturing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
                         toastr.success(result.Message);
-                        $("#grid").data("kendoGrid").dataSource.read();
+                        var grid = $("#Transfer_" + codeid).data("kendoGrid");
+                        grid.dataSource.read();
                     }
                     else {
                         toastr.error(result.Message);

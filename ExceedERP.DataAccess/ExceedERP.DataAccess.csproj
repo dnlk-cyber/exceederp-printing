@@ -434,6 +434,10 @@
     <Compile Include="Migrations\202404081828569_archiveupgrade.Designer.cs">
       <DependentUpon>202404081828569_archiveupgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404110935505_furniturejobstatus.cs" />
+    <Compile Include="Migrations\202404110935505_furniturejobstatus.Designer.cs">
+      <DependentUpon>202404110935505_furniturejobstatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -716,6 +720,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404081828569_archiveupgrade.resx">
       <DependentUpon>202404081828569_archiveupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404110935505_furniturejobstatus.resx">
+      <DependentUpon>202404110935505_furniturejobstatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

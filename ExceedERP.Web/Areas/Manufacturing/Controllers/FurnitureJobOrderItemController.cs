@@ -39,7 +39,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 CreatedBy = furnitureJobOrderItem.CreatedBy,
                 ModifiedBy = furnitureJobOrderItem.ModifiedBy,
                 FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId,
-                JobNo = furnitureJobOrderItem.JobNo
+                JobNo = furnitureJobOrderItem.JobNo,
+                IsClosed = furnitureJobOrderItem.IsClosed
+                
             });
 
             return Json(result);
@@ -77,6 +79,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureJobOrderItems_Update([DataSourceRequest]DataSourceRequest request, FurnitureJobOrderItem furnitureJobOrderItem)
         {
+            var jobOrderItem = db.FurnitureJobOrderItems.Where(x => x.JobNo == furnitureJobOrderItem.JobNo).ToList();
+            if (jobOrderItem.Any())
+            {
+                ModelState.AddModelError("", "This Job.No is already taken!");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new FurnitureJobOrderItem

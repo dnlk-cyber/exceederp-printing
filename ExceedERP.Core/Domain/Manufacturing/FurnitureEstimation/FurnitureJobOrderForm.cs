@@ -21,7 +21,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Display(Name ="Payment Type")]
         public TypeOfPayment PaymentType { get; set; }
         public int FurnitureProformaInvoiceId { get; set; }
-
+        public bool JobClosed { get; set; }  
     }
 
     public class FurnitureJobOrderItem : TrackUserSettingOperation
@@ -43,6 +43,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal UnitPriceWithVAT { get; set; }
 
         public int FurnitureJobOrderFormId { get; set; }
+        public bool IsClosed { get; set; }
         public FurnitureJobOrderForm FurnitureJobOrderForm { get; set; }
     }
 

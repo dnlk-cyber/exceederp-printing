@@ -82,7 +82,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         public ActionResult FurnitureOverallCosts_Update([DataSourceRequest]DataSourceRequest request, FurnitureOverallCost overallCost)
         {
 
-
+            if (overallCost.OverHeadCost == 0 || overallCost.AdministrativeCost == 0 || overallCost.ProfitMargin == 0)
+                ModelState.AddModelError("", "Overhead.cost/Adm.Cost/Profit margin missing");
             if (ModelState.IsValid)
             {
                 

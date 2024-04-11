@@ -25,6 +25,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.Production
         public QualityGrade QualityGrade { get; set; }
         [Display(Name ="Progress(%)")]
         public double WorkProgressInPercentage { get; set; }
+        public bool IsSent { get; set; }
+        public string SentBy { get; set; }
+        public DateTime? SentDate { get; set; } 
         public bool IsReceived { get; set; }
         public string ReceivedBy { get; set; }
         public DateTime? ReceivedDate { get; set; }

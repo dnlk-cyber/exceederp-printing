@@ -6947,6 +6947,7 @@
     <Content Include="Areas\Archive\Views\SubjectType\Index.cshtml" />
     <Content Include="Areas\Archive\Views\web.config" />
     <Content Include="Areas\Archive\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Manufacturing\Manufacturing.7z" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

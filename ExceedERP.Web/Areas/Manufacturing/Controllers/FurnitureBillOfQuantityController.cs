@@ -60,7 +60,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         public ActionResult FurnitureBillOfQuantities_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FurnitureBillOfQuantity> furniturebillofquantities = db.FurnitureBillOfQuantities.OrderByDescending(x => x.FurnitureBillOfQuantityId);
+            IQueryable<FurnitureBillOfQuantity> furniturebillofquantities = db.FurnitureBillOfQuantities;
             DataSourceResult result = furniturebillofquantities.ToDataSourceResult(request, furnitureBillOfQuantity =>  new FurnitureBillOfQuantity
             {
                 FurnitureBillOfQuantityId = furnitureBillOfQuantity.FurnitureBillOfQuantityId,
@@ -334,7 +334,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 if (billOfQuantity.JobTypeCategory == JobTypeCategory.Custom_Made)
                 {
-                    var jobtypeId = GenerateJobType(billOfQuantity);
+                    var jobtypeId = GenerateStandardJobType(billOfQuantity);
                     if (jobtypeId == 0)
                     {
                         response = new { Success = false, Message = "Something is wrong! BOQ material or labor missing" };
@@ -422,7 +422,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }
 
         }
-        private int GenerateJobType(FurnitureBillOfQuantity furnitureBillOfQuantity)
+        private int GenerateStandardJobType(FurnitureBillOfQuantity furnitureBillOfQuantity)
         {
             var jobType = new FurnitureStandardJobType
             {

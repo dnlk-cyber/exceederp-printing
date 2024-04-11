@@ -23,8 +23,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
         public ActionResult FurnitureUnfinishedMaterialTransferForms_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<FurnitureUnfinishedMaterialTransferForm> furnitureunfinishedmaterialtransferforms = db.FurnitureUnfinishedMaterialTransferForms.Where(x => x.FurnitureUnfinishedMaterialTransferFormId == id);
-            DataSourceResult result = furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request, furnitureUnfinishedMaterialTransferForm => new {
+            IQueryable<FurnitureUnfinishedMaterialTransferForm> furnitureunfinishedmaterialtransferforms = db.FurnitureUnfinishedMaterialTransferForms.Where(x => x.FurnitureJobOrderProductionId == id);
+            DataSourceResult result = furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request, furnitureUnfinishedMaterialTransferForm => new FurnitureUnfinishedMaterialTransferForm
+            {
                 FurnitureUnfinishedMaterialTransferFormId = furnitureUnfinishedMaterialTransferForm.FurnitureUnfinishedMaterialTransferFormId,
                 JobTypeId = furnitureUnfinishedMaterialTransferForm.JobTypeId,
                 Quantity = furnitureUnfinishedMaterialTransferForm.Quantity,
@@ -34,7 +35,28 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 QualityGrade = furnitureUnfinishedMaterialTransferForm.QualityGrade,
                 WorkProgressInPercentage = furnitureUnfinishedMaterialTransferForm.WorkProgressInPercentage,
                 FurnitureJobOrderProductionId = furnitureUnfinishedMaterialTransferForm.FurnitureJobOrderProductionId,
-                
+                IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived,
+                IsSent = furnitureUnfinishedMaterialTransferForm.IsSent
+            });
+
+            return Json(result);
+        }
+        public ActionResult FurnitureUnfinishedMaterialReceive_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            IQueryable<FurnitureUnfinishedMaterialTransferForm> furnitureunfinishedmaterialtransferforms = db.FurnitureUnfinishedMaterialTransferForms.Where(x => x.FurnitureJobOrderProductionId == id && x.IsSent);
+            DataSourceResult result = furnitureunfinishedmaterialtransferforms.ToDataSourceResult(request, furnitureUnfinishedMaterialTransferForm => new FurnitureUnfinishedMaterialTransferForm
+            {
+                FurnitureUnfinishedMaterialTransferFormId = furnitureUnfinishedMaterialTransferForm.FurnitureUnfinishedMaterialTransferFormId,
+                JobTypeId = furnitureUnfinishedMaterialTransferForm.JobTypeId,
+                Quantity = furnitureUnfinishedMaterialTransferForm.Quantity,
+                TransferDate = furnitureUnfinishedMaterialTransferForm.TransferDate,
+                TransfererId = furnitureUnfinishedMaterialTransferForm.TransfererId,
+                ReceiverId = furnitureUnfinishedMaterialTransferForm.ReceiverId,
+                QualityGrade = furnitureUnfinishedMaterialTransferForm.QualityGrade,
+                WorkProgressInPercentage = furnitureUnfinishedMaterialTransferForm.WorkProgressInPercentage,
+                FurnitureJobOrderProductionId = furnitureUnfinishedMaterialTransferForm.FurnitureJobOrderProductionId,
+                IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived,
+                IsSent = furnitureUnfinishedMaterialTransferForm.IsSent
             });
 
             return Json(result);
@@ -43,9 +65,25 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureUnfinishedMaterialTransferForms_Create([DataSourceRequest]DataSourceRequest request, FurnitureUnfinishedMaterialTransferForm furnitureUnfinishedMaterialTransferForm, int id)
         {
+            var production = db.FurnitureJobOrderProductions.FirstOrDefault(x => x.FurnitureJobOrderProductionId == id);
+            var transferItems = db.FurnitureUnfinishedMaterialTransferForms.Where(x => x.FurnitureJobOrderProductionId == production.FurnitureJobOrderProductionId).ToList();
+            if (transferItems.Any())
+            {
+                var totalTransferItems = transferItems.Sum(s => s.Quantity);
+                totalTransferItems = furnitureUnfinishedMaterialTransferForm.Quantity + totalTransferItems;
+                if (totalTransferItems > production.Quantity)
+                {
+                    ModelState.AddModelError(string.Empty, "You have reached the maximum quantity that was ordered!");
+                }
+            }
+            if(furnitureUnfinishedMaterialTransferForm.Quantity > production.Quantity)
+            {
+                ModelState.AddModelError(string.Empty, "You can not exceed the maximum quantity ordered");
+            }
+            
             if (ModelState.IsValid)
             {
-                var production = db.FurnitureJobOrderProductions.FirstOrDefault(x => x.FurnitureJobOrderProductionId == id);
+                
                 furnitureUnfinishedMaterialTransferForm.JobTypeId = production.JobTypeId;
                 var entity = new FurnitureUnfinishedMaterialTransferForm
                 {
@@ -120,7 +158,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     ModifiedBy = furnitureUnfinishedMaterialTransferForm.ModifiedBy,
                     LastModified = furnitureUnfinishedMaterialTransferForm.LastModified,
                     CreatedBy = furnitureUnfinishedMaterialTransferForm.CreatedBy,
-                    DateCreated = furnitureUnfinishedMaterialTransferForm.DateCreated
+                    DateCreated = furnitureUnfinishedMaterialTransferForm.DateCreated,
+                    IsReceived = furnitureUnfinishedMaterialTransferForm.IsReceived
                 };
 
                 db.FurnitureUnfinishedMaterialTransferForms.Attach(entity);

@@ -31,6 +31,7 @@
                       .Scrollable(s => s.Height(400))
                       .DataSource(dataSource => dataSource
                           .Ajax()
+                          .Sort(sort => sort.Add(e => e.FurnitureBillOfQuantityId).Descending())
                           .Events(ev => ev.Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))

@@ -31,6 +31,7 @@
     
     .DataSource(dataSource => dataSource
         .Ajax()
+        .Sort(sort => sort.Add(e => e.FurnitureProformaInvoiceId).Descending())
         .Events(ev => ev.Error("error_handler(\"grid\")")
                     .RequestStart("onRequestStart(\"grid\")")
                     .RequestEnd("onRequestEnd(\"grid\")"))
@@ -67,12 +68,13 @@
               {
                   
                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                  columns.Bound(c => c.UnitOfMeasurment);
-                  columns.Bound(c => c.Quantity);
-                  columns.Bound(c => c.UnitPriceBeforeVAT);
-                  columns.Bound(c => c.VAT);
-                  columns.Bound(c => c.UnitPriceWithVAT);
-                  columns.Bound(c => c.Remark);
+                  columns.Bound(c => c.UnitOfMeasurment).Width(100);
+                  columns.Bound(c => c.Quantity).Width(100);
+                  columns.Bound(c => c.UnitPriceBeforeVAT).Width(100);
+                  columns.Bound(c => c.VAT).Width(100);
+                  columns.Bound(c => c.UnitPriceWithVAT).Width(100);
+                  columns.Bound(c => c.TotalPrice).Width(100);
+                  columns.Bound(c => c.Remark).Width(100);  
 
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
               })

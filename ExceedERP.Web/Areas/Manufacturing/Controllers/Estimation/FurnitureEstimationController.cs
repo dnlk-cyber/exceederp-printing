@@ -191,7 +191,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             var estimation = db.FurnitureEstimationForms.Find(id);
             object response = null;
             var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId);
-            if(overAllCost == null)
+            if(overAllCost == null || overAllCost.FinalPriceIncludingProfit == 0)
             {
                 response = new { Success = false, Message = "⚠️ You forgot to calculate overall cost" };
                 return Json(response);
