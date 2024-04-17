@@ -3,6 +3,7 @@
 @using ExceedERP.Core.Domain.Finance
 @using ExceedERP.Core.Domain.Inventory
 @using ExceedERP.Helpers.Common
+@using ExceedERP.Helpers.Inventory
 @model ExceedERP.Core.Domain.Inventory.GoodReceive
 
 @Html.HiddenFor(model => model.GoodReceiveId)
@@ -178,15 +179,17 @@
                 </div>
             </div>
             <div class="row"></div>
-
-            @*<div class="form-group">
+           @if(InventoryConfigurationHelper.IsFreshBazaarEnabled())
+           { 
+            <div class="form-group">
                 @Html.LabelFor(model => model.IsFreshBazaar, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @Html.Kendo().CheckBoxFor(model => model.IsFreshBazaar)
                     @Html.ValidationMessageFor(model => model.IsFreshBazaar, "", new { @class = "text-danger" })
                 </div>
             </div>
-            <div class="row"></div>*@
+            <div class="row"></div>
+            }
 
 
 

@@ -242,6 +242,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
+                case "ENABLE_FRESH_BAZAAR":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
 
             }
 

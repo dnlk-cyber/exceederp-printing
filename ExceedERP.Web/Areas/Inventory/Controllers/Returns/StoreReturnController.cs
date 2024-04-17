@@ -10,6 +10,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -526,6 +527,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                             {
                                 StoreItemAssignment = storeItem,
                                 ReferenceDoc = "Void Return_" + record.StoreReturnID,
+                                Reference = record.Reference + " " + record.Remark,
                                 Date = record.ReturnDate,
                                 IssuedQTY = i.Quantity,
                                 IssuedUPrice = i.UnitPrice,
@@ -543,9 +545,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                             };
 
                             db.BinCardLines.Add(binCardLine);
-                           // db.SaveChanges();
+                            // db.SaveChanges();
 
                             #endregion
+                            var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReturnDate));
                         }
 
 

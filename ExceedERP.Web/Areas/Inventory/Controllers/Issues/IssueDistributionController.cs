@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             {
                 ModelState.AddModelError("exist", "The record is already transfered,hence cannot be manipulated.");
             }
-            var exists = db.IssueDistributions.Where(x => x.AccountCode == issueDistribution.AccountCode);
+            var exists = db.IssueDistributions.Where(x=>x.IssueID==id).Where(x => x.AccountCode == issueDistribution.AccountCode);
             if (exists.Any())
             {
                 ModelState.AddModelError("exist", "The account code selected already exists.");

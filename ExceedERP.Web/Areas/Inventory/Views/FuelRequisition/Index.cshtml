@@ -113,6 +113,7 @@
               model.Field(p => p.BusinessUnitId).Editable(false);
               // model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
               // model.Field(p => p.EmployeeId).Editable(false);
 
               model.Field(p => p.CreatedBy).Editable(false);
@@ -271,6 +272,8 @@
                           .Model(model =>
                           {
                               model.Id(p => p.StoreRequisitionItemID);
+                              model.Field(p => p.CurrentBalance).Editable(false);
+                              model.Field(p => p.CurrentAPrice).Editable(false);
                               model.Field(p => p.Unit).Editable(false);
                               model.Field(p => p.PartNo).Editable(false);
                               model.Field(p => p.ModelNo).Editable(false);
@@ -280,6 +283,7 @@
                               model.Field(p => p.DateCreated).Editable(false);
                               model.Field(p => p.ModifiedBy).Editable(false);
                               model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.AgreementPrice).Editable(false);
 
                           })
                           .Read(read => read.Action("FuelStoreRequisitionItems_Read", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))

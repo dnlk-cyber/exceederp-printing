@@ -47,13 +47,13 @@
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.BranchId)
                           .ValuePrimitive(true)
-                          .OptionLabel("Select Branch...")
+                          .OptionLabel("Select Branch/Project...")
                           .DataTextField("Name")
                           .DataValueField("Code")
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
+                              dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
                                   .ServerFiltering(false);
                           })
                     )

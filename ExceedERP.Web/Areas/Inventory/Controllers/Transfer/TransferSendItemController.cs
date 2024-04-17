@@ -14,7 +14,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
 {
-    [AuthorizeRoles(InventoryConstants.PropertyAdmin, InventoryConstants.PropertyApprover, InventoryConstants.PropertyUser)]
+   
     public class TransferSendItemController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -26,7 +26,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             return View();
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover,FinanceConstants.GeneralSubLedgerTransfer)]
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult ItemTransferItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<ItemTransferItem> itemtransferItems = _db.ItemTransferItems.Where(iti  => iti.ItemTransferID == id);

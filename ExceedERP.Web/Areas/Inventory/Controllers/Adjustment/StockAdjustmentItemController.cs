@@ -18,13 +18,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser, InventoryConstants.PropertyStockAdjustmentApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, FinanceConstants.GeneralSubLedgerTransfer)]
+        [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser, InventoryConstants.PropertyStockAdjustmentApprover, FinanceConstants.GeneralSubLedgerTransfer)]
         public ActionResult StockAdjustmentItemss_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<StockAdjustmentItems> stockadjustmentItemss = db.StockAdjustmentItemss.Where(adj => adj.StockAdjustmentID == id);
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(result);
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentItemss_Create([DataSourceRequest]DataSourceRequest request, StockAdjustmentItems stockAdjustmentItems , int id )
             {
@@ -92,7 +92,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(new[] { stockAdjustmentItems }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentItemss_Update([DataSourceRequest]DataSourceRequest request, StockAdjustmentItems stockAdjustmentItems, int id)
         {
@@ -139,7 +139,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(new[] { stockAdjustmentItems }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentItemss_Destroy([DataSourceRequest]DataSourceRequest request, StockAdjustmentItems stockAdjustmentItems)
         {

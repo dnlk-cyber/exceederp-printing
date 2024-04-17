@@ -17,6 +17,25 @@ namespace ExceedERP.Helpers.Inventory
 {
     public class InventoryBalanceHelper
     {
+        public static void UpdateSigleItemBinCardTransactions(int storeAssignmentId,DateTime transactdate)
+        {
+            ExceedDbContext _db = new ExceedDbContext();
+            //later will check count within transaction year
+            //
+            var previousCountBinCard = _db.BinCardLines
+                .Where(x=>x.Date<=transactdate)
+                .Where(x=>x.StoreItemAssignmentID==storeAssignmentId)
+                .Where(x => x.ReferenceDoc.Contains("Count"))
+                .AsQueryable();
+            if (previousCountBinCard.Any())
+            {
+                DateTime recentCountDate = previousCountBinCard.Where(x => x.ReferenceDoc.Contains("Count")).Max(x => x.Date);
+                int previousCountBinCardId = previousCountBinCard.Where(x => x.Date == recentCountDate).Select(x => x.BinCardLineID).FirstOrDefault();
+                RecalculateTransactionBincardData(storeAssignmentId, previousCountBinCardId, true);
+            }
+
+
+        }
         public static void RemoveDuplicateBinCardTransactions()
         {
             ExceedDbContext _db = new ExceedDbContext();
@@ -382,17 +401,24 @@ namespace ExceedERP.Helpers.Inventory
                                     #region Void Receive
 
                                     totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
-                                    ////get issued price from original record if possible
-                                    //totalpricebefore = cardLines[i].BalanceTPrice -
-                                    //                   (cardLines[i].IssuedQTY * cardLines[i].IssuedUPrice);
+                                    //get grn price
+                                    string id = cardLinesArray[i].ReferenceDoc.Split(' ')[2];
+                                    var receive = cardLines.Where(x => x.ReferenceDoc == "Receive_" + id).FirstOrDefault();
 
-                                    cardLinesArray[i].IssuedUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                                    cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
+                                    if (receive != null)
+                                    {
+                                        cardLinesArray[i].IssuedUPrice = receive.ReceivedUPrice;
+                                        decimal newAvgPrice = 0;
+                                        if(totalQty>0)
+                                        {
+                                            newAvgPrice = (cardLinesArray[i - 1].BalanceTPrice - (cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice)) / totalQty;
+                                        }                                      
 
-                                    cardLinesArray[i].BalanceQTY = totalQty;
-                                    cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                                    cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : cardLinesArray[i - 1].BalanceUPrice;
-                                    cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+                                        cardLinesArray[i].BalanceQTY = totalQty;
+                                        cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                        cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : newAvgPrice;
+                                        cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+                                    }
 
                                     #endregion
                                 }

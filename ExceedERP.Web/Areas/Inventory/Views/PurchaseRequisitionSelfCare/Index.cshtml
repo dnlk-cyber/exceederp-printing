@@ -450,6 +450,12 @@
 
 <script>
 
+    function filterRequestors() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
     function prAttachementSuccess(e) {
         var gridname = "#PurchaseRequisitionAttachment_" + codeid;
         $(gridname).data("kendoGrid").dataSource.read();

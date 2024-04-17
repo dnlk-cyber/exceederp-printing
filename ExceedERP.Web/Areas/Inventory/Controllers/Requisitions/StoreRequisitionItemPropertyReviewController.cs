@@ -24,13 +24,38 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return View();
         }
 
+        private bool IsSRReviewed(int id)
+        {
+            var sr = db.StoreRequisitions.Find(id);
+            if(sr!=null)
+            {
+                if (sr.IsSecondOnlineApproved)
+                    return true;
+            }
+            return false;
+        }
 
-         [AuthorizeRoles(InventoryConstants.PropertyUser, InventoryConstants.PropertyAuthrizer)]
+        private string GetItemUom(string itemcode)
+        {
+            var item = db.InventoryItems.Find(itemcode);
+            if (item != null)
+            {
+                return item.UoMName;
+            }
+            return "";
+        }
+
+        private string GetStore(int id)
+        {
+            return db.StoreRequisitions.Find(id).StoreCode;
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyUser, InventoryConstants.PropertyAuthrizer)]
         public ActionResult StoreRequsitionItemPropertyReviews_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<StoreRequisitionItem> storerequisitionItems = db.StoreRequisitionItems.Where(p => p.StoreRequisitionID == id);
             DataSourceResult result = storerequisitionItems.ToDataSourceResult(request, storeRequisitionItem => new {
-                
+
                 StoreRequisitionItemID = storeRequisitionItem.StoreRequisitionItemID,
                 StoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
                 ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
@@ -45,8 +70,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                 PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
                 GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
                 IsApproved = storeRequisitionItem.IsApproved,
+                AgreementPrice = storeRequisitionItem.AgreementPrice,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
-                CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, storeRequisitionItem.StoreRequisition.StoreCode)
+                Unit = GetItemUom(storeRequisitionItem.ItemCode),
+                CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
+                CurrentAPrice = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentAPrice : ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
             });
 
             return Json(result);
@@ -77,6 +105,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             {
                 ModelState.AddModelError("below", "Purchase quantity is not set");
             }
+
+            var sr = db.StoreRequisitions.Find(id);
             if (ModelState.IsValid)
             {
                 var entity = new StoreRequisitionItem
@@ -95,6 +125,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
+                    CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
+                    CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
 
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
@@ -139,6 +171,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             {
                 ModelState.AddModelError("below", "Purchase quantity is not set");
             }
+
+            var sr = db.StoreRequisitions.Find(storeRequisitionItem.StoreRequisitionID);
             if (ModelState.IsValid)
             {
                 var entity = new StoreRequisitionItem
@@ -159,6 +193,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
+                    CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
+                    CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
 
                     DateCreated = storeRequisitionItem.DateCreated,
                     CreatedBy = storeRequisitionItem.CreatedBy,
@@ -198,6 +234,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
+                    CurrentBalance = storeRequisitionItem.CurrentBalance,
+                    CurrentAPrice = storeRequisitionItem.CurrentAPrice,
                 };
 
                 db.StoreRequisitionItems.Attach(entity);
@@ -208,6 +246,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(new[] { storeRequisitionItem }.ToDataSourceResult(request, ModelState));
         }
 
+      
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

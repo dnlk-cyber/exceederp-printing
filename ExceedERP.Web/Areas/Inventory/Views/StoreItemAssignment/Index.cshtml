@@ -10,15 +10,16 @@
                                              .Name("grid")
                                               .Columns(columns =>
                                               {
-                                                  columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(130);
-                                                  columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(150);
-                                                   //columns.ForeignKey(p => p.ItemCode, (IEnumerable) ViewData["Items"], "ItemCode", "Name").Title("Item Name").EditorTemplateName("ItemSelector").Width(200);
+                                                  columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                  columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                  //columns.ForeignKey(p => p.ItemCode, (IEnumerable) ViewData["Items"], "ItemCode", "Name").Title("Item Name").EditorTemplateName("ItemSelector").Width(200);
                                                   columns.Bound(c => c.ItemCode).Width(110).EditorTemplateName("ItemSelector");
                                                   columns.Bound(c => c.ItemName).Width(150);
                                                   columns.Bound(c => c.ItemLocation).Width(100);
                                                   columns.Bound(c => c.ShelfNo).Width(90);
                                                   columns.Bound(c => c.Row).Width(80);
                                                   columns.Bound(c => c.Column).Width(90);
+                                                  columns.Bound(c => c.Balance).Width(90);
                                                   columns.Bound(c => c.AvgPrice).Width(100);
                                                   columns.Bound(c => c.MinPoint).Width(100).Title("Min. Point");
                                                   columns.Bound(c => c.MaxPoint).Width(100).Title("Max. Point");
@@ -32,13 +33,13 @@
                                                           command.Edit();
 
 
-                                              // command.Destroy();
-                                          }).Width(180);
+                                                          // command.Destroy();
+                                                      }).Width(180);
 
                                               }).Filterable()
                                               .ToolBar(toolbar =>
                                               {
-                                                  toolbar.Template(@<text>
+                                              toolbar.Template(@<text>
                                                     <div class="row">
                                                         <div class="col-md-12">
 
@@ -187,11 +188,11 @@
                                                         columns.Bound(c => c.ReceivedUPrice).Width(90);
                                                         columns.Bound(c => c.ReceivedTPrice).Width(90);
                                                         columns.Bound(c => c.IssuedQTY).Width(90);
-                                                        columns.Bound(c => c.IssuedUPrice).Width(90);
-                                                        columns.Bound(c => c.IssuedTPrice).Width(90);
-                                                        columns.Bound(c => c.BalanceUPrice).Width(90);
+                                                        columns.Bound(c => c.IssuedUPrice).Width(120);
+                                                        columns.Bound(c => c.IssuedTPrice).Width(120);
+                                                        columns.Bound(c => c.BalanceUPrice).Width(120);
                                                         columns.Bound(c => c.BalanceQTY).Width(90);
-                                                        columns.Bound(c => c.BalanceTPrice).Width(90);
+                                                        columns.Bound(c => c.BalanceTPrice).Width(120);
                                                         columns.Command(command =>
                                                         {
                                                             if (HttpContext.Current.User.IsInRole("Property_Bincard"))

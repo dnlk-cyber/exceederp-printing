@@ -1,0 +1,15 @@
+﻿
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Helpers.Common
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+              .Events(e =>
+                {
+                    e.Select("onSelectOwnerType");
+                })
+        .BindTo(EnumExtension.EnumToSelectList(typeof(IssueFuelVehicleOwner)))
+        
+)

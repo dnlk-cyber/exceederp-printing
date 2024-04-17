@@ -16,13 +16,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser, InventoryConstants.PropertyStockAdjustmentApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser, InventoryConstants.PropertyStockAdjustmentApprover)]
         public ActionResult StockAdjustmentDistributions_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<StockAdjustmentDistribution> stockadjustmentdistributions = db.StockAdjustmentDistributions;
@@ -37,7 +37,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(result);
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentDistributions_Create([DataSourceRequest]DataSourceRequest request, StockAdjustmentDistribution stockAdjustmentDistribution)
         {
@@ -62,7 +62,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(new[] { stockAdjustmentDistribution }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentDistributions_Update([DataSourceRequest]DataSourceRequest request, StockAdjustmentDistribution stockAdjustmentDistribution)
         {
@@ -88,7 +88,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(new[] { stockAdjustmentDistribution }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentDistributions_Destroy([DataSourceRequest]DataSourceRequest request, StockAdjustmentDistribution stockAdjustmentDistribution)
         {

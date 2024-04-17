@@ -99,22 +99,25 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
             var storeRequisitions = _db.StoreRequisitions.Where(x => x.IsFuel == true).Where(x => x.IsForMaintenance == false).ToList();
 
-            if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment)
-            && System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead)
+            && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
                 storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
-                                                                   || x.CreatedBy == User.Identity.Name).ToList();
+                                                                    || userworkunit.Contains(x.CreatedAtOrgStructureId)
+                                                                    || x.CreatedBy == User.Identity.Name).ToList();
             }
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment))
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
-                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
+                                                                    || userworkunit.Contains(x.CreatedAtOrgStructureId)
                                                                      || x.CreatedBy == User.Identity.Name).ToList();
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
                 storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name).ToList();
             }
+
 
 
             //old
@@ -125,6 +128,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                     BranchId = storeRequisition.BranchId,
                     IsTransfer = storeRequisition.IsTransfer,
                     ToStoreCode = storeRequisition.ToStoreCode,
@@ -263,7 +267,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     {
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
+                        CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name),
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                        BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         IsExternalDriver = storeRequisition.IsExternalDriver,
                         ExternalDriver = storeRequisition.ExternalDriver,
@@ -273,7 +279,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         Remark = storeRequisition.Remark,
                         GLPeriodId = storeRequisition.GLPeriodId,
                         IsVoid = storeRequisition.IsVoid,
-                        IsFuel = false,
+                        IsFuel = true,
                         IsTransfer = storeRequisition.IsTransfer,
                         ToStoreCode = storeRequisition.ToStoreCode,
                         IsForOther = storeRequisition.IsForOther,
@@ -395,6 +401,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         StoreRequisitionID = storeRequisition.StoreRequisitionID,
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         IsExternalDriver = storeRequisition.IsExternalDriver,
@@ -464,7 +471,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = storeRequisition.OrgStructureId,
-                        EmployeeId = storeRequisition.EmployeeId,
+                    CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                    EmployeeId = storeRequisition.EmployeeId,
                     IsExternalDriver = storeRequisition.IsExternalDriver,
                     ExternalDriver = storeRequisition.ExternalDriver,
                     RequestDate = storeRequisition.RequestDate,
@@ -509,7 +517,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return Json(new[] { storeRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.PropertyImport)]
+       
 
         public ActionResult StoreRequistion_Import([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file)
         {
@@ -660,7 +668,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.PropertyImport)]
+       
         public JsonResult SendForApproval(int id)
         {
             var record = _db.StoreRequisitions.Find(id);

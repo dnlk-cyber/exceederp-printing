@@ -20,8 +20,16 @@
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(130).EditorTemplateName("EmployeeSelector");
+
+          columns.Bound(c => c.Reference).Title("Issue Reference").Width(120);
           columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["Suppliers"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.Bound(c => c.Reference).Title("Issue Reference").Width(90);
+          columns.Bound(c => c.IsLoan).Width(90).Title("Is Loan?").ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsLoan #' " +
+             "# if (IsLoan) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             );
           columns.Bound(c => c.Remark).Width(90);
           columns.Bound(c => c.Status).Width(90);
           columns.Command(command =>
@@ -218,6 +226,7 @@
                                             {
                                     <a onclick='return voidRecord("#=IssueID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                             }
+                                /**/
                                 # } #
 
 
@@ -235,11 +244,11 @@
                                           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
                                           columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(600);
                                           //columns.ForeignKey(p => p.WorkItemCode, (IEnumerable)ViewData["WorkItem"], "Code", "Name").EditorTemplateName("ConsWorkItemSelector").Width(130);
-                                          columns.Bound(c => c.ProductionJobNo).Width(90);
                                           columns.Bound(c => c.RequestedQuantity).Width(150);
                                           columns.Bound(c => c.ApprovedQuantity).Width(80);
                                           columns.Bound(c => c.IssuedQuantity).Width(70);
                                           columns.Bound(c => c.UnitPrice).Width(70);
+                                          columns.Bound(c => c.AgreementPrice).Width(70);
                                           columns.Bound(c => c.Total).Width(70);
                                           columns.Bound(c => c.AdditionalCost).Hidden();
 
@@ -273,6 +282,9 @@
                                               model.Id(p => p.IssueItemID);
                                               //model.Field(p => p.ItemCategoryCode).Editable(false);
                                               //model.Field(p => p.ItemCode).Editable(false);
+                                              //model.Field(p => p.RequestedQuantity).Editable(false);
+                                              //model.Field(p => p.ApprovedQuantity).Editable(false);
+                                              model.Field(p => p.AgreementPrice).Editable(false);
                                               //model.Field(p => p.RequestedQuantity).Editable(false);
                                               //model.Field(p => p.ApprovedQuantity).Editable(false);
                                               model.Field(p => p.AdditionalCost).Editable(false);

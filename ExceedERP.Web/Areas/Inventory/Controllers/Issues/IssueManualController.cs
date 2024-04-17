@@ -16,6 +16,7 @@ using ExceedERP.Helpers.Inventory;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using EntityState = System.Data.Entity.EntityState;
@@ -128,6 +129,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 Owner = issue.Owner,
                 Status = issue.Status,
                 SupplierId = issue.SupplierId,
+                IsLoan = issue.IsLoan,
+                External = issue.External,
+                ExternalRequesterName = issue.ExternalRequesterName,
                 Remark = issue.Remark,
                 GLPeriodId = issue.GLPeriodId,
                 IsVoid = issue.IsVoid,
@@ -206,7 +210,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 ModelState.AddModelError("", "Please select period.");
             }
 
-            if (issue.IssueDate > DateTime.Today)
+            if (issue.IssueDate.Date > DateTime.Now)
             {
                 ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
             }
@@ -229,6 +233,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     PlateNo = issue.PlateNo,
                     Status = Enum.GetName(typeof(OperationStatuses), 5),
                     SupplierId = issue.SupplierId,
+                    IsLoan = issue.IsLoan,
+                    External = issue.External,
+                    ExternalRequesterName = issue.ExternalRequesterName,
                     Remark = issue.Remark,
                     GLPeriodId = issue.GLPeriodId,
                     IsVoid = issue.IsVoid,
@@ -312,7 +319,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             {
                 ModelState.AddModelError("", "Please select period.");
             }
-            if (issue.IssueDate.Date > DateTime.Today)
+            if (issue.IssueDate.Date > DateTime.Now)
             {
                 ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
             }
@@ -336,6 +343,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     PlateNo = issue.PlateNo,
                     Status = issue.Status,
                     SupplierId = issue.SupplierId,
+                    IsLoan = issue.IsLoan,
+                    External = issue.External,
+                    ExternalRequesterName = issue.ExternalRequesterName,
                     Remark = issue.Remark,
                     GLPeriodId = issue.GLPeriodId,
                     IsVoid = issue.IsVoid,
@@ -389,6 +399,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     PlateNo = issue.PlateNo,
                     Status = issue.Status,
                     SupplierId = issue.SupplierId,
+                    IsLoan = issue.IsLoan,
+                    External = issue.External,
+                    ExternalRequesterName = issue.ExternalRequesterName,
                     Remark = issue.Remark,
                     IsVoid = issue.IsVoid,
                     VoidBy = issue.VoidBy,
@@ -611,7 +624,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     InventoryItem stockItem = _db.InventoryItems.Find(itemCode);
                     int storeBranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storecode);
                     #region stock
-                    //var branchItem = _db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId).FirstOrDefault(x => x.ItemCode == i.ItemCode);
+                    var branchItem = _db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId).FirstOrDefault(x => x.ItemCode == i.ItemCode);
                     var storeItem = _db.StoreItemAssignments.FirstOrDefault(x => x.StoreCode == storecode && x.ItemCode == itemCode);
 
                     if (storeItem != null)
@@ -647,15 +660,15 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                         #endregion
 
                         #endregion
+                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.IssueDate));
+                    }
+                    if (branchItem != null)
+                    {
+                        branchItem.Balance = branchItem.Balance + i.IssuedQuantity;
+                        _db.Entry(branchItem).State = EntityState.Modified;
+                        //_db.SaveChanges();
 
                     }
-                    //if (branchItem != null)
-                    //{
-                    //    branchItem.Balance = branchItem.Balance + i.IssuedQuantity;
-                    //    _db.Entry(branchItem).State = EntityState.Modified;
-                    //    //_db.SaveChanges();
-
-                    //}
                     if (stockItem != null)
                     {
                         stockItem.Balance = stockItem.Balance + i.IssuedQuantity;

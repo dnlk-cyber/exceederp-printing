@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 Total = issueItem.Total,
                 AdditionalCost = issueItem.AdditionalCost,
                 WorkItemCode = issueItem.WorkItemCode,
-                ProductionJobNo = issueItem.ProductionJobNo,
+                AgreementPrice = issueItem.AgreementPrice,
 
 
                 OrgBranchName = issueItem.OrgBranchName,
@@ -64,8 +64,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
             var exist = db.IssueItems.Where(x => x.IssueID == id)
              .Where(x => x.ItemCode == issueItem.ItemCode)
-             .Where(x => x.ProductionJobNo == issueItem.ProductionJobNo).ToList();
-             
+             .AsQueryable();
             if (exist.Any())
             {
                 ModelState.AddModelError("exist", "Item " + issueItem.ItemCode + " already exists");
@@ -99,8 +98,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
                     WorkItemCode = issueItem.WorkItemCode,
-                    ProductionJobNo = issueItem.ProductionJobNo,
                     AdditionalCost = issueItem.AdditionalCost,
+                    AgreementPrice = issueItem.AgreementPrice,
                     UnitPrice = avgPrice,
                     Total = issueItem.IssuedQuantity*avgPrice,
                     OrgBranchName = issueItem.OrgBranchName,
@@ -129,11 +128,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
         public ActionResult IssueItems_Update([DataSourceRequest]DataSourceRequest request, IssueItem issueItem, int id)
         {
 
-            var exist = db.IssueItems.Where(x => x.IssueID == issueItem.IssueID)
+            var exist = db.IssueItems.Where(x => x.IssueID == id)
                 .Where(x => x.IssueItemID != issueItem.IssueItemID)
           .Where(x => x.ItemCode == issueItem.ItemCode)
-          .Where(x => x.ProductionJobNo == issueItem.ProductionJobNo)
-          .ToList();
+          .AsQueryable();
             if (exist.Any())
             {
                 ModelState.AddModelError("exist", "Item " + issueItem.ItemCode + " already exists");
@@ -168,11 +166,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ItemCategoryCode = issueItem.ItemCategoryCode,
                     ItemCode = issueItem.ItemCode,
                     WorkItemCode = issueItem.WorkItemCode,
-                    ProductionJobNo = issueItem.ProductionJobNo,
                     AdditionalCost = issueItem.AdditionalCost,
                     RequestedQuantity = issueItem.RequestedQuantity,
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
+                    AgreementPrice = issueItem.AgreementPrice,
                     UnitPrice = avgPrice,
                     Total = issueItem.IssuedQuantity * avgPrice,
                     OrgBranchName = issueItem.OrgBranchName,
@@ -211,6 +209,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
                     UnitPrice = issueItem.UnitPrice,
+                    AgreementPrice = issueItem.AgreementPrice,
 
                     Total = issueItem.Total,
                    

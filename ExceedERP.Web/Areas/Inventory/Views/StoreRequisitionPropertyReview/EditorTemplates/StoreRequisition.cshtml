@@ -45,8 +45,8 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.BranchId).HtmlAttributes(new { @readonly = "readonly" })
-                    @*@(Html.Kendo().DropDownListFor(model => model.BranchId)
+                    @*@Html.Kendo().TextBoxFor(model => model.BranchId).HtmlAttributes(new { @readonly = "readonly" })*@
+                    @(Html.Kendo().DropDownListFor(model => model.BranchId)
                           .ValuePrimitive(true)
                           .OptionLabel("Select Branch...")
                           .DataTextField("Name")
@@ -57,7 +57,7 @@
                               dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
                                   .ServerFiltering(false);
                           })
-                    )*@
+                    )
                     @Html.ValidationMessageFor(model => model.BranchId, "", new {@class = "text-danger"})
                 </div>
             </div>
@@ -66,8 +66,8 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.StoreCode, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.StoreCode).HtmlAttributes(new { @readonly = "readonly" })
-                    @*@(Html.Kendo().DropDownListFor(model => model.StoreCode)
+                    @*@Html.Kendo().TextBoxFor(model => model.StoreCode).HtmlAttributes(new { @readonly = "readonly" })*@
+                    @(Html.Kendo().DropDownListFor(model => model.StoreCode)
                           .ValuePrimitive(true)
                           .OptionLabel("Select Store...")
                           .DataTextField("Name")
@@ -79,7 +79,7 @@
                                   .ServerFiltering(true);
                           })
                           .CascadeFrom("BranchId")
-                          )*@
+                          )
                     @Html.ValidationMessageFor(model => model.StoreCode, "", new {@class = "text-danger"})
                 </div>
             </div>

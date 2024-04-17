@@ -118,19 +118,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
             if (storeReturnItems.Quantity <= 0)
                 ModelState.AddModelError("quantity", "Item qualtity should be positive number.");
 
-            if (record != null)
-            {
-                decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeReturnItems.ItemCode, record.StoreCode);
-                if (avgPrice == 0)
-                {
-                    if (storeReturnItems.UnitPrice == 0)
-                        ModelState.AddModelError("price", "Please enter price,since there is no price set in the system.");
-                }
-                else
-                {
-                    storeReturnItems.UnitPrice = avgPrice;
-                }
-            }
+
+            if (storeReturnItems.UnitPrice == 0)
+                ModelState.AddModelError("price", "Please enter price.");
+           
             if (ModelState.IsValid)
             {
                 var entity = new StoreReturnItems

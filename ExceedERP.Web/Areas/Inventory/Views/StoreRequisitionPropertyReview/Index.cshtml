@@ -11,12 +11,13 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+          columns.Bound(c => c.IsForMaintenance).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsForMaintenance #' " + " # if (IsForMaintenance) { #" + "checked='checked'" + "# } #" + " />").Width(110); 
           columns.Bound(c => c.Reference).Title("Reference").Width(120);
           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
           columns.Bound(c => c.RequestDate).Width(110);
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(150).EditorTemplateName("StoresSelector");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(150).EditorTemplateName("StoresSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(150).EditorTemplateName("StoresSelector");
+          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(150).EditorTemplateName("StoresSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(130).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
@@ -87,9 +88,11 @@
           {
               model.Id(p => p.StoreRequisitionID);
               model.Field(p => p.StoreRequisitionID).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.IsForOther).Editable(false);
               model.Field(p => p.IsTransfer).Editable(false);
-              model.Field(p => p.StoreCode).Editable(false);
+              model.Field(p => p.IsForMaintenance).Editable(false);
+              //model.Field(p => p.StoreCode).Editable(false);
               model.Field(p => p.ToStoreCode).Editable(false);
               model.Field(p => p.ModelNo).Editable(false);
               model.Field(p => p.Reference).Editable(false);
@@ -104,9 +107,10 @@
               model.Field(p => p.StandardConsumption).Editable(false);
 
 
-              model.Field(p => p.BranchId).Editable(false);
+              //model.Field(p => p.BranchId).Editable(false);
               model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
               model.Field(p => p.EmployeeId).Editable(false);
               model.Field(p => p.Status).Editable(false);
               model.Field(p => p.RequestDate).Editable(false);
@@ -218,6 +222,18 @@
                                         </dd>
                                     </dl>
                                 </div>
+
+                             <hr>
+
+                                # if (IsSecondOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                                {#
+                                @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                            {
+                                    <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                            }
+
+                                # } #
+
                             </text>
                                             );
 
@@ -227,40 +243,42 @@
                                               .Name("StoreRequisitionItem_#=StoreRequisitionID#")
                                               .Columns(columns =>
                                               {
-                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(170);
-                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(170);
-                                                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
-                                                          columns.Bound(c => c.ModelNo).Width(120);
-                                                          columns.Bound(c => c.SerialNo).Width(120);
-                                                          columns.Bound(c => c.ChasisNo).Width(120);
-                                                          columns.Bound(c => c.RequestedQuantity).Width(120);
-                                                          columns.Bound(c => c.ApprovedQuantity).Width(120);
-                                                          columns.Bound(c => c.CurrentBalance).Width(120);
-                                                          columns.Bound(c => c.IssuedQuantity).Width(120);
-                                                          columns.Bound(c => c.PurchaseQuantity).Width(120);
-                                                          columns.Bound(c => c.GeneratePurchaseReq).Width(100).ClientTemplate(
-                                                  "<input type='checkbox' disabled = 'true' value='\\#= GeneratePurchaseReq \\#' " +
-                                                  "\\# if (GeneratePurchaseReq) { \\#" +
-                                                  "checked='checked'" +
-                                                  "\\# } \\#" +
-                                                  "/>"
-                                                  );
+                                                  columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(170);
+                                                  columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(170);
+                                                  columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                                  columns.Bound(c => c.Unit).Width(50);
+                                                  columns.Bound(c => c.ModelNo).Width(80);
+                                                  columns.Bound(c => c.SerialNo).Width(80);
+                                                  columns.Bound(c => c.ChasisNo).Width(80);
+                                                  columns.Bound(c => c.RequestedQuantity).Width(80);
+                                                  columns.Bound(c => c.ApprovedQuantity).Width(80);
+                                                  columns.Bound(c => c.CurrentBalance).Width(80);
+                                                  columns.Bound(c => c.CurrentAPrice).Width(80);
+                                                  columns.Bound(c => c.IssuedQuantity).Width(80);
+                                                  columns.Bound(c => c.PurchaseQuantity).Width(80);
+                                                  columns.Bound(c => c.GeneratePurchaseReq).Width(100).ClientTemplate(
+                                          "<input type='checkbox' disabled = 'true' value='\\#= GeneratePurchaseReq \\#' " +
+                                          "\\# if (GeneratePurchaseReq) { \\#" +
+                                          "checked='checked'" +
+                                          "\\# } \\#" +
+                                          "/>"
+                                          );
 
-                                                          columns.Bound(c => c.CreatedBy).Hidden();
-                                                          columns.Bound(c => c.DateCreated).Hidden();
-                                                          columns.Bound(c => c.ModifiedBy).Hidden();
-                                                          columns.Bound(c => c.LastModified).Hidden();
-                                                          columns.Command(command =>
-                                              {
-                                                                      command.Edit();
-                                                          //command.Destroy();
-                                                      });
+                                                  columns.Bound(c => c.CreatedBy).Hidden();
+                                                  columns.Bound(c => c.DateCreated).Hidden();
+                                                  columns.Bound(c => c.ModifiedBy).Hidden();
+                                                  columns.Bound(c => c.LastModified).Hidden();
+                                                  columns.Command(command =>
+                                                  {
+                                                      command.Edit();
+                                                      //command.Destroy();
+                                                  }).Width(120);
 
-                                                      })
+                                              })
                                               .ToolBar(toolbar =>
                                               {
-                                              //toolbar.Create();
-                                          }).Events(ev => ev.Edit("onItemEdit"))
+                                                  //toolbar.Create();
+                                              }).Events(ev => ev.Edit("onItemEdit"))
                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                                               .Scrollable()
                                               .Events(x => x.DataBound("onDataBoundPropertyLines"))
@@ -272,22 +290,25 @@
                                                       .RequestEnd("onRequestEnd(\"StoreRequisitionItem_#=StoreRequisitionID#\")"))
                                                   .Model(model =>
                                                   {
-                                                              model.Id(p => p.StoreRequisitionItemID);
+                                                      model.Id(p => p.StoreRequisitionItemID);
 
-                                                              model.Field(p => p.ItemCategoryCode).Editable(false);
-                                                              model.Field(p => p.ItemCode).Editable(false);
-                                                              model.Field(p => p.RequestedQuantity).Editable(false);
-                                                              model.Field(p => p.CurrentBalance).Editable(false);
-                                                              model.Field(p => p.ApprovedQuantity).Editable(false);
-                                                              model.Field(p => p.ModelNo).Editable(false);
-                                                              model.Field(p => p.SerialNo).Editable(false);
-                                                              model.Field(p => p.ChasisNo).Editable(false);
-                                                              model.Field(p => p.CreatedBy).Editable(false);
-                                                              model.Field(p => p.DateCreated).Editable(false);
-                                                              model.Field(p => p.ModifiedBy).Editable(false);
-                                                              model.Field(p => p.LastModified).Editable(false);
+                                                      model.Field(p => p.ItemCategoryCode).Editable(false);
+                                                      model.Field(p => p.ItemCode).Editable(false);
+                                                      model.Field(p => p.RequestedQuantity).Editable(false);
+                                                      model.Field(p => p.CurrentBalance).Editable(false);
+                                                      model.Field(p => p.CurrentAPrice).Editable(false);
+                                                      model.Field(p => p.ApprovedQuantity).Editable(false);
+                                                      model.Field(p => p.Unit).Editable(false);
+                                                      model.Field(p => p.ModelNo).Editable(false);
+                                                      model.Field(p => p.SerialNo).Editable(false);
+                                                      model.Field(p => p.ChasisNo).Editable(false);
+                                                      model.Field(p => p.AgreementPrice).Editable(false);
+                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                      model.Field(p => p.LastModified).Editable(false);
 
-                                                          })
+                                                  })
                                                   .Read(read => read.Action("StoreRequsitionItemPropertyReviews_Read", "StoreRequisitionItemPropertyReview", new { id = "#=StoreRequisitionID#" }))
                                                   .Create(create => create.Action("StoreRequsitionItemPropertyReviews_Create", "StoreRequisitionItemPropertyReview", new { id = "#=StoreRequisitionID#" }))
                                                   .Update(update => update.Action("StoreRequsitionItemPropertyReviews_Update", "StoreRequisitionItemPropertyReview"))
@@ -413,6 +434,27 @@
 
 <script>
 
+     function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "StoreRequisitionPropertyReview", new {area = "Inventory"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+       }
+    }
+
     function sendForApproval(id) {
         var recordStatus = "";
 
@@ -465,7 +507,7 @@
 
     function isForOther() {
 
-        
+
 
     }
 
@@ -554,7 +596,7 @@
         ////changing colors
         //var rows = e.sender.tbody.children();
         //for (var j = 0; j < rows.length; j++) {
-        //    var row = $(rows[j]); 
+        //    var row = $(rows[j]);
         //    var dataItem = e.sender.dataItem(row);
 
         //    if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
@@ -640,7 +682,7 @@
         });
     }
 
-    
+
     function checkboxClicked(e) {
 
         var isChecked = e.checked;
@@ -669,8 +711,8 @@
         var gridname = "#StoreRequisitionAttachment" + codeid;
         $(gridname).data("kendoGrid").dataSource.read();
     }
-   
-   
+
+
 </script>
 
 

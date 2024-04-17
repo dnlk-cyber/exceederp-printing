@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Services.Description;
+using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
@@ -198,6 +199,30 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     _db.SaveChanges();
                     item.ItemCode = entity.ItemCode;
                     CacheHelper.ResetCache();
+                #region create CRM product
+                var productCategory = _db.ProductCategories.FirstOrDefault(x => x.InventoryCategoryCode == entity.ItemCategoryCode);
+                if(productCategory!=null)
+                {
+                    var product = new Product
+                    {
+                        Name = entity.Name,
+                        CategoryID = productCategory.ProductCategoryId.ToString(),
+                        SubCategoryId = "",
+                        UOM = entity.UoMName,
+                        Price = 0,
+                        IsActive = true,
+                        Remark = "",
+                        ItemCategoryCode = entity.ItemCategoryCode,
+                        ItemCode = entity.ItemCode,
+                        DateCreated = DateTime.Now,
+                        CreatedBy = User.Identity.Name
+
+                    };
+
+                    _db.Products.Add(product);
+                    _db.SaveChanges();
+                }
+                #endregion
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "inventory item", "Success", User.Identity.Name, $"created item {entity.ItemCode}  ", Modules.Inventory);
                 #endregion
@@ -210,26 +235,17 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Items_Update([DataSourceRequest]DataSourceRequest request, InventoryItem item)
         {
+            var nameexists = _db.InventoryItems.Where(x => x.ItemCode != item.ItemCode)
+                  .Where(x => x.Name == item.Name).ToList();
+
+            if (nameexists.Any())
+            {
+                ModelState.AddModelError("Item Name", item.Name + " already exists in the system.");
+            }
+
             if (ModelState.IsValid)
             {
-                #region validation
-
-                bool valid = true;
-
-                var nameexists = _db.InventoryItems.Where(x => x.ItemCode != item.ItemCode)
-                    .Where(x => x.Name == item.Name).ToList();
-
-                if (nameexists.Any())
-                {
-                    ModelState.AddModelError("Item Name", item.Name + " already exists in the system.");
-                    valid = false;
-                }
-
-
-                #endregion
-
-                if (valid)
-                {
+               
                     var entity = new InventoryItem
                     {
                         ItemCode = item.ItemCode,
@@ -258,7 +274,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "inventory item", "Success", User.Identity.Name, $"updated item {entity.ItemCode}  ", Modules.Inventory);
                     #endregion
-                }
+                
             }
 
             return Json(new[] { item }.ToDataSourceResult(request, ModelState));

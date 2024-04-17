@@ -17,6 +17,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using EntityState = System.Data.Entity.EntityState;
@@ -1093,6 +1094,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                             {
                                 StoreItemAssignment = storeItem,
                                 ReferenceDoc = "Void Receive " + record.GoodReceiveId,
+                                Reference = !String.IsNullOrEmpty(record.ReceiveRef) ? record.ReceiveRef + " " + record.Reference : record.Reference,
                                 Date = record.ReceiveDate,
                                 IssuedQTY = i.Quantity,
                                 IssuedUPrice = i.UnitPrice,
@@ -1108,12 +1110,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                                 TransactionOrder = BinCardTransactionOrder.VoidReceive
                             };
                             _db.BinCardLines.Add(binCardLine);
-                           // _db.SaveChanges();
+                            // _db.SaveChanges();
 
                             #endregion
 
                             #endregion
-
+                            var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReceiveDate));
                         }
                         if (branchItem != null)
                         {

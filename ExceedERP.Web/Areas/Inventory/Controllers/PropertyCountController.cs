@@ -90,11 +90,17 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PropertyCounts_Create([DataSourceRequest]DataSourceRequest request, PropertyCount propertyCount)
         {
-            var exist = db.PropertyCounts.Where(x => x.BranchId == propertyCount.BranchId)
-                .Where(x => x.StoreCode == propertyCount.StoreCode)
-                .Where(x => x.CountDate ==propertyCount.CountDate.Date).AsQueryable();
+            //var exist = db.PropertyCounts.Where(x => x.BranchId == propertyCount.BranchId)
+            //    .Where(x => x.StoreCode == propertyCount.StoreCode)
+            //    .Where(x => x.CountDate ==propertyCount.CountDate.Date).AsQueryable();
+
+            //once per year
+            var exist = db.PropertyCounts
+               .Where(x => x.StoreCode == propertyCount.StoreCode)
+               .Where(x => x.GlFiscalYearId == propertyCount.GlFiscalYearId).AsNoTracking().ToList();
+
             if (exist.Any())
-                ModelState.AddModelError("exist", "Count for date " + propertyCount.CountDate + " and store " + propertyCount.StoreCode + " already exists");
+                ModelState.AddModelError("exist", "Count for selected fiscal year and store " + propertyCount.StoreCode + " already exists");
 
             if (String.IsNullOrEmpty(propertyCount.StoreKeeperId))
                 propertyCount.StoreKeeperId =ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreKeeper(propertyCount.StoreCode);
@@ -139,14 +145,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PropertyCounts_Update([DataSourceRequest]DataSourceRequest request, PropertyCount propertyCount)
         {
+            //var exist = db.PropertyCounts.Where(x => x.PropertyCountId != propertyCount.PropertyCountId)
+            //                .Where(x => x.BranchId == propertyCount.BranchId)
+            //                .Where(x => x.StoreCode == propertyCount.StoreCode)
+            //                .Where(x => x.CountDate == propertyCount.CountDate.Date).AsQueryable();
+            //once per year
             var exist = db.PropertyCounts.Where(x => x.PropertyCountId != propertyCount.PropertyCountId)
-                            .Where(x => x.BranchId == propertyCount.BranchId)
-                            .Where(x => x.StoreCode == propertyCount.StoreCode)
-                            .Where(x => x.CountDate == propertyCount.CountDate.Date).AsQueryable();
-            if (exist.Any())
-                ModelState.AddModelError("exist", "Count for date " + propertyCount.CountDate + " and store " + propertyCount.StoreCode + " already exists");
+               .Where(x => x.StoreCode == propertyCount.StoreCode)
+               .Where(x => x.GlFiscalYearId == propertyCount.GlFiscalYearId).AsNoTracking().ToList();
 
-            if(String.IsNullOrEmpty(propertyCount.StoreKeeperId))
+            if (exist.Any())
+                ModelState.AddModelError("exist", "Count for selected fiscal year and store " + propertyCount.StoreCode + " already exists");
+
+            if (String.IsNullOrEmpty(propertyCount.StoreKeeperId))
                 propertyCount.StoreKeeperId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreKeeper(propertyCount.StoreCode);
 
             if (ModelState.IsValid)
@@ -451,7 +462,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             //List<PropertyCountItem> list = new List<PropertyCountItem>();
             lock (countLock)
             {
-                var itmeList = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode).ToList();
+                var itmeList = db.StoreItemAssignments
+                    .Where(x=>x.InventoryItem.Enable)
+                    .Where(x => x.StoreCode == countRecord.StoreCode).ToList();
 
              
                 foreach (var item in itmeList)

@@ -40,6 +40,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 IssuedQuantity = issueFuelItem.IssuedQuantity,
                 UnitPrice = issueFuelItem.UnitPrice,
                 AdditionalCost = issueFuelItem.AdditionalCost,
+                AgreementPrice = issueFuelItem.AgreementPrice,
                 Total = issueFuelItem.Total,
                
                 EmployeeOfFuelCompany = issueFuelItem.EmployeeOfFuelCompany,
@@ -68,10 +69,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             }
 
 
-            if (fuelissue != null && (fuelissue.Owner == IssueFuelVehicleOwner.External && issueFuelItem.AdditionalCost == 0))
-            {
-                ModelState.AddModelError("additional cost","Please fill additional cost");
-            }
+            //if (fuelissue != null && (fuelissue.Owner == IssueFuelVehicleOwner.External && issueFuelItem.AdditionalCost == 0))
+            //{
+            //    ModelState.AddModelError("additional cost","Please fill additional cost");
+            //}
             decimal avgPrice = 0;
             var issue = db.Issues.Find(id);
             if (issue != null)
@@ -102,6 +103,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssuedQuantity = issueFuelItem.IssuedQuantity,
                     UnitPrice = avgPrice,
                     AdditionalCost = issueFuelItem.AdditionalCost,
+                    AgreementPrice = issueFuelItem.AgreementPrice,
                     Total = issueFuelItem.IssuedQuantity * issueFuelItem.UnitPrice + issueFuelItem.AdditionalCost,
                    
                     EmployeeOfFuelCompany = issueFuelItem.EmployeeOfFuelCompany,
@@ -143,10 +145,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 ModelState.AddModelError("exist", "Item " + issueFuelItem.ItemCode + " already exists");
             }
 
-            if (fuelissue != null && (fuelissue.Owner == IssueFuelVehicleOwner.External && issueFuelItem.AdditionalCost == 0))
-            {
-                ModelState.AddModelError("additionalcost", "Please fill additional cost");
-            }
+            //if (fuelissue != null && (fuelissue.Owner == IssueFuelVehicleOwner.External && issueFuelItem.AdditionalCost == 0))
+            //{
+            //    ModelState.AddModelError("additionalcost", "Please fill additional cost");
+            //}
             decimal avgPrice = 0;
             var issue = db.Issues.Find(id);
             if (issue != null)
@@ -178,6 +180,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssuedQuantity = issueFuelItem.IssuedQuantity,
                     UnitPrice = avgPrice,
                     AdditionalCost = issueFuelItem.AdditionalCost,
+                    AgreementPrice = issueFuelItem.AgreementPrice,
                     Total = issueFuelItem.IssuedQuantity * issueFuelItem.UnitPrice+issueFuelItem.AdditionalCost,
                    
                     EmployeeOfFuelCompany = issueFuelItem.EmployeeOfFuelCompany,
@@ -223,6 +226,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssuedQuantity = issueFuelItem.IssuedQuantity,
                     UnitPrice = issueFuelItem.UnitPrice,
                     AdditionalCost = issueFuelItem.AdditionalCost,
+                    AgreementPrice = issueFuelItem.AgreementPrice,
                     Total = issueFuelItem.Total,
                    
                     EmployeeOfFuelCompany = issueFuelItem.EmployeeOfFuelCompany,

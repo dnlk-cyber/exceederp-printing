@@ -13,7 +13,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public int ItemTransferReceiveId { get; set; }
         [Display(Name = "Transfer No.")]
         public int ItemTransferID { get; set; }
-        [DisplayName("Document Ref No.")]
+        [DisplayName("Receive Doc. Ref No.")]
         public string DocumentRef { get; set; }
         [Display(Name = "Receive Date")]
         [DataType(DataType.Date)]

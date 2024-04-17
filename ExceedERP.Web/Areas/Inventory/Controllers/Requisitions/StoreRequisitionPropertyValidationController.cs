@@ -8,7 +8,9 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.CRM;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -62,7 +64,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                           var currentBalance = inventoryItemService.GetStoreItemBalance(item.ItemCode, item.StoreRequisition.StoreCode);
                           if (item.IssuedQuantity > currentBalance)
                           {
+                            if(currentBalance>0)
                               ModelState.AddModelError("no balance", "There is no enough balance in store for item: " + item.InventoryItem.Name + " current balance is: " + currentBalance);
+                            else
+                                ModelState.AddModelError("no balance", $"There is no enough balance or the item {item.InventoryItem.Name} is not in store {item.StoreRequisition.StoreCode} ");
                           }
 
                       }
@@ -102,12 +107,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         }
                         else
                         {
+                         
+                                #region transfer to issue
 
-                            #region transfer to issue
+                                TransferStoreRequisitionItemsToIssue(storeRequisition);
 
-                            TransferStoreRequisitionItemsToIssue(storeRequisition);
+                                #endregion
+                            
 
-                            #endregion
                             #region transfer to purchase
 
                             TransferToPurchaseRequisition(storeRequisition);
@@ -331,6 +338,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         GLPeriodId = storerequisition.GLPeriodId,
                         IssueDate = storerequisition.RequestDate,
                         IsFuel = storerequisition.IsFuel,
+                        SupplierId = storerequisition.SupplierId,
+                        IsLoan = storerequisition.IsLoan,
                         Status = "Editing",
                         Remark = storerequisition.Remark,
 
@@ -371,6 +380,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                                 IssuedQuantity = requestedItem.IssuedQuantity,
                                 UnitPrice = avgPrice,
                                 Total = avgPrice * requestedItem.IssuedQuantity,
+                                AgreementPrice = requestedItem.AgreementPrice,
 
 
                                 CreatedBy = User.Identity.Name,

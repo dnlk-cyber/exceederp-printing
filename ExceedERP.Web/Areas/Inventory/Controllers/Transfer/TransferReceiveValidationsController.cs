@@ -7,7 +7,10 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
+using ExceedERP.Reporting.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -192,42 +195,42 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                 {
                                     #region update to branch item
 
-                                    var branchItemAssignment =
-                                        db.BranchItemAssignments.Where(si => si.BranchId == tobranch)
-                                            .FirstOrDefault(si => si.ItemCode == i.ItemCode);
+                                    //var branchItemAssignment =
+                                    //    db.BranchItemAssignments.Where(si => si.BranchId == tobranch)
+                                    //        .FirstOrDefault(si => si.ItemCode == i.ItemCode);
 
-                                    if (branchItemAssignment == null)
-                                    {
-                                        BranchItemAssignment newItemAssignment = new BranchItemAssignment
-                                        {
-                                            BranchId = tobranch,
-                                            ItemCode = i.ItemCode,
-                                            ItemCategoryCode = i.ItemCategoryCode,
-                                            Balance = i.ReceivedQuantity,
-                                            AvgPrice = i.UPrice,
-                                        };
-                                        db.BranchItemAssignments.Add(newItemAssignment);
-                                       // db.SaveChanges();
+                                    //if (branchItemAssignment == null)
+                                    //{
+                                    //    BranchItemAssignment newItemAssignment = new BranchItemAssignment
+                                    //    {
+                                    //        BranchId = tobranch,
+                                    //        ItemCode = i.ItemCode,
+                                    //        ItemCategoryCode = i.ItemCategoryCode,
+                                    //        Balance = i.ReceivedQuantity,
+                                    //        AvgPrice = i.UPrice,
+                                    //    };
+                                    //    db.BranchItemAssignments.Add(newItemAssignment);
+                                    //   // db.SaveChanges();
 
-                                    }
-                                    else
-                                    {
-                                        if (frombranch != tobranch && avgpricesetting == AveragePriceLvel.PerBranch)
-                                        {
-                                            branchItemAssignment.AvgPrice = ((branchItemAssignment.Balance *
-                                                                              branchItemAssignment.AvgPrice) +
-                                                                             i.ReceivedQuantity *
-                                                                             i.UPrice)
-                                                                            /
-                                                                            (branchItemAssignment.Balance +
-                                                                             i.ReceivedQuantity);
-                                        }
-                                        branchItemAssignment.Balance = branchItemAssignment.Balance +
-                                                                       i.ReceivedQuantity;
-                                        db.BranchItemAssignments.Attach(branchItemAssignment);
-                                        db.Entry(branchItemAssignment).State = EntityState.Modified;
-                                        //db.SaveChanges();
-                                    }
+                                    //}
+                                    //else
+                                    //{
+                                    //    if (frombranch != tobranch && avgpricesetting == AveragePriceLvel.PerBranch)
+                                    //    {
+                                    //        branchItemAssignment.AvgPrice = ((branchItemAssignment.Balance *
+                                    //                                          branchItemAssignment.AvgPrice) +
+                                    //                                         i.ReceivedQuantity *
+                                    //                                         i.UPrice)
+                                    //                                        /
+                                    //                                        (branchItemAssignment.Balance +
+                                    //                                         i.ReceivedQuantity);
+                                    //    }
+                                    //    branchItemAssignment.Balance = branchItemAssignment.Balance +
+                                    //                                   i.ReceivedQuantity;
+                                    //    db.BranchItemAssignments.Attach(branchItemAssignment);
+                                    //    db.Entry(branchItemAssignment).State = EntityState.Modified;
+                                    //    //db.SaveChanges();
+                                    //}
 
                                     #endregion
 
@@ -254,7 +257,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                         {
                                             StoreItemAssignment = newItemAssignment,
                                             ReferenceDoc = "Transfer Receive_" + transferReceive.ItemTransferReceiveId.ToString(),
-                                            Reference = transferReceive.Remark,
+                                            Reference = transferReceive.DocumentRef + " " + transferReceive.Remark,
                                             Date = transferReceive.ReceiveDate,
                                             ReceivedQTY = i.ReceivedQuantity,
                                             ReceivedUPrice = i.UPrice,
@@ -274,6 +277,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                         //db.SaveChanges();
 
                                         #endregion
+                                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(newItemAssignment.StoreItemAssignmentID, transferReceive.ReceiveDate));
 
                                     }
                                     else
@@ -299,7 +303,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                         {
                                             StoreItemAssignment = iteminStore,
                                             ReferenceDoc = "Transfer Receive_" + transferReceive.ItemTransferReceiveId.ToString(),
-                                            Reference = transferReceive.Remark,
+                                            Reference = transferReceive.DocumentRef + " " + transferReceive.Remark,
                                             Date = transferReceive.ReceiveDate,
                                             ReceivedQTY = i.ReceivedQuantity,
                                             ReceivedUPrice = i.UPrice,
@@ -314,9 +318,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                                             StatusType = BinCardTransactionStatus.Regular,
                                         };
                                         db.BinCardLines.Add(binCardLine);
-                                       // db.SaveChanges();
+                                        // db.SaveChanges();
 
                                         #endregion
+                                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(iteminStore.StoreItemAssignmentID, transferReceive.ReceiveDate));
                                     }
 
                                     #endregion

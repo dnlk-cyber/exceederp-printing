@@ -1,0 +1,569 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Issue Fuel - Manual</legend>
+
+@(Html.Kendo().Grid<Issue>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IssueID).Title("Issue No.").Width(110).ClientTemplate("#=appendZeros(IssueID)#");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.IssueDate).Title("Issue Date").Width(100);
+          columns.Bound(c => c.Owner).Width(80).EditorTemplateName("InternalOrExternal");
+          columns.Bound(c => c.PlateNo).Title("Plate No.").Width(90);
+          columns.Bound(c => c.SupplierAccountCode).Title("Supplier Account").EditorTemplateName("AccountCode").Width(120);
+          columns.Bound(c => c.HasReading).Width(100).EditorTemplateName("HasReading").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= HasReading #' " +
+              "# if (HasReading) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.ReadingKM).Title("Reading KM").Width(110);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(180);
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(130).EditorTemplateName("EmployeeSelector");
+
+          columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["Suppliers"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.IsLoan).Width(90).Title("Is Loan?").ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsLoan #' " +
+             "# if (IsLoan) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             );
+          columns.Bound(c => c.External).Width(90).Title("External ?").ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= External #' " +
+             "# if (External) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             );
+          columns.Bound(c => c.ExternalRequesterName).Width(120);
+          columns.Bound(c => c.Remark).Title("Issue Reference").Width(120);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("IssueFuel").Window(w => w.Title("Issue Fuel")))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+
+      .Events(ev => ev.DetailExpand("detailExpand").Edit("onMasterEdit"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Sort(sort => sort.Add("IssueID").Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.IssueID);
+              model.Field(p => p.IssueID).Editable(false);
+              model.Field(p => p.ForBranchId).Editable(false);
+              //model.Field(p => p.EmployeeId).Editable(false);
+              //model.Field(p => p.IssueDate).Editable(false);
+              //model.Field(p => p.BranchId).Editable(false);
+              //model.Field(p => p.OrgStructureId).Editable(false);
+             // model.Field(p => p.BusinessUnitId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.IssueID).Editable(false);
+              model.Field(p => p.IsManual).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Read(read => read.Action("IssueFuels_Read", "IssueFuelManual"))
+          .Create(create => create.Action("IssueFuels_Create", "IssueFuelManual"))
+          .Update(update => update.Action("IssueFuels_Update", "IssueFuelManual"))
+          .Destroy(destroy => destroy.Action("IssueFuels_Destroy", "IssueFuelManual"))
+      ).ClientDetailTemplateId("issuefueltemplate"))
+
+<script id="issuefueltemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=IssueID#").Items(items =>
+              {
+                  items.Add().Text("Detail").Content(
+                    @<text>
+
+
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApproval("#=IssueID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+
+                        # if (IsOnlineApproved)
+                        {#
+                        <a href='@Url.Action("IssueFuelPrint", "InventoryPrint")/#=IssueID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        <br />
+                        # } #
+
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    StoreRequisitionID
+                                </dt>
+                                <dd>
+                                    #= StoreRequisitionID #
+                                </dd>
+                                <dt>
+                                    IssueID
+                                </dt>
+                                <dd>
+                                    #= IssueID #
+                                </dd>
+                                <dt>
+                                    Store
+                                </dt>
+                                <dd>
+                                    #= StoreCode #
+                                </dd>
+
+                                <dt>
+                                    Work Unit
+                                </dt>
+                                <dd>
+                                    #= OrgStructureId #
+                                </dd>
+                                <dt>
+                                    Project
+                                </dt>
+                                <dd>
+                                    #= BranchId #
+                                </dd>
+                                <dt>
+                                    Machine Reading KM.
+                                </dt>
+                                <dd>
+                                    #= ReadingKM #
+                                </dd>
+                                <dt>
+                                    Issue Date
+                                </dt>
+                                <dd>
+
+                                    #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Status
+                                </dt>
+                                <dd>
+                                    #= Status #
+                                </dd>
+                                <dt>
+                                    CreatedOn
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    CreatedBy
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #s
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <hr>
+                        # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                        {#
+                        @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                    {
+                            <a onclick='return voidRecord("#=IssueID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                    }
+                       
+                        # } #
+
+
+                    </text>
+                            );
+                        items.Add().Text("Items").Content(@<text>
+                            @(Html.Kendo().Grid<IssueItem>()
+                                          .Name("IssueFuelItem#=IssueID#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemFuelCategorySelector").Width(180);
+                                              columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemFuelSelector").Width(180);
+                                              columns.Bound(c => c.RequestedQuantity).Width(80);
+                                              columns.Bound(c => c.ApprovedQuantity).Width(80);
+                                              columns.Bound(c => c.IssuedQuantity).Width(70);
+                                              columns.Bound(c => c.UnitPrice).Width(70);
+                                              columns.Bound(c => c.Total).Width(70);
+                                              columns.Bound(c => c.AdditionalCost).Width(90);
+
+                                             
+                                              columns.Command(command =>
+                                              {
+                                                  command.Edit();
+                                                  command.Destroy();
+                                              }).Width(280);
+                                          })
+                                           .ToolBar(toolbar =>
+                                           {
+                                               toolbar.Create();
+                                           })
+
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .Events(ev => ev.Edit("onItemEdit"))
+                                          .Events(x => x.DataBound("onDataBoundLines"))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"IssueFuelItem#=IssueID#\")")
+                                                  .RequestStart("onRequestStart(\"IssueFuelItem#=IssueID#\")")
+                                                  .RequestEnd("onRequestEnd(\"IssueFuelItem#=IssueID#\")"))
+
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.IssueItemID);
+                                                  //model.Field(p => p.ItemCategoryCode).Editable(false);
+                                                  //model.Field(p => p.ItemCode).Editable(false);
+                                                  //model.Field(p => p.RequestedQuantity).Editable(false);
+                                                  //model.Field(p => p.ApprovedQuantity).Editable(false);
+                                                  
+                                                  model.Field(p => p.AgreementPrice).Editable(false);
+
+                                                  model.Field(p => p.EmployeeWhoGotItRefuelled).Editable(false);
+                                                  model.Field(p => p.UnitPrice).Editable(false);
+                                                  model.Field(p => p.Total).Editable(false);
+                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                  model.Field(p => p.LastModified).Editable(false);
+
+                                              })
+                                              .Read(read => read.Action("IssueFuelItems_Read", "IssueFuelItemManual", new { id = "#=IssueID#" }))
+                                              .Create(create => create.Action("IssueFuelItems_Create", "IssueFuelItemManual", new { id = "#=IssueID#" }))
+                                              .Update(update => update.Action("IssueFuelItems_Update", "IssueFuelItemManual", new { id = "#=IssueID#" }))
+                                              .Destroy(destroy => destroy.Action("IssueFuelItems_Destroy", "IssueFuelItemManual"))
+                                          ).ToClientTemplate())
+
+
+                        </text>);
+
+                                items.Add().Text("Validation").Content(@<text>
+                                    @(Html.Kendo().Grid<IssueValidation>()
+                                                  .Name("IssueFuelValidation#=IssueID#")
+                                                  .Columns(columns =>
+                                                  {
+                                                    columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                    columns.Bound(c => c.Remark).Width(170);
+                                                    columns.Command(command =>
+                                                    {
+                                                        command.Edit();
+                                            //command.Destroy();
+                                        });
+                                                })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                    toolbar.Create();
+                                                })
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"IssueFuelValidation#=IssueID#\")")
+                                                          .RequestStart("onRequestStart(\"IssueFuelValidation#=IssueID#\")")
+                                                          .RequestEnd("onRequestEnd(\"IssueFuelValidation#=IssueID#\")"))
+                                                      //.Sync("sync_handler"))
+                                                      .Model(model => model.Id(p => p.IssueValidationID))
+                                                      .Read(read => read.Action("IssueFuelValidations_Read", "IssueFuelValidation", new { id = "#=IssueID#" }))
+                                                      .Create(create => create.Action("IssueFuelValidations_Create", "IssueFuelValidation", new { id = "#=IssueID#" }))
+                                                      .Update(update => update.Action("IssueFuelValidations_Update", "IssueFuelValidation", new { id = "#=IssueID#" }))
+                                                      .Destroy(destroy => destroy.Action("IssueFuelValidations_Destroy", "IssueFuelValidation"))
+                                                  ).ToClientTemplate())
+
+
+                                </text>);
+
+                                    }).ToClientTemplate())
+    <h6>Distribution</h6>
+    @(Html.Kendo().Grid<IssueDistribution>()
+                  .Name("IssueFuelDistribution#=IssueID#")
+                  .Columns(columns =>
+                  {
+
+                      columns.Bound(c => c.AccountCode);
+                      columns.Bound(c => c.AccountDesc);
+                      columns.Bound(c => c.Debit);
+                      columns.Bound(c => c.Credit);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      }).Width(180);
+                  })
+
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Scrollable()
+                   .Filterable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.IssueDistributionID))
+                      .Read(read => read.Action("IssueFuelDistributions_Read", "IssueFuelDistribution", new { id = "#=IssueID#" }))
+                      .Create(create => create.Action("IssueFuelDistributions_Create", "IssueFuelDistribution", new { id = "#=IssueID#" }))
+                      .Update(update => update.Action("IssueFuelDistributions_Update", "IssueFuelDistribution", new { id = "#=IssueID#" }))
+                      .Destroy(destroy => destroy.Action("IssueFuelDistributions_Destroy", "IssueFuelDistribution"))
+                  ).ToClientTemplate())
+
+</script>
+
+<script>
+
+    function filterRequestor() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterEmployees() {
+        return {
+            text: $("#RecipientId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function hasReading(obj) {
+        if ($(obj).is(":checked")) {
+            $("#readingDiv").show();
+           
+        } else {
+            $("#readingDiv").hide();
+        }
+
+    }
+   
+    
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "IssueFuelManual", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "IssueFuelManual", new { area = "Inventory" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#IssueDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+                });
+                }
+
+    }
+
+    function filterPeriodsByMyStore() {
+        return {
+            store: $("#StoreCode").val(),
+            text: null
+        }
+    }
+
+    function onSelectOwnerType(e) {
+     
+        var grid = $("#grid").data("kendoGrid");
+        var owner = $("#Owner").data("kendoDropDownList");
+        var ownerValue = owner.value();
+       
+        if (ownerValue === "1") {
+            $("#supplierDiv").show();
+        } else if (ownerValue === "0") {
+            $("#supplierDiv").hide();
+        }
+    }
+    function onMasterEdit(e) {
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("SupplierAccountCode");
+        grid.hideColumn("ReadingKM");
+
+        if (e.model.isNew() === false) {
+            $("#StoreRequisitionID").kendoDropDownList({
+                enable: false
+            });
+
+        }
+        
+    }
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ReadingKM");
+        } else {
+            grid.hideColumn("ReadingKM");
+        }
+
+    };
+
+   
+    function onItemEdit(e) {
+       
+
+    }
+
+    function onSelectStoreRequisitionID(e) {
+        var id = $("#StoreRequisitionID").data("kendoDropDownList").value();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetStoreRequisitionData", "DataProvider", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#PlateNo").val(result[i].PlateNo).trigger("change");
+                        $("#StoreCode").val(result[i].StoreCode).trigger("change");
+                    }
+                }
+               
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+   
+    //var masterDataItem;
+    //var masterRow;
+    //var masterGrid;
+    //var codeid;
+    //var recordStatus;
+
+    //var validationGrid;
+    //function detailExpand(e) {
+
+    //    masterRow = e.masterRow;
+
+    //    masterGrid = $("#grid").data("kendoGrid");
+
+    //    masterDataItem = masterGrid.dataItem(masterRow);
+
+
+    //    //  var masterDataItem = masterGrid.dataItem();
+    //    codeid = masterDataItem.IssueID;
+
+    //    recordStatus = masterDataItem.Status;
+
+
+    //    validationGrid = "#IssueFuelValidation" + codeid;
+
+    //    if (recordStatus !== "WaitingApproval") {
+
+    //        $(".k-grid-add", validationGrid).hide();
+
+    //    }
+
+    //}
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+    }
+</script>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -104,12 +105,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
                 storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
+                                                                    || userworkunit.Contains(x.CreatedAtOrgStructureId)
                                                                     || x.CreatedBy == User.Identity.Name).ToList();
             }
 
             else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
-                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+                storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) 
+                                                                    || userworkunit.Contains(x.CreatedAtOrgStructureId)
                                                                      || x.CreatedBy == User.Identity.Name).ToList();
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
@@ -126,7 +129,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
-                    BranchId = storeRequisition.BranchId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                BranchId = storeRequisition.BranchId,
                 BusinessUnitId = storeRequisition.BusinessUnitId,
                 IsTransfer = storeRequisition.IsTransfer,
                     ToStoreCode = storeRequisition.ToStoreCode,
@@ -260,6 +264,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     {
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
+                        CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name),
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
@@ -382,6 +387,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         StoreRequisitionID = storeRequisition.StoreRequisitionID,
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         BusinessUnitId = storeRequisition.BusinessUnitId,
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
@@ -442,7 +448,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = storeRequisition.OrgStructureId,
-                        EmployeeId = storeRequisition.EmployeeId,
+                    CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                    EmployeeId = storeRequisition.EmployeeId,
                         RequestDate = storeRequisition.RequestDate,
                         StoreCode = storeRequisition.StoreCode,
                         Status = storeRequisition.Status,

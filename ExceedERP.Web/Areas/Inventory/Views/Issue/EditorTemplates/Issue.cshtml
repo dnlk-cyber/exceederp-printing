@@ -135,6 +135,15 @@
         <div class="col-md-3 ro1">
 
             <div class="form-group">
+                @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Reference)
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
                 @Html.LabelFor(model => model.SupplierId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.SupplierId)
@@ -150,6 +159,16 @@
                                   })
                     )
                     @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <br />
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.IsLoan, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.IsLoan)
+                    @Html.ValidationMessageFor(model => model.IsLoan, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>

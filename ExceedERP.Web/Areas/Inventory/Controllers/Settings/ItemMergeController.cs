@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.UI;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -107,10 +108,39 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                             // added for average price
                             totalOfAvgPriceMulByBalance = totalOfAvgPriceMulByBalance + (selectStoreItem.Balance * selectStoreItem.AvgPrice);
 
+                            #region bin card line--removed item
+
+                            var binCardLineForRemoved = new BinCardLine
+                            {
+                                StoreItemAssignment = selectStoreItem,
+                                ReferenceDoc = "Merge_Removed " + DateTime.Today,
+                                Reference = "",
+                                Date = DateTime.Today,
+                                IssuedQTY = selectStoreItem.Balance,
+                                IssuedUPrice = selectStoreItem.AvgPrice,
+                                IssuedTPrice = selectStoreItem.Balance* selectStoreItem.AvgPrice,
+                                BalanceQTY = 0,
+                                BalanceUPrice = 0,
+                                BalanceTPrice = 0,
+                                IssuedTo = "",
+                                //new    
+                                StoreCode = selectStoreItem.StoreCode,
+                                GLPeriodId = 0,
+                                TransactionType = BinCardTransactionTypes.Merge,
+                                StatusType = BinCardTransactionStatus.Regular,
+                                TransactionOrder = BinCardTransactionOrder.Issue
+
+                            };
+                            db.BinCardLines.Add(binCardLineForRemoved);
+                            db.SaveChanges();
+
+                            #endregion
                             selectStoreItem.Balance = 0;
                             selectStoreItem.AvgPrice = 0;
                             db.StoreItemAssignments.Attach(selectStoreItem);
                             db.Entry(selectStoreItem).State = EntityState.Modified;
+                            db.SaveChanges();
+
                         }
                     }
                     decimal totalAmountExisting = destiStoreItem.Balance * destiStoreItem.AvgPrice;
@@ -126,6 +156,34 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                     db.StoreItemAssignments.Attach(destiStoreItem);
                     db.Entry(destiStoreItem).State = EntityState.Modified;
                     db.SaveChanges();
+                    #endregion
+                    #region bin card line--received
+
+                    BinCardLine binCardLine = new BinCardLine
+                    {
+                        StoreItemAssignment = destiStoreItem,
+                        ReferenceDoc = "Merge_" + DateTime.Today,
+                        Reference = "",
+                        Date = DateTime.Today,
+                        ReceivedQTY = balanceTotransfer,
+                        ReceivedUPrice = balanceTotransfer>0? totalOfAvgPriceMulByBalance/balanceTotransfer:0,
+                        ReceivedTPrice = totalOfAvgPriceMulByBalance,//i.Total,
+                        BalanceUPrice= destiStoreItem.AvgPrice,
+                        BalanceQTY = destiStoreItem.Balance,
+                        BalanceTPrice = destiStoreItem.AvgPrice* destiStoreItem.Balance,
+                        SupplierName = "",
+                        //new    
+                        StoreCode = store,
+                        GLPeriodId = 0,
+                        TransactionType = BinCardTransactionTypes.Merge,
+                        StatusType = BinCardTransactionStatus.Regular,
+                        TransactionOrder = BinCardTransactionOrder.Receive
+                    };
+
+
+                    db.BinCardLines.Add(binCardLine);
+                     db.SaveChanges();
+
                     #endregion
                 }
                 else
@@ -143,7 +201,33 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                             balanceTotransfer = balanceTotransfer + selectStoreItem.Balance;
                             // added for average price
                             totalOfAvgPriceMulByBalance = totalOfAvgPriceMulByBalance + (selectStoreItem.Balance * selectStoreItem.AvgPrice);
+                            #region bin card line--removed item
 
+                            var binCardLineForRemoved = new BinCardLine
+                            {
+                                StoreItemAssignment = selectStoreItem,
+                                ReferenceDoc = "Merge_Removed " + DateTime.Today,
+                                Reference = "",
+                                Date = DateTime.Today,
+                                IssuedQTY = selectStoreItem.Balance,
+                                IssuedUPrice = selectStoreItem.AvgPrice,
+                                IssuedTPrice = selectStoreItem.Balance * selectStoreItem.AvgPrice,
+                                BalanceQTY = 0,
+                                BalanceUPrice = 0,
+                                BalanceTPrice = 0,
+                                IssuedTo = "",
+                                //new    
+                                StoreCode = selectStoreItem.StoreCode,
+                                GLPeriodId = 0,
+                                TransactionType = BinCardTransactionTypes.Merge,
+                                StatusType = BinCardTransactionStatus.Regular,
+                                TransactionOrder = BinCardTransactionOrder.Issue
+
+                            };
+                            db.BinCardLines.Add(binCardLineForRemoved);
+                            db.SaveChanges();
+
+                            #endregion
                             selectStoreItem.Balance = 0;
                             selectStoreItem.AvgPrice = 0;
                             db.StoreItemAssignments.Attach(selectStoreItem);
@@ -151,7 +235,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                         }
                     }
 
-                    var entity = new StoreItemAssignment
+                    var newStoreItem = new StoreItemAssignment
                     {
                         StoreCode = store,
                         ItemCategoryCode = item.ItemCategoryCode,
@@ -162,13 +246,42 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                         DateCreated = DateTime.Now
                     };
                     // added for average price
-                    if (entity.Balance != 0)
+                    if (newStoreItem.Balance != 0)
                     {
-                        entity.AvgPrice = totalOfAvgPriceMulByBalance / entity.Balance;
+                        newStoreItem.AvgPrice = totalOfAvgPriceMulByBalance / newStoreItem.Balance;
                     }
 
-                    db.StoreItemAssignments.Add(entity);
+                    db.StoreItemAssignments.Add(newStoreItem);
                     db.SaveChanges();
+                    #endregion
+
+                    #region bin card line--received 
+
+                    BinCardLine binCardLine = new BinCardLine
+                    {
+                        StoreItemAssignment = newStoreItem,
+                        ReferenceDoc = "Merge_" + DateTime.Today,
+                        Reference = "",
+                        Date = DateTime.Today,
+                        ReceivedQTY = balanceTotransfer,
+                        ReceivedUPrice = balanceTotransfer > 0 ? totalOfAvgPriceMulByBalance / balanceTotransfer : 0,
+                        ReceivedTPrice = totalOfAvgPriceMulByBalance,//i.Total,
+                        BalanceUPrice = newStoreItem.AvgPrice,
+                        BalanceQTY = newStoreItem.Balance,
+                        BalanceTPrice = newStoreItem.AvgPrice * newStoreItem.Balance,
+                        SupplierName = "",
+                        //new    
+                        StoreCode = store,
+                        GLPeriodId = 0,
+                        TransactionType = BinCardTransactionTypes.Merge,
+                        StatusType = BinCardTransactionStatus.Regular,
+                        TransactionOrder = BinCardTransactionOrder.Receive
+                    };
+
+
+                    db.BinCardLines.Add(binCardLine);
+                    db.SaveChanges();
+
                     #endregion
                 }
             }
@@ -187,6 +300,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                 #endregion
             }
             #endregion
+
+            CacheHelper.ResetCache();
 
             var formattedData = new
             {

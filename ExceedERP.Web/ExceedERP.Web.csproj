@@ -2001,6 +2001,9 @@
     <Compile Include="Areas\InfoDesk\Models\AssignTicketViewModel.cs" />
     <Compile Include="Areas\InfoDesk\Models\BindingModel.cs" />
     <Compile Include="Areas\Inventory\Controllers\ArchiveData\InventoryDataArchiveController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\InventoryHomeController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\Issues\IssueFuelItemManualController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\Issues\IssueFuelManualController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Issues\IssueManualController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Issues\IssueItemManualController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Returns\StoreReturnAttachmentController.cs" />
@@ -2011,6 +2014,8 @@
     <Compile Include="Areas\Inventory\Controllers\SelfCare\StoreRequisitionItemSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\StoreRequisitionSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\StoreRequisitionSelfCareValidationController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\SelfCare\SubContractor\StoreRequisitionSubItemSelfCareController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\SelfCare\SubContractor\StoreRequisitionSubSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\ItemMergeController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\InventorySettingController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\InventoryStorePeriodStatusController.cs" />
@@ -6948,6 +6953,17 @@
     <Content Include="Areas\Archive\Views\web.config" />
     <Content Include="Areas\Archive\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Manufacturing\Manufacturing.7z" />
+    <Content Include="Areas\Inventory\Views\InventoryHome\Index.cshtml" />
+    <Content Include="Areas\Inventory\Views\InventoryReport\StockBalanceByQTYValueReport.cshtml" />
+    <Content Include="Areas\Inventory\Views\IssueFuelManual\EditorTemplates\HasReading.cshtml" />
+    <Content Include="Areas\Inventory\Views\IssueFuelManual\EditorTemplates\InternalOrExternal.cshtml" />
+    <Content Include="Areas\Inventory\Views\IssueFuelManual\EditorTemplates\IssueFuel.cshtml" />
+    <Content Include="Areas\Inventory\Views\IssueFuelManual\Index.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\EditorTemplates\IsTransferRequest.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\EditorTemplates\ItemCategorySelector.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\EditorTemplates\StoreRequisition.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\EditorTemplates\ValidationStatus.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

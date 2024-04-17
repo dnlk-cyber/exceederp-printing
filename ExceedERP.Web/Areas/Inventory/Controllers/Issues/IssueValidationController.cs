@@ -8,7 +8,9 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -170,7 +172,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                     {
                                         StoreItemAssignment = storeItem,
                                         ReferenceDoc = "Issue " + record.IssueID.ToString(),
-                                        Reference = record.Remark,
+                                        Reference = record.Reference+" "+record.Remark,
                                         Date = record.IssueDate,
                                         IssuedQTY = i.IssuedQuantity,
                                         IssuedUPrice = i.UnitPrice,
@@ -188,11 +190,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
                                     };
                                     db.BinCardLines.Add(binCardLine);
-                                   // db.SaveChanges();
+                                    // db.SaveChanges();
 
                                     #endregion
 
                                     #endregion
+                                    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID,record.IssueDate));
                                 }
 
                                 if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)

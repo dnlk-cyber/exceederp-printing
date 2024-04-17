@@ -29,9 +29,9 @@ namespace ExceedERP.Core.Domain.Inventory
         [Display(Name = "Request Date")]
         public DateTime RequestDate { get; set; }
         [Required]
-        [Display(Name = "Store Code")]
+        [Display(Name = "Issuer(Sender) Store")]
         public string StoreCode { get; set; }
-        [DisplayName("To Store")]
+        [DisplayName("Receiver Store")]
         public string ToStoreCode { get; set; }
         [DisplayName("Is Fuel Request")]
         public bool IsFuel { get; set; }
@@ -50,13 +50,13 @@ namespace ExceedERP.Core.Domain.Inventory
         [Display(Name = "Model No.")]
         public string ModelNo { get; set; }
        
-        [DisplayName("Is For Maintenance")]
+        [DisplayName("For Maintenance?")]
         public bool IsForMaintenance { get; set; }
         [Display(Name = "Job Order No.")]
         public string JobOrderNo { get; set; }
         [Display(Name = "Service Job Order No.")]
         public string ServiceJobOrderNo { get; set; }
-        [Display(Name = "Plate No")]
+        [Display(Name = "Plate No / Tag No")]
         public string PlateNo { get; set; }
         [Display(Name = "External ?")]
         public bool IsExternalDriver { get; set; }
@@ -83,6 +83,10 @@ namespace ExceedERP.Core.Domain.Inventory
         public bool External { get; set; }
         [Display(Name = "Requester Name")]
         public string ExternalRequesterName { get; set; }
+        [Display(Name = "For External")]
+        public string SupplierId { get; set; }
+        [Display(Name = "Loan ?")]
+        public bool IsLoan { get; set; }
         public Guid? VehicleDistributionID { get; set; }
         public int CreatedAtOrgStructureId { get; set; }
 
@@ -123,8 +127,11 @@ namespace ExceedERP.Core.Domain.Inventory
         public bool GeneratePurchaseReq { get; set; }
         [NotMapped]
         public string Unit { get; set; }
-        [NotMapped]
+        [Display(Name = "Balance")]
         public decimal CurrentBalance { get; set; }
+        [Display(Name = "Avg Price")]
+        public decimal CurrentAPrice { get; set; }
+        public decimal AgreementPrice { get; set; }
     }
 
     public class StoreRequisitionValidationBase : TrackUserSettingOperation

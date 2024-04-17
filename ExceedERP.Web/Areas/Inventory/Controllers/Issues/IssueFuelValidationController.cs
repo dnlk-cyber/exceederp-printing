@@ -7,7 +7,9 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -71,7 +73,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                             var storeItem = db.StoreItemAssignments.Where(x => x.ItemCode == i.ItemCode).FirstOrDefault(x => x.StoreCode == record.StoreCode);
                             if (storeItem == null)
                             {
-                                string message = "Item: " + i.InventoryItem.Name + " is not available in store: " + record.StoreCode;
+                                string message = "Item: " + i.ItemCode + " is not available in store: " + record.StoreCode;
                                 ModelState.AddModelError("store", message);
 
                             }
@@ -164,7 +166,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                     {
                                         StoreItemAssignment = storeItem,
                                         ReferenceDoc = "Issue " + record.IssueID.ToString(),
-                                        Reference = record.Remark,
+                                        Reference = record.Reference + " " + record.Remark,
                                         Date = record.IssueDate,
                                         IssuedQTY = i.IssuedQuantity,
                                         IssuedUPrice = i.UnitPrice,
@@ -185,8 +187,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                     //db.SaveChanges();
 
                                     #endregion
-
                                     #endregion
+                                    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.IssueDate));
+                                    
                                 }
 
                                 if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)

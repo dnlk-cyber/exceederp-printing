@@ -7,7 +7,9 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -94,7 +96,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                                     {
                                         StoreItemAssignment = storeItem,
                                         ReferenceDoc = "Return_" + record.StoreReturnID.ToString(),
-                                        Reference = record.Remark,
+                                        Reference = record.Reference + " " + record.Remark,
                                         Date = record.ReturnDate,
                                         ReceivedQTY = i.Quantity,
                                         ReceivedUPrice = avgPrice,
@@ -112,7 +114,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                                     };
                                     //price if manual
                                     db.BinCardLines.Add(binCardLine);
-                                   // db.SaveChanges();
+                                    // db.SaveChanges();
+                                    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReturnDate));
 
                                     #endregion
                                 }
@@ -135,7 +138,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                                     {
                                         StoreItemAssignment = storeItem,
                                         ReferenceDoc = "Return_" + record.StoreReturnID.ToString(),
-                                        Reference = record.Remark,
+                                        Reference = record.Reference + " " + record.Remark,
                                         Date = record.ReturnDate,
                                         ReceivedQTY = i.Quantity,
                                         ReceivedUPrice = avgPrice,
@@ -154,32 +157,33 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                                     //db.SaveChanges();
 
                                     #endregion
+                                    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReturnDate));
                                 }
 
                                 #endregion
 
                                 #region  branch Balance
 
-                                var storeBranch = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(record.StoreCode);
-                                var branchItemAssignment = db.BranchItemAssignments.Where(x => x.BranchId == storeBranch)
-                                    .FirstOrDefault(x => x.ItemCode == i.ItemCode);
-                                if (branchItemAssignment != null)
-                                {
-                                    branchItemAssignment.Balance = branchItemAssignment.Balance + i.Quantity;
-                                    db.Entry(branchItemAssignment).State = EntityState.Modified;
-                                   // db.SaveChanges();
-                                }
-                                else
-                                {
-                                    var branchItem = new BranchItemAssignment();
-                                    if (store != null) branchItem.BranchId = store.BranchId;
-                                    branchItem.ItemCategoryCode = i.ItemCategoryCode;
-                                    branchItem.ItemCode = i.ItemCode;
-                                    branchItem.Balance = i.Quantity;
-                                    branchItem.AvgPrice = i.UnitPrice;
-                                    db.BranchItemAssignments.Add(branchItem);
-                                    //db.SaveChanges();
-                                }
+                                //var storeBranch = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(record.StoreCode);
+                                //var branchItemAssignment = db.BranchItemAssignments.Where(x => x.BranchId == storeBranch)
+                                //    .FirstOrDefault(x => x.ItemCode == i.ItemCode);
+                                //if (branchItemAssignment != null)
+                                //{
+                                //    branchItemAssignment.Balance = branchItemAssignment.Balance + i.Quantity;
+                                //    db.Entry(branchItemAssignment).State = EntityState.Modified;
+                                //   // db.SaveChanges();
+                                //}
+                                //else
+                                //{
+                                //    var branchItem = new BranchItemAssignment();
+                                //    if (store != null) branchItem.BranchId = store.BranchId;
+                                //    branchItem.ItemCategoryCode = i.ItemCategoryCode;
+                                //    branchItem.ItemCode = i.ItemCode;
+                                //    branchItem.Balance = i.Quantity;
+                                //    branchItem.AvgPrice = i.UnitPrice;
+                                //    db.BranchItemAssignments.Add(branchItem);
+                                //    //db.SaveChanges();
+                                //}
 
                                 #endregion
 

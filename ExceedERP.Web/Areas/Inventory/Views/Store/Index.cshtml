@@ -103,6 +103,7 @@
                                           @<text>   
                                    
                                       
+                                        @Html.Kendo().Button().Name("generatePeriod").Content("Generate Store Periods").Events(events => events.Click("generatePeriod")).ToClientTemplate()                             
                                         @Html.Kendo().Button().Name("closeAll").Content("Close All").Events(events => events.Click("closeAll")).ToClientTemplate()                             
                                         @Html.Kendo().Button().Name("openAll").Content("Open All").Events(events => events.Click("openAll")).ToClientTemplate()  
                                       
@@ -221,6 +222,35 @@
         //$('#gridPeriod').data('kendoGrid').refresh();
         //location.reload();
     }
+
+    function generatePeriod(e) {
+      
+        var conf = confirm("Are you sure you want to Generate Periods ?");
+        if (conf === true) {
+
+            $('#loading-image').show();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GenerateAllPeriod", "InventoryStorePeriodStatus")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    //location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                },
+                complete: function () {
+                    $('#loading-image').hide();
+                }
+            });
+        }
+       
+    }
+
 
     function closeAll(e) {
       

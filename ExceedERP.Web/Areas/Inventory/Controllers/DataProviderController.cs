@@ -678,7 +678,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             }),
                 JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetManualReceiveTypes()
         {
             var receiveTypes = db.ReceiveTypes.Where(x=>x.Type==GoodReceiveType.Other).AsQueryable();
@@ -692,7 +691,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
         public JsonResult GetAutoReceiveTypes()
         {
-            var receiveTypes = db.ReceiveTypes.Where(x => x.Type != GoodReceiveType.Other).AsQueryable();
+            var receiveTypes = db.ReceiveTypes.Where(x => x.Type == GoodReceiveType.PurchaseOrder).AsQueryable();
             return Json(receiveTypes.Select(i => new
             {
                 Name = i.Name,
@@ -795,7 +794,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
                         return Json(listpurchaseOrderItems.Select(i => new
                         {
-                            Name = "PO_" + i.PurchaseOrderID+" SR_" +i.PurchaseOrder.SroreRequisition,
+                            Name = "PO_" + i.PurchaseOrderID,//+" SR_" +i.PurchaseOrder.SroreRequisition,
                             referenceId = i.PurchaseOrderID
                         }), JsonRequestBehavior.AllowGet);
 
@@ -1702,6 +1701,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             {
                
                 var employees = db.Person_Employee
+                    .Where(x=>x.IsActive)
                    .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
@@ -1839,6 +1839,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             if (fleetPlates.Any())
                 plateNums.AddRange(fleetPlates);
 
+            var fleetAssetCode = db.Fleets
+                .Where(a => string.IsNullOrEmpty(a.PlateNumber) == true).Select(a => a.UnitNum).ToList();
+
+            if (fleetAssetCode.Any())
+                plateNums.AddRange(fleetAssetCode);
+
             //var plateNumbers = db.Fleets
             //    .Where(a => string.IsNullOrEmpty(a.PlateNumber) == false)
             //    .Select(p => new
@@ -1851,8 +1857,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
         public JsonResult GetStoreCounts(string store)
         {
-            int maxCount = db.PropertyCounts
-                .Where(a => a.StoreCode == store && a.IsClosed).Max(x => x.PropertyCountId);
+            int maxCount = 0;
+            var storeCounts=db.PropertyCounts
+                .Where(a => a.StoreCode == store && a.IsClosed).ToList();
+            if (storeCounts.Any())
+                maxCount = storeCounts.Max(x => x.PropertyCountId);
 
             var counts = db.PropertyCounts
                 .Where(a => a.StoreCode == store && a.PropertyCountId==maxCount)

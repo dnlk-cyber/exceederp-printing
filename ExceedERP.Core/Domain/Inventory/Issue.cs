@@ -68,8 +68,14 @@ namespace ExceedERP.Core.Domain.Inventory
         public bool IsManual { get; set; }
         [Display(Name = "Issue for Asset")]
         public int? AssetRegistrationId { get; set; }
-        [Display(Name = "For External")]
+        [Display(Name = " External")]
         public string SupplierId { get; set; }
+        [Display(Name = "Loan ?")]
+        public bool IsLoan { get; set; }
+        [Display(Name = "External")]
+        public bool External { get; set; }
+        [Display(Name = "Requester Name")]
+        public string ExternalRequesterName { get; set; }
         public virtual ICollection<IssueItem> IssueItems { get; set; }
         public virtual ICollection<IssueValidation> IssueValidation { get; set; }
         public virtual ICollection<IssueDistribution> IssueDistribution { get; set; }
@@ -102,11 +108,6 @@ namespace ExceedERP.Core.Domain.Inventory
         public decimal AdditionalCost { get; set; }
         [Display(Name = "Total")]
         public decimal Total { get; set; }
-        //[Required]
-        //[Display(Name = "GL Account")]
-        //public string GLAccountCode { get; set; }
-        //public string IssueGoodReceiveItemID { get; set; }
-        //public string IssueGoodReceiveItemPrice { get; set; }
         [Display(Name = "Employee of Fuel Company")]
         public string EmployeeOfFuelCompany { get; set; }
         [Display(Name = "Employee Who got Refueled")]
@@ -114,7 +115,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public string Name { get; set; }
         [Display(Name = "Work Item Code")] 
         public string WorkItemCode { get; set; }
-        [Display(Name = "Job No.")]
+        public decimal AgreementPrice { get; set; }
         public string ProductionJobNo { get; set; }
     }
     public class IssueValidation : VoucherValidation

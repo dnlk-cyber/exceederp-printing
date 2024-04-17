@@ -11,6 +11,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -529,6 +530,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                         {
                             StoreItemAssignment = storeItem,
                             ReferenceDoc = "Void Transfer Send " + record.ItemTransferID,
+                            Reference = record.DocumentRef + " " + record.Remark,
                             Date = record.TransferDate,
                             ReceivedQTY = i.ShippedQuantity,
                             ReceivedUPrice = i.UPrice,
@@ -549,6 +551,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                         #endregion
 
                         #endregion
+                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.TransferDate));
 
                     }
                     if (branchItem != null)

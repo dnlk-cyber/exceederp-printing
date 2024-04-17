@@ -10,8 +10,8 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(250).EditorTemplateName("StoresSelector").Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(p => p.StoreKeeper, (IEnumerable)ViewData["users"], "Code", "Name").Title("Store Clerk").Width(300).EditorTemplateName("StoreKeeperSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(400).EditorTemplateName("StoresSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.StoreKeeper, (IEnumerable)ViewData["users"], "Code", "Name").Title("Store Clerk").Width(350).EditorTemplateName("StoreKeeperSelector").Filterable(ftb => ftb.Multi(true).Search(true));
 
           columns.Command(command =>
           {

@@ -10,8 +10,8 @@
           columns.Bound(c => c.ItemTransferReceiveId).Title("#").Width(120).ClientTemplate("#=appendZeros(ItemTransferReceiveId)#");
           columns.Bound(c => c.ItemTransferID).Title("Trans. Send. No.").Width(110);//.EditorTemplateName("TransferStoreRequistion");
           columns.Bound(c => c.DocumentRef).Title("Doc Ref No.").Width(100);
-          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120);
-          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(120);
+          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.DriverType).EditorTemplateName("TransferType").Width(130);
           columns.ForeignKey(p => p.DeliveredBy, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Driver Name").Width(140).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.SupplierName, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier Name").Width(140).EditorTemplateName("SupplierSelector");
@@ -329,6 +329,12 @@
 
  
 <script>
+
+    function filterRequestors() {
+        return {
+            text: $("#DeliveredBy").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
     function onMasterEdit(e) {
         if (e.model.isNew() === false) {

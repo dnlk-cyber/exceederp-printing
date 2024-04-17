@@ -59,8 +59,14 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     ItemCode = i.ItemCode
                 }).ToList();
             ViewData["Items"] = selecteditems;
-            ViewData["Category"] = categories;
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+            var selectedCategories = categories.Select(
+               i => new
+               {
+                   Name = i.ItemCategoryCode + "_" + i.Name,
+                   ItemCategoryCode = i.ItemCategoryCode
+               }).ToList();
+            ViewData["Category"] = selectedCategories;
 
             var store = _db.InventoryStores.AsQueryable();
             ViewData["storesInCompany"] = store;
@@ -143,6 +149,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                     BranchId = storeRequisition.BranchId,
                 BusinessUnitId = storeRequisition.BusinessUnitId,
                 IsTransfer = storeRequisition.IsTransfer,
@@ -279,6 +286,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                        CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name),
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         RequestDate = storeRequisition.RequestDate.Date,// DateTime.Today,
                         StoreCode = storeRequisition.StoreCode,
@@ -402,6 +410,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         BusinessUnitId = storeRequisition.BusinessUnitId,
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         RequestDate = storeRequisition.RequestDate,
                         StoreCode = storeRequisition.StoreCode,
@@ -461,7 +470,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         BranchId = storeRequisition.BranchId,
                     BusinessUnitId = storeRequisition.BusinessUnitId,
                     OrgStructureId = storeRequisition.OrgStructureId,
-                        EmployeeId = storeRequisition.EmployeeId,
+                    CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                    EmployeeId = storeRequisition.EmployeeId,
                         RequestDate = storeRequisition.RequestDate,
                         StoreCode = storeRequisition.StoreCode,
                         Status = storeRequisition.Status,

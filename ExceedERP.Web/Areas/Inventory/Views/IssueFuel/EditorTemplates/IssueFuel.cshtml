@@ -190,13 +190,22 @@
                 </div>
             </div>
             <div class="row"></div>
+            <br />
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.IsLoan, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.IsLoan)
+                    @Html.ValidationMessageFor(model => model.IsLoan, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
 
 
         </div>
 
         <div class="col-md-3 ro1">
 
-           
+
 
             <br />
             <div class="form-group">
@@ -212,6 +221,24 @@
                 <div class="col-md-6">
                     @Html.Kendo().TextBoxFor(model => model.ReadingKM)
                     @Html.ValidationMessageFor(model => model.ReadingKM, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br/>
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.External, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.External)
+                    @Html.ValidationMessageFor(model => model.External, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ExternalRequesterName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.ExternalRequesterName)
+                    @Html.ValidationMessageFor(model => model.ExternalRequesterName, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="row"></div>

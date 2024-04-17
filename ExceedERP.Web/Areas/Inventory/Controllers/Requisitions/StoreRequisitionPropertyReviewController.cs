@@ -39,9 +39,20 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             var branches = db.Branch;
 
             ViewData["Branches"] = branches;
-            ViewData["Items"] = items;
-            ViewData["Category"] = categories;
-            ViewData["defaultCategory"] = categories.FirstOrDefault();
+            var selecteditems = items.Select(
+               i => new
+               {
+                   Name = i.ItemCode + "_" + i.Name,
+                   ItemCode = i.ItemCode
+               }).ToList();
+            ViewData["Items"] = selecteditems;
+            var selectedCategories = categories.Select(
+                i => new
+                {
+                    Name = i.ItemCategoryCode + "_" + i.Name,
+                    ItemCategoryCode = i.ItemCategoryCode
+                }).ToList();
+            ViewData["Category"] = selectedCategories;
 
             var store = db.InventoryStores.AsQueryable();
             ViewData["storesInCompany"] = store;
@@ -83,13 +94,18 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsOnlineApproved && !x.IsVoid).Where(x => mybraches.Contains(x.OrgBranchName));
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsForMaintenance == false).Where(x => x.IsOnlineApproved && !x.IsVoid).Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions
+                //.Where(x => x.IsForMaintenance == false) previously it was directly going to shipmentnow after review
+                .Where(x => x.IsOnlineApproved && !x.IsVoid).Where(x => userStores.Contains(x.StoreCode));
             var result = storerequisitions.ToDataSourceResult(request, storeRequisition => new
                 {
                     StoreRequisitionID = storeRequisition.StoreRequisitionID,
+                IsForMaintenance = storeRequisition.IsForMaintenance,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
-                    BranchId = storeRequisition.BranchId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                BranchId = storeRequisition.BranchId,
+                BusinessUnitId = storeRequisition.BusinessUnitId,
                     IsTransfer = storeRequisition.IsTransfer,
                     ToStoreCode = storeRequisition.ToStoreCode,
                     EmployeeId = storeRequisition.EmployeeId,
@@ -241,6 +257,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     Reference = storeRequisition.Reference,
                     BranchId = storeRequisition.BranchId,//UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                     EmployeeId = storeRequisition.EmployeeId, //UserInformationHelper.GetEmployeeId(User.Identity.Name),
+                    BusinessUnitId = storeRequisition.BusinessUnitId, //UserInformationHelper.GetEmployeeId(User.Identity.Name),
                     RequestDate = storeRequisition.RequestDate,
                     StoreCode = storeRequisition.StoreCode,
                     Status = storeRequisition.Status,
@@ -535,6 +552,85 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             return null;
         }
 
+        [AuthorizeRoles(InventoryConstants.PropertyVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = db.StoreRequisitions.Find(id);
+            #region check if purchase is started
+            #endregion
+            if (record != null && record.IsSecondOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.StoreRequisitionItem.Count > 0)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsSecondOnlineApproved = false;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.StoreRequisitions.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+
+
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "SR Review", "Success", User.Identity.Name, $"void requisition {id} ", Modules.Inventory);
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.StoreRequisitionItem.Count == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Please add line items first.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is transferred to GL.You can not void .",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!record.IsSecondOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

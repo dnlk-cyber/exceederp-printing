@@ -13,8 +13,10 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
+using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using EntityState = System.Data.Entity.EntityState;
@@ -130,6 +132,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 GLPeriodId = issue.GLPeriodId,
                 AssetRegistrationId = issue.AssetRegistrationId,
                 SupplierId = issue.SupplierId,
+                IsLoan = issue.IsLoan,
+                External = issue.External,
+                ExternalRequesterName = issue.ExternalRequesterName,
                 IsVoid = issue.IsVoid,
                 VoidBy = issue.VoidBy,
                 VoidTime = issue.VoidTime,
@@ -238,6 +243,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     GLPeriodId = issue.GLPeriodId,
                     AssetRegistrationId = issue.AssetRegistrationId,
                     SupplierId = issue.SupplierId,
+                    IsLoan = issue.IsLoan,
+                    External = issue.External,
+                    ExternalRequesterName = issue.ExternalRequesterName,
                     IsVoid = issue.IsVoid,
                     VoidBy = issue.VoidBy,
                     VoidTime = issue.VoidTime,
@@ -354,6 +362,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     GLPeriodId = issue.GLPeriodId,
                     AssetRegistrationId = issue.AssetRegistrationId,
                     SupplierId = issue.SupplierId,
+                    IsLoan = issue.IsLoan,
+                    External = issue.External,
+                    ExternalRequesterName = issue.ExternalRequesterName,
                     IsVoid = issue.IsVoid,
                     VoidBy = issue.VoidBy,
                     VoidTime = issue.VoidTime,
@@ -640,6 +651,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                         {
                             StoreItemAssignment = storeItem,
                             ReferenceDoc = "Void Issue " + record.IssueID,
+                            Reference = record.Reference + " " + record.Remark,
                             Date = record.IssueDate,
                             ReceivedQTY = i.IssuedQuantity,
                             ReceivedUPrice = i.UnitPrice,
@@ -655,11 +667,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                             TransactionOrder = BinCardTransactionOrder.VoidIssue
                         };
                         _db.BinCardLines.Add(binCardLine);
-                       // _db.SaveChanges();
+                        // _db.SaveChanges();
 
                         #endregion
 
                         #endregion
+                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.IssueDate));
 
                     }
                     if (branchItem != null)

@@ -24,6 +24,7 @@ namespace ExceedERP.Core.Domain.Inventory
         Adjustment,
         SalesOrLend,
         Count,
+        Merge
     }
 
     public enum BinCardTransactionStatus

@@ -12,6 +12,7 @@ using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -123,6 +124,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 GLPeriodId = issueFuel.GLPeriodId,
                 AssetRegistrationId = issueFuel.AssetRegistrationId,
                 SupplierId = issueFuel.SupplierId,
+                IsLoan = issueFuel.IsLoan,
+                External = issueFuel.External,
+                ExternalRequesterName = issueFuel.ExternalRequesterName,
                 Remark = issueFuel.Remark,
                 IsVoid = issueFuel.IsVoid,
                 VoidBy = issueFuel.VoidBy,
@@ -255,6 +259,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     GLPeriodId = issueFuel.GLPeriodId,
                     AssetRegistrationId = issueFuel.AssetRegistrationId,
                     SupplierId = issueFuel.SupplierId,
+                    IsLoan = issueFuel.IsLoan,
+                    External = issueFuel.External,
+                    ExternalRequesterName = issueFuel.ExternalRequesterName,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
                     LastModified = issueFuel.LastModified,
@@ -380,6 +387,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     GLPeriodId = issueFuel.GLPeriodId,
                     AssetRegistrationId = issueFuel.AssetRegistrationId,
                     SupplierId = issueFuel.SupplierId,
+                    IsLoan = issueFuel.IsLoan,
+                    External = issueFuel.External,
+                    ExternalRequesterName = issueFuel.ExternalRequesterName,
                     IsVoid = issueFuel.IsVoid,
                     VoidBy = issueFuel.VoidBy,
                     VoidTime = issueFuel.VoidTime,
@@ -434,6 +444,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssueDate = issueFuel.IssueDate,
                     AssetRegistrationId = issueFuel.AssetRegistrationId,
                     SupplierId = issueFuel.SupplierId,
+                    IsLoan = issueFuel.IsLoan,
+                    External = issueFuel.External,
+                    ExternalRequesterName = issueFuel.ExternalRequesterName,
                     Status = issueFuel.Status,
                     Remark = issueFuel.Remark,
                     IsVoid = issueFuel.IsVoid,
@@ -730,6 +743,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                 {
                                     StoreItemAssignment = storeItem,
                                     ReferenceDoc = "Void Issue " + record.IssueID,
+                                    Reference = record.Reference + " " + record.Remark,
                                     Date = record.IssueDate,
                                     ReceivedQTY = i.IssuedQuantity,
                                     ReceivedUPrice = i.UnitPrice,
@@ -750,7 +764,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                                 #endregion
 
                                 #endregion
-
+                                var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.IssueDate));
                             }
 
 

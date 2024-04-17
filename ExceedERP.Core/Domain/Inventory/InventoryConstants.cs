@@ -4,7 +4,10 @@
     {
         public const string PropertyRequistion = "Property_Requisition_User";
         public const string PropertyRequisitionSecondApprover = "Property_Requisition_Second_Approver";
-        
+
+        public const string PropertyStockAdjustmentUser = "Property_StockAdjustment_User";
+        public const string PropertyStockAdjustmentApprover = "Property_StockAdjustment_Approver";
+
         public const string PropertyUser = "Property_User";
         public const string UserDepartment = "User_Department";
         public const string PropertyApprover = "Property_Approver";

@@ -14,8 +14,8 @@
           columns.Bound(c => c.DocumentRef).Title("Doc Ref No.").Width(140);
           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector"); 
           columns.Bound(c => c.TransferDate).Title("Transfer Date").Width(150);
-          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(150).EditorTemplateName("StoreSelectorByKeeper");
-          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(150).EditorTemplateName("StoreSelector");
+          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(150).EditorTemplateName("StoreSelectorByKeeper").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(150).EditorTemplateName("StoreSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.DriverType).EditorTemplateName("TransferType").Width(130);
           columns.ForeignKey(p => p.DeliveredBy, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Driver Name").Width(150).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.SupplierName, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier Name").Width(150).EditorTemplateName("SupplierSelector");

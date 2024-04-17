@@ -7,7 +7,9 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -18,13 +20,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser, InventoryConstants.PropertyStockAdjustmentApprover)]
         public ActionResult Index()
         {
             return View();
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentUser, InventoryConstants.PropertyStockAdjustmentApprover)]
         public ActionResult StockAdjustmentValidations_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<StockAdjustmentValidation> stockadjustmentvalidations = db.StockAdjustmentValidations.Where(adj => adj.StockAdjustmentID == id);
@@ -37,7 +39,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(result);
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyApprover)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentValidations_Create([DataSourceRequest]DataSourceRequest request, StockAdjustmentValidation stockAdjustmentValidation , int id)
             {
@@ -117,6 +119,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                                 // db.SaveChanges();
 
                                 #endregion
+                                var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.AdjustmentDate));
                             }
                             else if (i.StockAdjustmentType == AdjustmentType.Overage)
                                     {
@@ -150,6 +153,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
                                 // db.SaveChanges();
 
                                 #endregion
+                                var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.AdjustmentDate));
                             }
                             if (i.PriceAdjustmentType == " Income")
                                     {
@@ -199,7 +203,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(new[] { stockAdjustmentValidation }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyApprover)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentValidations_Update([DataSourceRequest]DataSourceRequest request, StockAdjustmentValidation stockAdjustmentValidation)
         {
@@ -220,7 +224,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Adjustment
             return Json(new[] { stockAdjustmentValidation }.ToDataSourceResult(request, ModelState));
         }
 
-         [AuthorizeRoles(InventoryConstants.PropertyApprover)]
+         [AuthorizeRoles(InventoryConstants.PropertyStockAdjustmentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult StockAdjustmentValidations_Destroy([DataSourceRequest]DataSourceRequest request, StockAdjustmentValidation stockAdjustmentValidation)
         {

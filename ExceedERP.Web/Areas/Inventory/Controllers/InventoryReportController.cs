@@ -8,6 +8,10 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
     [AuthorizeRoles(InventoryConstants.PropertyReport )]
     public class InventoryReportController : Controller
     {
+        public ActionResult StockBalanceByQTYValueReport()
+        {
+            return View();
+        }
         public ActionResult StockStatusReport()
         {
             return View();

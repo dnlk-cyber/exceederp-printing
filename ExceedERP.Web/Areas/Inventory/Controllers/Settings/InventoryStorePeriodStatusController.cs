@@ -76,7 +76,24 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
             return Json(result);
         }
 
+        public JsonResult GenerateAllPeriod(string id)
+        {
+            if (id != null)
+            {
+                UpdatePeriodList(id);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "inventory period", "Success", User.Identity.Name, $"generate all periods for store {id} ", Modules.Inventory);
+                #endregion
+            }
 
+            var formattedData1 = new
+            {
+                Message = "Completed.",
+                Status = "OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
         public JsonResult CloseAllPeriod(string id)
         {
             if (id != null)
