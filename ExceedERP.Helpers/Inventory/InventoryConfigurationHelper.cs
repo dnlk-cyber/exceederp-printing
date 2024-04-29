@@ -114,5 +114,20 @@ namespace ExceedERP.Helpers.Inventory
             else
                 return false;
         }
+        public static bool IsFreshBazaarEnabled()
+        {
+            ExceedDbContext db = new ExceedDbContext();
+
+            var conf = db.Configurations
+                    .Where(x => x.Category == "Inventory")
+                    .Where(x => x.Reference == "ENABLE_FRESH_BAZAAR")
+                    .Where(x => x.Attribute == "TRUE")
+                    .FirstOrDefault();
+
+            if (conf != null)
+                return true;
+            else
+                return false;
+        }
     }
 }
