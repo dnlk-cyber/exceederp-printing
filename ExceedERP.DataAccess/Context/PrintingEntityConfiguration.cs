@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.printing.JobCosting;
 using ExceedERP.Core.Domain.printing.JobCosting.Setting;
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
+using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
 using System;
@@ -14,6 +15,64 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintCostCenterEntityTypeConfiguration: EntityTypeConfiguration<PrintCostCenter>
+    {
+        public PrintCostCenterEntityTypeConfiguration()
+        {
+            this.ToTable("PrintCostCenter", "Printing");
+            this.HasKey<int>(p => p.PrintCostCenterId);
+        }
+    }
+    public class PrintingMachineListEntityTypeConfiguration : EntityTypeConfiguration<PrintingMachineList>
+    {
+        public PrintingMachineListEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingMachineList", "Printing");
+            this.HasKey<int>(p => p.PrintingMachineListId);
+        }
+    }
+
+    public class PrintingProcessEntityTypeConfiguration : EntityTypeConfiguration<PrintingProcess>
+    {
+        public PrintingProcessEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProcess", "Printing");
+            this.HasKey<int>(p => p.PrintingProcessId);
+        }
+    }
+    public class PrintItemCategoryEntityTypeConfiguration : EntityTypeConfiguration<PrintItemCategory>
+    {
+        public PrintItemCategoryEntityTypeConfiguration()
+        {
+            this.ToTable("PrintItemCategory", "Printing");
+            this.HasKey<int>(p => p.PrintItemCategoryId);
+        }
+    }
+
+    public class PrintLabourRateEntityTypeConfiguration : EntityTypeConfiguration<PrintLabourRate>
+    {
+        public PrintLabourRateEntityTypeConfiguration()
+        {
+            this.ToTable("PrintLabourRate", "Printing");
+            this.HasKey<int>(p => p.PrintLaborRateId);
+        }
+    }
+    public class PrintMachinePaperListEntityTypeConfiguration : EntityTypeConfiguration<PrintMachinePaperList>
+    {
+        public PrintMachinePaperListEntityTypeConfiguration()
+        {
+            this.ToTable("PrintMachinePaperList", "Printing");
+            this.HasKey<int>(p => p.PrintMachinePaperListId);
+        }
+    }
+    public class PrintWorkOrderTypeEntityTypeConfiguration : EntityTypeConfiguration<PrintWorkOrderType>
+    {
+        public PrintWorkOrderTypeEntityTypeConfiguration()
+        {
+            this.ToTable("PrintWorkOrderType", "Printing");
+            this.HasKey<int>(p => p.PrintWorkOrderTypeId);
+        }
+    }
     #region printing Estimation
     class OverallCostEntityConfiguration : EntityTypeConfiguration<OverallCost>
     {
@@ -518,6 +577,8 @@ namespace ExceedERP.DataAccess.Context
     }
   
     #endregion
+
+
 
 
 }

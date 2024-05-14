@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintMachinePaperList>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        
+        columns.Bound(c => c.PaperSizeCode);
+        columns.Bound(c => c.Width);
+        columns.Bound(c => c.Length);
+        columns.Bound(c => c.PaperName);
+        columns.Bound(c => c.NumberOfPagesPerSheet);
+        columns.Bound(c => c.NumberOfPagesPerPlate);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintMachinePaperListId))
+          .Read(read => read.Action("PrintMachinePaperLists_Read", "PrintMachinePaperList"))
+          .Create(create => create.Action("PrintMachinePaperLists_Create", "PrintMachinePaperList"))
+          .Update(update => update.Action("PrintMachinePaperLists_Update", "PrintMachinePaperList"))
+          .Destroy(destroy => destroy.Action("PrintMachinePaperLists_Destroy", "PrintMachinePaperList"))
+      )
+)

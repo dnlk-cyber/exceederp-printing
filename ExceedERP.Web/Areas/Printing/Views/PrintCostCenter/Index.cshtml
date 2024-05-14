@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintCostCenter>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.PrintCostCenterCode);
+        columns.Bound(c => c.PrintCostCenterName);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintCostCenterId))
+          .Read(read => read.Action("PrintCostCenters_Read", "PrintCostCenter"))
+          .Create(create => create.Action("PrintCostCenters_Create", "PrintCostCenter"))
+          .Update(update => update.Action("PrintCostCenters_Update", "PrintCostCenter"))
+          .Destroy(destroy => destroy.Action("PrintCostCenters_Destroy", "PrintCostCenter"))
+      )
+)

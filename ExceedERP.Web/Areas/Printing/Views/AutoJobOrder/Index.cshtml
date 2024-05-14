@@ -209,25 +209,7 @@
                                                 .ToolBar(toolbar =>
                                                 {
                                                     toolbar.Create();
-
-                                                    /*toolbar.Template(@<text>
-                                                                    <div class="toolbar row">
-                                                                        <div class="col-md-1">
-                                                                            <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                                                                        </div>
-                                                                        <div class="col-md-2 pull-right">
-                                                                            @(Html.Kendo().Upload()
-                                                                                        .Name("file")
-                                                                                        .Async(a => a.Save("ProductionStoreRequisition_Import", "ProductionStoreRequisition"))
-                                                                                        .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                                                                                        .ShowFileList(false)
-                                                                            )
-                                                                        </div>
-
-                                                                    </div>
-
-                                                                </text>);*/
-
+                                                    
                                                 })
 
                                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProductionStoreRequisition").Window(w => w.Title("Store Requisition").Width(900)))
@@ -1700,9 +1682,9 @@
 
     }
     function filterStoresByBranch() {
-    return {
-    BranchId: $("#BranchId").val()
-    };
+        return {
+            BranchId: $("#BranchId").val()
+        };
     }
     function filterPeriodsByStore() {
     return {

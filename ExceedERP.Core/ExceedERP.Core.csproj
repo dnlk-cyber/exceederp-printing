@@ -1158,6 +1158,7 @@
     <Compile Include="Domain\Printing\JobCosting\Setting\Unit.cs" />
     <Compile Include="Domain\Printing\JobCosting\Setting\YearlyOverHeadRate.cs" />
     <Compile Include="Domain\Printing\JobCosting\Tax.cs" />
+    <Compile Include="Domain\Printing\PrintCostCenter.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\EstimationForm.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\LaborCost.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\MaterialCost.cs" />
@@ -1168,6 +1169,12 @@
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingStep.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\CommonEnum.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\Validation.cs" />
+    <Compile Include="Domain\Printing\PrintingMachineList.cs" />
+    <Compile Include="Domain\Printing\PrintingProcess.cs" />
+    <Compile Include="Domain\Printing\PrintItemCategory.cs" />
+    <Compile Include="Domain\Printing\PrintLabourRate.cs" />
+    <Compile Include="Domain\Printing\PrintMachinePaperList.cs" />
+    <Compile Include="Domain\Printing\PrintWorkOrderType.cs" />
     <Compile Include="Domain\Printing\ProductionFollowUp\ChangeOrder.cs" />
     <Compile Include="Domain\Printing\ProductionFollowUp\Common.cs" />
     <Compile Include="Domain\Printing\ProductionFollowUp\Delivery.cs" />
@@ -1327,6 +1334,7 @@
     <Folder Include="bin\Release\" />
     <Folder Include="Domain\App_Data\" />
     <Folder Include="Domain\Client Scripts\" />
+    <Folder Include="Domain\Printing\PrintingSetting\" />
     <Folder Include="Localization\obj\" />
   </ItemGroup>
   <ItemGroup>

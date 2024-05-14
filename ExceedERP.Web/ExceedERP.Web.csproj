@@ -2195,6 +2195,13 @@
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\JcPensionController.cs" />
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\UnitController.cs" />
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\YearlyOverHeadRateController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintCostCenterController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingMachineListController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintItemCategoryController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintLaborRateController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintMachinePaperListController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintWorkOrderTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\ProductionFollowUp\MachinesController.cs" />
     <Compile Include="Areas\Printing\Controllers\ProductionFollowUp\MegaDataProviderController.cs" />
     <Compile Include="Areas\Printing\Controllers\ProductionFollowUp\Operation\AutoJobOrderController.cs" />
@@ -6964,6 +6971,13 @@
     <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\EditorTemplates\StoreRequisition.cshtml" />
     <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\EditorTemplates\ValidationStatus.cshtml" />
     <Content Include="Areas\Inventory\Views\StoreRequisitionSubSelfCare\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintCostCenter\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingMachineList\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProcess\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintItemCategory\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintLaborRate\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintMachinePaperList\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintWorkOrderType\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

@@ -113,6 +113,7 @@ using ExceedERP.Core.Domain.ArchiveManagement.Institution;
 using ExceedERP.Core.Domain.ArchiveManagement.Employee;
 using ExceedERP.Core.Domain.ArchiveManagement.Setting;
 using ExceedERP.Core.Domain.Archive;
+using ExceedERP.Core.Domain.Printing;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1564,6 +1565,13 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintCostCenterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingMachineListEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProcessEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintItemCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintLabourRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintMachinePaperListEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintWorkOrderTypeEntityTypeConfiguration());
             #region  Estimation
             #region Printing Estimation
             modelBuilder.Configurations.Add(new Context.PrintingStepEntityConfiguration());
@@ -2114,6 +2122,13 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintCostCenter> PrintCostCenters { get; set; }
+        public DbSet<PrintingMachineList> PrintingMachineLists { get; set; }
+        public DbSet<PrintingProcess> PrintingProcesses { get; set; }
+        public DbSet<PrintItemCategory> PrintItemCategorys { get; set; }
+        public DbSet<PrintLabourRate> PrintLabourRates { get; set; }
+        public DbSet<PrintMachinePaperList> PrintMachinePaperLists { get; set; }
+        public DbSet<PrintWorkOrderType> PrintWorkOrderTypes { get; set; }
         #region  Estimation
         #region Printimg Estimation
         public DbSet<PrintingStep> PrintingSteps { get; set; }

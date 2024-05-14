@@ -442,6 +442,10 @@
     <Compile Include="Migrations\202404170857542_inventoryupdate.Designer.cs">
       <DependentUpon>202404170857542_inventoryupdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202405141326410_printing-updates.cs" />
+    <Compile Include="Migrations\202405141326410_printing-updates.Designer.cs">
+      <DependentUpon>202405141326410_printing-updates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -730,6 +734,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404170857542_inventoryupdate.resx">
       <DependentUpon>202404170857542_inventoryupdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405141326410_printing-updates.resx">
+      <DependentUpon>202405141326410_printing-updates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

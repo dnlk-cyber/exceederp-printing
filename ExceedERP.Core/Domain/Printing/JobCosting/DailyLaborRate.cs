@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.printing.JobCosting
 {
-    public class DailyLaborRate : TrackUserSettingOperation
+    public class DailyLaborRate : TrackUserSettingOperation 
     {
         public int DailyLaborRateId { get; set; }
         public string CostCenter { get; set; }

@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintItemCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.InventoryCategoryCode);
+        columns.Bound(c => c.PrintCategory);
+        columns.Bound(c => c.CostAccountCode);
+        columns.Bound(c => c.InventoryAccountCode);
+        columns.Bound(c => c.ProductionAccountCode);
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintItemCategoryId))
+          .Read(read => read.Action("PrintItemCategorys_Read", "PrintItemCategory"))
+          .Create(create => create.Action("PrintItemCategorys_Create", "PrintItemCategory"))
+          .Update(update => update.Action("PrintItemCategorys_Update", "PrintItemCategory"))
+          .Destroy(destroy => destroy.Action("PrintItemCategorys_Destroy", "PrintItemCategory"))
+      )
+)

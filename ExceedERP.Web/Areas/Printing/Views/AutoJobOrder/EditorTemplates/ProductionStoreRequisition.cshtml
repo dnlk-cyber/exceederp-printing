@@ -45,15 +45,15 @@
                         <div>
                             @(Html.Kendo().DropDownListFor(model => model.BranchId)
                                     .ValuePrimitive(true)
-                                            .OptionLabel("Select Branch...")
-                                            .DataTextField("Name")
-                                            .DataValueField("BranchId")
-                                            .Filter("contains")
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("GetAllBranches", "ProductionDataProvider"))
-                                                    .ServerFiltering(false);
-                                            })
+                                    .OptionLabel("Select Branch...")
+                                    .DataTextField("Name")
+                                    .DataValueField("BranchId")
+                                    .Filter("contains")
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetAllBranches", "ProductionDataProvider"))
+                                            .ServerFiltering(false);
+                                    })
                             )
 
                             @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })

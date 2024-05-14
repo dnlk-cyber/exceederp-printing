@@ -59,17 +59,17 @@ namespace ExceedERP.Web.Areas.Printing.Controllers.Estimation
             });
             return Json(stores, JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult GetFurnitureCategory()
-        //{
-        //    var category = _db.FurnitureCategories.ToList().Select(s => new
-        //    {
+        public JsonResult GetFurnitureCategory()
+        {
+            var category = _db.FurnitureCategories.ToList().Select(s => new
+            {
 
-        //        s.FurnitureCategoryId,
-        //        s.Name
+                s.FurnitureCategoryId,
+                s.Name
 
-        //    });
-        //    return Json(category, JsonRequestBehavior.AllowGet);
-        //}
+            });
+            return Json(category, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetItemDetail(string itemCode, string storeCode)
         {
             var item = _db.StoreItemAssignments.FirstOrDefault(q => q.StoreCode == storeCode && q.ItemCode == itemCode);

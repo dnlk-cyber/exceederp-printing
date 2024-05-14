@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintLabourRate>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.PeriodCode);
+        columns.Bound(c => c.PeriodName);
+        columns.Bound(c => c.NormalHourRate);
+        columns.Bound(c => c.OverTimeHourRate);
+        columns.Bound(c => c.OverHeadRate);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintLaborRateId))
+          .Read(read => read.Action("PrintLabourRates_Read", "PrintLaborRate"))
+          .Create(create => create.Action("PrintLabourRates_Create", "PrintLaborRate"))
+          .Update(update => update.Action("PrintLabourRates_Update", "PrintLaborRate"))
+          .Destroy(destroy => destroy.Action("PrintLabourRates_Destroy", "PrintLaborRate"))
+      )
+)

@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintWorkOrderType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.PrintWorkOrderTypeCode);
+        columns.Bound(c => c.Description);
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintWorkOrderTypeId))
+          .Read(read => read.Action("PrintWorkOrderTypes_Read", "PrintWorkOrderType"))
+          .Create(create => create.Action("PrintWorkOrderTypes_Create", "PrintWorkOrderType"))
+          .Update(update => update.Action("PrintWorkOrderTypes_Update", "PrintWorkOrderType"))
+          .Destroy(destroy => destroy.Action("PrintWorkOrderTypes_Destroy", "PrintWorkOrderType"))
+      )
+)
