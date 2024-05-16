@@ -1159,6 +1159,7 @@
     <Compile Include="Domain\Printing\JobCosting\Setting\YearlyOverHeadRate.cs" />
     <Compile Include="Domain\Printing\JobCosting\Tax.cs" />
     <Compile Include="Domain\Printing\PrintCostCenter.cs" />
+    <Compile Include="Domain\Printing\PrintingCostEstimation.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\EstimationForm.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\LaborCost.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\MaterialCost.cs" />

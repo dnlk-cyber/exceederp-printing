@@ -1,4 +1,7 @@
 ﻿
+
+<label>Print Work Order Type</label>
+
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintWorkOrderType>()
       .Name("grid")
       .Columns(columns =>
@@ -23,3 +26,7 @@
           .Destroy(destroy => destroy.Action("PrintWorkOrderTypes_Destroy", "PrintWorkOrderType"))
       )
 )
+
+<script type="text/javascript">
+
+</script>

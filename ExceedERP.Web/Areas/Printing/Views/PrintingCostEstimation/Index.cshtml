@@ -1,0 +1,44 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingCostEstimation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.PaperSizeId);
+        columns.Bound(c => c.PaperTypeId);
+        columns.Bound(c => c.ProductQuantity);
+        columns.Bound(c => c.TotalTextNoPages);
+        columns.Bound(c => c.BindingStyleId);
+        columns.Bound(c => c.Width);
+        columns.Bound(c => c.Length);
+        columns.Bound(c => c.TextNoOfColors);
+        columns.Bound(c => c.CoverNoOfColor);
+        columns.Bound(c => c.CoverPaperSize);
+        columns.Bound(c => c.CoverRequired);
+        columns.Bound(c => c.OnlyOneSideCover);
+        columns.Bound(c => c.NoUpPagesPerA1);
+        columns.Bound(c => c.ProcessCategoryId);
+        columns.Bound(c => c.TypeOfWorkId);
+        columns.Bound(c => c.EstimatedHrs);
+        columns.Bound(c => c.DLaborRate);
+        columns.Bound(c => c.TotalCost);
+        columns.Bound(c => c.OverHeadRate);
+        columns.Bound(c => c.OverHeadCost);
+        columns.Bound(c => c.TotalLaborCost);
+      
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintingCostEstimationId))
+          .Read(read => read.Action("PrintingCostEstimations_Read", "PrintingCostEstimation"))
+          .Create(create => create.Action("PrintingCostEstimations_Create", "PrintingCostEstimation"))
+          .Update(update => update.Action("PrintingCostEstimations_Update", "PrintingCostEstimation"))
+          .Destroy(destroy => destroy.Action("PrintingCostEstimations_Destroy", "PrintingCostEstimation"))
+      )
+)

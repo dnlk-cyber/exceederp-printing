@@ -2196,6 +2196,7 @@
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\UnitController.cs" />
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\YearlyOverHeadRateController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintCostCenterController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingCostEstimationController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineListController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintItemCategoryController.cs" />
@@ -6978,6 +6979,7 @@
     <Content Include="Areas\Printing\Views\PrintLaborRate\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintMachinePaperList\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintWorkOrderType\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingCostEstimation\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
