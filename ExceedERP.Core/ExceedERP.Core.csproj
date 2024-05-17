@@ -1171,7 +1171,10 @@
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\CommonEnum.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\Validation.cs" />
     <Compile Include="Domain\Printing\PrintingMachineList.cs" />
+    <Compile Include="Domain\Printing\PrintingMachineType.cs" />
+    <Compile Include="Domain\Printing\PrintingPaperSize.cs" />
     <Compile Include="Domain\Printing\PrintingProcess.cs" />
+    <Compile Include="Domain\Printing\PrintingProductProcess.cs" />
     <Compile Include="Domain\Printing\PrintItemCategory.cs" />
     <Compile Include="Domain\Printing\PrintLabourRate.cs" />
     <Compile Include="Domain\Printing\PrintMachinePaperList.cs" />

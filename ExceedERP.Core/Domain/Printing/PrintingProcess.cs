@@ -8,7 +8,7 @@ namespace ExceedERP.Core.Domain.Printing
         [Key]
         public int PrintingProcessId { get; set; }
         public PrintingProcessCategory PrintingCategory { get; set; }
-        public string ProcessCode { get; set; }
+        
         public string ProcessName { get; set; }
         public double HoursRequired { get; set; }
         public int Quantity { get; set; }

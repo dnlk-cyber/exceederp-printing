@@ -28,7 +28,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             DataSourceResult result = printingprocesses.ToDataSourceResult(request, printingProcess => new {
                 PrintingProcessId = printingProcess.PrintingProcessId,
                 PrintingCategory = printingProcess.PrintingCategory,
-                ProcessCode = printingProcess.ProcessCode,
+               
                 ProcessName = printingProcess.ProcessName,
                 HoursRequired = printingProcess.HoursRequired,
                 Quantity = printingProcess.Quantity,
@@ -53,7 +53,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var entity = new PrintingProcess
                 {
                     PrintingCategory = printingProcess.PrintingCategory,
-                    ProcessCode = printingProcess.ProcessCode,
+                   
                     ProcessName = printingProcess.ProcessName,
                     HoursRequired = printingProcess.HoursRequired,
                     Quantity = printingProcess.Quantity,
@@ -84,7 +84,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingProcessId = printingProcess.PrintingProcessId,
                     PrintingCategory = printingProcess.PrintingCategory,
-                    ProcessCode = printingProcess.ProcessCode,
+                   
                     ProcessName = printingProcess.ProcessName,
                     HoursRequired = printingProcess.HoursRequired,
                     Quantity = printingProcess.Quantity,
@@ -115,7 +115,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingProcessId = printingProcess.PrintingProcessId,
                     PrintingCategory = printingProcess.PrintingCategory,
-                    ProcessCode = printingProcess.ProcessCode,
+                   
                     ProcessName = printingProcess.ProcessName,
                     HoursRequired = printingProcess.HoursRequired,
                     Quantity = printingProcess.Quantity,

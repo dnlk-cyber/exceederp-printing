@@ -1,0 +1,29 @@
+﻿
+<label>Printing Product Process</label>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingProductProcess>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobTypeId);
+        columns.Bound(c => c.PrintingProcessCategory);
+        columns.Bound(c => c.ProcessName);
+        columns.Bound(c => c.HoursRequired);
+        columns.Bound(c => c.QtyToDone);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintingProductProcessId))
+          .Read(read => read.Action("PrintingProductProcesses_Read", "PrintingProductProcess"))
+          .Create(create => create.Action("PrintingProductProcesses_Create", "PrintingProductProcess"))
+          .Update(update => update.Action("PrintingProductProcesses_Update", "PrintingProductProcess"))
+          .Destroy(destroy => destroy.Action("PrintingProductProcesses_Destroy", "PrintingProductProcess"))
+      )
+)

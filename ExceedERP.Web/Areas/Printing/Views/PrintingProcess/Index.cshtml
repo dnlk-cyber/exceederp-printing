@@ -3,8 +3,7 @@
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.PrintingCategory);
-        columns.Bound(c => c.ProcessCode);
+        columns.Bound(c => c.PrintingCategory);        
         columns.Bound(c => c.ProcessName);
         columns.Bound(c => c.HoursRequired);
         columns.Bound(c => c.Quantity);
@@ -15,8 +14,9 @@
        
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
-      .ToolBar(toolbar => {
-            toolbar.Create();
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Filterable()

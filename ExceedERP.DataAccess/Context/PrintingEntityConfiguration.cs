@@ -15,6 +15,22 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingPaperSizeEntityTypeConfiguration : EntityTypeConfiguration<PrintingPaperSize>
+    {
+        public PrintingPaperSizeEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingPaperSize", "Printing");
+            this.HasKey<int>(p => p.PrintingPaperSizeId);
+        }
+    }
+    public class PrintingProductProcessEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductProcess>
+    {
+        public PrintingProductProcessEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductProcess", "Printing");
+            this.HasKey<int>(p => p.PrintingProductProcessId);
+        }
+    }
     public class PrintingCostEstimationEntityTypeConfiguration : EntityTypeConfiguration<PrintingCostEstimation>
     {
         public PrintingCostEstimationEntityTypeConfiguration()
@@ -31,12 +47,12 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.PrintCostCenterId);
         }
     }
-    public class PrintingMachineListEntityTypeConfiguration : EntityTypeConfiguration<PrintingMachineList>
+    public class PrintingMachineTypeEntityTypeConfiguration : EntityTypeConfiguration<PrintingMachineType>
     {
-        public PrintingMachineListEntityTypeConfiguration()
+        public PrintingMachineTypeEntityTypeConfiguration()
         {
-            this.ToTable("PrintingMachineList", "Printing");
-            this.HasKey<int>(p => p.PrintingMachineListId);
+            this.ToTable("PrintingMachineType", "Printing");
+            this.HasKey<int>(p => p.PrintingMachineTypeId);
         }
     }
 

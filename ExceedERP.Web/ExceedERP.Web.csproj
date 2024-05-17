@@ -2198,7 +2198,10 @@
     <Compile Include="Areas\Printing\Controllers\PrintCostCenterController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingCostEstimationController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineListController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingMachineTypeController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingPaperSizeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintItemCategoryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintLaborRateController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintMachinePaperListController.cs" />
@@ -6980,6 +6983,9 @@
     <Content Include="Areas\Printing\Views\PrintMachinePaperList\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintWorkOrderType\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingCostEstimation\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingMachineType\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingPaperSize\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductProcess\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

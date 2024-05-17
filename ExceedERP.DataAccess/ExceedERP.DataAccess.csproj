@@ -450,6 +450,10 @@
     <Compile Include="Migrations\202405160922420_printingcost.Designer.cs">
       <DependentUpon>202405160922420_printingcost.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202405171525161_printingmachinepaper.cs" />
+    <Compile Include="Migrations\202405171525161_printingmachinepaper.Designer.cs">
+      <DependentUpon>202405171525161_printingmachinepaper.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -744,6 +748,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202405160922420_printingcost.resx">
       <DependentUpon>202405160922420_printingcost.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405171525161_printingmachinepaper.resx">
+      <DependentUpon>202405171525161_printingmachinepaper.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

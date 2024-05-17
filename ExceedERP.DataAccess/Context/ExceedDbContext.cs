@@ -1565,14 +1565,18 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
-            modelBuilder.Configurations.Add(new PrintingCostEstimationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintCostCenterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingMachineListEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingProcessEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingMachineTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintItemCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintLabourRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintMachinePaperListEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintWorkOrderTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingCostEstimationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProductProcessEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingPaperSizeEntityTypeConfiguration());
+
+
+            modelBuilder.Configurations.Add(new PrintingProcessEntityTypeConfiguration());
             #region  Estimation
             #region Printing Estimation
             modelBuilder.Configurations.Add(new Context.PrintingStepEntityConfiguration());
@@ -2123,14 +2127,17 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
-        public DbSet<PrintingCostEstimation> PrintingCostEstimations { get; set; }
         public DbSet<PrintCostCenter> PrintCostCenters { get; set; }
-        public DbSet<PrintingMachineList> PrintingMachineLists { get; set; }
+        public DbSet<PrintingMachineType> PrintingMachineTypes { get; set; }
         public DbSet<PrintingProcess> PrintingProcesses { get; set; }
         public DbSet<PrintItemCategory> PrintItemCategorys { get; set; }
         public DbSet<PrintLabourRate> PrintLabourRates { get; set; }
         public DbSet<PrintMachinePaperList> PrintMachinePaperLists { get; set; }
         public DbSet<PrintWorkOrderType> PrintWorkOrderTypes { get; set; }
+        public DbSet<PrintingCostEstimation> PrintingCostEstimations { get; set; }
+        public DbSet<PrintingProductProcess> PrintingProductProcesses { get; set; }
+        public DbSet<PrintingPaperSize> PrintingPaperSizes { get; set; }
+        public DbSet<PrintingMachineList> PrintingMachineLists { get; set; }
         #region  Estimation
         #region Printimg Estimation
         public DbSet<PrintingStep> PrintingSteps { get; set; }
