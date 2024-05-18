@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Printing
 {
-    public class PrintingProductProcess
+    // here we map jobs to a specific printing process category
+    
+    public class PrintingProductProcess : TrackUserSettingOperation
     {
         [Key]
         public int PrintingProductProcessId { get; set; }

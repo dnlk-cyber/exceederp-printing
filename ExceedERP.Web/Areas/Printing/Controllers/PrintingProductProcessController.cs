@@ -18,6 +18,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
+
+            //ViewData["JobType"] = db.job
             return View();
         }
 

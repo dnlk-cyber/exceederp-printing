@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingJobType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.JobTypeName);
+        columns.Bound(c => c.NoOfPagesFactor);
+        columns.Bound(c => c.DefaultNoOfPages);
+        columns.Bound(c => c.IsSpinRequired);
+        columns.Bound(c => c.IsBindingRequired);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintingJobTypeId))
+          .Read(read => read.Action("PrintingJobTypes_Read", "PrintingJobType"))
+          .Create(create => create.Action("PrintingJobTypes_Create", "PrintingJobType"))
+          .Update(update => update.Action("PrintingJobTypes_Update", "PrintingJobType"))
+          .Destroy(destroy => destroy.Action("PrintingJobTypes_Destroy", "PrintingJobType"))
+      )
+)

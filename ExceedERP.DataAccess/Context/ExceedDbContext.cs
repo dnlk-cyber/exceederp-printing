@@ -1565,6 +1565,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingJobTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintCostCenterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingMachineTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintItemCategoryEntityTypeConfiguration());
@@ -2127,6 +2128,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingJobType> PrintingJobTypes { get; set; }
         public DbSet<PrintCostCenter> PrintCostCenters { get; set; }
         public DbSet<PrintingMachineType> PrintingMachineTypes { get; set; }
         public DbSet<PrintingProcess> PrintingProcesses { get; set; }
