@@ -15,6 +15,14 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingBindingStyleEntityTypeConfiguration : EntityTypeConfiguration<PrintingBindingStyle>
+    {
+        public PrintingBindingStyleEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingBindingStyle", "Printing");
+            this.HasKey<int>(p => p.PrintingBindingStyleId);
+        }
+    }
     public class PrintingJobTypeEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobType>
     {
         public PrintingJobTypeEntityTypeConfiguration()

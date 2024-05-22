@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+    .ValuePrimitive(true)
+    .OptionLabel("Select...")
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .Filter("contains")
+
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("PrintMachineType", "PrintDataProvider", new { area = "Printing" }))
+            .ServerFiltering(true);
+    }).HtmlAttributes(new { style = "width:100%" }))

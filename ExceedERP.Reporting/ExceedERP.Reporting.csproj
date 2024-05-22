@@ -2644,9 +2644,11 @@
     </Compile>
     <Compile Include="HRM\HRM\rptEmpAge.cs">
       <SubType>Component</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="HRM\HRM\rptEmpAge.designer.cs">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="HRM\HRM\rptEmpByStatus.cs">
       <SubType>Component</SubType>
@@ -5729,12 +5731,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpAge.am.resx">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpAge.om.resx">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpAge.resx">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpByStatus.am.resx">
       <DependentUpon>rptEmpByStatus.cs</DependentUpon>

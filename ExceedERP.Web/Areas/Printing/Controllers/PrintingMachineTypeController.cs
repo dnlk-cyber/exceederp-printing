@@ -22,10 +22,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return View();
         }
 
-        public ActionResult PrintingMachineLists_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult PrintingMachineType_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingMachineType> PrintingMachineType = db.PrintingMachineTypes;
-            DataSourceResult result = PrintingMachineType.ToDataSourceResult(request, printingMachineList => new {
+            DataSourceResult result = PrintingMachineType.ToDataSourceResult(request, printingMachineList => new PrintingMachineType
+            {
                 PrintingMachineTypeId = printingMachineList.PrintingMachineTypeId,
                 
                 PrintingCostCenterId = printingMachineList.PrintingCostCenterId,
@@ -41,14 +42,15 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 DateCreated = printingMachineList.DateCreated,
                 LastModified = printingMachineList.LastModified,
                 CreatedBy = printingMachineList.CreatedBy,
-                ModifiedBy = printingMachineList.ModifiedBy
+                ModifiedBy = printingMachineList.ModifiedBy,
+                
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingMachineLists_Create([DataSourceRequest]DataSourceRequest request, PrintingMachineType printingMachineList)
+        public ActionResult PrintingMachineType_Create([DataSourceRequest]DataSourceRequest request, PrintingMachineType printingMachineList)
         {
             if (ModelState.IsValid)
             {
@@ -80,7 +82,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingMachineLists_Update([DataSourceRequest]DataSourceRequest request, PrintingMachineType printingMachineList)
+        public ActionResult PrintingMachineType_Update([DataSourceRequest]DataSourceRequest request, PrintingMachineType printingMachineList)
         {
             if (ModelState.IsValid)
             {
@@ -113,7 +115,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingMachineLists_Destroy([DataSourceRequest]DataSourceRequest request, PrintingMachineType printingMachineList)
+        public ActionResult PrintingMachineType_Delete([DataSourceRequest]DataSourceRequest request, PrintingMachineType printingMachineList)
         {
             if (ModelState.IsValid)
             {

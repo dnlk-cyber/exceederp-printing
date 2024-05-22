@@ -19,7 +19,18 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult Index()
         {
 
-            //ViewData["JobType"] = db.job
+            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
+            {
+                Text = s.JobTypeName,
+                Value = s.PrintingJobTypeId
+            }).ToList();
+
+            ViewData["PrintingProcess"] = db.PrintingProcesses.Select(s => new
+            {
+                Text = s.ProcessName,
+                Value = s.PrintingProcessId
+            }).ToList();
+
             return View();
         }
 
@@ -32,7 +43,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 PrintingProcessCategory = printingProductProcess.PrintingProcessCategory,
                 ProcessName = printingProductProcess.ProcessName,
                 HoursRequired = printingProductProcess.HoursRequired,
-                QtyToDone = printingProductProcess.QtyToDone
+                QtyToDone = printingProductProcess.QtyToDone,
+                PrintingProcessId = printingProductProcess.PrintingProcessId
             });
 
             return Json(result);
@@ -49,7 +61,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingProcessCategory = printingProductProcess.PrintingProcessCategory,
                     ProcessName = printingProductProcess.ProcessName,
                     HoursRequired = printingProductProcess.HoursRequired,
-                    QtyToDone = printingProductProcess.QtyToDone
+                    QtyToDone = printingProductProcess.QtyToDone,
+                    PrintingProcessId = printingProductProcess.PrintingProcessId
                 };
 
                 db.PrintingProductProcesses.Add(entity);
@@ -72,7 +85,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingProcessCategory = printingProductProcess.PrintingProcessCategory,
                     ProcessName = printingProductProcess.ProcessName,
                     HoursRequired = printingProductProcess.HoursRequired,
-                    QtyToDone = printingProductProcess.QtyToDone
+                    QtyToDone = printingProductProcess.QtyToDone,
+                    PrintingProcessId = printingProductProcess.PrintingProcessId
                 };
 
                 db.PrintingProductProcesses.Attach(entity);
@@ -95,7 +109,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingProcessCategory = printingProductProcess.PrintingProcessCategory,
                     ProcessName = printingProductProcess.ProcessName,
                     HoursRequired = printingProductProcess.HoursRequired,
-                    QtyToDone = printingProductProcess.QtyToDone
+                    QtyToDone = printingProductProcess.QtyToDone,
+                    PrintingProcessId = printingProductProcess.PrintingProcessId
                 };
 
                 db.PrintingProductProcesses.Attach(entity);

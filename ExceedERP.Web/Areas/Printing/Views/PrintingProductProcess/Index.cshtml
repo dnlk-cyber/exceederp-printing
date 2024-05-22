@@ -5,15 +5,17 @@
       .Name("grid")
       .Columns(columns =>
       {
-        columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData[""], "", "");
-        columns.Bound(c => c.PrintingProcessCategory);
-        columns.Bound(c => c.ProcessName);
-        columns.Bound(c => c.HoursRequired);
-        columns.Bound(c => c.QtyToDone);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").EditorTemplateName("JobTypeDropDownTemplate");
+          columns.Bound(c => c.PrintingProcessCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
+          columns.ForeignKey(c => c.PrintingProcessId, (IEnumerable)ViewData["PrintingProcess"], "Value", "Text").EditorTemplateName("PrintingProcessDropDownTemplate");
+
+          columns.Bound(c => c.ProcessName);
+          columns.Bound(c => c.HoursRequired);
+          columns.Bound(c => c.QtyToDone);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Filterable()
@@ -27,3 +29,12 @@
           .Destroy(destroy => destroy.Action("PrintingProductProcesses_Destroy", "PrintingProductProcess"))
       )
 )
+
+
+<script type="text/javascript">
+    function printingProcessCategory() {
+        return {
+            processCategory: $("#PrintingProcessCategory").val()
+        }
+    }
+</script>

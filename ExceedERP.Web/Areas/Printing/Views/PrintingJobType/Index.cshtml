@@ -1,21 +1,21 @@
 ﻿
+
+<label>Printing Job Type</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingJobType>()
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.JobTypeName);
-        columns.Bound(c => c.NoOfPagesFactor);
-        columns.Bound(c => c.DefaultNoOfPages);
-        columns.Bound(c => c.IsSpinRequired);
-        columns.Bound(c => c.IsBindingRequired);
-        columns.Bound(c => c.DateCreated);
-        columns.Bound(c => c.LastModified);
-        columns.Bound(c => c.CreatedBy);
-        columns.Bound(c => c.ModifiedBy);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.JobTypeName);
+          columns.Bound(c => c.NoOfPagesFactor);
+          columns.Bound(c => c.DefaultNoOfPages);
+          columns.Bound(c => c.IsSpinRequired).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsSpinRequired? checked='checked': checked='' #/>");
+          columns.Bound(c => c.IsBindingRequired).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsBindingRequired? checked='checked': checked='' #/>");
+          columns.Bound(c => c.IsCoverRequired).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsCoverRequired? checked='checked': checked='' #/>");
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Scrollable()

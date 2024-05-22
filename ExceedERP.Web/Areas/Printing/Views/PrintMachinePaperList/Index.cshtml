@@ -3,25 +3,31 @@
       .Name("grid")
       .Columns(columns =>
       {
-        
-        columns.Bound(c => c.PaperSizeCode);
-        columns.Bound(c => c.Width);
-        columns.Bound(c => c.Length);
-        columns.Bound(c => c.PaperName);
-        columns.Bound(c => c.NumberOfPagesPerSheet);
-        columns.Bound(c => c.NumberOfPagesPerPlate);
-        
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.ForeignKey(c => c.PrintMachineTypeId, (IEnumerable)ViewData["MachineType"], "Value", "Text").EditorTemplateName("MachineTypeDropDownTemplate");
+          columns.ForeignKey(c => c.PrintingPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").EditorTemplateName("PaperSizeDropDownTemplate");
+          columns.Bound(c => c.Width);
+          columns.Bound(c => c.Length);
+          columns.Bound(c => c.NumberOfPagesPerSheet);
+          columns.Bound(c => c.NumberOfPagesPerPlate);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Filterable()
       .Scrollable()
       .DataSource(dataSource => dataSource
           .Ajax()
-          .Model(model => model.Id(p => p.PrintMachinePaperListId))
+          .Model(model =>
+          {
+              model.Id(p => p.PrintMachinePaperListId);
+              model.Field(p => p.Length).Editable(false);
+              model.Field(p => p.Width).Editable(false);
+              model.Field(p => p.NumberOfPagesPerPlate).Editable(false);
+              model.Field(p => p.NumberOfPagesPerSheet).Editable(false);
+          })
           .Read(read => read.Action("PrintMachinePaperLists_Read", "PrintMachinePaperList"))
           .Create(create => create.Action("PrintMachinePaperLists_Create", "PrintMachinePaperList"))
           .Update(update => update.Action("PrintMachinePaperLists_Update", "PrintMachinePaperList"))

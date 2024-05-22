@@ -16,6 +16,9 @@ namespace ExceedERP.Core.Domain.Printing
         public int PrintingProductProcessId { get; set; }
         [Display(Name ="Job Type")]
         public int JobTypeId { get; set; }
+
+        [Display(Name ="Printing Process")]
+        public int PrintingProcessId { get; set; }
         [Display(Name ="Printing Process Category")]
         public PrintingProcessCategory PrintingProcessCategory { get; set; }
         [Display(Name ="Process Name")]

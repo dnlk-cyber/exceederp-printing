@@ -1,0 +1,29 @@
+﻿
+
+<label>Binding Styles</label>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingBindingStyle>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.BindingStyleName);
+        columns.Bound(c => c.UnitCost);
+        columns.Bound(c => c.Remark);
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PrintingBindingStyleId))
+          .Read(read => read.Action("PrintingBindingStyles_Read", "PrintingBindingStyle"))
+          .Create(create => create.Action("PrintingBindingStyles_Create", "PrintingBindingStyle"))
+          .Update(update => update.Action("PrintingBindingStyles_Update", "PrintingBindingStyle"))
+          .Destroy(destroy => destroy.Action("PrintingBindingStyles_Destroy", "PrintingBindingStyle"))
+      )
+)

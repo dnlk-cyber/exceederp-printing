@@ -17,5 +17,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int DefaultNoOfPages { get; set; }
         public bool IsSpinRequired { get; set; }
         public bool IsBindingRequired { get; set; }
+        public bool IsCoverRequired { get; set; }
+
     }
 }

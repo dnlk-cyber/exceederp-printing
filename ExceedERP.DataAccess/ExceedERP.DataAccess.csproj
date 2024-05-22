@@ -458,6 +458,10 @@
     <Compile Include="Migrations\202405180654515_printingjob.Designer.cs">
       <DependentUpon>202405180654515_printingjob.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202405221809012_printingbindstyle.cs" />
+    <Compile Include="Migrations\202405221809012_printingbindstyle.Designer.cs">
+      <DependentUpon>202405221809012_printingbindstyle.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -758,6 +762,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202405180654515_printingjob.resx">
       <DependentUpon>202405180654515_printingjob.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202405221809012_printingbindstyle.resx">
+      <DependentUpon>202405221809012_printingbindstyle.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

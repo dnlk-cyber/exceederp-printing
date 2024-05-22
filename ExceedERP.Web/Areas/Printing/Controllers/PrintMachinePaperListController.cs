@@ -18,25 +18,37 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
+            ViewData["MachineType"] = db.PrintingMachineTypes.Select(s => new
+            {
+                Value = s.PrintingMachineTypeId,
+                Text = s.MachineTypeName
+            }).ToList();
+            ViewData["PaperSize"] = db.PrintingPaperSizes.Select(s => new
+            {
+                Value = s.PrintingPaperSizeId,
+                Text = s.PaperSizeName
+            }).ToList();
             return View();
         }
 
         public ActionResult PrintMachinePaperLists_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintMachinePaperList> printmachinepaperlists = db.PrintMachinePaperLists;
-            DataSourceResult result = printmachinepaperlists.ToDataSourceResult(request, printMachinePaperList => new {
+            DataSourceResult result = printmachinepaperlists.ToDataSourceResult(request, printMachinePaperList => new PrintMachinePaperList
+            {
                 PrintMachinePaperListId = printMachinePaperList.PrintMachinePaperListId,
                 PrintMachineTypeId = printMachinePaperList.PrintMachineTypeId,
-                PaperSizeCode = printMachinePaperList.PaperSizeCode,
+                
                 Width = printMachinePaperList.Width,
                 Length = printMachinePaperList.Length,
-                PaperName = printMachinePaperList.PaperName,
+                
                 NumberOfPagesPerSheet = printMachinePaperList.NumberOfPagesPerSheet,
                 NumberOfPagesPerPlate = printMachinePaperList.NumberOfPagesPerPlate,
                 DateCreated = printMachinePaperList.DateCreated,
                 LastModified = printMachinePaperList.LastModified,
                 CreatedBy = printMachinePaperList.CreatedBy,
-                ModifiedBy = printMachinePaperList.ModifiedBy
+                ModifiedBy = printMachinePaperList.ModifiedBy,
+                PrintingPaperSizeId = printMachinePaperList.PrintingPaperSizeId
             });
 
             return Json(result);
@@ -47,18 +59,24 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
+                var printingPaperSize = db.PrintingPaperSizes.Find(printMachinePaperList.PrintingPaperSizeId);
+                printMachinePaperList.Width = printingPaperSize.Width;
+                printMachinePaperList.Length = printingPaperSize.Length;
+                printMachinePaperList.NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet;
+                printMachinePaperList.NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate;
                 var entity = new PrintMachinePaperList
                 {
                     PrintMachineTypeId = printMachinePaperList.PrintMachineTypeId,
-                    PaperSizeCode = printMachinePaperList.PaperSizeCode,
-                    Width = printMachinePaperList.Width,
-                    Length = printMachinePaperList.Length,
-                    PaperName = printMachinePaperList.PaperName,
-                    NumberOfPagesPerSheet = printMachinePaperList.NumberOfPagesPerSheet,
-                    NumberOfPagesPerPlate = printMachinePaperList.NumberOfPagesPerPlate,
-                    DateCreated = printMachinePaperList.DateCreated,
+                    PrintingPaperSizeId = printMachinePaperList.PrintingPaperSizeId,
+                    
+                    Width = printingPaperSize.Width,
+                    Length = printingPaperSize.Length,
+                    
+                    NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
+                    NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
+                    DateCreated = DateTime.Today,
                     LastModified = printMachinePaperList.LastModified,
-                    CreatedBy = printMachinePaperList.CreatedBy,
+                    CreatedBy = User.Identity.Name,
                     ModifiedBy = printMachinePaperList.ModifiedBy
                 };
 
@@ -75,20 +93,25 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
+                var printingPaperSize = db.PrintingPaperSizes.Find(printMachinePaperList.PrintingPaperSizeId);
+                printMachinePaperList.Width = printingPaperSize.Width;
+                printMachinePaperList.Length = printingPaperSize.Length;
+                printMachinePaperList.NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet;
+                printMachinePaperList.NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate;
                 var entity = new PrintMachinePaperList
                 {
                     PrintMachinePaperListId = printMachinePaperList.PrintMachinePaperListId,
                     PrintMachineTypeId = printMachinePaperList.PrintMachineTypeId,
-                    PaperSizeCode = printMachinePaperList.PaperSizeCode,
-                    Width = printMachinePaperList.Width,
-                    Length = printMachinePaperList.Length,
-                    PaperName = printMachinePaperList.PaperName,
-                    NumberOfPagesPerSheet = printMachinePaperList.NumberOfPagesPerSheet,
-                    NumberOfPagesPerPlate = printMachinePaperList.NumberOfPagesPerPlate,
+                    PrintingPaperSizeId = printMachinePaperList.PrintingPaperSizeId,
+                    Width = printingPaperSize.Width,
+                    Length = printingPaperSize.Length,
+
+                    NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
+                    NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
                     DateCreated = printMachinePaperList.DateCreated,
-                    LastModified = printMachinePaperList.LastModified,
+                    LastModified = DateTime.Today,
                     CreatedBy = printMachinePaperList.CreatedBy,
-                    ModifiedBy = printMachinePaperList.ModifiedBy
+                    ModifiedBy = User.Identity.Name
                 };
 
                 db.PrintMachinePaperLists.Attach(entity);
@@ -108,10 +131,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintMachinePaperListId = printMachinePaperList.PrintMachinePaperListId,
                     PrintMachineTypeId = printMachinePaperList.PrintMachineTypeId,
-                    PaperSizeCode = printMachinePaperList.PaperSizeCode,
+                    PrintingPaperSizeId = printMachinePaperList.PrintingPaperSizeId,
                     Width = printMachinePaperList.Width,
                     Length = printMachinePaperList.Length,
-                    PaperName = printMachinePaperList.PaperName,
+                    
                     NumberOfPagesPerSheet = printMachinePaperList.NumberOfPagesPerSheet,
                     NumberOfPagesPerPlate = printMachinePaperList.NumberOfPagesPerPlate,
                     DateCreated = printMachinePaperList.DateCreated,

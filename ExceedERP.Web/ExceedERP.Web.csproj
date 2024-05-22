@@ -2189,6 +2189,8 @@
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\UnitController.cs" />
     <Compile Include="Areas\Printing\Controllers\JobCosting\Settings\YearlyOverHeadRateController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintCostCenterController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintDataProviderController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingBindingStyleController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingCostEstimationController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineListController.cs" />
@@ -6982,6 +6984,13 @@
     <Content Include="Areas\Printing\Views\PrintingProductProcess\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingJobType\Index.cshtml" />
     <Content Include="Areas\Common\Views\IsoDocuments\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingBindingStyle\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProcess\EditorTemplates\PrintingCategoryDropDownTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductProcess\EditorTemplates\JobTypeDropDownTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductProcess\EditorTemplates\PrintingCategoryDropDownTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductProcess\EditorTemplates\PrintingProcessDropDownTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintMachinePaperList\EditorTemplates\MachineTypeDropDownTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintMachinePaperList\EditorTemplates\PaperSizeDropDownTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -9177,6 +9186,7 @@
     <Folder Include="Areas\Printing\Views\JobCostingViews\Unit\" />
     <Folder Include="Areas\Printing\Views\JobCostingViews\YearlyOverHeadRate\" />
     <Folder Include="Areas\Printing\Views\MegaDataProvider\" />
+    <Folder Include="Areas\Printing\Views\PrintDataProvider\" />
     <Folder Include="Areas\Printing\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionFollowUpViews\AutoJobOrder\EditorTemplates\" />

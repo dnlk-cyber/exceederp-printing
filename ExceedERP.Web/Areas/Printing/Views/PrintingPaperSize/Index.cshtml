@@ -1,20 +1,22 @@
 ﻿
+
+<label>Paper Size</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingPaperSize>()
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.PaperSizeName);
-        columns.Bound(c => c.NoOfPagesPerSheet);
-        columns.Bound(c => c.NoOfPagesPerPlate);
-        columns.Bound(c => c.Width);
-        columns.Bound(c => c.Length);
-        columns.Bound(c => c.NoOfPagesToA1Ratio);
-        columns.Bound(c => c.Remark);
-        columns.Bound(c => c.PrintingMachineTypeId);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.PaperSizeName);
+          columns.Bound(c => c.NoOfPagesPerSheet);
+          columns.Bound(c => c.NoOfPagesPerPlate);
+          columns.Bound(c => c.Width);
+          columns.Bound(c => c.Length);
+          columns.Bound(c => c.NoOfPagesToA1Ratio);
+          columns.Bound(c => c.Remark);
+          //columns.Bound(c => c.PrintingMachineTypeId);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Filterable()

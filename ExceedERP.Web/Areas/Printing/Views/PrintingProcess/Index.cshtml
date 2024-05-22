@@ -3,11 +3,11 @@
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.PrintingCategory);        
+        columns.Bound(c => c.PrintingCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");        
         columns.Bound(c => c.ProcessName);
         columns.Bound(c => c.HoursRequired);
         columns.Bound(c => c.Quantity);
-        columns.Bound(c => c.ProcessScope);
+        
         columns.Bound(c => c.SetupCost);
         columns.Bound(c => c.CostPerItem);
         columns.Bound(c => c.Remark);
