@@ -105,7 +105,7 @@ namespace ExceedERP.Web.Controllers.Cmd
                         StoreRequisitionID = srid,
                         BranchId = storerequisition.BranchId,
                         OrgStructureId = storerequisition.OrgStructureId,
-                        EmployeeId = storerequisition.EmployeeId,
+                        EmployeeId = (int)storerequisition.EmployeeId,
                         ReferenceNo = storerequisition.Reference,
                         ProcurementOfficer = 0,
                         RequestDate = storerequisition.RequestDate,

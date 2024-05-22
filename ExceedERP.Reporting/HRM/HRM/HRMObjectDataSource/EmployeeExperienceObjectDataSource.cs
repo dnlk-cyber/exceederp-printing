@@ -83,7 +83,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     EmployeeId = emp.EmployeeCode,
                     FullName = emp.FullNameaEnglish,
                     Sex = HrHelper.GetLocalizedGender(emp.Gender)
-            };
+                };
 
                 var department = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.isCurrent);
                 if (department != null)
@@ -108,12 +108,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     extExp.Responsibility = exp.Responsibility;
                     extExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(exp.To.Date.Subtract(exp.From.Date).Days));
 
-                    totalExperience = totalExperience + (exp.To - exp.From).Days;
-
+                    totalExperience =(exp.To - exp.From).Days;
+                    extExp.TotalExperince = (exp.To - exp.From).Days; ;
                     experience.EmployeeExperienceList.Add(extExp);
                 }
 
-                experience.TotalExp = EmployeeHelper.GetDaystoWords(totalExperience);
+                //experience.TotalExp = EmployeeHelper.GetDaystoWords(totalExperience);
 
                 var educations = db.Education.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
                 foreach (var edu in educations)
@@ -142,8 +142,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     }
 
                     experience.EmployeeEducationList.Add(education);
+                    
                 }
+                experience.TotalExpreince = experience.EmployeeExperienceList.Sum(x => x.TotalExperince);
+                experience.TotalExp = EmployeeHelper.GetDaystoWords(experience.TotalExpreince);
                 experienceList.Add(experience);
+
             }
 
             return experienceList;
@@ -193,7 +197,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
 
                     totalExperience = totalExperience + (place.To - place.From).Days;
-
+                    intExp.TotalExperince = totalExperience;
                     experience.EmployeeExperienceList.Add(intExp);
                 }
 
@@ -233,8 +237,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(to.Subtract(from).Days));
 
-                    totalExperience = totalExperience + (to - from).Days;                    
-
+                    totalExperience = totalExperience + (to - from).Days;
+                    intExp.TotalExperince = totalExperience;
                     experience.EmployeeExperienceList.Add(intExp);
                 }
 
@@ -268,7 +272,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     experience.EmployeeEducationList.Add(education);
                 }
-
+                experience.TotalExpreince = experience.EmployeeExperienceList.Sum(x => x.TotalExperince);
+                experience.TotalExp = EmployeeHelper.GetDaystoWords(experience.TotalExpreince);
                 experienceList.Add(experience);
             }
 
@@ -310,11 +315,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     extExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(exp.To.Day, exp.To.Month, exp.To.Year);
                     extExp.Responsibility = exp.Responsibility;
                     extExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(exp.To.Date.Subtract(exp.From.Date).Days));
-
+                    extExp.TotalExperince = exp.To.Date.Subtract(exp.From.Date).Days;
                     experience.EmployeeExperienceList.Add(extExp);
                 }
-
-
                 // this placement history is the experience before they begin using the system
                 var placementHistories = db.PlacementHistories.Where(x => x.EmployeeId == emp.EmployeeId).ToList();
 
@@ -333,10 +336,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     intExp.From = XAPI.EthiopicDateTime.GetEthiopicDate(place.From.Day, place.From.Month, place.From.Year);
                     intExp.To = XAPI.EthiopicDateTime.GetEthiopicDate(place.To.Day, place.To.Month, place.To.Year);
                     intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(place.To.Date.Subtract(place.From.Date).Days));
-
+                    intExp.TotalExperince = place.To.Date.Subtract(place.From.Date).Days;
                     experience.EmployeeExperienceList.Add(intExp);
                 }
-
                 //this is after they begin using the system
                 var placements = db.Placements.Where(x => x.EmployeeId == emp.EmployeeId).OrderBy(x => x.AssignmentDate).ToList();
 
@@ -372,6 +374,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     }
 
                     intExp.Totalyear = EmployeeHelper.GetDaystoWords(Convert.ToDouble(to.Subtract(from).Days));
+                    intExp.TotalExperince = to.Date.Subtract(from.Date).Days;
 
                     experience.EmployeeExperienceList.Add(intExp);
                 }
@@ -404,7 +407,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     experience.EmployeeEducationList.Add(education);
                 }
-
+                experience.TotalExpreince = experience.EmployeeExperienceList.Sum(x => x.TotalExperince);
+                experience.TotalExp = EmployeeHelper.GetDaystoWords(experience.TotalExpreince);
                 experienceList.Add(experience);
             }
 

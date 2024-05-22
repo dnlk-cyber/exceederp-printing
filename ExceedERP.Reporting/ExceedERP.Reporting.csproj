@@ -1995,6 +1995,12 @@
     <Compile Include="HRM\HRM\ComplainResponseDepartment.designer.cs">
       <DependentUpon>ComplainResponseDepartment.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\ContractEmployeeReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\ContractEmployeeReport.designer.cs">
+      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Deligation.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2031,6 +2037,12 @@
     <Compile Include="HRM\HRM\EmployeePerformanceTotalSummary.Designer.cs">
       <DependentUpon>EmployeePerformanceTotalSummary.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.designer.cs">
+      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\EmployeePlacementReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2049,12 +2061,6 @@
     <Compile Include="HRM\HRM\EmployeeRestitution.designer.cs">
       <DependentUpon>EmployeeRestitution.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\HealthPaymentSelfCare.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\HealthPaymentSelfCare.designer.cs">
-      <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\HRMObjectDataSource\AllDepartmentsListODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AmharicExperienceLetterObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceDayAbsentAndLateCommingListObjectDataSource.cs" />
@@ -2070,6 +2076,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\CommitteeListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\CompanyStructureObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ComplainODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ContractEmployeeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DelegationCCODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DeligationODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DepartmentAttendanceListObjectDataSource.cs" />
@@ -2096,8 +2103,11 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePensionObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceDepartmentODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceParametrODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceSummaryObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceTotalSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforNotEvaluatedEmployeeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerfromanceLeaveDispilineBonusSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePlacementObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeProfileObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePromotionPerYearObjectDataSource.cs" />
@@ -2124,7 +2134,6 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\FiscalYearTrainingPlanActionPlanODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthAndValueObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthPaymentLimit.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\HealthPaymentSelfCareObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HospitalObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HRMObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\IncommingOutgoingObjectDataSource.cs" />
@@ -2175,6 +2184,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferralSheetObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ResiponsiblityLevelODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RestitutionListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\SeverancePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationObjectDataSource.cs" />
@@ -2211,6 +2221,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\CommitteeList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CompanyStructureVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ComplainVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ContractEmployeeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CosignVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CourtAllEmployeeList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CourtEmployees.cs" />
@@ -2242,6 +2253,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceTotalVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerfromance.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerfromanceLeaveDispilineBonusSummaryVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePlacementVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePromotion.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeQuarterPerfromance.cs" />
@@ -5304,6 +5316,15 @@
     <EmbeddedResource Include="HRM\HRM\ComplainResponseDepartment.resx">
       <DependentUpon>ComplainResponseDepartment.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\ContractEmployeeReport.am.resx">
+      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\ContractEmployeeReport.om.resx">
+      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\ContractEmployeeReport.resx">
+      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Deligation.am.resx">
       <DependentUpon>Deligation.cs</DependentUpon>
     </EmbeddedResource>
@@ -5340,6 +5361,15 @@
     <EmbeddedResource Include="HRM\HRM\EmployeePerformanceTotalSummary.resx">
       <DependentUpon>EmployeePerformanceTotalSummary.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.am.resx">
+      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.om.resx">
+      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.resx">
+      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\EmployeePlacementReport.resx">
       <DependentUpon>EmployeePlacementReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -5354,15 +5384,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\EmployeeRestitution.resx">
       <DependentUpon>EmployeeRestitution.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\HealthPaymentSelfCare.am.resx">
-      <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\HealthPaymentSelfCare.om.resx">
-      <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\HealthPaymentSelfCare.resx">
-      <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\IncomOutcommingLetter.am.resx">
       <DependentUpon>IncomOutcommingLetter.cs</DependentUpon>

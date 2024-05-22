@@ -117,46 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox19.Value" xml:space="preserve">
-    <value>ተራ.ቁጥር</value>
+  <data name="textBox9.Value" xml:space="preserve">
+    <value>ተ.ቁ.</value>
   </data>
   <data name="textBox29.Value" xml:space="preserve">
-    <value>የበጀት ዓመት</value>
-  </data>
-  <data name="textBox31.Value" xml:space="preserve">
-    <value>ጊዜ</value>
+    <value>የሰራተኛ መታወቂያ</value>
   </data>
   <data name="textBox33.Value" xml:space="preserve">
-    <value>የሕክምና ቀን</value>
+    <value>ሙሉ ስም</value>
   </data>
   <data name="textBox35.Value" xml:space="preserve">
-    <value>የመመዝገቢያ ቀን</value>
+    <value>ፆታ</value>
   </data>
   <data name="textBox37.Value" xml:space="preserve">
-    <value>የሚፈቀደው መጠን</value>
+    <value>ዲፓርትመንት</value>
   </data>
   <data name="textBox39.Value" xml:space="preserve">
-    <value>ጥቅም ላይ የዋለው መጠን</value>
+    <value>የስራ መጠርያ</value>
   </data>
   <data name="textBox41.Value" xml:space="preserve">
-    <value>የሚቀረው መጠን</value>
+    <value>ግዜ</value>
   </data>
-  <data name="Date.Value" xml:space="preserve">
+  <data name="textBox43.Value" xml:space="preserve">
+    <value>መመዘኛ</value>
+  </data>
+  <data name="textBox45.Value" xml:space="preserve">
+    <value>ክብደት</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>ውጤት</value>
+  </data>
+  <data name="textBox47.Value" xml:space="preserve">
+    <value>ጠቅላላ ውጤት</value>
+  </data>
+  <data name="textBox49.Value" xml:space="preserve">
+    <value>ደረጃ</value>
+  </data>
+  <data name="textBox21.Value" xml:space="preserve">
     <value>ቀን:</value>
   </data>
   <data name="textBox14.Value" xml:space="preserve">
     <value>= Fields.Date</value>
   </data>
-  <data name="textBox1.Value" xml:space="preserve">
-    <value>ሙሉ ስም</value>
+  <data name="textBox15.Value" xml:space="preserve">
+    <value>                                                          የብቃት መመዘኛ(ፐርፎርማንስ) ርፖርት</value>
   </data>
-  <data name="textBox2.Value" xml:space="preserve">
-    <value>ቅርንጫፍ</value>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>ገጽ: {PageNumber}</value>
   </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>የስራ ክፍል</value>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>የበጀት ዓመት፡ {= Parameters.year.Label}</value>
   </data>
-  <data name="textBox7.Value" xml:space="preserve">
-    <value>የስራ መደብ መጠርያ</value>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>ቅርንጫፍ {= Parameters.branchId.Label}</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>ዲፓርትመንት  {= Parameters.orgStructureId.Label}</value>
   </data>
 </root>

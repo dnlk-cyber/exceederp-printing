@@ -136,25 +136,19 @@
     <value>Period</value>
   </data>
   <data name="textBox6.Value" xml:space="preserve">
-    <value>Result</value>
+    <value>Criteria</value>
   </data>
   <data name="textBox19.Value" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
     <value>Sign</value>
-  </data>
-  <data name="txtOrgName.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox25.Value" xml:space="preserve">
-    <value>= Fields.AmharicName</value>
   </data>
   <data name="textBox14.Value" xml:space="preserve">
     <value>= Today()</value>
   </data>
   <data name="textBox21.Value" xml:space="preserve">
     <value>Date:</value>
-  </data>
-  <data name="textBox15.Value" xml:space="preserve">
-    <value>Performance Report</value>
   </data>
   <data name="textBox20.Value" xml:space="preserve">
     <value>=Fields.Period</value>
@@ -167,6 +161,9 @@
   </data>
   <data name="textBox24.Value" xml:space="preserve">
     <value>= Sum(Fields.Score)</value>
+  </data>
+  <data name="textBox30.Value" xml:space="preserve">
+    <value>= Fields.Criteria</value>
   </data>
   <data name="textBox29.Value" xml:space="preserve">
     <value>= RowNumber("tblEmployeeSumm")</value>
@@ -196,10 +193,10 @@
     <value>True</value>
   </metadata>
   <data name="reportParameter1.Text" xml:space="preserve">
-    <value>id</value>
+    <value>Year</value>
   </data>
   <data name="reportParameter2.Text" xml:space="preserve">
-    <value>Year</value>
+    <value>Work Unit</value>
   </data>
   <data name="reportParameter3.Text" xml:space="preserve">
     <value>Employees</value>

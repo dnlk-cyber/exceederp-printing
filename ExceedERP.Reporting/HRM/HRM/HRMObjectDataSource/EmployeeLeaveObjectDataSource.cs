@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -53,16 +54,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 leaves = leaves.Where(x => x.LeaveType.ToString() == type).ToList();
             }
+            if (from.HasValue)
+            {
+                leaves = leaves.Where(x =>( x.From <= from.Value&&x.To>=from)||x.From>=from.Value).ToList();
+            }
+            if (to.HasValue)
+            {
+                leaves = leaves.Where(x => (x.From <= to.Value && x.To > to.Value)||x.To<=to.Value).ToList();
 
+            }
             db = new ExceedDbContext();
-
             if (leaves.Any())
             {
                 foreach (var l in leaves)
                 {
 
-                    if ((l.From >= dateFrom && l.From <= dateTo))
-                    {
+                    //if ((l.From >= dateFrom && l.From <= dateTo))
+                    //{
                         db = new ExceedDbContext();
 
                         var emplist = employees.FirstOrDefault(x => x.EmployeeId == l.EmployeeId);
@@ -70,15 +78,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         if (emplist != null)
                         {
                             EmployeeInfo = new EmployeeLeave();
-                            //  EmployeeInfo.Sex = emplist.Gender;
-                            if (emplist.Gender == Gender.MALE)
-                            {
-                                EmployeeInfo.Sex = Gender.MALE.ToString();
-                            }
-                            else
-                            {
-                                EmployeeInfo.Sex = Gender.FEMALE.ToString();
-                            }
+                            
+                            EmployeeInfo.Sex = HrHelper.GetLocalizedGender(emplist.Gender);
+                            
                             EmployeeInfo.FullName = emplist.FullNameAmharic;
                             EmployeeInfo.From = XAPI.EthiopicDateTime.GetEthiopicDate(l.From.Day, l.From.Month, l.From.Year);//l.From.ToShortDateString();
                             EmployeeInfo.To = XAPI.EthiopicDateTime.GetEthiopicDate(l.To.Day, l.To.Month, l.To.Year);//l.To.ToShortDateString();
@@ -144,7 +146,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             EmployeeInfoList.Add(EmployeeInfo);
 
                         }
-                    }
+                    //}
                 }
             }
             return EmployeeInfoList;

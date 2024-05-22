@@ -147,6 +147,9 @@
   <data name="textBox5.Value" xml:space="preserve">
     <value>Result</value>
   </data>
+  <data name="textBox8.Value" xml:space="preserve">
+    <value>Total Weight</value>
+  </data>
   <data name="textBox47.Value" xml:space="preserve">
     <value>Total Result</value>
   </data>
@@ -210,6 +213,9 @@
   <data name="textBox7.Value" xml:space="preserve">
     <value>= Fields.Score</value>
   </data>
+  <data name="textBox10.Value" xml:space="preserve">
+    <value>= Fields.TotalWeight</value>
+  </data>
   <data name="textBox13.Value" xml:space="preserve">
     <value>= PageNumber("table1",Fields.FullName)</value>
   </data>
@@ -223,18 +229,21 @@
     <value>Fiscal Year</value>
   </data>
   <data name="reportParameter2.Text" xml:space="preserve">
-    <value>Branch</value>
+    <value>Period</value>
   </data>
   <data name="reportParameter3.Text" xml:space="preserve">
-    <value>Workunit</value>
+    <value>Branch</value>
   </data>
   <data name="reportParameter4.Text" xml:space="preserve">
-    <value>Business Unit</value>
+    <value>Workunit</value>
   </data>
   <data name="reportParameter5.Text" xml:space="preserve">
-    <value>Evaluation Status</value>
+    <value>Business Unit</value>
   </data>
-  <data name="reportParameter8.Text" xml:space="preserve">
+  <data name="reportParameter6.Text" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="reportParameter9.Text" xml:space="preserve">
     <value>Rank</value>
   </data>
 </root>

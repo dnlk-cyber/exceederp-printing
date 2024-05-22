@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using System;
 using System.Collections.Generic;
@@ -39,22 +40,26 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             var healthandvalues = db.HealthRankAndValues.ToList();
-            if (branch != null)
+            if (!string.IsNullOrEmpty( branch ))
             {
-                healthandvalues = healthandvalues.Where(x => x.BranchId.ToString() == branch).ToList();
+                int.TryParse(branch, out int branchId);
+                healthandvalues = healthandvalues.Where(x => x.BranchId == branchId).ToList();
             }
-            if (department != null)
+            if (!string.IsNullOrEmpty(department))
             {
-                var placement = placements.OrderByDescending(x => x.PlacementId).FirstOrDefault(x => x.OrgStructureId.ToString() == department);
+                int.TryParse(department, out int departmentId);
+
+                var placement = placements.OrderByDescending(x => x.PlacementId).FirstOrDefault(x => x.OrgStructureId == departmentId);
                 if (placement != null)
                 {
                     healthandvalues = healthandvalues.Where(x => x.EmployeeId == placement.EmployeeId).ToList();
                 }
 
             }
-            if (empId != null)
+            if (!string.IsNullOrEmpty(empId))
             {
-                healthandvalues = healthandvalues.Where(x => x.EmployeeId.ToString() == empId).ToList();
+                int.TryParse(empId, out int employeeId);
+                healthandvalues = healthandvalues.Where(x => x.EmployeeId == employeeId).ToList();
             }
 
             if (fromTreatment != null && toTreatment != null && fromTreatment <= toTreatment)
@@ -67,62 +72,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 healthandvalues = healthandvalues.Where(x => x.RecoredDate >= fromRecored && x.RecoredDate <= toRecored).ToList();
             }
 
-            //if(usage == "On Limit")
-            //{
-            //    healthandvalues = healthandvalues.Where(x => x.RemainingAmount >= 0).ToList();
-            //}
-            //if (usage == "Above Limit")
-            //{
-            //    healthandvalues = healthandvalues.Where(x => x.RemainingAmount < 0).ToList();
-            //}
-            if (unlimited)
-            {
-                var healthsettings = db.HealthRankAndValueSettings.Where(x => x.CurrentValue.ToLower() == "unlimited".ToLower());
-                if (healthsettings.Any())
-                {
-                    var ranks = healthsettings.Select(x => x.RankId);
-                    if (ranks.Any())
-                    {
-                        var places = db.Placements.Where(x => ranks.Contains(x.RankId) && x.isCurrent);
-                        if (places.Any())
-                        {
-                            var emps = places.Select(x => x.EmployeeId);
-                            if (emps.Any())
-                            {
-                                healthandvalues = healthandvalues.Where(x => emps.Contains(x.EmployeeId)).ToList();
-                            }
-                        }
-                    }
-                }
-            }
-
-            var ddd = 0;
-            foreach (var healthandvalue in healthandvalues)
-            {
-                var checkRemaining = healthandvalues.Where(x => x.EmployeeId == healthandvalue.EmployeeId && x.GlFiscalYearId == healthandvalue.GlFiscalYearId);
-                if (checkRemaining.Any())
-                {
-                    var sumOfUsed = checkRemaining.Sum(x => x.UsedAmount);
-                    if (usage == "On Limit" && healthandvalue.AllowedAmount != 0 && sumOfUsed > healthandvalue.AllowedAmount)
-                    {
-                        continue;
-                    }
-                    if (usage == "Above Limit" && (sumOfUsed <= healthandvalue.AllowedAmount || healthandvalue.AllowedAmount == 0))
-                    {
-                        continue;
-                    }
-                }
-                var checkExistance = clinicList.Where(x => x.EmployeeId == healthandvalue.EmployeeId && x.GlFiscalYearId == healthandvalue.GlFiscalYearId);
-
+           var healthandValueDistictsList = healthandvalues.DistinctByField(x => x.EmployeeId).ToList();
+           foreach (var healthandvalue in healthandvalues)
+           {
+                
 
                 var healthvalue = new HealthValueViewModel();
-
-
-                healthvalue.HealthValueList = new List<HealthValueListViewModel>();
-                if (checkExistance.Any())
-                {
-                    continue;
-                }
+               
                 var employee = employees.FirstOrDefault(x => x.EmployeeId == healthandvalue.EmployeeId);
                 if (employee != null)
                 {
@@ -146,11 +102,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         healthvalue.Branch = empBranch.Name;
                     }
+                    var healthvalueDetailLists = db.HealthRankAndValues.Where(x => x.EmployeeId == employee.EmployeeId && x.GlFiscalYearId == healthandvalue.GlFiscalYearId).ToList().OrderByDescending(x => x.RecoredDate);
+                 
+                    healthvalue.HealthValueList = new List<HealthValueListViewModel>();
 
-                    var healthvalueDetailLists = healthandvalues.Where(x => x.EmployeeId == employee.EmployeeId && x.GlFiscalYearId == healthandvalue.GlFiscalYearId).ToList().OrderByDescending(x => x.RecoredDate);
-                    decimal allowed = 0;
-                    decimal sumofUsed = 0;
-                    decimal sumofRemaining = 0;
                     foreach (var health in healthvalueDetailLists)
                     {
                         var healthvalueList = new HealthValueListViewModel();
@@ -170,33 +125,22 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         healthvalueList.TreatedDate = health.DateAmh;
                         healthvalueList.ReferalDate = health.DateAmh;
                         healthvalueList.RecoredDate = health.RecoredDateAmh;
+                        healthvalueList.UsedAmount = health.UsedAmount;
+                        healthvalueList.RecoredDate = health.RecoredDateAmh;
+                        healthvalueList.RecoredDate = health.RecoredDateAmh;
+                        healthvalueList.RecoredDate = health.RecoredDateAmh;
+                        healthvalueList.AllowedAmount = health.AllowedAmount.ToString();
+                        healthvalueList.AllowedSum = health.AllowedAmount.ToString();
+                        healthvalueList.RemainingSum = health.RemainingAmount.ToString();
+                        healthvalueList.UsedSum = health.UsedAmount;
                         var pl = placements.FirstOrDefault(x => x.EmployeeId == health.EmployeeId);
                         if (pl != null)
                         {
                             var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == pl.RankId);
-                            if (rank != null && rank.CurrentValue.ToLower() != "unlimited")
+                           
+                            if (rank != null && IsAlphabetOnly(rank.CurrentValue))
                             {
-                                healthvalueList.UsedAmount = health.UsedAmount;
-                                var allowedAmount = rank.CurrentValue;
-                                healthvalueList.AllowedAmount = allowedAmount;
-                                healthvalueList.AllowedSum = allowedAmount;
-                                healthvalueList.RemainingSum = (Convert.ToDecimal(allowedAmount) - healthvalueDetailLists.Where(x => x.EmployeeId == health.EmployeeId && x.GlFiscalYearId == health.GlFiscalYearId).Sum(x => x.UsedAmount)).ToString();
-                                healthvalueList.UsedSum = healthvalueDetailLists.Where(x => x.EmployeeId == health.EmployeeId && x.GlFiscalYearId == health.GlFiscalYearId).Sum(x => x.UsedAmount);
-                              var totalUsed = healthvalueDetailLists.Where(x => x.GlFiscalYearId == health.GlFiscalYearId && x.RecoredDate < health.RecoredDate);
-                                if (totalUsed.Any())
-                                {
-                                    var totalSum = totalUsed.Sum(x => x.UsedAmount) + health.UsedAmount;
-                                    healthvalueList.RemainingAmount = (Convert.ToDecimal(allowedAmount) - totalSum).ToString();
-                                   
-                                }
-                                else
-                                {
-                                    healthvalueList.RemainingAmount = (Convert.ToDecimal(allowedAmount) - health.UsedAmount).ToString();
-                                }
-
-                            }
-                            else if (rank != null && rank.CurrentValue.ToLower() == "unlimited")
-                            {
+                                
                                 healthvalueList.UsedAmount = health.UsedAmount;
                                 healthvalueList.UsedSum = healthvalueDetailLists.Where(x=>x.EmployeeId == health.EmployeeId && x.GlFiscalYearId == health.GlFiscalYearId).Sum(x=>x.UsedAmount);
                                 healthvalueList.AllowedAmount = "unlimited";
@@ -204,6 +148,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 healthvalueList.RemainingSum = "unlimited";
                                 healthvalueList.RemainingAmount = "unlimited";//(Convert.ToDecimal(allowedAmounttt) - health.UsedAmount).ToString();
                             }
+                            
                         }
                         healthvalue.HealthValueList.Add(healthvalueList);
 
@@ -218,6 +163,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return clinicList;
+        }
+
+        public bool IsAlphabetOnly(string input)
+        {
+            foreach (char c in input)
+            {
+                if (!char.IsDigit(c))
+                {
+                    return true; // Found a Non chackter  character
+                }
+            }
+            return false; // All characters are numeric
         }
     }
 }

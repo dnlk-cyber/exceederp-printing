@@ -117,43 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox29.Value" xml:space="preserve">
-    <value>Bara baajataa</value>
+  <data name="No.Value" xml:space="preserve">
+    <value>ተ.ቁ</value>
   </data>
-  <data name="textBox31.Value" xml:space="preserve">
-    <value>Yeroo</value>
+  <data name="FullName.Value" xml:space="preserve">
+    <value>ሙሉ  ስም</value>
   </data>
-  <data name="textBox33.Value" xml:space="preserve">
-    <value>Guyyaa wal'aansaa</value>
+  <data name="Sex.Value" xml:space="preserve">
+    <value>ፆታ </value>
   </data>
-  <data name="textBox35.Value" xml:space="preserve">
-    <value>Guyyaa galmee</value>
+  <data name="EduactionBa.Value" xml:space="preserve">
+    <value> የትምህርት  ዝግጅት</value>
   </data>
-  <data name="textBox37.Value" xml:space="preserve">
-    <value>Hanga hayyamame</value>
+  <data name="Training.Value" xml:space="preserve">
+    <value> የሰለጠነበት  ሙያ</value>
   </data>
-  <data name="textBox39.Value" xml:space="preserve">
-    <value>Hanga itti fayyadame</value>
+  <data name="TrainingIns.Value" xml:space="preserve">
+    <value> የሰለጠነበት  ተቋም</value>
   </data>
-  <data name="Date.Value" xml:space="preserve">
-    <value>Guyyaa:</value>
+  <data name="JobTitle.Value" xml:space="preserve">
+    <value> የሚሰራበት የስራ መደብ</value>
   </data>
-  <data name="textBox14.Value" xml:space="preserve">
-    <value>= Fields.Date</value>
+  <data name="EmployType.Value" xml:space="preserve">
+    <value> የቅጥር  ሁኔታ</value>
   </data>
-  <data name="textBox1.Value" xml:space="preserve">
-    <value>Maqaa guutuu</value>
+  <data name="textBox18.Value" xml:space="preserve">
+    <value> የቅጥር  ቀን </value>
   </data>
-  <data name="textBox2.Value" xml:space="preserve">
-    <value>Damee</value>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value> ደሞዝ</value>
   </data>
   <data name="textBox8.Value" xml:space="preserve">
-    <value>Kutaa hojii</value>
+    <value>= IIf(Fields.Sex="Male","ወንድ","ሴት")</value>
   </data>
-  <data name="textBox7.Value" xml:space="preserve">
-    <value>Rammadii hoji</value>
+  <data name="textBox1.Value" xml:space="preserve">
+    <value>   ጠቅላላ</value>
   </data>
-  <data name="textBox9.Value" xml:space="preserve">
-    <value>walii gala</value>
+  <data name="textBox29.Value" xml:space="preserve">
+    <value>ዲፓርትመንት</value>
+  </data>
+  <data name="textBox31.Value" xml:space="preserve">
+    <value>ፆታ</value>
+  </data>
+  <data name="textBox27.Value" xml:space="preserve">
+    <value>ቅርንጫፍ</value>
+  </data>
+  <data name="textBox33.Value" xml:space="preserve">
+    <value>የቅጥር ዐይነት</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>ገጽ፡</value>
   </data>
 </root>

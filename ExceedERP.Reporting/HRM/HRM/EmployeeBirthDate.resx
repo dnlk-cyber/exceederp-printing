@@ -186,8 +186,8 @@
   <data name="textBox28.Value" xml:space="preserve">
     <value>Branch</value>
   </data>
-  <data name="textBox20.Value" xml:space="preserve">
-    <value>= Parameters.agemin.Label</value>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="Department.Value" xml:space="preserve">
     <value>Department</value>
@@ -210,8 +210,8 @@
   <data name="textBox15.Value" xml:space="preserve">
     <value>= Parameters.orgStructureId.Label</value>
   </data>
-  <data name="textBox25.Value" xml:space="preserve">
-    <value>No</value>
+  <data name="textBox20.Value" xml:space="preserve">
+    <value>= Parameters.agemin.Label</value>
   </data>
   <data name="textBox8.Value" xml:space="preserve">
     <value>= Fields.Sex</value>

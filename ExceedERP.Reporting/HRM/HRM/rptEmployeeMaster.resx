@@ -135,6 +135,9 @@
   <data name="textBox30.Value" xml:space="preserve">
     <value>Age</value>
   </data>
+  <data name="textBox22.Value" xml:space="preserve">
+    <value>Nation</value>
+  </data>
   <data name="martialStatus.Value" xml:space="preserve">
     <value>Marital Status</value>
   </data>
@@ -180,14 +183,8 @@
   <data name="totalInternalExperience.Value" xml:space="preserve">
     <value>Total Internal Experience</value>
   </data>
-  <data name="textBox18.Value" xml:space="preserve">
-    <value>Internal Experience Detail</value>
-  </data>
   <data name="externalExperience.Value" xml:space="preserve">
     <value>Total External Exprience</value>
-  </data>
-  <data name="textBox9.Value" xml:space="preserve">
-    <value> External Experience details</value>
   </data>
   <data name="totalExperience.Value" xml:space="preserve">
     <value>Total Exoerience</value>
@@ -401,17 +398,20 @@ ExpirianceDetails</value>
   <data name="textBox5.Value" xml:space="preserve">
     <value>= Fields.JobTitle</value>
   </data>
-  <data name="htmlTextBox1.Value" xml:space="preserve">
-    <value>{Fields.ExpirianceDetails}</value>
-  </data>
-  <data name="htmlTextBox2.Value" xml:space="preserve">
-    <value>{Fields.InternalExprianceDetail}</value>
-  </data>
   <data name="textBox23.Value" xml:space="preserve">
     <value>= Fields.Nation</value>
   </data>
-  <data name="textBox22.Value" xml:space="preserve">
-    <value>Nation</value>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>=Fields.InternalExprianceDetail</value>
+  </data>
+  <data name="textBox28.Value" xml:space="preserve">
+    <value>=Fields.ExpirianceDetails</value>
+  </data>
+  <data name="textBox24.Value" xml:space="preserve">
+    <value>Internal Experience Detail</value>
+  </data>
+  <data name="textBox26.Value" xml:space="preserve">
+    <value> External Experience details</value>
   </data>
   <data name="textBox16.Value" xml:space="preserve">
     <value>Page: {PageNumber}</value>

@@ -54,78 +54,90 @@
 
             </ul>
         </li>
-    @if (HttpContext.Current.User.IsInRole("Admin"))
-    {
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
+        @if (HttpContext.Current.User.IsInRole("Admin"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
 
-                Document Approval
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
+                    Document Approval
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
 
-            <b class="arrow"></b>
+                <b class="arrow"></b>
 
-            <ul class="submenu">
-                <li id="link241d" class="actionlinlk">@Html.ActionLink("Approval Rule", "Index", "DocumentApprovalRule", new {area = "Common"}, null)<b class="arrow"></b></li>
-                @*<li id="link241g" class="actionlinlk">@Html.ActionLink("Approval Group", "Index", "ApprovalGroup", new { area = "Common" }, null)<b class="arrow"></b></li>*@
-                <li id="link242ga" class="actionlinlk">@Html.ActionLink("Assign Approval Group", "Index", "AssignApprovalGroup", new {area = "Common"}, null)<b class="arrow"></b></li>
+                <ul class="submenu">
+                    <li id="link241d" class="actionlinlk">@Html.ActionLink("Approval Rule", "Index", "DocumentApprovalRule", new { area = "Common" }, null)<b class="arrow"></b></li>
+                    @*<li id="link241g" class="actionlinlk">@Html.ActionLink("Approval Group", "Index", "ApprovalGroup", new { area = "Common" }, null)<b class="arrow"></b></li>*@
+                    <li id="link242ga" class="actionlinlk">@Html.ActionLink("Assign Approval Group", "Index", "AssignApprovalGroup", new { area = "Common" }, null)<b class="arrow"></b></li>
 
-            </ul>
-        </li>
+                </ul>
+            </li>
 
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    ISO Document
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="SET-ISO-01" class="actionlinlk">@Html.ActionLink("ISO Document Titles and Document No.", "Index", "IsoDocuments", new { area = "Common" }, null)<b class="arrow"></b></li>
+                </ul>
+            </li>
 
-                Log
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
 
-            <b class="arrow"></b>
+                    Log
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
 
-            <ul class="submenu">
-                <li id="link246" class="actionlinlk">@Html.ActionLink("Login Log", "Index", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
-                <li id="link247" class="actionlinlk">@Html.ActionLink("Delete", "Delete", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
-                <li id="link247" class="actionlinlk">@Html.ActionLink("Operation Log", "OperationLog", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
-                @*<li id="link249" class="actionlinlk">@Html.ActionLink("Export", "Export", "GlobalUserAccessLogs", new {area = ""}, null)<b class="arrow"></b></li>*@
-                <li id="link250" class="actionlinlk">@Html.ActionLink("Error", "Error", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
-            </ul>
-        </li>
-        <li id="hrm007" class="actionlinlk">
+                <b class="arrow"></b>
 
-        </li>
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
+                <ul class="submenu">
+                    <li id="link246" class="actionlinlk">@Html.ActionLink("Login Log", "Index", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+                    <li id="link247" class="actionlinlk">@Html.ActionLink("Delete", "Delete", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+                    <li id="link247" class="actionlinlk">@Html.ActionLink("Operation Log", "OperationLog", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+                    @*<li id="link249" class="actionlinlk">@Html.ActionLink("Export", "Export", "GlobalUserAccessLogs", new {area = ""}, null)<b class="arrow"></b></li>*@
+                    <li id="link250" class="actionlinlk">@Html.ActionLink("Error", "Error", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+                </ul>
+            </li>
+            <li id="hrm007" class="actionlinlk">
 
-                Global setup
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
+            </li>
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
 
-            <b class="arrow"></b>
+                    Global setup
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
 
-            <ul class="submenu">
-                <li id="link2415" class="actionlinlk">@Html.ActionLink("Configurations", "Index", "GlobalSetting", new {area = ""}, null)<b class="arrow"></b></li>
-                <li id="linka246" class="actionlinlk">@Html.ActionLink("Company Branches", "Index", "BranchAdmin", new {area = "HRM"}, null)<b class="arrow"></b></li>
-            </ul>
+                <b class="arrow"></b>
 
-        </li>
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
+                <ul class="submenu">
+                    <li id="link2415" class="actionlinlk">@Html.ActionLink("Configurations", "Index", "GlobalSetting", new { area = "" }, null)<b class="arrow"></b></li>
+                    <li id="linka246" class="actionlinlk">@Html.ActionLink("Company Branches", "Index", "BranchAdmin", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                </ul>
 
-                Database
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
+            </li>
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
 
-            <b class="arrow"></b>
+                    Database
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
 
-            <ul class="submenu">
-                <li id="linka246" class="actionlinlk">@Html.ActionLink("Backup", "Index", "Database", new {area = ""}, null)<b class="arrow"></b></li>
-            </ul>
-        </li>
-    }
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="linka246" class="actionlinlk">@Html.ActionLink("Backup", "Index", "Database", new { area = "" }, null)<b class="arrow"></b></li>
+                </ul>
+            </li>
+        }
 
     </ul>
 </li>

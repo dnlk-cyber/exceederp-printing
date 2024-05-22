@@ -159,9 +159,6 @@
   <data name="EmployeeInLeave.Value" xml:space="preserve">
     <value>ስራተኛ በዕረፍት</value>
   </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>= IIf(Fields.Sex="Male","ወንድ","ሴት")</value>
-  </data>
   <data name="textBox1.Value" xml:space="preserve">
     <value>ጠቅላላ</value>
   </data>

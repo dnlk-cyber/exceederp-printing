@@ -234,6 +234,12 @@
   <data name="textBox39.Value" xml:space="preserve">
     <value>Branch</value>
   </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>Business Unit</value>
+  </data>
+  <data name="textBox14.Value" xml:space="preserve">
+    <value>= Parameters.BusinessUnitId.Label</value>
+  </data>
   <data name="textBox16.Value" xml:space="preserve">
     <value>=PageNumber</value>
   </data>
@@ -250,15 +256,18 @@
     <value>Work Unit</value>
   </data>
   <data name="reportParameter3.Text" xml:space="preserve">
-    <value>Type</value>
+    <value>Business Unit</value>
   </data>
   <data name="reportParameter4.Text" xml:space="preserve">
-    <value>Status</value>
+    <value>Type</value>
   </data>
   <data name="reportParameter5.Text" xml:space="preserve">
-    <value>From</value>
+    <value>Status</value>
   </data>
   <data name="reportParameter6.Text" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="reportParameter7.Text" xml:space="preserve">
     <value>To</value>
   </data>
 </root>

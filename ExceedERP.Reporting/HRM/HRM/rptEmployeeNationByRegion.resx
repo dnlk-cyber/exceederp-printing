@@ -138,18 +138,6 @@
   <data name="textBox3.Value" xml:space="preserve">
     <value>Total</value>
   </data>
-  <data name="txtOrgName.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox25.Value" xml:space="preserve">
-    <value>= Fields.AmharicName</value>
-  </data>
-  <data name="textBox21.Value" xml:space="preserve">
-    <value>Date:</value>
-  </data>
-  <data name="textBox14.Value" xml:space="preserve">
-    <value>= Today()</value>
-  </data>
   <data name="textBox2.Value" xml:space="preserve">
     <value>= Fields.RegionName</value>
   </data>

@@ -285,6 +285,20 @@ namespace ExceedERP.Web.Controllers.Cmd
                             .Select(v => v.ToString())
                             .ToList();
                     break;
+                case "PayrollProcessMode":
+                    attributes =
+                        Enum.GetValues(typeof(PayrollProcessMode))
+                            .Cast<PayrollProcessMode>()
+                            .Select(v => v.ToString())
+                            .ToList();
+                    break;
+                case "FiscalYearType":
+                    attributes =
+                        Enum.GetValues(typeof(FiscalYearTypeAttribute))
+                            .Cast<FiscalYearTypeAttribute>()
+                            .Select(v => v.ToString())
+                            .ToList();
+                    break;
 
             }
 

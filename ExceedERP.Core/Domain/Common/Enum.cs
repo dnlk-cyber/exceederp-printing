@@ -160,7 +160,8 @@ namespace ExceedERP.Core.Domain.Common
         Over_Time_Hours,
         Commitment_report,
         Benefit_Report,
-        Not_Evaluated_Employee_Report
+        Not_Evaluated_Employee_Report,
+        Employee_Yearly_or_Half_yearly_or_Quarterly_Performance
     }
     public enum ProcurementModuleReportType
     {

@@ -159,9 +159,6 @@
   <data name="EmployeeInLeave.Value" xml:space="preserve">
     <value>Hojjetaa boqonnaa irra jiru</value>
   </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>= IIf(Fields.Sex="Male","Dhiira","Dhalaa")</value>
-  </data>
   <data name="textBox1.Value" xml:space="preserve">
     <value>walii gala</value>
   </data>

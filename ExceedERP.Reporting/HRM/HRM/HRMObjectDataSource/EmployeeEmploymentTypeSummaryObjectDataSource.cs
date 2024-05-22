@@ -203,8 +203,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 employee.Criteria = "Employement Type";
 
                 employee.SummaryName = GetStatus(a.Value.ToString());
-                employee.NumberOfFemaleEmployee = emplistByStatus.Where(x => males.Contains(x.EmployeeId)).Count();
-                employee.NumberOfMaleEmployee = emplistByStatus.Where(x => females.Contains(x.EmployeeId)).Count();
+                employee.NumberOfFemaleEmployee = emplistByStatus.Where(x => females.Contains(x.EmployeeId)).Count();
+                employee.NumberOfMaleEmployee = emplistByStatus.Where(x => males.Contains(x.EmployeeId)).Count();
                 employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
 
                 list.Add(employee);

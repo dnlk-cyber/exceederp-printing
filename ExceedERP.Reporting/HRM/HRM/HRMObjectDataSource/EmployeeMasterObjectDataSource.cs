@@ -14,6 +14,7 @@ using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
+
     [DataObject]
     public class EmployeeMasterObjectDataSource : List<EmployeeMasterViewModel>
     {
@@ -296,7 +297,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var ex in empExtExps)
                         {
                             expSum = expSum + (ex.To - ex.From).Days;
-                            PlaceWorked += "  ከ: " + ex.FromExAmharic + " " + "እስከ:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
+                            PlaceWorked += "\n  ከ: " + ex.FromExAmharic + " " + "እስከ:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "\n";
                         }
                     }
                     if (cultureName.ToLower() == "om")
@@ -304,7 +305,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var ex in empExtExps)
                         {
                             expSum = expSum + (ex.To - ex.From).Days;
-                            PlaceWorked += "  irraa: " + ex.FromExAmharic + " " + "gara:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
+                            PlaceWorked += "\n  irraa: " + ex.FromExAmharic + " " + "gara:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "\n";
                         }
                     }
                     if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
@@ -312,7 +313,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var ex in empExtExps)
                         {
                             expSum = expSum + (ex.To - ex.From).Days;
-                            PlaceWorked += "  From: " + ex.FromExAmharic + " " + "to:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
+                            PlaceWorked += "\n  From: " + ex.FromExAmharic + " " + "to:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "\n";
                         }
 
                     }
@@ -332,7 +333,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var perPl in individualPlacements)
                         {
 
-                            PlaceWorkedInternal += "  ከ: " + perPl.AssignmentDateAmharic + " " + "እስከ:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
+                            PlaceWorkedInternal += "\n  ከ: " + perPl.AssignmentDateAmharic + " " + "እስከ:" + fromdatestr + " " + perPl.JobTitleName + "\n";
                             fromdatestr = perPl.AssignmentDateAmharic;
                         }
                     }
@@ -342,7 +343,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var perPl in individualPlacements)
                         {
 
-                            PlaceWorkedInternal += "  Irraa: " + perPl.AssignmentDateAmharic + " " + "Gara:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
+                            PlaceWorkedInternal += "\n  Irraa: " + perPl.AssignmentDateAmharic + " " + "Gara:" + fromdatestr + " " + perPl.JobTitleName + "\n";
                             fromdatestr = perPl.AssignmentDateAmharic;
                         }
                     }
@@ -351,7 +352,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         foreach (var perPl in individualPlacements)
                         {
 
-                            PlaceWorkedInternal += "  From: " + perPl.AssignmentDateAmharic + " " + "to:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
+                            PlaceWorkedInternal += "\n  From: " + perPl.AssignmentDateAmharic + " " + "to:" + fromdatestr + " " + perPl.JobTitleName + "\n";
                             fromdatestr = perPl.AssignmentDateAmharic;
                         }
 

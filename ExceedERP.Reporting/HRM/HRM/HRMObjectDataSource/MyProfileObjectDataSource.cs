@@ -10,24 +10,19 @@ using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using System.Data.Entity;
 using System.Windows.Forms;
 using ExceedERP.Helpers.Common;
-
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
-
-
     [DataObject]
     public class MyProfileObjectDataSource : List<PromotedEmployee>
     {
         private ExceedDbContext db = new ExceedDbContext();
         private ApplicationContext userdetail = new ApplicationContext();
+        string cultureName = GlobalHelper.GetCurrentCulture();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PromotedEmployee> GetPromotedEmployee(string id)
         {
 
-
-
             List<PromotedEmployee> PromotedEmployees = new List<PromotedEmployee>();
-
             var lookups = db.Lookups;
             var employees = from e in db.Person_Employee
                             join p in db.Placements
@@ -40,13 +35,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             select (new { e, p });
             var otherexpriances = db.Experiences.AsNoTracking().ToList().OrderByDescending(x => x.From).ThenByDescending(x => x.To);
             var currentex = db.Placements.ToList();
-
             int TotalYear = 0;
             int TotalMonth = 0;
             int TotalDays = 0;
             var educations = db.Education.ToList();
-
-
             if (id != null)
             {
                 var list = employees.Where(x => x.e.EmployeeId.ToString() == id).ToList();
@@ -152,7 +144,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
                         otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
 
-                        otherexplist.ExpExtSingle = EmployeeHelper.GetDaystoWordsAmharic(e.To.Subtract(e.From).Days);
+                        //otherexplist.ExpExtSingle = EmployeeHelper.GetDaystoWordsAmharic(e.To.Subtract(e.From).Days);
+                        otherexplist.ExpExtSingle = EmployeeHelper.GetDaystoWords(e.To.Subtract(e.From).Days);
 
                         PromotedEmployee.OtherExpriance.Add(otherexplist);
 
@@ -183,7 +176,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
 
-                    PromotedEmployee.ExtExp = EmployeeHelper.GetDaystoWordsAmharic(extTotalDays);
+                  //  PromotedEmployee.ExtExp = EmployeeHelper.GetDaystoWordsAmharic(extTotalDays);
+                    PromotedEmployee.ExtExp = EmployeeHelper.GetDaystoWords(extTotalDays);
 
 
                     #endregion
@@ -225,9 +219,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             string val = XAPI.Common.GetConcatenatedYearMonthDay(empCurrrEx[e].AssignmentDate, empCurrrEx[e - 1].AssignmentDate);
                             currentEmployeeExpriance.DYear = Convert.ToInt32(val.Split('-')[0].ToString());
                             currentEmployeeExpriance.DMonth = Convert.ToInt32(val.Split('-')[1].ToString());
-                            currentEmployeeExpriance.IntExpSingle = EmployeeHelper.GetDaystoWordsAmharic(empCurrrEx[e - 1].AssignmentDate.Subtract(empCurrrEx[e].AssignmentDate).Days);
-
-
+                            //currentEmployeeExpriance.IntExpSingle = EmployeeHelper.GetDaystoWordsAmharic(empCurrrEx[e - 1].AssignmentDate.Subtract(empCurrrEx[e].AssignmentDate).Days);
+                            currentEmployeeExpriance.IntExpSingle = EmployeeHelper.GetDaystoWords(empCurrrEx[e - 1].AssignmentDate.Subtract(empCurrrEx[e].AssignmentDate).Days);
+                            
                         }
                         else
                         {
@@ -254,13 +248,24 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empCurrrEx[e].AssignmentDate, DateTime.Now);
                             currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e].AssignmentDate.Day, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Year).ToString();
-                            currentEmployeeExpriance.ToString = " አሁን";
+                            if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                            {
+
+                                currentEmployeeExpriance.ToString = " አሁን";
+                            }
+                            if (cultureName.ToLower() == "om")
+                            {
+
+                                currentEmployeeExpriance.ToString = " Amma";
+                            }
+                            if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
+                            {
+                                currentEmployeeExpriance.ToString = " Now";
+
+                            }
                         }
 
                         currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
-
-
-
                         //currentEmployeeExpriance.Description = currentEmployeeExpriance.Year;
                         PromotedEmployee.Expriance.Add(currentEmployeeExpriance);
                     }
@@ -273,18 +278,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     for (int e = 0; e < empHistory.Count(); e++)
                     {
                         currentEmployeeExpriance = new CurrentEmployeeExpriance();
-
-
                         int year = 0;
                         int month;
                         int days;
 
                         var from = new DateTime(empHistory[e].From.Year, empHistory[e].From.Month, empHistory[e].From.Day);
                         var to = new DateTime(empHistory[e].To.Year, empHistory[e].To.Month, empHistory[e].To.Day);
-
                         var totalmonths = (to.Year - from.Year) * 12 + to.Month - from.Month;
                         totalmonths += to.Day < from.Day ? -1 : 0;
-
                         var years = totalmonths / 12;
                         var months = totalmonths % 12;
                         var dayss = from.Subtract(to.AddMonths(totalmonths)).Days;
@@ -306,15 +307,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     }
                     #endregion
                     int TotalCurrentear = PromotedEmployee.Expriance.Sum(x => x.DYear);
-
                     int TotalCurrentMonth = PromotedEmployee.Expriance.Sum(x => x.DMonth);
                     PromotedEmployee.DMonth = TotalCurrentMonth;
                     PromotedEmployee.DYear = TotalCurrentear;
-                    PromotedEmployee.IntExp = EmployeeHelper.GetDaystoWordsAmharic((DateTime.Today.Subtract(r.e.HiredDate)).Days);
+                   // PromotedEmployee.IntExp = EmployeeHelper.GetDaystoWordsAmharic((DateTime.Today.Subtract(r.e.HiredDate)).Days);
+                    PromotedEmployee.IntExp = EmployeeHelper.GetDaystoWords((DateTime.Today.Subtract(r.e.HiredDate)).Days);
                     if (TotalCurrentMonth >= 12)
                     {
                         PromotedEmployee.DMonth = PromotedEmployee.DMonth % 12;
                         PromotedEmployee.DYear += TotalCurrentMonth / 12;
+
                     }
 
                     #endregion
@@ -326,11 +328,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         if (branch != null)
                         {
                             PromotedEmployee.Branch = branch.AmharicName;
+
                         }
 
+
                     }
-
-
+                    
                     TotalYear = PromotedEmployee.DYear + PromotedEmployee.OtherYear;
                     TotalMonth = PromotedEmployee.DMonth + PromotedEmployee.OtherMonth;
                     if (TotalMonth >= 12)
@@ -340,28 +343,28 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     }
                     //PromotedEmployee.TotalYear = TotalYear.ToString();
-
                     // double allExperienceDaySum = 0;
-
                     var extExps = otherexpriances.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
                     double extTotal = 0;
                     foreach (var ex in extExps)
                     {
                         extTotal = extTotal + ex.To.Subtract(ex.From).Days;
                     }
-
-
                     double intTotal = DateTime.Today.Subtract(r.e.HiredDate).Days;
                     double totalExp = extTotal + intTotal;
-
-                    PromotedEmployee.TotalMonth = EmployeeHelper.GetDaystoWordsAmharic(totalExp);//TotalMonth.ToString();
-                    PromotedEmployee.TotalYear = EmployeeHelper.GetDaystoWordsAmharic(totalExp); //TotalYear.ToString();                                                         //PromotedEmployee.TotalMonth = TotalDays.ToString();
+                    //PromotedEmployee.TotalMonth = EmployeeHelper.GetDaystoWordsAmharic(totalExp);//TotalMonth.ToString();
+                    PromotedEmployee.TotalMonth = EmployeeHelper.GetDaystoWords(totalExp);//TotalMonth.ToString();
+                    //PromotedEmployee.TotalYear = EmployeeHelper.GetDaystoWordsAmharic(totalExp); //TotalYear.ToString();                                                         //PromotedEmployee.TotalMonth = TotalDays.ToString();
+                    PromotedEmployee.TotalYear = EmployeeHelper.GetDaystoWords(totalExp); //TotalYear.ToString();                                                         //PromotedEmployee.TotalMonth = TotalDays.ToString();
                     PromotedEmployee.RecruitmentType = HrHelper.GetEmployeeStatus(r.e.Status);
-
                     PromotedEmployees.Add(PromotedEmployee);
+
                 }
             }
+
             return PromotedEmployees.OrderBy(x => x.No).ToList();
+
+
         }
 
     }

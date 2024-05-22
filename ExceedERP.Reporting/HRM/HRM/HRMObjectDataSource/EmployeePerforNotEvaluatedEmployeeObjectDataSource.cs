@@ -45,30 +45,20 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 int.TryParse(empId, out int employeeId);
                 placements = placements.Where(x => x.EmployeeId == employeeId).ToList();
             }
-
-            var employeePerformances = db.EmployeePerformances.ToList();
-            if (status == "Reviewed" )
-            {
-                employeePerformances = employeePerformances.Where(x => x.IsSecondLevelApproved).ToList() ;
-            }
-            else if (status == "Not Reviewed")
-            {
-                employeePerformances = employeePerformances.Where(x => x.IsSecondLevelApproved ||!x.IsSecondLevelApproved).ToList();
-            }
-
-            if (placements.Any() && employeePerformances.Any())
-            {
-                var employeeds = employeePerformances.Select(x => x.EmployeeId);
-
-                if (employeeds.Any())
-                  placements = placements.Where(x => !employeeds.Contains(x.EmployeeId)).ToList();
-
-            }
             if (businessUnit != null)
             {
                 int.TryParse(businessUnit, out int businessUnitId);
                 placements = placements.Where(x => x.BusinessUnitId == businessUnitId).ToList();
             }
+            var employeePerformances = db.EmployeePerformances.Where(x=>x.IsSecondLevelApproved).ToList();
+            
+            if (placements.Any() && employeePerformances.Any())
+            {
+                var employeeIds = employeePerformances.Select(x => x.EmployeeId);
+                 placements = placements.Where(x => !employeeIds.Contains(x.EmployeeId)).ToList();
+
+            }
+           
             foreach (var place in placements)
             {
 

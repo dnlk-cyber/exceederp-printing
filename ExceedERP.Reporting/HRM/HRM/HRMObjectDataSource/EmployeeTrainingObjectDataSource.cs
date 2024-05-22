@@ -17,7 +17,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeTraining> GetEmployeeTraining(string type, string status, DateTime from, DateTime to, string branchId, string orgStructureId)
+        public List<EmployeeTraining> GetEmployeeTraining(string type, string status, DateTime from, DateTime to, string branchId, string orgStructureId,string businessUnit)
         {
             List<EmployeeTraining> EmployeeInfoList = new List<EmployeeTraining>();
             EmployeeTraining EmployeeInfo = new EmployeeTraining();
@@ -43,6 +43,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(orgStructureId, out int orgId);
                 placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            }
+            if (businessUnit != null)
+            {
+                int.TryParse(businessUnit, out int businessUnitId);
+                placements = placements.Where(x=>x.BusinessUnitId==businessUnitId).ToList();
             }
 
             bool idCompleted = false;

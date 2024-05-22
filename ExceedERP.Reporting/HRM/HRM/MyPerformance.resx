@@ -150,14 +150,14 @@
   <data name="textBox2.Value" xml:space="preserve">
     <value>= RowNumber("table1")</value>
   </data>
+  <data name="textBox19.Value" xml:space="preserve">
+    <value>page: {PageNumber}</value>
+  </data>
   <data name="textBox11.Value" xml:space="preserve">
     <value>= Fields.Name</value>
   </data>
   <data name="textBox17.Value" xml:space="preserve">
     <value>= Fields.Weight</value>
-  </data>
-  <data name="reportParameter2.Text" xml:space="preserve">
-    <value>Year</value>
   </data>
   <data name="textBox4.Value" xml:space="preserve">
     <value>= Fields.MeasurmentName</value>
@@ -177,8 +177,8 @@
   <data name="reportParameter1.Text" xml:space="preserve">
     <value>id</value>
   </data>
-  <data name="textBox19.Value" xml:space="preserve">
-    <value>page: {PageNumber}</value>
+  <data name="reportParameter2.Text" xml:space="preserve">
+    <value>Year</value>
   </data>
   <data name="textBox15.Value" xml:space="preserve">
     <value>= Fields.ActionName</value>

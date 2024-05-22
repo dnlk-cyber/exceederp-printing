@@ -5,6 +5,7 @@
         public string Responsibility { get; set; }
         public string From { get; set; }
         public string To { get; set; }
+        public double TotalExperince { get; set; }       
         public string Totalyear { get; set; }       
 
     }

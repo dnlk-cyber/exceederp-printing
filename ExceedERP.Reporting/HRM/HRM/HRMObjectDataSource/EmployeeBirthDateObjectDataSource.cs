@@ -68,7 +68,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId);
                 if (employee != null)
                 {
-                    int diff = (int)(DateTime.Now - employee.DateOfBirth).TotalDays/365;
+                    decimal diff = (decimal)(DateTime.Now - employee.DateOfBirth).TotalDays/365;
                     if (ageMax != 0 && agemin != 0)
                     {
                         if (diff >= agemin && diff <= ageMax)

@@ -15,7 +15,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using System.IO;
-using Excel;
+
 using ExceedERP.DataAccess.Context;
 
 
@@ -73,117 +73,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
         }
 
-        public ActionResult TimeSheet_Import([DataSourceRequest] DataSourceRequest request, IEnumerable<HttpPostedFileBase> file)
-        {
-            ExceedDbContext db = new ExceedDbContext();
-            string errors = string.Empty;
-            string errorsummary = " Successfully Imported TimeSheet ";
-
-            string addtionalName = DateTime.Now.Year.ToString() +
-                DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() +
-                DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() +
-                DateTime.Now.Second.ToString();
-            System.Data.DataSet ds = new System.Data.DataSet();
-
-
-            foreach (HttpPostedFileBase fileBase in file)
-            {
-                Stream stream = fileBase.InputStream;
-                // We return the interface, so that
-                IExcelDataReader reader = null;
-                string fileExtension = System.IO.Path.GetExtension(Request.Files["file"].FileName);
-                int t = 0;
-
-                if (fileBase.FileName.EndsWith(".xls"))
-                {
-                    reader = ExcelReaderFactory.CreateBinaryReader(stream);
-                    t = reader.AsDataSet().Tables.Count;
-                }
-                else if (fileBase.FileName.EndsWith(".xlsx"))
-                {
-                    reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-                    t = reader.AsDataSet().Tables.Count;
-                }
-                else
-                {
-                    ModelState.AddModelError("File", "This file format is not supported");
-                    return View();
-                }
-
-                int V = t;
-                reader.IsFirstRowAsColumnNames = true;
-
-                ds = reader.AsDataSet();
-
-                errors = string.Empty;
-                decimal TotalBudget = decimal.Zero;
-                int BudgetPlanMonthId = 0;
-
-                var dt = ds.Tables[0];
-
-                for (int i = 1; i < dt.Rows.Count; i++)
-                {
-
-                    var AssetCode = dt.Rows[i][0].ToString().Trim();
-                    var Fleet = db.Fleets.Where(x => x.UnitNum == AssetCode).FirstOrDefault();
-                    while (reader.Read())
-                    {
-                        if (Fleet != null)
-                        {
-                            try
-                            {
-
-                                var Day = DateTime.Parse(reader.GetString(1));
-
-                                var firstShiftfrom = DateTime.Parse(reader.GetString(2));
-                                var firstShiftto = DateTime.Parse(reader.GetString(3));
-                                var secondShiftfrom = DateTime.Parse(reader.GetString(4));
-                                var secondShiftto = DateTime.Parse(reader.GetString(5));
-                                var KmHrReading = int.Parse(reader.GetString(10));
-                                var TimeSheet = new TimeSheet
-                                {
-                                    TimeSheetID = Guid.NewGuid(),
-                                    FleetsID = Fleet.FleetsID,
-                                    FleetTypeID = Fleet.EquipmentTypeID,
-                                    WorkingHoursMorningFrom = firstShiftfrom,
-                                    WorkingHoursMorningto = firstShiftto,
-                                    WorkingHoursAfternoonFrom = secondShiftfrom,
-                                    WorkingHoursAfternoonTo = secondShiftto,
-                                    KMHrReading = KmHrReading
-
-                                };
-
-
-
-                                db.TimeSheet.Add(TimeSheet);
-                                db.SaveChanges();
-
-
-                            }
-                            catch (Exception e)
-                            {
-
-                            }
-
-
-
-
-                            if (errors != string.Empty)
-                            {
-                                errorsummary = errors + " Numbers Failed Import";
-                            }
-
-
-
-                        }
-                    }
-                }
-
-
-            }
-            return Json(new { data = errorsummary });
-
-        }
+       
 
         public ActionResult TimeSheet_Read([DataSourceRequest] DataSourceRequest request)
         {

@@ -177,15 +177,6 @@
   <data name="textBox40.Value" xml:space="preserve">
     <value> Date :</value>
   </data>
-  <data name="txtOrgName.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox46.Value" xml:space="preserve">
-    <value>= Fields.AmharicName</value>
-  </data>
-  <data name="txtPerformanceEvaluation.Value" xml:space="preserve">
-    <value>Employee Performance Evaluation Form</value>
-  </data>
   <data name="txtApprover.Value" xml:space="preserve">
     <value>Approver </value>
   </data>
@@ -223,7 +214,7 @@
     <value>Comments for the Employee (By Immidiet Supervisor)</value>
   </data>
   <data name="htmlTextBox1.Value" xml:space="preserve">
-    <value>&lt;p&gt;Name : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.FullName}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; Department&amp;nbsp;: &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Department}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; Jobtitle : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Jobtitle}&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Branch : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Branch}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;Year : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.Year}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp; Period : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Period}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;&lt;/p&gt;</value>
+    <value>&lt;p&gt;Name : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.FullName}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp; Department&amp;nbsp;: &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Department}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;Jobtitle : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Jobtitle}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;Branch : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Branch}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;Year : &lt;span style="text-decoration: underline"&gt;&lt;strong&gt;{Fields.Year}&lt;/strong&gt;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;nbsp;&amp;nbsp;Period : &lt;strong&gt;&lt;span style="text-decoration: underline"&gt;{Fields.Period}&lt;/span&gt;&lt;/strong&gt;&amp;nbsp; &lt;/p&gt;&lt;p&gt;&lt;/p&gt;</value>
   </data>
   <data name="htmlTextBox2.Value" xml:space="preserve">
     <value>&lt;p&gt;Employee needed to Improve &lt;/p&gt;&lt;p&gt;________________________________________________________________________________________________________________________________________&lt;/p&gt;</value>
@@ -271,21 +262,21 @@
     <value>True</value>
   </metadata>
   <data name="reportParameter1.Text" xml:space="preserve">
-    <value>ID</value>
-  </data>
-  <data name="reportParameter2.Text" xml:space="preserve">
     <value>Employees</value>
   </data>
-  <data name="reportParameter3.Text" xml:space="preserve">
+  <data name="reportParameter2.Text" xml:space="preserve">
     <value>Year</value>
   </data>
-  <data name="reportParameter4.Text" xml:space="preserve">
+  <data name="reportParameter3.Text" xml:space="preserve">
     <value>Period</value>
   </data>
-  <data name="reportParameter5.Text" xml:space="preserve">
+  <data name="reportParameter4.Text" xml:space="preserve">
     <value>Criteria</value>
   </data>
-  <data name="reportParameter6.Text" xml:space="preserve">
+  <data name="reportParameter5.Text" xml:space="preserve">
     <value>Business Unit</value>
+  </data>
+  <data name="reportParameter8.Text" xml:space="preserve">
+    <value>Id</value>
   </data>
 </root>
