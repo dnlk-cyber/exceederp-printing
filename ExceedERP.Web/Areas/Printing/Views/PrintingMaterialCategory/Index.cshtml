@@ -1,0 +1,111 @@
+﻿
+
+<label>Material Category</label>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingMaterialCategory>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.InventoryCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text");/*.EditorTemplateName("InventoryCategoryTemplate");*/
+                  columns.Bound(c => c.CategoryName);
+                  columns.Bound(c => c.CostAccountCode);
+                  columns.Bound(c => c.InventoryAccountCode);
+                  columns.Bound(c => c.ProductionAccountCode);
+      //columns.Bound(c => c.IsActive);
+      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Navigatable()
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.PrintingMaterialCategoryId))
+                  .Read(read => read.Action("Read", "PrintingMaterialCategory"))
+                  .Create(create => create.Action("Create", "PrintingMaterialCategory"))
+                  .Update(update => update.Action("Update", "PrintingMaterialCategory"))
+                  .Destroy(destroy => destroy.Action("Delete", "PrintingMaterialCategory"))
+              ).ClientDetailTemplateId("templateId")
+)
+
+<script id="templateId" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+            .Name("Detail_#=PrintingMaterialCategoryId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+            @<text>
+                @Detail();
+            </text>);
+                    }).ToClientTemplate())
+</script>
+
+@helper Detail()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingMaterialCategoryItem>()
+                      .Name("grid_#=PrintingMaterialCategoryId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.InventorySubCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").EditorTemplateName("SubCategoryTemplate");
+                          columns.Bound(c => c.ItemName);
+                          columns.Bound(c => c.ItemCode);
+                          columns.Bound(c => c.UnitOfMeasurement);
+                          columns.Bound(c => c.UnitPrice);
+                          columns.Bound(c => c.Width);
+                          columns.Bound(c => c.Length);
+                          columns.Bound(c => c.Weight);
+                          //columns.Bound(c => c.IsActive);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          //toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Filterable()
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model =>
+                          {
+                              model.Id(p => p.PrintingMaterialCategoryItemId);
+                              model.Field(p => p.InventorySubCategoryCode).Editable(false);
+                              model.Field(p => p.ItemName).Editable(false);
+                              model.Field(p => p.ItemCode).Editable(false);
+                              model.Field(p => p.UnitOfMeasurement).Editable(false);
+
+                          })
+                          .Read(read => read.Action("PrintingMaterialCategoryItem_Read", "PrintingMaterialCategoryItem", new { id = "#=PrintingMaterialCategoryId#" }))
+                          .Create(create => create.Action("PrintingMaterialCategoryItem_Create", "PrintingMaterialCategoryItem", new { id = "#=PrintingMaterialCategoryId#" }))
+                          .Update(update => update.Action("PrintingMaterialCategoryItem_Update", "PrintingMaterialCategoryItem"))
+                          .Destroy(destroy => destroy.Action("PrintingMaterialCategoryItem_Delete", "PrintingMaterialCategoryItem"))
+                      ).ToClientTemplate()
+    )
+}
+
+<script type="text/javascript">
+
+    function filterCategory() {
+        return {
+            text: $("#InventoryCategoryCode").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterSubCategory() {
+        return {
+            categoryCode: $("#InventoryCategoryCode").val,//.data("kendoDropDownList").value(),
+            text: $("#InventorySubCategoryCode").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+
+</script>

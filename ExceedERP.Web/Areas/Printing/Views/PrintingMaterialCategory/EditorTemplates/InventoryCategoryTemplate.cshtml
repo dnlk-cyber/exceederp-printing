@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)                    
+    .DataTextField("Text")
+    .DataValueField("Value")                   
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetInventoryItemCategory", "PrintDataProvider", new { Area = "Printing" }).Data("filterCategory"))
+        .ServerFiltering(true);
+    })
+    .Filter("contains")
+    .MinLength(2)
+    .ValuePrimitive(true)
+)

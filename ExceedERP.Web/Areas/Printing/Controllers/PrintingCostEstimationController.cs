@@ -18,16 +18,39 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
+            ViewData["Customer"] = db.OrganizationCustomers.Select(s => new
+            {
+                Value = s.OrganizationCustomerID,
+                Text = s.TradeName
+            }).ToList();
+            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
+            {
+                Value = s.PrintingJobTypeId,
+                Text = s.JobTypeName
+            }).ToList();
+            ViewData["PaperSize"] = db.PrintingPaperSizes.Select(s => new
+            {
+                Value = s.PrintingPaperSizeId,
+                Text = s.PaperSizeName
+            }).ToList();
+            ViewData["BindingStyle"] = db.PrintingBindingStyles.Select(s => new
+            {
+                Value = s.PrintingBindingStyleId,
+                Text = s.BindingStyleName
+            }).ToList();
+
             return View();
         }
 
         public ActionResult PrintingCostEstimations_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingCostEstimation> printingcostestimations = db.PrintingCostEstimations;
-            DataSourceResult result = printingcostestimations.ToDataSourceResult(request, printingCostEstimation => new {
+            DataSourceResult result = printingcostestimations.ToDataSourceResult(request, printingCostEstimation => new PrintingCostEstimation
+            {
                 PrintingCostEstimationId = printingCostEstimation.PrintingCostEstimationId,
                 PaperSizeId = printingCostEstimation.PaperSizeId,
-                PaperTypeId = printingCostEstimation.PaperTypeId,
+                CustomerId = printingCostEstimation.CustomerId,
+                JobTypeId = printingCostEstimation.JobTypeId,
                 ProductQuantity = printingCostEstimation.ProductQuantity,
                 TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
                 BindingStyleId = printingCostEstimation.BindingStyleId,
@@ -64,7 +87,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var entity = new PrintingCostEstimation
                 {
                     PaperSizeId = printingCostEstimation.PaperSizeId,
-                    PaperTypeId = printingCostEstimation.PaperTypeId,
+                    CustomerId = printingCostEstimation.CustomerId,
+                    JobTypeId = printingCostEstimation.JobTypeId,
                     ProductQuantity = printingCostEstimation.ProductQuantity,
                     TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
                     BindingStyleId = printingCostEstimation.BindingStyleId,
@@ -84,9 +108,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     OverHeadRate = printingCostEstimation.OverHeadRate,
                     OverHeadCost = printingCostEstimation.OverHeadCost,
                     TotalLaborCost = printingCostEstimation.TotalLaborCost,
-                    DateCreated = printingCostEstimation.DateCreated,
+                    DateCreated = DateTime.Today,
                     LastModified = printingCostEstimation.LastModified,
-                    CreatedBy = printingCostEstimation.CreatedBy,
+                    CreatedBy = User.Identity.Name,
                     ModifiedBy = printingCostEstimation.ModifiedBy
                 };
 
@@ -107,7 +131,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingCostEstimationId = printingCostEstimation.PrintingCostEstimationId,
                     PaperSizeId = printingCostEstimation.PaperSizeId,
-                    PaperTypeId = printingCostEstimation.PaperTypeId,
+                    CustomerId = printingCostEstimation.CustomerId,
+                    JobTypeId = printingCostEstimation.JobTypeId,
                     ProductQuantity = printingCostEstimation.ProductQuantity,
                     TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
                     BindingStyleId = printingCostEstimation.BindingStyleId,
@@ -150,7 +175,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingCostEstimationId = printingCostEstimation.PrintingCostEstimationId,
                     PaperSizeId = printingCostEstimation.PaperSizeId,
-                    PaperTypeId = printingCostEstimation.PaperTypeId,
+                    CustomerId = printingCostEstimation.CustomerId,
+                    JobTypeId = printingCostEstimation.JobTypeId,
                     ProductQuantity = printingCostEstimation.ProductQuantity,
                     TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
                     BindingStyleId = printingCostEstimation.BindingStyleId,

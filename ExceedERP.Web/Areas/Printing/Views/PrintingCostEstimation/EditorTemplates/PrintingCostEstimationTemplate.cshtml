@@ -1,0 +1,118 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingCostEstimation
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Job Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.JobTypeId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Job...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("JobType", "PrintDataProvider", new { area = "Printing" }).Data("filterJobType"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+                
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Customer</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.CustomerId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select ...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetACustomers", "PrintDataProvider", new { area = "Printing" }).Data("filterCustomer"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+               
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>PaperSize</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.PaperSizeId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select ...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("PaperSizeFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterPaperSize"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+                
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Binding Style</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.BindingStyleId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select ...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("BindingStyleFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterBindingStyle"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Quantity</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.ProductQuantity).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Text No Of Colors</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.TextNoOfColors).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Cover No Of Color</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.CoverNoOfColor).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label></label>
+            <div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,15 +12,27 @@ namespace ExceedERP.Core.Domain.Printing
     {
         [Key]
         public int PrintingCostEstimationId { get; set; }
+        [Display(Name ="Paper Size")]
         public int PaperSizeId { get; set; }
-        public int PaperTypeId { get; set; }
-        public int ProductQuantity { get; set; }
-        public int TotalTextNoPages { get; set; }
+        [Display(Name ="Customer")]
+        public int CustomerId { get; set; } 
+        [Display(Name ="Job Type")]
+        public int JobTypeId { get; set; }
+        [Display(Name ="Binding style")]
         public int BindingStyleId { get; set; }
+        [Display(Name ="Quantity")]
+        public int ProductQuantity { get; set; }
+        [Display(Name ="Text No of Colors")]
+        public int TextNoOfColors { get; set; }
+        [Display(Name ="Cover No of Colors")]
+        public int CoverNoOfColor { get; set; }
+
+        //---------------///////////////
+        public int TotalTextNoPages { get; set; }
+        
         public double Width { get; set; }
         public double Length { get; set; }
-        public int TextNoOfColors { get; set; }
-        public int CoverNoOfColor { get; set; }
+        
         public double CoverPaperSize { get; set; }
         public bool CoverRequired { get; set; }
         public bool OnlyOneSideCover { get; set; }

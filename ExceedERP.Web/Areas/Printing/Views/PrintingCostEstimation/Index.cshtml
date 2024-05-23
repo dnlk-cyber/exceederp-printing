@@ -3,34 +3,23 @@
       .Name("grid")
       .Columns(columns =>
       {
+        columns.Bound(c => c.JobTypeId);
+       
         columns.Bound(c => c.PaperSizeId);
-        columns.Bound(c => c.PaperTypeId);
-        columns.Bound(c => c.ProductQuantity);
-        columns.Bound(c => c.TotalTextNoPages);
+        columns.Bound(c => c.CustomerId);
         columns.Bound(c => c.BindingStyleId);
-        columns.Bound(c => c.Width);
-        columns.Bound(c => c.Length);
+        
         columns.Bound(c => c.TextNoOfColors);
         columns.Bound(c => c.CoverNoOfColor);
-        columns.Bound(c => c.CoverPaperSize);
-        columns.Bound(c => c.CoverRequired);
-        columns.Bound(c => c.OnlyOneSideCover);
-        columns.Bound(c => c.NoUpPagesPerA1);
-        columns.Bound(c => c.ProcessCategoryId);
-        columns.Bound(c => c.TypeOfWorkId);
-        columns.Bound(c => c.EstimatedHrs);
-        columns.Bound(c => c.DLaborRate);
-        columns.Bound(c => c.TotalCost);
-        columns.Bound(c => c.OverHeadRate);
-        columns.Bound(c => c.OverHeadCost);
-        columns.Bound(c => c.TotalLaborCost);
+        columns.Bound(c => c.ProductQuantity);
+        
       
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
             toolbar.Create();
       })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingCostEstimationTemplate"))
       .Filterable()
       .Scrollable()
       .DataSource(dataSource => dataSource
@@ -42,3 +31,46 @@
           .Destroy(destroy => destroy.Action("PrintingCostEstimations_Destroy", "PrintingCostEstimation"))
       )
 )
+
+
+<script type="text/javascript">
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterCustomer() {
+        return {
+            text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterPaperSize() {
+        return {
+            text: $("#PaperSizeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+
+    function filterBindingStyle() {
+        return {
+            text: $("#BindingStyleId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

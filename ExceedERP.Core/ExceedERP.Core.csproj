@@ -1174,6 +1174,7 @@
     <Compile Include="Domain\Printing\PrintingJobType.cs" />
     <Compile Include="Domain\Printing\PrintingMachineList.cs" />
     <Compile Include="Domain\Printing\PrintingMachineType.cs" />
+    <Compile Include="Domain\Printing\PrintingMaterialCategory.cs" />
     <Compile Include="Domain\Printing\PrintingPaperSize.cs" />
     <Compile Include="Domain\Printing\PrintingProcess.cs" />
     <Compile Include="Domain\Printing\PrintingProductProcess.cs" />

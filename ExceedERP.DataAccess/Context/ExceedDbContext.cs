@@ -1565,6 +1565,8 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingMaterialCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingMaterialCategoryItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingBindingStyleEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintCostCenterEntityTypeConfiguration());
@@ -2129,6 +2131,8 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingMaterialCategory> PrintingMaterialCategories { get; set; }
+        public DbSet<PrintingMaterialCategoryItem> PrintingMaterialCategoryItems { get; set; }
         public DbSet<PrintingBindingStyle> PrintingBindingStyles { get; set; }
         public DbSet<PrintingJobType> PrintingJobTypes { get; set; }
         public DbSet<PrintCostCenter> PrintCostCenters { get; set; }

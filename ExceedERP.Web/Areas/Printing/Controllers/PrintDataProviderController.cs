@@ -46,6 +46,21 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult JobTypeFilterable(string text)
+        {
+            var jobType = db.PrintingJobTypes.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                jobType = jobType.Where(x => x.JobTypeName.ToLower().Contains(text.ToLower())).AsQueryable();
+            }
+            var result = jobType.Select(s => new
+            {
+                Text = s.JobTypeName,
+                Value = s.PrintingJobTypeId
+            }).ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult PrintingProcess(PrintingProcessCategory processCategory)
         {
@@ -56,6 +71,65 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.PrintingProcessId
             }).ToList();
 
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetInventoryItemCategory(string text)
+        {
+            // only Category
+            var itemCategory = db.ItemCategorys.Where(x => !x.HaveParent);
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                itemCategory = itemCategory.Where(x => x.Name.Contains(text));
+            }
+            var result = itemCategory.Select(s => new
+            {
+                Value = s.ItemCategoryCode,
+                Text = s.Name + "-" + s.ItemCategoryCode
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        
+        public JsonResult PaperSizeFilterable(string text)
+        {
+            var paper = db.PrintingPaperSizes.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                paper = paper.Where(x => x.PaperSizeName.ToLower().Contains(text.ToLower())).AsQueryable();
+            }
+            var result = paper.Select(s => new
+            {
+                Value = s.PrintingPaperSizeId,
+                text = s.PaperSizeName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult BindingStyleFilterable(string text)
+        {
+            var bindingStyle = db.PrintingBindingStyles.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                bindingStyle = bindingStyle.Where(x => x.BindingStyleName.ToLower().Contains(text.ToLower())).AsQueryable();
+            }
+            var result = bindingStyle.Select(s => new
+            {
+                Value = s.PrintingBindingStyleId,
+                Text = s.BindingStyleName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetACustomers(string text)
+        {
+            var customers = db.OrganizationCustomers.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                customers = customers.Where(x => x.TradeName.ToLower().Contains(text.ToLower())).AsQueryable();
+            }
+            var result = customers.Select(s => new
+            {
+                Value = s.OrganizationCustomerID,
+                Text = s.TradeName
+            }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
