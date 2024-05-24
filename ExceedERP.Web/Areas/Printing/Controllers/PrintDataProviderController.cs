@@ -99,7 +99,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var result = paper.Select(s => new
             {
                 Value = s.PrintingPaperSizeId,
-                text = s.PaperSizeName
+                Text = s.PaperSizeName
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

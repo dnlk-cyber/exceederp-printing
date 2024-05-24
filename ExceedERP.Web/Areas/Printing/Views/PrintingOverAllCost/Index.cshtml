@@ -1,0 +1,38 @@
+﻿
+@helper OverAllCost()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingOverAllCost>()
+              .Name("overall_#=PrintingCostEstimationId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.MaterialCost);
+                  columns.Bound(c => c.LaborCost);
+                  columns.Bound(c => c.TotalProductionCost);
+                  columns.Bound(c => c.AdminstrativeCost);
+                  columns.Bound(c => c.ProfitMargin);
+                  columns.Bound(c => c.GraphicsCost);
+                  columns.Bound(c => c.UnitPrice);
+                  columns.Bound(c => c.TotalBeforeVAT);
+                  columns.Bound(c => c.VAT);
+                  columns.Bound(c => c.GrandTotal);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.PrintingOverAllCostId))
+                  .Read(read => read.Action("PrintingOverAllCosts_Read", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
+                  .Create(create => create.Action("PrintingOverAllCosts_Create", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
+                  .Update(update => update.Action("PrintingOverAllCosts_Update", "PrintingOverAllCost"))
+                  .Destroy(destroy => destroy.Action("PrintingOverAllCosts_Destroy", "PrintingOverAllCost"))
+              ).ToClientTemplate()
+    )
+
+}
+

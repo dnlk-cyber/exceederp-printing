@@ -1,0 +1,36 @@
+﻿
+@helper MaterialCost()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingEstimationMaterialCost>()
+              .Name("material_#=PrintingCostEstimationId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.PrintingMaterialCategoryId);
+                  columns.Bound(c => c.PrintingMaterialCategoryItemId);
+                  columns.Bound(c => c.Quantity);
+                  columns.Bound(c => c.UnitCost);
+                  columns.Bound(c => c.TotalCost);
+                  columns.Bound(c => c.UnitOfMeasurment);
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.PrintingEstimationMaterialCostId))
+                  .Read(read => read.Action("PrintingEstimationMaterialCosts_Read", "PrintingEstimationMaterialCost", new { id = "#=PrintingCostEstimationId#" }))
+                  .Create(create => create.Action("PrintingEstimationMaterialCosts_Create", "PrintingEstimationMaterialCost", new { id = "#=PrintingCostEstimationId#" }))
+                  .Update(update => update.Action("PrintingEstimationMaterialCosts_Update", "PrintingEstimationMaterialCost"))
+                  .Destroy(destroy => destroy.Action("PrintingEstimationMaterialCosts_Destroy", "PrintingEstimationMaterialCost"))
+              )
+    )
+}
+
+
+

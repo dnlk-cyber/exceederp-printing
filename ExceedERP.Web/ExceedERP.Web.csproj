@@ -2192,11 +2192,14 @@
     <Compile Include="Areas\Printing\Controllers\PrintDataProviderController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingBindingStyleController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingCostEstimationController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingEstimationLaborCostController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingEstimationMaterialCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineListController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMaterialCategoryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMaterialCategoryItemController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingOverAllCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingPaperSizeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
@@ -6997,6 +7000,9 @@
     <Content Include="Areas\Printing\Views\PrintingMaterialCategory\EditorTemplates\InventoryCategoryTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingMaterialCategory\EditorTemplates\SubCategoryTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingMaterialCategory\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingEstimationLaborCost\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingEstimationMaterialCost\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingOverAllCost\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

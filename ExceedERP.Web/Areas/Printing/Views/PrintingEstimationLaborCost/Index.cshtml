@@ -1,0 +1,33 @@
+﻿
+@helper LaborCost()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingEstimationLaborCost>()
+              .Name("labor_#=PrintingCostEstimationId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.ProcessCategory);
+                  columns.Bound(c => c.PrintingProcessId);
+                  columns.Bound(c => c.EstimatedHours);
+                  columns.Bound(c => c.LaborRate);
+                  columns.Bound(c => c.TotalCost);
+                  
+                  columns.Command(command => { command.Edit(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.PrintingEstimationLaborCostId))
+                  .Read(read => read.Action("PrintingEstimationLaborCosts_Read", "PrintingEstimationLaborCost", new { id = "#=PrintingCostEstimationId#" }))
+                  .Create(create => create.Action("PrintingEstimationLaborCosts_Create", "PrintingEstimationLaborCost", new { id = "#=PrintingCostEstimationId#" }))
+                  .Update(update => update.Action("PrintingEstimationLaborCosts_Update", "PrintingEstimationLaborCost"))
+              ).ToClientTemplate()
+    )
+
+}
+
