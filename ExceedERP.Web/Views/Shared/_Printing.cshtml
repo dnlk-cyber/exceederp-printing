@@ -26,7 +26,7 @@
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-print"></i>
             <span class="menu-text">
-                Printing
+                Printing New
             </span>
             <b class="arrow fa fa-angle-down"></b>
         </a>
@@ -45,280 +45,11 @@
                     <b class="arrow"></b>
                     <ul class="submenu">
                         <li id="printingEst01" class="actionlinlk">@Html.ActionLink("Printing Cost Estimation", "Index", "PrintingCostEstimation", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="printingEst01" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "PrintingEstimationJobOrder", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="printingEst02" class="actionlinlk">@Html.ActionLink("Proforma", "Index", "PrintingEstimationProforma", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="printingEst03" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "EstimationForm", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         
                     </ul>
                 </li>
             }
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-tasks"></i>
-                    <span class="menu-text">
-                        Production FollowUp
-                    </span>
-
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-
-                <b class="arrow"></b>
-
-                <ul class="submenu">
-
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Operation
-
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-                        <b class="arrow"></b>
-                        <ul class="submenu">
-                            @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionProformaUser))
-                            {*@
-                          
-                                <li id="printingop01" class="actionlinlk">
-                                    @Html.ActionLink("Proforma", "Index", "Proforma", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                            @*}
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionJobOrderUser))
-                            {*@
-                                <li id="printingop02" class="actionlinlk">
-                                    @Html.ActionLink("Job Order", "Index", "AutoJobOrder", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingop03" class="actionlinlk">
-                                    @Html.ActionLink("Manual Order", "Index", "ManualJobOrder", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                            @*}
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionFinishedGoodUser))
-                            {*@
-                                <li id="printingop04" class="actionlinlk">
-                                    @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                            @*}
-                            @if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser))
-                            {*@
-                                <li id="printingop05" class="actionlinlk">
-                                    @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-
-                            @*}*@
-                        </ul>
-                    </li>
-
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Reports
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-
-                        <b class="arrow"></b>
-
-                        <ul class="submenu">
-                            @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionAdmin) ||
-                        HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionReport))
-                            {*@
-                                @*<li id="productionFollowUp001001001" class="actionlinlk">
-                                @Html.ActionLink("Job Supplies and Sales", "GetJobSupplyandSales", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                <b class="arrow"></b>
-                            </li>*@
-                                <li id="printingRpt01" class="actionlinlk">
-                                    @Html.ActionLink("Job Supplies and Sales Performance", "GetJobSupplyandSalesWp", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-                                <li id="printingRpt02" class="actionlinlk">
-                                    @Html.ActionLink("Job Supplies", "GetJobSupply", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-                                <li id="printingRpt03" class="actionlinlk">
-                                    @Html.ActionLink("Job Orders", "GetJobOrders", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-                                <li id="printingRpt04" class="actionlinlk">
-                                    @Html.ActionLink("Delivery FollowUp Sheet", "GetDeliveryFollowUpSheet", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-                                <li id="printingRpt05" class="actionlinlk">
-                                    @Html.ActionLink("Finished Products Receiving Note", "GetFinishedProductsReceivingNote", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-                                @*<li id="productionFollowUp001001001" class="actionlinlk">
-                                @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformance", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                <b class="arrow"></b>
-                            </li>*@
-                                <li id="printingRpt06" class="actionlinlk">
-                                    @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformanceWp", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-                                @*<li id="productionFollowUp001001001" class="actionlinlk">
-                                @Html.ActionLink("Delivery Team Performance", "GetDeliveryTeamPerformance", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                <b class="arrow"></b>
-                            </li>*@
-
-                                <li id="printingRpt07" class="actionlinlk">
-                                    @Html.ActionLink("Delivery  Performance", "GetDeliveryTeamPerformanceWp", "ProductionFollowUpReport", new { area = "Printing" }, null)
-                                    <b class="arrow"></b>
-                                </li>
-
-                            @*}*@
-                        </ul>
-                    </li>
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Settings
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-
-                        <b class="arrow"></b>
-
-                        <ul class="submenu">
-                            @*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionAdmin) ||
-                        HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionSetting))
-                            {*@
-                                <li id="printingstg01" class="actionlinlk">
-                                    @Html.ActionLink("Job Type", "Index", "JobCategory", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingstg012" class="actionlinlk">
-                                    @Html.ActionLink("Customer Type", "Index", "ProductionCustomerType", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingstg013" class="actionlinlk">
-                                    @Html.ActionLink("Machine Type", "Index", "Machine", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingstg014" class="actionlinlk">
-                                    @Html.ActionLink("Production Plan", "Index", "ProductionYearlyPlan", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingstg015" class="actionlinlk">
-                                    @Html.ActionLink("Yearly Production Plan", "Index", "YearlyProductionPlans", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingstg016" class="actionlinlk">
-                                    @Html.ActionLink("Monthly Production Plan", "Index", "MonthlyProductionPlans", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printingstg017" class="actionlinlk">
-                                    @Html.ActionLink("Weekly Production Plan", "Index", "WeeklyProductionPlans", new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                            @*}*@
-                        </ul>
-                    </li>
-
-
-
-                </ul>
-            </li>
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-lastfm-square"></i>
-                    Job Costing
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-                <b class="arrow"></b>
-                <ul class="submenu">
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Operation
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-                        <b class="arrow"></b>
-                        <ul class="submenu">
-                            @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
-                            {
-                                <li class="">
-                                    <a href="#" class="dropdown-toggle">
-                                        <i class="menu-icon fa fa-caret-right"></i>
-                                        Job Cost
-                                        <b class="arrow fa fa-angle-down"></b>
-                                    </a>
-                                    <b class="arrow"></b>
-                                    <ul class="submenu">
-                                        <li id="printingJobC01" class="actionlinlk">
-                                            @Html.ActionLink("Job Cost", "Index", "JobCost",new { area = "Printing" }, null)<b class="arrow"></b>
-                                        </li>
-                                    </ul>
-                                </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser))
-                            {
-                                <li class="">
-                                    <a href="#" class="dropdown-toggle">
-                                        <i class="menu-icon fa fa-caret-right"></i>
-                                        Idle Time
-                                        <b class="arrow fa fa-angle-down"></b>
-                                    </a>
-                                    <b class="arrow"></b>
-                                    <ul class="submenu">
-                                        <li id="printingIdt01" class="actionlinlk">
-                                            @Html.ActionLink("Idle Time", "Index", "IdleTime",new { area = "Printing" }, null)<b class="arrow"></b>
-                                        </li>
-                                    </ul>
-                                </li>
-                            }
-                            @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser))
-                            {
-                                <li class="">
-                                    <a href="#" class="dropdown-toggle">
-                                        <i class="menu-icon fa fa-caret-right"></i>
-                                        DLR
-                                        <b class="arrow fa fa-angle-down"></b>
-                                    </a>
-                                    <b class="arrow"></b>
-                                    <ul class="submenu">
-
-                                        <li id="printingDlr01" class="actionlinlk">
-                                            @Html.ActionLink("Daily Labor Rate", "Index", "DailyLaborRate",new { area = "Printing" }, null)<b class="arrow"></b>
-                                        </li>
-
-                                    </ul>
-                                </li>
-                            }
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Report
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-                        <b class="arrow"></b>
-                        <ul class="submenu">
-                            <li id="printingrt0101" class="actionlinlk">
-                                @Html.ActionLink("Job Order Card", "GetJobOrderCard", "JobCostingReport",new { area = "Printing" }, null)<b class="arrow"></b>
-                            </li>
-                        </ul>
-                    </li>
-
-
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Settings
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-                        <b class="arrow"></b>
-                        <ul class="submenu">
-
-                            @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin) ||
-                                HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
-                            {
-
-                                <li id="printings11" class="actionlinlk">
-                                    @Html.ActionLink("Idle Time Setup", "Index", "IdleTimeCategory",new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-
-                                <li id="printings1122" class="actionlinlk">
-                                    @Html.ActionLink("Yearly Overhead Rate", "Index", "YearlyOverHeadRate",new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                                <li id="printings1133" class="actionlinlk">
-                                    @Html.ActionLink("Pension", "Index", "JcPension",new { area = "Printing" }, null)<b class="arrow"></b>
-                                </li>
-                            }
-
-                        </ul>
-                    </li>
-                </ul>
-            </li>
+           
             @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
                    HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
             {
@@ -330,15 +61,15 @@
                     </a>
                     <b class="arrow"></b>
                     <ul class="submenu">
-                        <li id="ps11" class="actionlinlk">@Html.ActionLink("Printing Setup", "Index", "PrintingStep",new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Categories", "Index", "FurnitureCategories",new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                        @*<li id="ps1122" class="actionlinlk">@Html.ActionLink("Print Work Order Type", "Index", "PrintWorkOrderType", new { area = "Printing" }, null)<b class="arrow"></b></li>*@
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Print Machine paper list", "Index", "PrintMachinePaperList", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Print Labor Rate", "Index", "PrintLaborRate", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Print Item Category", "Index", "PrintItemCategory", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Printing Process", "Index", "PrintingProcess", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Printing Machine List", "Index", "PrintingMachineList", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps1122" class="actionlinlk">@Html.ActionLink("Print Cost Center", "Index", "PrintCostCenter", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps1" class="actionlinlk">@Html.ActionLink("Printing Job Type", "Index", "PrintingJobType", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps2" class="actionlinlk">@Html.ActionLink("Paper Size", "Index", "PrintingPaperSize", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps3" class="actionlinlk">@Html.ActionLink("Binding Style", "Index", "PrintingBindingStyle", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps4" class="actionlinlk">@Html.ActionLink("Printing Machine", "Index", "PrintingMachineType", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps5" class="actionlinlk">@Html.ActionLink("Machine-Paper list", "Index", "PrintMachinePaperList", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Product Process", "Index", "PrintingProductProcess", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Process", "Index", "PrintingProcess", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Material Category", "Index", "PrintingMaterialCategory", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        
                     </ul>
 
 

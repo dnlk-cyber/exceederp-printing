@@ -45,6 +45,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 WorkItemCode = issueItem.WorkItemCode,
                 AdditionalCost = issueItem.AdditionalCost,
                 AgreementPrice = issueItem.AgreementPrice,
+                ProductionJobNo = issueItem.ProductionJobNo,
 
 
                 OrgBranchName = issueItem.OrgBranchName,
@@ -103,6 +104,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
                     AgreementPrice = issueItem.AgreementPrice,
+                    ProductionJobNo = issueItem.ProductionJobNo,
                     UnitPrice = avgPrice,
                     Total = avgPrice * issueItem.IssuedQuantity,
                     OrgBranchName = issueItem.OrgBranchName,
@@ -175,6 +177,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
                     AgreementPrice = issueItem.AgreementPrice,
+                    ProductionJobNo = issueItem.ProductionJobNo,
                     UnitPrice = avgPrice,
                     Total = avgPrice* issueItem.IssuedQuantity,
                     OrgBranchName = issueItem.OrgBranchName,
@@ -214,6 +217,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     IssuedQuantity = issueItem.IssuedQuantity,
                     UnitPrice = issueItem.UnitPrice,
                     AgreementPrice = issueItem.AgreementPrice,
+                    ProductionJobNo = issueItem.ProductionJobNo,
 
                     Total = issueItem.Total,
                    
