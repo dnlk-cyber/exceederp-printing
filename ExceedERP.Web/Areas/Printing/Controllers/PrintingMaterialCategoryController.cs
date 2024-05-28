@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var entity = new PrintingMaterialCategory
                 {
                     InventoryCategoryCode = PrintingMaterialCategory.InventoryCategoryCode,
-                     CategoryName = PrintingMaterialCategory.CategoryName,
+                    CategoryName = PrintingMaterialCategory.CategoryName,
                     CostAccountCode = PrintingMaterialCategory.CostAccountCode,
                     InventoryAccountCode = PrintingMaterialCategory.InventoryAccountCode,
                     ProductionAccountCode = PrintingMaterialCategory.ProductionAccountCode,

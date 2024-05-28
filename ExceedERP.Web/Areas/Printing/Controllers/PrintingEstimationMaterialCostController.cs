@@ -45,23 +45,29 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PrintingEstimationMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost printingEstimationMaterialCost, int id)
-        {
+        {            
             if (ModelState.IsValid)
             {
+                var item = db.PrintingMaterialCategoryItems.Find(printingEstimationMaterialCost.PrintingMaterialCategoryItemId);
                 var entity = new PrintingEstimationMaterialCost
                 {
                     PrintingMaterialCategoryId = printingEstimationMaterialCost.PrintingMaterialCategoryId,
                     PrintingMaterialCategoryItemId = printingEstimationMaterialCost.PrintingMaterialCategoryItemId,
-                    Quantity = printingEstimationMaterialCost.Quantity,
-                    UnitCost = printingEstimationMaterialCost.UnitCost,
-                    TotalCost = printingEstimationMaterialCost.TotalCost,
-                    UnitOfMeasurment = printingEstimationMaterialCost.UnitOfMeasurment,
+                    Quantity = printingEstimationMaterialCost.Quantity,                   
                     DateCreated = DateTime.Today,
                     LastModified = printingEstimationMaterialCost.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = printingEstimationMaterialCost.ModifiedBy,
                     PrintingCostEstimationId = id
                 };
+
+                entity.UnitCost = item.UnitPrice;
+                entity.UnitOfMeasurment = item.UnitOfMeasurement;
+                entity.TotalCost = entity.UnitCost * entity.Quantity;
+
+                printingEstimationMaterialCost.UnitCost = entity.UnitCost;
+                printingEstimationMaterialCost.UnitOfMeasurment = entity.UnitOfMeasurment;
+                printingEstimationMaterialCost.TotalCost = entity.TotalCost;
 
                 db.PrintingEstimationMaterialCosts.Add(entity);
                 db.SaveChanges();
@@ -76,21 +82,23 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
+                var item = db.PrintingMaterialCategoryItems.Find(printingEstimationMaterialCost.PrintingMaterialCategoryItemId);
+
                 var entity = new PrintingEstimationMaterialCost
                 {
-                    PrintingEstimationMaterialCostId = printingEstimationMaterialCost.PrintingEstimationMaterialCostId,
                     PrintingMaterialCategoryId = printingEstimationMaterialCost.PrintingMaterialCategoryId,
                     PrintingMaterialCategoryItemId = printingEstimationMaterialCost.PrintingMaterialCategoryItemId,
                     Quantity = printingEstimationMaterialCost.Quantity,
-                    UnitCost = printingEstimationMaterialCost.UnitCost,
-                    TotalCost = printingEstimationMaterialCost.TotalCost,
-                    UnitOfMeasurment = printingEstimationMaterialCost.UnitOfMeasurment,
-                    DateCreated = printingEstimationMaterialCost.DateCreated,
+                    DateCreated = DateTime.Today,
                     LastModified = printingEstimationMaterialCost.LastModified,
-                    CreatedBy = printingEstimationMaterialCost.CreatedBy,
+                    CreatedBy = User.Identity.Name,
                     ModifiedBy = printingEstimationMaterialCost.ModifiedBy,
-                    PrintingCostEstimationId = printingEstimationMaterialCost.PrintingCostEstimationId
+                    PrintingCostEstimationId = printingEstimationMaterialCost.PrintingCostEstimationId,
+                    PrintingEstimationMaterialCostId = printingEstimationMaterialCost.PrintingEstimationMaterialCostId
                 };
+                entity.UnitCost = item.UnitPrice;
+                entity.UnitOfMeasurment = item.UnitOfMeasurement;
+                entity.TotalCost = entity.UnitCost * entity.Quantity;
 
                 db.PrintingEstimationMaterialCosts.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;

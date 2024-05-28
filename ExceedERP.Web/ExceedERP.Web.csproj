@@ -7003,6 +7003,10 @@
     <Content Include="Areas\Printing\Views\PrintingEstimationLaborCost\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingEstimationMaterialCost\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingOverAllCost\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeReport\ContractEmployee.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingCostEstimation\EditorTemplates\laborTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingCostEstimation\EditorTemplates\PrintingCategoryDropDownTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingCostEstimation\EditorTemplates\PrintMaterialEstimationTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

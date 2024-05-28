@@ -132,5 +132,49 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetPrintingMaterialCategory(string text)
+        {
+            var materialCategory = db.PrintingMaterialCategories.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                materialCategory = materialCategory.Where(x => x.CategoryName.Contains(text)).AsQueryable();
+            }
+            var result = materialCategory.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryId,
+                Text = s.CategoryName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPrintingMaterialCategoryItem(int materialCategoryId, string text)
+        {
+            var materialCategoryItems = db.PrintingMaterialCategoryItems.Where(x => x.PrintingMaterialCategoryId == materialCategoryId).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                materialCategoryItems = materialCategoryItems.Where(x => x.ItemName.Contains(text)).AsQueryable();
+            }
+            var result = materialCategoryItems.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryItemId,
+                Text = s.ItemName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet); 
+        }
+        public JsonResult GetPrintingProcess(string text, PrintingProcessCategory printingProcessCategory)
+        {
+            var printingProcess = db.PrintingProcesses.Where(x => x.PrintingCategory == printingProcessCategory).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                printingProcess = printingProcess.Where(x => x.ProcessName.ToLower().Contains(text.ToLower())).AsQueryable();
+            }
+            var result = printingProcess.Select(s => new
+            {
+                Value = s.PrintingProcessId,
+                Text = s.ProcessName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
     }
 }

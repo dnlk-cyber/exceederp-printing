@@ -39,6 +39,17 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Text = s.BindingStyleName
             }).ToList();
 
+            ViewData["Category"] = db.PrintingMaterialCategories.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryId,
+                Text = s.CategoryName
+            }).ToList();
+            ViewData["Item"] = db.PrintingMaterialCategoryItems.Select(s => new
+            {
+                Value = s.PrintingMaterialCategoryItemId,
+                Text = s.ItemName
+            }).ToList();
+
             return View();
         }
 

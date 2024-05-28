@@ -1,4 +1,6 @@
 ﻿
+<label>Printing Cost Estimation</label>
+
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingCostEstimation>()
                   .Name("grid")
                   .Columns(columns =>
@@ -51,20 +53,20 @@
                                       .Name("material_#=PrintingCostEstimationId#")
                                       .Columns(columns =>
                                       {
-                                          columns.Bound(c => c.PrintingMaterialCategoryId);
-                                          columns.Bound(c => c.PrintingMaterialCategoryItemId);
+                                          columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text");
+                                          columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["Item"], "Value", "Text");
+                                          columns.Bound(c => c.UnitOfMeasurment);
                                           columns.Bound(c => c.Quantity);
                                           columns.Bound(c => c.UnitCost);
                                           columns.Bound(c => c.TotalCost);
-                                          columns.Bound(c => c.UnitOfMeasurment);
-
+                                          
                                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                                       })
                                       .ToolBar(toolbar =>
                                       {
                                           toolbar.Create();
                                       })
-                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintMaterialEstimationTemplate"))
                                       .Filterable()
                                       .Scrollable()
                                       .DataSource(dataSource => dataSource
@@ -83,7 +85,7 @@
                       .Name("labor_#=PrintingCostEstimationId#")
                       .Columns(columns =>
                       {
-                          columns.Bound(c => c.ProcessCategory);
+                          columns.Bound(c => c.ProcessCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
                           columns.Bound(c => c.PrintingProcessId);
                           columns.Bound(c => c.EstimatedHours);
                           columns.Bound(c => c.LaborRate);
@@ -95,7 +97,7 @@
                       {
                           toolbar.Create();
                       })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("laborTemplate"))
                       .Filterable()
                       .Scrollable()
                       .DataSource(dataSource => dataSource
@@ -171,6 +173,24 @@
     function filterBindingStyle() {
         return {
             text: $("#BindingStyleId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function filterCategory() {
+        return {
+            text: $("#PrintingMaterialCategoryId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategoryItem() {
+        return {
+            text: $("#PrintingMaterialCategoryItemId").data("kendoDropDownList").filterInput.val(),
+            materialCategoryId: $("#PrintingMaterialCategoryId").val()
+        }
+    }
+    function filterProcess() {
+        return {
+            text: $("#PrintingProcessId").data("kendoDropDownList").filterInput.val(),
+            printingProcessCategory: $("#ProcessCategory").val()
         }
     }
 </script>
