@@ -117,70 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="No.Value" xml:space="preserve">
-    <value>No</value>
-  </data>
-  <data name="JobTitle.Value" xml:space="preserve">
-    <value>Job Title</value>
-  </data>
-  <data name="RelevantExperience.Value" xml:space="preserve">
-    <value>Relevant Experience</value>
-  </data>
-  <data name="Location.Value" xml:space="preserve">
-    <value>Location</value>
-  </data>
-  <data name="Quantity.Value" xml:space="preserve">
-    <value>Quantity</value>
-  </data>
-  <data name="Salary.Value" xml:space="preserve">
-    <value>Salary</value>
-  </data>
-  <data name="EmployementType.Value" xml:space="preserve">
-    <value>Employement Status</value>
-  </data>
-  <data name="textBox2.Value" xml:space="preserve">
-    <value>= RowNumber()</value>
-  </data>
-  <data name="textBox6.Value" xml:space="preserve">
-    <value>= Fields.Location</value>
-  </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>= Fields.JobTitle</value>
-  </data>
-  <data name="textBox18.Value" xml:space="preserve">
-    <value>= Fields.Quntity</value>
-  </data>
-  <data name="textBox22.Value" xml:space="preserve">
-    <value>= Fields.Salary</value>
-  </data>
-  <data name="textBox25.Value" xml:space="preserve">
-    <value>= Fields.RecruitmentType</value>
-  </data>
-  <data name="textBox5.Value" xml:space="preserve">
-    <value>= Fields.EduandExp</value>
-  </data>
   <data name="textBox4.Value" xml:space="preserve">
-    <value>Our company wants to recruit employees who meet the requirements for the vacant position created below. According to this, the applicants who meet the requirements and have the necessary proof of education and work experience after graduation, the applicants who are at the main office, the construction human resources development management and general service support work process personnel office, and the applicants who are at the project, through the project human resources management office, have been working for the consecutive 5 jobs since the date of this announcement. We will let you know if you can sign up in a few days. Permanent employee will be given priority/       </value>
-  </data>
-  <data name="textBox20.Value" xml:space="preserve">
-    <value>Open internal job advertisement</value>
-  </data>
-  <data name="textBox26.Value" xml:space="preserve">
-    <value> {PageNumber}</value>
-  </data>
-  <data name="Page.Value" xml:space="preserve">
-    <value>Page:</value>
-  </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="reportParameter1.Text" xml:space="preserve">
-    <value>Media Code</value>
-  </data>
-  <data name="reportParameter2.Text" xml:space="preserve">
-    <value>From</value>
-  </data>
-  <data name="reportParameter3.Text" xml:space="preserve">
-    <value>To</value>
+    <value>ድርጅታችን ከዚህ በታች ለተፈጠረው ክፍት የስራ መደብ መስፈርቱን የሚያሟሉ ሠራተኞችን አወዳድሮ በእድገት መመደብ ይፈልጋል፡፡ በዚህ መሰረት መስፈርቱን የምታሟሉ አመልካቾች አስፈላጊውን የትምህርትና የስራ ልምድ ማስረጃ ከምረቃ በኋላ ይዛችሁ ዋናው መ/ቤት የምትገኙ አመልካቾች የግንባታ ሰው ሀብት ልማት አስተዳደርና ጠቅላላ አገልግሎት ደጋፊ የስራ ሂደት ፐርሶኔል ቢሮ እንዲሁም በፕሮጀክት የምትገኙ አመልካቾች በፕሮጀክት የሰው ሀይል አስተዳደር ቢሮ በኩል ይህ ማስታወቂያ ከወጣበት ቀን ጀምሮ ባሉት ተከታታይ 5 የስራ ቀናት ውስጥ መመዝገብ የምትችሉ መሆኑን እናስታውቃለን፡፡ /ቋሚ ሠራተኛ ቅድሚያ ይሰጣል/       </value>
   </data>
 </root>

@@ -57,6 +57,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     
                     cosVM.AgreementSignDate = cos.AgreementDateAm;
                     cosVM.FullName = cos.FullName;
+                    cosVM.BirthPlace = //cos.BirthPlace;
                     cosVM.WorkOrganization = cos.Workorganization;
 
                     commit.Cosign.Add(cosVM);

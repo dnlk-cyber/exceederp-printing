@@ -30,7 +30,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             int TotalMonth = 0;
             int TotalDays = 0;
 
-           // var allPerfromace = db.EmployeeMeasurementDefinition.ToList();
+            var allPerfromace = db.EmployeeMeasurementDefinition.ToList();
 
 
             if (jobTitle != null && vacancyCod != null && vacancyId == null)
@@ -86,14 +86,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 {
                                     decimal totalResult = 0;
                                     int div = 0;
-                                    //var performance = allPerfromace.Where(x => x.EmployeeId == a.EmployeeId).ToList();
-                                    //foreach (var p in qaurters)
-                                    //{
-                                    //    var quarterName = p.AmharicName;
-                                    //    var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
-                                    //    totalResult = totalResult + oneQuarter;
+                                    var performance = allPerfromace.Where(x => x.EmployeeId == a.EmployeeId)
+                                        .ToList();
+                                    foreach (var p in qaurters)
+                                    {
+                                        var quarterName = p.AmharicName;
+                                        var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
+                                        totalResult = totalResult + oneQuarter;
 
-                                    //}
+                                    }
 
                                     internalVacancy.Perfromance = (Math.Round(totalResult / qaurters.Count(), 2)).ToString();
                                 }
@@ -115,13 +116,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 // internalVacancy.RecruitmentType = r.RecruitmentType;
                                 if (r.RecruitmentType == VacancyType.PERMANENT)
                                 {
-                                    //internalVacancy.RecruitmentType = "ቋሚ";
-                                    internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+                                    internalVacancy.RecruitmentType = "ቋሚ";
                                 }
                                 else
                                 {
-                                    //internalVacancy.RecruitmentType = "ጊዜያዊ";
-                                    internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+                                    internalVacancy.RecruitmentType = "ጊዜያዊ";
                                 }
                                 internalVacancy.No = internalVacancies.Count + 1;
                                 var emp = employees.Where(x => x.EmployeeId == a.EmployeeId).FirstOrDefault();
@@ -244,8 +243,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                                         currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empCurrrEx[e].AssignmentDate, DateTime.Now);
                                         currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e].AssignmentDate.Day, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Year).ToString();
-                                        //currentEmployeeExpriance.ToString = " አሁን";
-                                        currentEmployeeExpriance.ToString = " Now";
+                                        currentEmployeeExpriance.ToString = " አሁን";
                                     }
 
                                     currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
@@ -342,13 +340,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 //internalVacancy.RecruitmentType = r.RecruitmentType;
                                 if (r.RecruitmentType == VacancyType.PERMANENT)
                                 {
-                                    //internalVacancy.RecruitmentType = "ቋሚ";
-                                    internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+                                    internalVacancy.RecruitmentType = "ቋሚ";
                                 }
                                 else
                                 {
-                                   // internalVacancy.RecruitmentType = "ጊዜያዊ";
-                                    internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+                                    internalVacancy.RecruitmentType = "ጊዜያዊ";
                                 }
                                 internalVacancies.Add(internalVacancy);
                             }
@@ -413,14 +409,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             {
                                 decimal totalResult = 0;
                                 int div = 0;
-                                //var performance = allPerfromace.Where(x => x.EmployeeId == a.EmployeeId).ToList();
-                                //foreach (var p in qaurters)
-                                //{
-                                //    var quarterName = p.AmharicName;
-                                //    var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
-                                //    totalResult = totalResult + oneQuarter;
+                                var performance = allPerfromace.Where(x => x.EmployeeId == a.EmployeeId)
+                                    .ToList();
+                                foreach (var p in qaurters)
+                                {
+                                    var quarterName = p.AmharicName;
+                                    var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
+                                    totalResult = totalResult + oneQuarter;
 
-                                //}
+                                }
 
                                 internalVacancy.Perfromance = (Math.Round(totalResult / qaurters.Count(), 2)).ToString();
                             }
@@ -439,14 +436,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             // internalVacancy.RecruitmentType = recruits.RecruitmentType;
                             if (recruits.RecruitmentType == VacancyType.PERMANENT)
                             {
-                               // internalVacancy.RecruitmentType = "ቋሚ";
-                                internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+                                internalVacancy.RecruitmentType = "ቋሚ";
                             }
                             else
                             {
-                                //internalVacancy.RecruitmentType = "ጊዜያዊ";
-                                internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
-
+                                internalVacancy.RecruitmentType = "ጊዜያዊ";
                             }
                             internalVacancy.No = internalVacancies.Count + 1;
                             var emp = employees.Where(x => x.EmployeeId == a.EmployeeId).FirstOrDefault();
@@ -569,8 +563,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                                     currentEmployeeExpriance.Year = XAPI.Common.GetYearMonthDay(empCurrrEx[e].AssignmentDate, DateTime.Now);
                                     currentEmployeeExpriance.FromString = XAPI.EthiopicDateTime.GetEthiopicDate(empCurrrEx[e].AssignmentDate.Day, empCurrrEx[e].AssignmentDate.Month, empCurrrEx[e].AssignmentDate.Year).ToString();
-                                    //currentEmployeeExpriance.ToString = " አሁን";
-                                    currentEmployeeExpriance.ToString = " Now";
+                                    currentEmployeeExpriance.ToString = " አሁን";
                                 }
 
                                 currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
@@ -667,15 +660,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             //internalVacancy.RecruitmentType = r.RecruitmentType;
                             if (recruits.RecruitmentType == VacancyType.PERMANENT)
                             {
-                                // internalVacancy.RecruitmentType = "ቋሚ";
-                                internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
-
+                                internalVacancy.RecruitmentType = "ቋሚ";
                             }
                             else
                             {
-                                //internalVacancy.RecruitmentType = "ጊዜያዊ";
-                                internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
-
+                                internalVacancy.RecruitmentType = "ጊዜያዊ";
                             }
                             internalVacancies.Add(internalVacancy);
                         }

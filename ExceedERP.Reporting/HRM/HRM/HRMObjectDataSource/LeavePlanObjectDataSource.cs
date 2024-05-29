@@ -15,7 +15,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<LeavePlanList> GetLeavePlan(string empId,string period, string dept, string branchId,DateTime? from, DateTime? to)
+        public List<LeavePlanList> GetLeavePlan(string period, string dept, string branchId)
         {
             List<LeavePlanList> list = new List<LeavePlanList>();
             LeavePlanList employee = new LeavePlanList();
@@ -27,132 +27,107 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
             #region 
-            var leaveLists = db.LeavePlans.ToList();
+
             if (branchId != null && dept != null)
             {
                 empList = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(dept)).Where(x => x.IsActive).ToList();
-                var empIds = empList.Select(x => x.EmployeeId).ToList();
-                leaveLists = leaveLists.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-            if (branchId != null)
+            else if (branchId != null && dept == null)
             {
                 empList = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).Where(x => x.IsActive).ToList();
-                var empIds = empList.Select(x => x.EmployeeId).ToList();
-                leaveLists = leaveLists.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
-           if ( dept != null)
-           {
+            else if (branchId == null && dept != null)
+            {
                 empList = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(dept)).Where(x => x.IsActive).ToList();
-                var empIds = empList.Select(x => x.EmployeeId).ToList();
-                leaveLists = leaveLists.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+            else
+            {
 
-           }
-           if(empId != null)
-           {
-                int.TryParse(empId, out int emppId);
-                leaveLists = leaveLists.Where(x => x.EmployeeId==emppId).ToList();
+                empList = db.Person_Employee.Where(x => x.IsActive).ToList();
 
-           }
-           if (period != null && dept != null)
-           {
+            }
+
+            if (period != null && dept != null)
+            {
                 var periods = periodList.FirstOrDefault(x => x.GlFiscalYearId.ToString() == period);
-                
-                leaveLists = leaveLists.Where(
+                var leaveList = db.LeavePlans.ToList();
+                leaveList = leaveList.Where(
                     x => x.GlFiscalYearId.ToString() == period).ToList();
-                if (leaveLists.Any())
+                employee = new LeavePlanList();
+                if (leaveList.Any())
                 {
                     db = new ExceedDbContext();
-                    int.TryParse(period, out int fiscalyearId);
-                    var employees = leaveLists.GroupBy(x => new { x.EmployeeId, x.GlFiscalYearId })
-                                            .Select(g => new {
-                                                EmployeeId = g.Key.EmployeeId,
-                                                GlFiscalYearId = g.Key.GlFiscalYearId,
-                                                //LeaveAmount = g.Sum(s => s.LeaveAmount),
-                                            }).ToList();
-                    foreach (var employeePlan in employees)
+
+
+                    foreach (var t in leaveList)
                     {
-                        employee = new LeavePlanList();
-                        var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeePlan.EmployeeId);
+                        var emp = empList.FirstOrDefault(x => x.EmployeeId == t.EmployeeId);
                         if (emp != null)
                         {
-                            employee.Id = emp.EmployeeCode;
-                            employee.FullName = emp.FullNameaEnglish;
+                            var place = placments.FirstOrDefault(x => x.EmployeeId == t.EmployeeId && x.isCurrent);
+                            if (place != null)
+                            {
+                                employee = new LeavePlanList();
+
+                                employee.Id = emp.EmployeeCode;
+                                employee.FullName = emp.FullNameAmharic;//emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
+                                employee.LeavePeriod = periods.Name;
+                                employee.Amount = t.LeaveAmount;
+                                employee.From = t.From.ToShortDateString();
+                                employee.To = t.To.ToShortDateString();
+                                employee.Remark = t.Remark;
+                                var firstOrDefaul =
+                                    departments
+                                        .FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                                if (firstOrDefaul != null)
+                                    employee.Department = firstOrDefaul.Name;
+
+                            }
+                            list.Add(employee);
                         }
-                        var place = placments.FirstOrDefault(x => x.EmployeeId == employeePlan.EmployeeId && x.isCurrent);
-                        if (place != null)
-                        {
-                            var department = db.MainCompanyStructures.Find(place.OrgStructureId);
-                            employee.Department = department!=null? department.Name :"";
-                        }
-                        var fiscalyear = db.GLFiscalYears.Find(employeePlan.GlFiscalYearId);
-                        employee.LeavePeriod = fiscalyear != null ? fiscalyear.Name : "";
-                        employee.LeavePlanDetails = new List<LeavePlanDetailList>();
-                        leaveLists = leaveLists.Where(x => x.EmployeeId == employeePlan.EmployeeId).ToList();
-                        foreach (var t in leaveLists)
-                        {
-                            employee.LeavePeriod = t.GlFiscalYear.Name;
-                            var detail = new LeavePlanDetailList();
-                            detail.Amount = t.LeaveAmount;
-                            detail.From = t.From.ToShortDateString();
-                            detail.To = t.To.ToShortDateString();
-                            detail.Remark = t.Remark;
-                            employee.LeavePlanDetails.Add(detail);
-                        }
-                            
-                     list.Add(employee);
-                        
 
                     }
                 }
             }
             else
             {
-                
-                if (leaveLists.Any())
+                var periods = periodList.Select(x => x.GlFiscalYearId).ToList();
+                var leaveList = db.LeavePlans.ToList();//.Where(x => periods.Contains(x.GlFiscalYearId)).ToList();
+
+                employee = new LeavePlanList();
+                if (leaveList.Any())
                 {
                     db = new ExceedDbContext();
-                    var employees = leaveLists.GroupBy(x=> new { x.EmployeeId,x.GlFiscalYearId})
-                        .Select(g =>new { EmployeeId=g.Key.EmployeeId,
-                                        GlFiscalYearId = g.Key.GlFiscalYearId,
-                                       // LeaveAmount =g.Sum(s=>s.LeaveAmount),
-                            }).ToList();
-                    foreach (var employeePlan in employees)
+
+
+                    foreach (var t in leaveList)
                     {
-                        employee = new LeavePlanList();
-                        var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeePlan.EmployeeId);
+                        var emp = empList.FirstOrDefault(x => x.EmployeeId == t.EmployeeId);
                         if (emp != null)
                         {
-                            employee.Id = emp.EmployeeCode;
-                            employee.FullName = emp.FullNameaEnglish;
-                        }
-                        var place = placments.FirstOrDefault(x => x.EmployeeId == employeePlan.EmployeeId && x.isCurrent);
-                        if (place != null)
-                        {
-                            var department = db.MainCompanyStructures.Find(place.OrgStructureId);
-                            employee.Department = department != null ? department.Name : "";
+                            var place = placments.FirstOrDefault(x => x.EmployeeId == t.EmployeeId && x.isCurrent);
+                            if (place != null)
+                            {
+                                employee = new LeavePlanList();
+                                employee.Id = emp.EmployeeCode;
+                                employee.FullName = emp.FullNameAmharic;//emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
+                                employee.LeavePeriod = t.GlFiscalYear.Name;
+                                employee.Amount = t.LeaveAmount;
+                                employee.From = t.From.ToShortDateString();
+                                employee.To = t.To.ToShortDateString();
+                                employee.Remark = t.Remark;
+                                var firstOrDefaul =
+                                    departments
+                                        .FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                                if (firstOrDefaul != null)
+                                    employee.Department = firstOrDefaul.Name;
 
+                            }
+                            list.Add(employee);
                         }
-                        var fiscalyear = db.GLFiscalYears.Find(employeePlan.GlFiscalYearId);
-                        employee.LeavePeriod = fiscalyear != null ? fiscalyear.Name : "";
-                        employee.LeavePlanDetails = new List<LeavePlanDetailList>();
-                        leaveLists = leaveLists.Where(x => x.EmployeeId == employeePlan.EmployeeId).ToList();
-                        foreach (var t in leaveLists)
-                        {
-                            var department = db.MainCompanyStructures.Find(place.OrgStructureId);
-                            employee.Department = department != null ? department.Name : ""; var detail = new LeavePlanDetailList();
-                            detail.Amount = t.LeaveAmount;
-                            detail.From = t.From.ToShortDateString();
-                            detail.To = t.To.ToShortDateString();
-                            detail.Remark = t.Remark;
-                            employee.LeavePlanDetails.Add(detail);
-                        }
-                            
-                        list.Add(employee);
-                            
 
                     }
                 }
-               
             }
             #endregion
             return list.OrderBy(x => x.Id).ToList();

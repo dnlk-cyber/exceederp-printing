@@ -132,6 +132,18 @@
   <data name="textBox1.Value" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Date</value>
+  </data>
   <data name="textBox2.Value" xml:space="preserve">
     <value>= RowNumber("tbltraining")</value>
   </data>
@@ -147,17 +159,20 @@
   <data name="textBox3.Value" xml:space="preserve">
     <value>= Fields.Date</value>
   </data>
-  <data name="textBox5.Value" xml:space="preserve">
-    <value>= Parameters.orgStructureId.Label</value>
-  </data>
-  <data name="textBox7.Value" xml:space="preserve">
-    <value>Department</value>
-  </data>
   <data name="textBox16.Value" xml:space="preserve">
     <value>=PageNumber</value>
   </data>
   <data name="Page.Value" xml:space="preserve">
     <value>Page:</value>
+  </data>
+  <data name="EmployeeSummarybyAge.Value" xml:space="preserve">
+    <value>Training Requests</value>
+  </data>
+  <data name="textBox7.Value" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="textBox5.Value" xml:space="preserve">
+    <value>= Parameters.orgStructureId.Label</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

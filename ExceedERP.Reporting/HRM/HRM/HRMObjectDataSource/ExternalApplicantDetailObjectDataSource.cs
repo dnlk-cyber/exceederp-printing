@@ -15,13 +15,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExternalApplicantDetail> GetExternalApplicantDetail(string jobTitle, string vacancyCod, string vacancyId, DateTime from, DateTime to)
+        public List<ExternalApplicantDetail> GetExternalApplicantDetail(string jobTitle, string vacancyCod,string vacancyId, DateTime from, DateTime to)
         {
             List<ExternalApplicantDetail> internalVacancies = new List<ExternalApplicantDetail>();
             var lookups = db.Lookups;
             DateTime dateOne = new DateTime(from.Year, from.Month, from.Day);
             DateTime dateTow = new DateTime(to.Year, to.Month, to.Day);
-            var educations = db.Education.ToList();
+        var educations = db.Education.ToList();
             var otherexpriances = db.ApplicantExperience.ToList();
             var educationsList = db.ApplicantEducation.ToList();
             var trainingList = db.ApplicantTraining.ToList();
@@ -31,7 +31,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             int TotalMonth = 0;
             int TotalDays = 0;
 
-            if (vacancyCod != null && jobTitle != null)
+            if (vacancyCod!=null && jobTitle != null )
             {
                 var recruits = db.RecruitmentPlans.Where(x => x.LookupId.ToString() == jobTitle).ToList();
                 foreach (var r in recruits)
@@ -70,18 +70,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     if (firstOrDefault != null)
                                         internalVacancy.Rank = firstOrDefault.RankName;
                                     internalVacancy.Quntity = r.NoOfVacantPost;
-                                    // internalVacancy.RecruitmentType = r.RecruitmentType;
-                                    if (r.RecruitmentType == VacancyType.PERMANENT)
+                                   // internalVacancy.RecruitmentType = r.RecruitmentType;
+                                    if (r.RecruitmentType==VacancyType.PERMANENT)
                                     {
-                                        internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString().ToLower();
+                                        internalVacancy.RecruitmentType = "ቋሚ";
                                     }
                                     else
                                     {
-                                        internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString().ToLower();
+                                        internalVacancy.RecruitmentType = "ጊዜያዊ";
                                     }
                                     internalVacancy.No = internalVacancies.Count + 1;
 
-                                    // internalVacancy.ApplicantName = a.ApplicantName;
+                                   // internalVacancy.ApplicantName = a.ApplicantName;
 
 
 
@@ -104,7 +104,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                         //if (@default != null)
                                         //    otherexplist.EduLevel = @default.Description;
                                         //otherexplist.JobTitleName = e.Postion;                                    
-
+                                        
                                         //var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
                                         //var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
 
@@ -122,7 +122,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                         //TotalYear += year;
                                         //TotalMonth += month;
                                         //TotalDays += days;
-
+                                       
                                         //string val = XAPI.Common.GetConcatenatedYearMonthDay(e.From, e.To);
                                         //otherexplist.DYear = Convert.ToInt32(val.Split('-')[0]);
                                         //otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
@@ -192,14 +192,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                                         internalVacancy.Trainings.Add(empApplicantTraining);
                                     }
-
+                                   
                                     if (r.RecruitmentType == VacancyType.PERMANENT)
                                     {
-                                        internalVacancy.RecruitmentType = "Permanent";
+                                        internalVacancy.RecruitmentType = "ቋሚ";
                                     }
                                     else
                                     {
-                                        internalVacancy.RecruitmentType = "Contract";
+                                        internalVacancy.RecruitmentType = "ጊዜያዊ";
                                     }
 
                                     internalVacancies.Add(internalVacancy);
@@ -211,76 +211,78 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                 }
             }
-            else if (vacancyCod != null && vacancyId != null && jobTitle != null)
+            else if(vacancyCod !=null && vacancyId != null && jobTitle != null)
             {
-                var vaca = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId.ToString() == vacancyId);
-                var recruits = db.RecruitmentPlans.FirstOrDefault(x => x.LookupId.ToString() == jobTitle && x.RecruitmentPlanId == vaca.RecruitmentPlanId);
-
-                var vacan = new RecruitmentVacancy();
-                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.RecruitmentPlanId == recruits.RecruitmentPlanId);
-                if (vacancy != null)
-                {
-                    // vacan = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == vacancy.VacancyId);
+                var vaca = db.VaccancyPlans.FirstOrDefault(x=>x.VacancyId.ToString()==vacancyId);
+                var recruits = db.RecruitmentPlans.FirstOrDefault(x => x.LookupId.ToString() == jobTitle && x.RecruitmentPlanId==vaca.RecruitmentPlanId);
+                
+                    var vacan = new RecruitmentVacancy();
+                    var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.RecruitmentPlanId == recruits.RecruitmentPlanId);
+                    if (vacancy != null)
+                    {
+                       // vacan = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == vacancy.VacancyId);
                     vacan = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId.ToString() == vacancyId);
                 }
 
-                if (vacan != null)
-                {
-                    var vacancydetail = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == vacan.VacancyId);
-                    if (vacancydetail != null)
+                    if (vacan != null)
                     {
-                        var applicant = db.ApplicantRegistration.Where(x => x.VacancyId == vacan.VacancyId).ToList();
-                        if (applicant.Any())
+                        var vacancydetail = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == vacan.VacancyId);
+                        if (vacancydetail != null)
                         {
-                            EmployeeEducation edu = new EmployeeEducation();
-                            ExternalApplicantExpriance otherexplist = new ExternalApplicantExpriance();
-                            ExternalApplicantEducation educationList = new ExternalApplicantEducation();
-                            CurrentEmployeeExpriance currentEmployeeExpriance = new CurrentEmployeeExpriance();
-                            EmpApplicantTraining empApplicantTraining = new EmpApplicantTraining();
-                            foreach (var a in applicant)
+                            var applicant = db.ApplicantRegistration.Where(x => x.VacancyId == vacan.VacancyId).ToList();
+                            if (applicant.Any())
                             {
-                                ExternalApplicantDetail internalVacancy = new ExternalApplicantDetail();
-                                TotalYear = 0;
-                                TotalMonth = 0;
-                                TotalDays = 0;
-                                internalVacancy.JobTitle = recruits.JobtitleName;
+                                EmployeeEducation edu = new EmployeeEducation();
+                                ExternalApplicantExpriance otherexplist = new ExternalApplicantExpriance();
+                                ExternalApplicantEducation educationList = new ExternalApplicantEducation();
+                                CurrentEmployeeExpriance currentEmployeeExpriance = new CurrentEmployeeExpriance();
+                                EmpApplicantTraining empApplicantTraining = new EmpApplicantTraining();
+                                foreach (var a in applicant)
+                                {
+                                    ExternalApplicantDetail internalVacancy = new ExternalApplicantDetail();
+                                    TotalYear = 0;
+                                    TotalMonth = 0;
+                                    TotalDays = 0;
+                                    internalVacancy.JobTitle = recruits.JobtitleName;
 
-                                internalVacancy.Salary = recruits.PlannedSalary;
-                                var firstOrDefault = rankList.Where(x => x.RankId == recruits.RankId).FirstOrDefault();
-                                if (firstOrDefault != null)
-                                    internalVacancy.Rank = firstOrDefault.RankName;
-                                internalVacancy.Quntity = recruits.NoOfVacantPost;
-                                // internalVacancy.RecruitmentType = recruits.RecruitmentType;
-                                if (recruits.RecruitmentType == VacancyType.PERMANENT)
-                                {
-                                    internalVacancy.RecruitmentType = "Permanent";
-                                }
-                                else
-                                {
-                                    internalVacancy.RecruitmentType = "Contract";
-                                }
+                                    internalVacancy.Salary = recruits.PlannedSalary;
+                                    var firstOrDefault = rankList.Where(x => x.RankId == recruits.RankId).FirstOrDefault();
+                                    if (firstOrDefault != null)
+                                        internalVacancy.Rank = firstOrDefault.RankName;
+                                    internalVacancy.Quntity = recruits.NoOfVacantPost;
+                                   // internalVacancy.RecruitmentType = recruits.RecruitmentType;
+                                    if (recruits.RecruitmentType == VacancyType.PERMANENT)
+                                    {
+                                        internalVacancy.RecruitmentType = "ቋሚ";
+                                    }
+                                    else
+                                    {
+                                        internalVacancy.RecruitmentType = "ጊዜያዊ";
+                                    }
                                 internalVacancy.No = internalVacancies.Count + 1;
 
-                                //internalVacancy.ApplicantName = a.ApplicantName;
+                                    //internalVacancy.ApplicantName = a.ApplicantName;
 
-                                internalVacancy.OtherExpriance = new List<ExternalApplicantExpriance>();
-                                internalVacancy.Education = new List<ExternalApplicantEducation>();
 
-                                var empOtherEx = otherexpriances.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
-                                var empEduc = educationsList.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
-                                foreach (var e in empOtherEx)
-                                {
-                                    //otherexplist = new ExternalApplicantExpriance();
-                                    //otherexplist.From = e.From.ToShortDateString();
-                                    //otherexplist.To = e.To.ToShortDateString();
-                                    //otherexplist.CompanyName = e.OrganizationName;
-                                    //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
-                                    //if (orDefault != null)
-                                    //    otherexplist.EduField = orDefault.Description;
 
-                                    //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
-                                    //if (@default != null)
-                                    //    otherexplist.EduLevel = @default.Description;
+                                    internalVacancy.OtherExpriance = new List<ExternalApplicantExpriance>();
+                                    internalVacancy.Education = new List<ExternalApplicantEducation>();
+
+                                    var empOtherEx = otherexpriances.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
+                                    var empEduc = educationsList.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
+                                    foreach (var e in empOtherEx)
+                                    {
+                                        //otherexplist = new ExternalApplicantExpriance();
+                                        //otherexplist.From = e.From.ToShortDateString();
+                                        //otherexplist.To = e.To.ToShortDateString();
+                                        //otherexplist.CompanyName = e.OrganizationName;
+                                        //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
+                                        //if (orDefault != null)
+                                        //    otherexplist.EduField = orDefault.Description;
+
+                                        //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
+                                        //if (@default != null)
+                                        //    otherexplist.EduLevel = @default.Description;
                                     //    otherexplist.JobTitleName = e.Postion;
                                     //var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
                                     //var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
@@ -305,7 +307,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     //otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
 
                                     internalVacancy.OtherExpriance.Add(otherexplist);
-                                }
+                                    }
 
                                 int TotalOtherYear = internalVacancy.OtherExpriance.Sum(x => x.DYear);
 
@@ -342,55 +344,57 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 internalVacancy.TotalMonth = TotalMonth.ToString();
                                 internalVacancy.TotalExpriance = XAPI.Common.GetYearAndMonth(TotalYear, TotalMonth, TotalDays);
                                 foreach (var e in empEduc)
-                                {
-                                    //educationList = new ExternalApplicantEducation();
-                                    ////   educationList.From = e.From.ToShortDateString();
-                                    //educationList.To = e.To.ToShortDateString();
-                                    //educationList.EduInst = e.EducationInstitution;
-                                    //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
-                                    //if (orDefault != null)
-                                    //    educationList.EduField = orDefault.Description;
+                                    {
+                                        //educationList = new ExternalApplicantEducation();
+                                        ////   educationList.From = e.From.ToShortDateString();
+                                        //educationList.To = e.To.ToShortDateString();
+                                        //educationList.EduInst = e.EducationInstitution;
+                                        //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
+                                        //if (orDefault != null)
+                                        //    educationList.EduField = orDefault.Description;
 
-                                    //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
-                                    //if (@default != null)
-                                    //    educationList.EduLevel = @default.Description;
+                                        //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
+                                        //if (@default != null)
+                                        //    educationList.EduLevel = @default.Description;
 
-                                    //internalVacancy.Education.Add(educationList);
-                                }
-                                internalVacancy.Trainings = new List<EmpApplicantTraining>();
-                                var emptrainings = trainingList.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
-                                foreach (var t in emptrainings)
-                                {
+                                        //internalVacancy.Education.Add(educationList);
+                                    }
+                                    internalVacancy.Trainings = new List<EmpApplicantTraining>();
+                                    var emptrainings = trainingList.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
+                                    foreach (var t in emptrainings)
+                                    {
 
 
-                                    empApplicantTraining = new EmpApplicantTraining();
-                                    empApplicantTraining.CourseName = t.TrainingName;
+                                        empApplicantTraining = new EmpApplicantTraining();
+                                        empApplicantTraining.CourseName = t.TrainingName;
 
-                                    internalVacancy.Trainings.Add(empApplicantTraining);
-                                }
-
-                                //  internalVacancy.RecruitmentType = recruits.RecruitmentType;
-                                if (recruits.RecruitmentType == VacancyType.PERMANENT)
-                                {
-                                    internalVacancy.RecruitmentType = "Permanent";
-                                }
-                                else
-                                {
-                                    internalVacancy.RecruitmentType = "Contract";
-                                }
+                                        internalVacancy.Trainings.Add(empApplicantTraining);
+                                    }
+                             
+                                  //  internalVacancy.RecruitmentType = recruits.RecruitmentType;
+                                    if (recruits.RecruitmentType == VacancyType.PERMANENT)
+                                    {
+                                        internalVacancy.RecruitmentType = "ቋሚ";
+                                    }
+                                    else
+                                    {
+                                        internalVacancy.RecruitmentType = "ጊዜያዊ";
+                                    }
 
                                 internalVacancies.Add(internalVacancy);
+                                }
                             }
+
                         }
-
                     }
-                }
-            }
 
+                
+            }
+           
             return internalVacancies.OrderBy(x => x.No).ToList(); ; //internalVacancies.OrderBy(x => x.No).ToList();
         }
     }
-
-
-}
+          
+        
+    }
 

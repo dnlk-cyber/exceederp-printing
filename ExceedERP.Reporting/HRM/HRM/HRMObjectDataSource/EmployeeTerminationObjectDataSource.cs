@@ -6,7 +6,6 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -66,7 +65,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     EmployeeInfo.EmployeeId = e.EmployeeCode;
 
-                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetLocalizedGender(e.Gender);
+                    if (e.Gender == 0)
+                    {
+                        EmployeeInfo.Sex = "ወንድ";
+                    }
+                    else
+                    {
+                        EmployeeInfo.Sex = "ሴት";
+                    }
+
                     EmployeeInfo.FullName = e.FullNameAmharic;
 
                     var look = db.Lookups.FirstOrDefault(x => x.LookupId == l.LookupId);

@@ -117,7 +117,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     var diff = termination.TerminationDate.Subtract(termination.ApplicationDate).Days;
                     if (diff < 30)
                     {
-                        EmployeeInfo.Punishment = "This Employee Has a Punishment ";
+                        EmployeeInfo.Punishment = "እኚህ ሰራተኛ ቅጣት አለባቸው ";
                     }
 
                     var placement = db.Placements.Where(y => y.EmployeeId == personEmployee.EmployeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();

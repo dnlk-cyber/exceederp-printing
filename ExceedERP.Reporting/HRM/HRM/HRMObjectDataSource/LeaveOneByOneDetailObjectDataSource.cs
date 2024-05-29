@@ -92,7 +92,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         //var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired).ToList();
 
 
-                        var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == id && x.GlFiscalYearId == period).OrderBy(x=>x.LeaveEntitleId).ToList();
+                        var leaveEntitles = db.LeavesEntitle.Where(x => x.EmployeeId == id && x.GlFiscalYearId == period).ToList();
                         if (leaveEntitles.Any())
                         {
                             foreach (var leaveEntitle in leaveEntitles)

@@ -6,7 +6,6 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -17,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeTraining> GetEmployeeTraining(string type, string status, DateTime from, DateTime to, string branchId, string orgStructureId,string businessUnit)
+        public List<EmployeeTraining> GetEmployeeTraining(string type, string status, DateTime from, DateTime to, string branchId, string orgStructureId)
         {
             List<EmployeeTraining> EmployeeInfoList = new List<EmployeeTraining>();
             EmployeeTraining EmployeeInfo = new EmployeeTraining();
@@ -43,11 +42,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(orgStructureId, out int orgId);
                 placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
-            }
-            if (businessUnit != null)
-            {
-                int.TryParse(businessUnit, out int businessUnitId);
-                placements = placements.Where(x=>x.BusinessUnitId==businessUnitId).ToList();
             }
 
             bool idCompleted = false;
@@ -95,7 +89,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 EmployeeInfo = new EmployeeTraining();
                                 EmployeeInfo.EmployeeId = e.EmployeeCode;
 
-                                EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
+                                if (e.Gender == 0)
+                                {
+                                    EmployeeInfo.Sex = "ወንድ";
+                                }
+                                else
+                                {
+                                    EmployeeInfo.Sex = "ሴት";
+                                }
                                 EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
                                 var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
                                 var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
@@ -133,11 +134,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 //EmployeeInfo.TrainingType = l.TrainingType.ToString();
                                 if (l.TrainingType == TrainingType.TRAINING)
                                 {
-                                    EmployeeInfo.TrainingType = "Training";
+                                    EmployeeInfo.TrainingType = "ስልጠና";
                                 }
                                 else
                                 {
-                                    EmployeeInfo.TrainingType = "Education";
+                                    EmployeeInfo.TrainingType = "ትምህርት";
                                 }
 
                                 EmployeeInfoList.Add(EmployeeInfo);
@@ -173,7 +174,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 {
                                     EmployeeInfo = new EmployeeTraining();
                                     EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                    EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
+                                    if (e.Gender == 0)
+                                    {
+                                        EmployeeInfo.Sex = "ወንድ";
+                                    }
+                                    else
+                                    {
+                                        EmployeeInfo.Sex = "ሴት";
+                                    }
                                     EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
                                     var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
                                     var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
@@ -211,11 +219,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     // EmployeeInfo.TrainingType = l.TrainingType.ToString();
                                     if (l.TrainingType == TrainingType.TRAINING)
                                     {
-                                        EmployeeInfo.TrainingType = "Training";
+                                        EmployeeInfo.TrainingType = "ስልጠና";
                                     }
                                     else
                                     {
-                                        EmployeeInfo.TrainingType = "Education";
+                                        EmployeeInfo.TrainingType = "ትምህርት";
                                     }
 
                                     EmployeeInfoList.Add(EmployeeInfo);
@@ -257,7 +265,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                                 EmployeeInfo = new EmployeeTraining();
                                 EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
+                                if (e.Gender == 0)
+                                {
+                                    EmployeeInfo.Sex = "ወንድ";
+                                }
+                                else
+                                {
+                                    EmployeeInfo.Sex = "ሴት";
+                                }
                                 EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
 
                                 var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
@@ -297,11 +312,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 // EmployeeInfo.TrainingType = l.TrainingType.ToString();
                                 if (l.TrainingType == TrainingType.TRAINING)
                                 {
-                                    EmployeeInfo.TrainingType = "Training";
+                                    EmployeeInfo.TrainingType = "ስልጠና";
                                 }
                                 else
                                 {
-                                    EmployeeInfo.TrainingType = "Education";
+                                    EmployeeInfo.TrainingType = "ትምህርት";
                                 }
 
                                 EmployeeInfoList.Add(EmployeeInfo);

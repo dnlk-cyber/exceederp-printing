@@ -6,7 +6,6 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -28,10 +27,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             switch (sex)
             {
                 case "MALE":
-                    gender = Gender.MALE.ToString();
+                    gender = "ወንድ";
                     break;
                 case "FEMALE":
-                    gender = Gender.FEMALE.ToString();
+                    gender = "ሴት";
                     break;
             }
 
@@ -74,12 +73,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             if (employee != null)
                             {
-                                EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                                if (employee.Gender == Gender.MALE)
+                                {
+                                    EmployeeInfo.Sex = "ወንድ";
+                                }
+                                else if (employee.Gender == Gender.FEMALE)
+                                {
+                                    EmployeeInfo.Sex = "ሴት";
+                                }
                                 EmployeeInfo.IdNumber = employee.EmployeeCode;
                                 EmployeeInfo.FullName = employee.FullNameAmharic;
                                 EmployeeInfo.CriteriaName = value.IdNumber;
                                 EmployeeInfo.Value = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
-                                //EmployeeInfo.PensionDate = CalculatePensionDate(60, employee.DateOfBirth);
                             }
 
                             var tin = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.TIN);
@@ -107,13 +112,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         {
                             EmployeeInfo.CriteriaName = "--";
 
-                           
+                            EmployeeInfo.Sex = gender;
 
                             var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
                             if (employee != null)
                             {
-                                EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
-
                                 EmployeeInfo.IdNumber = employee.EmployeeCode;
                                 EmployeeInfo.FullName = employee.FullNameAmharic;
                                // EmployeeInfo.CriteriaName = value.IdNumber;
@@ -144,11 +147,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
                     if (employee != null)
                     {
-                        EmployeeInfo.Sex = EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+                        if(employee.Gender == Gender.MALE)
+                        {
+                            EmployeeInfo.Sex = "ወንድ";
+                        }
+                        else if(employee.Gender == Gender.FEMALE)
+                        {
+                            EmployeeInfo.Sex = "ሴት";
+                        }
                         EmployeeInfo.IdNumber = employee.EmployeeCode;
                         EmployeeInfo.FullName = employee.FullNameAmharic;
                         EmployeeInfo.Value = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
-                        
                     }
 
                     var tin = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.TIN);
@@ -173,25 +182,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             return EmployeeInfoList.OrderBy(x => x.IdNumber).ToList();
-        }
-        public DateTime CalculatePensionDate(int retirementAge,DateTime DateOfBirth)
-        {
-            // Calculate the current age of the employee
-            int currentAge = DateTime.Now.Year - DateOfBirth.Year;
-
-            // Check if the birthday has occurred this year
-            if (DateTime.Now < DateOfBirth.AddYears(currentAge))
-            {
-                currentAge--;
-            }
-
-            // Calculate the pension date by adding the remaining years to retirement age
-            int remainingYears = retirementAge - currentAge;
-
-            // Calculate the pension date based on years of service and retirement age
-           DateTime pensionDate = DateTime.Now.AddYears(remainingYears);
-
-            return pensionDate;
         }
     }
 }

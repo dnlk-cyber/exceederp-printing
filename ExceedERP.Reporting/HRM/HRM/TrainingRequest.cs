@@ -11,22 +11,21 @@ namespace ExceedERP.Reporting.HRM.HRM
     {
         public TrainingRequest()
         {
-            // var cultureInfo = new System.Globalization.CultureInfo("am");
+           // var cultureInfo = new System.Globalization.CultureInfo("am");
 
-
+           
             //
             // 
             // Required for telerik Reporting designer support
             //
-            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.DefaultThreadCurrentCulture;
-            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.DefaultThreadCurrentCulture;
             InitializeComponent();
     
             //
             // TODO: Add any constructor code after InitializeComponent call
             //
             this.DataSource = Organization;
-            
+            var culture = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
+            var cultures = new CultureInfo(culture);
           
           
            

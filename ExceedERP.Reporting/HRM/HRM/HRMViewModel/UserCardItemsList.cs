@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
 {
@@ -34,6 +34,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string MTITNo { get; set; }
         public DateTime MTITDate { get; set; }
         public string GRNNo { get; set; }
-        public DateTime ? GRNDate { get; set; }
+        public DateTime GRNDate { get; set; }
     }
 }

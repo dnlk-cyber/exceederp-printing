@@ -87,7 +87,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             var promotedEmployee = new PromotedEmployee();
             if (branchId != null || empId != null || orgId != null)
             {
-               // var allPerfromace = db.EmployeeMeasurementDefinition.ToList();
+                var allPerfromace = db.EmployeeMeasurementDefinition.ToList();
                 foreach (var r in list)
                 {
                     EmployeeEducation edu;
@@ -120,18 +120,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         decimal totalResult = 0;
                         int div = 0;
-                        //var performance = allPerfromace.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
-                        //foreach (var p in qaurters)
-                        //{
-                        //    var quarterName = p.AmharicName;
-                        //    if (performance.Any())
-                        //    {
-                        //        var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
+                        var performance = allPerfromace.Where(x => x.EmployeeId == r.e.EmployeeId).ToList();
+                        foreach (var p in qaurters)
+                        {
+                            var quarterName = p.AmharicName;
+                            if (performance.Any())
+                            {
+                                var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
 
-                        //        totalResult = totalResult + oneQuarter;
-                        //    }
+                                totalResult = totalResult + oneQuarter;
+                            }
                            
-                        //}
+                        }
                        
                             promotedEmployee.Perfromance = (Math.Round(totalResult / qaurters.Count(), 2)).ToString();
                        

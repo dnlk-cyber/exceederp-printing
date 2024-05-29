@@ -117,92 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox1.Value" xml:space="preserve">
-    <value>he case:- deals with employment.</value>
-  </data>
-  <data name="textBox2.Value" xml:space="preserve">
-    <value>To：</value>
-  </data>
-  <data name="textBox3.Value" xml:space="preserve">
-    <value>= Fields.FullName</value>
-  </data>
   <data name="textBox5.Value" xml:space="preserve">
-    <value>According to the notification issued by the organization for the assignment of work process/project/employee in   {=Fields.CurrentDepartement} ,  they have been qualified for the position and are allowed to be employed by the organization.
-Therefore, in the company's salary scale at the rank  {=Fields.CurrentRank}     You will be paid   {=Fields.CurrentSalary} (  {=Fields.CurrentAmount}   Birr) from	{=Fields.AssignmentDate} year 377/96 Article 11 No. 3 for a trial period of 45 days in {=Fields.CurrentDepartement}  / {=Fields.CurrentJobTitle}	announcing that the work process/project/job position is set to work; Recognizing that your assigned work responsibilities require high professional competence, honesty, caution and hard work, reminding you to carry out your assigned work responsibilities effectively, {=Fields.CurrentDepartement} 		to record the work process / project / of the hire and to prepare payroll every month on behalf of the employee and make salary payment and the work performance on time. We inform him to submit.</value>
-  </data>
-  <data name="textBox28.Value" xml:space="preserve">
-    <value>= Fields.Abbreviation</value>
-  </data>
-  <data name="textBox13.Value" xml:space="preserve">
-    <value>With Best regard</value>
-  </data>
-  <data name="txtOrgName.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox6.Value" xml:space="preserve">
-    <value>= Fields.AmharicName</value>
-  </data>
-  <data name="textBox29.Value" xml:space="preserve">
-    <value>Date:</value>
-  </data>
-  <data name="textBox30.Value" xml:space="preserve">
-    <value>=Fields.Date</value>
-  </data>
-  <data name="textBox11.Value" xml:space="preserve">
-    <value>Number:</value>
-  </data>
-  <data name="textBox24.Value" xml:space="preserve">
-    <value>____________________</value>
-  </data>
-  <data name="textBox17.Value" xml:space="preserve">
-    <value>= Fields.Tel</value>
-  </data>
-  <data name="textBox27.Value" xml:space="preserve">
-    <value>= Fields.Fax</value>
-  </data>
-  <data name="textBox16.Value" xml:space="preserve">
-    <value>= Fields.Pobox</value>
-  </data>
-  <data name="textBox4.Value" xml:space="preserve">
-    <value>= Fields.Email</value>
-  </data>
-  <data name="textBox31.Value" xml:space="preserve">
-    <value>= Fields.Address</value>
-  </data>
-  <data name="textBox9.Value" xml:space="preserve">
-    <value>= Fields.Abbreviation</value>
-  </data>
-  <data name="textBox12.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox7.Value" xml:space="preserve">
-    <value>+</value>
-  </data>
-  <data name="textBox14.Value" xml:space="preserve">
-    <value>= Fields.Name</value>
-  </data>
-  <data name="textBox15.Value" xml:space="preserve">
-    <value>+</value>
-  </data>
-  <data name="textBox10.Value" xml:space="preserve">
-    <value>To Inform</value>
-  </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>CCC</value>
-  </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="reportParameter1.Text" xml:space="preserve">
-    <value>Employee</value>
-  </data>
-  <data name="reportParameter2.Text" xml:space="preserve">
-    <value>To Inform</value>
-  </data>
-  <data name="reportParameter3.Text" xml:space="preserve">
-    <value>CCC</value>
-  </data>
-  <data name="reportParameter4.Text" xml:space="preserve">
-    <value>With Header?</value>
+    <value>በድርጅቱ በ  {=Fields.CurrentDepartement}        የስራ ሂደት/ፕሮጀክት/ ሰራተኛ  ለመመደብ ባወጣው ማስታወቂያ መሰረት ተወዳድረው ለስራ መደብ ብቁ ሆነው ስለተገኙ በድርጅቱ እንዲቀጠሩ ተፈቅዷል፡፡
+ስለሆነም በድርጅቱ የደመወዝ ስኬል በደረጃ {=Fields.CurrentRank}      ለሥራ መደቡ የተወሰነውን  ደመወዝ በወር ያልተጣራ ብር  {=Fields.CurrentSalary} (  {=Fields.CurrentAmount}   ብር) እየተከፈልዎ     እ.ኤ.አ ከ	{=Fields.AssignmentDate} ዓ.ም ጀምሮ በአሠሪና ሠራተኛ ጉዳይ አዋጅ 377/96 አንቀፅ 11 ተ.ቁ 3 መሠረት ለ45 ቀን የሙከራ ጊዜ በ{=Fields.CurrentDepartement}  / {=Fields.CurrentJobTitle}	የስራ ሂደት/ፕሮጀክት/ የስራ መደብ   እንዲሰሩ የተወሰነ መሆኑን እያስታወቅን፤ የተመደቡበት የሥራ ኃላፊነት ከፍተኛ የሙያ  ብቃትን፣ታማኝነትን፤ጥንቃቄንና፤ታታሪነትን የሚጠይቅ መሆኑን ተገንዝበው የተጣለብዎትን የስራ ኃላፊነት በብቃት እንዲወጡ እያሳሰብን፣የ{=Fields.CurrentDepartement} 		የስራ ሂደትም /ፕሮጀክትም/  ቅጥሩን እንዲመዘግብና በተቀጣሪው/ዋ ስም በየወሩ ፔሮል እያዘጋጀ የደመወዝ ክፍያ እንዲፈጽም እንዲሁም የስራ አፈፃፀሙንም በወቅቱ እንዲያቀርብ  እናስታውቃለን፡፡
+</value>
   </data>
 </root>

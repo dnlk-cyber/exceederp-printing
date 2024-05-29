@@ -7,7 +7,5 @@
         public int TotalEmployee { get; set; }
         public int ToBeStaff { get; set; }
         public int VacantPos { get; set; }
-        public string Status { get; set; }
-
     }
 }

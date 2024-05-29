@@ -9,11 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
@@ -27,7 +25,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
         {
             List<EmployeeExperienceLetter> EmployeeInfoList = new List<EmployeeExperienceLetter>();
             EmployeeExperienceLetter EmployeeInfo = new EmployeeExperienceLetter();
-            List<ExpLetter> expLetterList = new List<ExpLetter>();
+
             var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
 
             if (header)
@@ -106,8 +104,6 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     }
                 }
             }
-
-
             if (id != null)
             {
                 int.TryParse(id, out int empId);
@@ -128,9 +124,9 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                             EmployeeInfo.IsTerminated = false;
                         }
 
+                     
 
-
-                        if (language != null && language.ToLower() == "local")
+                        if (language != null && language.ToLower() == "amharic")
                         {
                             EmployeeInfo.CheckTermination = " ጠቅላላ የወር ደሞዝ ";
                             EmployeeInfo.CheckCurrent = "";
@@ -167,18 +163,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                                     EmployeeInfo.SalaryInWord = Convert.ToInt32(EmployeeInfo.CurrentSalary).ToWordAmharic();
                                 }
                             }
-                            string allowanceList = "";
-                            var employeeAllowances = db.AllowancePerEmployees.Where(x => x.EmployeeId == personEmployee.EmployeeId).ToList();
-                            foreach(var allowance in employeeAllowances)
-                            {
-                                var allownacevaName = db.AllowanceDefinations.Find(allowance.AllowanceDefinationId);
-                                if(allownacevaName != null)
-                                {
-                                    allowanceList += allownacevaName.AllowanceType.ToString() +"-"+allownacevaName.Amount+""+allownacevaName.AmtPercent.ToString()+",";
-                                }
-                                
-                            }
-                            EmployeeInfo.Allowance = allowanceList;
+
                             EmployeeInfo.Expriance = new List<CurrentEmployeeExpriance>();
 
                             for (int e = 0; e < placements.Count(); e++)
@@ -318,18 +303,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                                     EmployeeInfo.SalaryInWord = XAPI.NumberExtensions.toWords(Convert.ToInt32(EmployeeInfo.CurrentSalary));
                                 }
                             }
-                            string allowanceList = "";
-                            var employeeAllowances = db.AllowancePerEmployees.Where(x => x.EmployeeId == personEmployee.EmployeeId).ToList();
-                            foreach (var allowance in employeeAllowances)
-                            {
-                                var allownacevaName = db.AllowanceDefinations.Find(allowance.AllowanceDefinationId);
-                                if (allownacevaName != null)
-                                {
-                                    allowanceList += allownacevaName.AllowanceName + "-" + allownacevaName.AllowanceType.ToString() + "-" + allownacevaName.Amount + " " + allownacevaName.AmtPercent.ToString() + ",";
-                                }
 
-                            }
-                            EmployeeInfo.Allowance = allowanceList;
                             EmployeeInfo.Expriance = new List<CurrentEmployeeExpriance>();
 
                             for (int e = 0; e < placements.Count(); e++)
@@ -434,131 +408,131 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     }
 
                 }
-
-
-
             }
-                foreach (var exp in EmployeeInfoList)
+
+
+            List<ExpLetter> expLetterList = new List<ExpLetter>();
+
+            foreach (var exp in EmployeeInfoList)
+            {
+
+                var letter = new ExpLetter();
+
+                #region Headers
+
+                letter.Abbreviation = exp.Abbreviation;
+                letter.Address = exp.Address;
+                letter.AmharicName = exp.AmharicName;
+                letter.City = exp.City;
+                letter.Email = exp.Email;
+                letter.EnglishName = exp.EnglishName;
+                letter.Fax = exp.Fax;
+                letter.LogoFileName = exp.LogoFileName;
+                letter.Name = exp.Name;
+                letter.Pobox = exp.Pobox;
+                letter.Tel = exp.Tel;
+                letter.WebSite = exp.WebSite;
+
+                #endregion
+
+                if (language != null && language.ToLower() == "amharic")
                 {
-                    var letter = new ExpLetter();
+                    var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.ExperianceAm);
 
-                    #region Headers
-
-                    letter.Abbreviation = exp.Abbreviation;
-                    letter.Address = exp.Address;
-                    letter.AmharicName = exp.AmharicName;
-                    letter.City = exp.City;
-                    letter.Email = exp.Email;
-                    letter.EnglishName = exp.EnglishName;
-                    letter.Fax = exp.Fax;
-                    letter.LogoFileName = exp.LogoFileName;
-                    letter.Name = exp.Name;
-                    letter.Pobox = exp.Pobox;
-                    letter.Tel = exp.Tel;
-                    letter.WebSite = exp.WebSite;
-
-                    #endregion
-
-                    if (language != null && language.ToLower() == "local")
+                    if (template != null)
                     {
-                        var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.ExperianceAm);
+                        letter.Title = "ለሚመለከተው ሁሉ ";                       
 
-                        if (template != null)
+                        string doc = "";
+
+                        doc = template.Document.Replace("-ApplicantName-", exp.ApplicantName);
+                        doc = doc.Replace("-ApplicationDate-", exp.Date);
+                        doc = doc.Replace("-HimHer-", exp.HimHer);
+                        doc = doc.Replace("-HisHer-", exp.HisHer);
+
+                        if (exp.IsTerminated)
                         {
-                            letter.Title = "ለሚመለከተው ሁሉ ";
-
-                            string doc = "";
-
-                            doc = template.Document.Replace("-ApplicantName-", exp.ApplicantName);
-                            doc = doc.Replace("-ApplicationDate-", exp.Date);
-                            doc = doc.Replace("-HimHer-", exp.HimHer);
-                            doc = doc.Replace("-HisHer-", exp.HisHer);
-
-                            if (exp.IsTerminated)
-                            {
-                                doc = doc.Replace("-IsTerminated-", "ይከፈላቸው የነበረው");
-                                doc = doc.Replace("-IfTerminated-", "");
-                            }
-                            else
-                            {
-                                doc = doc.Replace("-IsTerminated-", " አሁን እየተከፈላቸው ያለ ");
-                                doc = doc.Replace("-IfTerminated-", " ይህ የስራ ልምድ እንደ ስራ መልቀቂያ አያገለግልም፡፡ ");
-
-                            }
-
-                            string experienceConcat = "";
-                            int rowNo = 1;
-
-                            foreach (var con in exp.Expriance)
-                            {
-                                experienceConcat = experienceConcat + " - " + con.JobTitleName + " ከ " + con.From + " እስከ " + con.To + " በ " + con.Branch + " " + con.RecruitmentType + "\n";
-                                rowNo++;
-                            }
-
-                            foreach (var con in exp.OtherExpriance)
-                            {
-                                experienceConcat = experienceConcat + " - " + con.JobTitleName + " ከ " + con.From + " እስከ " + con.To + " በ " + con.CompanyName + "\n";
-                                rowNo++;
-                            }
-
-                            doc = doc.Replace("-Experiences-", experienceConcat);
-
-                            string salary = exp.CurrentSalary + "/" + exp.SalaryInWord + "/" + ", አበል" + exp.Allowance;
-                            doc = doc.Replace("-Salary-", salary);
-
-                            letter.Experience = doc;
-
-                            expLetterList.Add(letter);
+                            doc = doc.Replace("-IsTerminated-", "ይከፈላቸው የነበረው");
+                            doc = doc.Replace("-IfTerminated-", "");
                         }
-                    }
-                    else
-                    {
-                        letter.Title = "TO WHOM IT MAY CONCERN";
-
-                        var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.ExperianceEng);
-
-                        if (template != null)
+                        else
                         {
-                            string doc = "";
+                            doc = doc.Replace("-IsTerminated-", " አሁን እየተከፈላቸው ያለ ");
+                            doc = doc.Replace("-IfTerminated-", " ይህ የስራ ልምድ እንደ ስራ መልቀቂያ አያገለግልም፡፡ ");
 
-                            doc = template.Document.Replace("-ApplicantName-", exp.ApplicantName);
-                            doc = doc.Replace("-ApplicationDate-", exp.Date);
-                            doc = doc.Replace("-HimHer-", exp.HimHer);
-                            doc = doc.Replace("-HisHer-", exp.HisHer);
-
-                            string experienceConcat = "";
-                            int rowNo = 1;
-
-
-                            foreach (var con in exp.Expriance)
-                            {
-                                experienceConcat = experienceConcat + " - " + con.JobTitleName + " from " + con.From + " to " + con.To + " at " + con.Branch + " " + con.RecruitmentType + "\n";
-                                rowNo++;
-                            }
-
-                            foreach (var con in exp.OtherExpriance)
-                            {
-                                experienceConcat = experienceConcat + " - " + con.JobTitleName + " from " + con.From + " to " + con.To + " at " + con.CompanyName + "\n";
-                                rowNo++;
-                            }
-
-
-                            doc = doc.Replace("-Experiences-", experienceConcat);
-                            
-                            string salary = exp.CurrentSalary + "/" + exp.SalaryInWord + "/" + ",  allowance of " + exp.Allowance;
-                            doc = doc.Replace("-Salary-", salary);
-
-                            letter.Experience = doc;
-
-                            expLetterList.Add(letter);
                         }
+
+                        string experienceConcat = "";
+                        int rowNo = 1;
+
+                        foreach (var con in exp.Expriance)
+                        {
+                            experienceConcat = experienceConcat + " - " + con.JobTitleName + " ከ " + con.From + " እስከ " + con.To + " በ " + con.Branch + " " + con.RecruitmentType + "\n";
+                            rowNo++;
+                        }
+
+                        foreach (var con in exp.OtherExpriance)
+                        {
+                            experienceConcat = experienceConcat + " - " + con.JobTitleName + " ከ " + con.From + " እስከ " + con.To + " በ " + con.CompanyName + "\n";
+                            rowNo++;
+                        }
+
+                        doc = doc.Replace("-Experiences-", experienceConcat);
+
+                        string salary = exp.CurrentSalary + "/" + exp.SalaryInWord + "/";
+                        doc = doc.Replace("-Salary-", salary);
+
+                        letter.Experience = doc;
+
+                        expLetterList.Add(letter);
                     }
-                   
                 }
+                else
+                {
+                    letter.Title = "TO WHOM IT MAY CONCERN";
 
-           
+                    var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.ExperianceEng);
+
+                    if (template != null)
+                    {
+                        string doc = "";
+
+                        doc = template.Document.Replace("-ApplicantName-", exp.ApplicantName);
+                        doc = doc.Replace("-ApplicationDate-", exp.Date);
+                        doc = doc.Replace("-HimHer-", exp.HimHer);
+                        doc = doc.Replace("-HisHer-", exp.HisHer);
+
+                        string experienceConcat = "";
+                        int rowNo = 1;
+
+
+                        foreach (var con in exp.Expriance)
+                        {
+                            experienceConcat = experienceConcat + " - " + con.JobTitleName + " from " + con.From + " to " + con.To + " at " + con.Branch + " " + con.RecruitmentType + "\n";
+                            rowNo++;
+                        }
+
+                        foreach (var con in exp.OtherExpriance)
+                        {
+                            experienceConcat = experienceConcat + " - " + con.JobTitleName + " from " + con.From + " to " + con.To + " at " + con.CompanyName + "\n";
+                            rowNo++;
+                        }
+
+
+                        doc = doc.Replace("-Experiences-", experienceConcat);
+
+                        string salary = exp.CurrentSalary + "/" + exp.SalaryInWord + "/";
+                        doc = doc.Replace("-Salary-", salary);
+
+                        letter.Experience = doc;
+
+                        expLetterList.Add(letter);
+                    }
+                }
+            }
+
+
             return expLetterList;
-           
         }
 
         public List<YearMonthDay> GetYearMonthDays(DateTime from, DateTime to)
@@ -578,17 +552,6 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
             return differenceList;
         }
 
-        public static Image ByteArrayToImage(byte[] byteArrayIn)
-        {
-            if (byteArrayIn != null)
-            {
-                MemoryStream ms = new MemoryStream(byteArrayIn);
-                Image returnImage = Image.FromStream(ms);
-                return returnImage;
-            }
-            return null;
-
-        }
     }
 
     public class YearMonthDay
@@ -601,7 +564,6 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
     {
         public string Experience { get; set; }
         public string Title { get; set; }
-        public string Allowance { get; set; }
 
        ////// Header ///////////
         public string Name { get; set; }
@@ -616,6 +578,5 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
         public string Fax { get; set; }
         public string Pobox { get; set; }
         public string Tel { get; set; }
-        public Image WaterMark { get; set; }
     }
 }

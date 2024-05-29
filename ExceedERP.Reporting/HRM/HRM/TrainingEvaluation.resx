@@ -117,91 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox1.Value" xml:space="preserve">
-    <value>No</value>
-  </data>
-  <data name="textBox3.Value" xml:space="preserve">
-    <value>Training evaluation questionnaires</value>
-  </data>
-  <data name="textBox9.Value" xml:space="preserve">
-    <value>Very High</value>
-  </data>
-  <data name="textBox8.Value" xml:space="preserve">
-    <value>Hign</value>
-  </data>
-  <data name="textBox12.Value" xml:space="preserve">
-    <value>Muddium</value>
-  </data>
-  <data name="textBox15.Value" xml:space="preserve">
-    <value>Low</value>
-  </data>
-  <data name="textBox18.Value" xml:space="preserve">
-    <value>Very Low</value>
-  </data>
-  <data name="textBox5.Value" xml:space="preserve">
-    <value>Evaluation points</value>
-  </data>
-  <data name="textBox14.Value" xml:space="preserve">
-    <value>= RowNumber("table2")</value>
-  </data>
-  <data name="textBox20.Value" xml:space="preserve">
-    <value>= Fields.Criteria</value>
-  </data>
-  <data name="textBox22.Value" xml:space="preserve">
-    <value>= Fields.Excellent</value>
-  </data>
-  <data name="textBox7.Value" xml:space="preserve">
-    <value>= Fields.VeryGood</value>
-  </data>
-  <data name="textBox11.Value" xml:space="preserve">
-    <value>= Fields.Good</value>
-  </data>
-  <data name="textBox17.Value" xml:space="preserve">
-    <value>=Fields.Low</value>
-  </data>
-  <data name="textBox21.Value" xml:space="preserve">
-    <value>=Fields.VeryLow</value>
-  </data>
-  <data name="textBox2.Value" xml:space="preserve">
-    <value>                    {= Fields.Category}</value>
-  </data>
-  <data name="textBox25.Value" xml:space="preserve">
-    <value>Evaluation of the results of the short-term training provided by the employees</value>
-  </data>
   <data name="htmlTextBox1.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;Training Date:- From&lt;span style="text-decoration: underline"&gt;{Fields.From} &lt;/span&gt;እስከ&lt;span style="text-decoration: underline"&gt; {Fields.To} &lt;/span&gt;E.C&lt;u&gt; &lt;/u&gt;&lt;/span&gt;&lt;/span&gt;</value>
+    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;የሥልጠናው ቀን :- ከ &lt;span style="text-decoration: underline"&gt;{Fields.From} &lt;/span&gt;እስከ&lt;span style="text-decoration: underline"&gt; {Fields.To} &lt;/span&gt;ዓ.ም&lt;u&gt; &lt;/u&gt;&lt;/span&gt;&lt;/span&gt;</value>
   </data>
   <data name="htmlTextBox2.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;Training Name :-&amp;nbsp; &lt;span style="text-decoration: underline"&gt;{Fields.TrainingName}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
+    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;የሥልጠናው ርዕስ :-&amp;nbsp; &lt;span style="text-decoration: underline"&gt;{Fields.TrainingName}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
   </data>
   <data name="htmlTextBox3.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;Those who participated in the training :- ­­­Department &lt;span style="text-decoration: underline"&gt;{Fields.Department}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
+    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;በሥልጠናው የተሳተፉት :- ­­­የሥራ ክፍል &lt;span style="text-decoration: underline"&gt;{Fields.Department}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
   </data>
   <data name="htmlTextBox6.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;Work Class&amp;nbsp; &lt;span style="text-decoration: underline"&gt;{Fields.Jobtitle}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
+    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;የስራ መደብ&amp;nbsp; &lt;span style="text-decoration: underline"&gt;{Fields.Jobtitle}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
   </data>
   <data name="htmlTextBox5.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;Name of trainee :- &lt;span style="text-decoration: underline"&gt;{Fields.FullName}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
-  </data>
-  <data name="htmlTextBox8.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 16px; font-family: times new roman"&gt;1. What did you get from the training?&amp;nbsp; &amp;nbsp;___________________________________________________________&lt;/span&gt;</value>
-  </data>
-  <data name="htmlTextBox9.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 16px; font-family: times new roman"&gt;2.How do you plan to implement the training ?&amp;nbsp; _____________________________________________&lt;/span&gt;</value>
+    <value>&lt;span style="font-size: 12pt; font-family: &amp;quot;power geez unicode1&amp;quot;; mso-fareast-font-family: &amp;quot;times new roman&amp;quot;; mso-bidi-font-family: &amp;quot;times new roman&amp;quot;; mso-ansi-language: en-us; mso-fareast-language: en-us; mso-bidi-language: ar-sa"&gt;&lt;span style="font-family: times new roman"&gt;የሰልጣኝ ስም :- &lt;span style="text-decoration: underline"&gt;{Fields.FullName}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</value>
   </data>
   <data name="htmlTextBox10.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 16px; font-family: times new roman"&gt;3.&amp;nbsp;What are the trainings provided by the company in the future?&amp;nbsp;If they are and how they are done, they think that they will have better benefits for the organization ?&amp;nbsp; &amp;nbsp;__________________________________________________________________&lt;/span&gt;</value>
-  </data>
-  <data name="htmlTextBox11.Value" xml:space="preserve">
-    <value>&lt;span style="font-size: 16px; font-family: times new roman"&gt;4. If you have any other comments&amp;nbsp; &amp;nbsp;_____________________________________________________________&lt;/span&gt;</value>
-  </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <data name="reportParameter1.Text" xml:space="preserve">
-    <value>courseTrackingId</value>
-  </data>
-  <data name="reportParameter2.Text" xml:space="preserve">
-    <value>empId</value>
+    <value>&lt;span style="font-size: 16px; font-family: times new roman"&gt;3.&amp;nbsp;ወደፊት በድርጅቱ የሚሰጡ ስልጠናዎች ምን ምን&amp;nbsp;ቢሆኑና በምን መልኩ ቢከናወኑ ለድርጅቱ የተሻለ ል።ጠቀሜታ ይኖራቸዋል ብለው ያስባሉ ?&amp;nbsp; &amp;nbsp;__________________________________________________________________&lt;/span&gt;</value>
   </data>
 </root>

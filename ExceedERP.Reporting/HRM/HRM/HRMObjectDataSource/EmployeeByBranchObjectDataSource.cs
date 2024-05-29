@@ -4,7 +4,6 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -56,13 +55,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (employes.Gender == Gender.MALE)
                     {
-                        // EmployeeByBranch.Sex = "ወንድ";
-                        EmployeeByBranch.Sex = HrHelper.GetGender(employes.Gender);
-
+                        EmployeeByBranch.Sex = "ወንድ";
                     }
                     else
                     {
-                        EmployeeByBranch.Sex = HrHelper.GetGender(employes.Gender);
+                        EmployeeByBranch.Sex = "ሴት";
                     }
 
                     EmployeeByBranch.HireDate = employes.HiredDateAmharic;
@@ -146,32 +143,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             string empStatus = "";
             if (status == EmployeeStatus.CONTRACT)
             {
-                //empStatus = "ጊዜያዊ";
-                empStatus = EmployeeStatus.CONTRACT.ToString().ToLower();
+                empStatus = "ጊዜያዊ";
             }
             else if (status == EmployeeStatus.PERMANENT)
             {
-               // empStatus = "ቋሚ";
-                empStatus = EmployeeStatus.PERMANENT.ToString().ToLower();
-
+                empStatus = "ቋሚ";
             }
             else if (status == EmployeeStatus.FREELANCER)
             {
-               // empStatus = "ነጻ ሰራተኛ";
-                empStatus = EmployeeStatus.FREELANCER.ToString().ToLower();
-
+                empStatus = "ነጻ ሰራተኛ";
             }
             else if (status == EmployeeStatus.PROBATION)
             {
-                // empStatus = "የሙከራ ጊዜ";
-                empStatus = EmployeeStatus.PROBATION.ToString().ToLower();
-
+                empStatus = "የሙከራ ጊዜ";
             }
             else
             {
-               // empStatus = "አይታወቅም";
-                empStatus = EmployeeStatus.NO_STATUS.ToString().ToLower();
-
+                empStatus = "አይታወቅም";
             }
 
             return empStatus;

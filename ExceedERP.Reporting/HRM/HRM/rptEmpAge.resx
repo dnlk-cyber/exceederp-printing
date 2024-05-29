@@ -121,7 +121,7 @@
     <value>No</value>
   </data>
   <data name="textBox45.Value" xml:space="preserve">
-    <value>Age</value>
+    <value>= Fields.Criteria</value>
   </data>
   <data name="NoOfMaleEmployee.Value" xml:space="preserve">
     <value>No Of Male Employee</value>
@@ -131,6 +131,18 @@
   </data>
   <data name="TotalEmployee.Value" xml:space="preserve">
     <value>Total Employee</value>
+  </data>
+  <data name="txtOrgName.Value" xml:space="preserve">
+    <value>= Fields.Name</value>
+  </data>
+  <data name="textBox25.Value" xml:space="preserve">
+    <value>= Fields.AmharicName</value>
+  </data>
+  <data name="Date.Value" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="textBox17.Value" xml:space="preserve">
+    <value>= Fields.Date</value>
   </data>
   <data name="textBox2.Value" xml:space="preserve">
     <value>= Fields.SummaryName</value>
@@ -144,6 +156,9 @@
   <data name="textBox8.Value" xml:space="preserve">
     <value>= Fields.NumberOfMaleEmployee</value>
   </data>
+  <data name="Total.Value" xml:space="preserve">
+    <value>Total</value>
+  </data>
   <data name="textBox9.Value" xml:space="preserve">
     <value>= Sum(Fields.NumberOfMaleEmployee)</value>
   </data>
@@ -155,6 +170,15 @@
   </data>
   <data name="textBox19.Value" xml:space="preserve">
     <value>= RowNumber("tblEmployeeSumm")</value>
+  </data>
+  <data name="textBox16.Value" xml:space="preserve">
+    <value>=PageNumber</value>
+  </data>
+  <data name="Page.Value" xml:space="preserve">
+    <value>Page:</value>
+  </data>
+  <data name="EmployeeSummarybyAge.Value" xml:space="preserve">
+    <value>Employee Summary by Age</value>
   </data>
   <data name="textBox3.Value" xml:space="preserve">
     <value>Branch</value>
@@ -179,12 +203,6 @@
   </data>
   <data name="textBox14.Value" xml:space="preserve">
     <value>= Parameters.status.Label</value>
-  </data>
-  <data name="textBox16.Value" xml:space="preserve">
-    <value>=PageNumber</value>
-  </data>
-  <data name="Page.Value" xml:space="preserve">
-    <value>Page:</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

@@ -9,17 +9,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecruitmentForExVacLetter));
             Telerik.Reporting.ReportParameter reportParameter1 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
-            this.EmployeesODS = new Telerik.Reporting.ObjectDataSource();
             this.detail = new Telerik.Reporting.DetailSection();
             this.l = new Telerik.Reporting.TextBox();
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
-            this.textBox15 = new Telerik.Reporting.TextBox();
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.textBox17 = new Telerik.Reporting.TextBox();
             this.textBox18 = new Telerik.Reporting.TextBox();
@@ -29,7 +26,6 @@
             this.textBox27 = new Telerik.Reporting.TextBox();
             this.textBox25 = new Telerik.Reporting.TextBox();
             this.textBox28 = new Telerik.Reporting.TextBox();
-            this.textBox4 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.panel2 = new Telerik.Reporting.Panel();
@@ -47,14 +43,11 @@
             this.textBox29 = new Telerik.Reporting.TextBox();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.shape3 = new Telerik.Reporting.Shape();
+            this.textBox15 = new Telerik.Reporting.TextBox();
+            this.textBox4 = new Telerik.Reporting.TextBox();
+            this.EmployeesODS = new Telerik.Reporting.ObjectDataSource();
             this.RecruitmentVaccLetterObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
-            // 
-            // EmployeesODS
-            // 
-            this.EmployeesODS.DataMember = "GetEmployees";
-            this.EmployeesODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.EmployeeDataSource);
-            this.EmployeesODS.Name = "EmployeesODS";
             // 
             // detail
             // 
@@ -82,22 +75,22 @@
             // 
             this.l.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.029285430908203125D), Telerik.Reporting.Drawing.Unit.Inch(0.047916572540998459D));
             this.l.Name = "l";
-            this.l.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.570635974407196D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            resources.ApplyResources(this.l, "l");
+            this.l.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.19996070861816406D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.l.Value = "ለ";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.60000008344650269D), Telerik.Reporting.Drawing.Unit.Inch(0.047916572540998459D));
+            this.textBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.2293248176574707D), Telerik.Reporting.Drawing.Unit.Inch(0.047916572540998459D));
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.3999996185302734D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            resources.ApplyResources(this.textBox1, "textBox1");
+            this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.9999215602874756D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox1.Value = "= Fields.FullName";
             // 
             // textBox2
             // 
             this.textBox2.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.029285430908203125D), Telerik.Reporting.Drawing.Unit.Inch(0.24799521267414093D));
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1999607086181641D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            resources.ApplyResources(this.textBox2, "textBox2");
+            this.textBox2.Value = "= Fields.AmharicName";
             // 
             // textBox3
             // 
@@ -105,28 +98,21 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1999607086181641D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox3.Style.Font.Underline = true;
-            resources.ApplyResources(this.textBox3, "textBox3");
-            // 
-            // textBox15
-            // 
-            this.textBox15.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.6000003814697266D), Telerik.Reporting.Drawing.Unit.Inch(0.94791680574417114D));
-            this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6936721801757813D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox15, "textBox15");
+            this.textBox3.Value = "= Fields.Address";
             // 
             // textBox16
             // 
             this.textBox16.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.12924639880657196D), Telerik.Reporting.Drawing.Unit.Inch(1.0479165315628052D));
             this.textBox16.Name = "textBox16";
             this.textBox16.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6936721801757813D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox16, "textBox16");
+            this.textBox16.Value = "እንዲያውቁት፡- ";
             // 
             // textBox17
             // 
             this.textBox17.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.10000038146972656D), Telerik.Reporting.Drawing.Unit.Inch(2.3479163646698D));
             this.textBox17.Name = "textBox17";
             this.textBox17.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6936721801757813D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox17, "textBox17");
+            this.textBox17.Value = "ግልባጭ፡-  ";
             // 
             // textBox18
             // 
@@ -134,42 +120,42 @@
             this.textBox18.Name = "textBox18";
             this.textBox18.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.1999607086181641D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox18.Style.Font.Underline = true;
-            resources.ApplyResources(this.textBox18, "textBox18");
+            this.textBox18.Value = "= Fields.Name";
             // 
             // textBox22
             // 
             this.textBox22.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D), Telerik.Reporting.Drawing.Unit.Inch(1.3479164838790894D));
             this.textBox22.Name = "textBox22";
             this.textBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1292462348937988D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox22, "textBox22");
+            this.textBox22.Value = "-";
             // 
             // textBox23
             // 
             this.textBox23.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D), Telerik.Reporting.Drawing.Unit.Inch(1.5479960441589356D));
             this.textBox23.Name = "textBox23";
             this.textBox23.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1292462348937988D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox23, "textBox23");
+            this.textBox23.Value = "-";
             // 
             // textBox24
             // 
             this.textBox24.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D), Telerik.Reporting.Drawing.Unit.Inch(1.7480756044387817D));
             this.textBox24.Name = "textBox24";
             this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1292462348937988D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox24, "textBox24");
+            this.textBox24.Value = "-";
             // 
             // textBox27
             // 
             this.textBox27.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.12928581237792969D), Telerik.Reporting.Drawing.Unit.Inch(2.5479166507720947D));
             this.textBox27.Name = "textBox27";
             this.textBox27.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1292462348937988D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox27, "textBox27");
+            this.textBox27.Value = "-";
             // 
             // textBox25
             // 
             this.textBox25.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.12928581237792969D), Telerik.Reporting.Drawing.Unit.Inch(2.7479164600372314D));
             this.textBox25.Name = "textBox25";
             this.textBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.1292462348937988D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
-            resources.ApplyResources(this.textBox25, "textBox25");
+            this.textBox25.Value = "-";
             // 
             // textBox28
             // 
@@ -177,15 +163,7 @@
             this.textBox28.Name = "textBox28";
             this.textBox28.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.1999607086181641D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox28.Style.Font.Underline = true;
-            resources.ApplyResources(this.textBox28, "textBox28");
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.029245695099234581D), Telerik.Reporting.Drawing.Unit.Inch(0.74791651964187622D));
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(8.970677375793457D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox4.Style.Font.Underline = false;
-            resources.ApplyResources(this.textBox4, "textBox4");
+            this.textBox28.Value = "= Fields. Abbreviation";
             // 
             // pageFooterSection1
             // 
@@ -229,7 +207,7 @@
             this.txtOrgName.Style.Font.Name = "Nyala";
             this.txtOrgName.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.txtOrgName.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
-            resources.ApplyResources(this.txtOrgName, "txtOrgName");
+            this.txtOrgName.Value = "= Fields.Name";
             // 
             // pbOrgLogo
             // 
@@ -248,15 +226,15 @@
             this.textBox20.Style.Font.Bold = true;
             this.textBox20.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox20.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
-            resources.ApplyResources(this.textBox20, "textBox20");
+            this.textBox20.Value = "= Fields.AmharicName";
             // 
             // textBox21
             // 
-            this.textBox21.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.4000000953674316D), Telerik.Reporting.Drawing.Unit.Inch(0.999960720539093D));
+            this.textBox21.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.6000003814697266D), Telerik.Reporting.Drawing.Unit.Inch(0.999960720539093D));
             this.textBox21.Name = "textBox21";
-            this.textBox21.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59999978542327881D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox21.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.39999964833259583D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox21.Style.Font.Bold = true;
-            resources.ApplyResources(this.textBox21, "textBox21");
+            this.textBox21.Value = "ቀን:-";
             // 
             // textBox14
             // 
@@ -264,15 +242,15 @@
             this.textBox14.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6D), Telerik.Reporting.Drawing.Unit.Inch(0.999960720539093D));
             this.textBox14.Name = "textBox14";
             this.textBox14.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3999220132827759D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            resources.ApplyResources(this.textBox14, "textBox14");
+            this.textBox14.Value = "_________________________";
             // 
             // textBox40
             // 
-            this.textBox40.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.4000000953674316D), Telerik.Reporting.Drawing.Unit.Inch(1.2000001668930054D));
+            this.textBox40.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.6000003814697266D), Telerik.Reporting.Drawing.Unit.Inch(1.2000001668930054D));
             this.textBox40.Name = "textBox40";
-            this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.59999978542327881D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.39999964833259583D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox40.Style.Font.Bold = true;
-            resources.ApplyResources(this.textBox40, "textBox40");
+            this.textBox40.Value = "ቁጥር:-";
             // 
             // textBox43
             // 
@@ -280,7 +258,7 @@
             this.textBox43.Name = "textBox43";
             this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3999220132827759D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox43.Style.Font.Bold = true;
-            resources.ApplyResources(this.textBox43, "textBox43");
+            this.textBox43.Value = "___________________";
             // 
             // textBox49
             // 
@@ -290,7 +268,7 @@
             this.textBox49.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(121)))), ((int)(((byte)(185)))));
             this.textBox49.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox49.Style.Font.Underline = false;
-            resources.ApplyResources(this.textBox49, "textBox49");
+            this.textBox49.Value = "= Fields.Tel";
             // 
             // textBox32
             // 
@@ -300,7 +278,7 @@
             this.textBox32.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(121)))), ((int)(((byte)(185)))));
             this.textBox32.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox32.Style.Font.Underline = false;
-            resources.ApplyResources(this.textBox32, "textBox32");
+            this.textBox32.Value = "= Fields.Fax";
             // 
             // textBox31
             // 
@@ -310,7 +288,7 @@
             this.textBox31.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(121)))), ((int)(((byte)(185)))));
             this.textBox31.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox31.Style.Font.Underline = false;
-            resources.ApplyResources(this.textBox31, "textBox31");
+            this.textBox31.Value = "= Fields.Pobox";
             // 
             // textBox30
             // 
@@ -320,7 +298,7 @@
             this.textBox30.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(121)))), ((int)(((byte)(185)))));
             this.textBox30.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox30.Style.Font.Underline = false;
-            resources.ApplyResources(this.textBox30, "textBox30");
+            this.textBox30.Value = "= Fields.Email";
             // 
             // textBox29
             // 
@@ -330,7 +308,7 @@
             this.textBox29.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(121)))), ((int)(((byte)(185)))));
             this.textBox29.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox29.Style.Font.Underline = false;
-            resources.ApplyResources(this.textBox29, "textBox29");
+            this.textBox29.Value = "= Fields.Address";
             // 
             // reportHeaderSection1
             // 
@@ -353,6 +331,27 @@
             this.shape3.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Point(0.5D);
             this.shape3.Style.BorderWidth.Top = Telerik.Reporting.Drawing.Unit.Point(1.5D);
             this.shape3.Style.Color = System.Drawing.Color.Transparent;
+            // 
+            // textBox15
+            // 
+            this.textBox15.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.6000003814697266D), Telerik.Reporting.Drawing.Unit.Inch(0.94791680574417114D));
+            this.textBox15.Name = "textBox15";
+            this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6936721801757813D), Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D));
+            this.textBox15.Value = "ከ ሠ ላ ም ታ ጋር";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.029245695099234581D), Telerik.Reporting.Drawing.Unit.Inch(0.74791651964187622D));
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(8.970677375793457D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox4.Style.Font.Underline = false;
+            this.textBox4.Value = "= Fields.RecruitmentLetter";
+            // 
+            // EmployeesODS
+            // 
+            this.EmployeesODS.DataMember = "GetEmployees";
+            this.EmployeesODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.EmployeeDataSource);
+            this.EmployeesODS.Name = "EmployeesODS";
             // 
             // RecruitmentVaccLetterObjectDataSource
             // 
@@ -380,11 +379,11 @@
             reportParameter1.AvailableValues.DisplayMember = "= Fields.FullAmharicName";
             reportParameter1.AvailableValues.ValueMember = "= Fields.EmpId";
             reportParameter1.Name = "id";
-            resources.ApplyResources(reportParameter1, "reportParameter1");
+            reportParameter1.Text = "Employee";
             reportParameter1.Visible = true;
             reportParameter2.AllowNull = true;
             reportParameter2.Name = "header";
-            resources.ApplyResources(reportParameter2, "reportParameter2");
+            reportParameter2.Text = "With Header?";
             reportParameter2.Type = Telerik.Reporting.ReportParameterType.Boolean;
             reportParameter2.Value = "=True";
             reportParameter2.Visible = true;

@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<AttendanceList> GetAttendanceListReport(string period, string branchId, string dept, string user, string bizUnitId)
+        public List<AttendanceList> GetAttendanceListReport(string period, string branchId, string dept, string user)
         {
 
             List<AttendanceList> attendanceList = new List<AttendanceList>();
@@ -42,6 +42,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             List<AttendanceNew> duplicateList = new List<AttendanceNew>();
+
             foreach (var att in attendances)
             {
                 var check = duplicateList.Where(x => x.EmployeeId == att.EmployeeId && x.GlPeriodId == att.GlPeriodId);
@@ -59,14 +60,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     attendance.EmpID = emp.EmployeeCode;
                     attendance.FullName = emp.FullNameAmharic;
-                    var lateCome = db.LateCommings.Where(x => x.EmployeeId == att.EmployeeId).ToList();
-                    if(lateCome != null)
-                    {
-                        attendance.LateDays = lateCome.Sum(x => x.Time)/8;
-                        
-                    }
-                   
-                    
 
                     var attendanceOneEmpApproverIds = attendances.Where(x => x.EmployeeId == att.EmployeeId).Select(x => x.ApproverEmpId).ToList();
                     var approvers = db.Person_Employee.Where(x => attendanceOneEmpApproverIds.Contains(x.EmployeeId)).ToList();

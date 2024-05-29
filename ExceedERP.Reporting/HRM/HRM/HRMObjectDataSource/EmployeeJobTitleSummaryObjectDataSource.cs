@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ExceedERP.Core.Localization;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
@@ -17,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetEmployeeJobTitleSummary(string branchId,string bussinessUnitId, string orgStructureId, string job, string status)
+        public List<EmployeeSummary> GetEmployeeJobTitleSummary(string branchId, string orgStructureId, string job, string status)
         {
 
             List<EmployeeSummary> list = new List<EmployeeSummary>();
@@ -34,11 +33,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(branchId, out int braId);
                 empPlacement = empPlacement.Where(x => x.BranchId == braId).ToList();
-            }
-            if (bussinessUnitId != null)
-            {
-                int.TryParse(bussinessUnitId, out int bUnitId);
-                empPlacement = empPlacement.Where(x => x.BusinessUnitId == bUnitId).ToList();
             }
             if (orgStructureId != null)
             {
@@ -122,7 +116,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
             }
 
-            employee.SummaryName = Resources.Navigator_Employee_Not_Placed_Employee ;
+            employee.SummaryName = "ያልተመደቡ ";
             employee.NumberOfMaleEmployee = countM;
             employee.NumberOfFemaleEmployee = countF;
             employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;

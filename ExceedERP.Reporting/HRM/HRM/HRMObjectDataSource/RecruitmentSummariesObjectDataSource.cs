@@ -96,7 +96,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             oneapplicant.Name = personem.FirstName + " " + personem.MiddleName + " " +
                                                 personem.LastName;
                             oneapplicant.Age = DateTime.Now.Year - personem.DateOfBirth.Year;
-                            oneapplicant.Sex = personem.Gender;
+                            oneapplicant.Sex = personem.Gender.ToString();
                             var internalApplcant =
                                 db.ApplicantScreeningResult.Where(
                                     x =>

@@ -30,15 +30,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
           //  employees = HrHelper.PersonEmployeesOneBranch(branchId, org, "");
 
-            var currentStaff = db.Placements.Where(x => x.isCurrent&&x.IsApprove).ToList();
-            //var currentOrgStId = currentStaff.Select(x => x.OrgStructureId);
             var toBepostions = db.JobTitleMapping.ToList();
+            var currentStaff = db.Placements.Where(x => x.isCurrent).ToList();
+
             //var departmentList = from m in db.MainCompanyStructures
             //                     join j in toBepostions
             //                         on m.OrgStructureId equals j.OrgStructureId
 
             //                     select (new { m.OrgStructureId, m.Name });
-            var filtered = db.MainCompanyStructures/*.Where(x=>currentOrgStId.Contains(x.OrgStructureId))*/.ToList();
+            var filtered = db.MainCompanyStructures.ToList();
            // var branch = db.Branch.ToList();
 
             if (org != null)
@@ -58,9 +58,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                 if (branchId != null)
                 {
-                    int.TryParse(branchId, out int branId);
-                    toBe = toBepostions.Where(x => x.OrgStructureId == filter.OrgStructureId && x.BranchId == branId).ToList();
-                    currentPlacement = currentStaff.Where(x => x.OrgStructureId == filter.OrgStructureId && x.BranchId == branId).ToList();
+                    toBe = toBepostions.Where(x => x.OrgStructureId == filter.OrgStructureId && x.BranchId.ToString() == branchId).ToList();
+                    currentPlacement = currentStaff.Where(x => x.OrgStructureId == filter.OrgStructureId && x.BranchId.ToString() == branchId).ToList();
                 }
                 foreach (var to in toBe)
                 {

@@ -23,8 +23,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 var recruitmentVacancy = db.RecruitmentVacancy.FirstOrDefault(X => X.VacancyId == vacId);
                 if (recruitmentVacancy != null)
                 {
-                    var lookupId = db.Lookups.Where(x => x.LookupType==LookUpTypes.COMMITTEE_TYPE).Select(x => x.LookupId);
-                    var committee = db.Committees.FirstOrDefault(x => lookupId.Contains(x.LookupId) && x.IsActive && x.VaccancyCode == recruitmentVacancy.MediaVacancyCode);
+                    var committee = db.Committees.FirstOrDefault();
                     if (committee != null)
                     {
                         var committes = db.CommitteeMembers.Where(x => x.CommitteeId == committee.CommitteeId && x.IsActive).ToList();

@@ -5,7 +5,6 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -79,7 +78,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
 
                         employee.IdNumber = person.EmployeeCode;
-                       employee.Sex = HrHelper.GetGender(person.Gender);
+
+                        if (person.Gender == 0)
+                        {
+                            employee.Sex = "ወንድ";
+                        }
+                        else
+                        {
+                            employee.Sex = "ሴት";
+                        }
 
                         var disByMoney = db.DisciplineMeasuerByMoney.FirstOrDefault(x=>x.DisciplinaryCaseId == c.DisciplinaryCaseId);
                         if(disByMoney != null)
@@ -88,8 +95,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
                         else
                         {
-                            //employee.PunishmentAmount = "በገንዘብ አልተቀጡም";
-                            employee.PunishmentAmount = "Not Fined By Cash";
+                            employee.PunishmentAmount = "በገንዘብ አልተቀጡም";
                         }
 
                         var empDisc = db.EmpDisciplineMeasure.FirstOrDefault(x => x.DisciplinaryCaseId == c.DisciplinaryCaseId);

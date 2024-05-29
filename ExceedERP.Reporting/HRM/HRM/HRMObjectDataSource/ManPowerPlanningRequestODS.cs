@@ -108,7 +108,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if (manPowerRequest != null)
             {
-               
+                manPower.NoOfEmployees = manPowerRequest.NoOfVaccantPostion;
                 manPower.EmployeementType = manPowerRequest.EmploymentType.ToString();
 
                 var mainCompany = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId == manPowerRequest.OrgStructureId);

@@ -6,7 +6,6 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
@@ -17,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeLeave> GetEmployeeLeave(string branchId, string dept, DateTime? from, DateTime? to, string type, string status)
+        public List<EmployeeLeave> GetEmployeeLeave(string branchId, string dept, DateTime from, DateTime to, string type, string status)
         {
             List<EmployeeLeave> EmployeeInfoList = new List<EmployeeLeave>();
             EmployeeLeave EmployeeInfo = new EmployeeLeave();
@@ -46,31 +45,24 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 employees = employees.Where(x => !x.IsActive).ToList();
             }
 
-            DateTime dateFrom = new DateTime(from.Value.Year, from.Value.Month, from.Value.Day);
-            DateTime dateTo = new DateTime(to.Value.Year, to.Value.Month, to.Value.Day);
+            DateTime dateFrom = new DateTime(from.Year, from.Month, from.Day);
+            DateTime dateTo = new DateTime(to.Year, to.Month, to.Day);
 
             var leaves = db.Leaves.ToList();
             if (type != null)
             {
                 leaves = leaves.Where(x => x.LeaveType.ToString() == type).ToList();
             }
-            if (from.HasValue)
-            {
-                leaves = leaves.Where(x =>( x.From <= from.Value&&x.To>=from)||x.From>=from.Value).ToList();
-            }
-            if (to.HasValue)
-            {
-                leaves = leaves.Where(x => (x.From <= to.Value && x.To > to.Value)||x.To<=to.Value).ToList();
 
-            }
             db = new ExceedDbContext();
+
             if (leaves.Any())
             {
                 foreach (var l in leaves)
                 {
 
-                    //if ((l.From >= dateFrom && l.From <= dateTo))
-                    //{
+                    if ((l.From >= dateFrom && l.From <= dateTo))
+                    {
                         db = new ExceedDbContext();
 
                         var emplist = employees.FirstOrDefault(x => x.EmployeeId == l.EmployeeId);
@@ -78,9 +70,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         if (emplist != null)
                         {
                             EmployeeInfo = new EmployeeLeave();
-                            
-                            EmployeeInfo.Sex = HrHelper.GetLocalizedGender(emplist.Gender);
-                            
+                            //  EmployeeInfo.Sex = emplist.Gender;
+                            if (emplist.Gender == Gender.MALE)
+                            {
+                                EmployeeInfo.Sex = "ወንድ";
+                            }
+                            else
+                            {
+                                EmployeeInfo.Sex = "ሴት";
+                            }
                             EmployeeInfo.FullName = emplist.FullNameAmharic;
                             EmployeeInfo.From = XAPI.EthiopicDateTime.GetEthiopicDate(l.From.Day, l.From.Month, l.From.Year);//l.From.ToShortDateString();
                             EmployeeInfo.To = XAPI.EthiopicDateTime.GetEthiopicDate(l.To.Day, l.To.Month, l.To.Year);//l.To.ToShortDateString();
@@ -90,17 +88,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             var fullhalf = l.Day;
                             if (fullhalf == LeaveDay.Full_Day)
                             {
-                                EmployeeInfo.FullOrHalf = LeaveDay.Full_Day.ToString(); ;
+                                EmployeeInfo.FullOrHalf = "ሙሉ ቀን ";
                             }
                             else if (fullhalf == LeaveDay.Half_Day)
                             {
                                 if (l.MorningOrAfternoon == MorningOrAfternoon.Afternoon)
                                 {
-                                    EmployeeInfo.FullOrHalf = MorningOrAfternoon.Afternoon.ToString();
+                                    EmployeeInfo.FullOrHalf = "ከሰአት ";
                                 }
                                 else if (l.MorningOrAfternoon == MorningOrAfternoon.Morning)
                                 {
-                                    EmployeeInfo.FullOrHalf = MorningOrAfternoon.Morning.ToString();
+                                    EmployeeInfo.FullOrHalf = "ጠዋት";
                                 }
                             }
 
@@ -146,7 +144,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             EmployeeInfoList.Add(EmployeeInfo);
 
                         }
-                    //}
+                    }
                 }
             }
             return EmployeeInfoList;

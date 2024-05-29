@@ -46,11 +46,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                             if (vacancy.VacancyType == VacancyType.PERMANENT)
                             {
-                                internalVacancy.RecruitmentType = VacancyType.PERMANENT.ToString();
+                                internalVacancy.RecruitmentType = "ቋሚ";
                             }
                             else if (vacancy.VacancyType == VacancyType.CONTRACT)
                             {
-                                internalVacancy.RecruitmentType = VacancyType.CONTRACT.ToString();
+                                internalVacancy.RecruitmentType = "ጊዜያዊ";
                             }
                             var recPlan = db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
                             if (recPlan != null)

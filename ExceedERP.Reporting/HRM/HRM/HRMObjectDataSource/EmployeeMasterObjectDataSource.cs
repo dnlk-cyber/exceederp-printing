@@ -10,19 +10,16 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
-using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
-
     [DataObject]
     public class EmployeeMasterObjectDataSource : List<EmployeeMasterViewModel>
     {
         private ExceedDbContext db = new ExceedDbContext();
-        string cultureName = GlobalHelper.GetCurrentCulture();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeMasterViewModel> GetEmployeeMasterInfo(/*string branchId,*/ object[] branchId,string BussinessUnitId, string orgStructureId, string employeeType, string status, string employee, string from, string to, string hireFrom, string hireTo)
+        public List<EmployeeMasterViewModel> GetEmployeeMasterInfo(/*string branchId,*/ object[] branchId, string orgStructureId, string employeeType, string status, string employee, string from, string to, string hireFrom, string hireTo)
         {
 
             //   EmployeeMasterViewModel EmployeeMasterViewModel = new EmployeeMasterViewModel();
@@ -65,11 +62,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 int.TryParse(orgStructureId, out int orgId);
                 placements = placements.Where(x => x.OrgStructureId == orgId).ToList();
-            }
-            if (BussinessUnitId != null)
-            {
-                int.TryParse(BussinessUnitId, out int bussUnitId);
-                placements = placements.Where(x => x.BusinessUnitId == bussUnitId).ToList();
             }
             if (employee != null)
             {
@@ -257,9 +249,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         var level = db.Lookups.FirstOrDefault(x => x.LookupId == educ.EduLevel);
                         EmployeeEductaionList edu = new EmployeeEductaionList();
 
-                        edu.EduField = filed != null ? filed.Description : "Unfilled";
+                        edu.EduField = filed != null ? filed.Description : "አልተሞላም";
 
-                        edu.EduLevel = level != null ? level.Description : "Unfilled";
+                        edu.EduLevel = level != null ? level.Description : "አልተሞላም";
                         edu.From = educ.FromEAmharic;
                         edu.To = educ.ToEAmharic;
                         edu.Institute = educ.OrganizationName;
@@ -290,74 +282,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     var empExtExps = db.Experiences.Where(x => x.EmployeeId == e.EmployeeId).ToList();
                     double expSum = 0;
-                    string PlaceWorked = "";
-                    string PlaceWorkedInternal = "";
-                    if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
+                    foreach (var ex in empExtExps)
                     {
-                        foreach (var ex in empExtExps)
-                        {
-                            expSum = expSum + (ex.To - ex.From).Days;
-                            PlaceWorked += "\n  ከ: " + ex.FromExAmharic + " " + "እስከ:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "\n";
-                        }
+                        expSum = expSum + (ex.To - ex.From).Days;
                     }
-                    if (cultureName.ToLower() == "om")
-                    {
-                        foreach (var ex in empExtExps)
-                        {
-                            expSum = expSum + (ex.To - ex.From).Days;
-                            PlaceWorked += "\n  irraa: " + ex.FromExAmharic + " " + "gara:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "\n";
-                        }
-                    }
-                    if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
-                    {
-                        foreach (var ex in empExtExps)
-                        {
-                            expSum = expSum + (ex.To - ex.From).Days;
-                            PlaceWorked += "\n  From: " + ex.FromExAmharic + " " + "to:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "\n";
-                        }
-
-                    }
-                   
                     EmployeeMasterViewModel.Expiriance = EmployeeHelper.GetDaystoWordsAmharic(expSum);
-                    EmployeeMasterViewModel.ExpirianceDetails = PlaceWorked;
                     EmployeeMasterViewModel.MartialStatus = HrHelper.GetMartialStatus(e);
+
                     double totalInternalDays = DateTime.Now.Subtract(e.HiredDate).TotalDays;
+
                     EmployeeMasterViewModel.InternalExpriance = EmployeeHelper.GetDaystoWordsAmharic(totalInternalDays);
-                    var individualPlacements = db.Placements.Where(x => x.EmployeeId == pl.EmployeeId).OrderByDescending(x=>x.AssignmentDate).ToList();
-                    DateTime today = DateTime.Now;
-                    var fromdatestr = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-                   
-                    if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
-                    {
-                        
-                        foreach (var perPl in individualPlacements)
-                        {
 
-                            PlaceWorkedInternal += "\n  ከ: " + perPl.AssignmentDateAmharic + " " + "እስከ:" + fromdatestr + " " + perPl.JobTitleName + "\n";
-                            fromdatestr = perPl.AssignmentDateAmharic;
-                        }
-                    }
-                    if (cultureName.ToLower() == "om")
-                    {
-                        
-                        foreach (var perPl in individualPlacements)
-                        {
-
-                            PlaceWorkedInternal += "\n  Irraa: " + perPl.AssignmentDateAmharic + " " + "Gara:" + fromdatestr + " " + perPl.JobTitleName + "\n";
-                            fromdatestr = perPl.AssignmentDateAmharic;
-                        }
-                    }
-                    if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
-                    {
-                        foreach (var perPl in individualPlacements)
-                        {
-
-                            PlaceWorkedInternal += "\n  From: " + perPl.AssignmentDateAmharic + " " + "to:" + fromdatestr + " " + perPl.JobTitleName + "\n";
-                            fromdatestr = perPl.AssignmentDateAmharic;
-                        }
-
-                    }
-                    EmployeeMasterViewModel.InternalExprianceDetail = PlaceWorkedInternal;
                     var ExpTotalSum = totalInternalDays + expSum;
 
                     EmployeeMasterViewModel.ExpTotalSum = EmployeeHelper.GetDaystoWordsAmharic(ExpTotalSum);
@@ -518,42 +453,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (e.Status == EmployeeStatus.CONTRACT)
                     {
-
-                        EmployeeMasterViewModel.Employement = Resources.Enum_EmployeeStatus_CONTRACT.ToLower();
-                        if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
-                        {
-
-                            EmployeeMasterViewModel.Employement = "ግዝያዊ";
-                        }
-                        if (cultureName.ToLower() == "om")
-                        {
-
-                            EmployeeMasterViewModel.Employement = "Waliigaltee";
-                        }
-                        if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
-                        {
-                            EmployeeMasterViewModel.Employement = "Contract";
-
-                        }
+                        EmployeeMasterViewModel.Employement = "ጊዜያዊ";
                     }
                     else if (e.Status == EmployeeStatus.PERMANENT)
                     {
-                        EmployeeMasterViewModel.Employement = Resources.Enum_EmployeeStatus_PERMANENT.ToLower();
-                        if (cultureName.ToLower() == "am" || cultureName.ToLower() == "am-et")
-                        {
-
-                            EmployeeMasterViewModel.Employement = "ቋሚ";
-                        }
-                        if (cultureName.ToLower() == "om")
-                        {
-
-                            EmployeeMasterViewModel.Employement = "Dhaabbataa";
-                        }
-                        if (cultureName.ToLower() == "en" || cultureName.ToLower() == "en-us")
-                        {
-                            EmployeeMasterViewModel.Employement = "Permanent";
-
-                        }
+                        EmployeeMasterViewModel.Employement = "ቋሚ";
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == pl.BranchId);
@@ -782,9 +686,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             foreach (var pl in placements)
             {
-                double expSum = 0;
-                string PlaceWorked = "";
-                string PlaceWorkedInternal = "";
                 var e = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == pl.EmployeeId);
 
                 if (e != null)
@@ -809,24 +710,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     EmployeeMasterViewModel.Languages = new List<ExceedERP.Reporting.HRM.HRM.HRMViewModel.Languages>();
                     EmployeeMasterViewModel.EmployeePerformances = new List<EmployeePerformances>();
                     EmployeeMasterViewModel.Discipline = new List<Discipline>();
-                    var individualPlacements = db.Placements.Where(x => x.EmployeeId == pl.EmployeeId).OrderByDescending(x => x.AssignmentDate).ToList();
-                    var fromdatestr = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-                    foreach (var perPl in individualPlacements)
-                    {
 
-                        PlaceWorkedInternal += "  From: " + perPl.AssignmentDateAmharic + " " + "to:" + fromdatestr + " " + perPl.JobTitleName + "<br /> ";
-                        fromdatestr = perPl.AssignmentDateAmharic;
-                    }
-                    EmployeeMasterViewModel.InternalExprianceDetail = PlaceWorkedInternal;
-
-                    var empExtExps = db.Experiences.Where(x => x.EmployeeId == e.EmployeeId).ToList();
-                    foreach (var ex in empExtExps)
-                    {
-                        expSum = expSum + (ex.To - ex.From).Days;
-                        PlaceWorked += "  From: " + ex.FromExAmharic + " " + "to:" + ex.ToExAmharic + " " + ex.Organozation + "  " + ex.OrgFullAddress + "<br /> ";
-                    }
-                    EmployeeMasterViewModel.Expiriance = EmployeeHelper.GetDaystoWords(expSum);
-                    EmployeeMasterViewModel.ExpirianceDetails = PlaceWorked;
                     if (!string.IsNullOrEmpty(e.Nation))
                     {
                         int.TryParse(e.Nation, out int lookId);
@@ -845,9 +729,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         var level = db.Lookups.FirstOrDefault(x => x.LookupId == educ.EduLevel);
                         EmployeeEductaionList edu = new EmployeeEductaionList();
 
-                        edu.EduField = filed != null ? filed.Description : "Unfilled";
+                        edu.EduField = filed != null ? filed.Description : "አልተሞላም";
 
-                        edu.EduLevel = level != null ? level.Description : "Unfilled";
+                        edu.EduLevel = level != null ? level.Description : "አልተሞላም";
                         edu.From = educ.FromEAmharic;
                         edu.To = educ.ToEAmharic;
                         edu.Institute = educ.OrganizationName;
@@ -876,22 +760,22 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         EmployeeMasterViewModel.PensionNo = value.IdNumber;
                     }
 
-                    var empExtExpss = expiriances.Where(x => x.EmployeeId == e.EmployeeId).ToList();
-                    foreach (var ex in empExtExpss)
+                    var empExtExps = expiriances.Where(x => x.EmployeeId == e.EmployeeId).ToList();
+                    double expSum = 0;
+                    foreach (var ex in empExtExps)
                     {
                         expSum = expSum + (ex.To - ex.From).Days;
                     }
-                   // EmployeeMasterViewModel.Expiriance = EmployeeHelper.GetDaystoWordsAmharic(expSum);
-                    EmployeeMasterViewModel.Expiriance = EmployeeHelper.GetDaystoWords(expSum);
+                    EmployeeMasterViewModel.Expiriance = EmployeeHelper.GetDaystoWordsAmharic(expSum);
                     EmployeeMasterViewModel.MartialStatus = HrHelper.GetMartialStatus(e);
 
                     double totalInternalDays = DateTime.Now.Subtract(e.HiredDate).TotalDays;
 
-                    EmployeeMasterViewModel.InternalExpriance = EmployeeHelper.GetDaystoWords(totalInternalDays);
+                    EmployeeMasterViewModel.InternalExpriance = EmployeeHelper.GetDaystoWordsAmharic(totalInternalDays);
 
                     var ExpTotalSum = totalInternalDays + expSum;
 
-                    EmployeeMasterViewModel.ExpTotalSum = EmployeeHelper.GetDaystoWords(ExpTotalSum);
+                    EmployeeMasterViewModel.ExpTotalSum = EmployeeHelper.GetDaystoWordsAmharic(ExpTotalSum);
 
                     var languageProficiency = db.LanguageOfProficiencies.Where(x => x.EmployeeId == e.EmployeeId);
                     foreach (var lang in languageProficiency)
@@ -1049,11 +933,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                     if (e.Status == EmployeeStatus.CONTRACT)
                     {
-                        EmployeeMasterViewModel.Employement = EmployeeStatus.CONTRACT.ToString();
+                        EmployeeMasterViewModel.Employement = "ጊዜያዊ";
                     }
                     else if (e.Status == EmployeeStatus.PERMANENT)
                     {
-                        EmployeeMasterViewModel.Employement = EmployeeStatus.PERMANENT.ToString();
+                        EmployeeMasterViewModel.Employement = "ቋሚ";
                     }
 
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == pl.BranchId);

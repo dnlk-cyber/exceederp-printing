@@ -1947,12 +1947,6 @@
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HelpDesk\ViewModel\MaintenanceFormVM.cs" />
-    <Compile Include="HRM\HRM\AttendanceDayAbssentAndLateCommingReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\AttendanceDayAbssentAndLateCommingReport.designer.cs">
-      <DependentUpon>AttendanceDayAbssentAndLateCommingReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\AttendanceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1964,12 +1958,6 @@
     </Compile>
     <Compile Include="HRM\HRM\AttendanceWeek.Designer.cs">
       <DependentUpon>AttendanceWeek.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\BenefitReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\BenefitReport.Designer.cs">
-      <DependentUpon>BenefitReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Commitment.cs">
       <SubType>Component</SubType>
@@ -1995,29 +1983,11 @@
     <Compile Include="HRM\HRM\ComplainResponseDepartment.designer.cs">
       <DependentUpon>ComplainResponseDepartment.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\ContractEmployeeReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\ContractEmployeeReport.designer.cs">
-      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\Deligation.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\Deligation.designer.cs">
       <DependentUpon>Deligation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Design\FiscalYearTrainingPlanActionPlanDesign.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Design\FiscalYearTrainingPlanActionPlanDesign.designer.cs">
-      <DependentUpon>FiscalYearTrainingPlanActionPlanDesign.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Design\TrainingNeedRequestReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Design\TrainingNeedRequestReport.designer.cs">
-      <DependentUpon>TrainingNeedRequestReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\EmployeeBirthDate.cs">
       <SubType>Component</SubType>
@@ -2031,42 +2001,22 @@
     <Compile Include="HRM\HRM\EmployeePerformanceSummary.designer.cs">
       <DependentUpon>EmployeePerformanceSummary.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\EmployeePerformanceTotalSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePerformanceTotalSummary.Designer.cs">
-      <DependentUpon>EmployeePerformanceTotalSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.designer.cs">
-      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePlacementReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeePlacementReport.designer.cs">
-      <DependentUpon>EmployeePlacementReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeeProfileReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\EmployeeProfileReport.designer.cs">
-      <DependentUpon>EmployeeProfileReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\EmployeeRestitution.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\EmployeeRestitution.designer.cs">
       <DependentUpon>EmployeeRestitution.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\HealthPaymentSelfCare.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\HealthPaymentSelfCare.designer.cs">
+      <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\HRMObjectDataSource\AllDepartmentsListODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AmharicExperienceLetterObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceDayAbsentAndLateCommingListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceLetterODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceListObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\BenefitODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\BranchObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ChangeOfPayrollBenefitObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ChangeOfPayrollObjectDataSource.cs" />
@@ -2076,7 +2026,6 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\CommitteeListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\CompanyStructureObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ComplainODS.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\ContractEmployeeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DelegationCCODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DeligationODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\DepartmentAttendanceListObjectDataSource.cs" />
@@ -2097,19 +2046,12 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeJobTitleSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeLeaveObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeLeavePlanObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeMasterColumnsODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeMasterObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeNationSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePensionObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceDepartmentODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceParametrODS.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceTotalSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforNotEvaluatedEmployeeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerforObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerfromanceLeaveDispilineBonusSummaryObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePlacementObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeProfileObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePromotionPerYearObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeQuarterPerforObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeeRankSummaryObjectDataSource.cs" />
@@ -2125,15 +2067,14 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationPeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationStatusODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationTypeObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationTypeSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExperienceAmharicTwoODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExperienceEnglishTwoODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExternalApplicanHeaderObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExternalApplicantDetailObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\FiscalYearObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\FiscalYearTrainingPlanActionPlanODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthAndValueObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HealthPaymentLimit.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\HealthPaymentSelfCareObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HospitalObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\HRMObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\IncommingOutgoingObjectDataSource.cs" />
@@ -2155,10 +2096,8 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailSelfCareObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePlanObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveRequestStatusObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LetThemKnowObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LetThemKowWorkUnitObjectDataSource.cs" />
@@ -2170,7 +2109,6 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\NewHeaderObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\NotifyRetirmentObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\NotPlacedEmployeesObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\OvertimeHoursListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\PayableLeaveSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\PersonTitleObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProbationPerformanceMeasureODS.cs" />
@@ -2178,21 +2116,17 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\PromotedEmployeeObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\QuarterLengthODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\QuarterODS.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\RankODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentHeaderObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RecruitmentSummaryObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferralSheetObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\ResiponsiblityLevelODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RestitutionListObjectDataSource.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\SeverancePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationReasonObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingAndEducationOneByOneODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationEvaluaterInfoODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationODS.cs" />
-    <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingNeedRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingOneByOneObjectDataSourse.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TranscriptObjectDataSource.cs" />
@@ -2211,7 +2145,6 @@
     <Compile Include="HRM\HRM\HRMViewModel\AttendanceHeaderVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\AttendanceLeterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\Behaviours.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\BenefitVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ChangeOfPayrollBenefitVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ChangeOfPayrollVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\Children.cs" />
@@ -2221,7 +2154,6 @@
     <Compile Include="HRM\HRM\HRMViewModel\CommitteeList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CompanyStructureVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ComplainVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\ContractEmployeeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CosignVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CourtAllEmployeeList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CourtEmployees.cs" />
@@ -2249,12 +2181,8 @@
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeLeave.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeLeavePlan.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeMasterViewModel.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceSummaryVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceTotalVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePerfromance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerfromanceLeaveDispilineBonusSummaryVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\EmployeePlacementVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeePromotion.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeQuarterPerfromance.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeRecruitment.cs" />
@@ -2272,7 +2200,6 @@
     <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantDetail.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantEducation.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantExpriance.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\FiscalYearTrainingPlanActionPlanVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthPaymentDetaiList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthValueListViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthValueViewModel.cs" />
@@ -2297,11 +2224,9 @@
     <Compile Include="HRM\HRM\HRMViewModel\LeaveBalanceViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveFromOther.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveOneByOne.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeavePayableVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePlan.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePlanList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestLetterVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestStatusVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveSummary.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveSummaryList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveTakenDetail.cs" />
@@ -2328,12 +2253,10 @@
     <Compile Include="HRM\HRM\HRMViewModel\ReferalSheetVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ReferralSheet.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\RestitutionList.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\SeverancePayablesVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\Structure.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TerminationAcceptanceLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingAndEducationOneByeOneVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingEvaluationVM.cs" />
-    <Compile Include="HRM\HRM\HRMViewModel\TrainingNeedRequestVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingOneByeOneViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingReqeustVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TransferToClinic.cs" />
@@ -2378,29 +2301,11 @@
     <Compile Include="HRM\HRM\LeaveOnebyOneSelfCare.designer.cs">
       <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\LeavePayableReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\LeavePayableReport.designer.cs">
-      <DependentUpon>LeavePayableReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\LeaveRequestStatusReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\LeaveRequestStatusReport.designer.cs">
-      <DependentUpon>LeaveRequestStatusReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.Designer.cs">
       <DependentUpon>AmharicExperienceLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\AmharicExperienceLetterReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\AmharicExperienceLetterReport.designer.cs">
-      <DependentUpon>AmharicExperienceLetterReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\ChangeOfPayroll.cs">
       <SubType>Component</SubType>
@@ -2481,13 +2386,6 @@
     <Compile Include="HRM\HRM\Letters\PromotionLetter.designer.cs">
       <DependentUpon>PromotionLetter.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\Letters\PromotionLetterTwo.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PromotionLetterTwo.designer.cs">
-      <DependentUpon>PromotionLetterTwo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\PromotionLetterTwoObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\PromotionObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\RecruitmentForExVacLetter.cs">
       <SubType>Component</SubType>
@@ -2507,13 +2405,6 @@
     <Compile Include="HRM\HRM\Letters\RecruitmentLetter.designer.cs">
       <DependentUpon>RecruitmentLetter.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentLetterTwo.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentLetterTwo.designer.cs">
-      <DependentUpon>RecruitmentLetterTwo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\RecruitmentLetterTwoObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\RecruitmentObjectDataSource .cs" />
     <Compile Include="HRM\HRM\Letters\RecruitmentRequestLetter.cs">
       <SubType>Component</SubType>
@@ -2546,13 +2437,6 @@
     <Compile Include="HRM\HRM\Letters\rptVacancyInternal.designer.cs">
       <DependentUpon>rptVacancyInternal.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\Letters\SalaryIncreementLetter.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\SalaryIncreementLetter.Designer.cs">
-      <DependentUpon>SalaryIncreementLetter.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\SalaryIncreementLetterODS.cs" />
     <Compile Include="HRM\HRM\Letters\TerminationAcceptanceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2579,13 +2463,6 @@
     <Compile Include="HRM\HRM\Letters\TransferLetter.designer.cs">
       <DependentUpon>TransferLetter.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\Letters\TransferLetterTwo.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TransferLetterTwo.designer.cs">
-      <DependentUpon>TransferLetterTwo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\Letters\TransferLetterTwoObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\TransferObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\TransferToClinicObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\VacancyForMedia.cs">
@@ -2644,11 +2521,9 @@
     </Compile>
     <Compile Include="HRM\HRM\rptEmpAge.cs">
       <SubType>Component</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="HRM\HRM\rptEmpAge.designer.cs">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="HRM\HRM\rptEmpByStatus.cs">
       <SubType>Component</SubType>
@@ -2757,12 +2632,6 @@
     </Compile>
     <Compile Include="HRM\HRM\rptEmployeePerformanceDepartment.designer.cs">
       <DependentUpon>rptEmployeePerformanceDepartment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePerformanceNotEvaluated.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptEmployeePerformanceNotEvaluated.designer.cs">
-      <DependentUpon>rptEmployeePerformanceNotEvaluated.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\rptEmployeePerformanceSummaryDepartment.cs">
       <SubType>Component</SubType>
@@ -2926,12 +2795,6 @@
     <Compile Include="HRM\HRM\rptMonthlySalaryPerPeriod.designer.cs">
       <DependentUpon>rptMonthlySalaryPerPeriod.cs</DependentUpon>
     </Compile>
-    <Compile Include="HRM\HRM\rptOvertimeHoursUnProcessedLists.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\rptOvertimeHoursUnProcessedLists.Designer.cs">
-      <DependentUpon>rptOvertimeHoursUnProcessedLists.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\rptPaidLeave.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3003,12 +2866,6 @@
     </Compile>
     <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.designer.cs">
       <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HRM\HRM\SeverancePayableReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\SeverancePayableReport.designer.cs">
-      <DependentUpon>SeverancePayableReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\TrainingAndEducationOneByOne.cs">
       <SubType>Component</SubType>
@@ -4435,6 +4292,7 @@
     <None Include="Fleet\ViewModel\EquipmentInspectionViewModel.cs~RFa0320e3.TMP" />
     <None Include="HRM\CustomExpression\bin\Debug\ExceedERP.Reporting.dll.config" />
     <None Include="HRM\CustomExpression\bin\Release\ExceedERP.Reporting.dll.config" />
+    <None Include="HRM\HRM\Letters\ExperienceLetter.zip" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -5264,143 +5122,41 @@
     <EmbeddedResource Include="HelpDesk\Designer\MaintenanceForm.resx">
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\AttendanceDayAbssentAndLateCommingReport.resx">
-      <DependentUpon>AttendanceDayAbssentAndLateCommingReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\AttendanceLetter.am.resx">
-      <DependentUpon>AttendanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\AttendanceLetter.om.resx">
-      <DependentUpon>AttendanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\AttendanceLetter.resx">
       <DependentUpon>AttendanceLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\AttendanceWeek.resx">
       <DependentUpon>AttendanceWeek.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\BenefitReport.resx">
-      <DependentUpon>BenefitReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Commitment.am.resx">
-      <DependentUpon>Commitment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Commitment.om.resx">
-      <DependentUpon>Commitment.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Commitment.resx">
       <DependentUpon>Commitment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\CompanyStructure.am.resx">
-      <DependentUpon>CompanyStructure.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\CompanyStructure.om.resx">
-      <DependentUpon>CompanyStructure.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\CompanyStructure.resx">
       <DependentUpon>CompanyStructure.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ComplainDescription.am.resx">
-      <DependentUpon>ComplainDescription.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ComplainDescription.om.resx">
-      <DependentUpon>ComplainDescription.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\ComplainDescription.resx">
       <DependentUpon>ComplainDescription.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ComplainResponseDepartment.am.resx">
-      <DependentUpon>ComplainResponseDepartment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ComplainResponseDepartment.om.resx">
-      <DependentUpon>ComplainResponseDepartment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\ComplainResponseDepartment.resx">
       <DependentUpon>ComplainResponseDepartment.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ContractEmployeeReport.am.resx">
-      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ContractEmployeeReport.om.resx">
-      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\ContractEmployeeReport.resx">
-      <DependentUpon>ContractEmployeeReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Deligation.am.resx">
-      <DependentUpon>Deligation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Deligation.om.resx">
-      <DependentUpon>Deligation.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Deligation.resx">
       <DependentUpon>Deligation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Design\FiscalYearTrainingPlanActionPlanDesign.resx">
-      <DependentUpon>FiscalYearTrainingPlanActionPlanDesign.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Design\TrainingNeedRequestReport.resx">
-      <DependentUpon>TrainingNeedRequestReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeBirthDate.am.resx">
-      <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeBirthDate.om.resx">
-      <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\EmployeeBirthDate.resx">
       <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePerformanceSummary.am.resx">
-      <DependentUpon>EmployeePerformanceSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePerformanceSummary.om.resx">
-      <DependentUpon>EmployeePerformanceSummary.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\EmployeePerformanceSummary.resx">
       <DependentUpon>EmployeePerformanceSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePerformanceTotalSummary.resx">
-      <DependentUpon>EmployeePerformanceTotalSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.am.resx">
-      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.om.resx">
-      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePerfromanceLeaveDispilineBonusSummary.resx">
-      <DependentUpon>EmployeePerfromanceLeaveDispilineBonusSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeePlacementReport.resx">
-      <DependentUpon>EmployeePlacementReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeProfileReport.resx">
-      <DependentUpon>EmployeeProfileReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeRestitution.am.resx">
-      <DependentUpon>EmployeeRestitution.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeRestitution.om.resx">
-      <DependentUpon>EmployeeRestitution.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\EmployeeRestitution.resx">
       <DependentUpon>EmployeeRestitution.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\IncomOutcommingLetter.am.resx">
-      <DependentUpon>IncomOutcommingLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\IncomOutcommingLetter.om.resx">
-      <DependentUpon>IncomOutcommingLetter.cs</DependentUpon>
+    <EmbeddedResource Include="HRM\HRM\HealthPaymentSelfCare.resx">
+      <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\IncomOutcommingLetter.resx">
       <DependentUpon>IncomOutcommingLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\InsurancePayment.am.resx">
-      <DependentUpon>InsurancePayment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\InsurancePayment.om.resx">
-      <DependentUpon>InsurancePayment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\InsurancePayment.resx">
       <DependentUpon>InsurancePayment.cs</DependentUpon>
@@ -5408,56 +5164,20 @@
     <EmbeddedResource Include="HRM\HRM\InVacRpt.resx">
       <DependentUpon>InVacRpt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LeaveOnebyOne.am.resx">
-      <DependentUpon>LeaveOnebyOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LeaveOnebyOne.om.resx">
-      <DependentUpon>LeaveOnebyOne.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\LeaveOnebyOne.resx">
       <DependentUpon>LeaveOnebyOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LeaveOnebyOneSelfCare.am.resx">
-      <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LeaveOnebyOneSelfCare.om.resx">
-      <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\LeaveOnebyOneSelfCare.resx">
       <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LeavePayableReport.resx">
-      <DependentUpon>LeavePayableReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LeaveRequestStatusReport.resx">
-      <DependentUpon>LeaveRequestStatusReport.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\AmharicExperienceLetter.resx">
       <DependentUpon>AmharicExperienceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\AmharicExperienceLetterReport.resx">
-      <DependentUpon>AmharicExperienceLetterReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ChangeOfPayroll.am.resx">
-      <DependentUpon>ChangeOfPayroll.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ChangeOfPayroll.resx">
       <DependentUpon>ChangeOfPayroll.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ClearanceLetter.am.resx">
-      <DependentUpon>ClearanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ClearanceLetter.om.resx">
-      <DependentUpon>ClearanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ClearanceLetter.resx">
       <DependentUpon>ClearanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ContractLetter.am.resx">
-      <DependentUpon>ContractLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ContractLetter.om.resx">
-      <DependentUpon>ContractLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ContractLetter.resx">
       <DependentUpon>ContractLetter.cs</DependentUpon>
@@ -5468,12 +5188,6 @@
     <EmbeddedResource Include="HRM\HRM\Letters\ExperienceEnglishFBC.resx">
       <DependentUpon>ExperienceEnglishFBC.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ExperienceLetter.am.resx">
-      <DependentUpon>ExperienceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ExperienceLetter.om.resx">
-      <DependentUpon>ExperienceLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ExperienceLetter.resx">
       <DependentUpon>ExperienceLetter.cs</DependentUpon>
     </EmbeddedResource>
@@ -5483,200 +5197,59 @@
     <EmbeddedResource Include="HRM\HRM\Letters\ExperienceLetterEnglishTwo.resx">
       <DependentUpon>ExperienceLetterEnglishTwo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\LeaveRequestLetter.am.resx">
-      <DependentUpon>LeaveRequestLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\LeaveRequestLetter.om.resx">
-      <DependentUpon>LeaveRequestLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\LeaveRequestLetter.resx">
       <DependentUpon>LeaveRequestLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.am.resx">
-      <DependentUpon>ManPowerPlanningRequestLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.om.resx">
-      <DependentUpon>ManPowerPlanningRequestLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.resx">
       <DependentUpon>ManPowerPlanningRequestLetter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PatientTransfer.am.resx">
-      <DependentUpon>PatientTransfer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PatientTransfer.om.resx">
-      <DependentUpon>PatientTransfer.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\PatientTransfer.resx">
       <DependentUpon>PatientTransfer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PromotionLetter.am.resx">
-      <DependentUpon>PromotionLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PromotionLetter.om.resx">
-      <DependentUpon>PromotionLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\PromotionLetter.resx">
       <DependentUpon>PromotionLetter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PromotionLetterTwo.am.resx">
-      <DependentUpon>PromotionLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PromotionLetterTwo.om.resx">
-      <DependentUpon>PromotionLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\PromotionLetterTwo.resx">
-      <DependentUpon>PromotionLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentForExVacLetter.am.resx">
-      <DependentUpon>RecruitmentForExVacLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentForExVacLetter.om.resx">
-      <DependentUpon>RecruitmentForExVacLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentForExVacLetter.resx">
       <DependentUpon>RecruitmentForExVacLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentForProject.am.resx">
-      <DependentUpon>RecruitmentForProject.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentForProject.om.resx">
-      <DependentUpon>RecruitmentForProject.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentForProject.resx">
       <DependentUpon>RecruitmentForProject.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetter.am.resx">
-      <DependentUpon>RecruitmentLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetter.om.resx">
-      <DependentUpon>RecruitmentLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetter.resx">
       <DependentUpon>RecruitmentLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetterTwo.am.resx">
-      <DependentUpon>RecruitmentLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetterTwo.om.resx">
-      <DependentUpon>RecruitmentLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetterTwo.resx">
-      <DependentUpon>RecruitmentLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentRequestLetter.am.resx">
-      <DependentUpon>RecruitmentRequestLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentRequestLetter.om.resx">
-      <DependentUpon>RecruitmentRequestLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentRequestLetter.resx">
       <DependentUpon>RecruitmentRequestLetter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ReferalSheet.am.resx">
-      <DependentUpon>ReferalSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\ReferalSheet.om.resx">
-      <DependentUpon>ReferalSheet.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ReferalSheet.resx">
       <DependentUpon>ReferalSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\rptAttendanceLetter.am.resx">
-      <DependentUpon>rptAttendanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\rptAttendanceLetter.om.resx">
-      <DependentUpon>rptAttendanceLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\rptAttendanceLetter.resx">
       <DependentUpon>rptAttendanceLetter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\rptMyProfile.am.resx">
-      <DependentUpon>rptMyProfile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\rptMyProfile.om.resx">
-      <DependentUpon>rptMyProfile.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\rptMyProfile.resx">
       <DependentUpon>rptMyProfile.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\rptVacancyInternal.am.resx">
-      <DependentUpon>rptVacancyInternal.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\rptVacancyInternal.om.resx">
-      <DependentUpon>rptVacancyInternal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\rptVacancyInternal.resx">
       <DependentUpon>rptVacancyInternal.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\SalaryIncreementLetter.resx">
-      <DependentUpon>SalaryIncreementLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TerminationAcceptanceLetter.am.resx">
-      <DependentUpon>TerminationAcceptanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TerminationAcceptanceLetter.om.resx">
-      <DependentUpon>TerminationAcceptanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\TerminationAcceptanceLetter.resx">
       <DependentUpon>TerminationAcceptanceLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TerminationLetter.am.resx">
-      <DependentUpon>TerminationLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\TerminationLetter.resx">
       <DependentUpon>TerminationLetter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TrainingRequest.am.resx">
-      <DependentUpon>TrainingRequest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TrainingRequest.om.resx">
-      <DependentUpon>TrainingRequest.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\TrainingRequest.resx">
       <DependentUpon>TrainingRequest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TransferLetter.am.resx">
-      <DependentUpon>TransferLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TransferLetter.om.resx">
-      <DependentUpon>TransferLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\TransferLetter.resx">
       <DependentUpon>TransferLetter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TransferLetterTwo.am.resx">
-      <DependentUpon>TransferLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TransferLetterTwo.om.resx">
-      <DependentUpon>TransferLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\TransferLetterTwo.resx">
-      <DependentUpon>TransferLetterTwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\VacancyForMedia.am.resx">
-      <DependentUpon>VacancyForMedia.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Letters\VacancyForMedia.om.resx">
-      <DependentUpon>VacancyForMedia.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\VacancyForMedia.resx">
       <DependentUpon>VacancyForMedia.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\MyPerformance.am.resx">
-      <DependentUpon>MyPerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\MyPerformance.om.resx">
-      <DependentUpon>MyPerformance.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\MyPerformance.resx">
       <DependentUpon>MyPerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\NotPlacedEmployees.am.resx">
-      <DependentUpon>NotPlacedEmployees.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\NotPlacedEmployees.om.resx">
-      <DependentUpon>NotPlacedEmployees.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\NotPlacedEmployees.resx">
       <DependentUpon>NotPlacedEmployees.cs</DependentUpon>
@@ -5684,113 +5257,38 @@
     <EmbeddedResource Include="HRM\HRM\Report1.resx">
       <DependentUpon>Report1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Restitution.am.resx">
-      <DependentUpon>Restitution.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\Restitution.om.resx">
-      <DependentUpon>Restitution.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Restitution.resx">
       <DependentUpon>Restitution.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\RetirementNote.am.resx">
-      <DependentUpon>RetirementNote.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\RetirementNote.om.resx">
-      <DependentUpon>RetirementNote.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\RetirementNote.resx">
       <DependentUpon>RetirementNote.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptAmharicExperience.am.resx">
-      <DependentUpon>rptAmharicExperience.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptAmharicExperience.om.resx">
-      <DependentUpon>rptAmharicExperience.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptAmharicExperience.resx">
       <DependentUpon>rptAmharicExperience.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptClinicReport.am.resx">
-      <DependentUpon>rptClinicReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptClinicReport.om.resx">
-      <DependentUpon>rptClinicReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptClinicReport.resx">
       <DependentUpon>rptClinicReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptDisciplineReason.am.resx">
-      <DependentUpon>rptDisciplineReason.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptDisciplineReason.om.resx">
-      <DependentUpon>rptDisciplineReason.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptDisciplineReason.resx">
       <DependentUpon>rptDisciplineReason.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpAge.am.resx">
-      <DependentUpon>rptEmpAge.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpAge.om.resx">
-      <DependentUpon>rptEmpAge.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpAge.resx">
       <DependentUpon>rptEmpAge.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpByStatus.am.resx">
-      <DependentUpon>rptEmpByStatus.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpByStatus.om.resx">
-      <DependentUpon>rptEmpByStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpByStatus.resx">
       <DependentUpon>rptEmpByStatus.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpEduField.am.resx">
-      <DependentUpon>rptEmpEduField.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpEduField.om.resx">
-      <DependentUpon>rptEmpEduField.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpEduField.resx">
       <DependentUpon>rptEmpEduField.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpEduLevel.am.resx">
-      <DependentUpon>rptEmpEduLevel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpEduLevel.om.resx">
-      <DependentUpon>rptEmpEduLevel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpEduLevel.resx">
       <DependentUpon>rptEmpEduLevel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpJobTitle.am.resx">
-      <DependentUpon>rptEmpJobTitle.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpJobTitle.om.resx">
-      <DependentUpon>rptEmpJobTitle.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpJobTitle.resx">
       <DependentUpon>rptEmpJobTitle.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeBSCPerformance.am.resx">
-      <DependentUpon>rptEmployeeBSCPerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeBSCPerformance.om.resx">
-      <DependentUpon>rptEmployeeBSCPerformance.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeBSCPerformance.resx">
       <DependentUpon>rptEmployeeBSCPerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeByBranch.am.resx">
-      <DependentUpon>rptEmployeeByBranch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeByBranch.om.resx">
-      <DependentUpon>rptEmployeeByBranch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeByBranch.resx">
       <DependentUpon>rptEmployeeByBranch.cs</DependentUpon>
@@ -5798,245 +5296,80 @@
     <EmbeddedResource Include="HRM\HRM\rptEmployeeCourtInsurance.resx">
       <DependentUpon>rptEmployeeCourtInsurance.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.am.resx">
-      <DependentUpon>rptEmployeeDisciplinaryMeasure.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.om.resx">
-      <DependentUpon>rptEmployeeDisciplinaryMeasure.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeDisciplinaryMeasure.resx">
       <DependentUpon>rptEmployeeDisciplinaryMeasure.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeEductions.am.resx">
-      <DependentUpon>rptEmployeeEductions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeEductions.om.resx">
-      <DependentUpon>rptEmployeeEductions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeEductions.resx">
       <DependentUpon>rptEmployeeEductions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeExperience.am.resx">
-      <DependentUpon>rptEmployeeExperience.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeExperience.om.resx">
-      <DependentUpon>rptEmployeeExperience.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeExperience.resx">
       <DependentUpon>rptEmployeeExperience.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeFixedAsset.am.resx">
-      <DependentUpon>rptEmployeeFixedAsset.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeFixedAsset.om.resx">
-      <DependentUpon>rptEmployeeFixedAsset.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeFixedAsset.resx">
       <DependentUpon>rptEmployeeFixedAsset.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeInLeave.am.resx">
-      <DependentUpon>rptEmployeeInLeave.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeInLeave.om.resx">
-      <DependentUpon>rptEmployeeInLeave.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeInLeave.resx">
       <DependentUpon>rptEmployeeInLeave.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeJobTitle.am.resx">
-      <DependentUpon>rptEmployeeJobTitle.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeJobTitle.om.resx">
-      <DependentUpon>rptEmployeeJobTitle.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeJobTitle.resx">
       <DependentUpon>rptEmployeeJobTitle.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeLeavePlan.am.resx">
-      <DependentUpon>rptEmployeeLeavePlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeLeavePlan.om.resx">
-      <DependentUpon>rptEmployeeLeavePlan.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeLeavePlan.resx">
       <DependentUpon>rptEmployeeLeavePlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeMaster.am.resx">
-      <DependentUpon>rptEmployeeMaster.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeMaster.om.resx">
-      <DependentUpon>rptEmployeeMaster.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeMaster.resx">
       <DependentUpon>rptEmployeeMaster.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeNationByRegion.am.resx">
-      <DependentUpon>rptEmployeeNationByRegion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeNationByRegion.om.resx">
-      <DependentUpon>rptEmployeeNationByRegion.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeNationByRegion.resx">
       <DependentUpon>rptEmployeeNationByRegion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformance.am.resx">
-      <DependentUpon>rptEmployeePerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformance.om.resx">
-      <DependentUpon>rptEmployeePerformance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeePerformance.resx">
       <DependentUpon>rptEmployeePerformance.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceDepartment.am.resx">
-      <DependentUpon>rptEmployeePerformanceDepartment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceDepartment.om.resx">
-      <DependentUpon>rptEmployeePerformanceDepartment.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceDepartment.resx">
       <DependentUpon>rptEmployeePerformanceDepartment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceNotEvaluated.am.resx">
-      <DependentUpon>rptEmployeePerformanceNotEvaluated.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceNotEvaluated.om.resx">
-      <DependentUpon>rptEmployeePerformanceNotEvaluated.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceNotEvaluated.resx">
-      <DependentUpon>rptEmployeePerformanceNotEvaluated.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceSummaryDepartment.am.resx">
-      <DependentUpon>rptEmployeePerformanceSummaryDepartment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceSummaryDepartment.om.resx">
-      <DependentUpon>rptEmployeePerformanceSummaryDepartment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeePerformanceSummaryDepartment.resx">
       <DependentUpon>rptEmployeePerformanceSummaryDepartment.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePesion.am.resx">
-      <DependentUpon>rptEmployeePesion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePesion.om.resx">
-      <DependentUpon>rptEmployeePesion.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeePesion.resx">
       <DependentUpon>rptEmployeePesion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePromotionStep.am.resx">
-      <DependentUpon>rptEmployeePromotionStep.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeePromotionStep.om.resx">
-      <DependentUpon>rptEmployeePromotionStep.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeePromotionStep.resx">
       <DependentUpon>rptEmployeePromotionStep.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeQuarterPerformance.am.resx">
-      <DependentUpon>rptEmployeeQuarterPerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeQuarterPerformance.om.resx">
-      <DependentUpon>rptEmployeeQuarterPerformance.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeQuarterPerformance.resx">
       <DependentUpon>rptEmployeeQuarterPerformance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeRecruitment.am.resx">
-      <DependentUpon>rptEmployeeRecruitment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeRecruitment.om.resx">
-      <DependentUpon>rptEmployeeRecruitment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeRecruitment.resx">
       <DependentUpon>rptEmployeeRecruitment.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeReferalSheet.am.resx">
-      <DependentUpon>rptEmployeeReferalSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeReferalSheet.om.resx">
-      <DependentUpon>rptEmployeeReferalSheet.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeReferalSheet.resx">
       <DependentUpon>rptEmployeeReferalSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeSalary.am.resx">
-      <DependentUpon>rptEmployeeSalary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeSalary.om.resx">
-      <DependentUpon>rptEmployeeSalary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeSalary.resx">
       <DependentUpon>rptEmployeeSalary.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeTermination.am.resx">
-      <DependentUpon>rptEmployeeTermination.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeTermination.om.resx">
-      <DependentUpon>rptEmployeeTermination.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeTermination.resx">
       <DependentUpon>rptEmployeeTermination.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeTraining.am.resx">
-      <DependentUpon>rptEmployeeTraining.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmployeeTraining.om.resx">
-      <DependentUpon>rptEmployeeTraining.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmployeeTraining.resx">
       <DependentUpon>rptEmployeeTraining.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpNation.am.resx">
-      <DependentUpon>rptEmpNation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpNation.om.resx">
-      <DependentUpon>rptEmpNation.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpNation.resx">
       <DependentUpon>rptEmpNation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpRank.am.resx">
-      <DependentUpon>rptEmpRank.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptEmpRank.om.resx">
-      <DependentUpon>rptEmpRank.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptEmpRank.resx">
       <DependentUpon>rptEmpRank.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptExternalApplicantList.am.resx">
-      <DependentUpon>rptExternalApplicantList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptExternalApplicantList.om.resx">
-      <DependentUpon>rptExternalApplicantList.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptExternalApplicantList.resx">
       <DependentUpon>rptExternalApplicantList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptHealthandValue.am.resx">
-      <DependentUpon>rptHealthandValue.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptHealthandValue.om.resx">
-      <DependentUpon>rptHealthandValue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptHealthandValue.resx">
       <DependentUpon>rptHealthandValue.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptInternalApplicantList.am.resx">
-      <DependentUpon>rptInternalApplicantList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptInternalApplicantList.om.resx">
-      <DependentUpon>rptInternalApplicantList.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptInternalApplicantList.resx">
       <DependentUpon>rptInternalApplicantList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptInternalVaccancies.am.resx">
-      <DependentUpon>rptInternalVaccancies.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptInternalVaccancies.om.resx">
-      <DependentUpon>rptInternalVaccancies.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptInternalVaccancies.resx">
       <DependentUpon>rptInternalVaccancies.cs</DependentUpon>
@@ -6062,224 +5395,74 @@
     <EmbeddedResource Include="HRM\HRM\rptJudgeList.resx">
       <DependentUpon>rptJudgeList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLeave.am.resx">
-      <DependentUpon>rptLeave.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLeave.om.resx">
-      <DependentUpon>rptLeave.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptLeave.resx">
       <DependentUpon>rptLeave.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLeavePlan.am.resx">
-      <DependentUpon>rptLeavePlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLeavePlan.om.resx">
-      <DependentUpon>rptLeavePlan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptLeavePlan.resx">
       <DependentUpon>rptLeavePlan.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLeaveSummary.am.resx">
-      <DependentUpon>rptLeaveSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLeaveSummary.om.resx">
-      <DependentUpon>rptLeaveSummary.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptLeaveSummary.resx">
       <DependentUpon>rptLeaveSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLongTermEducation.am.resx">
-      <DependentUpon>rptLongTermEducation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptLongTermEducation.om.resx">
-      <DependentUpon>rptLongTermEducation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptLongTermEducation.resx">
       <DependentUpon>rptLongTermEducation.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptMonthlySalaryPerPeriod.am.resx">
-      <DependentUpon>rptMonthlySalaryPerPeriod.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptMonthlySalaryPerPeriod.om.resx">
-      <DependentUpon>rptMonthlySalaryPerPeriod.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptMonthlySalaryPerPeriod.resx">
       <DependentUpon>rptMonthlySalaryPerPeriod.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptOvertimeHoursUnProcessedLists.resx">
-      <DependentUpon>rptOvertimeHoursUnProcessedLists.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptPaidLeave.am.resx">
-      <DependentUpon>rptPaidLeave.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptPaidLeave.om.resx">
-      <DependentUpon>rptPaidLeave.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptPaidLeave.resx">
       <DependentUpon>rptPaidLeave.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptPlacmentGap.am.resx">
-      <DependentUpon>rptPlacmentGap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptPlacmentGap.om.resx">
-      <DependentUpon>rptPlacmentGap.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptPlacmentGap.resx">
       <DependentUpon>rptPlacmentGap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptProbationPerformanceMeasure.am.resx">
-      <DependentUpon>rptProbationPerformanceMeasure.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptProbationPerformanceMeasure.om.resx">
-      <DependentUpon>rptProbationPerformanceMeasure.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptProbationPerformanceMeasure.resx">
       <DependentUpon>rptProbationPerformanceMeasure.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptRecruitment.am.resx">
-      <DependentUpon>rptRecruitment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptRecruitment.om.resx">
-      <DependentUpon>rptRecruitment.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptRecruitment.resx">
       <DependentUpon>rptRecruitment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptRecruitmentSummary.am.resx">
-      <DependentUpon>rptRecruitmentSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptRecruitmentSummary.om.resx">
-      <DependentUpon>rptRecruitmentSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptRecruitmentSummary.resx">
       <DependentUpon>rptRecruitmentSummary.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptTermination.am.resx">
-      <DependentUpon>rptTermination.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptTermination.om.resx">
-      <DependentUpon>rptTermination.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptTermination.resx">
       <DependentUpon>rptTermination.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptTerminationReason.am.resx">
-      <DependentUpon>rptTerminationReason.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptTerminationReason.om.resx">
-      <DependentUpon>rptTerminationReason.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptTerminationReason.resx">
       <DependentUpon>rptTerminationReason.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptTobePromotedEmployee.am.resx">
-      <DependentUpon>rptTobePromotedEmployee.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptTobePromotedEmployee.om.resx">
-      <DependentUpon>rptTobePromotedEmployee.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptTobePromotedEmployee.resx">
       <DependentUpon>rptTobePromotedEmployee.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptVacantPostion.am.resx">
-      <DependentUpon>rptVacantPostion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptVacantPostion.om.resx">
-      <DependentUpon>rptVacantPostion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptVacantPostion.resx">
       <DependentUpon>rptVacantPostion.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptWarrantyLetter.am.resx">
-      <DependentUpon>rptWarrantyLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptWarrantyLetter.om.resx">
-      <DependentUpon>rptWarrantyLetter.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptWarrantyLetter.resx">
       <DependentUpon>rptWarrantyLetter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptWorkandCostSummary.am.resx">
-      <DependentUpon>rptWorkandCostSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rptWorkandCostSummary.om.resx">
-      <DependentUpon>rptWorkandCostSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rptWorkandCostSummary.resx">
       <DependentUpon>rptWorkandCostSummary.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rtpInternalVcancySelfCare.am.resx">
-      <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\rtpInternalVcancySelfCare.om.resx">
-      <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rtpInternalVcancySelfCare.resx">
       <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\SeverancePayableReport.resx">
-      <DependentUpon>SeverancePayableReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingAndEducationOneByOne.am.resx">
-      <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingAndEducationOneByOne.om.resx">
-      <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingAndEducationOneByOne.resx">
       <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingEvaluation.am.resx">
-      <DependentUpon>TrainingEvaluation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingEvaluation.om.resx">
-      <DependentUpon>TrainingEvaluation.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingEvaluation.resx">
       <DependentUpon>TrainingEvaluation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingOneByeOne.am.resx">
-      <DependentUpon>TrainingOneByeOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingOneByeOne.om.resx">
-      <DependentUpon>TrainingOneByeOne.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingOneByeOne.resx">
       <DependentUpon>TrainingOneByeOne.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingRequest.am.resx">
-      <DependentUpon>TrainingRequest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\TrainingRequest.om.resx">
-      <DependentUpon>TrainingRequest.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingRequest.resx">
       <DependentUpon>TrainingRequest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecord.am.resx">
-      <DependentUpon>VehicleAccidentRecord.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecord.om.resx">
-      <DependentUpon>VehicleAccidentRecord.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecord.resx">
       <DependentUpon>VehicleAccidentRecord.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecordByLocation.am.resx">
-      <DependentUpon>VehicleAccidentRecordByLocation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecordByLocation.om.resx">
-      <DependentUpon>VehicleAccidentRecordByLocation.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecordByLocation.resx">
       <DependentUpon>VehicleAccidentRecordByLocation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecordByType.am.resx">
-      <DependentUpon>VehicleAccidentRecordByType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecordByType.om.resx">
-      <DependentUpon>VehicleAccidentRecordByType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\VehicleAccidentRecordByType.resx">
       <DependentUpon>VehicleAccidentRecordByType.cs</DependentUpon>

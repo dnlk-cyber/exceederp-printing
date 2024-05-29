@@ -3,98 +3,86 @@ using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EvaluationTypeObjectDataSource : EmployeePerformanceHeaderVM
+    public class EvaluationTypeObjectDataSource : EmployeePerformanceVM
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public EmployeePerformanceHeaderVM GetEvaluationType(string empId,string yearId, string quarterId, string criteriaId, string businessUnit)
+        public EmployeePerformanceVM GetEvaluationType(string empId, string quarterId, string criteriaId)
         {
 
-            var empPerformance = new EmployeePerformanceHeaderVM();
-            
-            if (!string.IsNullOrEmpty(empId) && !string.IsNullOrEmpty(yearId))
+            var empPerformance = new EmployeePerformanceVM();
+            var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+
+            if (Organization != null)
+            {
+                empPerformance.Name = Organization.TradeName;
+                empPerformance.AmharicName = Organization.AmharicName;
+                empPerformance.Abbreviation = Organization.Abbreviation;
+                var address =
+                    db.Addresses.Where(
+                        a =>
+                            a.Reference == Organization.MainCompanyId.ToString() &&
+                            a.ReferenceType.ToLower() == "company").ToList();
+                if (address.Any())
+                {
+                    foreach (var a in address)
+                    {
+                        if (a.Category == AddressType.KIFLEKETEMA)
+                        {
+                            empPerformance.Address = "Subcity: " + a.Value + " ";
+                        }
+                        if (a.Category == AddressType.KEBELE)
+                        {
+                            empPerformance.Address += "Kebele: " + a.Value + " ";
+                        }
+                        if (a.Category == AddressType.CITYPROVINCE)
+                        {
+                            if (empPerformance.Address == null)
+                            {
+                                empPerformance.Address += a.Value + " -Ethiopia";
+                            }
+                        }
+                    }
+
+                }
+                var logo =
+                    db.Attachments.Where(
+                        a =>
+                            a.Reference == Organization.MainCompanyId.ToString() &&
+                            a.ReferenceType == AttachmentType.LOGO).FirstOrDefault();
+                if (logo != null)
+                {
+                    empPerformance.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+                }
+            }
+
+
+            if (empId != null)
             {
                 int.TryParse(empId, out int employeeId);
-                int.TryParse(yearId, out int fiscalYearId);
-                var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId == employeeId && x.GlFiscalYearId == fiscalYearId && x.IsSecondLevelApproved).ToList();
-                
-                if (!string.IsNullOrEmpty(quarterId))
-                {
-                    int.TryParse(quarterId, out int quartId);
-                    employeePerformances = employeePerformances.Where(x => x.GlPeriodId == quartId).ToList();
+                int.TryParse(quarterId, out int quartId);
+                int.TryParse(criteriaId, out int evaluationCriteriaId);
 
-                }
-                if (!string.IsNullOrEmpty(criteriaId))
-                {
-                    int.TryParse(criteriaId, out int evaluationCriteriaId);
-                    employeePerformances = employeePerformances.Where(x => x.EvaluationCriteriaTypeId == evaluationCriteriaId).ToList();
-                }
-                if (!string.IsNullOrEmpty(businessUnit))
-                {
-                    int.TryParse(businessUnit, out int businessUnitId);
-                    employeePerformances = employeePerformances.Where(x => x.BusinessUnitId == businessUnitId).ToList();
-                }
-                var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
-                if (Organization != null)
-                {
-                    empPerformance.Name = Organization.TradeName;
-                    empPerformance.AmharicName = Organization.AmharicName;
-                    empPerformance.Abbreviation = Organization.Abbreviation;
-                    var address =
-                        db.Addresses.Where(
-                            a =>
-                                a.Reference == Organization.MainCompanyId.ToString() &&
-                                a.ReferenceType.ToLower() == "company").ToList();
-                    if (address.Any())
-                    {
-                        foreach (var a in address)
-                        {
-                            if (a.Category == AddressType.KIFLEKETEMA)
-                            {
-                                empPerformance.Address = "Subcity: " + a.Value + " ";
-                            }
-                            if (a.Category == AddressType.KEBELE)
-                            {
-                                empPerformance.Address += "Kebele: " + a.Value + " ";
-                            }
-                            if (a.Category == AddressType.CITYPROVINCE)
-                            {
-                                if (empPerformance.Address == null)
-                                {
-                                    empPerformance.Address += a.Value + " -Ethiopia";
-                                }
-                            }
-                        }
+                var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == employeeId && x.GlPeriodId == quartId && x.EvaluationCriteriaTypeId == evaluationCriteriaId && x.IsApproved);
 
-                    }
-                    var logo =
-                        db.Attachments.Where(
-                            a =>
-                                a.Reference == Organization.MainCompanyId.ToString() &&
-                                a.ReferenceType == AttachmentType.LOGO).FirstOrDefault();
-                    if (logo != null)
-                    {
-                        empPerformance.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
-                    }
-                }
-                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId);
+                if (employeePerformance != null)
                 {
+                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeePerformance.EmployeeId);
+                    if (person != null)
+                    {
+                        empPerformance.FullName = person.FullNameaEnglish;
+                    }
+
+                    var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeePerformance.EmployeeId && x.isCurrent);
                     if (place != null)
                     {
-
-                        var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeeId);
-                        if (person != null)
-                        {
-                            empPerformance.FullName = person.FullNameaEnglish;
-                        }
                         var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
                         if (branch != null)
                         {
@@ -112,68 +100,42 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         {
                             empPerformance.Jobtitle = look.Description;
                         }
-                        var businessUnitt = db.BusinessUnits.Find(place.BusinessUnitId);
-                        if(businessUnitt != null)
-                        {
-                            empPerformance.BussinessUnit = businessUnitt.Name;
-                        }
-                        var head = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.HeadId);
-                        if (head != null)
-                        {
-                            empPerformance.ImmidiateApprover = head.FullNameaEnglish;
-                        }
-                        var perform = employeePerformances.Where(x => x.EmployeeId == employeeId && x.DirectBossId !=0).FirstOrDefault();
-                        if (perform != null)
-                        {
-                            var secondLevelApprover = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == perform.DirectBossId);
-                            if (secondLevelApprover != null)
-                            {
-                                empPerformance.SecondLevelApproverApprover = secondLevelApprover.FullNameaEnglish;
-                            }
-                        }
                     }
 
-                    var year = db.GLFiscalYears.Find(fiscalYearId);
+                    var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == employeePerformance.GlFiscalYearId);
                     if (year != null)
                     {
                         empPerformance.Year = year.Name;
                     }
-                    if (!string.IsNullOrEmpty(quarterId))
-                    {
-                        int.TryParse(quarterId, out int QuarterId);
-                        var period = db.Quarters.Find(QuarterId);
-                        if (period != null)
-                        {
-                            empPerformance.Period = period.Name;
-                        }
-                    }
-                }
-                empPerformance.EmployeePerformanceLists = new List<EmployeePerformanceVM>();
-
-                foreach (var employeePerformance in employeePerformances)
-                {
-
-                    var crateriaList = new EmployeePerformanceVM();
 
                     var period = db.Quarters.FirstOrDefault(x => x.QuarterId == employeePerformance.GlPeriodId);
                     if (period != null)
                     {
-                        crateriaList.Period = period.Name;
+                        empPerformance.Period = period.Name;
                     }
-                    var evaluationCriteria = db.MeasurementDefinitions.Where(x => x.MeasurementDefinitionId == employeePerformance.EvaluationCriteriaTypeId).FirstOrDefault();
-                    if (evaluationCriteria != null )
-                    {                  
-                        crateriaList.EvaluationCriteriaName = evaluationCriteria.EvaluationCriteria;
-                        crateriaList.Role = evaluationCriteria.Role.ToString();
-                        crateriaList.Weight = evaluationCriteria.DefnPercentageofWeight;
 
+                    var evaluationCriteria = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == employeePerformance.EvaluationCriteriaTypeId);
+                    if (evaluationCriteria != null)
+                    {
+                        empPerformance.EvaluationCriteriaName = evaluationCriteria.EvaluationCriteria;
+                        empPerformance.Role = evaluationCriteria.Role.ToString();
+                        empPerformance.Weight = evaluationCriteria.DefnPercentageofWeight;
+                        empPerformance.Result = GetPerformanceScore(employeePerformance.EmployeePerformanceId);
+                        var look = db.Lookups.FirstOrDefault(x => x.LookupId == evaluationCriteria.LookupId);
+                        if (look != null)
+                        {
+                            empPerformance.EvaluationType = look.Description;
+                        }
                     }
-                    crateriaList.Result = GetPerformanceScore(employeePerformance.EmployeePerformanceId);
+
                     var employeeMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == employeePerformance.EmployeePerformanceId).ToList();
-                    crateriaList.EmployeeMeasurmentList = new List<EmployeeMeasurementVM>();
+
+                    empPerformance.EmployeeMeasurmentList = new List<EmployeeMeasurementVM>();
+
                     foreach (var empMeaur in employeeMeasurments)
                     {
                         var employeeMeasure = new EmployeeMeasurementVM();
+
                         var measur = db.Measurements.FirstOrDefault(x => x.MeasurementId == empMeaur.MeasurmentId);
                         if (measur != null)
                         {
@@ -182,28 +144,31 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
 
                         employeeMeasure.Result = GetEmployeeMeasurment(empMeaur.EmpMeasurementId);
+
                         var employeePerformanceScores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == empMeaur.EmpMeasurementId).ToList();
+
                         employeeMeasure.EmployeePerformanceScoreVMList = new List<EmployeePerformanceScoreVM>();
+
                         foreach (var perfAction in employeePerformanceScores)
                         {
-
                             var performanceScore = new EmployeePerformanceScoreVM();
+
                             var performanceAction = db.PerformanceActions.FirstOrDefault(x => x.ActionId == perfAction.PerformanceActionId);
                             if (performanceAction != null)
                             {
                                 performanceScore.ActionName = performanceAction.ActionName;
                                 performanceScore.Weight = performanceAction.AcPercentageofWeight;
                             }
+
                             performanceScore.Score = perfAction.Score;
+
                             employeeMeasure.EmployeePerformanceScoreVMList.Add(performanceScore);
                         }
-                        crateriaList.EmployeeMeasurmentList.Add(employeeMeasure);
 
+                        empPerformance.EmployeeMeasurmentList.Add(employeeMeasure);
                     }
-                    empPerformance.EmployeePerformanceLists.Add(crateriaList);
-                    //empPerformance.Add(crateriaList);
+
                 }
-             
             }
 
             return empPerformance;

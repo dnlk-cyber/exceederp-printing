@@ -106,8 +106,8 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             EmployeeInfo.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day,DateTime.Now.Month,DateTime.Now.Year);
 
-            int.TryParse(id,out int requestId);
-            var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId == requestId);
+            
+            var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId.ToString() == id);
             if(leaveRequest != null)
             {
                 var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == leaveRequest.EmployeeId);
@@ -158,7 +158,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
                     if(depApp != null)
                     {
                         EmployeeInfo.Status = depApp.Status.ToString();
-                        var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == depApp.ApproverId);
+                        var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == requstStatus.ApproverId);
                         if (emp != null)
                         {
                             EmployeeInfo.DepApprover = emp.FullNameaEnglish;

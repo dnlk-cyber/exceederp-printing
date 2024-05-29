@@ -132,12 +132,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         if (warranty.EmployeeStatus == EmployeeStatus.PERMANENT.ToString())
                         {
                             warranty.EmployeeStatus = "ቋሚ";
-                          warranty.EmployeeStatus = EmployeeStatus.PERMANENT.ToString().ToLower();
                         }
                         if (warranty.EmployeeStatus == EmployeeStatus.CONTRACT.ToString())
                         {
                             warranty.EmployeeStatus = "ጊዜያዊ";
-                            //warranty.EmployeeStatus = EmployeeStatus.CONTRACT.ToString().ToLower();
                         }
 
                         var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
