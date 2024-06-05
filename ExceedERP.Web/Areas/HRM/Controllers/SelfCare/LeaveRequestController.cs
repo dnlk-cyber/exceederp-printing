@@ -225,20 +225,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult LeaveRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var  employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByHead(employeeid);
-            //employeeids.Remove(employeeid);
-            //List<LeaveRequest> leaveRequestLists = new List<LeaveRequest>();
-            List<LeaveRequest> leaverequests = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) /*&& x.IsForOther*/).OrderBy(x => x.RequestDate).ToList();
-           // List<LeaveRequest> leaverequestSelf = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) && !x.IsForOther).OrderBy(x => x.RequestDate).ToList();
-            //foreach (var lrs in leaverequestSelf)
-            //{
-            //    var sentRequest = db.RequestesStatus.FirstOrDefault(x => x.RequestId == lrs.LeaveRequestId);
-            //    if (sentRequest != null)
-            //    {
-            //        leaverequests.Add(lrs);
-            //    }
-            //}
+            var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            employeeids.Remove(employeeid);
+            List<LeaveRequest> leaveRequestLists = new List<LeaveRequest>();
+            List<LeaveRequest> leaverequests = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) && x.IsForOther).OrderBy(x => x.RequestDate).ToList();
+            List<LeaveRequest> leaverequestSelf = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId) && !x.IsForOther).OrderBy(x => x.RequestDate).ToList();
+            foreach (var lrs in leaverequestSelf)
+            {
+                var sentRequest = db.RequestesStatus.FirstOrDefault(x => x.RequestId == lrs.LeaveRequestId);
+                if (sentRequest != null)
+                {
+                    leaverequests.Add(lrs);
+                }
+            }
 
             DataSourceResult result = leaverequests.ToDataSourceResult(request, leaveRequest => new
             {

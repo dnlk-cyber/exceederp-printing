@@ -559,193 +559,194 @@
 
 
 <ul class="nav nav-list">
-	@*<li id="link300" class="actionlinlk">
-			<a href="~/UserProfile/MyBranches">
-				<i class="menu-icon fa fa-key"></i>
-				<span class="menu-text"> User Profile </span>
-			</a>
+    @*<li id="link300" class="actionlinlk">
+            <a href="~/UserProfile/MyBranches">
+                <i class="menu-icon fa fa-key"></i>
+                <span class="menu-text"> User Profile </span>
+            </a>
 
-			<b class="arrow"></b>
-		</li>*@
-
-
-	@Html.Partial("_Dashboard")
+            <b class="arrow"></b>
+        </li>*@
 
 
-
-
-	@if (HttpContext.Current.User.IsInRole("HR_Admin") ||
-		 HttpContext.Current.User.IsInRole("Health_User") ||
-		 HttpContext.Current.User.IsInRole("Health_Admin") ||
-		 HttpContext.Current.User.IsInRole("Health_Approver") ||
-		 HttpContext.Current.User.IsInRole("HR_Attendance_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Benefit_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Benefit_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Company_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Company_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Discipline_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Employee_SelfService") ||
-		 HttpContext.Current.User.IsInRole("HR_Leave_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Leave_Approver") ||
-		 HttpContext.Current.User.IsInRole("HR_Leave_Report") ||
-		 HttpContext.Current.User.IsInRole("HR_Leave_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Letters_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
-		 HttpContext.Current.User.IsInRole("HR_Performance_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Performance_Report") ||
-		 HttpContext.Current.User.IsInRole("HR_Performance_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Placement_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Placement_User") ||
-		 HttpContext.Current.User.IsInRole("HR_PrintableDocuments_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Profile_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Profile_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") ||
-		 HttpContext.Current.User.IsInRole("HR_Recruitment_Approver") ||
-		 HttpContext.Current.User.IsInRole("HR_Recruitment_Report") ||
-		 HttpContext.Current.User.IsInRole("HR_Recruitment_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Report") ||
-		 HttpContext.Current.User.IsInRole("HR_Termination_User") ||
-		 HttpContext.Current.User.IsInRole("HR_Training_Approver") ||
-		 HttpContext.Current.User.IsInRole("HR_Training_User") ||
-		 HttpContext.Current.User.IsInRole("Archive_Report") ||
-		 HttpContext.Current.User.IsInRole("Archive_Admin") ||
-		 HttpContext.Current.User.IsInRole("Archive_User"))
-	{
-
-		@Html.Partial("_HRM")
-	}
-
-
-	@if (HttpContext.Current.User.IsInRole("APTS_Despensary") ||
-		 HttpContext.Current.User.IsInRole("APTS_Admin") ||
-		 HttpContext.Current.User.IsInRole("APTS_DrugStore") ||
-		 HttpContext.Current.User.IsInRole("APTS_Accountant") ||
-		 HttpContext.Current.User.IsInRole("APTS_User"))
-	{
-		@Html.Partial("_APTS")
-	}
-	@*@Html.Partial("_Production")*@
-
-
-
-	@if (HttpContext.Current.User.IsInRole("Health_User") ||
-		 HttpContext.Current.User.IsInRole("Health_Admin") ||
-		 HttpContext.Current.User.IsInRole("Health_Approver") ||
-		 HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
-		 HttpContext.Current.User.IsInRole("Insurance_Admin") ||
-		 HttpContext.Current.User.IsInRole("Insurance_User")
-		)
-	{
-		@Html.Partial("_HealtInsurance")
-	}
-
-	@if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
-		 HttpContext.Current.User.IsInRole("Archive_Report") ||
-		 HttpContext.Current.User.IsInRole("Archive_User"))
-	{
-		@Html.Partial("_Archive")
-	}
-
-	@if (HttpContext.Current.User.IsInRole("Payroll_Input") ||
-		 HttpContext.Current.User.IsInRole("Payroll_Admin") ||
-		 HttpContext.Current.User.IsInRole("Payroll_Process") ||
-		 HttpContext.Current.User.IsInRole("Payroll_Approver") ||
-		 HttpContext.Current.User.IsInRole("Payroll_Report") ||
-		 HttpContext.Current.User.IsInRole("Payroll_View"))
-	{
-		@Html.Partial("_Payroll")
-	}
-	@if (HttpContext.Current.User.IsInRole("Project_Admin") ||
-		 HttpContext.Current.User.IsInRole("Construction_Project_Estimation") ||
-		 HttpContext.Current.User.IsInRole("Construction_Costing") ||
-		 HttpContext.Current.User.IsInRole("Construction_Billing") ||
-		 HttpContext.Current.User.IsInRole("Construction_Contract_Management") ||
-		 HttpContext.Current.User.IsInRole("Construction_Scheduling") ||
-		 HttpContext.Current.User.IsInRole("Construction_Document") ||
-		 HttpContext.Current.User.IsInRole("Project_Report"))
-	{
-
-	}
-
-	@if (HttpContext.Current.User.IsInRole("Construction_Admin"))
-	{
-		@Html.Partial("_Construction")
-	}
-
-	@if (HttpContext.Current.User.IsInRole("Account_Payable_Admin") ||
-		 HttpContext.Current.User.IsInRole("Account_Payable_Approver") ||
-		 HttpContext.Current.User.IsInRole("Account_Payable_Invoice") ||
-		 HttpContext.Current.User.IsInRole("Account_Payable_Payment") ||
-		 HttpContext.Current.User.IsInRole("Account_Payable_Report") ||
-		 HttpContext.Current.User.IsInRole("Account_Payable_View") ||
-		 HttpContext.Current.User.IsInRole("Account_Receivable_Admin") ||
-		 HttpContext.Current.User.IsInRole("Account_Receivable_Collection") ||
-		 HttpContext.Current.User.IsInRole("Account_Receivable_Invoice") ||
-		 HttpContext.Current.User.IsInRole("Account_Receivable_Report") ||
-		 HttpContext.Current.User.IsInRole("Account_Receivable_view") ||
-		 HttpContext.Current.User.IsInRole("Account_Receivable_Approver") ||
-		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin") ||
-		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_report") ||
-		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_User") ||
-		 HttpContext.Current.User.IsInRole("Bank_Reconciliation_View") ||
-		 HttpContext.Current.User.IsInRole("General_Ledger_Admin") ||
-		 HttpContext.Current.User.IsInRole("GeneralLedgerApprover") ||
-		 HttpContext.Current.User.IsInRole("General_Ledger_Report") ||
-		 HttpContext.Current.User.IsInRole("General_Ledger_User") ||
-		 HttpContext.Current.User.IsInRole("GeneralLedgerView") ||
-		 HttpContext.Current.User.IsInRole("General_SubLedger_Transfer") ||
-		 HttpContext.Current.User.IsInRole("Finance_Admin") ||
-		 HttpContext.Current.User.IsInRole("Finance_Report") ||
-		 HttpContext.Current.User.IsInRole("Finance_Checker"))
-
-	{
-		@Html.Partial("_Finance")
-	}
-
-
-	@if (HttpContext.Current.User.IsInRole("Budget") ||
-		 HttpContext.Current.User.IsInRole("Budget_Admin") ||
-		 HttpContext.Current.User.IsInRole("Budget_Report")
-		)
-	{
-		@*@Html.Partial("_Budget")*@
-	}
-
-	@*@if (HttpContext.Current.User.IsInRole("Purchase") ||
-		HttpContext.Current.User.IsInRole("Purchase_Report") ||
-		HttpContext.Current.User.IsInRole("Purchase_Admin")
-		)*@
-
-	@Html.Partial("_Procurement")
-
-	@Html.Partial("_Inventory")
-
-	@Html.Partial("_FixedAsset")
-	@Html.Partial("_Budget")
-	@Html.Partial("_CRM")
-	@Html.Partial("_Fleet")
-	@Html.Partial("_Maintenance")
-	@*@Html.Partial("_PrintingEstimation")*@
-	@*@Html.Partial("_ProductionFollowUp")
-		@Html.Partial("_JobCosting")
-		@Html.Partial("_SelfService")
-		@Html.Partial("_CMS")
-		@Html.Partial("_InformationDesk")*@
-	@Html.Partial("_Printing")
-	@Html.Partial("_Manufacturing")
+    @Html.Partial("_Dashboard")
 
 
 
 
+    @if (HttpContext.Current.User.IsInRole("HR_Admin") ||
+         HttpContext.Current.User.IsInRole("Health_User") ||
+         HttpContext.Current.User.IsInRole("Health_Admin") ||
+         HttpContext.Current.User.IsInRole("Health_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Attendance_User") ||
+         HttpContext.Current.User.IsInRole("HR_Benefit_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Benefit_User") ||
+         HttpContext.Current.User.IsInRole("HR_Company_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Company_User") ||
+         HttpContext.Current.User.IsInRole("HR_Discipline_User") ||
+         HttpContext.Current.User.IsInRole("HR_Employee_SelfService") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Leave_User") ||
+         HttpContext.Current.User.IsInRole("HR_Letters_User") ||
+         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
+         HttpContext.Current.User.IsInRole("HR_Performance_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Performance_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Performance_User") ||
+         HttpContext.Current.User.IsInRole("HR_Placement_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Placement_User") ||
+         HttpContext.Current.User.IsInRole("HR_PrintableDocuments_User") ||
+         HttpContext.Current.User.IsInRole("HR_Profile_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Profile_User") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Recruitment_User") ||
+         HttpContext.Current.User.IsInRole("HR_Report") ||
+         HttpContext.Current.User.IsInRole("HR_Termination_User") ||
+         HttpContext.Current.User.IsInRole("HR_Training_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Training_User") ||
+         HttpContext.Current.User.IsInRole("Archive_Report") ||
+         HttpContext.Current.User.IsInRole("Archive_Admin") ||
+         HttpContext.Current.User.IsInRole("Archive_User"))
+    {
 
-	@*@Html.Partial("_Project")*@
+        @Html.Partial("_HRM")
+    }
 
-	@if (HttpContext.Current.User.IsInRole("Admin") ||
-		 HttpContext.Current.User.IsInRole("Admin_Regional") ||
-		 HttpContext.Current.User.IsInRole("Admin_Module"))
-	{
-		@Html.Partial("_Settings")
-	}
+
+    @if (HttpContext.Current.User.IsInRole("APTS_Despensary") ||
+         HttpContext.Current.User.IsInRole("APTS_Admin") ||
+         HttpContext.Current.User.IsInRole("APTS_DrugStore") ||
+         HttpContext.Current.User.IsInRole("APTS_Accountant") ||
+         HttpContext.Current.User.IsInRole("APTS_User"))
+    {
+        @Html.Partial("_APTS")
+    }
+    @*@Html.Partial("_Production")*@
+
+
+
+    @if (HttpContext.Current.User.IsInRole("Health_User") ||
+         HttpContext.Current.User.IsInRole("Health_Admin") ||
+         HttpContext.Current.User.IsInRole("Health_Approver") ||
+         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
+         HttpContext.Current.User.IsInRole("Insurance_Admin") ||
+         HttpContext.Current.User.IsInRole("Insurance_User")
+        )
+    {
+        @Html.Partial("_HealtInsurance")
+    }
+
+    @if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
+         HttpContext.Current.User.IsInRole("Archive_Report") ||
+         HttpContext.Current.User.IsInRole("Archive_User"))
+    {
+        @Html.Partial("_Archive")
+    }
+
+    @if (HttpContext.Current.User.IsInRole("Payroll_Input") ||
+         HttpContext.Current.User.IsInRole("Payroll_Admin") ||
+         HttpContext.Current.User.IsInRole("Payroll_Process") ||
+         HttpContext.Current.User.IsInRole("Payroll_Approver") ||
+         HttpContext.Current.User.IsInRole("Payroll_Report") ||
+         HttpContext.Current.User.IsInRole("Payroll_View"))
+    {
+        @Html.Partial("_Payroll")
+    }
+    @if (HttpContext.Current.User.IsInRole("Project_Admin") ||
+         HttpContext.Current.User.IsInRole("Construction_Project_Estimation") ||
+         HttpContext.Current.User.IsInRole("Construction_Costing") ||
+         HttpContext.Current.User.IsInRole("Construction_Billing") ||
+         HttpContext.Current.User.IsInRole("Construction_Contract_Management") ||
+         HttpContext.Current.User.IsInRole("Construction_Scheduling") ||
+         HttpContext.Current.User.IsInRole("Construction_Document") ||
+         HttpContext.Current.User.IsInRole("Project_Report"))
+    {
+
+    }
+
+    @if (HttpContext.Current.User.IsInRole("Construction_Admin"))
+    {
+        @Html.Partial("_Construction")
+    }
+
+    @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Approver") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Invoice") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Payment") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_Report") ||
+         HttpContext.Current.User.IsInRole("Account_Payable_View") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Admin") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Collection") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Invoice") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Report") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_view") ||
+         HttpContext.Current.User.IsInRole("Account_Receivable_Approver") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_report") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_User") ||
+         HttpContext.Current.User.IsInRole("Bank_Reconciliation_View") ||
+         HttpContext.Current.User.IsInRole("General_Ledger_Admin") ||
+         HttpContext.Current.User.IsInRole("GeneralLedgerApprover") ||
+         HttpContext.Current.User.IsInRole("General_Ledger_Report") ||
+         HttpContext.Current.User.IsInRole("General_Ledger_User") ||
+         HttpContext.Current.User.IsInRole("GeneralLedgerView") ||
+         HttpContext.Current.User.IsInRole("General_SubLedger_Transfer") ||
+         HttpContext.Current.User.IsInRole("Finance_Admin") ||
+         HttpContext.Current.User.IsInRole("Finance_Report") ||
+         HttpContext.Current.User.IsInRole("Finance_Checker"))
+
+    {
+        @Html.Partial("_Finance")
+    }
+
+
+    @if (HttpContext.Current.User.IsInRole("Budget") ||
+         HttpContext.Current.User.IsInRole("Budget_Admin") ||
+         HttpContext.Current.User.IsInRole("Budget_Report")
+        )
+    {
+        @*@Html.Partial("_Budget")*@
+    }
+
+    @*@if (HttpContext.Current.User.IsInRole("Purchase") ||
+        HttpContext.Current.User.IsInRole("Purchase_Report") ||
+        HttpContext.Current.User.IsInRole("Purchase_Admin")
+        )*@
+
+    @Html.Partial("_Procurement")
+
+    @Html.Partial("_Inventory")
+
+    @Html.Partial("_FixedAsset")
+    @Html.Partial("_Budget")
+    @Html.Partial("_CRM")
+    @Html.Partial("_Fleet")
+    @Html.Partial("_Maintenance")
+    @Html.Partial("_SelfService")
+    @*@Html.Partial("_PrintingEstimation")*@
+    @*@Html.Partial("_ProductionFollowUp")
+        @Html.Partial("_JobCosting")
+
+        @Html.Partial("_CMS")
+        @Html.Partial("_InformationDesk")*@
+    @Html.Partial("_Printing")
+    @Html.Partial("_Manufacturing")
+
+
+
+
+
+    @*@Html.Partial("_Project")*@
+
+    @if (HttpContext.Current.User.IsInRole("Admin") ||
+         HttpContext.Current.User.IsInRole("Admin_Regional") ||
+         HttpContext.Current.User.IsInRole("Admin_Module"))
+    {
+        @Html.Partial("_Settings")
+    }
 
 </ul>
 	   
